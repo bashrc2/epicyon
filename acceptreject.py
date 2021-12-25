@@ -25,7 +25,7 @@ from utils import hasObjectStringType
 
 def _createAcceptReject(base_dir: str, federationList: [],
                         nickname: str, domain: str, port: int,
-                        toUrl: str, ccUrl: str, httpPrefix: str,
+                        toUrl: str, ccUrl: str, http_prefix: str,
                         objectJson: {}, acceptType: str) -> {}:
     """Accepts or rejects something (eg. a follow request or offer)
     Typically toUrl will be https://www.w3.org/ns/activitystreams#Public
@@ -44,7 +44,7 @@ def _createAcceptReject(base_dir: str, federationList: [],
     newAccept = {
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': acceptType,
-        'actor': localActorUrl(httpPrefix, nickname, domain),
+        'actor': localActorUrl(http_prefix, nickname, domain),
         'to': [toUrl],
         'cc': [],
         'object': objectJson
@@ -57,22 +57,22 @@ def _createAcceptReject(base_dir: str, federationList: [],
 
 def createAccept(base_dir: str, federationList: [],
                  nickname: str, domain: str, port: int,
-                 toUrl: str, ccUrl: str, httpPrefix: str,
+                 toUrl: str, ccUrl: str, http_prefix: str,
                  objectJson: {}) -> {}:
     return _createAcceptReject(base_dir, federationList,
                                nickname, domain, port,
-                               toUrl, ccUrl, httpPrefix,
+                               toUrl, ccUrl, http_prefix,
                                objectJson, 'Accept')
 
 
 def createReject(base_dir: str, federationList: [],
                  nickname: str, domain: str, port: int,
-                 toUrl: str, ccUrl: str, httpPrefix: str,
+                 toUrl: str, ccUrl: str, http_prefix: str,
                  objectJson: {}) -> {}:
     return _createAcceptReject(base_dir, federationList,
                                nickname, domain, port,
                                toUrl, ccUrl,
-                               httpPrefix, objectJson, 'Reject')
+                               http_prefix, objectJson, 'Reject')
 
 
 def _acceptFollow(base_dir: str, domain: str, messageJson: {},
@@ -182,7 +182,7 @@ def _acceptFollow(base_dir: str, domain: str, messageJson: {},
 
 
 def receiveAcceptReject(session, base_dir: str,
-                        httpPrefix: str, domain: str, port: int,
+                        http_prefix: str, domain: str, port: int,
                         sendThreads: [], postLog: [], cachedWebfingers: {},
                         personCache: {}, messageJson: {}, federationList: [],
                         debug: bool) -> bool:

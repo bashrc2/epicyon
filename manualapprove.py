@@ -20,7 +20,7 @@ from threads import threadWithTrace
 
 
 def manualDenyFollowRequest(session, base_dir: str,
-                            httpPrefix: str,
+                            http_prefix: str,
                             nickname: str, domain: str, port: int,
                             denyHandle: str,
                             federationList: [],
@@ -59,7 +59,7 @@ def manualDenyFollowRequest(session, base_dir: str,
     if ':' in denyDomain:
         denyPort = getPortFromDomain(denyDomain)
         denyDomain = removeDomainPort(denyDomain)
-    followedAccountRejects(session, base_dir, httpPrefix,
+    followedAccountRejects(session, base_dir, http_prefix,
                            nickname, domain, port,
                            denyNickname, denyDomain, denyPort,
                            federationList,
@@ -72,7 +72,7 @@ def manualDenyFollowRequest(session, base_dir: str,
 
 
 def manualDenyFollowRequestThread(session, base_dir: str,
-                                  httpPrefix: str,
+                                  http_prefix: str,
                                   nickname: str, domain: str, port: int,
                                   denyHandle: str,
                                   federationList: [],
@@ -87,7 +87,7 @@ def manualDenyFollowRequestThread(session, base_dir: str,
     thr = \
         threadWithTrace(target=manualDenyFollowRequest,
                         args=(session, base_dir,
-                              httpPrefix,
+                              http_prefix,
                               nickname, domain, port,
                               denyHandle,
                               federationList,
@@ -121,7 +121,7 @@ def _approveFollowerHandle(accountDir: str, approveHandle: str) -> None:
 
 
 def manualApproveFollowRequest(session, base_dir: str,
-                               httpPrefix: str,
+                               http_prefix: str,
                                nickname: str, domain: str, port: int,
                                approveHandle: str,
                                federationList: [],
@@ -156,7 +156,7 @@ def manualApproveFollowRequest(session, base_dir: str,
             groupAccount = True
         reqNick = approveHandle.split('@')[0].replace('!', '')
         reqDomain = approveHandle.split('@')[1].strip()
-        reqPrefix = httpPrefix + '://' + reqDomain
+        reqPrefix = http_prefix + '://' + reqDomain
         paths = getUserPaths()
         for userPath in paths:
             if reqPrefix + userPath + reqNick in approveFollowsStr:
@@ -206,7 +206,7 @@ def manualApproveFollowRequest(session, base_dir: str,
                                   handle + ' follow request from ' +
                                   approveNickname + '@' + approveDomain)
                             followedAccountAccepts(session, base_dir,
-                                                   httpPrefix,
+                                                   http_prefix,
                                                    nickname, domain, port,
                                                    approveNickname,
                                                    approveDomain,
@@ -278,7 +278,7 @@ def manualApproveFollowRequest(session, base_dir: str,
 
 
 def manualApproveFollowRequestThread(session, base_dir: str,
-                                     httpPrefix: str,
+                                     http_prefix: str,
                                      nickname: str, domain: str, port: int,
                                      approveHandle: str,
                                      federationList: [],
@@ -293,7 +293,7 @@ def manualApproveFollowRequestThread(session, base_dir: str,
     thr = \
         threadWithTrace(target=manualApproveFollowRequest,
                         args=(session, base_dir,
-                              httpPrefix,
+                              http_prefix,
                               nickname, domain, port,
                               approveHandle,
                               federationList,

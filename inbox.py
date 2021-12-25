@@ -155,7 +155,7 @@ def _storeLastPostId(base_dir: str, nickname: str, domain: str,
 
 
 def _updateCachedHashtagSwarm(base_dir: str, nickname: str, domain: str,
-                              httpPrefix: str, domainFull: str,
+                              http_prefix: str, domainFull: str,
                               translate: {}) -> bool:
     """Updates the hashtag swarm stored as a file
     """
@@ -186,7 +186,7 @@ def _updateCachedHashtagSwarm(base_dir: str, nickname: str, domain: str,
         else:
             print('WARN: no modified date for ' + str(lastModified))
     if saveSwarm:
-        actor = localActorUrl(httpPrefix, nickname, domainFull)
+        actor = localActorUrl(http_prefix, nickname, domainFull)
         newSwarmStr = htmlHashTagSwarm(base_dir, actor, translate)
         if newSwarmStr:
             try:
@@ -200,7 +200,7 @@ def _updateCachedHashtagSwarm(base_dir: str, nickname: str, domain: str,
 
 
 def storeHashTags(base_dir: str, nickname: str, domain: str,
-                  httpPrefix: str, domainFull: str,
+                  http_prefix: str, domainFull: str,
                   postJsonObject: {}, translate: {}) -> None:
     """Extracts hashtags from an incoming post and updates the
     relevant tags files.
@@ -275,12 +275,12 @@ def storeHashTags(base_dir: str, nickname: str, domain: str,
     # ready for later display
     if hashtagsCtr > 0:
         _updateCachedHashtagSwarm(base_dir, nickname, domain,
-                                  httpPrefix, domainFull, translate)
+                                  http_prefix, domainFull, translate)
 
 
 def _inboxStorePostToHtmlCache(recentPostsCache: {}, maxRecentPosts: int,
                                translate: {},
-                               base_dir: str, httpPrefix: str,
+                               base_dir: str, http_prefix: str,
                                session, cachedWebfingers: {}, personCache: {},
                                nickname: str, domain: str, port: int,
                                postJsonObject: {},
@@ -311,7 +311,7 @@ def _inboxStorePostToHtmlCache(recentPostsCache: {}, maxRecentPosts: int,
                          personCache,
                          nickname, domain, port, postJsonObject,
                          avatarUrl, True, allowDeletion,
-                         httpPrefix, __version__, boxname,
+                         http_prefix, __version__, boxname,
                          YTReplacementDomain, twitterReplacementDomain,
                          showPublishedDateOnly,
                          peertubeInstances, allowLocalNetworkAccess,
@@ -448,7 +448,7 @@ def inboxPermittedMessage(domain: str, messageJson: {},
     return True
 
 
-def savePostToInboxQueue(base_dir: str, httpPrefix: str,
+def savePostToInboxQueue(base_dir: str, http_prefix: str,
                          nickname: str, domain: str,
                          postJsonObject: {},
                          originalPostJsonObject: {},
@@ -542,7 +542,7 @@ def savePostToInboxQueue(base_dir: str, httpPrefix: str,
         if actor:
             postId = actor + '/statuses/' + statusNumber
         else:
-            postId = localActorUrl(httpPrefix, nickname, originalDomain) + \
+            postId = localActorUrl(http_prefix, nickname, originalDomain) + \
                 '/statuses/' + statusNumber
 
     # NOTE: don't change postJsonObject['id'] before signature check
@@ -593,7 +593,7 @@ def savePostToInboxQueue(base_dir: str, httpPrefix: str,
     return filename
 
 
-def _inboxPostRecipientsAdd(base_dir: str, httpPrefix: str, toList: [],
+def _inboxPostRecipientsAdd(base_dir: str, http_prefix: str, toList: [],
                             recipientsDict: {},
                             domainMatch: str, domain: str,
                             actor: str, debug: bool) -> bool:
@@ -628,7 +628,7 @@ def _inboxPostRecipientsAdd(base_dir: str, httpPrefix: str, toList: [],
 
 
 def _inboxPostRecipients(base_dir: str, postJsonObject: {},
-                         httpPrefix: str, domain: str, port: int,
+                         http_prefix: str, domain: str, port: int,
                          debug: bool) -> ([], []):
     """Returns dictionaries containing the recipients of the given post
     The shared dictionary contains followers
@@ -660,7 +660,7 @@ def _inboxPostRecipients(base_dir: str, postJsonObject: {},
             if debug:
                 print('DEBUG: resolving "to"')
             includesFollowers, recipientsDict = \
-                _inboxPostRecipientsAdd(base_dir, httpPrefix,
+                _inboxPostRecipientsAdd(base_dir, http_prefix,
                                         recipientsList,
                                         recipientsDict,
                                         domainMatch, domainBase,
@@ -677,7 +677,7 @@ def _inboxPostRecipients(base_dir: str, postJsonObject: {},
             else:
                 recipientsList = [postJsonObject['object']['cc']]
             includesFollowers, recipientsDict = \
-                _inboxPostRecipientsAdd(base_dir, httpPrefix,
+                _inboxPostRecipientsAdd(base_dir, http_prefix,
                                         recipientsList,
                                         recipientsDict,
                                         domainMatch, domainBase,
@@ -702,7 +702,7 @@ def _inboxPostRecipients(base_dir: str, postJsonObject: {},
         else:
             recipientsList = [postJsonObject['to']]
         includesFollowers, recipientsDict = \
-            _inboxPostRecipientsAdd(base_dir, httpPrefix,
+            _inboxPostRecipientsAdd(base_dir, http_prefix,
                                     recipientsList,
                                     recipientsDict,
                                     domainMatch, domainBase,
@@ -716,7 +716,7 @@ def _inboxPostRecipients(base_dir: str, postJsonObject: {},
         else:
             recipientsList = [postJsonObject['cc']]
         includesFollowers, recipientsDict = \
-            _inboxPostRecipientsAdd(base_dir, httpPrefix,
+            _inboxPostRecipientsAdd(base_dir, http_prefix,
                                     recipientsList,
                                     recipientsDict,
                                     domainMatch, domainBase,
@@ -736,7 +736,7 @@ def _inboxPostRecipients(base_dir: str, postJsonObject: {},
     return recipientsDict, recipientsDictFollowers
 
 
-def _receiveUndoFollow(session, base_dir: str, httpPrefix: str,
+def _receiveUndoFollow(session, base_dir: str, http_prefix: str,
                        port: int, messageJson: {},
                        federationList: [],
                        debug: bool) -> bool:
@@ -791,7 +791,7 @@ def _receiveUndoFollow(session, base_dir: str, httpPrefix: str,
     return False
 
 
-def _receiveUndo(session, base_dir: str, httpPrefix: str,
+def _receiveUndo(session, base_dir: str, http_prefix: str,
                  port: int, sendThreads: [], postLog: [],
                  cachedWebfingers: {}, personCache: {},
                  messageJson: {}, federationList: [],
@@ -814,7 +814,7 @@ def _receiveUndo(session, base_dir: str, httpPrefix: str,
         return False
     if messageJson['object']['type'] == 'Follow' or \
        messageJson['object']['type'] == 'Join':
-        return _receiveUndoFollow(session, base_dir, httpPrefix,
+        return _receiveUndoFollow(session, base_dir, http_prefix,
                                   port, messageJson,
                                   federationList, debug)
     return False
@@ -938,7 +938,7 @@ def _receiveUpdateToQuestion(recentPostsCache: {}, messageJson: {},
 
 
 def _receiveUpdate(recentPostsCache: {}, session, base_dir: str,
-                   httpPrefix: str, domain: str, port: int,
+                   http_prefix: str, domain: str, port: int,
                    sendThreads: [], postLog: [], cachedWebfingers: {},
                    personCache: {}, messageJson: {}, federationList: [],
                    nickname: str, debug: bool) -> bool:
@@ -991,7 +991,7 @@ def _receiveUpdate(recentPostsCache: {}, session, base_dir: str,
 
 def _receiveLike(recentPostsCache: {},
                  session, handle: str, isGroup: bool, base_dir: str,
-                 httpPrefix: str, domain: str, port: int,
+                 http_prefix: str, domain: str, port: int,
                  onionDomain: str,
                  sendThreads: [], postLog: [], cachedWebfingers: {},
                  personCache: {}, messageJson: {}, federationList: [],
@@ -1096,7 +1096,7 @@ def _receiveLike(recentPostsCache: {},
                                  session, cachedWebfingers, personCache,
                                  handleName, domain, port, likedPostJson,
                                  None, True, allowDeletion,
-                                 httpPrefix, __version__,
+                                 http_prefix, __version__,
                                  'inbox',
                                  YTReplacementDomain,
                                  twitterReplacementDomain,
@@ -1114,7 +1114,7 @@ def _receiveLike(recentPostsCache: {},
 
 def _receiveUndoLike(recentPostsCache: {},
                      session, handle: str, isGroup: bool, base_dir: str,
-                     httpPrefix: str, domain: str, port: int,
+                     http_prefix: str, domain: str, port: int,
                      sendThreads: [], postLog: [], cachedWebfingers: {},
                      personCache: {}, messageJson: {}, federationList: [],
                      debug: bool,
@@ -1207,7 +1207,7 @@ def _receiveUndoLike(recentPostsCache: {},
                                  session, cachedWebfingers, personCache,
                                  handleName, domain, port, likedPostJson,
                                  None, True, allowDeletion,
-                                 httpPrefix, __version__,
+                                 http_prefix, __version__,
                                  'inbox',
                                  YTReplacementDomain,
                                  twitterReplacementDomain,
@@ -1225,7 +1225,7 @@ def _receiveUndoLike(recentPostsCache: {},
 
 def _receiveReaction(recentPostsCache: {},
                      session, handle: str, isGroup: bool, base_dir: str,
-                     httpPrefix: str, domain: str, port: int,
+                     http_prefix: str, domain: str, port: int,
                      onionDomain: str,
                      sendThreads: [], postLog: [], cachedWebfingers: {},
                      personCache: {}, messageJson: {}, federationList: [],
@@ -1355,7 +1355,7 @@ def _receiveReaction(recentPostsCache: {},
                                  session, cachedWebfingers, personCache,
                                  handleName, domain, port, reactionPostJson,
                                  None, True, allowDeletion,
-                                 httpPrefix, __version__,
+                                 http_prefix, __version__,
                                  'inbox',
                                  YTReplacementDomain,
                                  twitterReplacementDomain,
@@ -1373,7 +1373,7 @@ def _receiveReaction(recentPostsCache: {},
 
 def _receiveUndoReaction(recentPostsCache: {},
                          session, handle: str, isGroup: bool, base_dir: str,
-                         httpPrefix: str, domain: str, port: int,
+                         http_prefix: str, domain: str, port: int,
                          sendThreads: [], postLog: [], cachedWebfingers: {},
                          personCache: {}, messageJson: {}, federationList: [],
                          debug: bool,
@@ -1482,7 +1482,7 @@ def _receiveUndoReaction(recentPostsCache: {},
                                  session, cachedWebfingers, personCache,
                                  handleName, domain, port, reactionPostJson,
                                  None, True, allowDeletion,
-                                 httpPrefix, __version__,
+                                 http_prefix, __version__,
                                  'inbox',
                                  YTReplacementDomain,
                                  twitterReplacementDomain,
@@ -1500,7 +1500,7 @@ def _receiveUndoReaction(recentPostsCache: {},
 
 def _receiveBookmark(recentPostsCache: {},
                      session, handle: str, isGroup: bool, base_dir: str,
-                     httpPrefix: str, domain: str, port: int,
+                     http_prefix: str, domain: str, port: int,
                      sendThreads: [], postLog: [], cachedWebfingers: {},
                      personCache: {}, messageJson: {}, federationList: [],
                      debug: bool, signingPrivateKeyPem: str,
@@ -1592,7 +1592,7 @@ def _receiveBookmark(recentPostsCache: {},
                              session, cachedWebfingers, personCache,
                              nickname, domain, port, bookmarkedPostJson,
                              None, True, allowDeletion,
-                             httpPrefix, __version__,
+                             http_prefix, __version__,
                              'inbox',
                              YTReplacementDomain,
                              twitterReplacementDomain,
@@ -1610,7 +1610,7 @@ def _receiveBookmark(recentPostsCache: {},
 
 def _receiveUndoBookmark(recentPostsCache: {},
                          session, handle: str, isGroup: bool, base_dir: str,
-                         httpPrefix: str, domain: str, port: int,
+                         http_prefix: str, domain: str, port: int,
                          sendThreads: [], postLog: [], cachedWebfingers: {},
                          personCache: {}, messageJson: {}, federationList: [],
                          debug: bool, signingPrivateKeyPem: str,
@@ -1703,7 +1703,7 @@ def _receiveUndoBookmark(recentPostsCache: {},
                              session, cachedWebfingers, personCache,
                              nickname, domain, port, bookmarkedPostJson,
                              None, True, allowDeletion,
-                             httpPrefix, __version__,
+                             http_prefix, __version__,
                              'inbox',
                              YTReplacementDomain,
                              twitterReplacementDomain,
@@ -1719,7 +1719,7 @@ def _receiveUndoBookmark(recentPostsCache: {},
 
 
 def _receiveDelete(session, handle: str, isGroup: bool, base_dir: str,
-                   httpPrefix: str, domain: str, port: int,
+                   http_prefix: str, domain: str, port: int,
                    sendThreads: [], postLog: [], cachedWebfingers: {},
                    personCache: {}, messageJson: {}, federationList: [],
                    debug: bool, allowDeletion: bool,
@@ -1735,7 +1735,7 @@ def _receiveDelete(session, handle: str, isGroup: bool, base_dir: str,
     if not hasObjectString(messageJson, debug):
         return False
     domainFull = getFullDomain(domain, port)
-    deletePrefix = httpPrefix + '://' + domainFull + '/'
+    deletePrefix = http_prefix + '://' + domainFull + '/'
     if (not allowDeletion and
         (not messageJson['object'].startswith(deletePrefix) or
          not messageJson['actor'].startswith(deletePrefix))):
@@ -1774,7 +1774,7 @@ def _receiveDelete(session, handle: str, isGroup: bool, base_dir: str,
             print('DEBUG: delete post not found in inbox or outbox')
             print(messageId)
         return True
-    deletePost(base_dir, httpPrefix, handleNickname,
+    deletePost(base_dir, http_prefix, handleNickname,
                handleDomain, postFilename, debug,
                recentPostsCache)
     if debug:
@@ -1785,7 +1785,7 @@ def _receiveDelete(session, handle: str, isGroup: bool, base_dir: str,
         postFilename = locatePost(base_dir, 'news',
                                   handleDomain, messageId)
         if postFilename:
-            deletePost(base_dir, httpPrefix, 'news',
+            deletePost(base_dir, http_prefix, 'news',
                        handleDomain, postFilename, debug,
                        recentPostsCache)
             if debug:
@@ -1795,7 +1795,7 @@ def _receiveDelete(session, handle: str, isGroup: bool, base_dir: str,
 
 def _receiveAnnounce(recentPostsCache: {},
                      session, handle: str, isGroup: bool, base_dir: str,
-                     httpPrefix: str,
+                     http_prefix: str,
                      domain: str, onionDomain: str, port: int,
                      sendThreads: [], postLog: [], cachedWebfingers: {},
                      personCache: {}, messageJson: {}, federationList: [],
@@ -1910,7 +1910,7 @@ def _receiveAnnounce(recentPostsCache: {},
                              session, cachedWebfingers, personCache,
                              nickname, domain, port, messageJson,
                              None, True, allowDeletion,
-                             httpPrefix, __version__,
+                             http_prefix, __version__,
                              'inbox',
                              YTReplacementDomain,
                              twitterReplacementDomain,
@@ -1931,7 +1931,7 @@ def _receiveAnnounce(recentPostsCache: {},
             print('Generated announce html ' + announceHtml.replace('\n', ''))
 
     postJsonObject = downloadAnnounce(session, base_dir,
-                                      httpPrefix,
+                                      http_prefix,
                                       nickname, domain,
                                       messageJson,
                                       __version__, translate,
@@ -1962,7 +1962,7 @@ def _receiveAnnounce(recentPostsCache: {},
             print('DEBUG: Announce post downloaded for ' +
                   messageJson['actor'] + ' -> ' + messageJson['object'])
         storeHashTags(base_dir, nickname, domain,
-                      httpPrefix, domainFull,
+                      http_prefix, domainFull,
                       postJsonObject, translate)
         # Try to obtain the actor for this person
         # so that their avatar can be shown
@@ -1984,7 +1984,7 @@ def _receiveAnnounce(recentPostsCache: {},
                 if isRecentPost(postJsonObject, 3):
                     if not os.path.isfile(postFilename + '.tts'):
                         domainFull = getFullDomain(domain, port)
-                        updateSpeaker(base_dir, httpPrefix,
+                        updateSpeaker(base_dir, http_prefix,
                                       nickname, domain, domainFull,
                                       postJsonObject, personCache,
                                       translate, lookupActor,
@@ -2003,7 +2003,7 @@ def _receiveAnnounce(recentPostsCache: {},
                     pubKey = \
                         getPersonPubKey(base_dir, session, lookupActor,
                                         personCache, debug,
-                                        __version__, httpPrefix,
+                                        __version__, http_prefix,
                                         domain, onionDomain,
                                         signingPrivateKeyPem)
                     if pubKey:
@@ -2023,7 +2023,7 @@ def _receiveAnnounce(recentPostsCache: {},
 
 def _receiveUndoAnnounce(recentPostsCache: {},
                          session, handle: str, isGroup: bool, base_dir: str,
-                         httpPrefix: str, domain: str, port: int,
+                         http_prefix: str, domain: str, port: int,
                          sendThreads: [], postLog: [], cachedWebfingers: {},
                          personCache: {}, messageJson: {}, federationList: [],
                          debug: bool) -> bool:
@@ -2104,7 +2104,7 @@ def _postAllowsComments(postFilename: str) -> bool:
     return jsonPostAllowsComments(postJsonObject)
 
 
-def populateReplies(base_dir: str, httpPrefix: str, domain: str,
+def populateReplies(base_dir: str, http_prefix: str, domain: str,
                     messageJson: {}, maxReplies: int, debug: bool) -> bool:
     """Updates the list of replies for a post on this domain if
     a reply to it arrives
@@ -2123,11 +2123,11 @@ def populateReplies(base_dir: str, httpPrefix: str, domain: str,
     if debug:
         print('DEBUG: post contains a reply')
     # is this a reply to a post on this domain?
-    if not replyTo.startswith(httpPrefix + '://' + domain + '/'):
+    if not replyTo.startswith(http_prefix + '://' + domain + '/'):
         if debug:
             print('DEBUG: post is a reply to another not on this domain')
             print(replyTo)
-            print('Expected: ' + httpPrefix + '://' + domain + '/')
+            print('Expected: ' + http_prefix + '://' + domain + '/')
         return False
     replyToNickname = getNicknameFromActor(replyTo)
     if not replyToNickname:
@@ -2188,7 +2188,7 @@ def _validPostContent(base_dir: str, nickname: str, domain: str,
                       messageJson: {}, maxMentions: int, maxEmoji: int,
                       allowLocalNetworkAccess: bool, debug: bool,
                       systemLanguage: str,
-                      httpPrefix: str, domainFull: str,
+                      http_prefix: str, domainFull: str,
                       personCache: {}) -> bool:
     """Is the content of a received post valid?
     Check for bad html
@@ -2264,7 +2264,7 @@ def _validPostContent(base_dir: str, nickname: str, domain: str,
     # check that the post is in a language suitable for this account
     if not understoodPostLanguage(base_dir, nickname, domain,
                                   messageJson, systemLanguage,
-                                  httpPrefix, domainFull,
+                                  http_prefix, domainFull,
                                   personCache):
         return False
     # check for filtered content
@@ -2289,7 +2289,7 @@ def _validPostContent(base_dir: str, nickname: str, domain: str,
     return True
 
 
-def _obtainAvatarForReplyPost(session, base_dir: str, httpPrefix: str,
+def _obtainAvatarForReplyPost(session, base_dir: str, http_prefix: str,
                               domain: str, onionDomain: str, personCache: {},
                               postJsonObject: {}, debug: bool,
                               signingPrivateKeyPem: str) -> None:
@@ -2322,7 +2322,7 @@ def _obtainAvatarForReplyPost(session, base_dir: str, httpPrefix: str,
         pubKey = \
             getPersonPubKey(base_dir, session, lookupActor,
                             personCache, debug,
-                            __version__, httpPrefix,
+                            __version__, http_prefix,
                             domain, onionDomain, signingPrivateKeyPem)
         if pubKey:
             if debug:
@@ -2607,7 +2607,7 @@ def _groupHandle(base_dir: str, handle: str) -> bool:
 
 def _sendToGroupMembers(session, base_dir: str, handle: str, port: int,
                         postJsonObject: {},
-                        httpPrefix: str, federationList: [],
+                        http_prefix: str, federationList: [],
                         sendThreads: [], postLog: [], cachedWebfingers: {},
                         personCache: {}, debug: bool,
                         systemLanguage: str,
@@ -2642,7 +2642,7 @@ def _sendToGroupMembers(session, base_dir: str, handle: str, port: int,
     nickname = handle.split('@')[0].replace('!', '')
     domain = handle.split('@')[1]
     domainFull = getFullDomain(domain, port)
-    groupActor = localActorUrl(httpPrefix, nickname, domainFull)
+    groupActor = localActorUrl(http_prefix, nickname, domainFull)
     if groupActor not in postJsonObject['to']:
         return
     cc = ''
@@ -2650,7 +2650,7 @@ def _sendToGroupMembers(session, base_dir: str, handle: str, port: int,
 
     # save to the group outbox so that replies will be to the group
     # rather than the original sender
-    savePostToBox(base_dir, httpPrefix, None,
+    savePostToBox(base_dir, http_prefix, None,
                   nickname, domain, postJsonObject, 'outbox')
 
     postId = removeIdEnding(postJsonObject['object']['id'])
@@ -2660,14 +2660,14 @@ def _sendToGroupMembers(session, base_dir: str, handle: str, port: int,
         createAnnounce(session, base_dir, federationList,
                        nickname, domain, port,
                        groupActor + '/followers', cc,
-                       httpPrefix, postId, False, False,
+                       http_prefix, postId, False, False,
                        sendThreads, postLog,
                        personCache, cachedWebfingers,
                        debug, __version__, signingPrivateKeyPem)
 
     sendToFollowersThread(session, base_dir, nickname, domain,
                           onionDomain, i2pDomain, port,
-                          httpPrefix, federationList,
+                          http_prefix, federationList,
                           sendThreads, postLog,
                           cachedWebfingers, personCache,
                           announceJson, debug, __version__,
@@ -2787,7 +2787,7 @@ def _updateLastSeen(base_dir: str, handle: str, actor: str) -> None:
         print('EX: unable to write ' + lastSeenFilename)
 
 
-def _bounceDM(senderPostId: str, session, httpPrefix: str,
+def _bounceDM(senderPostId: str, session, http_prefix: str,
               base_dir: str, nickname: str, domain: str, port: int,
               sendingHandle: str, federationList: [],
               sendThreads: [], postLog: [],
@@ -2846,7 +2846,7 @@ def _bounceDM(senderPostId: str, session, httpPrefix: str,
     lowBandwidth = False
     postJsonObject = \
         createDirectMessagePost(base_dir, nickname, domain, port,
-                                httpPrefix, content, followersOnly,
+                                http_prefix, content, followersOnly,
                                 saveToFile, clientToServer,
                                 commentsEnabled,
                                 attachImageFilename, mediaType,
@@ -2864,7 +2864,7 @@ def _bounceDM(senderPostId: str, session, httpPrefix: str,
     sendSignedJson(postJsonObject, session, base_dir,
                    nickname, domain, port,
                    senderNickname, senderDomain, senderPort, cc,
-                   httpPrefix, False, False, federationList,
+                   http_prefix, False, False, federationList,
                    sendThreads, postLog, cachedWebfingers,
                    personCache, debug, __version__, None, groupAccount,
                    signingPrivateKeyPem, 7238634)
@@ -2873,7 +2873,7 @@ def _bounceDM(senderPostId: str, session, httpPrefix: str,
 
 def _isValidDM(base_dir: str, nickname: str, domain: str, port: int,
                postJsonObject: {}, updateIndexList: [],
-               session, httpPrefix: str,
+               session, http_prefix: str,
                federationList: [],
                sendThreads: [], postLog: [],
                cachedWebfingers: {},
@@ -2895,7 +2895,7 @@ def _isValidDM(base_dir: str, nickname: str, domain: str, port: int,
     if not os.path.isfile(followDMsFilename):
         # dm index will be updated
         updateIndexList.append('dm')
-        actUrl = localActorUrl(httpPrefix, nickname, domain)
+        actUrl = localActorUrl(http_prefix, nickname, domain)
         _dmNotify(base_dir, handle, actUrl + '/dm')
         return True
 
@@ -2949,7 +2949,7 @@ def _isValidDM(base_dir: str, nickname: str, domain: str, port: int,
                         if not obj.get('inReplyTo'):
                             bouncedId = removeIdEnding(postJsonObject['id'])
                             _bounceDM(bouncedId,
-                                      session, httpPrefix,
+                                      session, http_prefix,
                                       base_dir,
                                       nickname, domain,
                                       port, sendH,
@@ -2966,13 +2966,13 @@ def _isValidDM(base_dir: str, nickname: str, domain: str, port: int,
 
     # dm index will be updated
     updateIndexList.append('dm')
-    actUrl = localActorUrl(httpPrefix, nickname, domain)
+    actUrl = localActorUrl(http_prefix, nickname, domain)
     _dmNotify(base_dir, handle, actUrl + '/dm')
     return True
 
 
 def _receiveQuestionVote(base_dir: str, nickname: str, domain: str,
-                         httpPrefix: str, handle: str, debug: bool,
+                         http_prefix: str, handle: str, debug: bool,
                          postJsonObject: {}, recentPostsCache: {},
                          session, onionDomain: str, i2pDomain: str, port: int,
                          federationList: [], sendThreads: [], postLog: [],
@@ -3022,7 +3022,7 @@ def _receiveQuestionVote(base_dir: str, nickname: str, domain: str,
                          session, cachedWebfingers, personCache,
                          nickname, domain, port, questionJson,
                          None, True, allowDeletion,
-                         httpPrefix, __version__,
+                         http_prefix, __version__,
                          'inbox',
                          YTReplacementDomain,
                          twitterReplacementDomain,
@@ -3041,7 +3041,7 @@ def _receiveQuestionVote(base_dir: str, nickname: str, domain: str,
                      questionPostFilename, debug)
 
     # Is this a question created by this instance?
-    idPrefix = httpPrefix + '://' + domain
+    idPrefix = http_prefix + '://' + domain
     if not questionJson['object']['id'].startswith(idPrefix):
         return
     # if the votes on a question have changed then
@@ -3051,7 +3051,7 @@ def _receiveQuestionVote(base_dir: str, nickname: str, domain: str,
     sharedItemFederationTokens = {}
     sendToFollowersThread(session, base_dir, nickname, domain,
                           onionDomain, i2pDomain, port,
-                          httpPrefix, federationList,
+                          http_prefix, federationList,
                           sendThreads, postLog,
                           cachedWebfingers, personCache,
                           postJsonObject, debug, __version__,
@@ -3063,7 +3063,7 @@ def _receiveQuestionVote(base_dir: str, nickname: str, domain: str,
 def _createReplyNotificationFile(base_dir: str, nickname: str, domain: str,
                                  handle: str, debug: bool, postIsDM: bool,
                                  postJsonObject: {}, actor: str,
-                                 updateIndexList: [], httpPrefix: str,
+                                 updateIndexList: [], http_prefix: str,
                                  defaultReplyIntervalHours: int) -> bool:
     """Generates a file indicating that a new reply has arrived
     The file can then be used by other systems to create a notification
@@ -3098,7 +3098,7 @@ def _createReplyNotificationFile(base_dir: str, nickname: str, domain: str,
                                   defaultReplyIntervalHours)
         if canReplyTo(base_dir, nickname, domain, inReplyTo,
                       replyIntervalHours):
-            actUrl = localActorUrl(httpPrefix, nickname, domain)
+            actUrl = localActorUrl(http_prefix, nickname, domain)
             _replyNotify(base_dir, handle, actUrl + '/tlreplies')
         else:
             if debug:
@@ -3111,7 +3111,7 @@ def _createReplyNotificationFile(base_dir: str, nickname: str, domain: str,
     return isReplyToMutedPost
 
 
-def _lowFrequencyPostNotification(base_dir: str, httpPrefix: str,
+def _lowFrequencyPostNotification(base_dir: str, http_prefix: str,
                                   nickname: str, domain: str,
                                   port: int, handle: str,
                                   postIsDM: bool, jsonObj: {}) -> None:
@@ -3138,7 +3138,7 @@ def _lowFrequencyPostNotification(base_dir: str, httpPrefix: str,
         postId = removeIdEnding(jsonObj['id'])
         domFull = getFullDomain(domain, port)
         postLink = \
-            localActorUrl(httpPrefix, nickname, domFull) + \
+            localActorUrl(http_prefix, nickname, domFull) + \
             '?notifypost=' + postId.replace('/', '-')
         _notifyPostArrival(base_dir, handle, postLink)
 
@@ -3177,7 +3177,7 @@ def _checkForGitPatches(base_dir: str, nickname: str, domain: str,
 
 def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                        session, keyId: str, handle: str, messageJson: {},
-                       base_dir: str, httpPrefix: str, sendThreads: [],
+                       base_dir: str, http_prefix: str, sendThreads: [],
                        postLog: [], cachedWebfingers: {}, personCache: {},
                        queue: [], domain: str,
                        onionDomain: str, i2pDomain: str,
@@ -3212,7 +3212,7 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
 
     if _receiveLike(recentPostsCache,
                     session, handle, isGroup,
-                    base_dir, httpPrefix,
+                    base_dir, http_prefix,
                     domain, port,
                     onionDomain,
                     sendThreads, postLog,
@@ -3235,7 +3235,7 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
 
     if _receiveUndoLike(recentPostsCache,
                         session, handle, isGroup,
-                        base_dir, httpPrefix,
+                        base_dir, http_prefix,
                         domain, port,
                         sendThreads, postLog,
                         cachedWebfingers,
@@ -3257,7 +3257,7 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
 
     if _receiveReaction(recentPostsCache,
                         session, handle, isGroup,
-                        base_dir, httpPrefix,
+                        base_dir, http_prefix,
                         domain, port,
                         onionDomain,
                         sendThreads, postLog,
@@ -3280,7 +3280,7 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
 
     if _receiveUndoReaction(recentPostsCache,
                             session, handle, isGroup,
-                            base_dir, httpPrefix,
+                            base_dir, http_prefix,
                             domain, port,
                             sendThreads, postLog,
                             cachedWebfingers,
@@ -3302,7 +3302,7 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
 
     if _receiveBookmark(recentPostsCache,
                         session, handle, isGroup,
-                        base_dir, httpPrefix,
+                        base_dir, http_prefix,
                         domain, port,
                         sendThreads, postLog,
                         cachedWebfingers,
@@ -3324,7 +3324,7 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
 
     if _receiveUndoBookmark(recentPostsCache,
                             session, handle, isGroup,
-                            base_dir, httpPrefix,
+                            base_dir, http_prefix,
                             domain, port,
                             sendThreads, postLog,
                             cachedWebfingers,
@@ -3349,7 +3349,7 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
 
     if _receiveAnnounce(recentPostsCache,
                         session, handle, isGroup,
-                        base_dir, httpPrefix,
+                        base_dir, http_prefix,
                         domain, onionDomain, port,
                         sendThreads, postLog,
                         cachedWebfingers,
@@ -3371,7 +3371,7 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
 
     if _receiveUndoAnnounce(recentPostsCache,
                             session, handle, isGroup,
-                            base_dir, httpPrefix,
+                            base_dir, http_prefix,
                             domain, port,
                             sendThreads, postLog,
                             cachedWebfingers,
@@ -3384,7 +3384,7 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
         return False
 
     if _receiveDelete(session, handle, isGroup,
-                      base_dir, httpPrefix,
+                      base_dir, http_prefix,
                       domain, port,
                       sendThreads, postLog,
                       cachedWebfingers,
@@ -3416,7 +3416,7 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
     if _validPostContent(base_dir, nickname, domain,
                          postJsonObject, maxMentions, maxEmoji,
                          allowLocalNetworkAccess, debug,
-                         systemLanguage, httpPrefix,
+                         systemLanguage, http_prefix,
                          domainFull, personCache):
         # is the sending actor valid?
         if not validSendingActor(session, base_dir, nickname, domain,
@@ -3444,11 +3444,11 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
 
         # list of indexes to be updated
         updateIndexList = ['inbox']
-        populateReplies(base_dir, httpPrefix, domain, postJsonObject,
+        populateReplies(base_dir, http_prefix, domain, postJsonObject,
                         maxReplies, debug)
 
         _receiveQuestionVote(base_dir, nickname, domain,
-                             httpPrefix, handle, debug,
+                             http_prefix, handle, debug,
                              postJsonObject, recentPostsCache,
                              session, onionDomain, i2pDomain, port,
                              federationList, sendThreads, postLog,
@@ -3472,7 +3472,7 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
             if postIsDM:
                 if not _isValidDM(base_dir, nickname, domain, port,
                                   postJsonObject, updateIndexList,
-                                  session, httpPrefix,
+                                  session, http_prefix,
                                   federationList,
                                   sendThreads, postLog,
                                   cachedWebfingers,
@@ -3485,17 +3485,17 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                     return False
 
             # get the actor being replied to
-            actor = localActorUrl(httpPrefix, nickname, domainFull)
+            actor = localActorUrl(http_prefix, nickname, domainFull)
 
             # create a reply notification file if needed
             isReplyToMutedPost = \
                 _createReplyNotificationFile(base_dir, nickname, domain,
                                              handle, debug, postIsDM,
                                              postJsonObject, actor,
-                                             updateIndexList, httpPrefix,
+                                             updateIndexList, http_prefix,
                                              defaultReplyIntervalHours)
 
-            if isImageMedia(session, base_dir, httpPrefix,
+            if isImageMedia(session, base_dir, http_prefix,
                             nickname, domain, postJsonObject,
                             translate,
                             YTReplacementDomain,
@@ -3511,13 +3511,13 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
 
         # get the avatar for a reply/announce
         _obtainAvatarForReplyPost(session, base_dir,
-                                  httpPrefix, domain, onionDomain,
+                                  http_prefix, domain, onionDomain,
                                   personCache, postJsonObject, debug,
                                   signingPrivateKeyPem)
 
         # save the post to file
         if saveJson(postJsonObject, destinationFilename):
-            _lowFrequencyPostNotification(base_dir, httpPrefix,
+            _lowFrequencyPostNotification(base_dir, http_prefix,
                                           nickname, domain, port,
                                           handle, postIsDM, jsonObj)
 
@@ -3541,7 +3541,7 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                     if boxname == 'inbox':
                         if isRecentPost(postJsonObject, 3):
                             domainFull = getFullDomain(domain, port)
-                            updateSpeaker(base_dir, httpPrefix,
+                            updateSpeaker(base_dir, http_prefix,
                                           nickname, domain, domainFull,
                                           postJsonObject, personCache,
                                           translate, None, themeName)
@@ -3554,7 +3554,7 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                         _inboxStorePostToHtmlCache(recentPostsCache,
                                                    maxRecentPosts,
                                                    translate, base_dir,
-                                                   httpPrefix,
+                                                   http_prefix,
                                                    session, cachedWebfingers,
                                                    personCache,
                                                    handleName,
@@ -3590,7 +3590,7 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
 
             # If this was an edit then delete the previous version of the post
             if editedFilename:
-                deletePost(base_dir, httpPrefix,
+                deletePost(base_dir, http_prefix,
                            nickname, domain, editedFilename,
                            debug, recentPostsCache)
 
@@ -3600,14 +3600,14 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
             _inboxUpdateCalendar(base_dir, handle, postJsonObject)
 
             storeHashTags(base_dir, handleName, domain,
-                          httpPrefix, domainFull,
+                          http_prefix, domainFull,
                           postJsonObject, translate)
 
             # send the post out to group members
             if isGroup:
                 _sendToGroupMembers(session, base_dir, handle, port,
                                     postJsonObject,
-                                    httpPrefix, federationList, sendThreads,
+                                    http_prefix, federationList, sendThreads,
                                     postLog, cachedWebfingers, personCache,
                                     debug, systemLanguage,
                                     onionDomain, i2pDomain,
@@ -3843,7 +3843,7 @@ def _checkJsonSignature(base_dir: str, queueJson: {}) -> (bool, bool):
     return hasJsonSignature, jwebsigType
 
 
-def _receiveFollowRequest(session, base_dir: str, httpPrefix: str,
+def _receiveFollowRequest(session, base_dir: str, http_prefix: str,
                           port: int, sendThreads: [], postLog: [],
                           cachedWebfingers: {}, personCache: {},
                           messageJson: {}, federationList: [],
@@ -3968,7 +3968,7 @@ def _receiveFollowRequest(session, base_dir: str, httpPrefix: str,
             print('Obtaining the following actor: ' + messageJson['actor'])
         if not getPersonPubKey(base_dir, session, messageJson['actor'],
                                personCache, debug, projectVersion,
-                               httpPrefix, domainToFollow, onionDomain,
+                               http_prefix, domainToFollow, onionDomain,
                                signingPrivateKeyPem):
             if debug:
                 print('Unable to obtain following actor: ' +
@@ -4005,7 +4005,7 @@ def _receiveFollowRequest(session, base_dir: str, httpPrefix: str,
                 print('Obtaining the following actor: ' + messageJson['actor'])
             if not getPersonPubKey(base_dir, session, messageJson['actor'],
                                    personCache, debug, projectVersion,
-                                   httpPrefix, domainToFollow, onionDomain,
+                                   http_prefix, domainToFollow, onionDomain,
                                    signingPrivateKeyPem):
                 if debug:
                     print('Unable to obtain following actor: ' +
@@ -4048,7 +4048,7 @@ def _receiveFollowRequest(session, base_dir: str, httpPrefix: str,
                     print('EX: unable to write ' + followersFilename)
 
     print('Beginning follow accept')
-    return followedAccountAccepts(session, base_dir, httpPrefix,
+    return followedAccountAccepts(session, base_dir, http_prefix,
                                   nicknameToFollow, domainToFollow, port,
                                   nickname, domain, fromPort,
                                   messageJson['actor'], federationList,
@@ -4060,18 +4060,22 @@ def _receiveFollowRequest(session, base_dir: str, httpPrefix: str,
 
 def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                   projectVersion: str,
-                  base_dir: str, httpPrefix: str, sendThreads: [], postLog: [],
+                  base_dir: str, http_prefix: str,
+                  sendThreads: [], postLog: [],
                   cachedWebfingers: {}, personCache: {}, queue: [],
                   domain: str,
-                  onionDomain: str, i2pDomain: str, port: int, proxyType: str,
+                  onionDomain: str, i2pDomain: str,
+                  port: int, proxyType: str,
                   federationList: [], maxReplies: int,
-                  domainMaxPostsPerDay: int, accountMaxPostsPerDay: int,
+                  domainMaxPostsPerDay: int,
+                  accountMaxPostsPerDay: int,
                   allowDeletion: bool, debug: bool, maxMentions: int,
                   maxEmoji: int, translate: {}, unitTest: bool,
                   YTReplacementDomain: str,
                   twitterReplacementDomain: str,
                   showPublishedDateOnly: bool,
-                  maxFollowers: int, allowLocalNetworkAccess: bool,
+                  maxFollowers: int,
+                  allowLocalNetworkAccess: bool,
                   peertubeInstances: [],
                   verifyAllSignatures: bool,
                   themeName: str, systemLanguage: str,
@@ -4228,7 +4232,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
             pubKey = \
                 getPersonPubKey(base_dir, session, keyId,
                                 personCache, debug,
-                                projectVersion, httpPrefix,
+                                projectVersion, http_prefix,
                                 domain, onionDomain, signingPrivateKeyPem)
             if pubKey:
                 if debug:
@@ -4259,7 +4263,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
             pprint(queueJson['httpHeaders'])
         postStr = json.dumps(queueJson['post'])
         httpSignatureFailed = False
-        if not verifyPostHeaders(httpPrefix,
+        if not verifyPostHeaders(http_prefix,
                                  pubKey,
                                  queueJson['httpHeaders'],
                                  queueJson['path'], False,
@@ -4339,7 +4343,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
         #     queueJson['post']['id'] = queueJson['id']
 
         if _receiveUndo(session,
-                        base_dir, httpPrefix, port,
+                        base_dir, http_prefix, port,
                         sendThreads, postLog,
                         cachedWebfingers,
                         personCache,
@@ -4360,7 +4364,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
         if debug:
             print('DEBUG: checking for follow requests')
         if _receiveFollowRequest(session,
-                                 base_dir, httpPrefix, port,
+                                 base_dir, http_prefix, port,
                                  sendThreads, postLog,
                                  cachedWebfingers,
                                  personCache,
@@ -4385,7 +4389,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                 print('DEBUG: No follow requests')
 
         if receiveAcceptReject(session,
-                               base_dir, httpPrefix, domain, port,
+                               base_dir, http_prefix, domain, port,
                                sendThreads, postLog,
                                cachedWebfingers, personCache,
                                queueJson['post'],
@@ -4402,7 +4406,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
             continue
 
         if _receiveUpdate(recentPostsCache, session,
-                          base_dir, httpPrefix,
+                          base_dir, http_prefix,
                           domain, port,
                           sendThreads, postLog,
                           cachedWebfingers,
@@ -4426,7 +4430,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
         # get recipients list
         recipientsDict, recipientsDictFollowers = \
             _inboxPostRecipients(base_dir, queueJson['post'],
-                                 httpPrefix, domain, port, debug)
+                                 http_prefix, domain, port, debug)
         if len(recipientsDict.items()) == 0 and \
            len(recipientsDictFollowers.items()) == 0:
             if debug:
@@ -4485,7 +4489,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                                maxRecentPosts,
                                session, keyId, handle,
                                queueJson['post'],
-                               base_dir, httpPrefix,
+                               base_dir, http_prefix,
                                sendThreads, postLog,
                                cachedWebfingers,
                                personCache, queue,

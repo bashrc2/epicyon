@@ -15,7 +15,7 @@ from webapp_utils import htmlFooter
 from markdown import markdownToHtml
 
 
-def htmlAbout(cssCache: {}, base_dir: str, httpPrefix: str,
+def htmlAbout(cssCache: {}, base_dir: str, http_prefix: str,
               domainFull: str, onionDomain: str, translate: {},
               systemLanguage: str) -> str:
     """Show the about screen
@@ -44,7 +44,7 @@ def htmlAbout(cssCache: {}, base_dir: str, httpPrefix: str,
         getConfigParam(base_dir, 'instanceTitle')
     aboutForm = \
         htmlHeaderWithWebsiteMarkup(cssFilename, instanceTitle,
-                                    httpPrefix, domainFull,
+                                    http_prefix, domainFull,
                                     systemLanguage)
     aboutForm += '<div class="container">' + aboutText + '</div>'
     if onionDomain:

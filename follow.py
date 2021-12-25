@@ -38,7 +38,7 @@ from session import getJson
 from session import postJson
 
 
-def createInitialLastSeen(base_dir: str, httpPrefix: str) -> None:
+def createInitialLastSeen(base_dir: str, http_prefix: str) -> None:
     """Creates initial lastseen files for all follows.
     The lastseen files are used to generate the Zzz icons on
     follows/following lists on the profile screen.
@@ -70,7 +70,7 @@ def createInitialLastSeen(base_dir: str, httpPrefix: str) -> None:
                 domain = handle.split('@')[1]
                 if nickname.startswith('!'):
                     nickname = nickname[1:]
-                actor = localActorUrl(httpPrefix, nickname, domain)
+                actor = localActorUrl(http_prefix, nickname, domain)
                 lastSeenFilename = \
                     lastSeenDir + '/' + actor.replace('/', '#') + '.txt'
                 if not os.path.isfile(lastSeenFilename):
@@ -423,7 +423,7 @@ def getNoOfFollowers(base_dir: str,
 
 
 def getFollowingFeed(base_dir: str, domain: str, port: int, path: str,
-                     httpPrefix: str, authorized: bool,
+                     http_prefix: str, authorized: bool,
                      followsPerPage=12,
                      followFile='following') -> {}:
     """Returns the following and followers feeds from GET requests.
@@ -468,10 +468,10 @@ def getFollowingFeed(base_dir: str, domain: str, port: int, path: str,
 
     if headerOnly:
         firstStr = \
-            localActorUrl(httpPrefix, nickname, domain) + \
+            localActorUrl(http_prefix, nickname, domain) + \
             '/' + followFile + '?page=1'
         idStr = \
-            localActorUrl(httpPrefix, nickname, domain) + '/' + followFile
+            localActorUrl(http_prefix, nickname, domain) + '/' + followFile
         totalStr = \
             _getNoOfFollows(base_dir, nickname, domain, authorized)
         following = {
@@ -488,10 +488,10 @@ def getFollowingFeed(base_dir: str, domain: str, port: int, path: str,
 
     nextPageNumber = int(pageNumber + 1)
     idStr = \
-        localActorUrl(httpPrefix, nickname, domain) + \
+        localActorUrl(http_prefix, nickname, domain) + \
         '/' + followFile + '?page=' + str(pageNumber)
     partOfStr = \
-        localActorUrl(httpPrefix, nickname, domain) + '/' + followFile
+        localActorUrl(http_prefix, nickname, domain) + '/' + followFile
     following = {
         '@context': 'https://www.w3.org/ns/activitystreams',
         'id': idStr,
@@ -529,10 +529,10 @@ def getFollowingFeed(base_dir: str, domain: str, port: int, path: str,
                     dom = line2.split('@')[1]
                     if not nick.startswith('!'):
                         # person actor
-                        url = localActorUrl(httpPrefix, nick, dom)
+                        url = localActorUrl(http_prefix, nick, dom)
                     else:
                         # group actor
-                        url = httpPrefix + '://' + dom + '/c/' + nick
+                        url = http_prefix + '://' + dom + '/c/' + nick
                     following['orderedItems'].append(url)
             elif ((line.startswith('http') or
                    line.startswith('hyper')) and
@@ -553,7 +553,7 @@ def getFollowingFeed(base_dir: str, domain: str, port: int, path: str,
         lastPage = 1
     if nextPageNumber > lastPage:
         following['next'] = \
-            localActorUrl(httpPrefix, nickname, domain) + \
+            localActorUrl(http_prefix, nickname, domain) + \
             '/' + followFile + '?page=' + str(lastPage)
     return following
 
@@ -713,7 +713,7 @@ def storeFollowRequest(base_dir: str,
     return saveJson(followJson, followActivityfilename)
 
 
-def followedAccountAccepts(session, base_dir: str, httpPrefix: str,
+def followedAccountAccepts(session, base_dir: str, http_prefix: str,
                            nicknameToFollow: str, domainToFollow: str,
                            port: int,
                            nickname: str, domain: str, fromPort: int,
@@ -736,7 +736,7 @@ def followedAccountAccepts(session, base_dir: str, httpPrefix: str,
               ' back to ' + acceptHandle)
     acceptJson = createAccept(base_dir, federationList,
                               nicknameToFollow, domainToFollow, port,
-                              personUrl, '', httpPrefix,
+                              personUrl, '', http_prefix,
                               followJson)
     if debug:
         pprint(acceptJson)
@@ -768,7 +768,7 @@ def followedAccountAccepts(session, base_dir: str, httpPrefix: str,
     return sendSignedJson(acceptJson, session, base_dir,
                           nicknameToFollow, domainToFollow, port,
                           nickname, domain, fromPort, '',
-                          httpPrefix, True, clientToServer,
+                          http_prefix, True, clientToServer,
                           federationList,
                           sendThreads, postLog, cachedWebfingers,
                           personCache, debug, projectVersion, None,
@@ -776,7 +776,7 @@ def followedAccountAccepts(session, base_dir: str, httpPrefix: str,
                           7856837)
 
 
-def followedAccountRejects(session, base_dir: str, httpPrefix: str,
+def followedAccountRejects(session, base_dir: str, http_prefix: str,
                            nicknameToFollow: str, domainToFollow: str,
                            port: int,
                            nickname: str, domain: str, fromPort: int,
@@ -811,7 +811,7 @@ def followedAccountRejects(session, base_dir: str, httpPrefix: str,
     rejectJson = \
         createReject(base_dir, federationList,
                      nicknameToFollow, domainToFollow, port,
-                     personUrl, '', httpPrefix, followJson)
+                     personUrl, '', http_prefix, followJson)
     if debug:
         pprint(rejectJson)
         print('DEBUG: sending follow Reject from ' +
@@ -836,7 +836,7 @@ def followedAccountRejects(session, base_dir: str, httpPrefix: str,
     return sendSignedJson(rejectJson, session, base_dir,
                           nicknameToFollow, domainToFollow, port,
                           nickname, domain, fromPort, '',
-                          httpPrefix, True, clientToServer,
+                          http_prefix, True, clientToServer,
                           federationList,
                           sendThreads, postLog, cachedWebfingers,
                           personCache, debug, projectVersion, None,
@@ -845,7 +845,7 @@ def followedAccountRejects(session, base_dir: str, httpPrefix: str,
 
 
 def sendFollowRequest(session, base_dir: str,
-                      nickname: str, domain: str, port: int, httpPrefix: str,
+                      nickname: str, domain: str, port: int, http_prefix: str,
                       followNickname: str, followDomain: str,
                       followedActor: str,
                       followPort: int, followHttpPrefix: str,
@@ -863,7 +863,7 @@ def sendFollowRequest(session, base_dir: str,
         return None
 
     fullDomain = getFullDomain(domain, port)
-    followActor = localActorUrl(httpPrefix, nickname, fullDomain)
+    followActor = localActorUrl(http_prefix, nickname, fullDomain)
 
     requestDomain = getFullDomain(followDomain, followPort)
 
@@ -928,7 +928,7 @@ def sendFollowRequest(session, base_dir: str,
     sendSignedJson(newFollowJson, session, base_dir, nickname, domain, port,
                    followNickname, followDomain, followPort,
                    'https://www.w3.org/ns/activitystreams#Public',
-                   httpPrefix, True, clientToServer,
+                   http_prefix, True, clientToServer,
                    federationList,
                    sendThreads, postLog, cachedWebfingers, personCache,
                    debug, projectVersion, None, groupAccount,
@@ -942,7 +942,7 @@ def sendFollowRequestViaServer(base_dir: str, session,
                                fromDomain: str, fromPort: int,
                                followNickname: str, followDomain: str,
                                followPort: int,
-                               httpPrefix: str,
+                               http_prefix: str,
                                cachedWebfingers: {}, personCache: {},
                                debug: bool, projectVersion: str,
                                signingPrivateKeyPem: str) -> {}:
@@ -956,9 +956,9 @@ def sendFollowRequestViaServer(base_dir: str, session,
 
     followDomainFull = getFullDomain(followDomain, followPort)
 
-    followActor = localActorUrl(httpPrefix, fromNickname, fromDomainFull)
+    followActor = localActorUrl(http_prefix, fromNickname, fromDomainFull)
     followedId = \
-        httpPrefix + '://' + followDomainFull + '/@' + followNickname
+        http_prefix + '://' + followDomainFull + '/@' + followNickname
 
     statusNumber, published = getStatusNumber()
     newFollowJson = {
@@ -969,11 +969,11 @@ def sendFollowRequestViaServer(base_dir: str, session,
         'object': followedId
     }
 
-    handle = httpPrefix + '://' + fromDomainFull + '/@' + fromNickname
+    handle = http_prefix + '://' + fromDomainFull + '/@' + fromNickname
 
     # lookup the inbox for the To handle
     wfRequest = \
-        webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
+        webfingerHandle(session, handle, http_prefix, cachedWebfingers,
                         fromDomain, projectVersion, debug, False,
                         signingPrivateKeyPem)
     if not wfRequest:
@@ -993,7 +993,7 @@ def sendFollowRequestViaServer(base_dir: str, session,
      fromPersonId, sharedInbox, avatarUrl,
      displayName, _) = getPersonBox(signingPrivateKeyPem, originDomain,
                                     base_dir, session, wfRequest, personCache,
-                                    projectVersion, httpPrefix, fromNickname,
+                                    projectVersion, http_prefix, fromNickname,
                                     fromDomain, postToBox, 52025)
 
     if not inboxUrl:
@@ -1014,7 +1014,7 @@ def sendFollowRequestViaServer(base_dir: str, session,
         'Authorization': authHeader
     }
     postResult = \
-        postJson(httpPrefix, fromDomainFull,
+        postJson(http_prefix, fromDomainFull,
                  session, newFollowJson, [], inboxUrl, headers, 3, True)
     if not postResult:
         if debug:
@@ -1032,7 +1032,7 @@ def sendUnfollowRequestViaServer(base_dir: str, session,
                                  fromDomain: str, fromPort: int,
                                  followNickname: str, followDomain: str,
                                  followPort: int,
-                                 httpPrefix: str,
+                                 http_prefix: str,
                                  cachedWebfingers: {}, personCache: {},
                                  debug: bool, projectVersion: str,
                                  signingPrivateKeyPem: str) -> {}:
@@ -1045,9 +1045,9 @@ def sendUnfollowRequestViaServer(base_dir: str, session,
     fromDomainFull = getFullDomain(fromDomain, fromPort)
     followDomainFull = getFullDomain(followDomain, followPort)
 
-    followActor = localActorUrl(httpPrefix, fromNickname, fromDomainFull)
+    followActor = localActorUrl(http_prefix, fromNickname, fromDomainFull)
     followedId = \
-        httpPrefix + '://' + followDomainFull + '/@' + followNickname
+        http_prefix + '://' + followDomainFull + '/@' + followNickname
     statusNumber, published = getStatusNumber()
 
     unfollowJson = {
@@ -1063,11 +1063,11 @@ def sendUnfollowRequestViaServer(base_dir: str, session,
         }
     }
 
-    handle = httpPrefix + '://' + fromDomainFull + '/@' + fromNickname
+    handle = http_prefix + '://' + fromDomainFull + '/@' + fromNickname
 
     # lookup the inbox for the To handle
     wfRequest = \
-        webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
+        webfingerHandle(session, handle, http_prefix, cachedWebfingers,
                         fromDomain, projectVersion, debug, False,
                         signingPrivateKeyPem)
     if not wfRequest:
@@ -1088,7 +1088,7 @@ def sendUnfollowRequestViaServer(base_dir: str, session,
                                     originDomain,
                                     base_dir, session,
                                     wfRequest, personCache,
-                                    projectVersion, httpPrefix,
+                                    projectVersion, http_prefix,
                                     fromNickname,
                                     fromDomain, postToBox,
                                     76536)
@@ -1111,7 +1111,7 @@ def sendUnfollowRequestViaServer(base_dir: str, session,
         'Authorization': authHeader
     }
     postResult = \
-        postJson(httpPrefix, fromDomainFull,
+        postJson(http_prefix, fromDomainFull,
                  session, unfollowJson, [], inboxUrl, headers, 3, True)
     if not postResult:
         if debug:
@@ -1127,7 +1127,7 @@ def sendUnfollowRequestViaServer(base_dir: str, session,
 def getFollowingViaServer(base_dir: str, session,
                           nickname: str, password: str,
                           domain: str, port: int,
-                          httpPrefix: str, pageNumber: int,
+                          http_prefix: str, pageNumber: int,
                           cachedWebfingers: {}, personCache: {},
                           debug: bool, projectVersion: str,
                           signingPrivateKeyPem: str) -> {}:
@@ -1138,7 +1138,7 @@ def getFollowingViaServer(base_dir: str, session,
         return 6
 
     domainFull = getFullDomain(domain, port)
-    followActor = localActorUrl(httpPrefix, nickname, domainFull)
+    followActor = localActorUrl(http_prefix, nickname, domainFull)
 
     authHeader = createBasicAuthHeader(nickname, password)
 
@@ -1153,7 +1153,7 @@ def getFollowingViaServer(base_dir: str, session,
     url = followActor + '/following?page=' + str(pageNumber)
     followingJson = \
         getJson(signingPrivateKeyPem, session, url, headers, {}, debug,
-                __version__, httpPrefix, domain, 10, True)
+                __version__, http_prefix, domain, 10, True)
     if not followingJson:
         if debug:
             print('DEBUG: GET following list failed for c2s to ' + url)
@@ -1168,7 +1168,7 @@ def getFollowingViaServer(base_dir: str, session,
 def getFollowersViaServer(base_dir: str, session,
                           nickname: str, password: str,
                           domain: str, port: int,
-                          httpPrefix: str, pageNumber: int,
+                          http_prefix: str, pageNumber: int,
                           cachedWebfingers: {}, personCache: {},
                           debug: bool, projectVersion: str,
                           signingPrivateKeyPem: str) -> {}:
@@ -1179,7 +1179,7 @@ def getFollowersViaServer(base_dir: str, session,
         return 6
 
     domainFull = getFullDomain(domain, port)
-    followActor = localActorUrl(httpPrefix, nickname, domainFull)
+    followActor = localActorUrl(http_prefix, nickname, domainFull)
 
     authHeader = createBasicAuthHeader(nickname, password)
 
@@ -1194,7 +1194,7 @@ def getFollowersViaServer(base_dir: str, session,
     url = followActor + '/followers?page=' + str(pageNumber)
     followersJson = \
         getJson(signingPrivateKeyPem, session, url, headers, {}, debug,
-                __version__, httpPrefix, domain, 10, True)
+                __version__, http_prefix, domain, 10, True)
     if not followersJson:
         if debug:
             print('DEBUG: GET followers list failed for c2s to ' + url)
@@ -1209,7 +1209,7 @@ def getFollowersViaServer(base_dir: str, session,
 def getFollowRequestsViaServer(base_dir: str, session,
                                nickname: str, password: str,
                                domain: str, port: int,
-                               httpPrefix: str, pageNumber: int,
+                               http_prefix: str, pageNumber: int,
                                cachedWebfingers: {}, personCache: {},
                                debug: bool, projectVersion: str,
                                signingPrivateKeyPem: str) -> {}:
@@ -1221,7 +1221,7 @@ def getFollowRequestsViaServer(base_dir: str, session,
 
     domainFull = getFullDomain(domain, port)
 
-    followActor = localActorUrl(httpPrefix, nickname, domainFull)
+    followActor = localActorUrl(http_prefix, nickname, domainFull)
     authHeader = createBasicAuthHeader(nickname, password)
 
     headers = {
@@ -1235,7 +1235,7 @@ def getFollowRequestsViaServer(base_dir: str, session,
     url = followActor + '/followrequests?page=' + str(pageNumber)
     followersJson = \
         getJson(signingPrivateKeyPem, session, url, headers, {}, debug,
-                __version__, httpPrefix, domain, 10, True)
+                __version__, http_prefix, domain, 10, True)
     if not followersJson:
         if debug:
             print('DEBUG: GET follow requests list failed for c2s to ' + url)
@@ -1250,7 +1250,7 @@ def getFollowRequestsViaServer(base_dir: str, session,
 def approveFollowRequestViaServer(base_dir: str, session,
                                   nickname: str, password: str,
                                   domain: str, port: int,
-                                  httpPrefix: str, approveHandle: int,
+                                  http_prefix: str, approveHandle: int,
                                   cachedWebfingers: {}, personCache: {},
                                   debug: bool, projectVersion: str,
                                   signingPrivateKeyPem: str) -> str:
@@ -1263,7 +1263,7 @@ def approveFollowRequestViaServer(base_dir: str, session,
         return 6
 
     domainFull = getFullDomain(domain, port)
-    actor = localActorUrl(httpPrefix, nickname, domainFull)
+    actor = localActorUrl(http_prefix, nickname, domainFull)
 
     authHeader = createBasicAuthHeader(nickname, password)
 
@@ -1276,7 +1276,7 @@ def approveFollowRequestViaServer(base_dir: str, session,
     url = actor + '/followapprove=' + approveHandle
     approveHtml = \
         getJson(signingPrivateKeyPem, session, url, headers, {}, debug,
-                __version__, httpPrefix, domain, 10, True)
+                __version__, http_prefix, domain, 10, True)
     if not approveHtml:
         if debug:
             print('DEBUG: GET approve follow request failed for c2s to ' + url)
@@ -1291,7 +1291,7 @@ def approveFollowRequestViaServer(base_dir: str, session,
 def denyFollowRequestViaServer(base_dir: str, session,
                                nickname: str, password: str,
                                domain: str, port: int,
-                               httpPrefix: str, denyHandle: int,
+                               http_prefix: str, denyHandle: int,
                                cachedWebfingers: {}, personCache: {},
                                debug: bool, projectVersion: str,
                                signingPrivateKeyPem: str) -> str:
@@ -1304,7 +1304,7 @@ def denyFollowRequestViaServer(base_dir: str, session,
         return 6
 
     domainFull = getFullDomain(domain, port)
-    actor = localActorUrl(httpPrefix, nickname, domainFull)
+    actor = localActorUrl(http_prefix, nickname, domainFull)
 
     authHeader = createBasicAuthHeader(nickname, password)
 
@@ -1317,7 +1317,7 @@ def denyFollowRequestViaServer(base_dir: str, session,
     url = actor + '/followdeny=' + denyHandle
     denyHtml = \
         getJson(signingPrivateKeyPem, session, url, headers, {}, debug,
-                __version__, httpPrefix, domain, 10, True)
+                __version__, http_prefix, domain, 10, True)
     if not denyHtml:
         if debug:
             print('DEBUG: GET deny follow request failed for c2s to ' + url)

@@ -91,7 +91,8 @@ def generateRSAKey() -> (str, str):
     return privateKeyPem, publicKeyPem
 
 
-def setProfileImage(base_dir: str, httpPrefix: str, nickname: str, domain: str,
+def setProfileImage(base_dir: str, http_prefix: str,
+                    nickname: str, domain: str,
                     port: int, imageFilename: str, imageType: str,
                     resolution: str, city: str,
                     contentLicenseUrl: str) -> bool:
@@ -148,7 +149,7 @@ def setProfileImage(base_dir: str, httpPrefix: str, nickname: str, domain: str,
     if personJson:
         personJson[iconFilenameBase]['mediaType'] = mediaType
         personJson[iconFilenameBase]['url'] = \
-            localActorUrl(httpPrefix, nickname, fullDomain) + \
+            localActorUrl(http_prefix, nickname, fullDomain) + \
             '/' + iconFilename
         saveJson(personJson, personFilename)
 
@@ -348,7 +349,7 @@ def getDefaultPersonContext() -> str:
 
 
 def _createPersonBase(base_dir: str, nickname: str, domain: str, port: int,
-                      httpPrefix: str, saveToFile: bool,
+                      http_prefix: str, saveToFile: bool,
                       manualFollowerApproval: bool,
                       groupAccount: bool,
                       password: str) -> (str, str, {}, {}):
@@ -357,7 +358,7 @@ def _createPersonBase(base_dir: str, nickname: str, domain: str, port: int,
     privateKeyPem, publicKeyPem = generateRSAKey()
     webfingerEndpoint = \
         createWebfingerEndpoint(nickname, domain, port,
-                                httpPrefix, publicKeyPem,
+                                http_prefix, publicKeyPem,
                                 groupAccount)
     if saveToFile:
         storeWebfingerEndpoint(nickname, domain, port,
@@ -373,20 +374,20 @@ def _createPersonBase(base_dir: str, nickname: str, domain: str, port: int,
     # Enable follower approval by default
     approveFollowers = manualFollowerApproval
     personName = nickname
-    personId = localActorUrl(httpPrefix, nickname, domain)
+    personId = localActorUrl(http_prefix, nickname, domain)
     inboxStr = personId + '/inbox'
-    personUrl = httpPrefix + '://' + domain + '/@' + personName
+    personUrl = http_prefix + '://' + domain + '/@' + personName
     if nickname == 'inbox':
         # shared inbox
-        inboxStr = httpPrefix + '://' + domain + '/actor/inbox'
-        personId = httpPrefix + '://' + domain + '/actor'
-        personUrl = httpPrefix + '://' + domain + \
+        inboxStr = http_prefix + '://' + domain + '/actor/inbox'
+        personId = http_prefix + '://' + domain + '/actor'
+        personUrl = http_prefix + '://' + domain + \
             '/about/more?instance_actor=true'
         personName = originalDomain
         approveFollowers = True
         personType = 'Application'
     elif nickname == 'news':
-        personUrl = httpPrefix + '://' + domain + \
+        personUrl = http_prefix + '://' + domain + \
             '/about/more?news_actor=true'
         approveFollowers = True
         personType = 'Application'
@@ -415,7 +416,7 @@ def _createPersonBase(base_dir: str, nickname: str, domain: str, port: int,
         'devices': personId + '/collections/devices',
         'endpoints': {
             'id': personId + '/endpoints',
-            'sharedInbox': httpPrefix + '://' + domain + '/inbox',
+            'sharedInbox': http_prefix + '://' + domain + '/inbox',
         },
         'featured': personId + '/collections/featured',
         'featuredTags': personId + '/collections/tags',
@@ -538,7 +539,7 @@ def _createPersonBase(base_dir: str, nickname: str, domain: str, port: int,
     return privateKeyPem, publicKeyPem, newPerson, webfingerEndpoint
 
 
-def registerAccount(base_dir: str, httpPrefix: str, domain: str, port: int,
+def registerAccount(base_dir: str, http_prefix: str, domain: str, port: int,
                     nickname: str, password: str,
                     manualFollowerApproval: bool) -> bool:
     """Registers a new account from the web interface
@@ -554,7 +555,7 @@ def registerAccount(base_dir: str, httpPrefix: str, domain: str, port: int,
     (privateKeyPem, publicKeyPem,
      newPerson, webfingerEndpoint) = createPerson(base_dir, nickname,
                                                   domain, port,
-                                                  httpPrefix, True,
+                                                  http_prefix, True,
                                                   manualFollowerApproval,
                                                   password)
     if privateKeyPem:
@@ -563,14 +564,14 @@ def registerAccount(base_dir: str, httpPrefix: str, domain: str, port: int,
 
 
 def createGroup(base_dir: str, nickname: str, domain: str, port: int,
-                httpPrefix: str, saveToFile: bool,
+                http_prefix: str, saveToFile: bool,
                 password: str = None) -> (str, str, {}, {}):
     """Returns a group
     """
     (privateKeyPem, publicKeyPem,
      newPerson, webfingerEndpoint) = createPerson(base_dir, nickname,
                                                   domain, port,
-                                                  httpPrefix, saveToFile,
+                                                  http_prefix, saveToFile,
                                                   False, password, True)
 
     return privateKeyPem, publicKeyPem, newPerson, webfingerEndpoint
@@ -591,7 +592,7 @@ def savePersonQrcode(base_dir: str,
 
 
 def createPerson(base_dir: str, nickname: str, domain: str, port: int,
-                 httpPrefix: str, saveToFile: bool,
+                 http_prefix: str, saveToFile: bool,
                  manualFollowerApproval: bool,
                  password: str,
                  groupAccount: bool = False) -> (str, str, {}, {}):
@@ -617,7 +618,7 @@ def createPerson(base_dir: str, nickname: str, domain: str, port: int,
     (privateKeyPem, publicKeyPem,
      newPerson, webfingerEndpoint) = _createPersonBase(base_dir, nickname,
                                                        domain, port,
-                                                       httpPrefix,
+                                                       http_prefix,
                                                        saveToFile,
                                                        manualFollowerApproval,
                                                        groupAccount,
@@ -704,19 +705,19 @@ def createPerson(base_dir: str, nickname: str, domain: str, port: int,
 
 
 def createSharedInbox(base_dir: str, nickname: str, domain: str, port: int,
-                      httpPrefix: str) -> (str, str, {}, {}):
+                      http_prefix: str) -> (str, str, {}, {}):
     """Generates the shared inbox
     """
-    return _createPersonBase(base_dir, nickname, domain, port, httpPrefix,
+    return _createPersonBase(base_dir, nickname, domain, port, http_prefix,
                              True, True, False, None)
 
 
 def createNewsInbox(base_dir: str, domain: str, port: int,
-                    httpPrefix: str) -> (str, str, {}, {}):
+                    http_prefix: str) -> (str, str, {}, {}):
     """Generates the news inbox
     """
     return createPerson(base_dir, 'news', domain, port,
-                        httpPrefix, True, True, None)
+                        http_prefix, True, True, None)
 
 
 def personUpgradeActor(base_dir: str, personJson: {},
@@ -896,7 +897,7 @@ def personLookup(domain: str, path: str, base_dir: str) -> {}:
 
 def personBoxJson(recentPostsCache: {},
                   session, base_dir: str, domain: str, port: int, path: str,
-                  httpPrefix: str, noOfItems: int, boxname: str,
+                  http_prefix: str, noOfItems: int, boxname: str,
                   authorized: bool,
                   newswireVotesThreshold: int, positiveVoting: bool,
                   votingTimeMins: int) -> {}:
@@ -947,50 +948,50 @@ def personBoxJson(recentPostsCache: {},
     if boxname == 'inbox':
         return createInbox(recentPostsCache,
                            session, base_dir, nickname, domain, port,
-                           httpPrefix,
+                           http_prefix,
                            noOfItems, headerOnly, pageNumber)
     elif boxname == 'dm':
         return createDMTimeline(recentPostsCache,
                                 session, base_dir, nickname, domain, port,
-                                httpPrefix,
+                                http_prefix,
                                 noOfItems, headerOnly, pageNumber)
     elif boxname == 'tlbookmarks' or boxname == 'bookmarks':
         return createBookmarksTimeline(session, base_dir, nickname, domain,
-                                       port, httpPrefix,
+                                       port, http_prefix,
                                        noOfItems, headerOnly,
                                        pageNumber)
     elif boxname == 'tlreplies':
         return createRepliesTimeline(recentPostsCache,
                                      session, base_dir, nickname, domain,
-                                     port, httpPrefix,
+                                     port, http_prefix,
                                      noOfItems, headerOnly,
                                      pageNumber)
     elif boxname == 'tlmedia':
         return createMediaTimeline(session, base_dir, nickname, domain, port,
-                                   httpPrefix, noOfItems, headerOnly,
+                                   http_prefix, noOfItems, headerOnly,
                                    pageNumber)
     elif boxname == 'tlnews':
         return createNewsTimeline(session, base_dir, nickname, domain, port,
-                                  httpPrefix, noOfItems, headerOnly,
+                                  http_prefix, noOfItems, headerOnly,
                                   newswireVotesThreshold, positiveVoting,
                                   votingTimeMins, pageNumber)
     elif boxname == 'tlfeatures':
         return createFeaturesTimeline(session, base_dir,
                                       nickname, domain, port,
-                                      httpPrefix, noOfItems, headerOnly,
+                                      http_prefix, noOfItems, headerOnly,
                                       pageNumber)
     elif boxname == 'tlblogs':
         return createBlogsTimeline(session, base_dir, nickname, domain, port,
-                                   httpPrefix, noOfItems, headerOnly,
+                                   http_prefix, noOfItems, headerOnly,
                                    pageNumber)
     elif boxname == 'outbox':
         return createOutbox(session, base_dir, nickname, domain, port,
-                            httpPrefix,
+                            http_prefix,
                             noOfItems, headerOnly, authorized,
                             pageNumber)
     elif boxname == 'moderation':
         return createModeration(base_dir, nickname, domain, port,
-                                httpPrefix,
+                                http_prefix,
                                 noOfItems, headerOnly,
                                 pageNumber)
     return None
@@ -1497,19 +1498,19 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
     cachedWebfingers = {}
     proxyType = None
     if http or domain.endswith('.onion'):
-        httpPrefix = 'http'
+        http_prefix = 'http'
         proxyType = 'tor'
     elif domain.endswith('.i2p'):
-        httpPrefix = 'http'
+        http_prefix = 'http'
         proxyType = 'i2p'
     elif gnunet:
-        httpPrefix = 'gnunet'
+        http_prefix = 'gnunet'
         proxyType = 'gnunet'
     else:
         if '127.0.' not in domain and '192.168.' not in domain:
-            httpPrefix = 'https'
+            http_prefix = 'https'
         else:
-            httpPrefix = 'http'
+            http_prefix = 'http'
     if existingSession:
         session = existingSession
     else:
@@ -1532,7 +1533,7 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
     else:
         handle = nickname + '@' + domain
         wfRequest = webfingerHandle(session, handle,
-                                    httpPrefix, cachedWebfingers,
+                                    http_prefix, cachedWebfingers,
                                     hostDomain, __version__, debug,
                                     groupAccount, signingPrivateKeyPem)
         if not wfRequest:
@@ -1570,10 +1571,10 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
         for userPath in paths:
             personUrl = personUrl.replace(userPath, '/actor/')
     if not personUrl and groupAccount:
-        personUrl = httpPrefix + '://' + domain + '/c/' + nickname
+        personUrl = http_prefix + '://' + domain + '/c/' + nickname
     if not personUrl:
         # try single user instance
-        personUrl = httpPrefix + '://' + domain + '/' + nickname
+        personUrl = http_prefix + '://' + domain + '/' + nickname
         headersList = (
             "ld+json", "jrd+json", "activity+json"
         )
@@ -1592,7 +1593,7 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
         }
         personJson = \
             getJson(signingPrivateKeyPem, session, personUrl, asHeader, None,
-                    debug, __version__, httpPrefix, hostDomain, 20, quiet)
+                    debug, __version__, http_prefix, hostDomain, 20, quiet)
         if personJson:
             if not quiet:
                 pprint(personJson)

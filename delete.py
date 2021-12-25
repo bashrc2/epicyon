@@ -29,7 +29,7 @@ from posts import getPersonBox
 def sendDeleteViaServer(base_dir: str, session,
                         fromNickname: str, password: str,
                         fromDomain: str, fromPort: int,
-                        httpPrefix: str, deleteObjectUrl: str,
+                        http_prefix: str, deleteObjectUrl: str,
                         cachedWebfingers: {}, personCache: {},
                         debug: bool, projectVersion: str,
                         signingPrivateKeyPem: str) -> {}:
@@ -41,7 +41,7 @@ def sendDeleteViaServer(base_dir: str, session,
 
     fromDomainFull = getFullDomain(fromDomain, fromPort)
 
-    actor = localActorUrl(httpPrefix, fromNickname, fromDomainFull)
+    actor = localActorUrl(http_prefix, fromNickname, fromDomainFull)
     toUrl = 'https://www.w3.org/ns/activitystreams#Public'
     ccUrl = actor + '/followers'
 
@@ -54,11 +54,11 @@ def sendDeleteViaServer(base_dir: str, session,
         'type': 'Delete'
     }
 
-    handle = httpPrefix + '://' + fromDomainFull + '/@' + fromNickname
+    handle = http_prefix + '://' + fromDomainFull + '/@' + fromNickname
 
     # lookup the inbox for the To handle
     wfRequest = \
-        webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
+        webfingerHandle(session, handle, http_prefix, cachedWebfingers,
                         fromDomain, projectVersion, debug, False,
                         signingPrivateKeyPem)
     if not wfRequest:
@@ -78,7 +78,7 @@ def sendDeleteViaServer(base_dir: str, session,
      fromPersonId, sharedInbox, avatarUrl,
      displayName, _) = getPersonBox(signingPrivateKeyPem, originDomain,
                                     base_dir, session, wfRequest, personCache,
-                                    projectVersion, httpPrefix, fromNickname,
+                                    projectVersion, http_prefix, fromNickname,
                                     fromDomain, postToBox, 53036)
 
     if not inboxUrl:
@@ -99,7 +99,7 @@ def sendDeleteViaServer(base_dir: str, session,
         'Authorization': authHeader
     }
     postResult = \
-        postJson(httpPrefix, fromDomainFull,
+        postJson(http_prefix, fromDomainFull,
                  session, newDeleteJson, [], inboxUrl, headers, 3, True)
     if not postResult:
         if debug:
@@ -112,7 +112,7 @@ def sendDeleteViaServer(base_dir: str, session,
     return newDeleteJson
 
 
-def outboxDelete(base_dir: str, httpPrefix: str,
+def outboxDelete(base_dir: str, http_prefix: str,
                  nickname: str, domain: str,
                  messageJson: {}, debug: bool,
                  allowDeletion: bool,
@@ -131,7 +131,7 @@ def outboxDelete(base_dir: str, httpPrefix: str,
         return
     if debug:
         print('DEBUG: c2s delete request arrived in outbox')
-    deletePrefix = httpPrefix + '://' + domain
+    deletePrefix = http_prefix + '://' + domain
     if (not allowDeletion and
         (not messageJson['object'].startswith(deletePrefix) or
          not messageJson['actor'].startswith(deletePrefix))):
@@ -168,7 +168,7 @@ def outboxDelete(base_dir: str, httpPrefix: str,
             print('DEBUG: c2s delete post not found in inbox or outbox')
             print(messageId)
         return True
-    deletePost(base_dir, httpPrefix, deleteNickname, deleteDomain,
+    deletePost(base_dir, http_prefix, deleteNickname, deleteDomain,
                postFilename, debug, recentPostsCache)
     if debug:
         print('DEBUG: post deleted via c2s - ' + postFilename)

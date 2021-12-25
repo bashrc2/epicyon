@@ -32,14 +32,14 @@ from webapp_utils import htmlKeyboardNavigation
 
 
 def htmlCalendarDeleteConfirm(cssCache: {}, translate: {}, base_dir: str,
-                              path: str, httpPrefix: str,
+                              path: str, http_prefix: str,
                               domainFull: str, postId: str, postTime: str,
                               year: int, monthNumber: int,
                               dayNumber: int, callingDomain: str) -> str:
     """Shows a screen asking to confirm the deletion of a calendar event
     """
     nickname = getNicknameFromActor(path)
-    actor = localActorUrl(httpPrefix, nickname, domainFull)
+    actor = localActorUrl(http_prefix, nickname, domainFull)
     domain, port = getDomainFromActor(actor)
     messageId = actor + '/statuses/' + postId
 
@@ -245,7 +245,7 @@ def _htmlCalendarDay(personCache: {}, cssCache: {}, translate: {},
 
 def htmlCalendar(personCache: {}, cssCache: {}, translate: {},
                  base_dir: str, path: str,
-                 httpPrefix: str, domainFull: str,
+                 http_prefix: str, domainFull: str,
                  textModeBanner: str, accessKeys: {}) -> str:
     """Show the calendar for a person
     """
@@ -254,7 +254,7 @@ def htmlCalendar(personCache: {}, cssCache: {}, translate: {},
     monthNumber = 0
     dayNumber = None
     year = 1970
-    actor = httpPrefix + '://' + domainFull + path.replace('/calendar', '')
+    actor = http_prefix + '://' + domainFull + path.replace('/calendar', '')
     if '?' in actor:
         first = True
         for p in actor.split('?'):

@@ -43,7 +43,7 @@ from webapp_hashtagswarm import htmlHashTagSwarm
 
 
 def htmlSearchEmoji(cssCache: {}, translate: {},
-                    base_dir: str, httpPrefix: str,
+                    base_dir: str, http_prefix: str,
                     searchStr: str) -> str:
     """Search results for emoji
     """
@@ -172,7 +172,7 @@ def _htmlSearchResultSharePage(actor: str, domainFull: str,
 def _htmlSharesResult(base_dir: str,
                       sharesJson: {}, pageNumber: int, resultsPerPage: int,
                       searchStrLowerList: [], currPage: int, ctr: int,
-                      callingDomain: str, httpPrefix: str, domainFull: str,
+                      callingDomain: str, http_prefix: str, domainFull: str,
                       contactNickname: str, actor: str,
                       resultsExist: bool, searchStrLower: str, translate: {},
                       sharesFileType: str) -> (bool, int, int, str):
@@ -188,7 +188,7 @@ def _htmlSharesResult(base_dir: str,
                 # show individual search result
                 sharedItemsForm += \
                     htmlSearchResultShare(base_dir, sharedItem, translate,
-                                          httpPrefix, domainFull,
+                                          http_prefix, domainFull,
                                           contactNickname,
                                           name, actor, sharesFileType,
                                           sharedItem['category'])
@@ -221,7 +221,7 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
                           base_dir: str, searchStr: str,
                           pageNumber: int,
                           resultsPerPage: int,
-                          httpPrefix: str,
+                          http_prefix: str,
                           domainFull: str, actor: str,
                           callingDomain: str,
                           sharedItemsFederatedDomains: [],
@@ -269,7 +269,7 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
                                             resultsPerPage,
                                             searchStrLowerList,
                                             currPage, ctr,
-                                            callingDomain, httpPrefix,
+                                            callingDomain, http_prefix,
                                             domainFull,
                                             contactNickname,
                                             actor, resultsExist,
@@ -307,7 +307,7 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
                                                 resultsPerPage,
                                                 searchStrLowerList,
                                                 currPage, ctr,
-                                                callingDomain, httpPrefix,
+                                                callingDomain, http_prefix,
                                                 domainFull,
                                                 contactNickname,
                                                 actor, resultsExist,
@@ -456,7 +456,7 @@ def htmlSearch(cssCache: {}, translate: {},
 
 def htmlSkillsSearch(actor: str,
                      cssCache: {}, translate: {}, base_dir: str,
-                     httpPrefix: str,
+                     http_prefix: str,
                      skillsearch: str, instanceOnly: bool,
                      postsPerPage: int) -> str:
     """Show a page containing search results for a skill
@@ -586,7 +586,7 @@ def htmlSkillsSearch(actor: str,
 
 
 def htmlHistorySearch(cssCache: {}, translate: {}, base_dir: str,
-                      httpPrefix: str,
+                      http_prefix: str,
                       nickname: str, domain: str,
                       historysearch: str,
                       postsPerPage: int, pageNumber: int,
@@ -630,7 +630,7 @@ def htmlHistorySearch(cssCache: {}, translate: {}, base_dir: str,
 
     # add the page title
     domainFull = getFullDomain(domain, port)
-    actor = localActorUrl(httpPrefix, nickname, domainFull)
+    actor = localActorUrl(http_prefix, nickname, domainFull)
     historySearchTitle = '🔍 ' + translate['Your Posts']
     if boxName == 'bookmarks':
         historySearchTitle = '🔍 ' + translate['Bookmarks']
@@ -682,7 +682,7 @@ def htmlHistorySearch(cssCache: {}, translate: {}, base_dir: str,
                                  nickname, domain, port,
                                  postJsonObject,
                                  None, True, allowDeletion,
-                                 httpPrefix, projectVersion,
+                                 http_prefix, projectVersion,
                                  'search',
                                  YTReplacementDomain,
                                  twitterReplacementDomain,
@@ -709,7 +709,7 @@ def htmlHashtagSearch(cssCache: {},
                       base_dir: str, hashtag: str, pageNumber: int,
                       postsPerPage: int,
                       session, cachedWebfingers: {}, personCache: {},
-                      httpPrefix: str, projectVersion: str,
+                      http_prefix: str, projectVersion: str,
                       YTReplacementDomain: str,
                       twitterReplacementDomain: str,
                       showPublishedDateOnly: bool,
@@ -865,7 +865,7 @@ def htmlHashtagSearch(cssCache: {},
                                  postJsonObject,
                                  avatarUrl, showAvatarOptions,
                                  allowDeletion,
-                                 httpPrefix, projectVersion,
+                                 http_prefix, projectVersion,
                                  'search',
                                  YTReplacementDomain,
                                  twitterReplacementDomain,
@@ -902,7 +902,7 @@ def rssHashtagSearch(nickname: str, domain: str, port: int,
                      base_dir: str, hashtag: str,
                      postsPerPage: int,
                      session, cachedWebfingers: {}, personCache: {},
-                     httpPrefix: str, projectVersion: str,
+                     http_prefix: str, projectVersion: str,
                      YTReplacementDomain: str,
                      twitterReplacementDomain: str,
                      systemLanguage: str) -> str:
@@ -937,7 +937,7 @@ def rssHashtagSearch(nickname: str, domain: str, port: int,
 
     maxFeedLength = 10
     hashtagFeed = \
-        rss2TagHeader(hashtag, httpPrefix, domainFull)
+        rss2TagHeader(hashtag, http_prefix, domainFull)
     for index in range(len(lines)):
         postId = lines[index].strip('\n').strip('\r')
         if '  ' not in postId:

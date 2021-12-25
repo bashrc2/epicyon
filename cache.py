@@ -33,7 +33,7 @@ def _removePersonFromCache(base_dir: str, personUrl: str,
 
 
 def checkForChangedActor(session, base_dir: str,
-                         httpPrefix: str, domainFull: str,
+                         http_prefix: str, domainFull: str,
                          personUrl: str, avatarUrl: str, personCache: {},
                          timeoutSec: int):
     """Checks if the avatar url exists and if not then
@@ -45,7 +45,7 @@ def checkForChangedActor(session, base_dir: str,
         return
     if domainFull in avatarUrl:
         return
-    if urlExists(session, avatarUrl, timeoutSec, httpPrefix, domainFull):
+    if urlExists(session, avatarUrl, timeoutSec, http_prefix, domainFull):
         return
     _removePersonFromCache(base_dir, personUrl, personCache)
 
@@ -138,7 +138,7 @@ def getWebfingerFromCache(handle: str, cachedWebfingers: {}) -> {}:
 
 def getPersonPubKey(base_dir: str, session, personUrl: str,
                     personCache: {}, debug: bool,
-                    projectVersion: str, httpPrefix: str,
+                    projectVersion: str, http_prefix: str,
                     domain: str, onionDomain: str,
                     signingPrivateKeyPem: str) -> str:
     if not personUrl:
@@ -168,7 +168,7 @@ def getPersonPubKey(base_dir: str, session, personUrl: str,
         personJson = \
             getJson(signingPrivateKeyPem,
                     session, personUrl, asHeader, None, debug,
-                    projectVersion, httpPrefix, personDomain)
+                    projectVersion, http_prefix, personDomain)
         if not personJson:
             return None
     pubKey = None

@@ -455,7 +455,7 @@ def pgpLocalPublicKey() -> str:
 def pgpPublicKeyUpload(base_dir: str, session,
                        nickname: str, password: str,
                        domain: str, port: int,
-                       httpPrefix: str,
+                       http_prefix: str,
                        cachedWebfingers: {}, personCache: {},
                        debug: bool, test: str,
                        signingPrivateKeyPem: str) -> {}:
@@ -500,7 +500,7 @@ def pgpPublicKeyUpload(base_dir: str, session,
     if debug:
         print('Actor for ' + handle + ' obtained')
 
-    actor = localActorUrl(httpPrefix, nickname, domainFull)
+    actor = localActorUrl(http_prefix, nickname, domainFull)
     handle = replaceUsersWithAt(actor)
 
     # check that this looks like the correct actor
@@ -557,7 +557,7 @@ def pgpPublicKeyUpload(base_dir: str, session,
 
     # lookup the inbox for the To handle
     wfRequest = \
-        webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
+        webfingerHandle(session, handle, http_prefix, cachedWebfingers,
                         domain, __version__, debug, False,
                         signingPrivateKeyPem)
     if not wfRequest:
@@ -578,7 +578,7 @@ def pgpPublicKeyUpload(base_dir: str, session,
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
      displayName, _) = getPersonBox(signingPrivateKeyPem, originDomain,
                                     base_dir, session, wfRequest, personCache,
-                                    __version__, httpPrefix, nickname,
+                                    __version__, http_prefix, nickname,
                                     domain, postToBox, 35725)
 
     if not inboxUrl:
@@ -601,7 +601,7 @@ def pgpPublicKeyUpload(base_dir: str, session,
     tries = 0
     while tries < 4:
         postResult = \
-            postJson(httpPrefix, domainFull,
+            postJson(http_prefix, domainFull,
                      session, actorUpdate, [], inboxUrl,
                      headers, 5, quiet)
         if postResult:

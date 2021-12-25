@@ -234,7 +234,7 @@ def setBlogAddress(actorJson: {}, blogAddress: str) -> None:
 
 
 def updateAvatarImageCache(signingPrivateKeyPem: str,
-                           session, base_dir: str, httpPrefix: str,
+                           session, base_dir: str, http_prefix: str,
                            actor: str, avatarUrl: str,
                            personCache: {}, allowDownloads: bool,
                            force: bool = False, debug: bool = False) -> str:
@@ -306,7 +306,7 @@ def updateAvatarImageCache(signingPrivateKeyPem: str,
             }
         personJson = \
             getJson(signingPrivateKeyPem, session, actor, sessionHeaders, None,
-                    debug, __version__, httpPrefix, None)
+                    debug, __version__, http_prefix, None)
         if personJson:
             if not personJson.get('id'):
                 return None
@@ -735,7 +735,7 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
 
 
 def htmlHeaderWithWebsiteMarkup(cssFilename: str, instanceTitle: str,
-                                httpPrefix: str, domain: str,
+                                http_prefix: str, domain: str,
                                 systemLanguage: str) -> str:
     """html header which includes website markup
     https://schema.org/WebSite
@@ -751,7 +751,7 @@ def htmlHeaderWithWebsiteMarkup(cssFilename: str, instanceTitle: str,
         '      "@context" : "http://schema.org",\n' + \
         '      "@type" : "WebSite",\n' + \
         '      "name": "' + instanceTitle + '",\n' + \
-        '      "url": "' + httpPrefix + '://' + domain + '",\n' + \
+        '      "url": "' + http_prefix + '://' + domain + '",\n' + \
         '      "license": "' + licenseUrl + '",\n' + \
         '      "inLanguage": "' + systemLanguage + '",\n' + \
         '      "isAccessibleForFree": true,\n' + \
@@ -774,12 +774,12 @@ def htmlHeaderWithWebsiteMarkup(cssFilename: str, instanceTitle: str,
     ogMetadata = \
         '    <meta content="Epicyon hosted on ' + domain + \
         '" property="og:site_name" />\n' + \
-        '    <meta content="' + httpPrefix + '://' + domain + \
+        '    <meta content="' + http_prefix + '://' + domain + \
         '/about" property="og:url" />\n' + \
         '    <meta content="website" property="og:type" />\n' + \
         '    <meta content="' + instanceTitle + \
         '" property="og:title" />\n' + \
-        '    <meta content="' + httpPrefix + '://' + domain + \
+        '    <meta content="' + http_prefix + '://' + domain + \
         '/logo.png" property="og:image" />\n' + \
         '    <meta content="' + systemLanguage + \
         '" property="og:locale" />\n' + \
@@ -793,7 +793,7 @@ def htmlHeaderWithWebsiteMarkup(cssFilename: str, instanceTitle: str,
 
 
 def htmlHeaderWithBlogMarkup(cssFilename: str, instanceTitle: str,
-                             httpPrefix: str, domain: str, nickname: str,
+                             http_prefix: str, domain: str, nickname: str,
                              systemLanguage: str,
                              published: str, modified: str,
                              title: str, snippet: str,
@@ -802,8 +802,8 @@ def htmlHeaderWithBlogMarkup(cssFilename: str, instanceTitle: str,
     """html header which includes blog post markup
     https://schema.org/BlogPosting
     """
-    authorUrl = localActorUrl(httpPrefix, nickname, domain)
-    aboutUrl = httpPrefix + '://' + domain + '/about.html'
+    authorUrl = localActorUrl(http_prefix, nickname, domain)
+    aboutUrl = http_prefix + '://' + domain + '/about.html'
 
     # license for content on the site may be different from
     # the software license
@@ -888,7 +888,7 @@ def loadIndividualPostAsHtmlFromCache(base_dir: str,
         return postHtml
 
 
-def addEmojiToDisplayName(session, base_dir: str, httpPrefix: str,
+def addEmojiToDisplayName(session, base_dir: str, http_prefix: str,
                           nickname: str, domain: str,
                           displayName: str, inProfileName: bool) -> str:
     """Adds emoji icons to display names or CW on individual posts
@@ -900,7 +900,7 @@ def addEmojiToDisplayName(session, base_dir: str, httpPrefix: str,
     emojiTags = {}
 #    print('TAG: displayName before tags: ' + displayName)
     displayName = \
-        addHtmlTags(base_dir, httpPrefix,
+        addHtmlTags(base_dir, http_prefix,
                     nickname, domain, displayName, [], emojiTags)
     displayName = displayName.replace('<p>', '').replace('</p>', '')
 #    print('TAG: displayName after tags: ' + displayName)
@@ -1231,7 +1231,7 @@ def htmlHighlightLabel(label: str, highlight: bool) -> str:
 
 
 def getAvatarImageUrl(session,
-                      base_dir: str, httpPrefix: str,
+                      base_dir: str, http_prefix: str,
                       postActor: str, personCache: {},
                       avatarUrl: str, allowDownloads: bool,
                       signingPrivateKeyPem: str) -> str:
@@ -1244,12 +1244,12 @@ def getAvatarImageUrl(session,
                                allowDownloads)
         avatarUrl = \
             updateAvatarImageCache(signingPrivateKeyPem,
-                                   session, base_dir, httpPrefix,
+                                   session, base_dir, http_prefix,
                                    postActor, avatarUrl, personCache,
                                    allowDownloads)
     else:
         updateAvatarImageCache(signingPrivateKeyPem,
-                               session, base_dir, httpPrefix,
+                               session, base_dir, http_prefix,
                                postActor, avatarUrl, personCache,
                                allowDownloads)
 
@@ -1406,7 +1406,7 @@ def editTextArea(label: str, name: str, value: str,
 
 
 def htmlSearchResultShare(base_dir: str, sharedItem: {}, translate: {},
-                          httpPrefix: str, domainFull: str,
+                          http_prefix: str, domainFull: str,
                           contactNickname: str, itemID: str,
                           actor: str, sharesFileType: str,
                           category: str) -> str:
@@ -1448,7 +1448,7 @@ def htmlSearchResultShare(base_dir: str, sharedItem: {}, translate: {},
                 contactTitleStr = translate['Buy']
     sharedItemsForm += '</p>\n'
     contactActor = \
-        localActorUrl(httpPrefix, contactNickname, domainFull)
+        localActorUrl(http_prefix, contactNickname, domainFull)
     buttonStyleStr = 'button'
     if category == 'accommodation':
         contactTitleStr = translate['Request to stay']
@@ -1493,7 +1493,7 @@ def htmlSearchResultShare(base_dir: str, sharedItem: {}, translate: {},
 
 
 def htmlShowShare(base_dir: str, domain: str, nickname: str,
-                  httpPrefix: str, domainFull: str,
+                  http_prefix: str, domainFull: str,
                   itemID: str, translate: {},
                   sharedItemsFederatedDomains: [],
                   defaultTimeline: str, theme: str,
@@ -1545,7 +1545,7 @@ def htmlShowShare(base_dir: str, domain: str, nickname: str,
     if not sharesJson.get(itemID):
         return None
     sharedItem = sharesJson[itemID]
-    actor = localActorUrl(httpPrefix, nickname, domainFull)
+    actor = localActorUrl(http_prefix, nickname, domainFull)
 
     # filename of the banner shown at the top
     bannerFile, bannerFilename = \
@@ -1560,7 +1560,7 @@ def htmlShowShare(base_dir: str, domain: str, nickname: str,
         'src="/users/' + nickname + '/' + bannerFile + '" /></a>\n' + \
         '</header><br>\n'
     shareStr += \
-        htmlSearchResultShare(base_dir, sharedItem, translate, httpPrefix,
+        htmlSearchResultShare(base_dir, sharedItem, translate, http_prefix,
                               domainFull, contactNickname, itemID,
                               actor, sharesFileType, category)
 

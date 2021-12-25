@@ -79,7 +79,7 @@ def outboxAvailability(base_dir: str, nickname: str, messageJson: {},
 def sendAvailabilityViaServer(base_dir: str, session,
                               nickname: str, password: str,
                               domain: str, port: int,
-                              httpPrefix: str,
+                              http_prefix: str,
                               status: str,
                               cachedWebfingers: {}, personCache: {},
                               debug: bool, projectVersion: str,
@@ -92,7 +92,7 @@ def sendAvailabilityViaServer(base_dir: str, session,
 
     domainFull = getFullDomain(domain, port)
 
-    toUrl = localActorUrl(httpPrefix, nickname, domainFull)
+    toUrl = localActorUrl(http_prefix, nickname, domainFull)
     ccUrl = toUrl + '/followers'
 
     newAvailabilityJson = {
@@ -103,10 +103,10 @@ def sendAvailabilityViaServer(base_dir: str, session,
         'cc': [ccUrl]
     }
 
-    handle = httpPrefix + '://' + domainFull + '/@' + nickname
+    handle = http_prefix + '://' + domainFull + '/@' + nickname
 
     # lookup the inbox for the To handle
-    wfRequest = webfingerHandle(session, handle, httpPrefix,
+    wfRequest = webfingerHandle(session, handle, http_prefix,
                                 cachedWebfingers,
                                 domain, projectVersion, debug, False,
                                 signingPrivateKeyPem)
@@ -128,7 +128,7 @@ def sendAvailabilityViaServer(base_dir: str, session,
                                     originDomain,
                                     base_dir, session, wfRequest,
                                     personCache, projectVersion,
-                                    httpPrefix, nickname,
+                                    http_prefix, nickname,
                                     domain, postToBox, 57262)
 
     if not inboxUrl:
@@ -148,7 +148,7 @@ def sendAvailabilityViaServer(base_dir: str, session,
         'Content-type': 'application/json',
         'Authorization': authHeader
     }
-    postResult = postJson(httpPrefix, domainFull,
+    postResult = postJson(http_prefix, domainFull,
                           session, newAvailabilityJson, [],
                           inboxUrl, headers, 30, True)
     if not postResult:

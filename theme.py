@@ -777,7 +777,7 @@ def _setThemeImages(base_dir: str, name: str) -> None:
 
 
 def setNewsAvatar(base_dir: str, name: str,
-                  httpPrefix: str,
+                  http_prefix: str,
                   domain: str, domainFull: str) -> None:
     """Sets the avatar for the news account
     """
@@ -788,7 +788,7 @@ def setNewsAvatar(base_dir: str, name: str,
     if not os.path.isfile(newFilename):
         return
     avatarFilename = \
-        localActorUrl(httpPrefix, domainFull, nickname) + '.png'
+        localActorUrl(http_prefix, domainFull, nickname) + '.png'
     avatarFilename = avatarFilename.replace('/', '-')
     filename = base_dir + '/cache/avatars/' + avatarFilename
 

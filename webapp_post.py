@@ -269,7 +269,7 @@ def _saveIndividualPostAsHtmlToCache(base_dir: str,
 
 def _getPostFromRecentCache(session,
                             base_dir: str,
-                            httpPrefix: str,
+                            http_prefix: str,
                             nickname: str, domain: str,
                             postJsonObject: {},
                             postActor: str,
@@ -310,7 +310,7 @@ def _getPostFromRecentCache(session,
         _logPostTiming(enableTimingLog, postStartTime, '2.1')
 
     updateAvatarImageCache(signingPrivateKeyPem,
-                           session, base_dir, httpPrefix,
+                           session, base_dir, http_prefix,
                            postActor, avatarUrl, personCache,
                            allowDownloads)
 
@@ -945,7 +945,7 @@ def _announceWithDisplayNameHtml(translate: {},
 
 
 def _getPostTitleAnnounceHtml(base_dir: str,
-                              httpPrefix: str,
+                              http_prefix: str,
                               nickname: str, domain: str,
                               showRepeatIcon: bool,
                               isAnnounced: bool,
@@ -1006,7 +1006,8 @@ def _getPostTitleAnnounceHtml(base_dir: str,
     # add any emoji to the display name
     if ':' in announceDisplayName:
         announceDisplayName = \
-            addEmojiToDisplayName(None, base_dir, httpPrefix, nickname, domain,
+            addEmojiToDisplayName(None, base_dir, http_prefix,
+                                  nickname, domain,
                                   announceDisplayName, False)
     _logPostTiming(enableTimingLog, postStartTime, '13.3.1')
     titleStr += \
@@ -1111,7 +1112,7 @@ def _getReplyHtml(translate: {},
 
 
 def _getPostTitleReplyHtml(base_dir: str,
-                           httpPrefix: str,
+                           http_prefix: str,
                            nickname: str, domain: str,
                            showRepeatIcon: bool,
                            isAnnounced: bool,
@@ -1188,7 +1189,8 @@ def _getPostTitleReplyHtml(base_dir: str,
         _logPostTiming(enableTimingLog, postStartTime, '13.5')
 
         replyDisplayName = \
-            addEmojiToDisplayName(None, base_dir, httpPrefix, nickname, domain,
+            addEmojiToDisplayName(None, base_dir, http_prefix,
+                                  nickname, domain,
                                   replyDisplayName, False)
         _logPostTiming(enableTimingLog, postStartTime, '13.6')
 
@@ -1222,7 +1224,7 @@ def _getPostTitleReplyHtml(base_dir: str,
 
 
 def _getPostTitleHtml(base_dir: str,
-                      httpPrefix: str,
+                      http_prefix: str,
                       nickname: str, domain: str,
                       showRepeatIcon: bool,
                       isAnnounced: bool,
@@ -1250,7 +1252,7 @@ def _getPostTitleHtml(base_dir: str,
 
     if isAnnounced:
         return _getPostTitleAnnounceHtml(base_dir,
-                                         httpPrefix,
+                                         http_prefix,
                                          nickname, domain,
                                          showRepeatIcon,
                                          isAnnounced,
@@ -1269,7 +1271,7 @@ def _getPostTitleHtml(base_dir: str,
                                          containerClass)
 
     return _getPostTitleReplyHtml(base_dir,
-                                  httpPrefix,
+                                  http_prefix,
                                   nickname, domain,
                                   showRepeatIcon,
                                   isAnnounced,
@@ -1327,7 +1329,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
                          postJsonObject: {},
                          avatarUrl: str, showAvatarOptions: bool,
                          allowDeletion: bool,
-                         httpPrefix: str, projectVersion: str,
+                         http_prefix: str, projectVersion: str,
                          boxName: str,
                          YTReplacementDomain: str,
                          twitterReplacementDomain: str,
@@ -1388,7 +1390,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
     # get the html post from the recent posts cache if it exists there
     postHtml = \
         _getPostFromRecentCache(session, base_dir,
-                                httpPrefix, nickname, domain,
+                                http_prefix, nickname, domain,
                                 postJsonObject,
                                 postActor,
                                 personCache,
@@ -1412,7 +1414,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
 
     avatarUrl = \
         getAvatarImageUrl(session,
-                          base_dir, httpPrefix,
+                          base_dir, http_prefix,
                           postActor, personCache,
                           avatarUrl, allowDownloads,
                           signingPrivateKeyPem)
@@ -1427,7 +1429,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
         postActorDomainFull = getFullDomain(postActorDomain, postActorPort)
         postActorHandle = postActorNickname + '@' + postActorDomainFull
         postActorWf = \
-            webfingerHandle(session, postActorHandle, httpPrefix,
+            webfingerHandle(session, postActorHandle, http_prefix,
                             cachedWebfingers,
                             domain, __version__, False, False,
                             signingPrivateKeyPem)
@@ -1443,7 +1445,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
                                             postActorWf,
                                             personCache,
                                             projectVersion,
-                                            httpPrefix,
+                                            http_prefix,
                                             nickname, domain,
                                             'outbox', 72367)
 
@@ -1455,7 +1457,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
             # add any emoji to the display name
             if ':' in displayName:
                 displayName = \
-                    addEmojiToDisplayName(session, base_dir, httpPrefix,
+                    addEmojiToDisplayName(session, base_dir, http_prefix,
                                           nickname, domain,
                                           displayName, False)
 
@@ -1494,7 +1496,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
         announceJsonObject = postJsonObject.copy()
         blockedCache = {}
         postJsonAnnounce = \
-            downloadAnnounce(session, base_dir, httpPrefix,
+            downloadAnnounce(session, base_dir, http_prefix,
                              nickname, domain, postJsonObject,
                              projectVersion, translate,
                              YTReplacementDomain,
@@ -1516,7 +1518,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
         # is the announced post in the html cache?
         postHtml = \
             _getPostFromRecentCache(session, base_dir,
-                                    httpPrefix, nickname, domain,
+                                    http_prefix, nickname, domain,
                                     postJsonObject,
                                     postActor,
                                     personCache,
@@ -1545,7 +1547,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
             if isRecentPost(postJsonObject, 3):
                 if postJsonObject.get('actor'):
                     if not os.path.isfile(announceFilename + '.tts'):
-                        updateSpeaker(base_dir, httpPrefix,
+                        updateSpeaker(base_dir, http_prefix,
                                       nickname, domain, domainFull,
                                       postJsonObject, personCache,
                                       translate, postJsonObject['actor'],
@@ -1581,7 +1583,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
     if displayName:
         if ':' in displayName:
             displayName = \
-                addEmojiToDisplayName(session, base_dir, httpPrefix,
+                addEmojiToDisplayName(session, base_dir, http_prefix,
                                       nickname, domain,
                                       displayName, False)
         titleStr += \
@@ -1750,7 +1752,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
      replyAvatarImageInPost,
      containerClassIcons,
      containerClass) = _getPostTitleHtml(base_dir,
-                                         httpPrefix,
+                                         http_prefix,
                                          nickname, domain,
                                          showRepeatIcon,
                                          isAnnounced,
@@ -1847,7 +1849,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
             postJsonObject['object']['content']
 
     domainFull = getFullDomain(domain, port)
-    personUrl = localActorUrl(httpPrefix, nickname, domainFull)
+    personUrl = localActorUrl(http_prefix, nickname, domainFull)
     actorJson = \
         getPersonFromCache(base_dir, personUrl, personCache, False)
     languagesUnderstood = []
@@ -1903,7 +1905,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
         if postJsonObject['object'].get('summary'):
             cwStr = str(postJsonObject['object']['summary'])
             cwStr = \
-                addEmojiToDisplayName(session, base_dir, httpPrefix,
+                addEmojiToDisplayName(session, base_dir, http_prefix,
                                       nickname, domain,
                                       cwStr, False)
             contentStr += \
@@ -1994,7 +1996,7 @@ def htmlIndividualPost(cssCache: {},
                        base_dir: str, session, cachedWebfingers: {},
                        personCache: {},
                        nickname: str, domain: str, port: int, authorized: bool,
-                       postJsonObject: {}, httpPrefix: str,
+                       postJsonObject: {}, http_prefix: str,
                        projectVersion: str, likedBy: str,
                        reactBy: str, reactEmoji: str,
                        YTReplacementDomain: str,
@@ -2061,7 +2063,7 @@ def htmlIndividualPost(cssCache: {},
                              base_dir, session, cachedWebfingers, personCache,
                              nickname, domain, port, postJsonObject,
                              None, True, False,
-                             httpPrefix, projectVersion, 'inbox',
+                             http_prefix, projectVersion, 'inbox',
                              YTReplacementDomain,
                              twitterReplacementDomain,
                              showPublishedDateOnly,
@@ -2092,7 +2094,7 @@ def htmlIndividualPost(cssCache: {},
                                          nickname, domain, port,
                                          postJsonObject,
                                          None, True, False,
-                                         httpPrefix, projectVersion, 'inbox',
+                                         http_prefix, projectVersion, 'inbox',
                                          YTReplacementDomain,
                                          twitterReplacementDomain,
                                          showPublishedDateOnly,
@@ -2127,7 +2129,7 @@ def htmlIndividualPost(cssCache: {},
                                          personCache,
                                          nickname, domain, port, item,
                                          None, True, False,
-                                         httpPrefix, projectVersion, 'inbox',
+                                         http_prefix, projectVersion, 'inbox',
                                          YTReplacementDomain,
                                          twitterReplacementDomain,
                                          showPublishedDateOnly,
@@ -2155,7 +2157,7 @@ def htmlPostReplies(cssCache: {},
                     translate: {}, base_dir: str,
                     session, cachedWebfingers: {}, personCache: {},
                     nickname: str, domain: str, port: int, repliesJson: {},
-                    httpPrefix: str, projectVersion: str,
+                    http_prefix: str, projectVersion: str,
                     YTReplacementDomain: str,
                     twitterReplacementDomain: str,
                     showPublishedDateOnly: bool,
@@ -2179,7 +2181,7 @@ def htmlPostReplies(cssCache: {},
                                      personCache,
                                      nickname, domain, port, item,
                                      None, True, False,
-                                     httpPrefix, projectVersion, 'inbox',
+                                     http_prefix, projectVersion, 'inbox',
                                      YTReplacementDomain,
                                      twitterReplacementDomain,
                                      showPublishedDateOnly,
@@ -2207,7 +2209,7 @@ def htmlEmojiReactionPicker(cssCache: {},
                             base_dir: str, session, cachedWebfingers: {},
                             personCache: {},
                             nickname: str, domain: str, port: int,
-                            postJsonObject: {}, httpPrefix: str,
+                            postJsonObject: {}, http_prefix: str,
                             projectVersion: str,
                             YTReplacementDomain: str,
                             twitterReplacementDomain: str,
@@ -2231,7 +2233,7 @@ def htmlEmojiReactionPicker(cssCache: {},
                              personCache,
                              nickname, domain, port, postJsonObject,
                              None, True, False,
-                             httpPrefix, projectVersion, 'inbox',
+                             http_prefix, projectVersion, 'inbox',
                              YTReplacementDomain,
                              twitterReplacementDomain,
                              showPublishedDateOnly,

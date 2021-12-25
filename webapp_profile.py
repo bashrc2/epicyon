@@ -124,7 +124,7 @@ def _validProfilePreviewPost(postJsonObject: {},
 def htmlProfileAfterSearch(cssCache: {},
                            recentPostsCache: {}, maxRecentPosts: int,
                            translate: {},
-                           base_dir: str, path: str, httpPrefix: str,
+                           base_dir: str, path: str, http_prefix: str,
                            nickname: str, domain: str, port: int,
                            profileHandle: str,
                            session, cachedWebfingers: {}, personCache: {},
@@ -145,9 +145,9 @@ def htmlProfileAfterSearch(cssCache: {},
     """
     http = False
     gnunet = False
-    if httpPrefix == 'http':
+    if http_prefix == 'http':
         http = True
-    elif httpPrefix == 'gnunet':
+    elif http_prefix == 'gnunet':
         gnunet = True
     profileJson, asHeader = \
         getActorJson(domain, profileHandle, http, gnunet, debug, False,
@@ -323,7 +323,7 @@ def htmlProfileAfterSearch(cssCache: {},
     userFeed = \
         parseUserFeed(signingPrivateKeyPem,
                       session, outboxUrl, asHeader, projectVersion,
-                      httpPrefix, domain, debug)
+                      http_prefix, domain, debug)
     if userFeed:
         i = 0
         for item in userFeed:
@@ -339,7 +339,7 @@ def htmlProfileAfterSearch(cssCache: {},
                                      session, cachedWebfingers, personCache,
                                      nickname, domain, port,
                                      postJsonObject, avatarUrl, False, False,
-                                     httpPrefix, projectVersion, 'inbox',
+                                     http_prefix, projectVersion, 'inbox',
                                      YTReplacementDomain,
                                      twitterReplacementDomain,
                                      showPublishedDateOnly,
@@ -358,7 +358,7 @@ def htmlProfileAfterSearch(cssCache: {},
         profileStr + htmlFooter()
 
 
-def _getProfileHeader(base_dir: str, httpPrefix: str,
+def _getProfileHeader(base_dir: str, http_prefix: str,
                       nickname: str, domain: str,
                       domainFull: str, translate: {},
                       defaultTimeline: str,
@@ -416,7 +416,7 @@ def _getProfileHeader(base_dir: str, httpPrefix: str,
         otherAccountsHtml = \
             '    <p>' + translate['Other accounts'] + ': '
 
-        actor = localActorUrl(httpPrefix, nickname, domainFull)
+        actor = localActorUrl(http_prefix, nickname, domainFull)
         ctr = 0
         if isinstance(alsoKnownAs, list):
             for altActor in alsoKnownAs:
@@ -544,7 +544,7 @@ def htmlProfile(signingPrivateKeyPem: str,
                 defaultTimeline: str,
                 recentPostsCache: {}, maxRecentPosts: int,
                 translate: {}, projectVersion: str,
-                base_dir: str, httpPrefix: str, authorized: bool,
+                base_dir: str, http_prefix: str, authorized: bool,
                 profileJson: {}, selected: str,
                 session, cachedWebfingers: {}, personCache: {},
                 YTReplacementDomain: str,
@@ -573,7 +573,7 @@ def htmlProfile(signingPrivateKeyPem: str,
                                defaultTimeline,
                                recentPostsCache, maxRecentPosts,
                                translate, projectVersion,
-                               base_dir, httpPrefix, authorized,
+                               base_dir, http_prefix, authorized,
                                profileJson, selected,
                                session, cachedWebfingers, personCache,
                                YTReplacementDomain,
@@ -590,12 +590,12 @@ def htmlProfile(signingPrivateKeyPem: str,
     if not domain:
         return ""
     displayName = \
-        addEmojiToDisplayName(session, base_dir, httpPrefix,
+        addEmojiToDisplayName(session, base_dir, http_prefix,
                               nickname, domain,
                               profileJson['name'], True)
     domainFull = getFullDomain(domain, port)
     profileDescription = \
-        addEmojiToDisplayName(session, base_dir, httpPrefix,
+        addEmojiToDisplayName(session, base_dir, http_prefix,
                               nickname, domain,
                               profileJson['summary'], False)
     postsButton = 'button'
@@ -752,7 +752,7 @@ def htmlProfile(signingPrivateKeyPem: str,
                                 nick = followerHandle.split('@')[0]
                                 dom = followerHandle.split('@')[1]
                                 followerActor = \
-                                    localActorUrl(httpPrefix, nick, dom)
+                                    localActorUrl(http_prefix, nick, dom)
 
                             # is this a new domain?
                             # if so then append a new instance indicator
@@ -839,7 +839,7 @@ def htmlProfile(signingPrivateKeyPem: str,
             pinnedContent = pinFile.read()
 
     profileHeaderStr = \
-        _getProfileHeader(base_dir, httpPrefix,
+        _getProfileHeader(base_dir, http_prefix,
                           nickname, domain,
                           domainFull, translate,
                           defaultTimeline, displayName,
@@ -954,7 +954,7 @@ def htmlProfile(signingPrivateKeyPem: str,
         profileStr += \
             _htmlProfilePosts(recentPostsCache, maxRecentPosts,
                               translate,
-                              base_dir, httpPrefix, authorized,
+                              base_dir, http_prefix, authorized,
                               nickname, domain, port,
                               session, cachedWebfingers, personCache,
                               projectVersion,
@@ -970,7 +970,7 @@ def htmlProfile(signingPrivateKeyPem: str,
     if not isGroup:
         if selected == 'following':
             profileStr += \
-                _htmlProfileFollowing(translate, base_dir, httpPrefix,
+                _htmlProfileFollowing(translate, base_dir, http_prefix,
                                       authorized, nickname,
                                       domain, port, session,
                                       cachedWebfingers, personCache, extraJson,
@@ -980,7 +980,7 @@ def htmlProfile(signingPrivateKeyPem: str,
                                       signingPrivateKeyPem)
     if selected == 'followers':
         profileStr += \
-            _htmlProfileFollowing(translate, base_dir, httpPrefix,
+            _htmlProfileFollowing(translate, base_dir, http_prefix,
                                   authorized, nickname,
                                   domain, port, session,
                                   cachedWebfingers, personCache, extraJson,
@@ -1021,7 +1021,7 @@ def htmlProfile(signingPrivateKeyPem: str,
 
 def _htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
                       translate: {},
-                      base_dir: str, httpPrefix: str,
+                      base_dir: str, http_prefix: str,
                       authorized: bool,
                       nickname: str, domain: str, port: int,
                       session, cachedWebfingers: {}, personCache: {},
@@ -1052,7 +1052,7 @@ def _htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
             personBoxJson({}, session, base_dir, domain,
                           port,
                           outboxFeedPathStr,
-                          httpPrefix,
+                          http_prefix,
                           10, boxName,
                           authorized, 0, False, 0)
         if not outboxFeed:
@@ -1070,7 +1070,7 @@ def _htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
                                          personCache,
                                          nickname, domain, port, item,
                                          None, True, False,
-                                         httpPrefix, projectVersion, 'inbox',
+                                         http_prefix, projectVersion, 'inbox',
                                          YTReplacementDomain,
                                          twitterReplacementDomain,
                                          showPublishedDateOnly,
@@ -1090,7 +1090,7 @@ def _htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
     return profileStr
 
 
-def _htmlProfileFollowing(translate: {}, base_dir: str, httpPrefix: str,
+def _htmlProfileFollowing(translate: {}, base_dir: str, http_prefix: str,
                           authorized: bool,
                           nickname: str, domain: str, port: int,
                           session, cachedWebfingers: {}, personCache: {},
@@ -1132,7 +1132,7 @@ def _htmlProfileFollowing(translate: {}, base_dir: str, httpPrefix: str,
                                     cachedWebfingers, personCache,
                                     domain, followingActor,
                                     authorized, nickname,
-                                    httpPrefix, projectVersion, dormant,
+                                    http_prefix, projectVersion, dormant,
                                     debug, buttons)
 
     if authorized and maxItemsPerPage and pageNumber:
@@ -2084,7 +2084,7 @@ def _htmlEditProfileTopBanner(base_dir: str,
 
 
 def htmlEditProfile(cssCache: {}, translate: {}, base_dir: str, path: str,
-                    domain: str, port: int, httpPrefix: str,
+                    domain: str, port: int, http_prefix: str,
                     defaultTimeline: str, theme: str,
                     peertubeInstances: [],
                     textModeBanner: str, city: str,
@@ -2340,7 +2340,7 @@ def _individualFollowAsHtml(signingPrivateKeyPem: str,
                             followUrl: str,
                             authorized: bool,
                             actorNickname: str,
-                            httpPrefix: str,
+                            http_prefix: str,
                             projectVersion: str,
                             dormant: bool,
                             debug: bool,
@@ -2361,7 +2361,7 @@ def _individualFollowAsHtml(signingPrivateKeyPem: str,
         # lookup the correct webfinger for the followUrl
         followUrlHandle = followUrlNickname + '@' + followUrlDomainFull
         followUrlWf = \
-            webfingerHandle(session, followUrlHandle, httpPrefix,
+            webfingerHandle(session, followUrlHandle, http_prefix,
                             cachedWebfingers,
                             domain, __version__, debug, False,
                             signingPrivateKeyPem)
@@ -2373,14 +2373,14 @@ def _individualFollowAsHtml(signingPrivateKeyPem: str,
                                               base_dir, session,
                                               followUrlWf,
                                               personCache, projectVersion,
-                                              httpPrefix, followUrlNickname,
+                                              http_prefix, followUrlNickname,
                                               domain, 'outbox', 43036)
         if avatarUrl2:
             avatarUrl = avatarUrl2
 
     if displayName:
         displayName = \
-            addEmojiToDisplayName(None, base_dir, httpPrefix,
+            addEmojiToDisplayName(None, base_dir, http_prefix,
                                   actorNickname, domain,
                                   displayName, False)
         titleStr = displayName

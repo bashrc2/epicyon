@@ -71,7 +71,7 @@ def likedByPerson(postJsonObject: {}, nickname: str, domain: str) -> bool:
 def _like(recentPostsCache: {},
           session, base_dir: str, federationList: [],
           nickname: str, domain: str, port: int,
-          ccList: [], httpPrefix: str,
+          ccList: [], http_prefix: str,
           objectUrl: str, actorLiked: str,
           clientToServer: bool,
           sendThreads: [], postLog: [],
@@ -91,7 +91,7 @@ def _like(recentPostsCache: {},
     newLikeJson = {
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Like',
-        'actor': localActorUrl(httpPrefix, nickname, fullDomain),
+        'actor': localActorUrl(http_prefix, nickname, fullDomain),
         'object': objectUrl
     }
     if ccList:
@@ -135,7 +135,7 @@ def _like(recentPostsCache: {},
                        nickname, domain, port,
                        likedPostNickname, likedPostDomain, likedPostPort,
                        'https://www.w3.org/ns/activitystreams#Public',
-                       httpPrefix, True, clientToServer, federationList,
+                       http_prefix, True, clientToServer, federationList,
                        sendThreads, postLog, cachedWebfingers, personCache,
                        debug, projectVersion, None, groupAccount,
                        signingPrivateKeyPem, 7367374)
@@ -145,7 +145,7 @@ def _like(recentPostsCache: {},
 
 def likePost(recentPostsCache: {},
              session, base_dir: str, federationList: [],
-             nickname: str, domain: str, port: int, httpPrefix: str,
+             nickname: str, domain: str, port: int, http_prefix: str,
              likeNickname: str, likeDomain: str, likePort: int,
              ccList: [],
              likeStatusNumber: int, clientToServer: bool,
@@ -157,12 +157,12 @@ def likePost(recentPostsCache: {},
     """
     likeDomain = getFullDomain(likeDomain, likePort)
 
-    actorLiked = localActorUrl(httpPrefix, likeNickname, likeDomain)
+    actorLiked = localActorUrl(http_prefix, likeNickname, likeDomain)
     objectUrl = actorLiked + '/statuses/' + str(likeStatusNumber)
 
     return _like(recentPostsCache,
                  session, base_dir, federationList, nickname, domain, port,
-                 ccList, httpPrefix, objectUrl, actorLiked, clientToServer,
+                 ccList, http_prefix, objectUrl, actorLiked, clientToServer,
                  sendThreads, postLog, personCache, cachedWebfingers,
                  debug, projectVersion, signingPrivateKeyPem)
 
@@ -170,7 +170,7 @@ def likePost(recentPostsCache: {},
 def sendLikeViaServer(base_dir: str, session,
                       fromNickname: str, password: str,
                       fromDomain: str, fromPort: int,
-                      httpPrefix: str, likeUrl: str,
+                      http_prefix: str, likeUrl: str,
                       cachedWebfingers: {}, personCache: {},
                       debug: bool, projectVersion: str,
                       signingPrivateKeyPem: str) -> {}:
@@ -182,7 +182,7 @@ def sendLikeViaServer(base_dir: str, session,
 
     fromDomainFull = getFullDomain(fromDomain, fromPort)
 
-    actor = localActorUrl(httpPrefix, fromNickname, fromDomainFull)
+    actor = localActorUrl(http_prefix, fromNickname, fromDomainFull)
 
     newLikeJson = {
         "@context": "https://www.w3.org/ns/activitystreams",
@@ -191,10 +191,10 @@ def sendLikeViaServer(base_dir: str, session,
         'object': likeUrl
     }
 
-    handle = httpPrefix + '://' + fromDomainFull + '/@' + fromNickname
+    handle = http_prefix + '://' + fromDomainFull + '/@' + fromNickname
 
     # lookup the inbox for the To handle
-    wfRequest = webfingerHandle(session, handle, httpPrefix,
+    wfRequest = webfingerHandle(session, handle, http_prefix,
                                 cachedWebfingers,
                                 fromDomain, projectVersion, debug, False,
                                 signingPrivateKeyPem)
@@ -216,7 +216,7 @@ def sendLikeViaServer(base_dir: str, session,
                                     originDomain,
                                     base_dir, session, wfRequest,
                                     personCache,
-                                    projectVersion, httpPrefix,
+                                    projectVersion, http_prefix,
                                     fromNickname, fromDomain,
                                     postToBox, 72873)
 
@@ -236,7 +236,7 @@ def sendLikeViaServer(base_dir: str, session,
         'Content-type': 'application/json',
         'Authorization': authHeader
     }
-    postResult = postJson(httpPrefix, fromDomainFull,
+    postResult = postJson(http_prefix, fromDomainFull,
                           session, newLikeJson, [], inboxUrl,
                           headers, 3, True)
     if not postResult:
@@ -253,7 +253,7 @@ def sendLikeViaServer(base_dir: str, session,
 def sendUndoLikeViaServer(base_dir: str, session,
                           fromNickname: str, password: str,
                           fromDomain: str, fromPort: int,
-                          httpPrefix: str, likeUrl: str,
+                          http_prefix: str, likeUrl: str,
                           cachedWebfingers: {}, personCache: {},
                           debug: bool, projectVersion: str,
                           signingPrivateKeyPem: str) -> {}:
@@ -265,7 +265,7 @@ def sendUndoLikeViaServer(base_dir: str, session,
 
     fromDomainFull = getFullDomain(fromDomain, fromPort)
 
-    actor = localActorUrl(httpPrefix, fromNickname, fromDomainFull)
+    actor = localActorUrl(http_prefix, fromNickname, fromDomainFull)
 
     newUndoLikeJson = {
         "@context": "https://www.w3.org/ns/activitystreams",
@@ -278,10 +278,10 @@ def sendUndoLikeViaServer(base_dir: str, session,
         }
     }
 
-    handle = httpPrefix + '://' + fromDomainFull + '/@' + fromNickname
+    handle = http_prefix + '://' + fromDomainFull + '/@' + fromNickname
 
     # lookup the inbox for the To handle
-    wfRequest = webfingerHandle(session, handle, httpPrefix,
+    wfRequest = webfingerHandle(session, handle, http_prefix,
                                 cachedWebfingers,
                                 fromDomain, projectVersion, debug, False,
                                 signingPrivateKeyPem)
@@ -304,7 +304,7 @@ def sendUndoLikeViaServer(base_dir: str, session,
                                     originDomain,
                                     base_dir, session, wfRequest,
                                     personCache, projectVersion,
-                                    httpPrefix, fromNickname,
+                                    http_prefix, fromNickname,
                                     fromDomain, postToBox,
                                     72625)
 
@@ -324,7 +324,7 @@ def sendUndoLikeViaServer(base_dir: str, session,
         'Content-type': 'application/json',
         'Authorization': authHeader
     }
-    postResult = postJson(httpPrefix, fromDomainFull,
+    postResult = postJson(http_prefix, fromDomainFull,
                           session, newUndoLikeJson, [], inboxUrl,
                           headers, 3, True)
     if not postResult:
@@ -339,7 +339,7 @@ def sendUndoLikeViaServer(base_dir: str, session,
 
 
 def outboxLike(recentPostsCache: {},
-               base_dir: str, httpPrefix: str,
+               base_dir: str, http_prefix: str,
                nickname: str, domain: str, port: int,
                messageJson: {}, debug: bool) -> None:
     """ When a like request is received by the outbox from c2s
@@ -374,7 +374,7 @@ def outboxLike(recentPostsCache: {},
 
 
 def outboxUndoLike(recentPostsCache: {},
-                   base_dir: str, httpPrefix: str,
+                   base_dir: str, http_prefix: str,
                    nickname: str, domain: str, port: int,
                    messageJson: {}, debug: bool) -> None:
     """ When an undo like request is received by the outbox from c2s

@@ -174,7 +174,7 @@ def outboxSkills(base_dir: str, nickname: str, messageJson: {},
 
 def sendSkillViaServer(base_dir: str, session, nickname: str, password: str,
                        domain: str, port: int,
-                       httpPrefix: str,
+                       http_prefix: str,
                        skill: str, skillLevelPercent: int,
                        cachedWebfingers: {}, personCache: {},
                        debug: bool, projectVersion: str,
@@ -187,7 +187,7 @@ def sendSkillViaServer(base_dir: str, session, nickname: str, password: str,
 
     domainFull = getFullDomain(domain, port)
 
-    actor = localActorUrl(httpPrefix, nickname, domainFull)
+    actor = localActorUrl(http_prefix, nickname, domainFull)
     toUrl = actor
     ccUrl = actor + '/followers'
 
@@ -204,11 +204,11 @@ def sendSkillViaServer(base_dir: str, session, nickname: str, password: str,
         'cc': [ccUrl]
     }
 
-    handle = httpPrefix + '://' + domainFull + '/@' + nickname
+    handle = http_prefix + '://' + domainFull + '/@' + nickname
 
     # lookup the inbox for the To handle
     wfRequest = \
-        webfingerHandle(session, handle, httpPrefix,
+        webfingerHandle(session, handle, http_prefix,
                         cachedWebfingers,
                         domain, projectVersion, debug, False,
                         signingPrivateKeyPem)
@@ -230,7 +230,7 @@ def sendSkillViaServer(base_dir: str, session, nickname: str, password: str,
                                     originDomain,
                                     base_dir, session, wfRequest,
                                     personCache, projectVersion,
-                                    httpPrefix, nickname, domain,
+                                    http_prefix, nickname, domain,
                                     postToBox, 76121)
 
     if not inboxUrl:
@@ -251,7 +251,7 @@ def sendSkillViaServer(base_dir: str, session, nickname: str, password: str,
         'Authorization': authHeader
     }
     postResult = \
-        postJson(httpPrefix, domainFull,
+        postJson(http_prefix, domainFull,
                  session, newSkillJson, [], inboxUrl,
                  headers, 30, True)
     if not postResult:

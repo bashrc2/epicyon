@@ -84,7 +84,7 @@ def _getMastoApiV1Account(base_dir: str, nickname: str, domain: str) -> {}:
 def mastoApiV1Response(path: str, callingDomain: str,
                        uaStr: str,
                        authorized: bool,
-                       httpPrefix: str,
+                       http_prefix: str,
                        base_dir: str, nickname: str, domain: str,
                        domainFull: str,
                        onionDomain: str, i2pDomain: str,
@@ -210,10 +210,10 @@ def mastoApiV1Response(path: str, callingDomain: str,
 
         if callingDomain.endswith('.onion') and onionDomain:
             domainFull = onionDomain
-            httpPrefix = 'http'
+            http_prefix = 'http'
         elif (callingDomain.endswith('.i2p') and i2pDomain):
             domainFull = i2pDomain
-            httpPrefix = 'http'
+            http_prefix = 'http'
 
         if brochMode:
             showNodeInfoAccounts = False
@@ -223,7 +223,7 @@ def mastoApiV1Response(path: str, callingDomain: str,
                              instanceTitle,
                              instanceDescriptionShort,
                              instanceDescription,
-                             httpPrefix,
+                             http_prefix,
                              base_dir,
                              adminNickname,
                              domain,

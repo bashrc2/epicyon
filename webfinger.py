@@ -60,7 +60,7 @@ def _parseHandle(handle: str) -> (str, str, bool):
     return None, None, False
 
 
-def webfingerHandle(session, handle: str, httpPrefix: str,
+def webfingerHandle(session, handle: str, http_prefix: str,
                     cachedWebfingers: {},
                     fromDomain: str, projectVersion: str,
                     debug: bool, groupAccount: bool,
@@ -83,7 +83,7 @@ def webfingerHandle(session, handle: str, httpPrefix: str,
         if debug:
             print('Webfinger from cache: ' + str(wf))
         return wf
-    url = '{}://{}/.well-known/webfinger'.format(httpPrefix, domain)
+    url = '{}://{}/.well-known/webfinger'.format(http_prefix, domain)
     hdr = {
         'Accept': 'application/jrd+json'
     }
@@ -93,7 +93,7 @@ def webfingerHandle(session, handle: str, httpPrefix: str,
     try:
         result = \
             getJson(signingPrivateKeyPem, session, url, hdr, par,
-                    debug, projectVersion, httpPrefix, fromDomain)
+                    debug, projectVersion, http_prefix, fromDomain)
     except Exception as ex:
         print('ERROR: webfingerHandle ' + str(ex))
         return None
@@ -131,7 +131,7 @@ def storeWebfingerEndpoint(nickname: str, domain: str, port: int,
 
 
 def createWebfingerEndpoint(nickname: str, domain: str, port: int,
-                            httpPrefix: str, publicKeyPem: str,
+                            http_prefix: str, publicKeyPem: str,
                             groupAccount: bool) -> {}:
     """Creates a webfinger endpoint for a user
     """
@@ -139,17 +139,17 @@ def createWebfingerEndpoint(nickname: str, domain: str, port: int,
     domain = getFullDomain(domain, port)
 
     personName = nickname
-    personId = localActorUrl(httpPrefix, personName, domain)
+    personId = localActorUrl(http_prefix, personName, domain)
     subjectStr = "acct:" + personName + "@" + originalDomain
-    profilePageHref = httpPrefix + "://" + domain + "/@" + nickname
+    profilePageHref = http_prefix + "://" + domain + "/@" + nickname
     if nickname == 'inbox' or nickname == originalDomain:
         personName = 'actor'
-        personId = httpPrefix + "://" + domain + "/" + personName
+        personId = http_prefix + "://" + domain + "/" + personName
         subjectStr = "acct:" + originalDomain + "@" + originalDomain
-        profilePageHref = httpPrefix + '://' + domain + \
+        profilePageHref = http_prefix + '://' + domain + \
             '/about/more?instance_actor=true'
 
-    personLink = httpPrefix + "://" + domain + "/@" + personName
+    personLink = http_prefix + "://" + domain + "/@" + personName
     account = {
         "aliases": [
             personLink,
@@ -162,7 +162,7 @@ def createWebfingerEndpoint(nickname: str, domain: str, port: int,
                 "type": "image/png"
             },
             {
-                "href": httpPrefix + "://" + domain + "/blog/" + personName,
+                "href": http_prefix + "://" + domain + "/blog/" + personName,
                 "rel": "http://webfinger.net/rel/blog"
             },
             {
@@ -181,13 +181,13 @@ def createWebfingerEndpoint(nickname: str, domain: str, port: int,
     return account
 
 
-def webfingerNodeInfo(httpPrefix: str, domainFull: str) -> {}:
+def webfingerNodeInfo(http_prefix: str, domainFull: str) -> {}:
     """ /.well-known/nodeinfo endpoint
     """
     nodeinfo = {
         'links': [
             {
-                'href': httpPrefix + '://' + domainFull + '/nodeinfo/2.0',
+                'href': http_prefix + '://' + domainFull + '/nodeinfo/2.0',
                 'rel': 'http://nodeinfo.diaspora.software/ns/schema/2.0'
             }
         ]
@@ -195,7 +195,7 @@ def webfingerNodeInfo(httpPrefix: str, domainFull: str) -> {}:
     return nodeinfo
 
 
-def webfingerMeta(httpPrefix: str, domainFull: str) -> str:
+def webfingerMeta(http_prefix: str, domainFull: str) -> str:
     """Return /.well-known/host-meta
     """
     metaStr = \
@@ -206,7 +206,7 @@ def webfingerMeta(httpPrefix: str, domainFull: str) -> str:
         "<hm:Host>" + domainFull + "</hm:Host>" + \
         "" + \
         "<Link rel=’lrdd’" + \
-        " template=’" + httpPrefix + "://" + domainFull + \
+        " template=’" + http_prefix + "://" + domainFull + \
         "/describe?uri={uri}'>" + \
         " <Title>Resource Descriptor</Title>" + \
         " </Link>" + \

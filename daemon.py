@@ -390,13 +390,13 @@ followsPerPage = 6
 sharesPerPage = 12
 
 
-def saveDomainQrcode(base_dir: str, httpPrefix: str,
+def saveDomainQrcode(base_dir: str, http_prefix: str,
                      domainFull: str, scale=6) -> None:
     """Saves a qrcode image for the domain name
     This helps to transfer onion or i2p domains to a mobile device
     """
     qrcodeFilename = base_dir + '/accounts/qrcode.png'
-    url = pyqrcode.create(httpPrefix + '://' + domainFull)
+    url = pyqrcode.create(http_prefix + '://' + domainFull)
     url.png(qrcodeFilename, scale)
 
 
@@ -444,7 +444,7 @@ class PubServer(BaseHTTPRequestHandler):
             instanceUrl = 'http://' + self.server.i2pDomain
         else:
             instanceUrl = \
-                self.server.httpPrefix + '://' + self.server.domainFull
+                self.server.http_prefix + '://' + self.server.domainFull
         return instanceUrl
 
     def _getheaderSignatureInput(self):
@@ -503,7 +503,7 @@ class PubServer(BaseHTTPRequestHandler):
             createPublicPost(self.server.base_dir,
                              nickname,
                              self.server.domain, self.server.port,
-                             self.server.httpPrefix,
+                             self.server.http_prefix,
                              answer, False, False, False,
                              commentsEnabled,
                              attachImageFilename, mediaType,
@@ -531,7 +531,7 @@ class PubServer(BaseHTTPRequestHandler):
                     postJsonObject = loadJson(postFilename)
                     if postJsonObject:
                         populateReplies(self.server.base_dir,
-                                        self.server.httpPrefix,
+                                        self.server.http_prefix,
                                         self.server.domainFull,
                                         postJsonObject,
                                         self.server.maxReplies,
@@ -732,9 +732,11 @@ class PubServer(BaseHTTPRequestHandler):
 
         # obtain the public key
         pubKey = \
-            getPersonPubKey(self.server.base_dir, self.server.session, keyId,
+            getPersonPubKey(self.server.base_dir,
+                            self.server.session, keyId,
                             self.server.personCache, self.server.debug,
-                            self.server.projectVersion, self.server.httpPrefix,
+                            self.server.projectVersion,
+                            self.server.http_prefix,
                             self.server.domain, self.server.onionDomain,
                             self.server.signingPrivateKeyPem)
         if not pubKey:
@@ -744,7 +746,7 @@ class PubServer(BaseHTTPRequestHandler):
             return False
 
         # verify the GET request without any digest
-        if verifyPostHeaders(self.server.httpPrefix,
+        if verifyPostHeaders(self.server.http_prefix,
                              self.server.domainFull,
                              pubKey, self.headers,
                              self.path, True, None, '', self.server.debug):
@@ -823,7 +825,7 @@ class PubServer(BaseHTTPRequestHandler):
         if cookie:
             cookieStr = cookie
             if 'HttpOnly;' not in cookieStr:
-                if self.server.httpPrefix == 'https':
+                if self.server.http_prefix == 'https':
                     cookieStr += '; Secure'
                 cookieStr += '; HttpOnly; SameSite=Strict'
             self.send_header('Cookie', cookieStr)
@@ -906,7 +908,7 @@ class PubServer(BaseHTTPRequestHandler):
         if cookie:
             cookieStr = cookie.replace('SET:', '').strip()
             if 'HttpOnly;' not in cookieStr:
-                if self.server.httpPrefix == 'https':
+                if self.server.http_prefix == 'https':
                     cookieStr += '; Secure'
                 cookieStr += '; HttpOnly; SameSite=Strict'
             if not cookie.startswith('SET:'):
@@ -1038,7 +1040,7 @@ class PubServer(BaseHTTPRequestHandler):
     def _mastoApiV1(self, path: str, callingDomain: str,
                     uaStr: str,
                     authorized: bool,
-                    httpPrefix: str,
+                    http_prefix: str,
                     base_dir: str, nickname: str, domain: str,
                     domainFull: str,
                     onionDomain: str, i2pDomain: str,
@@ -1064,7 +1066,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                    callingDomain,
                                                    uaStr,
                                                    authorized,
-                                                   httpPrefix,
+                                                   http_prefix,
                                                    base_dir,
                                                    nickname, domain,
                                                    domainFull,
@@ -1102,7 +1104,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _mastoApi(self, path: str, callingDomain: str,
                   uaStr: str,
-                  authorized: bool, httpPrefix: str,
+                  authorized: bool, http_prefix: str,
                   base_dir: str, nickname: str, domain: str,
                   domainFull: str,
                   onionDomain: str, i2pDomain: str,
@@ -1113,7 +1115,7 @@ class PubServer(BaseHTTPRequestHandler):
                   customEmoji: [],
                   showNodeInfoAccounts: bool) -> bool:
         return self._mastoApiV1(path, callingDomain, uaStr, authorized,
-                                httpPrefix, base_dir, nickname, domain,
+                                http_prefix, base_dir, nickname, domain,
                                 domainFull, onionDomain, i2pDomain,
                                 translate, registration, systemLanguage,
                                 projectVersion, customEmoji,
@@ -1187,7 +1189,7 @@ class PubServer(BaseHTTPRequestHandler):
                     webfingerMeta('http', self.server.i2pDomain)
             else:
                 wfResult = \
-                    webfingerMeta(self.server.httpPrefix,
+                    webfingerMeta(self.server.http_prefix,
                                   self.server.domainFull)
             if wfResult:
                 msg = wfResult.encode('utf-8')
@@ -1217,7 +1219,7 @@ class PubServer(BaseHTTPRequestHandler):
                     webfingerNodeInfo('http', self.server.i2pDomain)
             else:
                 wfResult = \
-                    webfingerNodeInfo(self.server.httpPrefix,
+                    webfingerNodeInfo(self.server.http_prefix,
                                       self.server.domainFull)
             if wfResult:
                 msg = json.dumps(wfResult).encode('utf-8')
@@ -1275,7 +1277,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.translate,
                                    messageJson, self.postToNickname,
                                    self.server, self.server.base_dir,
-                                   self.server.httpPrefix,
+                                   self.server.http_prefix,
                                    self.server.domain,
                                    self.server.domainFull,
                                    self.server.onionDomain,
@@ -1531,7 +1533,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         queueFilename = \
             savePostToInboxQueue(self.server.base_dir,
-                                 self.server.httpPrefix,
+                                 self.server.http_prefix,
                                  nickname,
                                  self.server.domainFull,
                                  messageJson, originalMessageJson,
@@ -1625,13 +1627,13 @@ class PubServer(BaseHTTPRequestHandler):
         if self.server.tokens.get(nickname):
             del self.server.tokensLookup[self.server.tokens[nickname]]
             del self.server.tokens[nickname]
-        self._redirect_headers(self.server.httpPrefix + '://' +
+        self._redirect_headers(self.server.http_prefix + '://' +
                                self.server.domainFull + '/login',
                                'epicyon=; SameSite=Strict',
                                callingDomain)
 
     def _loginScreen(self, path: str, callingDomain: str, cookie: str,
-                     base_dir: str, httpPrefix: str,
+                     base_dir: str, http_prefix: str,
                      domain: str, domainFull: str, port: int,
                      onionDomain: str, i2pDomain: str,
                      debug: bool) -> None:
@@ -1696,12 +1698,12 @@ class PubServer(BaseHTTPRequestHandler):
                                                '/login', cookie,
                                                callingDomain)
                     else:
-                        self._redirect_headers(httpPrefix + '://' +
+                        self._redirect_headers(http_prefix + '://' +
                                                domainFull + '/login',
                                                cookie, callingDomain)
                     return
 
-                if not registerAccount(base_dir, httpPrefix, domain, port,
+                if not registerAccount(base_dir, http_prefix, domain, port,
                                        loginNickname, loginPassword,
                                        self.server.manualFollowerApproval):
                     self.server.POSTbusy = False
@@ -1714,7 +1716,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                '/login', cookie,
                                                callingDomain)
                     else:
-                        self._redirect_headers(httpPrefix + '://' +
+                        self._redirect_headers(http_prefix + '://' +
                                                domainFull + '/login',
                                                cookie, callingDomain)
                     return
@@ -1818,7 +1820,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.defaultTimeline,
                                            cookieStr, callingDomain)
                 else:
-                    self._redirect_headers(httpPrefix + '://' +
+                    self._redirect_headers(http_prefix + '://' +
                                            domainFull + '/users/' +
                                            loginNickname + '/' +
                                            self.server.defaultTimeline,
@@ -1829,7 +1831,7 @@ class PubServer(BaseHTTPRequestHandler):
         self.server.POSTbusy = False
 
     def _moderatorActions(self, path: str, callingDomain: str, cookie: str,
-                          base_dir: str, httpPrefix: str,
+                          base_dir: str, http_prefix: str,
                           domain: str, domainFull: str, port: int,
                           onionDomain: str, i2pDomain: str,
                           debug: bool) -> None:
@@ -1907,7 +1909,7 @@ class PubServer(BaseHTTPRequestHandler):
                         msg = \
                             htmlAccountInfo(self.server.cssCache,
                                             self.server.translate,
-                                            base_dir, httpPrefix,
+                                            base_dir, http_prefix,
                                             nickname,
                                             self.server.domain,
                                             self.server.port,
@@ -1919,7 +1921,7 @@ class PubServer(BaseHTTPRequestHandler):
                         msg = \
                             htmlModerationInfo(self.server.cssCache,
                                                self.server.translate,
-                                               base_dir, httpPrefix,
+                                               base_dir, http_prefix,
                                                nickname)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
@@ -2009,7 +2011,7 @@ class PubServer(BaseHTTPRequestHandler):
                                              nickname, domain, port,
                                              moderationText):
                                 deletePost(base_dir,
-                                           httpPrefix,
+                                           http_prefix,
                                            nickname, domain,
                                            postFilename,
                                            debug,
@@ -2025,7 +2027,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                  'news', domain, port,
                                                  moderationText):
                                     deletePost(base_dir,
-                                               httpPrefix,
+                                               http_prefix,
                                                'news', domain,
                                                postFilename,
                                                debug,
@@ -2038,7 +2040,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _keyShortcuts(self, path: str,
                       callingDomain: str, cookie: str,
-                      base_dir: str, httpPrefix: str, nickname: str,
+                      base_dir: str, http_prefix: str, nickname: str,
                       domain: str, domainFull: str, port: int,
                       onionDomain: str, i2pDomain: str,
                       debug: bool, accessKeys: {},
@@ -2047,7 +2049,8 @@ class PubServer(BaseHTTPRequestHandler):
         """
         usersPath = '/users/' + nickname
         originPathStr = \
-            httpPrefix + '://' + domainFull + usersPath + '/' + defaultTimeline
+            http_prefix + '://' + domainFull + usersPath + '/' + \
+            defaultTimeline
         length = int(self.headers['Content-length'])
 
         try:
@@ -2123,7 +2126,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _themeDesigner(self, path: str,
                        callingDomain: str, cookie: str,
-                       base_dir: str, httpPrefix: str, nickname: str,
+                       base_dir: str, http_prefix: str, nickname: str,
                        domain: str, domainFull: str, port: int,
                        onionDomain: str, i2pDomain: str,
                        debug: bool, accessKeys: {},
@@ -2134,7 +2137,8 @@ class PubServer(BaseHTTPRequestHandler):
         """
         usersPath = '/users/' + nickname
         originPathStr = \
-            httpPrefix + '://' + domainFull + usersPath + '/' + defaultTimeline
+            http_prefix + '://' + domainFull + usersPath + '/' + \
+            defaultTimeline
         length = int(self.headers['Content-length'])
 
         try:
@@ -2256,7 +2260,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _personOptions(self, path: str,
                        callingDomain: str, cookie: str,
-                       base_dir: str, httpPrefix: str,
+                       base_dir: str, http_prefix: str,
                        domain: str, domainFull: str, port: int,
                        onionDomain: str, i2pDomain: str,
                        debug: bool) -> None:
@@ -2264,7 +2268,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         pageNumber = 1
         usersPath = path.split('/personoptions')[0]
-        originPathStr = httpPrefix + '://' + domainFull + usersPath
+        originPathStr = http_prefix + '://' + domainFull + usersPath
 
         chooserNickname = getNicknameFromActor(originPathStr)
         if not chooserNickname:
@@ -2613,7 +2617,7 @@ class PubServer(BaseHTTPRequestHandler):
                         domain,
                         optionsNickname, optionsDomainFull):
                 # send block activity
-                self._sendBlock(httpPrefix,
+                self._sendBlock(http_prefix,
                                 chooserNickname, domainFull,
                                 optionsNickname, optionsDomainFull)
 
@@ -2695,7 +2699,7 @@ class PubServer(BaseHTTPRequestHandler):
             msg = htmlNewPost(self.server.cssCache,
                               False, self.server.translate,
                               base_dir,
-                              httpPrefix,
+                              http_prefix,
                               reportPath, None,
                               [optionsActor], None, None,
                               pageNumber, '',
@@ -2745,7 +2749,7 @@ class PubServer(BaseHTTPRequestHandler):
                     htmlAccountInfo(self.server.cssCache,
                                     self.server.translate,
                                     base_dir,
-                                    httpPrefix,
+                                    http_prefix,
                                     chooserNickname,
                                     domain,
                                     self.server.port,
@@ -2767,7 +2771,7 @@ class PubServer(BaseHTTPRequestHandler):
         # See htmlPersonOptions
         if '&submitSnooze=' in optionsConfirmParams:
             usersPath = path.split('/personoptions')[0]
-            thisActor = httpPrefix + '://' + domainFull + usersPath
+            thisActor = http_prefix + '://' + domainFull + usersPath
             if debug:
                 print('Snoozing ' + optionsActor + ' ' + thisActor)
             if '/users/' in thisActor:
@@ -2790,7 +2794,7 @@ class PubServer(BaseHTTPRequestHandler):
         # See htmlPersonOptions
         if '&submitUnSnooze=' in optionsConfirmParams:
             usersPath = path.split('/personoptions')[0]
-            thisActor = httpPrefix + '://' + domainFull + usersPath
+            thisActor = http_prefix + '://' + domainFull + usersPath
             if debug:
                 print('Unsnoozing ' + optionsActor + ' ' + thisActor)
             if '/users/' in thisActor:
@@ -2830,7 +2834,7 @@ class PubServer(BaseHTTPRequestHandler):
             msg = htmlNewPost(self.server.cssCache,
                               False, self.server.translate,
                               base_dir,
-                              httpPrefix,
+                              http_prefix,
                               reportPath, None, [],
                               None, postUrl, pageNumber, '',
                               chooserNickname,
@@ -2879,14 +2883,14 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _unfollowConfirm(self, callingDomain: str, cookie: str,
                          authorized: bool, path: str,
-                         base_dir: str, httpPrefix: str,
+                         base_dir: str, http_prefix: str,
                          domain: str, domainFull: str, port: int,
                          onionDomain: str, i2pDomain: str,
                          debug: bool) -> None:
         """Confirm to unfollow
         """
         usersPath = path.split('/unfollowconfirm')[0]
-        originPathStr = httpPrefix + '://' + domainFull + usersPath
+        originPathStr = http_prefix + '://' + domainFull + usersPath
         followerNickname = getNicknameFromActor(originPathStr)
 
         length = int(self.headers['Content-length'])
@@ -2931,7 +2935,7 @@ class PubServer(BaseHTTPRequestHandler):
                     print(followerNickname + ' stops following ' +
                           followingActor)
                 followActor = \
-                    localActorUrl(httpPrefix, followerNickname, domainFull)
+                    localActorUrl(http_prefix, followerNickname, domainFull)
                 statusNumber, published = getStatusNumber()
                 followId = followActor + '/statuses/' + str(statusNumber)
                 unfollowJson = {
@@ -2966,14 +2970,14 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _followConfirm(self, callingDomain: str, cookie: str,
                        authorized: bool, path: str,
-                       base_dir: str, httpPrefix: str,
+                       base_dir: str, http_prefix: str,
                        domain: str, domainFull: str, port: int,
                        onionDomain: str, i2pDomain: str,
                        debug: bool) -> None:
         """Confirm to follow
         """
         usersPath = path.split('/followconfirm')[0]
-        originPathStr = httpPrefix + '://' + domainFull + usersPath
+        originPathStr = http_prefix + '://' + domainFull + usersPath
         followerNickname = getNicknameFromActor(originPathStr)
 
         length = int(self.headers['Content-length'])
@@ -3035,11 +3039,11 @@ class PubServer(BaseHTTPRequestHandler):
                 sendFollowRequest(self.server.session,
                                   base_dir, followerNickname,
                                   domain, port,
-                                  httpPrefix,
+                                  http_prefix,
                                   followingNickname,
                                   followingDomain,
                                   followingActor,
-                                  followingPort, httpPrefix,
+                                  followingPort, http_prefix,
                                   False, self.server.federationList,
                                   self.server.sendThreads,
                                   self.server.postLog,
@@ -3056,14 +3060,14 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _blockConfirm(self, callingDomain: str, cookie: str,
                       authorized: bool, path: str,
-                      base_dir: str, httpPrefix: str,
+                      base_dir: str, http_prefix: str,
                       domain: str, domainFull: str, port: int,
                       onionDomain: str, i2pDomain: str,
                       debug: bool) -> None:
         """Confirms a block
         """
         usersPath = path.split('/blockconfirm')[0]
-        originPathStr = httpPrefix + '://' + domainFull + usersPath
+        originPathStr = http_prefix + '://' + domainFull + usersPath
         blockerNickname = getNicknameFromActor(originPathStr)
         if not blockerNickname:
             if callingDomain.endswith('.onion') and onionDomain:
@@ -3131,7 +3135,7 @@ class PubServer(BaseHTTPRequestHandler):
                             blockingNickname,
                             blockingDomainFull):
                     # send block activity
-                    self._sendBlock(httpPrefix,
+                    self._sendBlock(http_prefix,
                                     blockerNickname, domainFull,
                                     blockingNickname, blockingDomainFull)
         if callingDomain.endswith('.onion') and onionDomain:
@@ -3143,14 +3147,14 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _unblockConfirm(self, callingDomain: str, cookie: str,
                         authorized: bool, path: str,
-                        base_dir: str, httpPrefix: str,
+                        base_dir: str, http_prefix: str,
                         domain: str, domainFull: str, port: int,
                         onionDomain: str, i2pDomain: str,
                         debug: bool) -> None:
         """Confirms a unblock
         """
         usersPath = path.split('/unblockconfirm')[0]
-        originPathStr = httpPrefix + '://' + domainFull + usersPath
+        originPathStr = http_prefix + '://' + domainFull + usersPath
         blockerNickname = getNicknameFromActor(originPathStr)
         if not blockerNickname:
             if callingDomain.endswith('.onion') and onionDomain:
@@ -3227,7 +3231,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _receiveSearchQuery(self, callingDomain: str, cookie: str,
                             authorized: bool, path: str,
-                            base_dir: str, httpPrefix: str,
+                            base_dir: str, http_prefix: str,
                             domain: str, domainFull: str,
                             port: int, searchForEmoji: bool,
                             onionDomain: str, i2pDomain: str,
@@ -3297,7 +3301,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.session,
                                       self.server.cachedWebfingers,
                                       self.server.personCache,
-                                      httpPrefix,
+                                      http_prefix,
                                       self.server.projectVersion,
                                       self.server.YTReplacementDomain,
                                       self.server.twitterReplacementDomain,
@@ -3334,7 +3338,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.cssCache,
                                      self.server.translate,
                                      base_dir,
-                                     httpPrefix,
+                                     http_prefix,
                                      searchStr,
                                      self.server.instanceOnlySkillsSearch,
                                      64)
@@ -3381,7 +3385,7 @@ class PubServer(BaseHTTPRequestHandler):
                     htmlHistorySearch(self.server.cssCache,
                                       self.server.translate,
                                       base_dir,
-                                      httpPrefix,
+                                      http_prefix,
                                       nickname,
                                       domain,
                                       searchStr,
@@ -3449,7 +3453,7 @@ class PubServer(BaseHTTPRequestHandler):
                     htmlHistorySearch(self.server.cssCache,
                                       self.server.translate,
                                       base_dir,
-                                      httpPrefix,
+                                      http_prefix,
                                       nickname,
                                       domain,
                                       searchStr,
@@ -3508,13 +3512,13 @@ class PubServer(BaseHTTPRequestHandler):
                         searchDomainFull = \
                             getFullDomain(searchDomain, searchPort)
                         actor = \
-                            localActorUrl(httpPrefix, searchNickname,
+                            localActorUrl(http_prefix, searchNickname,
                                           searchDomainFull)
                     else:
                         actor = searchStr
                     avatarUrl = \
                         getAvatarImageUrl(self.server.session,
-                                          base_dir, httpPrefix,
+                                          base_dir, http_prefix,
                                           actor,
                                           self.server.personCache,
                                           None, True,
@@ -3523,7 +3527,7 @@ class PubServer(BaseHTTPRequestHandler):
                         '?options=' + actor + ';1;' + avatarUrl
 
                     self._showPersonOptions(callingDomain, profilePathStr,
-                                            base_dir, httpPrefix,
+                                            base_dir, http_prefix,
                                             domain, domainFull,
                                             GETstartTime,
                                             onionDomain, i2pDomain,
@@ -3549,7 +3553,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                self.server.translate,
                                                base_dir,
                                                profilePathStr,
-                                               httpPrefix,
+                                               http_prefix,
                                                nickname,
                                                domain,
                                                port,
@@ -3597,7 +3601,7 @@ class PubServer(BaseHTTPRequestHandler):
                     htmlSearchEmoji(self.server.cssCache,
                                     self.server.translate,
                                     base_dir,
-                                    httpPrefix,
+                                    http_prefix,
                                     searchStr)
                 if emojiStr:
                     msg = emojiStr.encode('utf-8')
@@ -3617,7 +3621,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           base_dir,
                                           searchStr[1:], pageNumber,
                                           maxPostsInFeed,
-                                          httpPrefix,
+                                          http_prefix,
                                           domainFull,
                                           actorStr, callingDomain,
                                           sharedItemsFederatedDomains,
@@ -3640,7 +3644,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           base_dir,
                                           searchStr, pageNumber,
                                           maxPostsInFeed,
-                                          httpPrefix,
+                                          http_prefix,
                                           domainFull,
                                           actorStr, callingDomain,
                                           sharedItemsFederatedDomains,
@@ -3661,7 +3665,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _receiveVote(self, callingDomain: str, cookie: str,
                      authorized: bool, path: str,
-                     base_dir: str, httpPrefix: str,
+                     base_dir: str, http_prefix: str,
                      domain: str, domainFull: str,
                      onionDomain: str, i2pDomain: str,
                      debug: bool) -> None:
@@ -3678,7 +3682,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # the actor who votes
         usersPath = path.replace('/question', '')
-        actor = httpPrefix + '://' + domainFull + usersPath
+        actor = http_prefix + '://' + domainFull + usersPath
         nickname = getNicknameFromActor(actor)
         if not nickname:
             if callingDomain.endswith('.onion') and onionDomain:
@@ -3748,7 +3752,7 @@ class PubServer(BaseHTTPRequestHandler):
     def _receiveImage(self, length: int,
                       callingDomain: str, cookie: str,
                       authorized: bool, path: str,
-                      base_dir: str, httpPrefix: str,
+                      base_dir: str, http_prefix: str,
                       domain: str, domainFull: str,
                       onionDomain: str, i2pDomain: str,
                       debug: bool) -> None:
@@ -3810,14 +3814,14 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _removeShare(self, callingDomain: str, cookie: str,
                      authorized: bool, path: str,
-                     base_dir: str, httpPrefix: str,
+                     base_dir: str, http_prefix: str,
                      domain: str, domainFull: str,
                      onionDomain: str, i2pDomain: str,
                      debug: bool) -> None:
         """Removes a shared item
         """
         usersPath = path.split('/rmshare')[0]
-        originPathStr = httpPrefix + '://' + domainFull + usersPath
+        originPathStr = http_prefix + '://' + domainFull + usersPath
 
         length = int(self.headers['Content-length'])
 
@@ -3852,7 +3856,7 @@ class PubServer(BaseHTTPRequestHandler):
                 shareActor = shareActor.split('&')[0]
             adminNickname = getConfigParam(base_dir, 'admin')
             adminActor = \
-                localActorUrl(httpPrefix, adminNickname, domainFull)
+                localActorUrl(http_prefix, adminNickname, domainFull)
             actor = originPathStr
             actorNickname = getNicknameFromActor(actor)
             if actor == shareActor or actor == adminActor or \
@@ -3865,7 +3869,7 @@ class PubServer(BaseHTTPRequestHandler):
                     shareDomain, sharePort = getDomainFromActor(shareActor)
                     removeSharedItem(base_dir,
                                      shareNickname, shareDomain, itemID,
-                                     httpPrefix, domainFull, 'shares')
+                                     http_prefix, domainFull, 'shares')
 
         if callingDomain.endswith('.onion') and onionDomain:
             originPathStr = 'http://' + onionDomain + usersPath
@@ -3877,14 +3881,14 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _removeWanted(self, callingDomain: str, cookie: str,
                       authorized: bool, path: str,
-                      base_dir: str, httpPrefix: str,
+                      base_dir: str, http_prefix: str,
                       domain: str, domainFull: str,
                       onionDomain: str, i2pDomain: str,
                       debug: bool) -> None:
         """Removes a wanted item
         """
         usersPath = path.split('/rmwanted')[0]
-        originPathStr = httpPrefix + '://' + domainFull + usersPath
+        originPathStr = http_prefix + '://' + domainFull + usersPath
 
         length = int(self.headers['Content-length'])
 
@@ -3919,7 +3923,7 @@ class PubServer(BaseHTTPRequestHandler):
                 shareActor = shareActor.split('&')[0]
             adminNickname = getConfigParam(base_dir, 'admin')
             adminActor = \
-                localActorUrl(httpPrefix, adminNickname, domainFull)
+                localActorUrl(http_prefix, adminNickname, domainFull)
             actor = originPathStr
             actorNickname = getNicknameFromActor(actor)
             if actor == shareActor or actor == adminActor or \
@@ -3932,7 +3936,7 @@ class PubServer(BaseHTTPRequestHandler):
                     shareDomain, sharePort = getDomainFromActor(shareActor)
                     removeSharedItem(base_dir,
                                      shareNickname, shareDomain, itemID,
-                                     httpPrefix, domainFull, 'wanted')
+                                     http_prefix, domainFull, 'wanted')
 
         if callingDomain.endswith('.onion') and onionDomain:
             originPathStr = 'http://' + onionDomain + usersPath
@@ -3944,7 +3948,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _removePost(self, callingDomain: str, cookie: str,
                     authorized: bool, path: str,
-                    base_dir: str, httpPrefix: str,
+                    base_dir: str, http_prefix: str,
                     domain: str, domainFull: str,
                     onionDomain: str, i2pDomain: str,
                     debug: bool) -> None:
@@ -3953,7 +3957,7 @@ class PubServer(BaseHTTPRequestHandler):
         pageNumber = 1
         usersPath = path.split('/rmpost')[0]
         originPathStr = \
-            httpPrefix + '://' + \
+            http_prefix + '://' + \
             domainFull + usersPath
 
         length = int(self.headers['Content-length'])
@@ -4044,7 +4048,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _linksUpdate(self, callingDomain: str, cookie: str,
                      authorized: bool, path: str,
-                     base_dir: str, httpPrefix: str,
+                     base_dir: str, http_prefix: str,
                      domain: str, domainFull: str,
                      onionDomain: str, i2pDomain: str, debug: bool,
                      defaultTimeline: str,
@@ -4185,7 +4189,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _setHashtagCategory(self, callingDomain: str, cookie: str,
                             authorized: bool, path: str,
-                            base_dir: str, httpPrefix: str,
+                            base_dir: str, http_prefix: str,
                             domain: str, domainFull: str,
                             onionDomain: str, i2pDomain: str, debug: bool,
                             defaultTimeline: str,
@@ -4287,7 +4291,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _newswireUpdate(self, callingDomain: str, cookie: str,
                         authorized: bool, path: str,
-                        base_dir: str, httpPrefix: str,
+                        base_dir: str, http_prefix: str,
                         domain: str, domainFull: str,
                         onionDomain: str, i2pDomain: str, debug: bool,
                         defaultTimeline: str) -> None:
@@ -4442,7 +4446,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _citationsUpdate(self, callingDomain: str, cookie: str,
                          authorized: bool, path: str,
-                         base_dir: str, httpPrefix: str,
+                         base_dir: str, http_prefix: str,
                          domain: str, domainFull: str,
                          onionDomain: str, i2pDomain: str, debug: bool,
                          defaultTimeline: str,
@@ -4532,7 +4536,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _newsPostEdit(self, callingDomain: str, cookie: str,
                       authorized: bool, path: str,
-                      base_dir: str, httpPrefix: str,
+                      base_dir: str, http_prefix: str,
                       domain: str, domainFull: str,
                       onionDomain: str, i2pDomain: str, debug: bool,
                       defaultTimeline: str) -> None:
@@ -4666,7 +4670,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _profileUpdate(self, callingDomain: str, cookie: str,
                        authorized: bool, path: str,
-                       base_dir: str, httpPrefix: str,
+                       base_dir: str, http_prefix: str,
                        domain: str, domainFull: str,
                        onionDomain: str, i2pDomain: str,
                        debug: bool, allowLocalNetworkAccess: bool,
@@ -5027,7 +5031,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                'publishButtonAtTop')
                             setNewsAvatar(base_dir,
                                           fields['themeDropdown'],
-                                          httpPrefix,
+                                          http_prefix,
                                           domain,
                                           domainFull)
 
@@ -5516,7 +5520,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 actorTags = {}
                                 actorJson['summary'] = \
                                     addHtmlTags(base_dir,
-                                                httpPrefix,
+                                                http_prefix,
                                                 nickname,
                                                 domainFull,
                                                 bioStr, [], actorTags)
@@ -6834,7 +6838,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _getRSS2feed(self, authorized: bool,
                      callingDomain: str, path: str,
-                     base_dir: str, httpPrefix: str,
+                     base_dir: str, http_prefix: str,
                      domain: str, port: int, proxyType: str,
                      GETstartTime,
                      debug: bool) -> None:
@@ -6853,7 +6857,7 @@ class PubServer(BaseHTTPRequestHandler):
                     htmlBlogPageRSS2(authorized,
                                      self.server.session,
                                      base_dir,
-                                     httpPrefix,
+                                     http_prefix,
                                      self.server.translate,
                                      nickname,
                                      domain,
@@ -6881,7 +6885,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _getRSS2site(self, authorized: bool,
                      callingDomain: str, path: str,
-                     base_dir: str, httpPrefix: str,
+                     base_dir: str, http_prefix: str,
                      domainFull: str, port: int, proxyType: str,
                      translate: {},
                      GETstartTime,
@@ -6903,7 +6907,7 @@ class PubServer(BaseHTTPRequestHandler):
                     htmlBlogPageRSS2(authorized,
                                      self.server.session,
                                      base_dir,
-                                     httpPrefix,
+                                     http_prefix,
                                      self.server.translate,
                                      nickname,
                                      domain,
@@ -6913,7 +6917,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.systemLanguage)
             break
         if msg:
-            msg = rss2Header(httpPrefix,
+            msg = rss2Header(http_prefix,
                              'news', domainFull,
                              'Site', translate) + msg + rss2Footer()
 
@@ -6936,7 +6940,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _getNewswireFeed(self, authorized: bool,
                          callingDomain: str, path: str,
-                         base_dir: str, httpPrefix: str,
+                         base_dir: str, http_prefix: str,
                          domain: str, port: int, proxyType: str,
                          GETstartTime,
                          debug: bool) -> None:
@@ -6947,7 +6951,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         msg = getRSSfromDict(self.server.base_dir, self.server.newswire,
-                             self.server.httpPrefix,
+                             self.server.http_prefix,
                              self.server.domainFull,
                              'Newswire', self.server.translate)
         if msg:
@@ -6970,7 +6974,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _getHashtagCategoriesFeed(self, authorized: bool,
                                   callingDomain: str, path: str,
-                                  base_dir: str, httpPrefix: str,
+                                  base_dir: str, http_prefix: str,
                                   domain: str, port: int, proxyType: str,
                                   GETstartTime,
                                   debug: bool) -> None:
@@ -7002,7 +7006,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _getRSS3feed(self, authorized: bool,
                      callingDomain: str, path: str,
-                     base_dir: str, httpPrefix: str,
+                     base_dir: str, http_prefix: str,
                      domain: str, port: int, proxyType: str,
                      GETstartTime,
                      debug: bool, systemLanguage: str) -> None:
@@ -7020,7 +7024,7 @@ class PubServer(BaseHTTPRequestHandler):
                 msg = \
                     htmlBlogPageRSS3(authorized,
                                      self.server.session,
-                                     base_dir, httpPrefix,
+                                     base_dir, http_prefix,
                                      self.server.translate,
                                      nickname, domain, port,
                                      maxPostsInRSSFeed, 1,
@@ -7043,7 +7047,7 @@ class PubServer(BaseHTTPRequestHandler):
         self._404()
 
     def _showPersonOptions(self, callingDomain: str, path: str,
-                           base_dir: str, httpPrefix: str,
+                           base_dir: str, http_prefix: str,
                            domain: str, domainFull: str,
                            GETstartTime,
                            onionDomain: str, i2pDomain: str,
@@ -7123,7 +7127,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self.server.session:
                 checkForChangedActor(self.server.session,
                                      self.server.base_dir,
-                                     self.server.httpPrefix,
+                                     self.server.http_prefix,
                                      self.server.domainFull,
                                      optionsActor, optionsProfileUrl,
                                      self.server.personCache, 5)
@@ -7181,7 +7185,7 @@ class PubServer(BaseHTTPRequestHandler):
                 'http://' + i2pDomain + originPathStr
         else:
             originPathStrAbsolute = \
-                httpPrefix + '://' + domainFull + originPathStr
+                http_prefix + '://' + domainFull + originPathStr
         self._redirect_headers(originPathStrAbsolute, cookie,
                                callingDomain)
 
@@ -7490,7 +7494,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _hashtagSearch(self, callingDomain: str,
                        path: str, cookie: str,
-                       base_dir: str, httpPrefix: str,
+                       base_dir: str, http_prefix: str,
                        domain: str, domainFull: str, port: int,
                        onionDomain: str, i2pDomain: str,
                        GETstartTime) -> None:
@@ -7532,7 +7536,7 @@ class PubServer(BaseHTTPRequestHandler):
                               maxPostsInHashtagFeed, self.server.session,
                               self.server.cachedWebfingers,
                               self.server.personCache,
-                              httpPrefix,
+                              http_prefix,
                               self.server.projectVersion,
                               self.server.YTReplacementDomain,
                               self.server.twitterReplacementDomain,
@@ -7554,7 +7558,7 @@ class PubServer(BaseHTTPRequestHandler):
         else:
             originPathStr = path.split('/tags/')[0]
             originPathStrAbsolute = \
-                httpPrefix + '://' + domainFull + originPathStr
+                http_prefix + '://' + domainFull + originPathStr
             if callingDomain.endswith('.onion') and onionDomain:
                 originPathStrAbsolute = \
                     'http://' + onionDomain + originPathStr
@@ -7569,7 +7573,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _hashtagSearchRSS2(self, callingDomain: str,
                            path: str, cookie: str,
-                           base_dir: str, httpPrefix: str,
+                           base_dir: str, http_prefix: str,
                            domain: str, domainFull: str, port: int,
                            onionDomain: str, i2pDomain: str,
                            GETstartTime) -> None:
@@ -7582,7 +7586,7 @@ class PubServer(BaseHTTPRequestHandler):
         nickname = None
         if '/users/' in path:
             actor = \
-                httpPrefix + '://' + domainFull + path
+                http_prefix + '://' + domainFull + path
             nickname = \
                 getNicknameFromActor(actor)
         hashtagStr = \
@@ -7595,7 +7599,7 @@ class PubServer(BaseHTTPRequestHandler):
                              maxPostsInFeed, self.server.session,
                              self.server.cachedWebfingers,
                              self.server.personCache,
-                             httpPrefix,
+                             http_prefix,
                              self.server.projectVersion,
                              self.server.YTReplacementDomain,
                              self.server.twitterReplacementDomain,
@@ -7609,7 +7613,7 @@ class PubServer(BaseHTTPRequestHandler):
         else:
             originPathStr = path.split('/tags/rss2/')[0]
             originPathStrAbsolute = \
-                httpPrefix + '://' + domainFull + originPathStr
+                http_prefix + '://' + domainFull + originPathStr
             if callingDomain.endswith('.onion') and onionDomain:
                 originPathStrAbsolute = \
                     'http://' + onionDomain + originPathStr
@@ -7625,7 +7629,7 @@ class PubServer(BaseHTTPRequestHandler):
     def _announceButton(self, callingDomain: str, path: str,
                         base_dir: str,
                         cookie: str, proxyType: str,
-                        httpPrefix: str,
+                        http_prefix: str,
                         domain: str, domainFull: str, port: int,
                         onionDomain: str, i2pDomain: str,
                         GETstartTime,
@@ -7672,7 +7676,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
         self.server.actorRepeat = path.split('?actor=')[1]
         announceToStr = \
-            localActorUrl(httpPrefix, self.postToNickname, domainFull) + \
+            localActorUrl(http_prefix, self.postToNickname, domainFull) + \
             '/followers'
         if not repeatPrivate:
             announceToStr = 'https://www.w3.org/ns/activitystreams#Public'
@@ -7683,7 +7687,7 @@ class PubServer(BaseHTTPRequestHandler):
                            self.postToNickname,
                            domain, port,
                            announceToStr,
-                           None, httpPrefix,
+                           None, http_prefix,
                            repeatUrl, False, False,
                            self.server.sendThreads,
                            self.server.postLog,
@@ -7699,7 +7703,7 @@ class PubServer(BaseHTTPRequestHandler):
             # but the html still needs to be generated before this call ends
             announceId = removeIdEnding(announceJson['id'])
             announceFilename = \
-                savePostToBox(base_dir, httpPrefix, announceId,
+                savePostToBox(base_dir, http_prefix, announceId,
                               self.postToNickname, domainFull,
                               announceJson, 'outbox')
 
@@ -7744,7 +7748,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.port, announceJson,
                                  None, True,
                                  self.server.allowDeletion,
-                                 httpPrefix, self.server.projectVersion,
+                                 http_prefix, self.server.projectVersion,
                                  timelineStr,
                                  self.server.YTReplacementDomain,
                                  self.server.twitterReplacementDomain,
@@ -7773,7 +7777,7 @@ class PubServer(BaseHTTPRequestHandler):
     def _undoAnnounceButton(self, callingDomain: str, path: str,
                             base_dir: str,
                             cookie: str, proxyType: str,
-                            httpPrefix: str,
+                            http_prefix: str,
                             domain: str, domainFull: str, port: int,
                             onionDomain: str, i2pDomain: str,
                             GETstartTime,
@@ -7822,7 +7826,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._404()
             return
         undoAnnounceActor = \
-            httpPrefix + '://' + domainFull + \
+            http_prefix + '://' + domainFull + \
             '/users/' + self.postToNickname
         unRepeatToStr = 'https://www.w3.org/ns/activitystreams#Public'
         newUndoAnnounce = {
@@ -7855,7 +7859,7 @@ class PubServer(BaseHTTPRequestHandler):
                     postFilename = \
                         locatePost(base_dir, nickname, domain, announceUrl)
             if postFilename:
-                deletePost(base_dir, httpPrefix,
+                deletePost(base_dir, http_prefix,
                            nickname, domain, postFilename,
                            debug, recentPostsCache)
 
@@ -7873,7 +7877,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _followApproveButton(self, callingDomain: str, path: str,
                              cookie: str,
-                             base_dir: str, httpPrefix: str,
+                             base_dir: str, http_prefix: str,
                              domain: str, domainFull: str, port: int,
                              onionDomain: str, i2pDomain: str,
                              GETstartTime,
@@ -7893,7 +7897,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._404()
                 return
             manualApproveFollowRequestThread(self.server.session,
-                                             base_dir, httpPrefix,
+                                             base_dir, http_prefix,
                                              followerNickname,
                                              domain, port,
                                              followingHandle,
@@ -7906,7 +7910,7 @@ class PubServer(BaseHTTPRequestHandler):
                                              self.server.projectVersion,
                                              self.server.signingPrivateKeyPem)
         originPathStrAbsolute = \
-            httpPrefix + '://' + domainFull + originPathStr
+            http_prefix + '://' + domainFull + originPathStr
         if callingDomain.endswith('.onion') and onionDomain:
             originPathStrAbsolute = \
                 'http://' + onionDomain + originPathStr
@@ -7921,7 +7925,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _newswireVote(self, callingDomain: str, path: str,
                       cookie: str,
-                      base_dir: str, httpPrefix: str,
+                      base_dir: str, http_prefix: str,
                       domain: str, domainFull: str, port: int,
                       onionDomain: str, i2pDomain: str,
                       GETstartTime,
@@ -7961,7 +7965,7 @@ class PubServer(BaseHTTPRequestHandler):
                   str(newswire))
 
         originPathStrAbsolute = \
-            httpPrefix + '://' + domainFull + originPathStr + '/' + \
+            http_prefix + '://' + domainFull + originPathStr + '/' + \
             self.server.defaultTimeline
         if callingDomain.endswith('.onion') and onionDomain:
             originPathStrAbsolute = \
@@ -7977,7 +7981,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _newswireUnvote(self, callingDomain: str, path: str,
                         cookie: str,
-                        base_dir: str, httpPrefix: str,
+                        base_dir: str, http_prefix: str,
                         domain: str, domainFull: str, port: int,
                         onionDomain: str, i2pDomain: str,
                         GETstartTime,
@@ -8015,7 +8019,7 @@ class PubServer(BaseHTTPRequestHandler):
                   str(newswire))
 
         originPathStrAbsolute = \
-            httpPrefix + '://' + domainFull + originPathStr + '/' + \
+            http_prefix + '://' + domainFull + originPathStr + '/' + \
             self.server.defaultTimeline
         if callingDomain.endswith('.onion') and onionDomain:
             originPathStrAbsolute = \
@@ -8031,7 +8035,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _followDenyButton(self, callingDomain: str, path: str,
                           cookie: str,
-                          base_dir: str, httpPrefix: str,
+                          base_dir: str, http_prefix: str,
                           domain: str, domainFull: str, port: int,
                           onionDomain: str, i2pDomain: str,
                           GETstartTime,
@@ -8048,7 +8052,7 @@ class PubServer(BaseHTTPRequestHandler):
                 handleNickname + '@' + getFullDomain(handleDomain, handlePort)
         if '@' in followingHandle:
             manualDenyFollowRequestThread(self.server.session,
-                                          base_dir, httpPrefix,
+                                          base_dir, http_prefix,
                                           followerNickname,
                                           domain, port,
                                           followingHandle,
@@ -8061,7 +8065,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.projectVersion,
                                           self.server.signingPrivateKeyPem)
         originPathStrAbsolute = \
-            httpPrefix + '://' + domainFull + originPathStr
+            http_prefix + '://' + domainFull + originPathStr
         if callingDomain.endswith('.onion') and onionDomain:
             originPathStrAbsolute = \
                 'http://' + onionDomain + originPathStr
@@ -8075,7 +8079,7 @@ class PubServer(BaseHTTPRequestHandler):
                            self.server.debug)
 
     def _likeButton(self, callingDomain: str, path: str,
-                    base_dir: str, httpPrefix: str,
+                    base_dir: str, http_prefix: str,
                     domain: str, domainFull: str,
                     onionDomain: str, i2pDomain: str,
                     GETstartTime,
@@ -8122,7 +8126,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._404()
             return
         likeActor = \
-            localActorUrl(httpPrefix, self.postToNickname, domainFull)
+            localActorUrl(http_prefix, self.postToNickname, domainFull)
         actorLiked = path.split('?actor=')[1]
         if '?' in actorLiked:
             actorLiked = actorLiked.split('?')[0]
@@ -8203,7 +8207,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.port, likedPostJson,
                                      None, True,
                                      self.server.allowDeletion,
-                                     httpPrefix,
+                                     http_prefix,
                                      self.server.projectVersion,
                                      timelineStr,
                                      self.server.YTReplacementDomain,
@@ -8240,7 +8244,7 @@ class PubServer(BaseHTTPRequestHandler):
                                callingDomain)
 
     def _undoLikeButton(self, callingDomain: str, path: str,
-                        base_dir: str, httpPrefix: str,
+                        base_dir: str, http_prefix: str,
                         domain: str, domainFull: str,
                         onionDomain: str, i2pDomain: str,
                         GETstartTime,
@@ -8286,7 +8290,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._404()
             return
         undoActor = \
-            localActorUrl(httpPrefix, self.postToNickname, domainFull)
+            localActorUrl(http_prefix, self.postToNickname, domainFull)
         actorLiked = path.split('?actor=')[1]
         if '?' in actorLiked:
             actorLiked = actorLiked.split('?')[0]
@@ -8358,7 +8362,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.port, likedPostJson,
                                      None, True,
                                      self.server.allowDeletion,
-                                     httpPrefix,
+                                     http_prefix,
                                      self.server.projectVersion, timelineStr,
                                      self.server.YTReplacementDomain,
                                      self.server.twitterReplacementDomain,
@@ -8390,7 +8394,7 @@ class PubServer(BaseHTTPRequestHandler):
                                callingDomain)
 
     def _reactionButton(self, callingDomain: str, path: str,
-                        base_dir: str, httpPrefix: str,
+                        base_dir: str, http_prefix: str,
                         domain: str, domainFull: str,
                         onionDomain: str, i2pDomain: str,
                         GETstartTime,
@@ -8453,7 +8457,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._404()
             return
         reactionActor = \
-            localActorUrl(httpPrefix, self.postToNickname, domainFull)
+            localActorUrl(http_prefix, self.postToNickname, domainFull)
         actorReaction = path.split('?actor=')[1]
         if '?' in actorReaction:
             actorReaction = actorReaction.split('?')[0]
@@ -8541,7 +8545,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.port, reactionPostJson,
                                      None, True,
                                      self.server.allowDeletion,
-                                     httpPrefix,
+                                     http_prefix,
                                      self.server.projectVersion,
                                      timelineStr,
                                      self.server.YTReplacementDomain,
@@ -8576,7 +8580,7 @@ class PubServer(BaseHTTPRequestHandler):
                                callingDomain)
 
     def _undoReactionButton(self, callingDomain: str, path: str,
-                            base_dir: str, httpPrefix: str,
+                            base_dir: str, http_prefix: str,
                             domain: str, domainFull: str,
                             onionDomain: str, i2pDomain: str,
                             GETstartTime,
@@ -8637,7 +8641,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._404()
             return
         undoActor = \
-            localActorUrl(httpPrefix, self.postToNickname, domainFull)
+            localActorUrl(http_prefix, self.postToNickname, domainFull)
         actorReaction = path.split('?actor=')[1]
         if '?' in actorReaction:
             actorReaction = actorReaction.split('?')[0]
@@ -8714,7 +8718,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.port, reactionPostJson,
                                      None, True,
                                      self.server.allowDeletion,
-                                     httpPrefix,
+                                     http_prefix,
                                      self.server.projectVersion, timelineStr,
                                      self.server.YTReplacementDomain,
                                      self.server.twitterReplacementDomain,
@@ -8744,7 +8748,7 @@ class PubServer(BaseHTTPRequestHandler):
         self._redirect_headers(actorPathStr, cookie, callingDomain)
 
     def _reactionPicker(self, callingDomain: str, path: str,
-                        base_dir: str, httpPrefix: str,
+                        base_dir: str, http_prefix: str,
                         domain: str, domainFull: str, port: int,
                         onionDomain: str, i2pDomain: str,
                         GETstartTime,
@@ -8812,7 +8816,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.personCache,
                                     self.postToNickname,
                                     domain, port, postJsonObject,
-                                    self.server.httpPrefix,
+                                    self.server.http_prefix,
                                     self.server.projectVersion,
                                     self.server.YTReplacementDomain,
                                     self.server.twitterReplacementDomain,
@@ -8837,7 +8841,7 @@ class PubServer(BaseHTTPRequestHandler):
                            self.server.debug)
 
     def _bookmarkButton(self, callingDomain: str, path: str,
-                        base_dir: str, httpPrefix: str,
+                        base_dir: str, http_prefix: str,
                         domain: str, domainFull: str, port: int,
                         onionDomain: str, i2pDomain: str,
                         GETstartTime,
@@ -8884,7 +8888,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._404()
             return
         bookmarkActor = \
-            localActorUrl(httpPrefix, self.postToNickname, domainFull)
+            localActorUrl(http_prefix, self.postToNickname, domainFull)
         ccList = []
         bookmark(self.server.recentPostsCache,
                  self.server.session,
@@ -8893,7 +8897,7 @@ class PubServer(BaseHTTPRequestHandler):
                  self.postToNickname,
                  domain, port,
                  ccList,
-                 httpPrefix,
+                 http_prefix,
                  bookmarkUrl, bookmarkActor, False,
                  self.server.sendThreads,
                  self.server.postLog,
@@ -8934,7 +8938,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.port, bookmarkPostJson,
                                      None, True,
                                      self.server.allowDeletion,
-                                     httpPrefix, self.server.projectVersion,
+                                     http_prefix, self.server.projectVersion,
                                      timelineStr,
                                      self.server.YTReplacementDomain,
                                      self.server.twitterReplacementDomain,
@@ -8964,7 +8968,7 @@ class PubServer(BaseHTTPRequestHandler):
                                callingDomain)
 
     def _undoBookmarkButton(self, callingDomain: str, path: str,
-                            base_dir: str, httpPrefix: str,
+                            base_dir: str, http_prefix: str,
                             domain: str, domainFull: str, port: int,
                             onionDomain: str, i2pDomain: str,
                             GETstartTime,
@@ -9010,7 +9014,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._404()
             return
         undoActor = \
-            localActorUrl(httpPrefix, self.postToNickname, domainFull)
+            localActorUrl(http_prefix, self.postToNickname, domainFull)
         ccList = []
         undoBookmark(self.server.recentPostsCache,
                      self.server.session,
@@ -9019,7 +9023,7 @@ class PubServer(BaseHTTPRequestHandler):
                      self.postToNickname,
                      domain, port,
                      ccList,
-                     httpPrefix,
+                     http_prefix,
                      bookmarkUrl, undoActor, False,
                      self.server.sendThreads,
                      self.server.postLog,
@@ -9062,7 +9066,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.port, bookmarkPostJson,
                                      None, True,
                                      self.server.allowDeletion,
-                                     httpPrefix,
+                                     http_prefix,
                                      self.server.projectVersion, timelineStr,
                                      self.server.YTReplacementDomain,
                                      self.server.twitterReplacementDomain,
@@ -9091,7 +9095,7 @@ class PubServer(BaseHTTPRequestHandler):
                                callingDomain)
 
     def _deleteButton(self, callingDomain: str, path: str,
-                      base_dir: str, httpPrefix: str,
+                      base_dir: str, http_prefix: str,
                       domain: str, domainFull: str, port: int,
                       onionDomain: str, i2pDomain: str,
                       GETstartTime,
@@ -9122,7 +9126,7 @@ class PubServer(BaseHTTPRequestHandler):
                 timelineStr = timelineStr.split('?')[0]
         usersPath = path.split('?delete=')[0]
         actor = \
-            httpPrefix + '://' + domainFull + usersPath
+            http_prefix + '://' + domainFull + usersPath
         if self.server.allowDeletion or \
            deleteUrl.startswith(actor):
             if self.server.debug:
@@ -9157,7 +9161,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.maxRecentPosts,
                                   self.server.translate, pageNumber,
                                   self.server.session, base_dir,
-                                  deleteUrl, httpPrefix,
+                                  deleteUrl, http_prefix,
                                   self.server.projectVersion,
                                   self.server.cachedWebfingers,
                                   self.server.personCache, callingDomain,
@@ -9190,7 +9194,7 @@ class PubServer(BaseHTTPRequestHandler):
                                cookie, callingDomain)
 
     def _muteButton(self, callingDomain: str, path: str,
-                    base_dir: str, httpPrefix: str,
+                    base_dir: str, http_prefix: str,
                     domain: str, domainFull: str, port: int,
                     onionDomain: str, i2pDomain: str,
                     GETstartTime,
@@ -9222,10 +9226,10 @@ class PubServer(BaseHTTPRequestHandler):
             if pageNumberStr.isdigit():
                 pageNumber = int(pageNumberStr)
         actor = \
-            httpPrefix + '://' + domainFull + path.split('?mute=')[0]
+            http_prefix + '://' + domainFull + path.split('?mute=')[0]
         nickname = getNicknameFromActor(actor)
         mutePost(base_dir, nickname, domain, port,
-                 httpPrefix, muteUrl,
+                 http_prefix, muteUrl,
                  self.server.recentPostsCache, debug)
         muteFilename = \
             locatePost(base_dir, nickname, domain, muteUrl)
@@ -9264,7 +9268,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.port, mutePostJson,
                                      avatarUrl, showAvatarOptions,
                                      self.server.allowDeletion,
-                                     httpPrefix,
+                                     http_prefix,
                                      self.server.projectVersion, timelineStr,
                                      self.server.YTReplacementDomain,
                                      self.server.twitterReplacementDomain,
@@ -9299,7 +9303,7 @@ class PubServer(BaseHTTPRequestHandler):
                                cookie, callingDomain)
 
     def _undoMuteButton(self, callingDomain: str, path: str,
-                        base_dir: str, httpPrefix: str,
+                        base_dir: str, http_prefix: str,
                         domain: str, domainFull: str, port: int,
                         onionDomain: str, i2pDomain: str,
                         GETstartTime,
@@ -9331,10 +9335,10 @@ class PubServer(BaseHTTPRequestHandler):
             if pageNumberStr.isdigit():
                 pageNumber = int(pageNumberStr)
         actor = \
-            httpPrefix + '://' + domainFull + path.split('?unmute=')[0]
+            http_prefix + '://' + domainFull + path.split('?unmute=')[0]
         nickname = getNicknameFromActor(actor)
         unmutePost(base_dir, nickname, domain, port,
-                   httpPrefix, muteUrl,
+                   http_prefix, muteUrl,
                    self.server.recentPostsCache, debug)
         muteFilename = \
             locatePost(base_dir, nickname, domain, muteUrl)
@@ -9374,7 +9378,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.port, mutePostJson,
                                      avatarUrl, showAvatarOptions,
                                      self.server.allowDeletion,
-                                     httpPrefix,
+                                     http_prefix,
                                      self.server.projectVersion, timelineStr,
                                      self.server.YTReplacementDomain,
                                      self.server.twitterReplacementDomain,
@@ -9407,7 +9411,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _showRepliesToPost(self, authorized: bool,
                            callingDomain: str, path: str,
-                           base_dir: str, httpPrefix: str,
+                           base_dir: str, http_prefix: str,
                            domain: str, domainFull: str, port: int,
                            onionDomain: str, i2pDomain: str,
                            GETstartTime,
@@ -9439,7 +9443,7 @@ class PubServer(BaseHTTPRequestHandler):
             acctDir(base_dir, nickname, domain) + '/' + boxname
         postRepliesFilename = \
             postDir + '/' + \
-            httpPrefix + ':##' + domainFull + '#users#' + \
+            http_prefix + ':##' + domainFull + '#users#' + \
             nickname + '#statuses#' + statusNumber + '.replies'
         if not os.path.isfile(postRepliesFilename):
             # There are no replies,
@@ -9448,15 +9452,15 @@ class PubServer(BaseHTTPRequestHandler):
                 'https://www.w3.org/ns/activitystreams'
 
             firstStr = \
-                localActorUrl(httpPrefix, nickname, domainFull) + \
+                localActorUrl(http_prefix, nickname, domainFull) + \
                 '/statuses/' + statusNumber + '/replies?page=true'
 
             idStr = \
-                localActorUrl(httpPrefix, nickname, domainFull) + \
+                localActorUrl(http_prefix, nickname, domainFull) + \
                 '/statuses/' + statusNumber + '/replies'
 
             lastStr = \
-                localActorUrl(httpPrefix, nickname, domainFull) + \
+                localActorUrl(http_prefix, nickname, domainFull) + \
                 '/statuses/' + statusNumber + '/replies?page=true'
 
             repliesJson = {
@@ -9496,7 +9500,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     domain,
                                     port,
                                     repliesJson,
-                                    httpPrefix,
+                                    http_prefix,
                                     projectVersion,
                                     ytDomain,
                                     twitterReplacementDomain,
@@ -9538,11 +9542,11 @@ class PubServer(BaseHTTPRequestHandler):
             contextStr = 'https://www.w3.org/ns/activitystreams'
 
             idStr = \
-                localActorUrl(httpPrefix, nickname, domainFull) + \
+                localActorUrl(http_prefix, nickname, domainFull) + \
                 '/statuses/' + statusNumber + '?page=true'
 
             partOfStr = \
-                localActorUrl(httpPrefix, nickname, domainFull) + \
+                localActorUrl(http_prefix, nickname, domainFull) + \
                 '/statuses/' + statusNumber
 
             repliesJson = {
@@ -9588,7 +9592,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     domain,
                                     port,
                                     repliesJson,
-                                    httpPrefix,
+                                    http_prefix,
                                     projectVersion,
                                     ytDomain,
                                     twitterReplacementDomain,
@@ -9629,7 +9633,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _showRoles(self, authorized: bool,
                    callingDomain: str, path: str,
-                   base_dir: str, httpPrefix: str,
+                   base_dir: str, http_prefix: str,
                    domain: str, domainFull: str, port: int,
                    onionDomain: str, i2pDomain: str,
                    GETstartTime,
@@ -9688,7 +9692,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.maxRecentPosts,
                                     self.server.translate,
                                     self.server.projectVersion,
-                                    base_dir, httpPrefix, True,
+                                    base_dir, http_prefix, True,
                                     getPerson, 'roles',
                                     self.server.session,
                                     cachedWebfingers,
@@ -9739,7 +9743,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _showSkills(self, authorized: bool,
                     callingDomain: str, path: str,
-                    base_dir: str, httpPrefix: str,
+                    base_dir: str, http_prefix: str,
                     domain: str, domainFull: str, port: int,
                     onionDomain: str, i2pDomain: str,
                     GETstartTime,
@@ -9802,7 +9806,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                 self.server.maxRecentPosts,
                                                 self.server.translate,
                                                 self.server.projectVersion,
-                                                base_dir, httpPrefix, True,
+                                                base_dir, http_prefix, True,
                                                 getPerson, 'skills',
                                                 self.server.session,
                                                 cachedWebfingers,
@@ -9862,7 +9866,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _showIndividualAtPost(self, authorized: bool,
                               callingDomain: str, path: str,
-                              base_dir: str, httpPrefix: str,
+                              base_dir: str, http_prefix: str,
                               domain: str, domainFull: str, port: int,
                               onionDomain: str, i2pDomain: str,
                               GETstartTime,
@@ -9908,7 +9912,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         postFilename = \
             acctDir(base_dir, nickname, domain) + '/outbox/' + \
-            httpPrefix + ':##' + domainFull + '#users#' + nickname + \
+            http_prefix + ':##' + domainFull + '#users#' + nickname + \
             '#statuses#' + statusNumber + '.json'
 
         includeCreateWrapper = False
@@ -9918,7 +9922,7 @@ class PubServer(BaseHTTPRequestHandler):
         result = self._showPostFromFile(postFilename, likedBy,
                                         reactBy, reactEmoji,
                                         authorized, callingDomain, path,
-                                        base_dir, httpPrefix, nickname,
+                                        base_dir, http_prefix, nickname,
                                         domain, domainFull, port,
                                         onionDomain, i2pDomain,
                                         GETstartTime,
@@ -9933,7 +9937,7 @@ class PubServer(BaseHTTPRequestHandler):
                           reactBy: str, reactEmoji: str,
                           authorized: bool,
                           callingDomain: str, path: str,
-                          base_dir: str, httpPrefix: str, nickname: str,
+                          base_dir: str, http_prefix: str, nickname: str,
                           domain: str, domainFull: str, port: int,
                           onionDomain: str, i2pDomain: str,
                           GETstartTime,
@@ -9975,7 +9979,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    nickname, domain, port,
                                    authorized,
                                    postJsonObject,
-                                   httpPrefix,
+                                   http_prefix,
                                    self.server.projectVersion,
                                    likedBy, reactBy, reactEmoji,
                                    self.server.YTReplacementDomain,
@@ -10026,7 +10030,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _showIndividualPost(self, authorized: bool,
                             callingDomain: str, path: str,
-                            base_dir: str, httpPrefix: str,
+                            base_dir: str, http_prefix: str,
                             domain: str, domainFull: str, port: int,
                             onionDomain: str, i2pDomain: str,
                             GETstartTime,
@@ -10066,7 +10070,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         postFilename = \
             acctDir(base_dir, nickname, domain) + '/outbox/' + \
-            httpPrefix + ':##' + domainFull + '#users#' + nickname + \
+            http_prefix + ':##' + domainFull + '#users#' + nickname + \
             '#statuses#' + statusNumber + '.json'
 
         includeCreateWrapper = False
@@ -10076,7 +10080,7 @@ class PubServer(BaseHTTPRequestHandler):
         result = self._showPostFromFile(postFilename, likedBy,
                                         reactBy, reactEmoji,
                                         authorized, callingDomain, path,
-                                        base_dir, httpPrefix, nickname,
+                                        base_dir, http_prefix, nickname,
                                         domain, domainFull, port,
                                         onionDomain, i2pDomain,
                                         GETstartTime,
@@ -10089,7 +10093,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _showNotifyPost(self, authorized: bool,
                         callingDomain: str, path: str,
-                        base_dir: str, httpPrefix: str,
+                        base_dir: str, http_prefix: str,
                         domain: str, domainFull: str, port: int,
                         onionDomain: str, i2pDomain: str,
                         GETstartTime,
@@ -10120,7 +10124,7 @@ class PubServer(BaseHTTPRequestHandler):
         result = self._showPostFromFile(postFilename, likedBy,
                                         reactBy, reactEmoji,
                                         authorized, callingDomain, path,
-                                        base_dir, httpPrefix, nickname,
+                                        base_dir, http_prefix, nickname,
                                         domain, domainFull, port,
                                         onionDomain, i2pDomain,
                                         GETstartTime,
@@ -10133,7 +10137,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _showInbox(self, authorized: bool,
                    callingDomain: str, path: str,
-                   base_dir: str, httpPrefix: str,
+                   base_dir: str, http_prefix: str,
                    domain: str, domainFull: str, port: int,
                    onionDomain: str, i2pDomain: str,
                    GETstartTime,
@@ -10160,7 +10164,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   domain,
                                   port,
                                   path,
-                                  httpPrefix,
+                                  http_prefix,
                                   maxPostsInFeed, 'inbox',
                                   authorized,
                                   0,
@@ -10192,7 +10196,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               domain,
                                               port,
                                               path + '?page=1',
-                                              httpPrefix,
+                                              http_prefix,
                                               maxPostsInFeed, 'inbox',
                                               authorized,
                                               0,
@@ -10229,7 +10233,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         port,
                                         inboxFeed,
                                         allowDeletion,
-                                        httpPrefix,
+                                        http_prefix,
                                         projectVersion,
                                         minimalNick,
                                         YTReplacementDomain,
@@ -10302,7 +10306,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _showDMs(self, authorized: bool,
                  callingDomain: str, path: str,
-                 base_dir: str, httpPrefix: str,
+                 base_dir: str, http_prefix: str,
                  domain: str, domainFull: str, port: int,
                  onionDomain: str, i2pDomain: str,
                  GETstartTime,
@@ -10319,7 +10323,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   domain,
                                   port,
                                   path,
-                                  httpPrefix,
+                                  http_prefix,
                                   maxPostsInFeed, 'dm',
                                   authorized,
                                   0, self.server.positiveVoting,
@@ -10345,7 +10349,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               domain,
                                               port,
                                               path + '?page=1',
-                                              httpPrefix,
+                                              http_prefix,
                                               maxPostsInFeed, 'dm',
                                               authorized,
                                               0,
@@ -10378,7 +10382,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          port,
                                          inboxDMFeed,
                                          self.server.allowDeletion,
-                                         httpPrefix,
+                                         http_prefix,
                                          self.server.projectVersion,
                                          minimalNick,
                                          self.server.YTReplacementDomain,
@@ -10443,7 +10447,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _showReplies(self, authorized: bool,
                      callingDomain: str, path: str,
-                     base_dir: str, httpPrefix: str,
+                     base_dir: str, http_prefix: str,
                      domain: str, domainFull: str, port: int,
                      onionDomain: str, i2pDomain: str,
                      GETstartTime,
@@ -10460,7 +10464,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   domain,
                                   port,
                                   path,
-                                  httpPrefix,
+                                  http_prefix,
                                   maxPostsInFeed, 'tlreplies',
                                   True,
                                   0, self.server.positiveVoting,
@@ -10487,7 +10491,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           domain,
                                           port,
                                           path + '?page=1',
-                                          httpPrefix,
+                                          http_prefix,
                                           maxPostsInFeed, 'tlreplies',
                                           True,
                                           0, self.server.positiveVoting,
@@ -10519,7 +10523,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          port,
                                          inboxRepliesFeed,
                                          self.server.allowDeletion,
-                                         httpPrefix,
+                                         http_prefix,
                                          self.server.projectVersion,
                                          minimalNick,
                                          self.server.YTReplacementDomain,
@@ -10584,7 +10588,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _showMediaTimeline(self, authorized: bool,
                            callingDomain: str, path: str,
-                           base_dir: str, httpPrefix: str,
+                           base_dir: str, http_prefix: str,
                            domain: str, domainFull: str, port: int,
                            onionDomain: str, i2pDomain: str,
                            GETstartTime,
@@ -10601,7 +10605,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   domain,
                                   port,
                                   path,
-                                  httpPrefix,
+                                  http_prefix,
                                   maxPostsInMediaFeed, 'tlmedia',
                                   True,
                                   0, self.server.positiveVoting,
@@ -10628,7 +10632,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           domain,
                                           port,
                                           path + '?page=1',
-                                          httpPrefix,
+                                          http_prefix,
                                           maxPostsInMediaFeed, 'tlmedia',
                                           True,
                                           0, self.server.positiveVoting,
@@ -10658,7 +10662,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        port,
                                        inboxMediaFeed,
                                        self.server.allowDeletion,
-                                       httpPrefix,
+                                       http_prefix,
                                        self.server.projectVersion,
                                        minimalNick,
                                        self.server.YTReplacementDomain,
@@ -10724,7 +10728,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _showBlogsTimeline(self, authorized: bool,
                            callingDomain: str, path: str,
-                           base_dir: str, httpPrefix: str,
+                           base_dir: str, http_prefix: str,
                            domain: str, domainFull: str, port: int,
                            onionDomain: str, i2pDomain: str,
                            GETstartTime,
@@ -10741,7 +10745,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   domain,
                                   port,
                                   path,
-                                  httpPrefix,
+                                  http_prefix,
                                   maxPostsInBlogsFeed, 'tlblogs',
                                   True,
                                   0, self.server.positiveVoting,
@@ -10768,7 +10772,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           domain,
                                           port,
                                           path + '?page=1',
-                                          httpPrefix,
+                                          http_prefix,
                                           maxPostsInBlogsFeed, 'tlblogs',
                                           True,
                                           0, self.server.positiveVoting,
@@ -10798,7 +10802,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        port,
                                        inboxBlogsFeed,
                                        self.server.allowDeletion,
-                                       httpPrefix,
+                                       http_prefix,
                                        self.server.projectVersion,
                                        minimalNick,
                                        self.server.YTReplacementDomain,
@@ -10865,7 +10869,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _showNewsTimeline(self, authorized: bool,
                           callingDomain: str, path: str,
-                          base_dir: str, httpPrefix: str,
+                          base_dir: str, http_prefix: str,
                           domain: str, domainFull: str, port: int,
                           onionDomain: str, i2pDomain: str,
                           GETstartTime,
@@ -10882,7 +10886,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   domain,
                                   port,
                                   path,
-                                  httpPrefix,
+                                  http_prefix,
                                   maxPostsInNewsFeed, 'tlnews',
                                   True,
                                   self.server.newswireVotesThreshold,
@@ -10910,7 +10914,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           domain,
                                           port,
                                           path + '?page=1',
-                                          httpPrefix,
+                                          http_prefix,
                                           maxPostsInBlogsFeed, 'tlnews',
                                           True,
                                           self.server.newswireVotesThreshold,
@@ -10947,7 +10951,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       port,
                                       inboxNewsFeed,
                                       self.server.allowDeletion,
-                                      httpPrefix,
+                                      http_prefix,
                                       self.server.projectVersion,
                                       minimalNick,
                                       self.server.YTReplacementDomain,
@@ -11014,7 +11018,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _showFeaturesTimeline(self, authorized: bool,
                               callingDomain: str, path: str,
-                              base_dir: str, httpPrefix: str,
+                              base_dir: str, http_prefix: str,
                               domain: str, domainFull: str, port: int,
                               onionDomain: str, i2pDomain: str,
                               GETstartTime,
@@ -11031,7 +11035,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   domain,
                                   port,
                                   path,
-                                  httpPrefix,
+                                  http_prefix,
                                   maxPostsInNewsFeed, 'tlfeatures',
                                   True,
                                   self.server.newswireVotesThreshold,
@@ -11059,7 +11063,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           domain,
                                           port,
                                           path + '?page=1',
-                                          httpPrefix,
+                                          http_prefix,
                                           maxPostsInBlogsFeed, 'tlfeatures',
                                           True,
                                           self.server.newswireVotesThreshold,
@@ -11095,7 +11099,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           port,
                                           inboxFeaturesFeed,
                                           self.server.allowDeletion,
-                                          httpPrefix,
+                                          http_prefix,
                                           self.server.projectVersion,
                                           minimalNick,
                                           self.server.YTReplacementDomain,
@@ -11161,7 +11165,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _showSharesTimeline(self, authorized: bool,
                             callingDomain: str, path: str,
-                            base_dir: str, httpPrefix: str,
+                            base_dir: str, http_prefix: str,
                             domain: str, domainFull: str, port: int,
                             onionDomain: str, i2pDomain: str,
                             GETstartTime,
@@ -11203,7 +11207,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    domain,
                                    port,
                                    self.server.allowDeletion,
-                                   httpPrefix,
+                                   http_prefix,
                                    self.server.projectVersion,
                                    self.server.YTReplacementDomain,
                                    self.server.twitterReplacementDomain,
@@ -11245,7 +11249,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _showWantedTimeline(self, authorized: bool,
                             callingDomain: str, path: str,
-                            base_dir: str, httpPrefix: str,
+                            base_dir: str, http_prefix: str,
                             domain: str, domainFull: str, port: int,
                             onionDomain: str, i2pDomain: str,
                             GETstartTime,
@@ -11287,7 +11291,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    domain,
                                    port,
                                    self.server.allowDeletion,
-                                   httpPrefix,
+                                   http_prefix,
                                    self.server.projectVersion,
                                    self.server.YTReplacementDomain,
                                    self.server.twitterReplacementDomain,
@@ -11329,7 +11333,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _showBookmarksTimeline(self, authorized: bool,
                                callingDomain: str, path: str,
-                               base_dir: str, httpPrefix: str,
+                               base_dir: str, http_prefix: str,
                                domain: str, domainFull: str, port: int,
                                onionDomain: str, i2pDomain: str,
                                GETstartTime,
@@ -11346,7 +11350,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   domain,
                                   port,
                                   path,
-                                  httpPrefix,
+                                  http_prefix,
                                   maxPostsInFeed, 'tlbookmarks',
                                   authorized,
                                   0, self.server.positiveVoting,
@@ -11373,7 +11377,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               domain,
                                               port,
                                               path + '?page=1',
-                                              httpPrefix,
+                                              http_prefix,
                                               maxPostsInFeed,
                                               'tlbookmarks',
                                               authorized,
@@ -11406,7 +11410,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           port,
                                           bookmarksFeed,
                                           self.server.allowDeletion,
-                                          httpPrefix,
+                                          http_prefix,
                                           self.server.projectVersion,
                                           minimalNick,
                                           self.server.YTReplacementDomain,
@@ -11471,7 +11475,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _showOutboxTimeline(self, authorized: bool,
                             callingDomain: str, path: str,
-                            base_dir: str, httpPrefix: str,
+                            base_dir: str, http_prefix: str,
                             domain: str, domainFull: str, port: int,
                             onionDomain: str, i2pDomain: str,
                             GETstartTime,
@@ -11484,7 +11488,7 @@ class PubServer(BaseHTTPRequestHandler):
             personBoxJson(self.server.recentPostsCache,
                           self.server.session,
                           base_dir, domain, port, path,
-                          httpPrefix, maxPostsInFeed, 'outbox',
+                          http_prefix, maxPostsInFeed, 'outbox',
                           authorized,
                           self.server.newswireVotesThreshold,
                           self.server.positiveVoting,
@@ -11511,7 +11515,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.session,
                                   base_dir, domain, port,
                                   path + pageStr,
-                                  httpPrefix,
+                                  http_prefix,
                                   maxPostsInFeed, 'outbox',
                                   authorized,
                                   self.server.newswireVotesThreshold,
@@ -11544,7 +11548,7 @@ class PubServer(BaseHTTPRequestHandler):
                                nickname, domain, port,
                                outboxFeed,
                                self.server.allowDeletion,
-                               httpPrefix,
+                               http_prefix,
                                self.server.projectVersion,
                                minimalNick,
                                self.server.YTReplacementDomain,
@@ -11598,7 +11602,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _showModTimeline(self, authorized: bool,
                          callingDomain: str, path: str,
-                         base_dir: str, httpPrefix: str,
+                         base_dir: str, http_prefix: str,
                          domain: str, domainFull: str, port: int,
                          onionDomain: str, i2pDomain: str,
                          GETstartTime,
@@ -11615,7 +11619,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   domain,
                                   port,
                                   path,
-                                  httpPrefix,
+                                  http_prefix,
                                   maxPostsInFeed, 'moderation',
                                   True,
                                   0, self.server.positiveVoting,
@@ -11641,7 +11645,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               domain,
                                               port,
                                               path + '?page=1',
-                                              httpPrefix,
+                                              http_prefix,
                                               maxPostsInFeed, 'moderation',
                                               True,
                                               0, self.server.positiveVoting,
@@ -11675,7 +11679,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            port,
                                            moderationFeed,
                                            True,
-                                           httpPrefix,
+                                           http_prefix,
                                            self.server.projectVersion,
                                            self.server.YTReplacementDomain,
                                            twitterReplacementDomain,
@@ -11737,7 +11741,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _showSharesFeed(self, authorized: bool,
                         callingDomain: str, path: str,
-                        base_dir: str, httpPrefix: str,
+                        base_dir: str, http_prefix: str,
                         domain: str, domainFull: str, port: int,
                         onionDomain: str, i2pDomain: str,
                         GETstartTime,
@@ -11747,7 +11751,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         shares = \
             getSharesFeedForPerson(base_dir, domain, port, path,
-                                   httpPrefix, sharesFileType, sharesPerPage)
+                                   http_prefix, sharesFileType, sharesPerPage)
         if shares:
             if self._requestHTTP():
                 pageNumber = 1
@@ -11757,7 +11761,7 @@ class PubServer(BaseHTTPRequestHandler):
                     shares = \
                         getSharesFeedForPerson(base_dir, domain, port,
                                                path + '?page=true',
-                                               httpPrefix, sharesFileType,
+                                               http_prefix, sharesFileType,
                                                sharesPerPage)
                 else:
                     pageNumberStr = path.split('?page=')[1]
@@ -11797,7 +11801,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.maxRecentPosts,
                                     self.server.translate,
                                     self.server.projectVersion,
-                                    base_dir, httpPrefix,
+                                    base_dir, http_prefix,
                                     authorized,
                                     getPerson, sharesFileType,
                                     self.server.session,
@@ -11853,7 +11857,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _showFollowingFeed(self, authorized: bool,
                            callingDomain: str, path: str,
-                           base_dir: str, httpPrefix: str,
+                           base_dir: str, http_prefix: str,
                            domain: str, domainFull: str, port: int,
                            onionDomain: str, i2pDomain: str,
                            GETstartTime,
@@ -11863,7 +11867,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         following = \
             getFollowingFeed(base_dir, domain, port, path,
-                             httpPrefix, authorized, followsPerPage,
+                             http_prefix, authorized, followsPerPage,
                              'following')
         if following:
             if self._requestHTTP():
@@ -11876,7 +11880,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          domain,
                                          port,
                                          path + '?page=true',
-                                         httpPrefix,
+                                         http_prefix,
                                          authorized, followsPerPage)
                 else:
                     pageNumberStr = path.split('?page=')[1]
@@ -11918,7 +11922,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.maxRecentPosts,
                                     self.server.translate,
                                     self.server.projectVersion,
-                                    base_dir, httpPrefix,
+                                    base_dir, http_prefix,
                                     authorized,
                                     getPerson, 'following',
                                     self.server.session,
@@ -11972,7 +11976,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _showFollowersFeed(self, authorized: bool,
                            callingDomain: str, path: str,
-                           base_dir: str, httpPrefix: str,
+                           base_dir: str, http_prefix: str,
                            domain: str, domainFull: str, port: int,
                            onionDomain: str, i2pDomain: str,
                            GETstartTime,
@@ -11981,7 +11985,7 @@ class PubServer(BaseHTTPRequestHandler):
         """Shows the followers feed
         """
         followers = \
-            getFollowingFeed(base_dir, domain, port, path, httpPrefix,
+            getFollowingFeed(base_dir, domain, port, path, http_prefix,
                              authorized, followsPerPage, 'followers')
         if followers:
             if self._requestHTTP():
@@ -11994,7 +11998,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          domain,
                                          port,
                                          path + '?page=1',
-                                         httpPrefix,
+                                         http_prefix,
                                          authorized, followsPerPage,
                                          'followers')
                 else:
@@ -12038,7 +12042,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.translate,
                                     self.server.projectVersion,
                                     base_dir,
-                                    httpPrefix,
+                                    http_prefix,
                                     authorized,
                                     getPerson, 'followers',
                                     self.server.session,
@@ -12093,14 +12097,14 @@ class PubServer(BaseHTTPRequestHandler):
     def _getFeaturedCollection(self, callingDomain: str,
                                base_dir: str,
                                path: str,
-                               httpPrefix: str,
+                               http_prefix: str,
                                nickname: str, domain: str,
                                domainFull: str, systemLanguage: str) -> None:
         """Returns the featured posts collections in
         actor/collections/featured
         """
         featuredCollection = \
-            jsonPinPost(base_dir, httpPrefix,
+            jsonPinPost(base_dir, http_prefix,
                         nickname, domain, domainFull, systemLanguage)
         msg = json.dumps(featuredCollection,
                          ensure_ascii=False).encode('utf-8')
@@ -12111,7 +12115,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _getFeaturedTagsCollection(self, callingDomain: str,
                                    path: str,
-                                   httpPrefix: str,
+                                   http_prefix: str,
                                    domainFull: str):
         """Returns the featured tags collections in
         actor/collections/featuredTags
@@ -12120,7 +12124,7 @@ class PubServer(BaseHTTPRequestHandler):
         postContext = getIndividualPostContext()
         featuredTagsCollection = {
             '@context': postContext,
-            'id': httpPrefix + '://' + domainFull + path,
+            'id': http_prefix + '://' + domainFull + path,
             'orderedItems': [],
             'totalItems': 0,
             'type': 'OrderedCollection'
@@ -12134,7 +12138,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _showPersonProfile(self, authorized: bool,
                            callingDomain: str, path: str,
-                           base_dir: str, httpPrefix: str,
+                           base_dir: str, http_prefix: str,
                            domain: str, domainFull: str, port: int,
                            onionDomain: str, i2pDomain: str,
                            GETstartTime,
@@ -12174,7 +12178,7 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.translate,
                             self.server.projectVersion,
                             base_dir,
-                            httpPrefix,
+                            http_prefix,
                             authorized,
                             actorJson, 'posts',
                             self.server.session,
@@ -12231,7 +12235,7 @@ class PubServer(BaseHTTPRequestHandler):
         return True
 
     def _showInstanceActor(self, callingDomain: str, path: str,
-                           base_dir: str, httpPrefix: str,
+                           base_dir: str, http_prefix: str,
                            domain: str, domainFull: str, port: int,
                            onionDomain: str, i2pDomain: str,
                            GETstartTime,
@@ -12256,7 +12260,7 @@ class PubServer(BaseHTTPRequestHandler):
         elif i2pDomain and callingDomain.endswith('.i2p'):
             actorDomainUrl = 'http://' + i2pDomain
         else:
-            actorDomainUrl = httpPrefix + '://' + domainFull
+            actorDomainUrl = http_prefix + '://' + domainFull
         actorUrl = actorDomainUrl + '/users/Actor'
         removeFields = ('icon', 'image', 'tts', 'shares',
                         'alsoKnownAs', 'hasOccupation', 'featured',
@@ -12283,10 +12287,10 @@ class PubServer(BaseHTTPRequestHandler):
         actorJson['following'] = actorUrl + '/following'
         msgStr = json.dumps(actorJson, ensure_ascii=False)
         if onionDomain and callingDomain.endswith('.onion'):
-            msgStr = msgStr.replace(httpPrefix + '://' + domainFull,
+            msgStr = msgStr.replace(http_prefix + '://' + domainFull,
                                     'http://' + onionDomain)
         elif i2pDomain and callingDomain.endswith('.i2p'):
-            msgStr = msgStr.replace(httpPrefix + '://' + domainFull,
+            msgStr = msgStr.replace(http_prefix + '://' + domainFull,
                                     'http://' + i2pDomain)
         msg = msgStr.encode('utf-8')
         msglen = len(msg)
@@ -12308,7 +12312,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _showBlogPage(self, authorized: bool,
                       callingDomain: str, path: str,
-                      base_dir: str, httpPrefix: str,
+                      base_dir: str, http_prefix: str,
                       domain: str, domainFull: str, port: int,
                       onionDomain: str, i2pDomain: str,
                       GETstartTime,
@@ -12341,7 +12345,7 @@ class PubServer(BaseHTTPRequestHandler):
         msg = htmlBlogPage(authorized,
                            self.server.session,
                            base_dir,
-                           httpPrefix,
+                           http_prefix,
                            translate,
                            nickname,
                            domain, port,
@@ -12365,7 +12369,7 @@ class PubServer(BaseHTTPRequestHandler):
         return True
 
     def _redirectToLoginScreen(self, callingDomain: str, path: str,
-                               httpPrefix: str, domainFull: str,
+                               http_prefix: str, domainFull: str,
                                onionDomain: str, i2pDomain: str,
                                GETstartTime,
                                authorized: bool, debug: bool):
@@ -12418,7 +12422,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        i2pDomain + divertPath,
                                        None, callingDomain)
             else:
-                self._redirect_headers(httpPrefix + '://' +
+                self._redirect_headers(http_prefix + '://' +
                                        domainFull +
                                        divertPath, None, callingDomain)
             fitnessPerformance(GETstartTime,
@@ -12817,7 +12821,7 @@ class PubServer(BaseHTTPRequestHandler):
         return True
 
     def _confirmDeleteEvent(self, callingDomain: str, path: str,
-                            base_dir: str, httpPrefix: str, cookie: str,
+                            base_dir: str, http_prefix: str, cookie: str,
                             translate: {}, domainFull: str,
                             onionDomain: str, i2pDomain: str,
                             GETstartTime) -> bool:
@@ -12842,14 +12846,14 @@ class PubServer(BaseHTTPRequestHandler):
         msg = htmlCalendarDeleteConfirm(self.server.cssCache,
                                         translate,
                                         base_dir, path,
-                                        httpPrefix,
+                                        http_prefix,
                                         domainFull,
                                         postId, postTime,
                                         postYear, postMonth, postDay,
                                         callingDomain)
         if not msg:
             actor = \
-                httpPrefix + '://' + \
+                http_prefix + '://' + \
                 domainFull + \
                 path.split('/eventdelete')[0]
             if callingDomain.endswith('.onion') and onionDomain:
@@ -12876,7 +12880,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _showNewPost(self, callingDomain: str, path: str,
                      mediaInstance: bool, translate: {},
-                     base_dir: str, httpPrefix: str,
+                     base_dir: str, http_prefix: str,
                      inReplyToUrl: str, replyToList: [],
                      shareDescription: str, replyPageNumber: int,
                      replyCategory: str,
@@ -12925,7 +12929,7 @@ class PubServer(BaseHTTPRequestHandler):
                               mediaInstance,
                               translate,
                               base_dir,
-                              httpPrefix,
+                              http_prefix,
                               path, inReplyToUrl,
                               replyToList,
                               shareDescription, None,
@@ -13006,7 +13010,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _editProfile(self, callingDomain: str, path: str,
                      translate: {}, base_dir: str,
-                     httpPrefix: str, domain: str, port: int,
+                     http_prefix: str, domain: str, port: int,
                      cookie: str) -> bool:
         """Show the edit profile screen
         """
@@ -13030,7 +13034,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   base_dir,
                                   path, domain,
                                   port,
-                                  httpPrefix,
+                                  http_prefix,
                                   self.server.defaultTimeline,
                                   self.server.themeName,
                                   peertubeInstances,
@@ -13053,7 +13057,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _editLinks(self, callingDomain: str, path: str,
                    translate: {}, base_dir: str,
-                   httpPrefix: str, domain: str, port: int,
+                   http_prefix: str, domain: str, port: int,
                    cookie: str, theme: str) -> bool:
         """Show the links from the left column
         """
@@ -13071,7 +13075,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 base_dir,
                                 path, domain,
                                 port,
-                                httpPrefix,
+                                http_prefix,
                                 self.server.defaultTimeline,
                                 theme, accessKeys).encode('utf-8')
             if msg:
@@ -13086,7 +13090,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _editNewswire(self, callingDomain: str, path: str,
                       translate: {}, base_dir: str,
-                      httpPrefix: str, domain: str, port: int,
+                      http_prefix: str, domain: str, port: int,
                       cookie: str) -> bool:
         """Show the newswire from the right column
         """
@@ -13104,7 +13108,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    base_dir,
                                    path, domain,
                                    port,
-                                   httpPrefix,
+                                   http_prefix,
                                    self.server.defaultTimeline,
                                    self.server.themeName,
                                    accessKeys).encode('utf-8')
@@ -13120,7 +13124,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _editNewsPost(self, callingDomain: str, path: str,
                       translate: {}, base_dir: str,
-                      httpPrefix: str, domain: str, port: int,
+                      http_prefix: str, domain: str, port: int,
                       domainFull: str,
                       cookie: str) -> bool:
         """Show the edit screen for a news post
@@ -13134,13 +13138,13 @@ class PubServer(BaseHTTPRequestHandler):
             postId = path.split('/editnewspost=')[1]
             if '?' in postId:
                 postId = postId.split('?')[0]
-            postUrl = localActorUrl(httpPrefix, postActor, domainFull) + \
+            postUrl = localActorUrl(http_prefix, postActor, domainFull) + \
                 '/statuses/' + postId
             path = path.split('/editnewspost=')[0]
             msg = htmlEditNewsPost(self.server.cssCache,
                                    translate, base_dir,
                                    path, domain, port,
-                                   httpPrefix,
+                                   http_prefix,
                                    postUrl,
                                    self.server.systemLanguage).encode('utf-8')
             if msg:
@@ -13155,14 +13159,14 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _getFollowingJson(self, base_dir: str, path: str,
                           callingDomain: str,
-                          httpPrefix: str,
+                          http_prefix: str,
                           domain: str, port: int,
                           followingItemsPerPage: int,
                           debug: bool, listName='following') -> None:
         """Returns json collection for following.txt
         """
         followingJson = \
-            getFollowingFeed(base_dir, domain, port, path, httpPrefix,
+            getFollowingFeed(base_dir, domain, port, path, http_prefix,
                              True, followingItemsPerPage, listName)
         if not followingJson:
             if debug:
@@ -13176,7 +13180,7 @@ class PubServer(BaseHTTPRequestHandler):
                           msglen, None, callingDomain, False)
         self._write(msg)
 
-    def _sendBlock(self, httpPrefix: str,
+    def _sendBlock(self, http_prefix: str,
                    blockerNickname: str, blockerDomainFull: str,
                    blockingNickname: str, blockingDomainFull: str) -> bool:
         if blockerDomainFull == blockingDomainFull:
@@ -13184,12 +13188,12 @@ class PubServer(BaseHTTPRequestHandler):
                 # don't block self
                 return False
         blockActor = \
-            localActorUrl(httpPrefix, blockerNickname, blockerDomainFull)
+            localActorUrl(http_prefix, blockerNickname, blockerDomainFull)
         toUrl = 'https://www.w3.org/ns/activitystreams#Public'
         ccUrl = blockActor + '/followers'
 
         blockedUrl = \
-            httpPrefix + '://' + blockingDomainFull + \
+            http_prefix + '://' + blockingDomainFull + \
             '/@' + blockingNickname
         blockJson = {
             "@context": "https://www.w3.org/ns/activitystreams",
@@ -13317,7 +13321,7 @@ class PubServer(BaseHTTPRequestHandler):
                     htmlLogin(self.server.cssCache,
                               self.server.translate,
                               self.server.base_dir,
-                              self.server.httpPrefix,
+                              self.server.http_prefix,
                               self.server.domainFull,
                               self.server.systemLanguage,
                               False).encode('utf-8')
@@ -13338,7 +13342,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           '/users/news', None,
                                           callingDomain)
                 else:
-                    self._logout_redirect(self.server.httpPrefix +
+                    self._logout_redirect(self.server.http_prefix +
                                           '://' +
                                           self.server.domainFull +
                                           '/users/news',
@@ -13374,7 +13378,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.path = '/users/inbox'
             if self._showInstanceActor(callingDomain, self.path,
                                        self.server.base_dir,
-                                       self.server.httpPrefix,
+                                       self.server.http_prefix,
                                        self.server.domain,
                                        self.server.domainFull,
                                        self.server.port,
@@ -13504,12 +13508,12 @@ class PubServer(BaseHTTPRequestHandler):
                             print('Catalog for the instance')
                         catalogJson = \
                             sharesCatalogEndpoint(self.server.base_dir,
-                                                  self.server.httpPrefix,
+                                                  self.server.http_prefix,
                                                   self.server.domainFull,
                                                   self.path, 'shares')
                     else:
                         domainFull = self.server.domainFull
-                        httpPrefix = self.server.httpPrefix
+                        http_prefix = self.server.http_prefix
                         nickname = self.path.split('/users/')[1]
                         if '/' in nickname:
                             nickname = nickname.split('/')[0]
@@ -13517,7 +13521,7 @@ class PubServer(BaseHTTPRequestHandler):
                             print('Catalog for account: ' + nickname)
                         catalogJson = \
                             sharesCatalogAccountEndpoint(self.server.base_dir,
-                                                         httpPrefix,
+                                                         http_prefix,
                                                          nickname,
                                                          self.server.domain,
                                                          domainFull,
@@ -13535,7 +13539,7 @@ class PubServer(BaseHTTPRequestHandler):
                     # catalog as a CSV file for import into a spreadsheet
                     msg = \
                         sharesCatalogCSVEndpoint(self.server.base_dir,
-                                                 self.server.httpPrefix,
+                                                 self.server.http_prefix,
                                                  self.server.domainFull,
                                                  self.path,
                                                  'shares').encode('utf-8')
@@ -13597,12 +13601,12 @@ class PubServer(BaseHTTPRequestHandler):
                             print('Wanted catalog for the instance')
                         catalogJson = \
                             sharesCatalogEndpoint(self.server.base_dir,
-                                                  self.server.httpPrefix,
+                                                  self.server.http_prefix,
                                                   self.server.domainFull,
                                                   self.path, 'wanted')
                     else:
                         domainFull = self.server.domainFull
-                        httpPrefix = self.server.httpPrefix
+                        http_prefix = self.server.http_prefix
                         nickname = self.path.split('/users/')[1]
                         if '/' in nickname:
                             nickname = nickname.split('/')[0]
@@ -13610,7 +13614,7 @@ class PubServer(BaseHTTPRequestHandler):
                             print('Wanted catalog for account: ' + nickname)
                         catalogJson = \
                             sharesCatalogAccountEndpoint(self.server.base_dir,
-                                                         httpPrefix,
+                                                         http_prefix,
                                                          nickname,
                                                          self.server.domain,
                                                          domainFull,
@@ -13628,7 +13632,7 @@ class PubServer(BaseHTTPRequestHandler):
                     # catalog as a CSV file for import into a spreadsheet
                     msg = \
                         sharesCatalogCSVEndpoint(self.server.base_dir,
-                                                 self.server.httpPrefix,
+                                                 self.server.http_prefix,
                                                  self.server.domainFull,
                                                  self.path,
                                                  'wanted').encode('utf-8')
@@ -13645,7 +13649,7 @@ class PubServer(BaseHTTPRequestHandler):
         # minimal mastodon api
         if self._mastoApi(self.path, callingDomain, uaStr,
                           authorized,
-                          self.server.httpPrefix,
+                          self.server.http_prefix,
                           self.server.base_dir,
                           self.authorizedNickname,
                           self.server.domain,
@@ -13759,7 +13763,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._getHashtagCategoriesFeed(authorized,
                                            callingDomain, self.path,
                                            self.server.base_dir,
-                                           self.server.httpPrefix,
+                                           self.server.http_prefix,
                                            self.server.domain,
                                            self.server.port,
                                            self.server.proxyType,
@@ -13771,7 +13775,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._getNewswireFeed(authorized,
                                   callingDomain, self.path,
                                   self.server.base_dir,
-                                  self.server.httpPrefix,
+                                  self.server.http_prefix,
                                   self.server.domain,
                                   self.server.port,
                                   self.server.proxyType,
@@ -13786,7 +13790,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._getRSS2feed(authorized,
                                   callingDomain, self.path,
                                   self.server.base_dir,
-                                  self.server.httpPrefix,
+                                  self.server.http_prefix,
                                   self.server.domain,
                                   self.server.port,
                                   self.server.proxyType,
@@ -13796,7 +13800,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._getRSS2site(authorized,
                                   callingDomain, self.path,
                                   self.server.base_dir,
-                                  self.server.httpPrefix,
+                                  self.server.http_prefix,
                                   self.server.domainFull,
                                   self.server.port,
                                   self.server.proxyType,
@@ -13815,7 +13819,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._getRSS3feed(authorized,
                               callingDomain, self.path,
                               self.server.base_dir,
-                              self.server.httpPrefix,
+                              self.server.http_prefix,
                               self.server.domain,
                               self.server.port,
                               self.server.proxyType,
@@ -13833,7 +13837,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._getFollowingJson(self.server.base_dir,
                                        self.path,
                                        callingDomain,
-                                       self.server.httpPrefix,
+                                       self.server.http_prefix,
                                        self.server.domain,
                                        self.server.port,
                                        self.server.followingItemsPerPage,
@@ -13843,7 +13847,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._getFollowingJson(self.server.base_dir,
                                        self.path,
                                        callingDomain,
-                                       self.server.httpPrefix,
+                                       self.server.http_prefix,
                                        self.server.domain,
                                        self.server.port,
                                        self.server.followingItemsPerPage,
@@ -13853,7 +13857,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._getFollowingJson(self.server.base_dir,
                                        self.path,
                                        callingDomain,
-                                       self.server.httpPrefix,
+                                       self.server.http_prefix,
                                        self.server.domain,
                                        self.server.port,
                                        self.server.followingItemsPerPage,
@@ -13910,7 +13914,7 @@ class PubServer(BaseHTTPRequestHandler):
                 nickname = nickname.split('/')[0]
             pinnedPostJson = \
                 getPinnedPostAsJson(self.server.base_dir,
-                                    self.server.httpPrefix,
+                                    self.server.http_prefix,
                                     nickname, self.server.domain,
                                     self.server.domainFull,
                                     self.server.systemLanguage)
@@ -13918,7 +13922,7 @@ class PubServer(BaseHTTPRequestHandler):
             if pinnedPostJson:
                 postId = removeIdEnding(pinnedPostJson['id'])
                 messageJson = \
-                    outboxMessageCreateWrap(self.server.httpPrefix,
+                    outboxMessageCreateWrap(self.server.http_prefix,
                                             nickname,
                                             self.server.domain,
                                             self.server.port,
@@ -13944,7 +13948,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._getFeaturedCollection(callingDomain,
                                         self.server.base_dir,
                                         self.path,
-                                        self.server.httpPrefix,
+                                        self.server.http_prefix,
                                         nickname, self.server.domain,
                                         self.server.domainFull,
                                         self.server.systemLanguage)
@@ -13954,7 +13958,7 @@ class PubServer(BaseHTTPRequestHandler):
            usersInPath and self.path.endswith('/collections/featuredTags'):
             self._getFeaturedTagsCollection(callingDomain,
                                             self.path,
-                                            self.server.httpPrefix,
+                                            self.server.http_prefix,
                                             self.server.domainFull)
             return
 
@@ -14012,7 +14016,7 @@ class PubServer(BaseHTTPRequestHandler):
                 msg = htmlBlogView(authorized,
                                    self.server.session,
                                    self.server.base_dir,
-                                   self.server.httpPrefix,
+                                   self.server.http_prefix,
                                    self.server.translate,
                                    self.server.domain,
                                    self.server.port,
@@ -14045,7 +14049,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if self._showBlogPage(authorized,
                                       callingDomain, self.path,
                                       self.server.base_dir,
-                                      self.server.httpPrefix,
+                                      self.server.http_prefix,
                                       self.server.domain,
                                       self.server.domainFull,
                                       self.server.port,
@@ -14068,7 +14072,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                 nickname,
                                                 self.server.domain,
                                                 self.server.domainFull,
-                                                self.server.httpPrefix)
+                                                self.server.http_prefix)
                 msg = json.dumps(devJson,
                                  ensure_ascii=False).encode('utf-8')
                 msglen = len(msg)
@@ -14090,7 +14094,7 @@ class PubServer(BaseHTTPRequestHandler):
             if '?options=' in self.path:
                 self._showPersonOptions(callingDomain, self.path,
                                         self.server.base_dir,
-                                        self.server.httpPrefix,
+                                        self.server.http_prefix,
                                         self.server.domain,
                                         self.server.domainFull,
                                         GETstartTime,
@@ -14106,7 +14110,7 @@ class PubServer(BaseHTTPRequestHandler):
             # show blog post
             blogFilename, nickname = \
                 pathContainsBlogLink(self.server.base_dir,
-                                     self.server.httpPrefix,
+                                     self.server.http_prefix,
                                      self.server.domain,
                                      self.server.domainFull,
                                      self.path)
@@ -14116,7 +14120,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = htmlBlogPost(self.server.session,
                                        authorized,
                                        self.server.base_dir,
-                                       self.server.httpPrefix,
+                                       self.server.http_prefix,
                                        self.server.translate,
                                        nickname, self.server.domain,
                                        self.server.domainFull,
@@ -14159,7 +14163,7 @@ class PubServer(BaseHTTPRequestHandler):
             msg = \
                 htmlShowShare(self.server.base_dir,
                               self.server.domain, nickname,
-                              self.server.httpPrefix, self.server.domainFull,
+                              self.server.http_prefix, self.server.domainFull,
                               itemID, self.server.translate,
                               self.server.sharedItemsFederatedDomains,
                               self.server.defaultTimeline,
@@ -14198,7 +14202,7 @@ class PubServer(BaseHTTPRequestHandler):
             msg = \
                 htmlShowShare(self.server.base_dir,
                               self.server.domain, nickname,
-                              self.server.httpPrefix, self.server.domainFull,
+                              self.server.http_prefix, self.server.domainFull,
                               itemID, self.server.translate,
                               self.server.sharedItemsFederatedDomains,
                               self.server.defaultTimeline,
@@ -14229,7 +14233,7 @@ class PubServer(BaseHTTPRequestHandler):
             itemID = urllib.parse.unquote_plus(itemID.strip())
             usersPath = self.path.split('?rmshare=')[0]
             actor = \
-                self.server.httpPrefix + '://' + \
+                self.server.http_prefix + '://' + \
                 self.server.domainFull + usersPath
             msg = htmlConfirmRemoveSharedItem(self.server.cssCache,
                                               self.server.translate,
@@ -14262,7 +14266,7 @@ class PubServer(BaseHTTPRequestHandler):
             itemID = urllib.parse.unquote_plus(itemID.strip())
             usersPath = self.path.split('?rmwanted=')[0]
             actor = \
-                self.server.httpPrefix + '://' + \
+                self.server.http_prefix + '://' + \
                 self.server.domainFull + usersPath
             msg = htmlConfirmRemoveSharedItem(self.server.cssCache,
                                               self.server.translate,
@@ -14307,7 +14311,7 @@ class PubServer(BaseHTTPRequestHandler):
             else:
                 msg = htmlTermsOfService(self.server.cssCache,
                                          self.server.base_dir,
-                                         self.server.httpPrefix,
+                                         self.server.http_prefix,
                                          self.server.domainFull)
             msg = msg.encode('utf-8')
             msglen = len(msg)
@@ -14365,7 +14369,7 @@ class PubServer(BaseHTTPRequestHandler):
                 msg = \
                     htmlAbout(self.server.cssCache,
                               self.server.base_dir,
-                              self.server.httpPrefix,
+                              self.server.http_prefix,
                               self.server.domainFull,
                               self.server.onionDomain,
                               self.server.translate,
@@ -14475,7 +14479,7 @@ class PubServer(BaseHTTPRequestHandler):
                 msg = \
                     htmlWelcomeProfile(self.server.base_dir, nickname,
                                        self.server.domain,
-                                       self.server.httpPrefix,
+                                       self.server.http_prefix,
                                        self.server.domainFull,
                                        self.server.systemLanguage,
                                        self.server.translate,
@@ -14503,7 +14507,7 @@ class PubServer(BaseHTTPRequestHandler):
                 msg = \
                     htmlWelcomeFinal(self.server.base_dir, nickname,
                                      self.server.domain,
-                                     self.server.httpPrefix,
+                                     self.server.http_prefix,
                                      self.server.domainFull,
                                      self.server.systemLanguage,
                                      self.server.translate,
@@ -14526,7 +14530,7 @@ class PubServer(BaseHTTPRequestHandler):
            self.path != '/users/news/linksmobile' and \
            self.path != '/users/news/newswiremobile':
             if self._redirectToLoginScreen(callingDomain, self.path,
-                                           self.server.httpPrefix,
+                                           self.server.http_prefix,
                                            self.server.domainFull,
                                            self.server.onionDomain,
                                            self.server.i2pDomain,
@@ -14872,7 +14876,7 @@ class PubServer(BaseHTTPRequestHandler):
             msg = htmlLogin(self.server.cssCache,
                             self.server.translate,
                             self.server.base_dir,
-                            self.server.httpPrefix,
+                            self.server.http_prefix,
                             self.server.domainFull,
                             self.server.systemLanguage,
                             True).encode('utf-8')
@@ -14902,7 +14906,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       '/users/news', None,
                                       callingDomain)
             else:
-                self._logout_redirect(self.server.httpPrefix +
+                self._logout_redirect(self.server.http_prefix +
                                       '://' +
                                       self.server.domainFull +
                                       '/users/news',
@@ -14943,7 +14947,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          nickname,
                                          self.server.domain,
                                          self.server.domainFull,
-                                         self.server.httpPrefix,
+                                         self.server.http_prefix,
                                          self.server.translate,
                                          self.server.newswire,
                                          self.server.positiveVoting,
@@ -14985,7 +14989,7 @@ class PubServer(BaseHTTPRequestHandler):
                 msg = htmlLinksMobile(self.server.cssCache,
                                       self.server.base_dir, nickname,
                                       self.server.domainFull,
-                                      self.server.httpPrefix,
+                                      self.server.http_prefix,
                                       self.server.translate,
                                       timelinePath,
                                       authorized,
@@ -15009,7 +15013,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._hashtagSearchRSS2(callingDomain,
                                         self.path, cookie,
                                         self.server.base_dir,
-                                        self.server.httpPrefix,
+                                        self.server.http_prefix,
                                         self.server.domain,
                                         self.server.domainFull,
                                         self.server.port,
@@ -15021,7 +15025,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._hashtagSearch(callingDomain,
                                 self.path, cookie,
                                 self.server.base_dir,
-                                self.server.httpPrefix,
+                                self.server.http_prefix,
                                 self.server.domain,
                                 self.server.domainFull,
                                 self.server.port,
@@ -15131,7 +15135,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.cssCache,
                                    self.server.translate,
                                    self.server.base_dir, self.path,
-                                   self.server.httpPrefix,
+                                   self.server.http_prefix,
                                    self.server.domainFull,
                                    self.server.textModeBanner,
                                    accessKeys).encode('utf-8')
@@ -15156,7 +15160,7 @@ class PubServer(BaseHTTPRequestHandler):
                '?eventid=' in self.path:
                 if self._confirmDeleteEvent(callingDomain, self.path,
                                             self.server.base_dir,
-                                            self.server.httpPrefix,
+                                            self.server.http_prefix,
                                             cookie,
                                             self.server.translate,
                                             self.server.domainFull,
@@ -15201,7 +15205,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._announceButton(callingDomain, self.path,
                                  self.server.base_dir,
                                  cookie, self.server.proxyType,
-                                 self.server.httpPrefix,
+                                 self.server.http_prefix,
                                  self.server.domain,
                                  self.server.domainFull,
                                  self.server.port,
@@ -15225,7 +15229,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._undoAnnounceButton(callingDomain, self.path,
                                      self.server.base_dir,
                                      cookie, self.server.proxyType,
-                                     self.server.httpPrefix,
+                                     self.server.http_prefix,
                                      self.server.domain,
                                      self.server.domainFull,
                                      self.server.port,
@@ -15248,7 +15252,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._newswireVote(callingDomain, self.path,
                                cookie,
                                self.server.base_dir,
-                               self.server.httpPrefix,
+                               self.server.http_prefix,
                                self.server.domain,
                                self.server.domainFull,
                                self.server.port,
@@ -15267,7 +15271,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._newswireUnvote(callingDomain, self.path,
                                  cookie,
                                  self.server.base_dir,
-                                 self.server.httpPrefix,
+                                 self.server.http_prefix,
                                  self.server.domain,
                                  self.server.domainFull,
                                  self.server.port,
@@ -15286,7 +15290,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._followApproveButton(callingDomain, self.path,
                                       cookie,
                                       self.server.base_dir,
-                                      self.server.httpPrefix,
+                                      self.server.http_prefix,
                                       self.server.domain,
                                       self.server.domainFull,
                                       self.server.port,
@@ -15308,7 +15312,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._followDenyButton(callingDomain, self.path,
                                    cookie,
                                    self.server.base_dir,
-                                   self.server.httpPrefix,
+                                   self.server.http_prefix,
                                    self.server.domain,
                                    self.server.domainFull,
                                    self.server.port,
@@ -15328,7 +15332,7 @@ class PubServer(BaseHTTPRequestHandler):
         if authorized and htmlGET and '?like=' in self.path:
             self._likeButton(callingDomain, self.path,
                              self.server.base_dir,
-                             self.server.httpPrefix,
+                             self.server.http_prefix,
                              self.server.domain,
                              self.server.domainFull,
                              self.server.onionDomain,
@@ -15348,7 +15352,7 @@ class PubServer(BaseHTTPRequestHandler):
         if authorized and htmlGET and '?unlike=' in self.path:
             self._undoLikeButton(callingDomain, self.path,
                                  self.server.base_dir,
-                                 self.server.httpPrefix,
+                                 self.server.http_prefix,
                                  self.server.domain,
                                  self.server.domainFull,
                                  self.server.onionDomain,
@@ -15369,7 +15373,7 @@ class PubServer(BaseHTTPRequestHandler):
            '?actor=' in self.path:
             self._reactionButton(callingDomain, self.path,
                                  self.server.base_dir,
-                                 self.server.httpPrefix,
+                                 self.server.http_prefix,
                                  self.server.domain,
                                  self.server.domainFull,
                                  self.server.onionDomain,
@@ -15391,7 +15395,7 @@ class PubServer(BaseHTTPRequestHandler):
            '?actor=' in self.path:
             self._undoReactionButton(callingDomain, self.path,
                                      self.server.base_dir,
-                                     self.server.httpPrefix,
+                                     self.server.http_prefix,
                                      self.server.domain,
                                      self.server.domainFull,
                                      self.server.onionDomain,
@@ -15410,7 +15414,7 @@ class PubServer(BaseHTTPRequestHandler):
         if authorized and htmlGET and '?bookmark=' in self.path:
             self._bookmarkButton(callingDomain, self.path,
                                  self.server.base_dir,
-                                 self.server.httpPrefix,
+                                 self.server.http_prefix,
                                  self.server.domain,
                                  self.server.domainFull,
                                  self.server.port,
@@ -15430,7 +15434,7 @@ class PubServer(BaseHTTPRequestHandler):
         if authorized and htmlGET and '?selreact=' in self.path:
             self._reactionPicker(callingDomain, self.path,
                                  self.server.base_dir,
-                                 self.server.httpPrefix,
+                                 self.server.http_prefix,
                                  self.server.domain,
                                  self.server.domainFull,
                                  self.server.port,
@@ -15450,7 +15454,7 @@ class PubServer(BaseHTTPRequestHandler):
         if authorized and htmlGET and '?unbookmark=' in self.path:
             self._undoBookmarkButton(callingDomain, self.path,
                                      self.server.base_dir,
-                                     self.server.httpPrefix,
+                                     self.server.http_prefix,
                                      self.server.domain,
                                      self.server.domainFull,
                                      self.server.port,
@@ -15470,7 +15474,7 @@ class PubServer(BaseHTTPRequestHandler):
         if authorized and htmlGET and '?delete=' in self.path:
             self._deleteButton(callingDomain, self.path,
                                self.server.base_dir,
-                               self.server.httpPrefix,
+                               self.server.http_prefix,
                                self.server.domain,
                                self.server.domainFull,
                                self.server.port,
@@ -15490,7 +15494,7 @@ class PubServer(BaseHTTPRequestHandler):
         if authorized and htmlGET and '?mute=' in self.path:
             self._muteButton(callingDomain, self.path,
                              self.server.base_dir,
-                             self.server.httpPrefix,
+                             self.server.http_prefix,
                              self.server.domain,
                              self.server.domainFull,
                              self.server.port,
@@ -15510,7 +15514,7 @@ class PubServer(BaseHTTPRequestHandler):
         if authorized and htmlGET and '?unmute=' in self.path:
             self._undoMuteButton(callingDomain, self.path,
                                  self.server.base_dir,
-                                 self.server.httpPrefix,
+                                 self.server.http_prefix,
                                  self.server.domain,
                                  self.server.domainFull,
                                  self.server.port,
@@ -15641,13 +15645,13 @@ class PubServer(BaseHTTPRequestHandler):
                 nickname = getNicknameFromActor(self.path.split('?')[0])
                 if nickname == actor:
                     postUrl = \
-                        localActorUrl(self.server.httpPrefix, nickname,
+                        localActorUrl(self.server.http_prefix, nickname,
                                       self.server.domainFull) + \
                         '/statuses/' + messageId
                     msg = htmlEditBlog(self.server.mediaInstance,
                                        self.server.translate,
                                        self.server.base_dir,
-                                       self.server.httpPrefix,
+                                       self.server.http_prefix,
                                        self.path,
                                        replyPageNumber,
                                        nickname, self.server.domain,
@@ -15672,7 +15676,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self._editProfile(callingDomain, self.path,
                                  self.server.translate,
                                  self.server.base_dir,
-                                 self.server.httpPrefix,
+                                 self.server.http_prefix,
                                  self.server.domain,
                                  self.server.port,
                                  cookie):
@@ -15683,7 +15687,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self._editLinks(callingDomain, self.path,
                                self.server.translate,
                                self.server.base_dir,
-                               self.server.httpPrefix,
+                               self.server.http_prefix,
                                self.server.domain,
                                self.server.port,
                                cookie,
@@ -15695,7 +15699,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self._editNewswire(callingDomain, self.path,
                                   self.server.translate,
                                   self.server.base_dir,
-                                  self.server.httpPrefix,
+                                  self.server.http_prefix,
                                   self.server.domain,
                                   self.server.port,
                                   cookie):
@@ -15706,7 +15710,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self._editNewsPost(callingDomain, self.path,
                                   self.server.translate,
                                   self.server.base_dir,
-                                  self.server.httpPrefix,
+                                  self.server.http_prefix,
                                   self.server.domain,
                                   self.server.port,
                                   self.server.domainFull,
@@ -15718,7 +15722,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.mediaInstance,
                                  self.server.translate,
                                  self.server.base_dir,
-                                 self.server.httpPrefix,
+                                 self.server.http_prefix,
                                  inReplyToUrl, replyToList,
                                  shareDescription, replyPageNumber,
                                  replyCategory,
@@ -15737,7 +15741,7 @@ class PubServer(BaseHTTPRequestHandler):
         if self._showIndividualAtPost(authorized,
                                       callingDomain, self.path,
                                       self.server.base_dir,
-                                      self.server.httpPrefix,
+                                      self.server.http_prefix,
                                       self.server.domain,
                                       self.server.domainFull,
                                       self.server.port,
@@ -15758,7 +15762,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self._showRepliesToPost(authorized,
                                        callingDomain, self.path,
                                        self.server.base_dir,
-                                       self.server.httpPrefix,
+                                       self.server.http_prefix,
                                        self.server.domain,
                                        self.server.domainFull,
                                        self.server.port,
@@ -15779,7 +15783,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self._showRoles(authorized,
                                callingDomain, self.path,
                                self.server.base_dir,
-                               self.server.httpPrefix,
+                               self.server.http_prefix,
                                self.server.domain,
                                self.server.domainFull,
                                self.server.port,
@@ -15800,7 +15804,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self._showSkills(authorized,
                                 callingDomain, self.path,
                                 self.server.base_dir,
-                                self.server.httpPrefix,
+                                self.server.http_prefix,
                                 self.server.domain,
                                 self.server.domainFull,
                                 self.server.port,
@@ -15820,7 +15824,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self._showNotifyPost(authorized,
                                     callingDomain, self.path,
                                     self.server.base_dir,
-                                    self.server.httpPrefix,
+                                    self.server.http_prefix,
                                     self.server.domain,
                                     self.server.domainFull,
                                     self.server.port,
@@ -15838,7 +15842,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self._showIndividualPost(authorized,
                                         callingDomain, self.path,
                                         self.server.base_dir,
-                                        self.server.httpPrefix,
+                                        self.server.http_prefix,
                                         self.server.domain,
                                         self.server.domainFull,
                                         self.server.port,
@@ -15859,7 +15863,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self._showInbox(authorized,
                                callingDomain, self.path,
                                self.server.base_dir,
-                               self.server.httpPrefix,
+                               self.server.http_prefix,
                                self.server.domain,
                                self.server.domainFull,
                                self.server.port,
@@ -15891,7 +15895,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self._showDMs(authorized,
                              callingDomain, self.path,
                              self.server.base_dir,
-                             self.server.httpPrefix,
+                             self.server.http_prefix,
                              self.server.domain,
                              self.server.domainFull,
                              self.server.port,
@@ -15912,7 +15916,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self._showReplies(authorized,
                                  callingDomain, self.path,
                                  self.server.base_dir,
-                                 self.server.httpPrefix,
+                                 self.server.http_prefix,
                                  self.server.domain,
                                  self.server.domainFull,
                                  self.server.port,
@@ -15933,7 +15937,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self._showMediaTimeline(authorized,
                                        callingDomain, self.path,
                                        self.server.base_dir,
-                                       self.server.httpPrefix,
+                                       self.server.http_prefix,
                                        self.server.domain,
                                        self.server.domainFull,
                                        self.server.port,
@@ -15954,7 +15958,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self._showBlogsTimeline(authorized,
                                        callingDomain, self.path,
                                        self.server.base_dir,
-                                       self.server.httpPrefix,
+                                       self.server.http_prefix,
                                        self.server.domain,
                                        self.server.domainFull,
                                        self.server.port,
@@ -15975,7 +15979,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self._showNewsTimeline(authorized,
                                       callingDomain, self.path,
                                       self.server.base_dir,
-                                      self.server.httpPrefix,
+                                      self.server.http_prefix,
                                       self.server.domain,
                                       self.server.domainFull,
                                       self.server.port,
@@ -15993,7 +15997,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self._showFeaturesTimeline(authorized,
                                           callingDomain, self.path,
                                           self.server.base_dir,
-                                          self.server.httpPrefix,
+                                          self.server.http_prefix,
                                           self.server.domain,
                                           self.server.domainFull,
                                           self.server.port,
@@ -16014,7 +16018,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self._showSharesTimeline(authorized,
                                         callingDomain, self.path,
                                         self.server.base_dir,
-                                        self.server.httpPrefix,
+                                        self.server.http_prefix,
                                         self.server.domain,
                                         self.server.domainFull,
                                         self.server.port,
@@ -16031,7 +16035,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self._showWantedTimeline(authorized,
                                         callingDomain, self.path,
                                         self.server.base_dir,
-                                        self.server.httpPrefix,
+                                        self.server.http_prefix,
                                         self.server.domain,
                                         self.server.domainFull,
                                         self.server.port,
@@ -16070,7 +16074,7 @@ class PubServer(BaseHTTPRequestHandler):
                 htmlAccountInfo(self.server.cssCache,
                                 self.server.translate,
                                 self.server.base_dir,
-                                self.server.httpPrefix,
+                                self.server.http_prefix,
                                 nickname,
                                 self.server.domain,
                                 self.server.port,
@@ -16107,7 +16111,7 @@ class PubServer(BaseHTTPRequestHandler):
                 htmlAccountInfo(self.server.cssCache,
                                 self.server.translate,
                                 self.server.base_dir,
-                                self.server.httpPrefix,
+                                self.server.http_prefix,
                                 nickname,
                                 self.server.domain,
                                 self.server.port,
@@ -16131,7 +16135,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self._showBookmarksTimeline(authorized,
                                            callingDomain, self.path,
                                            self.server.base_dir,
-                                           self.server.httpPrefix,
+                                           self.server.http_prefix,
                                            self.server.domain,
                                            self.server.domainFull,
                                            self.server.port,
@@ -16153,7 +16157,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self._showOutboxTimeline(authorized,
                                         callingDomain, self.path,
                                         self.server.base_dir,
-                                        self.server.httpPrefix,
+                                        self.server.http_prefix,
                                         self.server.domain,
                                         self.server.domainFull,
                                         self.server.port,
@@ -16175,7 +16179,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self._showModTimeline(authorized,
                                      callingDomain, self.path,
                                      self.server.base_dir,
-                                     self.server.httpPrefix,
+                                     self.server.http_prefix,
                                      self.server.domain,
                                      self.server.domainFull,
                                      self.server.port,
@@ -16194,7 +16198,7 @@ class PubServer(BaseHTTPRequestHandler):
         if self._showSharesFeed(authorized,
                                 callingDomain, self.path,
                                 self.server.base_dir,
-                                self.server.httpPrefix,
+                                self.server.http_prefix,
                                 self.server.domain,
                                 self.server.domainFull,
                                 self.server.port,
@@ -16213,7 +16217,7 @@ class PubServer(BaseHTTPRequestHandler):
         if self._showFollowingFeed(authorized,
                                    callingDomain, self.path,
                                    self.server.base_dir,
-                                   self.server.httpPrefix,
+                                   self.server.http_prefix,
                                    self.server.domain,
                                    self.server.domainFull,
                                    self.server.port,
@@ -16232,7 +16236,7 @@ class PubServer(BaseHTTPRequestHandler):
         if self._showFollowersFeed(authorized,
                                    callingDomain, self.path,
                                    self.server.base_dir,
-                                   self.server.httpPrefix,
+                                   self.server.http_prefix,
                                    self.server.domain,
                                    self.server.domainFull,
                                    self.server.port,
@@ -16252,7 +16256,7 @@ class PubServer(BaseHTTPRequestHandler):
         if self._showPersonProfile(authorized,
                                    callingDomain, self.path,
                                    self.server.base_dir,
-                                   self.server.httpPrefix,
+                                   self.server.http_prefix,
                                    self.server.domain,
                                    self.server.domainFull,
                                    self.server.port,
@@ -16576,7 +16580,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      nickname,
                                      self.server.domain,
                                      self.server.port,
-                                     self.server.httpPrefix,
+                                     self.server.http_prefix,
                                      mentionsStr + fields['message'],
                                      False, False, False, commentsEnabled,
                                      filename, attachmentMediaType,
@@ -16606,7 +16610,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.projectVersion,
                                           nickname):
                         populateReplies(self.server.base_dir,
-                                        self.server.httpPrefix,
+                                        self.server.http_prefix,
                                         self.server.domainFull,
                                         messageJson,
                                         self.server.maxReplies,
@@ -16621,7 +16625,7 @@ class PubServer(BaseHTTPRequestHandler):
                         htmlCitations(self.server.base_dir,
                                       nickname,
                                       self.server.domain,
-                                      self.server.httpPrefix,
+                                      self.server.http_prefix,
                                       self.server.defaultTimeline,
                                       self.server.translate,
                                       self.server.newswire,
@@ -16658,7 +16662,7 @@ class PubServer(BaseHTTPRequestHandler):
                 messageJson = \
                     createBlogPost(self.server.base_dir, nickname,
                                    self.server.domain, self.server.port,
-                                   self.server.httpPrefix,
+                                   self.server.http_prefix,
                                    fields['message'],
                                    followersOnly, saveToFile,
                                    clientToServer, commentsEnabled,
@@ -16683,7 +16687,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           nickname):
                         refreshNewswire(self.server.base_dir)
                         populateReplies(self.server.base_dir,
-                                        self.server.httpPrefix,
+                                        self.server.http_prefix,
                                         self.server.domainFull,
                                         messageJson,
                                         self.server.maxReplies,
@@ -16723,7 +16727,7 @@ class PubServer(BaseHTTPRequestHandler):
                         mentionedRecipients = []
                         fields['message'] = \
                             addHtmlTags(self.server.base_dir,
-                                        self.server.httpPrefix,
+                                        self.server.http_prefix,
                                         nickname, self.server.domain,
                                         fields['message'],
                                         mentionedRecipients,
@@ -16756,7 +16760,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                   self.server.domain)
                             postJsonObject['object'] = \
                                 attachMedia(self.server.base_dir,
-                                            self.server.httpPrefix,
+                                            self.server.http_prefix,
                                             nickname,
                                             self.server.domain,
                                             self.server.port,
@@ -16808,7 +16812,7 @@ class PubServer(BaseHTTPRequestHandler):
                     createUnlistedPost(self.server.base_dir,
                                        nickname,
                                        self.server.domain, self.server.port,
-                                       self.server.httpPrefix,
+                                       self.server.http_prefix,
                                        mentionsStr + fields['message'],
                                        followersOnly, saveToFile,
                                        clientToServer, commentsEnabled,
@@ -16833,7 +16837,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.projectVersion,
                                           nickname):
                         populateReplies(self.server.base_dir,
-                                        self.server.httpPrefix,
+                                        self.server.http_prefix,
                                         self.server.domain,
                                         messageJson,
                                         self.server.maxReplies,
@@ -16859,7 +16863,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             nickname,
                                             self.server.domain,
                                             self.server.port,
-                                            self.server.httpPrefix,
+                                            self.server.http_prefix,
                                             mentionsStr + fields['message'],
                                             followersOnly, saveToFile,
                                             clientToServer,
@@ -16885,7 +16889,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.projectVersion,
                                           nickname):
                         populateReplies(self.server.base_dir,
-                                        self.server.httpPrefix,
+                                        self.server.http_prefix,
                                         self.server.domain,
                                         messageJson,
                                         self.server.maxReplies,
@@ -16914,7 +16918,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                 nickname,
                                                 self.server.domain,
                                                 self.server.port,
-                                                self.server.httpPrefix,
+                                                self.server.http_prefix,
                                                 mentionsStr +
                                                 fields['message'],
                                                 followersOnly, saveToFile,
@@ -16943,7 +16947,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.projectVersion,
                                           nickname):
                         populateReplies(self.server.base_dir,
-                                        self.server.httpPrefix,
+                                        self.server.http_prefix,
                                         self.server.domain,
                                         messageJson,
                                         self.server.maxReplies,
@@ -16971,7 +16975,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             nickname,
                                             self.server.domain,
                                             self.server.port,
-                                            self.server.httpPrefix,
+                                            self.server.http_prefix,
                                             mentionsStr + fields['message'],
                                             followersOnly, saveToFile,
                                             clientToServer, commentsEnabled,
@@ -17015,7 +17019,7 @@ class PubServer(BaseHTTPRequestHandler):
                     createReportPost(self.server.base_dir,
                                      nickname,
                                      self.server.domain, self.server.port,
-                                     self.server.httpPrefix,
+                                     self.server.http_prefix,
                                      mentionsStr + fields['message'],
                                      True, False, False, True,
                                      filename, attachmentMediaType,
@@ -17055,7 +17059,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        nickname,
                                        self.server.domain,
                                        self.server.port,
-                                       self.server.httpPrefix,
+                                       self.server.http_prefix,
                                        fields['message'], qOptions,
                                        False, False, False,
                                        commentsEnabled,
@@ -17124,7 +17128,7 @@ class PubServer(BaseHTTPRequestHandler):
                     print('Adding wanted item')
                     sharesFileType = 'wanted'
                 addShare(self.server.base_dir,
-                         self.server.httpPrefix,
+                         self.server.http_prefix,
                          nickname,
                          self.server.domain, self.server.port,
                          fields['subject'],
@@ -17519,7 +17523,7 @@ class PubServer(BaseHTTPRequestHandler):
         # login screen
         if self.path.startswith('/login'):
             self._loginScreen(self.path, callingDomain, cookie,
-                              self.server.base_dir, self.server.httpPrefix,
+                              self.server.base_dir, self.server.http_prefix,
                               self.server.domain, self.server.domainFull,
                               self.server.port,
                               self.server.onionDomain, self.server.i2pDomain,
@@ -17535,7 +17539,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._setHashtagCategory(callingDomain, cookie,
                                      authorized, self.path,
                                      self.server.base_dir,
-                                     self.server.httpPrefix,
+                                     self.server.http_prefix,
                                      self.server.domain,
                                      self.server.domainFull,
                                      self.server.onionDomain,
@@ -17550,7 +17554,7 @@ class PubServer(BaseHTTPRequestHandler):
         # after selecting Edit button then Submit
         if authorized and self.path.endswith('/profiledata'):
             self._profileUpdate(callingDomain, cookie, authorized, self.path,
-                                self.server.base_dir, self.server.httpPrefix,
+                                self.server.base_dir, self.server.http_prefix,
                                 self.server.domain,
                                 self.server.domainFull,
                                 self.server.onionDomain,
@@ -17563,7 +17567,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         if authorized and self.path.endswith('/linksdata'):
             self._linksUpdate(callingDomain, cookie, authorized, self.path,
-                              self.server.base_dir, self.server.httpPrefix,
+                              self.server.base_dir, self.server.http_prefix,
                               self.server.domain,
                               self.server.domainFull,
                               self.server.onionDomain,
@@ -17575,7 +17579,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         if authorized and self.path.endswith('/newswiredata'):
             self._newswireUpdate(callingDomain, cookie, authorized, self.path,
-                                 self.server.base_dir, self.server.httpPrefix,
+                                 self.server.base_dir, self.server.http_prefix,
                                  self.server.domain,
                                  self.server.domainFull,
                                  self.server.onionDomain,
@@ -17586,7 +17590,8 @@ class PubServer(BaseHTTPRequestHandler):
 
         if authorized and self.path.endswith('/citationsdata'):
             self._citationsUpdate(callingDomain, cookie, authorized, self.path,
-                                  self.server.base_dir, self.server.httpPrefix,
+                                  self.server.base_dir,
+                                  self.server.http_prefix,
                                   self.server.domain,
                                   self.server.domainFull,
                                   self.server.onionDomain,
@@ -17598,7 +17603,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         if authorized and self.path.endswith('/newseditdata'):
             self._newsPostEdit(callingDomain, cookie, authorized, self.path,
-                               self.server.base_dir, self.server.httpPrefix,
+                               self.server.base_dir, self.server.http_prefix,
                                self.server.domain,
                                self.server.domainFull,
                                self.server.onionDomain,
@@ -17620,7 +17625,7 @@ class PubServer(BaseHTTPRequestHandler):
            self.path.endswith('/moderationaction'):
             self._moderatorActions(self.path, callingDomain, cookie,
                                    self.server.base_dir,
-                                   self.server.httpPrefix,
+                                   self.server.http_prefix,
                                    self.server.domain,
                                    self.server.domainFull,
                                    self.server.port,
@@ -17654,7 +17659,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._receiveSearchQuery(callingDomain, cookie,
                                      authorized, self.path,
                                      self.server.base_dir,
-                                     self.server.httpPrefix,
+                                     self.server.http_prefix,
                                      self.server.domain,
                                      self.server.domainFull,
                                      self.server.port,
@@ -17684,7 +17689,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._receiveVote(callingDomain, cookie,
                                   authorized, self.path,
                                   self.server.base_dir,
-                                  self.server.httpPrefix,
+                                  self.server.http_prefix,
                                   self.server.domain,
                                   self.server.domainFull,
                                   self.server.onionDomain,
@@ -17698,7 +17703,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._removeShare(callingDomain, cookie,
                                   authorized, self.path,
                                   self.server.base_dir,
-                                  self.server.httpPrefix,
+                                  self.server.http_prefix,
                                   self.server.domain,
                                   self.server.domainFull,
                                   self.server.onionDomain,
@@ -17712,7 +17717,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._removeWanted(callingDomain, cookie,
                                    authorized, self.path,
                                    self.server.base_dir,
-                                   self.server.httpPrefix,
+                                   self.server.http_prefix,
                                    self.server.domain,
                                    self.server.domainFull,
                                    self.server.onionDomain,
@@ -17737,7 +17742,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._removePost(callingDomain, cookie,
                                  authorized, self.path,
                                  self.server.base_dir,
-                                 self.server.httpPrefix,
+                                 self.server.http_prefix,
                                  self.server.domain,
                                  self.server.domainFull,
                                  self.server.onionDomain,
@@ -17755,7 +17760,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._followConfirm(callingDomain, cookie,
                                     authorized, self.path,
                                     self.server.base_dir,
-                                    self.server.httpPrefix,
+                                    self.server.http_prefix,
                                     self.server.domain,
                                     self.server.domainFull,
                                     self.server.port,
@@ -17774,7 +17779,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._unfollowConfirm(callingDomain, cookie,
                                       authorized, self.path,
                                       self.server.base_dir,
-                                      self.server.httpPrefix,
+                                      self.server.http_prefix,
                                       self.server.domain,
                                       self.server.domainFull,
                                       self.server.port,
@@ -17793,7 +17798,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._unblockConfirm(callingDomain, cookie,
                                      authorized, self.path,
                                      self.server.base_dir,
-                                     self.server.httpPrefix,
+                                     self.server.http_prefix,
                                      self.server.domain,
                                      self.server.domainFull,
                                      self.server.port,
@@ -17812,7 +17817,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._blockConfirm(callingDomain, cookie,
                                    authorized, self.path,
                                    self.server.base_dir,
-                                   self.server.httpPrefix,
+                                   self.server.http_prefix,
                                    self.server.domain,
                                    self.server.domainFull,
                                    self.server.port,
@@ -17832,7 +17837,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._personOptions(self.path,
                                     callingDomain, cookie,
                                     self.server.base_dir,
-                                    self.server.httpPrefix,
+                                    self.server.http_prefix,
                                     self.server.domain,
                                     self.server.domainFull,
                                     self.server.port,
@@ -17857,7 +17862,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._keyShortcuts(self.path,
                                    callingDomain, cookie,
                                    self.server.base_dir,
-                                   self.server.httpPrefix,
+                                   self.server.http_prefix,
                                    nickname,
                                    self.server.domain,
                                    self.server.domainFull,
@@ -17885,7 +17890,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._themeDesigner(self.path,
                                     callingDomain, cookie,
                                     self.server.base_dir,
-                                    self.server.httpPrefix,
+                                    self.server.http_prefix,
                                     nickname,
                                     self.server.domain,
                                     self.server.domainFull,
@@ -17995,7 +18000,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            callingDomain)
                 else:
                     actorPathStr = \
-                        localActorUrl(self.server.httpPrefix, nickname,
+                        localActorUrl(self.server.http_prefix, nickname,
                                       self.server.domainFull) + \
                         '/' + postRedirect + '?page=' + str(pageNumber)
                     self._redirect_headers(actorPathStr, cookie,
@@ -18066,7 +18071,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._receiveImage(length, callingDomain, cookie,
                                authorized, self.path,
                                self.server.base_dir,
-                               self.server.httpPrefix,
+                               self.server.http_prefix,
                                self.server.domain,
                                self.server.domainFull,
                                self.server.onionDomain,
@@ -18426,7 +18431,7 @@ def runDaemon(contentLicenseUrl: str,
               YTReplacementDomain: str,
               twitterReplacementDomain: str,
               port: int = 80, proxyPort: int = 80,
-              httpPrefix: str = 'https',
+              http_prefix: str = 'https',
               fedList: [] = [],
               maxMentions: int = 10, maxEmoji: int = 10,
               secureMode: bool = False,
@@ -18683,8 +18688,8 @@ def runDaemon(contentLicenseUrl: str,
     httpd.domain = domain
     httpd.port = port
     httpd.domainFull = getFullDomain(domain, port)
-    saveDomainQrcode(base_dir, httpPrefix, httpd.domainFull)
-    httpd.httpPrefix = httpPrefix
+    saveDomainQrcode(base_dir, http_prefix, httpd.domainFull)
+    httpd.http_prefix = http_prefix
     httpd.debug = debug
     httpd.federationList = fedList.copy()
     httpd.sharedItemsFederatedDomains = sharedItemsFederatedDomains.copy()
@@ -18733,18 +18738,18 @@ def runDaemon(contentLicenseUrl: str,
 
     # get the list of custom emoji, for use by the mastodon api
     httpd.customEmoji = \
-        metadataCustomEmoji(base_dir, httpPrefix, httpd.domainFull)
+        metadataCustomEmoji(base_dir, http_prefix, httpd.domainFull)
 
     # whether to enable broch mode, which locks down the instance
     setBrochMode(base_dir, httpd.domainFull, brochMode)
 
     if not os.path.isdir(base_dir + '/accounts/inbox@' + domain):
         print('Creating shared inbox: inbox@' + domain)
-        createSharedInbox(base_dir, 'inbox', domain, port, httpPrefix)
+        createSharedInbox(base_dir, 'inbox', domain, port, http_prefix)
 
     if not os.path.isdir(base_dir + '/accounts/news@' + domain):
         print('Creating news inbox: news@' + domain)
-        createNewsInbox(base_dir, domain, port, httpPrefix)
+        createNewsInbox(base_dir, domain, port, http_prefix)
         setConfigParam(base_dir, "listsEnabled", "Murdoch press")
 
     # dict of known web crawlers accessing nodeinfo or the masto API
@@ -18780,7 +18785,7 @@ def runDaemon(contentLicenseUrl: str,
 
     setNewsAvatar(base_dir,
                   httpd.themeName,
-                  httpPrefix,
+                  http_prefix,
                   domain,
                   httpd.domainFull)
 
@@ -18815,7 +18820,7 @@ def runDaemon(contentLicenseUrl: str,
     httpd.thrCache = \
         threadWithTrace(target=expireCache,
                         args=(base_dir, httpd.personCache,
-                              httpd.httpPrefix,
+                              httpd.http_prefix,
                               archiveDir,
                               httpd.maxPostsInBox), daemon=True)
     httpd.thrCache.start()
@@ -18865,14 +18870,14 @@ def runDaemon(contentLicenseUrl: str,
     httpd.peertubeInstances = []
     loadPeertubeInstances(base_dir, httpd.peertubeInstances)
 
-    createInitialLastSeen(base_dir, httpPrefix)
+    createInitialLastSeen(base_dir, http_prefix)
 
     print('Creating inbox queue')
     httpd.thrInboxQueue = \
         threadWithTrace(target=runInboxQueue,
                         args=(httpd.recentPostsCache, httpd.maxRecentPosts,
                               projectVersion,
-                              base_dir, httpPrefix, httpd.sendThreads,
+                              base_dir, http_prefix, httpd.sendThreads,
                               httpd.postLog, httpd.cachedWebfingers,
                               httpd.personCache, httpd.inboxQueue,
                               domain, onionDomain, i2pDomain, port, proxyType,
@@ -18904,14 +18909,14 @@ def runDaemon(contentLicenseUrl: str,
     httpd.thrNewswireDaemon = \
         threadWithTrace(target=runNewswireDaemon,
                         args=(base_dir, httpd,
-                              httpPrefix, domain, port,
+                              http_prefix, domain, port,
                               httpd.translate), daemon=True)
 
     print('Creating federated shares thread')
     httpd.thrFederatedSharesDaemon = \
         threadWithTrace(target=runFederatedSharesDaemon,
                         args=(base_dir, httpd,
-                              httpPrefix, httpd.domainFull,
+                              http_prefix, httpd.domainFull,
                               proxyType, debug,
                               httpd.systemLanguage), daemon=True)
 

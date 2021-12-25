@@ -17,7 +17,7 @@ from markdown import markdownToHtml
 
 
 def htmlWelcomeFinal(base_dir: str, nickname: str, domain: str,
-                     httpPrefix: str, domainFull: str,
+                     http_prefix: str, domainFull: str,
                      language: str, translate: {},
                      themeName: str) -> str:
     """Returns the final welcome screen after first login

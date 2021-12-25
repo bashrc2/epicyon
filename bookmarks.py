@@ -249,7 +249,7 @@ def updateBookmarksCollection(recentPostsCache: {},
 def bookmark(recentPostsCache: {},
              session, base_dir: str, federationList: [],
              nickname: str, domain: str, port: int,
-             ccList: [], httpPrefix: str,
+             ccList: [], http_prefix: str,
              objectUrl: str, actorBookmarked: str,
              clientToServer: bool,
              sendThreads: [], postLog: [],
@@ -268,7 +268,7 @@ def bookmark(recentPostsCache: {},
     newBookmarkJson = {
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Bookmark',
-        'actor': localActorUrl(httpPrefix, nickname, fullDomain),
+        'actor': localActorUrl(http_prefix, nickname, fullDomain),
         'object': objectUrl
     }
     if ccList:
@@ -308,7 +308,7 @@ def bookmark(recentPostsCache: {},
 def undoBookmark(recentPostsCache: {},
                  session, base_dir: str, federationList: [],
                  nickname: str, domain: str, port: int,
-                 ccList: [], httpPrefix: str,
+                 ccList: [], http_prefix: str,
                  objectUrl: str, actorBookmarked: str,
                  clientToServer: bool,
                  sendThreads: [], postLog: [],
@@ -327,10 +327,10 @@ def undoBookmark(recentPostsCache: {},
     newUndoBookmarkJson = {
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Undo',
-        'actor': localActorUrl(httpPrefix, nickname, fullDomain),
+        'actor': localActorUrl(http_prefix, nickname, fullDomain),
         'object': {
             'type': 'Bookmark',
-            'actor': localActorUrl(httpPrefix, nickname, fullDomain),
+            'actor': localActorUrl(http_prefix, nickname, fullDomain),
             'object': objectUrl
         }
     }
@@ -371,7 +371,7 @@ def undoBookmark(recentPostsCache: {},
 def sendBookmarkViaServer(base_dir: str, session,
                           nickname: str, password: str,
                           domain: str, fromPort: int,
-                          httpPrefix: str, bookmarkUrl: str,
+                          http_prefix: str, bookmarkUrl: str,
                           cachedWebfingers: {}, personCache: {},
                           debug: bool, projectVersion: str,
                           signingPrivateKeyPem: str) -> {}:
@@ -383,7 +383,7 @@ def sendBookmarkViaServer(base_dir: str, session,
 
     domainFull = getFullDomain(domain, fromPort)
 
-    actor = localActorUrl(httpPrefix, nickname, domainFull)
+    actor = localActorUrl(http_prefix, nickname, domainFull)
 
     newBookmarkJson = {
         "@context": "https://www.w3.org/ns/activitystreams",
@@ -398,10 +398,10 @@ def sendBookmarkViaServer(base_dir: str, session,
         "target": actor + "/tlbookmarks"
     }
 
-    handle = httpPrefix + '://' + domainFull + '/@' + nickname
+    handle = http_prefix + '://' + domainFull + '/@' + nickname
 
     # lookup the inbox for the To handle
-    wfRequest = webfingerHandle(session, handle, httpPrefix,
+    wfRequest = webfingerHandle(session, handle, http_prefix,
                                 cachedWebfingers,
                                 domain, projectVersion, debug, False,
                                 signingPrivateKeyPem)
@@ -423,7 +423,7 @@ def sendBookmarkViaServer(base_dir: str, session,
                                     originDomain,
                                     base_dir, session, wfRequest,
                                     personCache,
-                                    projectVersion, httpPrefix,
+                                    projectVersion, http_prefix,
                                     nickname, domain,
                                     postToBox, 58391)
 
@@ -444,7 +444,7 @@ def sendBookmarkViaServer(base_dir: str, session,
         'Content-type': 'application/json',
         'Authorization': authHeader
     }
-    postResult = postJson(httpPrefix, domainFull,
+    postResult = postJson(http_prefix, domainFull,
                           session, newBookmarkJson, [], inboxUrl,
                           headers, 3, True)
     if not postResult:
@@ -461,7 +461,7 @@ def sendBookmarkViaServer(base_dir: str, session,
 def sendUndoBookmarkViaServer(base_dir: str, session,
                               nickname: str, password: str,
                               domain: str, fromPort: int,
-                              httpPrefix: str, bookmarkUrl: str,
+                              http_prefix: str, bookmarkUrl: str,
                               cachedWebfingers: {}, personCache: {},
                               debug: bool, projectVersion: str,
                               signingPrivateKeyPem: str) -> {}:
@@ -473,7 +473,7 @@ def sendUndoBookmarkViaServer(base_dir: str, session,
 
     domainFull = getFullDomain(domain, fromPort)
 
-    actor = localActorUrl(httpPrefix, nickname, domainFull)
+    actor = localActorUrl(http_prefix, nickname, domainFull)
 
     newBookmarkJson = {
         "@context": "https://www.w3.org/ns/activitystreams",
@@ -488,10 +488,10 @@ def sendUndoBookmarkViaServer(base_dir: str, session,
         "target": actor + "/tlbookmarks"
     }
 
-    handle = httpPrefix + '://' + domainFull + '/@' + nickname
+    handle = http_prefix + '://' + domainFull + '/@' + nickname
 
     # lookup the inbox for the To handle
-    wfRequest = webfingerHandle(session, handle, httpPrefix,
+    wfRequest = webfingerHandle(session, handle, http_prefix,
                                 cachedWebfingers,
                                 domain, projectVersion, debug, False,
                                 signingPrivateKeyPem)
@@ -513,7 +513,7 @@ def sendUndoBookmarkViaServer(base_dir: str, session,
                                     originDomain,
                                     base_dir, session, wfRequest,
                                     personCache,
-                                    projectVersion, httpPrefix,
+                                    projectVersion, http_prefix,
                                     nickname, domain,
                                     postToBox, 52594)
 
@@ -534,7 +534,7 @@ def sendUndoBookmarkViaServer(base_dir: str, session,
         'Content-type': 'application/json',
         'Authorization': authHeader
     }
-    postResult = postJson(httpPrefix, domainFull,
+    postResult = postJson(http_prefix, domainFull,
                           session, newBookmarkJson, [], inboxUrl,
                           headers, 3, True)
     if not postResult:
@@ -549,7 +549,7 @@ def sendUndoBookmarkViaServer(base_dir: str, session,
 
 
 def outboxBookmark(recentPostsCache: {},
-                   base_dir: str, httpPrefix: str,
+                   base_dir: str, http_prefix: str,
                    nickname: str, domain: str, port: int,
                    messageJson: {}, debug: bool) -> None:
     """ When a bookmark request is received by the outbox from c2s
@@ -605,7 +605,7 @@ def outboxBookmark(recentPostsCache: {},
 
 
 def outboxUndoBookmark(recentPostsCache: {},
-                       base_dir: str, httpPrefix: str,
+                       base_dir: str, http_prefix: str,
                        nickname: str, domain: str, port: int,
                        messageJson: {}, debug: bool) -> None:
     """ When an undo bookmark request is received by the outbox from c2s

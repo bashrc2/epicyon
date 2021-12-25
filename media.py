@@ -293,7 +293,7 @@ def _updateEtag(mediaFilename: str) -> None:
               str(mediaFilename) + '.etag')
 
 
-def attachMedia(base_dir: str, httpPrefix: str,
+def attachMedia(base_dir: str, http_prefix: str,
                 nickname: str, domain: str, port: int,
                 postJson: {}, imageFilename: str,
                 mediaType: str, description: str,
@@ -338,7 +338,7 @@ def attachMedia(base_dir: str, httpPrefix: str,
         'mediaType': mediaType,
         'name': description,
         'type': 'Document',
-        'url': httpPrefix + '://' + domain + '/' + mediaPath
+        'url': http_prefix + '://' + domain + '/' + mediaPath
     }
     if mediaType.startswith('image/'):
         attachmentJson['blurhash'] = _getBlurHash()

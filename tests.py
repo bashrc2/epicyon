@@ -185,7 +185,7 @@ thrEve = None
 
 def _testHttpSignedGET(base_dir: str):
     print('testHttpSignedGET')
-    httpPrefix = 'https'
+    http_prefix = 'https'
     debug = True
 
     boxpath = "/users/Actor"
@@ -240,12 +240,12 @@ def _testHttpSignedGET(base_dir: str):
     messageBodyDigest = None
     messageBodyJsonStr = ''
     noRecencyCheck = True
-    assert verifyPostHeaders(httpPrefix, publicKeyPem, headers,
+    assert verifyPostHeaders(http_prefix, publicKeyPem, headers,
                              boxpath, GETmethod, messageBodyDigest,
                              messageBodyJsonStr, debug, noRecencyCheck)
     # Change a single character and the signature should fail
     headers['date'] = headers['date'].replace(':10', ':11')
-    assert not verifyPostHeaders(httpPrefix, publicKeyPem, headers,
+    assert not verifyPostHeaders(http_prefix, publicKeyPem, headers,
                                  boxpath, GETmethod, messageBodyDigest,
                                  messageBodyJsonStr, debug, noRecencyCheck)
 
@@ -258,13 +258,13 @@ def _testHttpSignedGET(base_dir: str):
     nickname = 'testactor'
     hostDomain = 'someother.instance'
     domain = 'argumentative.social'
-    httpPrefix = 'https'
+    http_prefix = 'https'
     port = 443
     withDigest = False
     password = 'SuperSecretPassword'
     noRecencyCheck = True
     privateKeyPem, publicKeyPem, person, wfEndpoint = \
-        createPerson(path, nickname, domain, port, httpPrefix,
+        createPerson(path, nickname, domain, port, http_prefix,
                      False, False, password)
     assert privateKeyPem
     assert publicKeyPem
@@ -287,12 +287,12 @@ def _testHttpSignedGET(base_dir: str):
                                          privateKeyPem, nickname,
                                          domain, port,
                                          hostDomain, port,
-                                         boxpath, httpPrefix, False,
+                                         boxpath, http_prefix, False,
                                          None, accept)
 
     headers['signature'] = signatureHeader['signature']
     GETmethod = not withDigest
-    assert verifyPostHeaders(httpPrefix, publicKeyPem, headers,
+    assert verifyPostHeaders(http_prefix, publicKeyPem, headers,
                              boxpath, GETmethod, None,
                              messageBodyJsonStr, debug, noRecencyCheck)
     if os.path.isdir(path):
@@ -395,7 +395,7 @@ def _testSignAndVerify() -> None:
 
 def _testHttpSigNew(algorithm: str, digestAlgorithm: str):
     print('testHttpSigNew')
-    httpPrefix = 'https'
+    http_prefix = 'https'
     port = 443
     debug = True
     messageBodyJson = {"hello": "world"}
@@ -489,7 +489,7 @@ def _testHttpSigNew(algorithm: str, digestAlgorithm: str):
         signPostHeadersNew(dateStr, privateKeyPem, nickname,
                            domain, port,
                            domain, port,
-                           pathStr, httpPrefix, messageBodyJsonStr,
+                           pathStr, http_prefix, messageBodyJsonStr,
                            algorithm, digestAlgorithm, debug)
     print('signatureIndexHeader1: ' + str(signatureIndexHeader))
     print('signatureHeader1: ' + str(signatureHeader))
@@ -511,14 +511,14 @@ def _testHttpSigNew(algorithm: str, digestAlgorithm: str):
     headers['path'] = pathStr
     headers['signature'] = sig
     headers['signature-input'] = sigInput
-    assert verifyPostHeaders(httpPrefix, publicKeyPem, headers,
+    assert verifyPostHeaders(http_prefix, publicKeyPem, headers,
                              pathStr, False, None,
                              messageBodyJsonStr, debug, True)
 
     # make a deliberate mistake
     debug = False
     headers['signature'] = headers['signature'].replace('V', 'B')
-    assert not verifyPostHeaders(httpPrefix, publicKeyPem, headers,
+    assert not verifyPostHeaders(http_prefix, publicKeyPem, headers,
                                  pathStr, False, None,
                                  messageBodyJsonStr, debug, True)
 
@@ -538,11 +538,11 @@ def _testHttpsigBase(withDigest: bool, base_dir: str):
     nickname = 'socrates'
     hostDomain = 'someother.instance'
     domain = 'argumentative.social'
-    httpPrefix = 'https'
+    http_prefix = 'https'
     port = 5576
     password = 'SuperSecretPassword'
     privateKeyPem, publicKeyPem, person, wfEndpoint = \
-        createPerson(path, nickname, domain, port, httpPrefix,
+        createPerson(path, nickname, domain, port, http_prefix,
                      False, False, password)
     assert privateKeyPem
     if withDigest:
@@ -569,7 +569,7 @@ def _testHttpsigBase(withDigest: bool, base_dir: str):
             signPostHeaders(dateStr, privateKeyPem, nickname,
                             domain, port,
                             hostDomain, port,
-                            boxpath, httpPrefix, None, contentType,
+                            boxpath, http_prefix, None, contentType,
                             algorithm, None)
     else:
         digestPrefix = getDigestPrefix(digestAlgorithm)
@@ -587,25 +587,25 @@ def _testHttpsigBase(withDigest: bool, base_dir: str):
             signPostHeaders(dateStr, privateKeyPem, nickname,
                             domain, port,
                             hostDomain, port,
-                            boxpath, httpPrefix, messageBodyJsonStr,
+                            boxpath, http_prefix, messageBodyJsonStr,
                             contentType, algorithm, digestAlgorithm)
 
     headers['signature'] = signatureHeader
     GETmethod = not withDigest
     debug = True
-    assert verifyPostHeaders(httpPrefix, publicKeyPem, headers,
+    assert verifyPostHeaders(http_prefix, publicKeyPem, headers,
                              boxpath, GETmethod, None,
                              messageBodyJsonStr, debug)
     if withDigest:
         # everything correct except for content-length
         headers['content-length'] = str(contentLength + 2)
-        assert verifyPostHeaders(httpPrefix, publicKeyPem, headers,
+        assert verifyPostHeaders(http_prefix, publicKeyPem, headers,
                                  boxpath, GETmethod, None,
                                  messageBodyJsonStr, False) is False
-    assert verifyPostHeaders(httpPrefix, publicKeyPem, headers,
+    assert verifyPostHeaders(http_prefix, publicKeyPem, headers,
                              '/parambulator' + boxpath, GETmethod, None,
                              messageBodyJsonStr, False) is False
-    assert verifyPostHeaders(httpPrefix, publicKeyPem, headers,
+    assert verifyPostHeaders(http_prefix, publicKeyPem, headers,
                              boxpath, not GETmethod, None,
                              messageBodyJsonStr, False) is False
     if not withDigest:
@@ -632,7 +632,7 @@ def _testHttpsigBase(withDigest: bool, base_dir: str):
         }
         assert getDigestAlgorithmFromHeaders(headers) == digestAlgorithm
     headers['signature'] = signatureHeader
-    assert verifyPostHeaders(httpPrefix, publicKeyPem, headers,
+    assert verifyPostHeaders(http_prefix, publicKeyPem, headers,
                              boxpath, not GETmethod, None,
                              messageBodyJsonStr, False) is False
 
@@ -690,7 +690,7 @@ def createServerAlice(path: str, domain: str, port: int,
     sharedItemsFederatedDomains = []
     systemLanguage = 'en'
     nickname = 'alice'
-    httpPrefix = 'http'
+    http_prefix = 'http'
     proxyType = None
     password = 'alicepass'
     maxReplies = 64
@@ -699,7 +699,7 @@ def createServerAlice(path: str, domain: str, port: int,
     allowDeletion = True
     lowBandwidth = True
     privateKeyPem, publicKeyPem, person, wfEndpoint = \
-        createPerson(path, nickname, domain, port, httpPrefix, True,
+        createPerson(path, nickname, domain, port, http_prefix, True,
                      False, password)
     deleteAllPosts(path, nickname, domain, 'inbox')
     deleteAllPosts(path, nickname, domain, 'outbox')
@@ -729,7 +729,7 @@ def createServerAlice(path: str, domain: str, port: int,
         testIsArticle = False
         conversationId = None
         contentLicenseUrl = 'https://creativecommons.org/licenses/by/4.0'
-        createPublicPost(path, nickname, domain, port, httpPrefix,
+        createPublicPost(path, nickname, domain, port, http_prefix,
                          "No wise fish would go anywhere without a porpoise",
                          testFollowersOnly,
                          testSaveToFile,
@@ -743,7 +743,7 @@ def createServerAlice(path: str, domain: str, port: int,
                          testEventDate, testEventTime, testLocation,
                          testIsArticle, systemLanguage, conversationId,
                          lowBandwidth, contentLicenseUrl)
-        createPublicPost(path, nickname, domain, port, httpPrefix,
+        createPublicPost(path, nickname, domain, port, http_prefix,
                          "Curiouser and curiouser!",
                          testFollowersOnly,
                          testSaveToFile,
@@ -757,7 +757,7 @@ def createServerAlice(path: str, domain: str, port: int,
                          testEventDate, testEventTime, testLocation,
                          testIsArticle, systemLanguage, conversationId,
                          lowBandwidth, contentLicenseUrl)
-        createPublicPost(path, nickname, domain, port, httpPrefix,
+        createPublicPost(path, nickname, domain, port, http_prefix,
                          "In the gardens of memory, in the palace " +
                          "of dreams, that is where you and I shall meet",
                          testFollowersOnly,
@@ -815,7 +815,7 @@ def createServerAlice(path: str, domain: str, port: int,
               5, True, True, 'en', __version__,
               "instanceId", False, path, domain,
               onionDomain, i2pDomain, None, None, port, port,
-              httpPrefix, federationList, maxMentions, maxEmoji, False,
+              http_prefix, federationList, maxMentions, maxEmoji, False,
               proxyType, maxReplies,
               domainMaxPostsPerDay, accountMaxPostsPerDay,
               allowDeletion, True, True, False, sendThreads,
@@ -834,7 +834,7 @@ def createServerBob(path: str, domain: str, port: int,
     sharedItemsFederatedDomains = []
     systemLanguage = 'en'
     nickname = 'bob'
-    httpPrefix = 'http'
+    http_prefix = 'http'
     proxyType = None
     clientToServer = False
     password = 'bobpass'
@@ -844,7 +844,7 @@ def createServerBob(path: str, domain: str, port: int,
     allowDeletion = True
     lowBandwidth = True
     privateKeyPem, publicKeyPem, person, wfEndpoint = \
-        createPerson(path, nickname, domain, port, httpPrefix, True,
+        createPerson(path, nickname, domain, port, http_prefix, True,
                      False, password)
     deleteAllPosts(path, nickname, domain, 'inbox')
     deleteAllPosts(path, nickname, domain, 'outbox')
@@ -871,7 +871,7 @@ def createServerBob(path: str, domain: str, port: int,
         testIsArticle = False
         conversationId = None
         contentLicenseUrl = 'https://creativecommons.org/licenses/by/4.0'
-        createPublicPost(path, nickname, domain, port, httpPrefix,
+        createPublicPost(path, nickname, domain, port, http_prefix,
                          "It's your life, live it your way.",
                          testFollowersOnly,
                          testSaveToFile,
@@ -885,7 +885,7 @@ def createServerBob(path: str, domain: str, port: int,
                          testEventDate, testEventTime, testLocation,
                          testIsArticle, systemLanguage, conversationId,
                          lowBandwidth, contentLicenseUrl)
-        createPublicPost(path, nickname, domain, port, httpPrefix,
+        createPublicPost(path, nickname, domain, port, http_prefix,
                          "One of the things I've realised is that " +
                          "I am very simple",
                          testFollowersOnly,
@@ -900,7 +900,7 @@ def createServerBob(path: str, domain: str, port: int,
                          testEventDate, testEventTime, testLocation,
                          testIsArticle, systemLanguage, conversationId,
                          lowBandwidth, contentLicenseUrl)
-        createPublicPost(path, nickname, domain, port, httpPrefix,
+        createPublicPost(path, nickname, domain, port, http_prefix,
                          "Quantum physics is a bit of a passion of mine",
                          testFollowersOnly,
                          testSaveToFile,
@@ -957,7 +957,7 @@ def createServerBob(path: str, domain: str, port: int,
               5, True, True, 'en', __version__,
               "instanceId", False, path, domain,
               onionDomain, i2pDomain, None, None, port, port,
-              httpPrefix, federationList, maxMentions, maxEmoji, False,
+              http_prefix, federationList, maxMentions, maxEmoji, False,
               proxyType, maxReplies,
               domainMaxPostsPerDay, accountMaxPostsPerDay,
               allowDeletion, True, True, False, sendThreads,
@@ -974,13 +974,13 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
     os.chdir(path)
     sharedItemsFederatedDomains = []
     nickname = 'eve'
-    httpPrefix = 'http'
+    http_prefix = 'http'
     proxyType = None
     password = 'evepass'
     maxReplies = 64
     allowDeletion = True
     privateKeyPem, publicKeyPem, person, wfEndpoint = \
-        createPerson(path, nickname, domain, port, httpPrefix, True,
+        createPerson(path, nickname, domain, port, http_prefix, True,
                      False, password)
     deleteAllPosts(path, nickname, domain, 'inbox')
     deleteAllPosts(path, nickname, domain, 'outbox')
@@ -1027,7 +1027,7 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
               5, True, True, 'en', __version__,
               "instanceId", False, path, domain,
               onionDomain, i2pDomain, None, None, port, port,
-              httpPrefix, federationList, maxMentions, maxEmoji, False,
+              http_prefix, federationList, maxMentions, maxEmoji, False,
               proxyType, maxReplies, allowDeletion, True, True, False,
               sendThreads, False)
 
@@ -1044,7 +1044,7 @@ def createServerGroup(path: str, domain: str, port: int,
     sharedItemsFederatedDomains = []
     # systemLanguage = 'en'
     nickname = 'testgroup'
-    httpPrefix = 'http'
+    http_prefix = 'http'
     proxyType = None
     password = 'testgrouppass'
     maxReplies = 64
@@ -1052,7 +1052,7 @@ def createServerGroup(path: str, domain: str, port: int,
     accountMaxPostsPerDay = 1000
     allowDeletion = True
     privateKeyPem, publicKeyPem, person, wfEndpoint = \
-        createGroup(path, nickname, domain, port, httpPrefix, True,
+        createGroup(path, nickname, domain, port, http_prefix, True,
                     password)
     deleteAllPosts(path, nickname, domain, 'inbox')
     deleteAllPosts(path, nickname, domain, 'outbox')
@@ -1099,7 +1099,7 @@ def createServerGroup(path: str, domain: str, port: int,
               5, True, True, 'en', __version__,
               "instanceId", False, path, domain,
               onionDomain, i2pDomain, None, None, port, port,
-              httpPrefix, federationList, maxMentions, maxEmoji, False,
+              http_prefix, federationList, maxMentions, maxEmoji, False,
               proxyType, maxReplies,
               domainMaxPostsPerDay, accountMaxPostsPerDay,
               allowDeletion, True, True, False, sendThreads,
@@ -1115,7 +1115,7 @@ def testPostMessageBetweenServers(base_dir: str) -> None:
     testServerBobRunning = False
 
     systemLanguage = 'en'
-    httpPrefix = 'http'
+    http_prefix = 'http'
     proxyType = None
     contentLicenseUrl = 'https://creativecommons.org/licenses/by/4.0'
 
@@ -1210,7 +1210,7 @@ def testPostMessageBetweenServers(base_dir: str) -> None:
     sendResult = \
         sendPost(signingPrivateKeyPem, __version__,
                  sessionAlice, aliceDir, 'alice', aliceDomain, alicePort,
-                 'bob', bobDomain, bobPort, ccUrl, httpPrefix,
+                 'bob', bobDomain, bobPort, ccUrl, http_prefix,
                  'Why is a mouse when it spins? ' +
                  'यह एक परीक्षण है #sillyquestion',
                  followersOnly,
@@ -1257,7 +1257,7 @@ def testPostMessageBetweenServers(base_dir: str) -> None:
     # check the id of the news actor
     print('News actor Id: ' + newsActorJson["id"])
     assert (newsActorJson["id"] ==
-            httpPrefix + '://' + aliceAddress + '/users/news')
+            http_prefix + '://' + aliceAddress + '/users/news')
 
     # Image attachment created
     assert len([name for name in os.listdir(mediaPath)
@@ -1328,7 +1328,7 @@ def testPostMessageBetweenServers(base_dir: str) -> None:
     assert statusNumber > 0
     assert outboxPostFilename
     assert likePost({}, sessionBob, bobDir, federationList,
-                    'bob', bobDomain, bobPort, httpPrefix,
+                    'bob', bobDomain, bobPort, http_prefix,
                     'alice', aliceDomain, alicePort, [],
                     statusNumber, False, bobSendThreads, bobPostLog,
                     bobPersonCache, bobCachedWebfingers,
@@ -1349,7 +1349,7 @@ def testPostMessageBetweenServers(base_dir: str) -> None:
     print("Bob reacts to Alice's post")
 
     assert reactionPost({}, sessionBob, bobDir, federationList,
-                        'bob', bobDomain, bobPort, httpPrefix,
+                        'bob', bobDomain, bobPort, http_prefix,
                         'alice', aliceDomain, alicePort, [],
                         statusNumber, '😀',
                         False, bobSendThreads, bobPostLog,
@@ -1370,7 +1370,7 @@ def testPostMessageBetweenServers(base_dir: str) -> None:
     print('\n\n*******************************************************')
     print("Bob repeats Alice's post")
     objectUrl = \
-        httpPrefix + '://' + aliceDomain + ':' + str(alicePort) + \
+        http_prefix + '://' + aliceDomain + ':' + str(alicePort) + \
         '/users/alice/statuses/' + str(statusNumber)
     inboxPath = aliceDir + '/accounts/alice@' + aliceDomain + '/inbox'
     outboxPath = bobDir + '/accounts/bob@' + bobDomain + '/outbox'
@@ -1385,7 +1385,7 @@ def testPostMessageBetweenServers(base_dir: str) -> None:
     assert outboxBeforeAnnounceCount == 0
     assert beforeAnnounceCount == 0
     announcePublic(sessionBob, bobDir, federationList,
-                   'bob', bobDomain, bobPort, httpPrefix,
+                   'bob', bobDomain, bobPort, http_prefix,
                    objectUrl,
                    False, bobSendThreads, bobPostLog,
                    bobPersonCache, bobCachedWebfingers,
@@ -1439,7 +1439,7 @@ def testFollowBetweenServers(base_dir: str) -> None:
     testServerBobRunning = False
 
     systemLanguage = 'en'
-    httpPrefix = 'http'
+    http_prefix = 'http'
     proxyType = None
     federationList = []
     contentLicenseUrl = 'https://creativecommons.org/licenses/by/4.0'
@@ -1523,13 +1523,13 @@ def testFollowBetweenServers(base_dir: str) -> None:
     alicePersonCache = {}
     aliceCachedWebfingers = {}
     alicePostLog = []
-    bobActor = httpPrefix + '://' + bobAddress + '/users/bob'
+    bobActor = http_prefix + '://' + bobAddress + '/users/bob'
     signingPrivateKeyPem = None
     sendResult = \
         sendFollowRequest(sessionAlice, aliceDir,
-                          'alice', aliceDomain, alicePort, httpPrefix,
+                          'alice', aliceDomain, alicePort, http_prefix,
                           'bob', bobDomain, bobActor,
-                          bobPort, httpPrefix,
+                          bobPort, http_prefix,
                           clientToServer, federationList,
                           aliceSendThreads, alicePostLog,
                           aliceCachedWebfingers, alicePersonCache,
@@ -1575,7 +1575,7 @@ def testFollowBetweenServers(base_dir: str) -> None:
         sendPost(signingPrivateKeyPem, __version__,
                  sessionAlice, aliceDir, 'alice', aliceDomain, alicePort,
                  'bob', bobDomain, bobPort, ccUrl,
-                 httpPrefix, 'Alice message', followersOnly, saveToFile,
+                 http_prefix, 'Alice message', followersOnly, saveToFile,
                  clientToServer, True,
                  None, None, None, city, federationList,
                  aliceSendThreads, alicePostLog, aliceCachedWebfingers,
@@ -1628,7 +1628,7 @@ def testSharedItemsFederation(base_dir: str) -> None:
     testServerBobRunning = False
 
     systemLanguage = 'en'
-    httpPrefix = 'http'
+    http_prefix = 'http'
     proxyType = None
     federationList = []
     contentLicenseUrl = 'https://creativecommons.org/licenses/by/4.0'
@@ -1741,12 +1741,12 @@ def testSharedItemsFederation(base_dir: str) -> None:
     alicePersonCache = {}
     aliceCachedWebfingers = {}
     alicePostLog = []
-    bobActor = httpPrefix + '://' + bobAddress + '/users/bob'
+    bobActor = http_prefix + '://' + bobAddress + '/users/bob'
     sendResult = \
         sendFollowRequest(sessionAlice, aliceDir,
-                          'alice', aliceDomain, alicePort, httpPrefix,
+                          'alice', aliceDomain, alicePort, http_prefix,
                           'bob', bobDomain, bobActor,
-                          bobPort, httpPrefix,
+                          bobPort, http_prefix,
                           clientToServer, federationList,
                           aliceSendThreads, alicePostLog,
                           aliceCachedWebfingers, alicePersonCache,
@@ -1814,7 +1814,7 @@ def testSharedItemsFederation(base_dir: str) -> None:
         sendShareViaServer(bobDir, sessionBob,
                            'bob', bobPassword,
                            bobDomain, bobPort,
-                           httpPrefix, sharedItemName,
+                           http_prefix, sharedItemName,
                            sharedItemDescription, sharedItemImageFilename,
                            sharedItemQty, sharedItemType, sharedItemCategory,
                            sharedItemLocation, sharedItemDuration,
@@ -1838,7 +1838,7 @@ def testSharedItemsFederation(base_dir: str) -> None:
         sendShareViaServer(bobDir, sessionBob,
                            'bob', bobPassword,
                            bobDomain, bobPort,
-                           httpPrefix, sharedItemName,
+                           http_prefix, sharedItemName,
                            sharedItemDescription, sharedItemImageFilename,
                            sharedItemQty, sharedItemType, sharedItemCategory,
                            sharedItemLocation, sharedItemDuration,
@@ -1862,7 +1862,7 @@ def testSharedItemsFederation(base_dir: str) -> None:
         sendShareViaServer(bobDir, sessionBob,
                            'bob', bobPassword,
                            bobDomain, bobPort,
-                           httpPrefix, sharedItemName,
+                           http_prefix, sharedItemName,
                            sharedItemDescription, sharedItemImageFilename,
                            sharedItemQty, sharedItemType, sharedItemCategory,
                            sharedItemLocation, sharedItemDuration,
@@ -1894,7 +1894,7 @@ def testSharedItemsFederation(base_dir: str) -> None:
     signingPrivateKeyPem = None
     catalogJson = \
         getSharedItemsCatalogViaServer(bobDir, sessionBob, 'bob', bobPassword,
-                                       bobDomain, bobPort, httpPrefix, True,
+                                       bobDomain, bobPort, http_prefix, True,
                                        signingPrivateKeyPem)
     assert catalogJson
     pprint(catalogJson)
@@ -1926,7 +1926,7 @@ def testSharedItemsFederation(base_dir: str) -> None:
         sendPost(signingPrivateKeyPem, __version__,
                  sessionAlice, aliceDir, 'alice', aliceDomain, alicePort,
                  'bob', bobDomain, bobPort, ccUrl,
-                 httpPrefix, 'Alice message', followersOnly, saveToFile,
+                 http_prefix, 'Alice message', followersOnly, saveToFile,
                  clientToServer, True,
                  None, None, None, city, federationList,
                  aliceSendThreads, alicePostLog, aliceCachedWebfingers,
@@ -1986,7 +1986,7 @@ def testSharedItemsFederation(base_dir: str) -> None:
         'host': bobAddress,
         'Accept': 'application/json'
     }
-    url = httpPrefix + '://' + bobAddress + '/catalog'
+    url = http_prefix + '://' + bobAddress + '/catalog'
     signingPrivateKeyPem = None
     catalogJson = getJson(signingPrivateKeyPem, sessionAlice, url, headers,
                           None, True)
@@ -2034,7 +2034,7 @@ def testGroupFollow(base_dir: str) -> None:
     testServerGroupRunning = False
 
     # systemLanguage = 'en'
-    httpPrefix = 'http'
+    http_prefix = 'http'
     proxyType = None
     federationList = []
     contentLicenseUrl = 'https://creativecommons.org/licenses/by/4.0'
@@ -2177,14 +2177,15 @@ def testGroupFollow(base_dir: str) -> None:
     alicePersonCache = {}
     aliceCachedWebfingers = {}
     alicePostLog = []
-    # aliceActor = httpPrefix + '://' + aliceAddress + '/users/alice'
-    testgroupActor = httpPrefix + '://' + testgroupAddress + '/users/testgroup'
+    # aliceActor = http_prefix + '://' + aliceAddress + '/users/alice'
+    testgroupActor = \
+        http_prefix + '://' + testgroupAddress + '/users/testgroup'
     signingPrivateKeyPem = None
     sendResult = \
         sendFollowRequest(sessionAlice, aliceDir,
-                          'alice', aliceDomain, alicePort, httpPrefix,
+                          'alice', aliceDomain, alicePort, http_prefix,
                           'testgroup', testgroupDomain, testgroupActor,
-                          testgroupPort, httpPrefix,
+                          testgroupPort, http_prefix,
                           clientToServer, federationList,
                           aliceSendThreads, alicePostLog,
                           aliceCachedWebfingers, alicePersonCache,
@@ -2253,14 +2254,15 @@ def testGroupFollow(base_dir: str) -> None:
     bobPersonCache = {}
     bobCachedWebfingers = {}
     bobPostLog = []
-    # bobActor = httpPrefix + '://' + bobAddress + '/users/bob'
-    testgroupActor = httpPrefix + '://' + testgroupAddress + '/users/testgroup'
+    # bobActor = http_prefix + '://' + bobAddress + '/users/bob'
+    testgroupActor = \
+        http_prefix + '://' + testgroupAddress + '/users/testgroup'
     signingPrivateKeyPem = None
     sendResult = \
         sendFollowRequest(sessionBob, bobDir,
-                          'bob', bobDomain, bobPort, httpPrefix,
+                          'bob', bobDomain, bobPort, http_prefix,
                           'testgroup', testgroupDomain, testgroupActor,
-                          testgroupPort, httpPrefix,
+                          testgroupPort, http_prefix,
                           clientToServer, federationList,
                           bobSendThreads, bobPostLog,
                           bobCachedWebfingers, bobPersonCache,
@@ -2347,7 +2349,7 @@ def testGroupFollow(base_dir: str) -> None:
         sendPost(signingPrivateKeyPem, __version__,
                  sessionAlice, aliceDir, 'alice', aliceDomain, alicePort,
                  'testgroup', testgroupDomain, testgroupPort, ccUrl,
-                 httpPrefix, "Alice group message", followersOnly,
+                 http_prefix, "Alice group message", followersOnly,
                  saveToFile, clientToServer, True,
                  None, None, None, city, federationList,
                  aliceSendThreads, alicePostLog, aliceCachedWebfingers,
@@ -2438,7 +2440,7 @@ def _testFollowersOfPerson(base_dir: str) -> None:
     domain = 'diva.domain'
     password = 'birb'
     port = 80
-    httpPrefix = 'https'
+    http_prefix = 'https'
     federationList = []
     base_dir = currDir + '/.tests_followersofperson'
     if os.path.isdir(base_dir):
@@ -2446,15 +2448,15 @@ def _testFollowersOfPerson(base_dir: str) -> None:
     os.mkdir(base_dir)
     os.chdir(base_dir)
     createPerson(base_dir, nickname, domain, port,
-                 httpPrefix, True, False, password)
+                 http_prefix, True, False, password)
     createPerson(base_dir, 'maxboardroom', domain, port,
-                 httpPrefix, True, False, password)
+                 http_prefix, True, False, password)
     createPerson(base_dir, 'ultrapancake', domain, port,
-                 httpPrefix, True, False, password)
+                 http_prefix, True, False, password)
     createPerson(base_dir, 'drokk', domain, port,
-                 httpPrefix, True, False, password)
+                 http_prefix, True, False, password)
     createPerson(base_dir, 'sausagedog', domain, port,
-                 httpPrefix, True, False, password)
+                 http_prefix, True, False, password)
 
     clearFollows(base_dir, nickname, domain)
     followPerson(base_dir, nickname, domain, 'maxboardroom', domain,
@@ -2488,23 +2490,23 @@ def _testNoOfFollowersOnDomain(base_dir: str) -> None:
     otherdomain = 'soup.dragon'
     password = 'birb'
     port = 80
-    httpPrefix = 'https'
+    http_prefix = 'https'
     federationList = []
     base_dir = currDir + '/.tests_nooffollowersOndomain'
     if os.path.isdir(base_dir):
         shutil.rmtree(base_dir, ignore_errors=False, onerror=None)
     os.mkdir(base_dir)
     os.chdir(base_dir)
-    createPerson(base_dir, nickname, domain, port, httpPrefix, True,
+    createPerson(base_dir, nickname, domain, port, http_prefix, True,
                  False, password)
     createPerson(base_dir, 'maxboardroom', otherdomain, port,
-                 httpPrefix, True, False, password)
+                 http_prefix, True, False, password)
     createPerson(base_dir, 'ultrapancake', otherdomain, port,
-                 httpPrefix, True, False, password)
+                 http_prefix, True, False, password)
     createPerson(base_dir, 'drokk', otherdomain, port,
-                 httpPrefix, True, False, password)
+                 http_prefix, True, False, password)
     createPerson(base_dir, 'sausagedog', otherdomain, port,
-                 httpPrefix, True, False, password)
+                 http_prefix, True, False, password)
 
     followPerson(base_dir, 'drokk', otherdomain, nickname, domain,
                  federationList, False, False)
@@ -2550,14 +2552,14 @@ def _testGroupFollowers(base_dir: str) -> None:
     domain = 'mydomain.com'
     password = 'somepass'
     port = 80
-    httpPrefix = 'https'
+    http_prefix = 'https'
     federationList = []
     base_dir = currDir + '/.tests_testgroupfollowers'
     if os.path.isdir(base_dir):
         shutil.rmtree(base_dir, ignore_errors=False, onerror=None)
     os.mkdir(base_dir)
     os.chdir(base_dir)
-    createPerson(base_dir, nickname, domain, port, httpPrefix, True,
+    createPerson(base_dir, nickname, domain, port, http_prefix, True,
                  False, password)
 
     clearFollowers(base_dir, nickname, domain)
@@ -2594,14 +2596,14 @@ def _testFollows(base_dir: str) -> None:
     domain = 'testdomain.com'
     password = 'mypass'
     port = 80
-    httpPrefix = 'https'
+    http_prefix = 'https'
     federationList = ['wild.com', 'mesh.com']
     base_dir = currDir + '/.tests_testfollows'
     if os.path.isdir(base_dir):
         shutil.rmtree(base_dir, ignore_errors=False, onerror=None)
     os.mkdir(base_dir)
     os.chdir(base_dir)
-    createPerson(base_dir, nickname, domain, port, httpPrefix, True,
+    createPerson(base_dir, nickname, domain, port, http_prefix, True,
                  False, password)
 
     clearFollows(base_dir, nickname, domain)
@@ -2673,7 +2675,7 @@ def _testCreatePerson(base_dir: str):
     domain = 'badgerdomain.com'
     password = 'mypass'
     port = 80
-    httpPrefix = 'https'
+    http_prefix = 'https'
     clientToServer = False
     base_dir = currDir + '/.tests_createperson'
     if os.path.isdir(base_dir):
@@ -2683,7 +2685,7 @@ def _testCreatePerson(base_dir: str):
 
     privateKeyPem, publicKeyPem, person, wfEndpoint = \
         createPerson(base_dir, nickname, domain, port,
-                     httpPrefix, True, False, password)
+                     http_prefix, True, False, password)
     assert os.path.isfile(base_dir + '/accounts/passwords')
     deleteAllPosts(base_dir, nickname, domain, 'inbox')
     deleteAllPosts(base_dir, nickname, domain, 'outbox')
@@ -2708,7 +2710,7 @@ def _testCreatePerson(base_dir: str):
     conversationId = None
     lowBandwidth = True
     contentLicenseUrl = 'https://creativecommons.org/licenses/by/4.0'
-    createPublicPost(base_dir, nickname, domain, port, httpPrefix,
+    createPublicPost(base_dir, nickname, domain, port, http_prefix,
                      content, followersOnly, saveToFile, clientToServer,
                      commentsEnabled, attachImageFilename, mediaType,
                      'Not suitable for Vogons', 'London, England',
@@ -2784,7 +2786,7 @@ def testClientToServer(base_dir: str):
     testServerBobRunning = False
 
     systemLanguage = 'en'
-    httpPrefix = 'http'
+    http_prefix = 'http'
     proxyType = None
     federationList = []
     lowBandwidth = False
@@ -2890,7 +2892,7 @@ def testClientToServer(base_dir: str):
                           aliceDir, sessionAlice, 'alice', password,
                           aliceDomain, alicePort,
                           'bob', bobDomain, bobPort, None,
-                          httpPrefix, 'Sent from my ActivityPub client',
+                          http_prefix, 'Sent from my ActivityPub client',
                           followersOnly, True,
                           attachedImageFilename, mediaType,
                           attachedImageDescription, city,
@@ -2957,7 +2959,7 @@ def testClientToServer(base_dir: str):
                                'alice', password,
                                aliceDomain, alicePort,
                                'bob', bobDomain, bobPort,
-                               httpPrefix,
+                               http_prefix,
                                cachedWebfingers, personCache,
                                True, __version__, signingPrivateKeyPem)
     alicePetnamesFilename = aliceDir + '/accounts/' + \
@@ -2999,7 +3001,7 @@ def testClientToServer(base_dir: str):
                                'bob', 'bobpass',
                                bobDomain, bobPort,
                                'alice', aliceDomain, alicePort,
-                               httpPrefix,
+                               http_prefix,
                                cachedWebfingers, personCache,
                                True, __version__, signingPrivateKeyPem)
     for t in range(10):
@@ -3054,7 +3056,7 @@ def testClientToServer(base_dir: str):
     sendLikeViaServer(bobDir, sessionBob,
                       'bob', 'bobpass',
                       bobDomain, bobPort,
-                      httpPrefix, outboxPostId,
+                      http_prefix, outboxPostId,
                       cachedWebfingers, personCache,
                       True, __version__, signingPrivateKeyPem)
     for i in range(20):
@@ -3084,7 +3086,7 @@ def testClientToServer(base_dir: str):
     sendReactionViaServer(bobDir, sessionBob,
                           'bob', 'bobpass',
                           bobDomain, bobPort,
-                          httpPrefix, outboxPostId, '😃',
+                          http_prefix, outboxPostId, '😃',
                           cachedWebfingers, personCache,
                           True, __version__, signingPrivateKeyPem)
     for i in range(20):
@@ -3130,7 +3132,7 @@ def testClientToServer(base_dir: str):
     signingPrivateKeyPem = None
     sendAnnounceViaServer(bobDir, sessionBob, 'bob', password,
                           bobDomain, bobPort,
-                          httpPrefix, outboxPostId,
+                          http_prefix, outboxPostId,
                           cachedWebfingers,
                           personCache, True, __version__,
                           signingPrivateKeyPem)
@@ -3168,7 +3170,7 @@ def testClientToServer(base_dir: str):
     password = 'alicepass'
     sendDeleteViaServer(aliceDir, sessionAlice, 'alice', password,
                         aliceDomain, alicePort,
-                        httpPrefix, outboxPostId,
+                        http_prefix, outboxPostId,
                         cachedWebfingers, personCache,
                         True, __version__, signingPrivateKeyPem)
     for i in range(30):
@@ -3193,7 +3195,7 @@ def testClientToServer(base_dir: str):
                                  'alice', password,
                                  aliceDomain, alicePort,
                                  'bob', bobDomain, bobPort,
-                                 httpPrefix,
+                                 http_prefix,
                                  cachedWebfingers, personCache,
                                  True, __version__, signingPrivateKeyPem)
     for t in range(10):
@@ -3408,7 +3410,7 @@ def _testWebLinks():
 def _testAddEmoji(base_dir: str):
     print('testAddEmoji')
     content = "Emoji :lemon: :strawberry: :banana:"
-    httpPrefix = 'http'
+    http_prefix = 'http'
     nickname = 'testuser'
     domain = 'testdomain.net'
     port = 3682
@@ -3431,9 +3433,9 @@ def _testAddEmoji(base_dir: str):
     os.chdir(base_dir)
     privateKeyPem, publicKeyPem, person, wfEndpoint = \
         createPerson(base_dir, nickname, domain, port,
-                     httpPrefix, True, False, 'password')
+                     http_prefix, True, False, 'password')
     contentModified = \
-        addHtmlTags(base_dir, httpPrefix,
+        addHtmlTags(base_dir, http_prefix,
                     nickname, domain, content,
                     recipients, hashtags, True)
     assert ':lemon:' in contentModified
@@ -4229,8 +4231,8 @@ def _testReplyToPublicPost(base_dir: str) -> None:
     nickname = 'test7492362'
     domain = 'other.site'
     port = 443
-    httpPrefix = 'https'
-    postId = httpPrefix + '://rat.site/users/ninjarodent/statuses/63746173435'
+    http_prefix = 'https'
+    postId = http_prefix + '://rat.site/users/ninjarodent/statuses/63746173435'
     content = "@ninjarodent@rat.site This is a test."
     followersOnly = False
     saveToFile = False
@@ -4252,7 +4254,7 @@ def _testReplyToPublicPost(base_dir: str) -> None:
     lowBandwidth = True
     contentLicenseUrl = 'https://creativecommons.org/licenses/by/4.0'
     reply = \
-        createPublicPost(base_dir, nickname, domain, port, httpPrefix,
+        createPublicPost(base_dir, nickname, domain, port, http_prefix,
                          content, followersOnly, saveToFile,
                          clientToServer, commentsEnabled,
                          attachImageFilename, mediaType,
@@ -4281,7 +4283,7 @@ def _testReplyToPublicPost(base_dir: str) -> None:
         print('reply["object"]["cc"]: ' + str(reply['object']['cc']))
     assert len(reply['object']['cc']) == 2
     assert reply['object']['cc'][1] == \
-        httpPrefix + '://rat.site/users/ninjarodent'
+        http_prefix + '://rat.site/users/ninjarodent'
 
     assert len(reply['to']) == 1
     assert reply['to'][0].endswith('#Public')
@@ -4290,7 +4292,7 @@ def _testReplyToPublicPost(base_dir: str) -> None:
     if len(reply['cc']) != 2:
         print('reply["cc"]: ' + str(reply['cc']))
     assert len(reply['cc']) == 2
-    assert reply['cc'][1] == httpPrefix + '://rat.site/users/ninjarodent'
+    assert reply['cc'][1] == http_prefix + '://rat.site/users/ninjarodent'
 
 
 def _getFunctionCallArgs(name: str, lines: [], startLineCtr: int) -> []:
@@ -4774,7 +4776,7 @@ def _testLinksWithinPost(base_dir: str) -> None:
     nickname = 'test27636'
     domain = 'rando.site'
     port = 443
-    httpPrefix = 'https'
+    http_prefix = 'https'
     content = 'This is a test post with links.\n\n' + \
         'ftp://ftp.ncdc.noaa.gov/pub/data/ghcn/v4/\n\nhttps://libreserver.org'
     followersOnly = False
@@ -4798,7 +4800,7 @@ def _testLinksWithinPost(base_dir: str) -> None:
     contentLicenseUrl = 'https://creativecommons.org/licenses/by/4.0'
 
     postJsonObject = \
-        createPublicPost(base_dir, nickname, domain, port, httpPrefix,
+        createPublicPost(base_dir, nickname, domain, port, http_prefix,
                          content, followersOnly, saveToFile,
                          clientToServer, commentsEnabled,
                          attachImageFilename, mediaType,
@@ -4834,7 +4836,7 @@ def _testLinksWithinPost(base_dir: str) -> None:
         "taggedthing\" class=\"mention hashtag\" rel=\"tag\" " + \
         "target=\"_blank\">#<span>taggedthing</span></a></p>"
     postJsonObject = \
-        createPublicPost(base_dir, nickname, domain, port, httpPrefix,
+        createPublicPost(base_dir, nickname, domain, port, http_prefix,
                          content,
                          False, False,
                          False, True,
@@ -5064,7 +5066,7 @@ def testUpdateActor(base_dir: str):
     global testServerAliceRunning
     testServerAliceRunning = False
 
-    httpPrefix = 'http'
+    http_prefix = 'http'
     proxyType = None
     federationList = []
 
@@ -5144,7 +5146,7 @@ def testUpdateActor(base_dir: str):
         pgpPublicKeyUpload(aliceDir, sessionAlice,
                            'alice', password,
                            aliceDomain, alicePort,
-                           httpPrefix,
+                           http_prefix,
                            cachedWebfingers, personCache,
                            True, pubKey, signingPrivateKeyPem)
     print('actor update result: ' + str(actorUpdate))
@@ -5761,7 +5763,7 @@ def _testCanReplyTo(base_dir: str) -> None:
     nickname = 'test27637'
     domain = 'rando.site'
     port = 443
-    httpPrefix = 'https'
+    http_prefix = 'https'
     content = 'This is a test post with links.\n\n' + \
         'ftp://ftp.ncdc.noaa.gov/pub/data/ghcn/v4/\n\nhttps://libreserver.org'
     followersOnly = False
@@ -5785,7 +5787,7 @@ def _testCanReplyTo(base_dir: str) -> None:
     contentLicenseUrl = 'https://creativecommons.org/licenses/by/4.0'
 
     postJsonObject = \
-        createPublicPost(base_dir, nickname, domain, port, httpPrefix,
+        createPublicPost(base_dir, nickname, domain, port, http_prefix,
                          content, followersOnly, saveToFile,
                          clientToServer, commentsEnabled,
                          attachImageFilename, mediaType,
@@ -5919,11 +5921,11 @@ def _testHttpsigBaseNew(withDigest: bool, base_dir: str,
     nickname = 'socrates'
     hostDomain = 'someother.instance'
     domain = 'argumentative.social'
-    httpPrefix = 'https'
+    http_prefix = 'https'
     port = 5576
     password = 'SuperSecretPassword'
     privateKeyPem, publicKeyPem, person, wfEndpoint = \
-        createPerson(path, nickname, domain, port, httpPrefix,
+        createPerson(path, nickname, domain, port, http_prefix,
                      False, False, password)
     assert privateKeyPem
     if withDigest:
@@ -5950,7 +5952,7 @@ def _testHttpsigBaseNew(withDigest: bool, base_dir: str,
             signPostHeadersNew(dateStr, privateKeyPem, nickname,
                                domain, port,
                                hostDomain, port,
-                               boxpath, httpPrefix, messageBodyJsonStr,
+                               boxpath, http_prefix, messageBodyJsonStr,
                                algorithm, digestAlgorithm, debug)
     else:
         digestPrefix = getDigestPrefix(digestAlgorithm)
@@ -5968,7 +5970,7 @@ def _testHttpsigBaseNew(withDigest: bool, base_dir: str,
             signPostHeadersNew(dateStr, privateKeyPem, nickname,
                                domain, port,
                                hostDomain, port,
-                               boxpath, httpPrefix, messageBodyJsonStr,
+                               boxpath, http_prefix, messageBodyJsonStr,
                                algorithm, digestAlgorithm, debug)
 
     headers['signature'] = signatureHeader
@@ -5977,20 +5979,20 @@ def _testHttpsigBaseNew(withDigest: bool, base_dir: str,
 
     GETmethod = not withDigest
     debug = True
-    assert verifyPostHeaders(httpPrefix, publicKeyPem, headers,
+    assert verifyPostHeaders(http_prefix, publicKeyPem, headers,
                              boxpath, GETmethod, None,
                              messageBodyJsonStr, debug)
     debug = False
     if withDigest:
         # everything correct except for content-length
         headers['content-length'] = str(contentLength + 2)
-        assert verifyPostHeaders(httpPrefix, publicKeyPem, headers,
+        assert verifyPostHeaders(http_prefix, publicKeyPem, headers,
                                  boxpath, GETmethod, None,
                                  messageBodyJsonStr, debug) is False
-    assert verifyPostHeaders(httpPrefix, publicKeyPem, headers,
+    assert verifyPostHeaders(http_prefix, publicKeyPem, headers,
                              '/parambulator' + boxpath, GETmethod, None,
                              messageBodyJsonStr, debug) is False
-    assert verifyPostHeaders(httpPrefix, publicKeyPem, headers,
+    assert verifyPostHeaders(http_prefix, publicKeyPem, headers,
                              boxpath, not GETmethod, None,
                              messageBodyJsonStr, debug) is False
     if not withDigest:
@@ -6019,7 +6021,7 @@ def _testHttpsigBaseNew(withDigest: bool, base_dir: str,
     headers['signature'] = signatureHeader
     headers['signature-input'] = signatureIndexHeader
     pprint(headers)
-    assert verifyPostHeaders(httpPrefix, publicKeyPem, headers,
+    assert verifyPostHeaders(http_prefix, publicKeyPem, headers,
                              boxpath, not GETmethod, None,
                              messageBodyJsonStr, False) is False
 

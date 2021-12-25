@@ -28,10 +28,10 @@ invalidCharacters = (
 )
 
 
-def localActorUrl(httpPrefix: str, nickname: str, domainFull: str) -> str:
+def localActorUrl(http_prefix: str, nickname: str, domainFull: str) -> str:
     """Returns the url for an actor on this instance
     """
-    return httpPrefix + '://' + domainFull + '/users/' + nickname
+    return http_prefix + '://' + domainFull + '/users/' + nickname
 
 
 def getActorLanguagesList(actorJson: {}) -> []:
@@ -1453,7 +1453,7 @@ def canReplyTo(base_dir: str, nickname: str, domain: str,
     return True
 
 
-def _removeAttachment(base_dir: str, httpPrefix: str, domain: str,
+def _removeAttachment(base_dir: str, http_prefix: str, domain: str,
                       postJson: {}):
     if not postJson.get('attachment'):
         return
@@ -1463,7 +1463,7 @@ def _removeAttachment(base_dir: str, httpPrefix: str, domain: str,
     if not attachmentUrl:
         return
     mediaFilename = base_dir + '/' + \
-        attachmentUrl.replace(httpPrefix + '://' + domain + '/', '')
+        attachmentUrl.replace(http_prefix + '://' + domain + '/', '')
     if os.path.isfile(mediaFilename):
         try:
             os.remove(mediaFilename)
@@ -1522,7 +1522,7 @@ def _isReplyToBlogPost(base_dir: str, nickname: str, domain: str,
 
 
 def _deletePostRemoveReplies(base_dir: str, nickname: str, domain: str,
-                             httpPrefix: str, postFilename: str,
+                             http_prefix: str, postFilename: str,
                              recentPostsCache: {}, debug: bool) -> None:
     """Removes replies when deleting a post
     """
@@ -1537,7 +1537,7 @@ def _deletePostRemoveReplies(base_dir: str, nickname: str, domain: str,
             if not replyFile:
                 continue
             if os.path.isfile(replyFile):
-                deletePost(base_dir, httpPrefix,
+                deletePost(base_dir, http_prefix,
                            nickname, domain, replyFile, debug,
                            recentPostsCache)
     # remove the replies file
@@ -1705,7 +1705,7 @@ def _deleteConversationPost(base_dir: str, nickname: str, domain: str,
                   str(conversationFilename))
 
 
-def deletePost(base_dir: str, httpPrefix: str,
+def deletePost(base_dir: str, http_prefix: str,
                nickname: str, domain: str, postFilename: str,
                debug: bool, recentPostsCache: {}) -> None:
     """Recursively deletes a post and its replies and attachments
@@ -1714,7 +1714,7 @@ def deletePost(base_dir: str, httpPrefix: str,
     if not postJsonObject:
         # remove any replies
         _deletePostRemoveReplies(base_dir, nickname, domain,
-                                 httpPrefix, postFilename,
+                                 http_prefix, postFilename,
                                  recentPostsCache, debug)
         # finally, remove the post itself
         try:
@@ -1741,7 +1741,7 @@ def deletePost(base_dir: str, httpPrefix: str,
     _deleteConversationPost(base_dir, nickname, domain, postJsonObject)
 
     # remove any attachment
-    _removeAttachment(base_dir, httpPrefix, domain, postJsonObject)
+    _removeAttachment(base_dir, http_prefix, domain, postJsonObject)
 
     extensions = ('votes', 'arrived', 'muted', 'tts', 'reject')
     for ext in extensions:
@@ -1774,7 +1774,7 @@ def deletePost(base_dir: str, httpPrefix: str,
 
     # remove any replies
     _deletePostRemoveReplies(base_dir, nickname, domain,
-                             httpPrefix, postFilename,
+                             http_prefix, postFilename,
                              recentPostsCache, debug)
     # finally, remove the post itself
     try:

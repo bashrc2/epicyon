@@ -59,7 +59,7 @@ from webapp_post import individualPostAsHtml
 
 
 def _outboxPersonReceiveUpdate(recentPostsCache: {},
-                               base_dir: str, httpPrefix: str,
+                               base_dir: str, http_prefix: str,
                                nickname: str, domain: str, port: int,
                                messageJson: {}, debug: bool) -> None:
     """ Receive an actor update from c2s
@@ -101,7 +101,7 @@ def _outboxPersonReceiveUpdate(recentPostsCache: {},
             print('DEBUG: c2s actor update id is not a string')
         return
     domainFull = getFullDomain(domain, port)
-    actor = localActorUrl(httpPrefix, nickname, domainFull)
+    actor = localActorUrl(http_prefix, nickname, domainFull)
     if len(messageJson['to']) != 1:
         if debug:
             print('DEBUG: c2s actor update - to does not contain one actor ' +
@@ -179,7 +179,7 @@ def _outboxPersonReceiveUpdate(recentPostsCache: {},
 
 def postMessageToOutbox(session, translate: {},
                         messageJson: {}, postToNickname: str,
-                        server, base_dir: str, httpPrefix: str,
+                        server, base_dir: str, http_prefix: str,
                         domain: str, domainFull: str,
                         onionDomain: str, i2pDomain: str, port: int,
                         recentPostsCache: {}, followersThreads: [],
@@ -215,7 +215,7 @@ def postMessageToOutbox(session, translate: {},
             if debug:
                 print('DEBUG: POST to outbox - adding Create wrapper')
             messageJson = \
-                outboxMessageCreateWrap(httpPrefix,
+                outboxMessageCreateWrap(http_prefix,
                                         postToNickname,
                                         domain, port,
                                         messageJson)
@@ -334,7 +334,7 @@ def postMessageToOutbox(session, translate: {},
                     os.rename(uploadMediaFilename, mediaFilename)
                     # change the url of the attachment
                     attach['url'] = \
-                        httpPrefix + '://' + domainFull + '/' + mediaPath
+                        http_prefix + '://' + domainFull + '/' + mediaPath
                     attach['url'] = \
                         attach['url'].replace('/media/',
                                               '/system/' +
@@ -371,7 +371,7 @@ def postMessageToOutbox(session, translate: {},
 
         savedFilename = \
             savePostToBox(base_dir,
-                          httpPrefix,
+                          http_prefix,
                           postId,
                           postToNickname, domainFull,
                           messageJson, outboxName)
@@ -412,14 +412,14 @@ def postMessageToOutbox(session, translate: {},
         if messageJson['type'] in indexedActivities:
             indexes = [outboxName, "inbox"]
             selfActor = \
-                localActorUrl(httpPrefix, postToNickname, domainFull)
+                localActorUrl(http_prefix, postToNickname, domainFull)
             for boxNameIndex in indexes:
                 if not boxNameIndex:
                     continue
 
                 # should this also go to the media timeline?
                 if boxNameIndex == 'inbox':
-                    if isImageMedia(session, base_dir, httpPrefix,
+                    if isImageMedia(session, base_dir, http_prefix,
                                     postToNickname, domain,
                                     messageJson,
                                     translate,
@@ -462,7 +462,7 @@ def postMessageToOutbox(session, translate: {},
                                          postToNickname, domain, port,
                                          messageJson, None, True,
                                          allowDeletion,
-                                         httpPrefix, __version__,
+                                         http_prefix, __version__,
                                          boxNameIndex,
                                          YTReplacementDomain,
                                          twitterReplacementDomain,
@@ -513,7 +513,7 @@ def postMessageToOutbox(session, translate: {},
                               base_dir,
                               postToNickname,
                               domain, onionDomain, i2pDomain,
-                              port, httpPrefix,
+                              port, http_prefix,
                               federationList,
                               sendThreads,
                               postLog,
@@ -541,52 +541,52 @@ def postMessageToOutbox(session, translate: {},
     if debug:
         print('DEBUG: handle any like requests')
     outboxLike(recentPostsCache,
-               base_dir, httpPrefix,
+               base_dir, http_prefix,
                postToNickname, domain, port,
                messageJson, debug)
     if debug:
         print('DEBUG: handle any undo like requests')
     outboxUndoLike(recentPostsCache,
-                   base_dir, httpPrefix,
+                   base_dir, http_prefix,
                    postToNickname, domain, port,
                    messageJson, debug)
 
     if debug:
         print('DEBUG: handle any emoji reaction requests')
     outboxReaction(recentPostsCache,
-                   base_dir, httpPrefix,
+                   base_dir, http_prefix,
                    postToNickname, domain, port,
                    messageJson, debug)
     if debug:
         print('DEBUG: handle any undo emoji reaction requests')
     outboxUndoReaction(recentPostsCache,
-                       base_dir, httpPrefix,
+                       base_dir, http_prefix,
                        postToNickname, domain, port,
                        messageJson, debug)
 
     if debug:
         print('DEBUG: handle any undo announce requests')
     outboxUndoAnnounce(recentPostsCache,
-                       base_dir, httpPrefix,
+                       base_dir, http_prefix,
                        postToNickname, domain, port,
                        messageJson, debug)
 
     if debug:
         print('DEBUG: handle any bookmark requests')
     outboxBookmark(recentPostsCache,
-                   base_dir, httpPrefix,
+                   base_dir, http_prefix,
                    postToNickname, domain, port,
                    messageJson, debug)
     if debug:
         print('DEBUG: handle any undo bookmark requests')
     outboxUndoBookmark(recentPostsCache,
-                       base_dir, httpPrefix,
+                       base_dir, http_prefix,
                        postToNickname, domain, port,
                        messageJson, debug)
 
     if debug:
         print('DEBUG: handle delete requests')
-    outboxDelete(base_dir, httpPrefix,
+    outboxDelete(base_dir, http_prefix,
                  postToNickname, domain,
                  messageJson, debug,
                  allowDeletion,
@@ -594,20 +594,20 @@ def postMessageToOutbox(session, translate: {},
 
     if debug:
         print('DEBUG: handle block requests')
-    outboxBlock(base_dir, httpPrefix,
+    outboxBlock(base_dir, http_prefix,
                 postToNickname, domain,
                 port,
                 messageJson, debug)
 
     if debug:
         print('DEBUG: handle undo block requests')
-    outboxUndoBlock(base_dir, httpPrefix,
+    outboxUndoBlock(base_dir, http_prefix,
                     postToNickname, domain,
                     port, messageJson, debug)
 
     if debug:
         print('DEBUG: handle mute requests')
-    outboxMute(base_dir, httpPrefix,
+    outboxMute(base_dir, http_prefix,
                postToNickname, domain,
                port,
                messageJson, debug,
@@ -615,7 +615,7 @@ def postMessageToOutbox(session, translate: {},
 
     if debug:
         print('DEBUG: handle undo mute requests')
-    outboxUndoMute(base_dir, httpPrefix,
+    outboxUndoMute(base_dir, http_prefix,
                    postToNickname, domain,
                    port,
                    messageJson, debug,
@@ -623,21 +623,21 @@ def postMessageToOutbox(session, translate: {},
 
     if debug:
         print('DEBUG: handle share uploads')
-    outboxShareUpload(base_dir, httpPrefix, postToNickname, domain,
+    outboxShareUpload(base_dir, http_prefix, postToNickname, domain,
                       port, messageJson, debug, city,
                       systemLanguage, translate, lowBandwidth,
                       contentLicenseUrl)
 
     if debug:
         print('DEBUG: handle undo share uploads')
-    outboxUndoShareUpload(base_dir, httpPrefix,
+    outboxUndoShareUpload(base_dir, http_prefix,
                           postToNickname, domain,
                           port, messageJson, debug)
 
     if debug:
         print('DEBUG: handle actor updates from c2s')
     _outboxPersonReceiveUpdate(recentPostsCache,
-                               base_dir, httpPrefix,
+                               base_dir, http_prefix,
                                postToNickname, domain, port,
                                messageJson, debug)
 
@@ -654,7 +654,7 @@ def postMessageToOutbox(session, translate: {},
         sendToNamedAddressesThread(server.session, base_dir,
                                    postToNickname,
                                    domain, onionDomain, i2pDomain, port,
-                                   httpPrefix,
+                                   http_prefix,
                                    federationList,
                                    sendThreads,
                                    postLog,

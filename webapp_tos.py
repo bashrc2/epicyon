@@ -17,7 +17,7 @@ from markdown import markdownToHtml
 
 
 def htmlTermsOfService(cssCache: {}, base_dir: str,
-                       httpPrefix: str, domainFull: str) -> str:
+                       http_prefix: str, domainFull: str) -> str:
     """Show the terms of service screen
     """
     adminNickname = getConfigParam(base_dir, 'admin')
@@ -45,7 +45,7 @@ def htmlTermsOfService(cssCache: {}, base_dir: str,
     TOSForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     TOSForm += '<div class="container">' + TOSText + '</div>\n'
     if adminNickname:
-        adminActor = localActorUrl(httpPrefix, adminNickname, domainFull)
+        adminActor = localActorUrl(http_prefix, adminNickname, domainFull)
         TOSForm += \
             '<div class="container"><center>\n' + \
             '<p class="administeredby">Administered by <a href="' + \

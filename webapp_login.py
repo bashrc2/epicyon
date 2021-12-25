@@ -56,7 +56,7 @@ def htmlGetLoginCredentials(loginParams: str,
 
 def htmlLogin(cssCache: {}, translate: {},
               base_dir: str,
-              httpPrefix: str, domain: str,
+              http_prefix: str, domain: str,
               systemLanguage: str,
               autocomplete: bool) -> str:
     """Shows the login screen
@@ -152,7 +152,7 @@ def htmlLogin(cssCache: {}, translate: {},
         getConfigParam(base_dir, 'instanceTitle')
     loginForm = \
         htmlHeaderWithWebsiteMarkup(cssFilename, instanceTitle,
-                                    httpPrefix, domain,
+                                    http_prefix, domain,
                                     systemLanguage)
 
     nicknamePattern = getNicknameValidationPattern()

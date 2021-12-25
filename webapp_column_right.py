@@ -48,7 +48,7 @@ def _votesIndicator(totalVotes: int, positiveVoting: bool) -> str:
 
 
 def getRightColumnContent(base_dir: str, nickname: str, domainFull: str,
-                          httpPrefix: str, translate: {},
+                          http_prefix: str, translate: {},
                           moderator: bool, editor: bool,
                           newswire: {}, positiveVoting: bool,
                           showBackButton: bool, timelinePath: str,
@@ -327,7 +327,7 @@ def _htmlNewswire(base_dir: str, newswire: {}, nickname: str, moderator: bool,
 
 
 def htmlCitations(base_dir: str, nickname: str, domain: str,
-                  httpPrefix: str, defaultTimeline: str,
+                  http_prefix: str, defaultTimeline: str,
                   translate: {}, newswire: {}, cssCache: {},
                   blogTitle: str, blogContent: str,
                   blogImageFilename: str,
@@ -444,7 +444,7 @@ def htmlCitations(base_dir: str, nickname: str, domain: str,
 
 def htmlNewswireMobile(cssCache: {}, base_dir: str, nickname: str,
                        domain: str, domainFull: str,
-                       httpPrefix: str, translate: {},
+                       http_prefix: str, translate: {},
                        newswire: {},
                        positiveVoting: bool,
                        timelinePath: str,
@@ -497,7 +497,7 @@ def htmlNewswireMobile(cssCache: {}, base_dir: str, nickname: str,
                                  iconsAsButtons) + '</center>'
     htmlStr += \
         getRightColumnContent(base_dir, nickname, domainFull,
-                              httpPrefix, translate,
+                              http_prefix, translate,
                               moderator, editor,
                               newswire, positiveVoting,
                               False, timelinePath, showPublishButton,
@@ -517,7 +517,7 @@ def htmlNewswireMobile(cssCache: {}, base_dir: str, nickname: str,
 
 
 def htmlEditNewswire(cssCache: {}, translate: {}, base_dir: str, path: str,
-                     domain: str, port: int, httpPrefix: str,
+                     domain: str, port: int, http_prefix: str,
                      defaultTimeline: str, theme: str,
                      accessKeys: {}) -> str:
     """Shows the edit newswire screen
@@ -640,7 +640,7 @@ def htmlEditNewswire(cssCache: {}, translate: {}, base_dir: str, path: str,
 
 def htmlEditNewsPost(cssCache: {}, translate: {}, base_dir: str, path: str,
                      domain: str, port: int,
-                     httpPrefix: str, postUrl: str,
+                     http_prefix: str, postUrl: str,
                      systemLanguage: str) -> str:
     """Edits a news post on the news/features timeline
     """

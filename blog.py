@@ -39,7 +39,7 @@ from newswire import rss2Footer
 from cache import getPersonFromCache
 
 
-def _noOfBlogReplies(base_dir: str, httpPrefix: str, translate: {},
+def _noOfBlogReplies(base_dir: str, http_prefix: str, translate: {},
                      nickname: str, domain: str, domainFull: str,
                      postId: str, depth=0) -> int:
     """Returns the number of replies on the post
@@ -84,7 +84,7 @@ def _noOfBlogReplies(base_dir: str, httpPrefix: str, translate: {},
         if locatePost(base_dir, nickname, domain, replyPostId):
             replyPostId = replyPostId.replace('.replies', '')
             replies += \
-                1 + _noOfBlogReplies(base_dir, httpPrefix, translate,
+                1 + _noOfBlogReplies(base_dir, http_prefix, translate,
                                      nickname, domain, domainFull,
                                      replyPostId, depth+1)
         else:
@@ -109,7 +109,7 @@ def _noOfBlogReplies(base_dir: str, httpPrefix: str, translate: {},
     return replies
 
 
-def _getBlogReplies(base_dir: str, httpPrefix: str, translate: {},
+def _getBlogReplies(base_dir: str, http_prefix: str, translate: {},
                     nickname: str, domain: str, domainFull: str,
                     postId: str, depth=0) -> str:
     """Returns a string containing html blog posts
@@ -169,7 +169,7 @@ def _getBlogReplies(base_dir: str, httpPrefix: str, translate: {},
                     repliesStr += postFile.read() + '\n'
             except OSError:
                 print('EX: unable to read blog replies ' + postFilename)
-            rply = _getBlogReplies(base_dir, httpPrefix, translate,
+            rply = _getBlogReplies(base_dir, http_prefix, translate,
                                    nickname, domain, domainFull,
                                    replyPostId, depth+1)
             if rply not in repliesStr:
@@ -186,7 +186,7 @@ def _getBlogReplies(base_dir: str, httpPrefix: str, translate: {},
 
 
 def _htmlBlogPostContent(debug: bool, session, authorized: bool,
-                         base_dir: str, httpPrefix: str, translate: {},
+                         base_dir: str, http_prefix: str, translate: {},
                          nickname: str, domain: str, domainFull: str,
                          postJsonObject: {},
                          handle: str, restrictToDomain: bool,
@@ -234,7 +234,7 @@ def _htmlBlogPostContent(debug: bool, session, authorized: bool,
                 postJsonObject['object']['published'].split('T')[0]
             if handle:
                 if handle.startswith(nickname + '@' + domain):
-                    blogStr += ' <a href="' + httpPrefix + '://' + \
+                    blogStr += ' <a href="' + http_prefix + '://' + \
                         domainFull + \
                         '/users/' + nickname + '">' + handle + '</a>'
                     linkedAuthor = True
@@ -264,7 +264,7 @@ def _htmlBlogPostContent(debug: bool, session, authorized: bool,
     if attachmentStr:
         blogStr += '<br><center>' + attachmentStr + '</center>'
 
-    personUrl = localActorUrl(httpPrefix, nickname, domainFull)
+    personUrl = localActorUrl(http_prefix, nickname, domainFull)
     actorJson = \
         getPersonFromCache(base_dir, personUrl, personCache, False)
     languagesUnderstood = []
@@ -309,11 +309,11 @@ def _htmlBlogPostContent(debug: bool, session, authorized: bool,
 
     if not linkedAuthor:
         blogStr += '<p class="about"><a class="about" href="' + \
-            localActorUrl(httpPrefix, nickname, domainFull) + \
+            localActorUrl(http_prefix, nickname, domainFull) + \
             '">' + translate['About the author'] + \
             '</a></p>\n'
 
-    replies = _noOfBlogReplies(base_dir, httpPrefix, translate,
+    replies = _noOfBlogReplies(base_dir, http_prefix, translate,
                                nickname, domain, domainFull,
                                postJsonObject['object']['id'])
 
@@ -332,11 +332,11 @@ def _htmlBlogPostContent(debug: bool, session, authorized: bool,
     else:
         blogStr += blogSeparator + '<h1>' + translate['Replies'] + '</h1>\n'
         if not titleStr:
-            blogStr += _getBlogReplies(base_dir, httpPrefix, translate,
+            blogStr += _getBlogReplies(base_dir, http_prefix, translate,
                                        nickname, domain, domainFull,
                                        postJsonObject['object']['id'])
         else:
-            blogRepliesStr = _getBlogReplies(base_dir, httpPrefix, translate,
+            blogRepliesStr = _getBlogReplies(base_dir, http_prefix, translate,
                                              nickname, domain, domainFull,
                                              postJsonObject['object']['id'])
             blogStr += blogRepliesStr.replace('>' + titleStr + '<', '')
@@ -345,7 +345,7 @@ def _htmlBlogPostContent(debug: bool, session, authorized: bool,
 
 
 def _htmlBlogPostRSS2(authorized: bool,
-                      base_dir: str, httpPrefix: str, translate: {},
+                      base_dir: str, http_prefix: str, translate: {},
                       nickname: str, domain: str, domainFull: str,
                       postJsonObject: {},
                       handle: str, restrictToDomain: bool,
@@ -378,7 +378,7 @@ def _htmlBlogPostRSS2(authorized: bool,
 
 
 def _htmlBlogPostRSS3(authorized: bool,
-                      base_dir: str, httpPrefix: str, translate: {},
+                      base_dir: str, http_prefix: str, translate: {},
                       nickname: str, domain: str, domainFull: str,
                       postJsonObject: {},
                       handle: str, restrictToDomain: bool,
@@ -436,7 +436,7 @@ def _getSnippetFromBlogContent(postJsonObject: {}, systemLanguage: str) -> str:
 
 
 def htmlBlogPost(session, authorized: bool,
-                 base_dir: str, httpPrefix: str, translate: {},
+                 base_dir: str, http_prefix: str, translate: {},
                  nickname: str, domain: str, domainFull: str,
                  postJsonObject: {},
                  peertubeInstances: [],
@@ -461,14 +461,14 @@ def htmlBlogPost(session, authorized: bool,
         url = postJsonObject['object']['url']
     snippet = _getSnippetFromBlogContent(postJsonObject, systemLanguage)
     blogStr = htmlHeaderWithBlogMarkup(cssFilename, instanceTitle,
-                                       httpPrefix, domainFull, nickname,
+                                       http_prefix, domainFull, nickname,
                                        systemLanguage, published, modified,
                                        title, snippet, translate, url,
                                        contentLicenseUrl)
     _htmlBlogRemoveCwButton(blogStr, translate)
 
     blogStr += _htmlBlogPostContent(debug, session, authorized, base_dir,
-                                    httpPrefix, translate,
+                                    http_prefix, translate,
                                     nickname, domain,
                                     domainFull, postJsonObject,
                                     None, False,
@@ -478,14 +478,14 @@ def htmlBlogPost(session, authorized: bool,
     # show rss links
     blogStr += '<p class="rssfeed">'
 
-    blogStr += '<a href="' + httpPrefix + '://' + \
+    blogStr += '<a href="' + http_prefix + '://' + \
         domainFull + '/blog/' + nickname + '/rss.xml">'
     blogStr += '<img style="width:3%;min-width:50px" ' + \
         'loading="lazy" alt="RSS 2.0" ' + \
         'title="RSS 2.0" src="/' + \
         'icons/logorss.png" /></a>'
 
-    # blogStr += '<a href="' + httpPrefix + '://' + \
+    # blogStr += '<a href="' + http_prefix + '://' + \
     #     domainFull + '/blog/' + nickname + '/rss.txt">'
     # blogStr += '<img style="width:3%;min-width:50px" ' + \
     #     'loading="lazy" alt="RSS 3.0" ' + \
@@ -498,7 +498,7 @@ def htmlBlogPost(session, authorized: bool,
 
 
 def htmlBlogPage(authorized: bool, session,
-                 base_dir: str, httpPrefix: str, translate: {},
+                 base_dir: str, http_prefix: str, translate: {},
                  nickname: str, domain: str, port: int,
                  noOfItems: int, pageNumber: int,
                  peertubeInstances: [], systemLanguage: str,
@@ -524,7 +524,7 @@ def htmlBlogPage(authorized: bool, session,
 
     timelineJson = createBlogsTimeline(session, base_dir,
                                        nickname, domain, port,
-                                       httpPrefix,
+                                       http_prefix,
                                        noOfItems, False,
                                        pageNumber)
 
@@ -538,7 +538,7 @@ def htmlBlogPage(authorized: bool, session,
         navigateStr = '<p>'
         if pageNumber > 1:
             # show previous button
-            navigateStr += '<a href="' + httpPrefix + '://' + \
+            navigateStr += '<a href="' + http_prefix + '://' + \
                 domainFull + '/blog/' + \
                 nickname + '?page=' + str(pageNumber-1) + '">' + \
                 '<img loading="lazy" alt="<" title="<" ' + \
@@ -546,7 +546,7 @@ def htmlBlogPage(authorized: bool, session,
                 '/prev.png" class="buttonprev"/></a>\n'
         if len(timelineJson['orderedItems']) >= noOfItems:
             # show next button
-            navigateStr += '<a href="' + httpPrefix + '://' + \
+            navigateStr += '<a href="' + http_prefix + '://' + \
                 domainFull + '/blog/' + nickname + \
                 '?page=' + str(pageNumber + 1) + '">' + \
                 '<img loading="lazy" alt=">" title=">" ' + \
@@ -560,7 +560,7 @@ def htmlBlogPage(authorized: bool, session,
             continue
 
         blogStr += _htmlBlogPostContent(debug, session, authorized, base_dir,
-                                        httpPrefix, translate,
+                                        http_prefix, translate,
                                         nickname, domain,
                                         domainFull, item,
                                         None, True,
@@ -574,13 +574,13 @@ def htmlBlogPage(authorized: bool, session,
     # show rss link
     blogStr += '<p class="rssfeed">'
 
-    blogStr += '<a href="' + httpPrefix + '://' + \
+    blogStr += '<a href="' + http_prefix + '://' + \
         domainFull + '/blog/' + nickname + '/rss.xml">'
     blogStr += '<img loading="lazy" alt="RSS 2.0" ' + \
         'title="RSS 2.0" src="/' + \
         'icons/logorss.png" /></a>'
 
-    # blogStr += '<a href="' + httpPrefix + '://' + \
+    # blogStr += '<a href="' + http_prefix + '://' + \
     #     domainFull + '/blog/' + nickname + '/rss.txt">'
     # blogStr += '<img loading="lazy" alt="RSS 3.0" ' + \
     #     'title="RSS 3.0" src="/' + \
@@ -591,7 +591,7 @@ def htmlBlogPage(authorized: bool, session,
 
 
 def htmlBlogPageRSS2(authorized: bool, session,
-                     base_dir: str, httpPrefix: str, translate: {},
+                     base_dir: str, http_prefix: str, translate: {},
                      nickname: str, domain: str, port: int,
                      noOfItems: int, pageNumber: int,
                      includeHeader: bool, systemLanguage: str) -> str:
@@ -605,7 +605,7 @@ def htmlBlogPageRSS2(authorized: bool, session,
 
     blogRSS2 = ''
     if includeHeader:
-        blogRSS2 = rss2Header(httpPrefix, nickname, domainFull,
+        blogRSS2 = rss2Header(http_prefix, nickname, domainFull,
                               'Blog', translate)
 
     blogsIndex = acctDir(base_dir, nickname, domain) + '/tlblogs.index'
@@ -617,7 +617,7 @@ def htmlBlogPageRSS2(authorized: bool, session,
 
     timelineJson = createBlogsTimeline(session, base_dir,
                                        nickname, domain, port,
-                                       httpPrefix,
+                                       http_prefix,
                                        noOfItems, False,
                                        pageNumber)
 
@@ -634,7 +634,7 @@ def htmlBlogPageRSS2(authorized: bool, session,
 
             blogRSS2 += \
                 _htmlBlogPostRSS2(authorized, base_dir,
-                                  httpPrefix, translate,
+                                  http_prefix, translate,
                                   nickname, domain,
                                   domainFull, item,
                                   None, True, systemLanguage)
@@ -646,7 +646,7 @@ def htmlBlogPageRSS2(authorized: bool, session,
 
 
 def htmlBlogPageRSS3(authorized: bool, session,
-                     base_dir: str, httpPrefix: str, translate: {},
+                     base_dir: str, http_prefix: str, translate: {},
                      nickname: str, domain: str, port: int,
                      noOfItems: int, pageNumber: int,
                      systemLanguage: str) -> str:
@@ -666,7 +666,7 @@ def htmlBlogPageRSS3(authorized: bool, session,
 
     timelineJson = createBlogsTimeline(session, base_dir,
                                        nickname, domain, port,
-                                       httpPrefix,
+                                       http_prefix,
                                        noOfItems, False,
                                        pageNumber)
 
@@ -680,7 +680,7 @@ def htmlBlogPageRSS3(authorized: bool, session,
 
             blogRSS3 += \
                 _htmlBlogPostRSS3(authorized, base_dir,
-                                  httpPrefix, translate,
+                                  http_prefix, translate,
                                   nickname, domain,
                                   domainFull, item,
                                   None, True,
@@ -721,7 +721,7 @@ def _singleBlogAccountNickname(base_dir: str) -> str:
 
 
 def htmlBlogView(authorized: bool,
-                 session, base_dir: str, httpPrefix: str,
+                 session, base_dir: str, http_prefix: str,
                  translate: {}, domain: str, port: int,
                  noOfItems: int,
                  peertubeInstances: [], systemLanguage: str,
@@ -741,7 +741,7 @@ def htmlBlogView(authorized: bool,
         nickname = _singleBlogAccountNickname(base_dir)
         if nickname:
             return htmlBlogPage(authorized, session,
-                                base_dir, httpPrefix, translate,
+                                base_dir, http_prefix, translate,
                                 nickname, domain, port,
                                 noOfItems, 1, peertubeInstances,
                                 systemLanguage, personCache, debug)
@@ -757,7 +757,7 @@ def htmlBlogView(authorized: bool,
             if os.path.isfile(blogsIndex):
                 blogStr += '<p class="blogaccount">'
                 blogStr += '<a href="' + \
-                    httpPrefix + '://' + domainFull + '/blog/' + \
+                    http_prefix + '://' + domainFull + '/blog/' + \
                     acct.split('@')[0] + '">' + acct + '</a>'
                 blogStr += '</p>'
         break
@@ -766,7 +766,7 @@ def htmlBlogView(authorized: bool,
 
 
 def htmlEditBlog(mediaInstance: bool, translate: {},
-                 base_dir: str, httpPrefix: str,
+                 base_dir: str, http_prefix: str,
                  path: str,
                  pageNumber: int,
                  nickname: str, domain: str,
@@ -911,7 +911,7 @@ def htmlEditBlog(mediaInstance: bool, translate: {},
 
 
 def pathContainsBlogLink(base_dir: str,
-                         httpPrefix: str, domain: str,
+                         http_prefix: str, domain: str,
                          domainFull: str, path: str) -> (str, str):
     """If the path contains a blog entry then return its filename
     """
@@ -935,7 +935,7 @@ def pathContainsBlogLink(base_dir: str,
         return None, None
     if '#' + userEnding2[1] + '.' not in open(blogIndexFilename).read():
         return None, None
-    messageId = localActorUrl(httpPrefix, nickname, domainFull) + \
+    messageId = localActorUrl(http_prefix, nickname, domainFull) + \
         '/statuses/' + userEnding2[1]
     return locatePost(base_dir, nickname, domain, messageId), nickname
 

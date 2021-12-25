@@ -483,7 +483,7 @@ def validHashTag(hashtag: str) -> bool:
     return False
 
 
-def _addHashTags(wordStr: str, httpPrefix: str, domain: str,
+def _addHashTags(wordStr: str, http_prefix: str, domain: str,
                  replaceHashTags: {}, postHashtags: {}) -> bool:
     """Detects hashtags and adds them to the replacements dict
     Also updates the hashtags list to be added to the post
@@ -493,7 +493,7 @@ def _addHashTags(wordStr: str, httpPrefix: str, domain: str,
     hashtag = wordStr[1:]
     if not validHashTag(hashtag):
         return False
-    hashtagUrl = httpPrefix + "://" + domain + "/tags/" + hashtag
+    hashtagUrl = http_prefix + "://" + domain + "/tags/" + hashtag
     postHashtags[hashtag] = {
         'href': hashtagUrl,
         'name': '#' + hashtag,
@@ -506,7 +506,7 @@ def _addHashTags(wordStr: str, httpPrefix: str, domain: str,
 
 
 def _addEmoji(base_dir: str, wordStr: str,
-              httpPrefix: str, domain: str,
+              http_prefix: str, domain: str,
               replaceEmoji: {}, postTags: {},
               emojiDict: {}) -> bool:
     """Detects Emoji and adds them to the replacements dict
@@ -531,7 +531,7 @@ def _addEmoji(base_dir: str, wordStr: str,
     emojiFilename = base_dir + '/emoji/' + emojiDict[emoji] + '.png'
     if not os.path.isfile(emojiFilename):
         return False
-    emojiUrl = httpPrefix + "://" + domain + \
+    emojiUrl = http_prefix + "://" + domain + \
         "/emoji/" + emojiDict[emoji] + '.png'
     postTags[emoji] = {
         'icon': {
@@ -556,7 +556,7 @@ def tagExists(tagType: str, tagName: str, tags: {}) -> bool:
     return False
 
 
-def _addMention(wordStr: str, httpPrefix: str, following: str, petnames: str,
+def _addMention(wordStr: str, http_prefix: str, following: str, petnames: str,
                 replaceMentions: {}, recipients: [], tags: {}) -> bool:
     """Detects mentions and adds them to the replacements dict and
     recipients list
@@ -574,7 +574,7 @@ def _addMention(wordStr: str, httpPrefix: str, following: str, petnames: str,
             if possibleNickname == followNick:
                 followStr = follow.replace('\n', '').replace('\r', '')
                 replaceDomain = followStr.split('@')[1]
-                recipientActor = httpPrefix + "://" + \
+                recipientActor = http_prefix + "://" + \
                     replaceDomain + "/@" + possibleNickname
                 if recipientActor not in recipients:
                     recipients.append(recipientActor)
@@ -584,7 +584,7 @@ def _addMention(wordStr: str, httpPrefix: str, following: str, petnames: str,
                     'type': 'Mention'
                 }
                 replaceMentions[wordStr] = \
-                    "<span class=\"h-card\"><a href=\"" + httpPrefix + \
+                    "<span class=\"h-card\"><a href=\"" + http_prefix + \
                     "://" + replaceDomain + "/@" + possibleNickname + \
                     "\" class=\"u-url mention\">@<span>" + possibleNickname + \
                     "</span></a></span>"
@@ -601,7 +601,7 @@ def _addMention(wordStr: str, httpPrefix: str, following: str, petnames: str,
                     followStr = follow.replace('\n', '').replace('\r', '')
                     replaceNickname = followStr.split('@')[0]
                     replaceDomain = followStr.split('@')[1]
-                    recipientActor = httpPrefix + "://" + \
+                    recipientActor = http_prefix + "://" + \
                         replaceDomain + "/@" + replaceNickname
                     if recipientActor not in recipients:
                         recipients.append(recipientActor)
@@ -611,7 +611,7 @@ def _addMention(wordStr: str, httpPrefix: str, following: str, petnames: str,
                         'type': 'Mention'
                     }
                     replaceMentions[wordStr] = \
-                        "<span class=\"h-card\"><a href=\"" + httpPrefix + \
+                        "<span class=\"h-card\"><a href=\"" + http_prefix + \
                         "://" + replaceDomain + "/@" + replaceNickname + \
                         "\" class=\"u-url mention\">@<span>" + \
                         replaceNickname + "</span></a></span>"
@@ -633,7 +633,7 @@ def _addMention(wordStr: str, httpPrefix: str, following: str, petnames: str,
         for follow in following:
             if follow.replace('\n', '').replace('\r', '') != possibleHandle:
                 continue
-            recipientActor = httpPrefix + "://" + \
+            recipientActor = http_prefix + "://" + \
                 possibleDomain + "/@" + possibleNickname
             if recipientActor not in recipients:
                 recipients.append(recipientActor)
@@ -643,7 +643,7 @@ def _addMention(wordStr: str, httpPrefix: str, following: str, petnames: str,
                 'type': 'Mention'
             }
             replaceMentions[wordStr] = \
-                "<span class=\"h-card\"><a href=\"" + httpPrefix + \
+                "<span class=\"h-card\"><a href=\"" + http_prefix + \
                 "://" + possibleDomain + "/@" + possibleNickname + \
                 "\" class=\"u-url mention\">@<span>" + possibleNickname + \
                 "</span></a></span>"
@@ -651,7 +651,7 @@ def _addMention(wordStr: str, httpPrefix: str, following: str, petnames: str,
     # @nick@domain
     if not (possibleDomain == 'localhost' or '.' in possibleDomain):
         return False
-    recipientActor = httpPrefix + "://" + \
+    recipientActor = http_prefix + "://" + \
         possibleDomain + "/@" + possibleNickname
     if recipientActor not in recipients:
         recipients.append(recipientActor)
@@ -661,7 +661,7 @@ def _addMention(wordStr: str, httpPrefix: str, following: str, petnames: str,
         'type': 'Mention'
     }
     replaceMentions[wordStr] = \
-        "<span class=\"h-card\"><a href=\"" + httpPrefix + \
+        "<span class=\"h-card\"><a href=\"" + http_prefix + \
         "://" + possibleDomain + "/@" + possibleNickname + \
         "\" class=\"u-url mention\">@<span>" + possibleNickname + \
         "</span></a></span>"
@@ -817,7 +817,7 @@ def _autoTag(base_dir: str, nickname: str, domain: str,
                 appendTags.append('#' + tagName)
 
 
-def addHtmlTags(base_dir: str, httpPrefix: str,
+def addHtmlTags(base_dir: str, http_prefix: str,
                 nickname: str, domain: str, content: str,
                 recipients: [], hashtags: {},
                 isJsonContent: bool = False) -> str:
@@ -887,7 +887,7 @@ def addHtmlTags(base_dir: str, httpPrefix: str,
                 longWordsList.append(wordStr)
             firstChar = wordStr[0]
             if firstChar == '@':
-                if _addMention(wordStr, httpPrefix, following, petnames,
+                if _addMention(wordStr, http_prefix, following, petnames,
                                replaceMentions, recipients, hashtags):
                     prevWordStr = ''
                     continue
@@ -899,7 +899,7 @@ def addHtmlTags(base_dir: str, httpPrefix: str,
                         wordStr = wordStr[:len(wordStr) - 1]
                         break
 
-                if _addHashTags(wordStr, httpPrefix, originalDomain,
+                if _addHashTags(wordStr, http_prefix, originalDomain,
                                 replaceHashTags, hashtags):
                     prevWordStr = ''
                     continue
@@ -923,7 +923,7 @@ def addHtmlTags(base_dir: str, httpPrefix: str,
                         emojiDict = dict(emojiDict, **customEmojiDict)
 
 #                print('TAG: looking up emoji for :' + wordStr2 + ':')
-                _addEmoji(base_dir, ':' + wordStr2 + ':', httpPrefix,
+                _addEmoji(base_dir, ':' + wordStr2 + ':', http_prefix,
                           originalDomain, replaceEmoji, hashtags,
                           emojiDict)
             else:
@@ -942,7 +942,7 @@ def addHtmlTags(base_dir: str, httpPrefix: str,
     # add any auto generated tags
     for appended in appendTags:
         content = content + ' ' + appended
-        _addHashTags(appended, httpPrefix, originalDomain,
+        _addHashTags(appended, http_prefix, originalDomain,
                      replaceHashTags, hashtags)
 
     # replace words with their html versions

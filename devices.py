@@ -140,13 +140,13 @@ def E2EEaddDevice(base_dir: str, nickname: str, domain: str,
 
 
 def E2EEdevicesCollection(base_dir: str, nickname: str, domain: str,
-                          domainFull: str, httpPrefix: str) -> {}:
+                          domainFull: str, http_prefix: str) -> {}:
     """Returns a list of registered devices
     """
     personDir = acctDir(base_dir, nickname, domain)
     if not os.path.isdir(personDir):
         return {}
-    personId = localActorUrl(httpPrefix, nickname, domainFull)
+    personId = localActorUrl(http_prefix, nickname, domainFull)
     if not os.path.isdir(personDir + '/devices'):
         os.mkdir(personDir + '/devices')
     deviceList = []

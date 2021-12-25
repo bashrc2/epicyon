@@ -85,7 +85,7 @@ def metaDataInstance(showAccounts: bool,
                      instanceTitle: str,
                      instanceDescriptionShort: str,
                      instanceDescription: str,
-                     httpPrefix: str, base_dir: str,
+                     http_prefix: str, base_dir: str,
                      adminNickname: str, domain: str, domainFull: str,
                      registration: bool, systemLanguage: str,
                      version: str) -> {}:
@@ -128,7 +128,7 @@ def metaDataInstance(showAccounts: bool,
         isBot = True
 
     url = \
-        httpPrefix + '://' + domainFull + '/@' + \
+        http_prefix + '://' + domainFull + '/@' + \
         adminActor['preferredUsername']
 
     if showAccounts:
@@ -170,7 +170,7 @@ def metaDataInstance(showAccounts: bool,
             'status_count': localPosts,
             'user_count': activeAccounts
         },
-        'thumbnail': httpPrefix + '://' + domainFull + '/login.png',
+        'thumbnail': http_prefix + '://' + domainFull + '/login.png',
         'title': instanceTitle,
         'uri': domainFull,
         'urls': {},
@@ -208,13 +208,13 @@ def metaDataInstance(showAccounts: bool,
 
 
 def metadataCustomEmoji(base_dir: str,
-                        httpPrefix: str, domainFull: str) -> {}:
+                        http_prefix: str, domainFull: str) -> {}:
     """Returns the custom emoji
     Endpoint /api/v1/custom_emojis
     See https://docs.joinmastodon.org/methods/instance/custom_emojis
     """
     result = []
-    emojisUrl = httpPrefix + '://' + domainFull + '/emoji'
+    emojisUrl = http_prefix + '://' + domainFull + '/emoji'
     for subdir, dirs, files in os.walk(base_dir + '/emoji'):
         for f in files:
             if len(f) < 3:

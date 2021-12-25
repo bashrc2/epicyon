@@ -673,11 +673,11 @@ if args.testsnetwork:
     print('All tests succeeded')
     sys.exit()
 
-httpPrefix = 'https'
+http_prefix = 'https'
 if args.http or args.i2p:
-    httpPrefix = 'http'
+    http_prefix = 'http'
 elif args.gnunet:
-    httpPrefix = 'gnunet'
+    http_prefix = 'gnunet'
 
 base_dir = args.base_dir
 if base_dir.endswith('/'):
@@ -727,7 +727,7 @@ if args.posts:
         args.language = 'en'
     signingPrivateKeyPem = getInstanceActorKey(base_dir, originDomain)
     getPublicPostsOfPerson(base_dir, nickname, domain, False, True,
-                           proxyType, args.port, httpPrefix, debug,
+                           proxyType, args.port, http_prefix, debug,
                            __version__, args.language,
                            signingPrivateKeyPem, originDomain)
     sys.exit()
@@ -772,7 +772,7 @@ if args.postDomains:
                                       base_dir, nickname, domain,
                                       originDomain,
                                       proxyType, args.port,
-                                      httpPrefix, debug,
+                                      http_prefix, debug,
                                       __version__,
                                       wordFrequency, domainList,
                                       args.language,
@@ -819,7 +819,7 @@ if args.postDomainsBlocked:
     domainList = getPublicPostDomainsBlocked(None,
                                              base_dir, nickname, domain,
                                              proxyType, args.port,
-                                             httpPrefix, debug,
+                                             http_prefix, debug,
                                              __version__,
                                              wordFrequency, domainList,
                                              args.language,
@@ -864,7 +864,7 @@ if args.checkDomains:
     checkDomains(None,
                  base_dir, nickname, domain,
                  proxyType, args.port,
-                 httpPrefix, debug,
+                 http_prefix, debug,
                  __version__,
                  maxBlockedDomains, False, args.language,
                  signingPrivateKeyPem)
@@ -891,7 +891,7 @@ if args.socnet:
         signingPrivateKeyPem = getInstanceActorKey(base_dir, domain)
     dotGraph = instancesGraph(base_dir, args.socnet,
                               proxyType, args.port,
-                              httpPrefix, debug,
+                              http_prefix, debug,
                               __version__, args.language,
                               signingPrivateKeyPem)
     try:
@@ -927,7 +927,7 @@ if args.postsraw:
         args.language = 'en'
     signingPrivateKeyPem = getInstanceActorKey(base_dir, originDomain)
     getPublicPostsOfPerson(base_dir, nickname, domain, False, False,
-                           proxyType, args.port, httpPrefix, debug,
+                           proxyType, args.port, http_prefix, debug,
                            __version__, args.language,
                            signingPrivateKeyPem, originDomain)
     sys.exit()
@@ -951,7 +951,7 @@ if args.json:
         else:
             print('Did not obtain instance actor key for ' + domain)
     testJson = getJson(signingPrivateKeyPem, session, args.json, asHeader,
-                       None, debug, __version__, httpPrefix, domain)
+                       None, debug, __version__, http_prefix, domain)
     if testJson:
         pprint(testJson)
     sys.exit()
@@ -976,7 +976,7 @@ if args.htmlpost:
             print('Did not obtain instance actor key for ' + domain)
     testHtml = downloadHtml(signingPrivateKeyPem, session, args.htmlpost,
                             asHeader, None, debug, __version__,
-                            httpPrefix, domain)
+                            http_prefix, domain)
     if testHtml:
         print(testHtml)
     sys.exit()
@@ -1192,7 +1192,7 @@ if args.approve:
     if args.secureMode:
         signingPrivateKeyPem = getInstanceActorKey(base_dir, domain)
     manualApproveFollowRequest(session, base_dir,
-                               httpPrefix,
+                               http_prefix,
                                args.nickname, domain, port,
                                args.approve,
                                federationList,
@@ -1220,7 +1220,7 @@ if args.deny:
     if args.secureMode:
         signingPrivateKeyPem = getInstanceActorKey(base_dir, domain)
     manualDenyFollowRequest(session, base_dir,
-                            httpPrefix,
+                            http_prefix,
                             args.nickname, domain, port,
                             args.deny,
                             federationList,
@@ -1318,7 +1318,7 @@ if args.message:
                       base_dir, session, args.nickname, args.password,
                       domain, port,
                       toNickname, toDomain, toPort, ccUrl,
-                      httpPrefix, sendMessage, followersOnly,
+                      http_prefix, sendMessage, followersOnly,
                       args.commentsEnabled, attach, mediaType,
                       attachedImageDescription, city,
                       cachedWebfingers, personCache, isArticle,
@@ -1354,7 +1354,7 @@ if args.announce:
 
     sendAnnounceViaServer(base_dir, session, args.nickname, args.password,
                           domain, port,
-                          httpPrefix, args.announce,
+                          http_prefix, args.announce,
                           cachedWebfingers, personCache,
                           True, __version__, signingPrivateKeyPem)
     for i in range(10):
@@ -1398,7 +1398,7 @@ if args.box:
     session = createSession(proxyType)
     boxJson = c2sBoxJson(base_dir, session,
                          args.nickname, args.password,
-                         domain, port, httpPrefix,
+                         domain, port, http_prefix,
                          args.box, args.pageNumber,
                          args.debug, signingPrivateKeyPem)
     if boxJson:
@@ -1460,7 +1460,7 @@ if args.itemName:
     sendShareViaServer(base_dir, session,
                        args.nickname, args.password,
                        domain, port,
-                       httpPrefix,
+                       http_prefix,
                        args.itemName,
                        args.summary,
                        args.itemImage,
@@ -1503,7 +1503,7 @@ if args.undoItemName:
     sendUndoShareViaServer(base_dir, session,
                            args.nickname, args.password,
                            domain, port,
-                           httpPrefix,
+                           http_prefix,
                            args.undoItemName,
                            cachedWebfingers, personCache,
                            debug, __version__, signingPrivateKeyPem)
@@ -1565,7 +1565,7 @@ if args.wantedItemName:
     sendWantedViaServer(base_dir, session,
                         args.nickname, args.password,
                         domain, port,
-                        httpPrefix,
+                        http_prefix,
                         args.wantedItemName,
                         args.summary,
                         args.itemImage,
@@ -1608,7 +1608,7 @@ if args.undoWantedItemName:
     sendUndoWantedViaServer(base_dir, session,
                             args.nickname, args.password,
                             domain, port,
-                            httpPrefix,
+                            http_prefix,
                             args.undoWantedItemName,
                             cachedWebfingers, personCache,
                             debug, __version__, signingPrivateKeyPem)
@@ -1642,7 +1642,7 @@ if args.like:
     sendLikeViaServer(base_dir, session,
                       args.nickname, args.password,
                       domain, port,
-                      httpPrefix, args.like,
+                      http_prefix, args.like,
                       cachedWebfingers, personCache,
                       True, __version__, signingPrivateKeyPem)
     for i in range(10):
@@ -1681,7 +1681,7 @@ if args.react:
     sendReactionViaServer(base_dir, session,
                           args.nickname, args.password,
                           domain, port,
-                          httpPrefix, args.react, args.emoji,
+                          http_prefix, args.react, args.emoji,
                           cachedWebfingers, personCache,
                           True, __version__, signingPrivateKeyPem)
     for i in range(10):
@@ -1714,7 +1714,7 @@ if args.undolike:
     sendUndoLikeViaServer(base_dir, session,
                           args.nickname, args.password,
                           domain, port,
-                          httpPrefix, args.undolike,
+                          http_prefix, args.undolike,
                           cachedWebfingers, personCache,
                           True, __version__,
                           signingPrivateKeyPem)
@@ -1754,7 +1754,7 @@ if args.undoreact:
     sendUndoReactionViaServer(base_dir, session,
                               args.nickname, args.password,
                               domain, port,
-                              httpPrefix, args.undoreact, args.emoji,
+                              http_prefix, args.undoreact, args.emoji,
                               cachedWebfingers, personCache,
                               True, __version__,
                               signingPrivateKeyPem)
@@ -1788,7 +1788,7 @@ if args.bookmark:
     sendBookmarkViaServer(base_dir, session,
                           args.nickname, args.password,
                           domain, port,
-                          httpPrefix, args.bookmark,
+                          http_prefix, args.bookmark,
                           cachedWebfingers, personCache,
                           True, __version__,
                           signingPrivateKeyPem)
@@ -1822,7 +1822,7 @@ if args.unbookmark:
     sendUndoBookmarkViaServer(base_dir, session,
                               args.nickname, args.password,
                               domain, port,
-                              httpPrefix, args.unbookmark,
+                              http_prefix, args.unbookmark,
                               cachedWebfingers, personCache,
                               True, __version__, signingPrivateKeyPem)
     for i in range(10):
@@ -1855,7 +1855,7 @@ if args.delete:
     sendDeleteViaServer(base_dir, session,
                         args.nickname, args.password,
                         domain, port,
-                        httpPrefix, args.delete,
+                        http_prefix, args.delete,
                         cachedWebfingers, personCache,
                         True, __version__, signingPrivateKeyPem)
     for i in range(10):
@@ -1887,7 +1887,7 @@ if args.follow:
     session = createSession(proxyType)
     personCache = {}
     cachedWebfingers = {}
-    followHttpPrefix = httpPrefix
+    followHttpPrefix = http_prefix
     if args.follow.startswith('https'):
         followHttpPrefix = 'https'
     if not domain:
@@ -1900,7 +1900,7 @@ if args.follow:
                                args.nickname, args.password,
                                domain, port,
                                followNickname, followDomain, followPort,
-                               httpPrefix,
+                               http_prefix,
                                cachedWebfingers, personCache,
                                debug, __version__, signingPrivateKeyPem)
     for t in range(20):
@@ -1933,7 +1933,7 @@ if args.unfollow:
     session = createSession(proxyType)
     personCache = {}
     cachedWebfingers = {}
-    followHttpPrefix = httpPrefix
+    followHttpPrefix = http_prefix
     if args.follow.startswith('https'):
         followHttpPrefix = 'https'
     if not domain:
@@ -1946,7 +1946,7 @@ if args.unfollow:
                                  args.nickname, args.password,
                                  domain, port,
                                  followNickname, followDomain, followPort,
-                                 httpPrefix,
+                                 http_prefix,
                                  cachedWebfingers, personCache,
                                  debug, __version__, signingPrivateKeyPem)
     for t in range(20):
@@ -1970,7 +1970,7 @@ if args.followingList:
     session = createSession(proxyType)
     personCache = {}
     cachedWebfingers = {}
-    followHttpPrefix = httpPrefix
+    followHttpPrefix = http_prefix
     if not domain:
         domain = getConfigParam(base_dir, 'domain')
     signingPrivateKeyPem = None
@@ -1981,7 +1981,7 @@ if args.followingList:
         getFollowingViaServer(base_dir, session,
                               args.nickname, args.password,
                               domain, port,
-                              httpPrefix, args.pageNumber,
+                              http_prefix, args.pageNumber,
                               cachedWebfingers, personCache,
                               debug, __version__, signingPrivateKeyPem)
     if followingJson:
@@ -2003,7 +2003,7 @@ if args.followersList:
     session = createSession(proxyType)
     personCache = {}
     cachedWebfingers = {}
-    followHttpPrefix = httpPrefix
+    followHttpPrefix = http_prefix
     if not domain:
         domain = getConfigParam(base_dir, 'domain')
     signingPrivateKeyPem = None
@@ -2014,7 +2014,7 @@ if args.followersList:
         getFollowersViaServer(base_dir, session,
                               args.nickname, args.password,
                               domain, port,
-                              httpPrefix, args.pageNumber,
+                              http_prefix, args.pageNumber,
                               cachedWebfingers, personCache,
                               debug, __version__,
                               signingPrivateKeyPem)
@@ -2037,7 +2037,7 @@ if args.followRequestsList:
     session = createSession(proxyType)
     personCache = {}
     cachedWebfingers = {}
-    followHttpPrefix = httpPrefix
+    followHttpPrefix = http_prefix
     if not domain:
         domain = getConfigParam(base_dir, 'domain')
     signingPrivateKeyPem = None
@@ -2048,7 +2048,7 @@ if args.followRequestsList:
         getFollowRequestsViaServer(base_dir, session,
                                    args.nickname, args.password,
                                    domain, port,
-                                   httpPrefix, args.pageNumber,
+                                   http_prefix, args.pageNumber,
                                    cachedWebfingers, personCache,
                                    debug, __version__, signingPrivateKeyPem)
     if followRequestsJson:
@@ -2066,28 +2066,28 @@ if args.proxyPort:
     proxyPort = args.proxyPort
     setConfigParam(base_dir, 'proxyPort', proxyPort)
 if args.gnunet:
-    httpPrefix = 'gnunet'
+    http_prefix = 'gnunet'
 if args.dat or args.hyper:
-    httpPrefix = 'hyper'
+    http_prefix = 'hyper'
 if args.i2p:
-    httpPrefix = 'http'
+    http_prefix = 'http'
 
 if args.migrations:
     cachedWebfingers = {}
     if args.http or domain.endswith('.onion'):
-        httpPrefix = 'http'
+        http_prefix = 'http'
         port = 80
         proxyType = 'tor'
     elif domain.endswith('.i2p'):
-        httpPrefix = 'http'
+        http_prefix = 'http'
         port = 80
         proxyType = 'i2p'
     elif args.gnunet:
-        httpPrefix = 'gnunet'
+        http_prefix = 'gnunet'
         port = 80
         proxyType = 'gnunet'
     else:
-        httpPrefix = 'https'
+        http_prefix = 'https'
         port = 443
     session = createSession(proxyType)
     if not domain:
@@ -2096,7 +2096,7 @@ if args.migrations:
     if args.secureMode:
         signingPrivateKeyPem = getInstanceActorKey(base_dir, domain)
     ctr = migrateAccounts(base_dir, session,
-                          httpPrefix, cachedWebfingers,
+                          http_prefix, cachedWebfingers,
                           True, signingPrivateKeyPem)
     if ctr == 0:
         print('No followed accounts have moved')
@@ -2172,19 +2172,19 @@ if args.followers:
         domain = domain.replace('\n', '').replace('\r', '')
     cachedWebfingers = {}
     if args.http or domain.endswith('.onion'):
-        httpPrefix = 'http'
+        http_prefix = 'http'
         port = 80
         proxyType = 'tor'
     elif domain.endswith('.i2p'):
-        httpPrefix = 'http'
+        http_prefix = 'http'
         port = 80
         proxyType = 'i2p'
     elif args.gnunet:
-        httpPrefix = 'gnunet'
+        http_prefix = 'gnunet'
         port = 80
         proxyType = 'gnunet'
     else:
-        httpPrefix = 'https'
+        http_prefix = 'https'
         port = 443
     session = createSession(proxyType)
     if nickname == 'inbox':
@@ -2198,7 +2198,7 @@ if args.followers:
     if args.secureMode:
         signingPrivateKeyPem = getInstanceActorKey(base_dir, domain)
     wfRequest = webfingerHandle(session, handle,
-                                httpPrefix, cachedWebfingers,
+                                http_prefix, cachedWebfingers,
                                 hostDomain, __version__, debug, False,
                                 signingPrivateKeyPem)
     if not wfRequest:
@@ -2232,7 +2232,7 @@ if args.followers:
         personUrl = personUrl.replace('/c/', '/actor/')
     if not personUrl:
         # try single user instance
-        personUrl = httpPrefix + '://' + domain
+        personUrl = http_prefix + '://' + domain
         profileStr = 'https://www.w3.org/ns/activitystreams'
         asHeader = {
             'Accept': 'application/ld+json; profile="' + profileStr + '"'
@@ -2248,7 +2248,7 @@ if args.followers:
     followersList = \
         downloadFollowCollection(signingPrivateKeyPem,
                                  'followers', session,
-                                 httpPrefix, personUrl, 1, 3, args.debug)
+                                 http_prefix, personUrl, 1, 3, args.debug)
     if followersList:
         for actor in followersList:
             print(actor)
@@ -2293,8 +2293,8 @@ if args.addaccount:
     if domain.endswith('.onion') or \
        domain.endswith('.i2p'):
         port = 80
-        httpPrefix = 'http'
-    createPerson(base_dir, nickname, domain, port, httpPrefix,
+        http_prefix = 'http'
+    createPerson(base_dir, nickname, domain, port, http_prefix,
                  True, not args.noapproval, args.password.strip())
     if os.path.isdir(accountDir):
         print('Account created for ' + nickname + '@' + domain)
@@ -2330,7 +2330,7 @@ if args.addgroup:
     if os.path.isdir(accountDir):
         print('Group already exists')
         sys.exit()
-    createGroup(base_dir, nickname, domain, port, httpPrefix,
+    createGroup(base_dir, nickname, domain, port, http_prefix,
                 True, args.password.strip())
     if os.path.isdir(accountDir):
         print('Group created for ' + nickname + '@' + domain)
@@ -2434,7 +2434,7 @@ if args.archive:
     else:
         print('Archiving to ' + args.archive + '...')
     archiveMedia(base_dir, args.archive, args.archiveWeeks)
-    archivePosts(base_dir, httpPrefix, args.archive, {}, args.archiveMaxPosts)
+    archivePosts(base_dir, http_prefix, args.archive, {}, args.archiveMaxPosts)
     print('Archiving complete')
     sys.exit()
 
@@ -2450,7 +2450,7 @@ if args.avatar:
         print('Specify a nickname with --nickname [name]')
         sys.exit()
     city = 'London, England'
-    if setProfileImage(base_dir, httpPrefix, args.nickname, domain,
+    if setProfileImage(base_dir, http_prefix, args.nickname, domain,
                        port, args.avatar, 'avatar', '128x128', city,
                        args.contentLicenseUrl):
         print('Avatar added for ' + args.nickname)
@@ -2466,7 +2466,7 @@ if args.backgroundImage:
         print('Specify a nickname with --nickname [name]')
         sys.exit()
     city = 'London, England'
-    if setProfileImage(base_dir, httpPrefix, args.nickname, domain,
+    if setProfileImage(base_dir, http_prefix, args.nickname, domain,
                        port, args.backgroundImage, 'background',
                        '256x256', city, args.contentLicenseUrl):
         print('Background image added for ' + args.nickname)
@@ -2509,7 +2509,7 @@ if args.skill:
     sendSkillViaServer(base_dir, session,
                        nickname, args.password,
                        domain, port,
-                       httpPrefix,
+                       http_prefix,
                        args.skill, args.skillLevelPercent,
                        cachedWebfingers, personCache,
                        True, __version__, signingPrivateKeyPem)
@@ -2543,7 +2543,7 @@ if args.availability:
 
     sendAvailabilityViaServer(base_dir, session, nickname, args.password,
                               domain, port,
-                              httpPrefix,
+                              http_prefix,
                               args.availability,
                               cachedWebfingers, personCache,
                               True, __version__, signingPrivateKeyPem)
@@ -2589,7 +2589,7 @@ if args.desktop:
     # only store inbox posts if we are not running as a daemon
     storeInboxPosts = not args.noKeyPress
 
-    runDesktopClient(base_dir, proxyType, httpPrefix,
+    runDesktopClient(base_dir, proxyType, http_prefix,
                      nickname, domain, port, args.password,
                      args.screenreader, args.language,
                      args.notificationSounds,
@@ -2636,7 +2636,7 @@ if args.block:
         blockedDomain = args.block.split('@')[1]
         blockedDomain = blockedDomain.replace('\n', '').replace('\r', '')
         blockedNickname = args.block.split('@')[0]
-        blockedActor = httpPrefix + '://' + blockedDomain + \
+        blockedActor = http_prefix + '://' + blockedDomain + \
             '/users/' + blockedNickname
         args.block = blockedActor
     else:
@@ -2656,7 +2656,7 @@ if args.block:
 
     sendBlockViaServer(base_dir, session, nickname, args.password,
                        domain, port,
-                       httpPrefix, args.block,
+                       http_prefix, args.block,
                        cachedWebfingers, personCache,
                        True, __version__, signingPrivateKeyPem)
     for i in range(10):
@@ -2688,7 +2688,7 @@ if args.mute:
 
     sendMuteViaServer(base_dir, session, nickname, args.password,
                       domain, port,
-                      httpPrefix, args.mute,
+                      http_prefix, args.mute,
                       cachedWebfingers, personCache,
                       True, __version__, signingPrivateKeyPem)
     for i in range(10):
@@ -2720,7 +2720,7 @@ if args.unmute:
 
     sendUndoMuteViaServer(base_dir, session, nickname, args.password,
                           domain, port,
-                          httpPrefix, args.unmute,
+                          http_prefix, args.unmute,
                           cachedWebfingers, personCache,
                           True, __version__, signingPrivateKeyPem)
     for i in range(10):
@@ -2744,7 +2744,7 @@ if args.unblock:
         blockedDomain = args.unblock.split('@')[1]
         blockedDomain = blockedDomain.replace('\n', '').replace('\r', '')
         blockedNickname = args.unblock.split('@')[0]
-        blockedActor = httpPrefix + '://' + blockedDomain + \
+        blockedActor = http_prefix + '://' + blockedDomain + \
             '/users/' + blockedNickname
         args.unblock = blockedActor
     else:
@@ -2764,7 +2764,7 @@ if args.unblock:
 
     sendUndoBlockViaServer(base_dir, session, nickname, args.password,
                            domain, port,
-                           httpPrefix, args.unblock,
+                           http_prefix, args.unblock,
                            cachedWebfingers, personCache,
                            True, __version__, signingPrivateKeyPem)
     for i in range(10):
@@ -2814,16 +2814,16 @@ if args.testdata:
     setConfigParam(base_dir, 'registrationsRemaining',
                    str(maxRegistrations))
 
-    createPerson(base_dir, 'maxboardroom', domain, port, httpPrefix,
+    createPerson(base_dir, 'maxboardroom', domain, port, http_prefix,
                  True, False, password)
-    createPerson(base_dir, 'ultrapancake', domain, port, httpPrefix,
+    createPerson(base_dir, 'ultrapancake', domain, port, http_prefix,
                  True, False, password)
-    createPerson(base_dir, 'drokk', domain, port, httpPrefix,
+    createPerson(base_dir, 'drokk', domain, port, http_prefix,
                  True, False, password)
-    createPerson(base_dir, 'sausagedog', domain, port, httpPrefix,
+    createPerson(base_dir, 'sausagedog', domain, port, http_prefix,
                  True, False, password)
 
-    createPerson(base_dir, nickname, domain, port, httpPrefix,
+    createPerson(base_dir, nickname, domain, port, http_prefix,
                  True, False, 'likewhateveryouwantscoob')
     setSkillLevel(base_dir, nickname, domain, 'testing', 60)
     setSkillLevel(base_dir, nickname, domain, 'typing', 50)
@@ -2831,7 +2831,7 @@ if args.testdata:
     setAvailability(base_dir, nickname, domain, 'busy')
 
     addShare(base_dir,
-             httpPrefix, nickname, domain, port,
+             http_prefix, nickname, domain, port,
              "spanner",
              "It's a spanner",
              "img/shares1.png",
@@ -2842,7 +2842,7 @@ if args.testdata:
              debug, city, args.language, {}, 'shares', args.lowBandwidth,
              args.contentLicenseUrl)
     addShare(base_dir,
-             httpPrefix, nickname, domain, port,
+             http_prefix, nickname, domain, port,
              "witch hat",
              "Spooky",
              "img/shares2.png",
@@ -2875,7 +2875,7 @@ if args.testdata:
     conversationId = None
     lowBandwidth = False
 
-    createPublicPost(base_dir, nickname, domain, port, httpPrefix,
+    createPublicPost(base_dir, nickname, domain, port, http_prefix,
                      "like this is totally just a #test man",
                      testFollowersOnly,
                      testSaveToFile,
@@ -2888,7 +2888,7 @@ if args.testdata:
                      testEventDate, testEventTime, testLocation,
                      testIsArticle, args.language, conversationId,
                      lowBandwidth, args.contentLicenseUrl)
-    createPublicPost(base_dir, nickname, domain, port, httpPrefix,
+    createPublicPost(base_dir, nickname, domain, port, http_prefix,
                      "Zoiks!!!",
                      testFollowersOnly,
                      testSaveToFile,
@@ -2901,7 +2901,7 @@ if args.testdata:
                      testEventDate, testEventTime, testLocation,
                      testIsArticle, args.language, conversationId,
                      lowBandwidth, args.contentLicenseUrl)
-    createPublicPost(base_dir, nickname, domain, port, httpPrefix,
+    createPublicPost(base_dir, nickname, domain, port, http_prefix,
                      "Hey scoob we need like a hundred more #milkshakes",
                      testFollowersOnly,
                      testSaveToFile,
@@ -2914,7 +2914,7 @@ if args.testdata:
                      testEventDate, testEventTime, testLocation,
                      testIsArticle, args.language, conversationId,
                      lowBandwidth, args.contentLicenseUrl)
-    createPublicPost(base_dir, nickname, domain, port, httpPrefix,
+    createPublicPost(base_dir, nickname, domain, port, http_prefix,
                      "Getting kinda spooky around here",
                      testFollowersOnly,
                      testSaveToFile,
@@ -2927,7 +2927,7 @@ if args.testdata:
                      testEventDate, testEventTime, testLocation,
                      testIsArticle, args.language, conversationId,
                      lowBandwidth, args.contentLicenseUrl)
-    createPublicPost(base_dir, nickname, domain, port, httpPrefix,
+    createPublicPost(base_dir, nickname, domain, port, http_prefix,
                      "And they would have gotten away with it too" +
                      "if it wasn't for those pesky hackers",
                      testFollowersOnly,
@@ -2941,7 +2941,7 @@ if args.testdata:
                      testEventDate, testEventTime, testLocation,
                      testIsArticle, args.language, conversationId,
                      lowBandwidth, args.contentLicenseUrl)
-    createPublicPost(base_dir, nickname, domain, port, httpPrefix,
+    createPublicPost(base_dir, nickname, domain, port, http_prefix,
                      "man these centralized sites are like the worst!",
                      testFollowersOnly,
                      testSaveToFile,
@@ -2954,7 +2954,7 @@ if args.testdata:
                      testEventDate, testEventTime, testLocation,
                      testIsArticle, args.language, conversationId,
                      lowBandwidth, args.contentLicenseUrl)
-    createPublicPost(base_dir, nickname, domain, port, httpPrefix,
+    createPublicPost(base_dir, nickname, domain, port, http_prefix,
                      "another mystery solved #test",
                      testFollowersOnly,
                      testSaveToFile,
@@ -2967,7 +2967,7 @@ if args.testdata:
                      testEventDate, testEventTime, testLocation,
                      testIsArticle, args.language, conversationId,
                      lowBandwidth, args.contentLicenseUrl)
-    createPublicPost(base_dir, nickname, domain, port, httpPrefix,
+    createPublicPost(base_dir, nickname, domain, port, http_prefix,
                      "let's go bowling",
                      testFollowersOnly,
                      testSaveToFile,
@@ -3250,7 +3250,7 @@ if __name__ == "__main__":
               domain, onionDomain, i2pDomain,
               args.YTReplacementDomain,
               args.twitterReplacementDomain,
-              port, proxyPort, httpPrefix,
+              port, proxyPort, http_prefix,
               federationList, args.maxMentions,
               args.maxEmoji, args.secureMode,
               proxyType, args.maxReplies,

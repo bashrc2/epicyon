@@ -68,7 +68,7 @@ def signPostHeaders(dateStr: str, privateKeyPem: str,
                     domain: str, port: int,
                     toDomain: str, toPort: int,
                     path: str,
-                    httpPrefix: str,
+                    http_prefix: str,
                     messageBodyJsonStr: str,
                     contentType: str,
                     algorithm: str,
@@ -83,10 +83,10 @@ def signPostHeaders(dateStr: str, privateKeyPem: str,
     if not dateStr:
         dateStr = strftime("%a, %d %b %Y %H:%M:%S %Z", gmtime())
     if nickname != domain and nickname.lower() != 'actor':
-        keyID = localActorUrl(httpPrefix, nickname, domain)
+        keyID = localActorUrl(http_prefix, nickname, domain)
     else:
         # instance actor
-        keyID = httpPrefix + '://' + domain + '/actor'
+        keyID = http_prefix + '://' + domain + '/actor'
     keyID += '#main-key'
     if not messageBodyJsonStr:
         headers = {
@@ -147,7 +147,7 @@ def signPostHeadersNew(dateStr: str, privateKeyPem: str,
                        domain: str, port: int,
                        toDomain: str, toPort: int,
                        path: str,
-                       httpPrefix: str,
+                       http_prefix: str,
                        messageBodyJsonStr: str,
                        algorithm: str, digestAlgorithm: str,
                        debug: bool) -> (str, str):
@@ -168,7 +168,7 @@ def signPostHeadersNew(dateStr: str, privateKeyPem: str,
         currTime = datetime.datetime.strptime(dateStr, timeFormat)
     secondsSinceEpoch = \
         int((currTime - datetime.datetime(1970, 1, 1)).total_seconds())
-    keyID = localActorUrl(httpPrefix, nickname, domain) + '#main-key'
+    keyID = localActorUrl(http_prefix, nickname, domain) + '#main-key'
     if not messageBodyJsonStr:
         headers = {
             '@request-target': f'get {path}',
@@ -240,7 +240,7 @@ def signPostHeadersNew(dateStr: str, privateKeyPem: str,
 def createSignedHeader(dateStr: str, privateKeyPem: str, nickname: str,
                        domain: str, port: int,
                        toDomain: str, toPort: int,
-                       path: str, httpPrefix: str, withDigest: bool,
+                       path: str, http_prefix: str, withDigest: bool,
                        messageBodyJsonStr: str,
                        contentType: str) -> {}:
     """Note that the domain is the destination, not the sender
@@ -267,7 +267,7 @@ def createSignedHeader(dateStr: str, privateKeyPem: str, nickname: str,
         signatureHeader = \
             signPostHeaders(dateStr, privateKeyPem, nickname,
                             domain, port, toDomain, toPort,
-                            path, httpPrefix, None, contentType,
+                            path, http_prefix, None, contentType,
                             algorithm, None)
     else:
         bodyDigest = messageContentDigest(messageBodyJsonStr, digestAlgorithm)
@@ -285,7 +285,7 @@ def createSignedHeader(dateStr: str, privateKeyPem: str, nickname: str,
             signPostHeaders(dateStr, privateKeyPem, nickname,
                             domain, port,
                             toDomain, toPort,
-                            path, httpPrefix, messageBodyJsonStr,
+                            path, http_prefix, messageBodyJsonStr,
                             contentType, algorithm, digestAlgorithm)
     headers['signature'] = signatureHeader
     return headers
@@ -311,7 +311,7 @@ def _verifyRecentSignature(signedDateStr: str) -> bool:
     return True
 
 
-def verifyPostHeaders(httpPrefix: str,
+def verifyPostHeaders(http_prefix: str,
                       publicKeyPem: str, headers: dict,
                       path: str, GETmethod: bool,
                       messageBodyDigest: str,

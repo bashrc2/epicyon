@@ -402,7 +402,7 @@ def speakableText(base_dir: str, content: str, translate: {}) -> (str, []):
     return sayContent.replace(' . ', '. ').strip(), detectedLinks
 
 
-def _postToSpeakerJson(base_dir: str, httpPrefix: str,
+def _postToSpeakerJson(base_dir: str, http_prefix: str,
                        nickname: str, domain: str, domainFull: str,
                        postJsonObject: {}, personCache: {},
                        translate: {}, announcingActor: str,
@@ -454,7 +454,7 @@ def _postToSpeakerJson(base_dir: str, httpPrefix: str,
                             img['name'] + '. '
 
     isDirect = isDM(postJsonObject)
-    actor = localActorUrl(httpPrefix, nickname, domainFull)
+    actor = localActorUrl(http_prefix, nickname, domainFull)
     replyToYou = isReply(postJsonObject, actor)
 
     published = ''
@@ -533,7 +533,7 @@ def _postToSpeakerJson(base_dir: str, httpPrefix: str,
                                 isDirect, replyToYou)
 
 
-def updateSpeaker(base_dir: str, httpPrefix: str,
+def updateSpeaker(base_dir: str, http_prefix: str,
                   nickname: str, domain: str, domainFull: str,
                   postJsonObject: {}, personCache: {},
                   translate: {}, announcingActor: str,
@@ -542,7 +542,7 @@ def updateSpeaker(base_dir: str, httpPrefix: str,
     of incoming inbox posts
     """
     speakerJson = \
-        _postToSpeakerJson(base_dir, httpPrefix,
+        _postToSpeakerJson(base_dir, http_prefix,
                            nickname, domain, domainFull,
                            postJsonObject, personCache,
                            translate, announcingActor,

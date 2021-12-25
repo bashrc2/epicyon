@@ -117,7 +117,7 @@ def announcedByPerson(isAnnounced: bool, postActor: str,
 
 def createAnnounce(session, base_dir: str, federationList: [],
                    nickname: str, domain: str, port: int,
-                   toUrl: str, ccUrl: str, httpPrefix: str,
+                   toUrl: str, ccUrl: str, http_prefix: str,
                    objectUrl: str, saveToFile: bool,
                    clientToServer: bool,
                    sendThreads: [], postLog: [],
@@ -137,13 +137,13 @@ def createAnnounce(session, base_dir: str, federationList: [],
     fullDomain = getFullDomain(domain, port)
 
     statusNumber, published = getStatusNumber()
-    newAnnounceId = httpPrefix + '://' + fullDomain + \
+    newAnnounceId = http_prefix + '://' + fullDomain + \
         '/users/' + nickname + '/statuses/' + statusNumber
-    atomUriStr = localActorUrl(httpPrefix, nickname, fullDomain) + \
+    atomUriStr = localActorUrl(http_prefix, nickname, fullDomain) + \
         '/statuses/' + statusNumber
     newAnnounce = {
         "@context": "https://www.w3.org/ns/activitystreams",
-        'actor': localActorUrl(httpPrefix, nickname, fullDomain),
+        'actor': localActorUrl(http_prefix, nickname, fullDomain),
         'atomUri': atomUriStr,
         'cc': [],
         'id': newAnnounceId + '/activity',
@@ -178,7 +178,7 @@ def createAnnounce(session, base_dir: str, federationList: [],
         sendSignedJson(newAnnounce, session, base_dir,
                        nickname, domain, port,
                        announceNickname, announceDomain, announcePort, None,
-                       httpPrefix, True, clientToServer, federationList,
+                       http_prefix, True, clientToServer, federationList,
                        sendThreads, postLog, cachedWebfingers, personCache,
                        debug, projectVersion, None, groupAccount,
                        signingPrivateKeyPem, 639633)
@@ -187,7 +187,7 @@ def createAnnounce(session, base_dir: str, federationList: [],
 
 
 def announcePublic(session, base_dir: str, federationList: [],
-                   nickname: str, domain: str, port: int, httpPrefix: str,
+                   nickname: str, domain: str, port: int, http_prefix: str,
                    objectUrl: str, clientToServer: bool,
                    sendThreads: [], postLog: [],
                    personCache: {}, cachedWebfingers: {},
@@ -198,10 +198,10 @@ def announcePublic(session, base_dir: str, federationList: [],
     fromDomain = getFullDomain(domain, port)
 
     toUrl = 'https://www.w3.org/ns/activitystreams#Public'
-    ccUrl = localActorUrl(httpPrefix, nickname, fromDomain) + '/followers'
+    ccUrl = localActorUrl(http_prefix, nickname, fromDomain) + '/followers'
     return createAnnounce(session, base_dir, federationList,
                           nickname, domain, port,
-                          toUrl, ccUrl, httpPrefix,
+                          toUrl, ccUrl, http_prefix,
                           objectUrl, True, clientToServer,
                           sendThreads, postLog,
                           personCache, cachedWebfingers,
@@ -212,7 +212,7 @@ def announcePublic(session, base_dir: str, federationList: [],
 def sendAnnounceViaServer(base_dir: str, session,
                           fromNickname: str, password: str,
                           fromDomain: str, fromPort: int,
-                          httpPrefix: str, repeatObjectUrl: str,
+                          http_prefix: str, repeatObjectUrl: str,
                           cachedWebfingers: {}, personCache: {},
                           debug: bool, projectVersion: str,
                           signingPrivateKeyPem: str) -> {}:
@@ -225,7 +225,7 @@ def sendAnnounceViaServer(base_dir: str, session,
     fromDomainFull = getFullDomain(fromDomain, fromPort)
 
     toUrl = 'https://www.w3.org/ns/activitystreams#Public'
-    actorStr = localActorUrl(httpPrefix, fromNickname, fromDomainFull)
+    actorStr = localActorUrl(http_prefix, fromNickname, fromDomainFull)
     ccUrl = actorStr + '/followers'
 
     statusNumber, published = getStatusNumber()
@@ -242,10 +242,10 @@ def sendAnnounceViaServer(base_dir: str, session,
         'type': 'Announce'
     }
 
-    handle = httpPrefix + '://' + fromDomainFull + '/@' + fromNickname
+    handle = http_prefix + '://' + fromDomainFull + '/@' + fromNickname
 
     # lookup the inbox for the To handle
-    wfRequest = webfingerHandle(session, handle, httpPrefix,
+    wfRequest = webfingerHandle(session, handle, http_prefix,
                                 cachedWebfingers,
                                 fromDomain, projectVersion, debug, False,
                                 signingPrivateKeyPem)
@@ -268,7 +268,7 @@ def sendAnnounceViaServer(base_dir: str, session,
                                     originDomain,
                                     base_dir, session, wfRequest,
                                     personCache,
-                                    projectVersion, httpPrefix,
+                                    projectVersion, http_prefix,
                                     fromNickname, fromDomain,
                                     postToBox, 73528)
 
@@ -289,7 +289,7 @@ def sendAnnounceViaServer(base_dir: str, session,
         'Content-type': 'application/json',
         'Authorization': authHeader
     }
-    postResult = postJson(httpPrefix, fromDomainFull,
+    postResult = postJson(http_prefix, fromDomainFull,
                           session, newAnnounceJson, [], inboxUrl,
                           headers, 3, True)
     if not postResult:
@@ -305,7 +305,7 @@ def sendUndoAnnounceViaServer(base_dir: str, session,
                               undoPostJsonObject: {},
                               nickname: str, password: str,
                               domain: str, port: int,
-                              httpPrefix: str, repeatObjectUrl: str,
+                              http_prefix: str, repeatObjectUrl: str,
                               cachedWebfingers: {}, personCache: {},
                               debug: bool, projectVersion: str,
                               signingPrivateKeyPem: str) -> {}:
@@ -317,7 +317,7 @@ def sendUndoAnnounceViaServer(base_dir: str, session,
 
     domainFull = getFullDomain(domain, port)
 
-    actor = localActorUrl(httpPrefix, nickname, domainFull)
+    actor = localActorUrl(http_prefix, nickname, domainFull)
     handle = replaceUsersWithAt(actor)
 
     statusNumber, published = getStatusNumber()
@@ -330,7 +330,7 @@ def sendUndoAnnounceViaServer(base_dir: str, session,
     }
 
     # lookup the inbox for the To handle
-    wfRequest = webfingerHandle(session, handle, httpPrefix,
+    wfRequest = webfingerHandle(session, handle, http_prefix,
                                 cachedWebfingers,
                                 domain, projectVersion, debug, False,
                                 signingPrivateKeyPem)
@@ -353,7 +353,7 @@ def sendUndoAnnounceViaServer(base_dir: str, session,
                                     originDomain,
                                     base_dir, session, wfRequest,
                                     personCache,
-                                    projectVersion, httpPrefix,
+                                    projectVersion, http_prefix,
                                     nickname, domain,
                                     postToBox, 73528)
 
@@ -374,7 +374,7 @@ def sendUndoAnnounceViaServer(base_dir: str, session,
         'Content-type': 'application/json',
         'Authorization': authHeader
     }
-    postResult = postJson(httpPrefix, domainFull,
+    postResult = postJson(http_prefix, domainFull,
                           session, unAnnounceJson, [], inboxUrl,
                           headers, 3, True)
     if not postResult:
@@ -387,7 +387,7 @@ def sendUndoAnnounceViaServer(base_dir: str, session,
 
 
 def outboxUndoAnnounce(recentPostsCache: {},
-                       base_dir: str, httpPrefix: str,
+                       base_dir: str, http_prefix: str,
                        nickname: str, domain: str, port: int,
                        messageJson: {}, debug: bool) -> None:
     """ When an undo announce is received by the outbox from c2s

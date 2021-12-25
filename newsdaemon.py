@@ -285,7 +285,7 @@ def hashtagRuleTree(operators: [],
     return tree
 
 
-def _hashtagAdd(base_dir: str, httpPrefix: str, domainFull: str,
+def _hashtagAdd(base_dir: str, http_prefix: str, domainFull: str,
                 postJsonObject: {},
                 actionStr: str, hashtags: [], systemLanguage: str,
                 translate: {}) -> None:
@@ -301,7 +301,7 @@ def _hashtagAdd(base_dir: str, httpPrefix: str, domainFull: str,
     if not validHashTag(htId):
         return
 
-    hashtagUrl = httpPrefix + "://" + domainFull + "/tags/" + htId
+    hashtagUrl = http_prefix + "://" + domainFull + "/tags/" + htId
     newTag = {
         'href': hashtagUrl,
         'name': addHashtag,
@@ -337,11 +337,11 @@ def _hashtagAdd(base_dir: str, httpPrefix: str, domainFull: str,
     if ':' in domain:
         domain = domain.split(':')[0]
     storeHashTags(base_dir, 'news', domain,
-                  httpPrefix, domainFull,
+                  http_prefix, domainFull,
                   postJsonObject, translate)
 
 
-def _hashtagRemove(httpPrefix: str, domainFull: str, postJsonObject: {},
+def _hashtagRemove(http_prefix: str, domainFull: str, postJsonObject: {},
                    actionStr: str, hashtags: [], systemLanguage: str) -> None:
     """Removes a hashtag via a hashtag rule
     """
@@ -352,7 +352,7 @@ def _hashtagRemove(httpPrefix: str, domainFull: str, postJsonObject: {},
     if rmHashtag in hashtags:
         hashtags.remove(rmHashtag)
     htId = rmHashtag.replace('#', '')
-    hashtagUrl = httpPrefix + "://" + domainFull + "/tags/" + htId
+    hashtagUrl = http_prefix + "://" + domainFull + "/tags/" + htId
     # remove tag html from the post content
     hashtagHtml = \
         "<a href=\"" + hashtagUrl + "\" class=\"addedHashtag\" " + \
@@ -374,7 +374,7 @@ def _hashtagRemove(httpPrefix: str, domainFull: str, postJsonObject: {},
 
 
 def _newswireHashtagProcessing(session, base_dir: str, postJsonObject: {},
-                               hashtags: [], httpPrefix: str,
+                               hashtags: [], http_prefix: str,
                                domain: str, port: int,
                                personCache: {},
                                cachedWebfingers: {},
@@ -425,12 +425,12 @@ def _newswireHashtagProcessing(session, base_dir: str, postJsonObject: {},
 
         if actionStr.startswith('add '):
             # add a hashtag
-            _hashtagAdd(base_dir, httpPrefix, domainFull,
+            _hashtagAdd(base_dir, http_prefix, domainFull,
                         postJsonObject, actionStr, hashtags, systemLanguage,
                         translate)
         elif actionStr.startswith('remove '):
             # remove a hashtag
-            _hashtagRemove(httpPrefix, domainFull, postJsonObject,
+            _hashtagRemove(http_prefix, domainFull, postJsonObject,
                            actionStr, hashtags, systemLanguage)
         elif actionStr.startswith('block') or actionStr.startswith('drop'):
             # Block this item
@@ -533,7 +533,7 @@ def _createNewsMirror(base_dir: str, domain: str,
     return True
 
 
-def _convertRSStoActivityPub(base_dir: str, httpPrefix: str,
+def _convertRSStoActivityPub(base_dir: str, http_prefix: str,
                              domain: str, port: int,
                              newswire: {},
                              translate: {},
@@ -582,7 +582,7 @@ def _convertRSStoActivityPub(base_dir: str, httpPrefix: str,
 
         statusNumber, published = getStatusNumber(dateStr)
         newPostId = \
-            localActorUrl(httpPrefix, 'news', domain) + \
+            localActorUrl(http_prefix, 'news', domain) + \
             '/statuses/' + statusNumber
 
         # file where the post is stored
@@ -632,7 +632,7 @@ def _convertRSStoActivityPub(base_dir: str, httpPrefix: str,
         city = 'London, England'
         conversationId = None
         blog = createNewsPost(base_dir,
-                              domain, port, httpPrefix,
+                              domain, port, http_prefix,
                               rssDescription,
                               followersOnly, saveToFile,
                               attachImageFilename, mediaType,
@@ -649,7 +649,7 @@ def _convertRSStoActivityPub(base_dir: str, httpPrefix: str,
                 continue
 
         idStr = \
-            localActorUrl(httpPrefix, 'news', domain) + \
+            localActorUrl(http_prefix, 'news', domain) + \
             '/statuses/' + statusNumber + '/replies'
         blog['news'] = True
 
@@ -665,7 +665,7 @@ def _convertRSStoActivityPub(base_dir: str, httpPrefix: str,
         blog['object']['id'] = newPostId
         blog['object']['atomUri'] = newPostId
         blog['object']['url'] = \
-            httpPrefix + '://' + domain + '/@news/' + statusNumber
+            http_prefix + '://' + domain + '/@news/' + statusNumber
         blog['object']['published'] = dateStr
 
         blog['object']['content'] = rssDescription
@@ -681,7 +681,7 @@ def _convertRSStoActivityPub(base_dir: str, httpPrefix: str,
 
         savePost = _newswireHashtagProcessing(session, base_dir,
                                               blog, hashtags,
-                                              httpPrefix, domain, port,
+                                              http_prefix, domain, port,
                                               personCache, cachedWebfingers,
                                               federationList,
                                               sendThreads, postLog,
@@ -696,7 +696,7 @@ def _convertRSStoActivityPub(base_dir: str, httpPrefix: str,
             for tagName in hashtags:
                 htId = tagName.replace('#', '')
                 hashtagUrl = \
-                    httpPrefix + "://" + domainFull + "/tags/" + htId
+                    http_prefix + "://" + domainFull + "/tags/" + htId
                 newTag = {
                     'href': hashtagUrl,
                     'name': tagName,
@@ -726,7 +726,7 @@ def _convertRSStoActivityPub(base_dir: str, httpPrefix: str,
                     newswire[originalDateStr][6].append(tag)
 
             storeHashTags(base_dir, 'news', domain,
-                          httpPrefix, domainFull,
+                          http_prefix, domainFull,
                           blog, translate)
 
             clearFromPostCaches(base_dir, recentPostsCache, postId)
@@ -771,7 +771,7 @@ def _mergeWithPreviousNewswire(oldNewswire: {}, newNewswire: {}) -> None:
 
 
 def runNewswireDaemon(base_dir: str, httpd,
-                      httpPrefix: str, domain: str, port: int,
+                      http_prefix: str, domain: str, port: int,
                       translate: {}) -> None:
     """Periodically updates RSS feeds
     """
@@ -823,7 +823,7 @@ def runNewswireDaemon(base_dir: str, httpd,
 
         print('Converting newswire to activitypub format')
         _convertRSStoActivityPub(base_dir,
-                                 httpPrefix, domain, port,
+                                 http_prefix, domain, port,
                                  newNewswire, translate,
                                  httpd.recentPostsCache,
                                  httpd.maxRecentPosts,
@@ -845,7 +845,7 @@ def runNewswireDaemon(base_dir: str, httpd,
             archiveSubdir = \
                 archiveDir + '/accounts/news@' + domain + '/outbox'
             print('Archiving news posts')
-            archivePostsForPerson(httpPrefix, 'news',
+            archivePostsForPerson(http_prefix, 'news',
                                   domain, base_dir, 'outbox',
                                   archiveSubdir,
                                   httpd.recentPostsCache,

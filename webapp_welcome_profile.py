@@ -23,7 +23,7 @@ from markdown import markdownToHtml
 
 
 def htmlWelcomeProfile(base_dir: str, nickname: str, domain: str,
-                       httpPrefix: str, domainFull: str,
+                       http_prefix: str, domainFull: str,
                        language: str, translate: {},
                        themeName: str) -> str:
     """Returns the welcome profile screen to set avatar and bio
@@ -76,7 +76,7 @@ def htmlWelcomeProfile(base_dir: str, nickname: str, domain: str,
         if os.path.isfile(avatarFilename):
             break
     avatarUrl = \
-        localActorUrl(httpPrefix, nickname, domainFull) + '/avatar.' + ext
+        localActorUrl(http_prefix, nickname, domainFull) + '/avatar.' + ext
 
     imageFormats = getImageFormats()
     profileForm += '<div class="container">' + profileText + '</div>\n'

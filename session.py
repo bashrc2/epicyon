@@ -55,7 +55,7 @@ def createSession(proxyType: str):
 
 
 def urlExists(session, url: str, timeoutSec: int = 3,
-              httpPrefix: str = 'https', domain: str = 'testdomain') -> bool:
+              http_prefix: str = 'https', domain: str = 'testdomain') -> bool:
     if not isinstance(url, str):
         print('url: ' + str(url))
         print('ERROR: urlExists failed, url should be a string')
@@ -65,7 +65,7 @@ def urlExists(session, url: str, timeoutSec: int = 3,
     sessionHeaders['User-Agent'] = 'Epicyon/' + __version__
     if domain:
         sessionHeaders['User-Agent'] += \
-            '; +' + httpPrefix + '://' + domain + '/'
+            '; +' + http_prefix + '://' + domain + '/'
     if not session:
         print('WARN: urlExists failed, no session specified')
         return True
@@ -148,7 +148,7 @@ def _getJsonSigned(session, url: str, domainFull: str, sessionHeaders: {},
     if '://' not in url:
         print('Invalid url: ' + url)
         return None
-    httpPrefix = url.split('://')[0]
+    http_prefix = url.split('://')[0]
     toDomainFull = url.split('://')[1]
     if '/' in toDomainFull:
         toDomainFull = toDomainFull.split('/')[0]
@@ -158,7 +158,7 @@ def _getJsonSigned(session, url: str, domainFull: str, sessionHeaders: {},
         port = domainFull.split(':')[1]
     else:
         domain = domainFull
-        if httpPrefix == 'https':
+        if http_prefix == 'https':
             port = 443
         else:
             port = 80
@@ -168,7 +168,7 @@ def _getJsonSigned(session, url: str, domainFull: str, sessionHeaders: {},
         toPort = toDomainFull.split(':')[1]
     else:
         toDomain = toDomainFull
-        if httpPrefix == 'https':
+        if http_prefix == 'https':
             toPort = 443
         else:
             toPort = 80
@@ -177,7 +177,7 @@ def _getJsonSigned(session, url: str, domainFull: str, sessionHeaders: {},
         print('Signed GET domain: ' + domain + ' ' + str(port))
         print('Signed GET toDomain: ' + toDomain + ' ' + str(toPort))
         print('Signed GET url: ' + url)
-        print('Signed GET httpPrefix: ' + httpPrefix)
+        print('Signed GET http_prefix: ' + http_prefix)
     messageStr = ''
     withDigest = False
     if toDomainFull + '/' in url:
@@ -189,7 +189,7 @@ def _getJsonSigned(session, url: str, domainFull: str, sessionHeaders: {},
         contentType = sessionHeaders['Accept']
     signatureHeaderJson = \
         createSignedHeader(None, signingPrivateKeyPem, 'actor', domain, port,
-                           toDomain, toPort, path, httpPrefix, withDigest,
+                           toDomain, toPort, path, http_prefix, withDigest,
                            messageStr, contentType)
     if debug:
         print('Signed GET signatureHeaderJson ' + str(signatureHeaderJson))
@@ -212,7 +212,7 @@ def _getJsonSigned(session, url: str, domainFull: str, sessionHeaders: {},
 
 def getJson(signingPrivateKeyPem: str,
             session, url: str, headers: {}, params: {}, debug: bool,
-            version: str = '1.2.0', httpPrefix: str = 'https',
+            version: str = '1.2.0', http_prefix: str = 'https',
             domain: str = 'testdomain',
             timeoutSec: int = 20, quiet: bool = False) -> {}:
     if not isinstance(url, str):
@@ -229,7 +229,7 @@ def getJson(signingPrivateKeyPem: str,
     sessionHeaders['User-Agent'] = 'Epicyon/' + version
     if domain:
         sessionHeaders['User-Agent'] += \
-            '; +' + httpPrefix + '://' + domain + '/'
+            '; +' + http_prefix + '://' + domain + '/'
     if not session:
         if not quiet:
             print('WARN: getJson failed, no session specified for getJson')
@@ -251,7 +251,7 @@ def getJson(signingPrivateKeyPem: str,
 
 def downloadHtml(signingPrivateKeyPem: str,
                  session, url: str, headers: {}, params: {}, debug: bool,
-                 version: str = '1.2.0', httpPrefix: str = 'https',
+                 version: str = '1.2.0', http_prefix: str = 'https',
                  domain: str = 'testdomain',
                  timeoutSec: int = 20, quiet: bool = False) -> {}:
     if not isinstance(url, str):
@@ -269,7 +269,7 @@ def downloadHtml(signingPrivateKeyPem: str,
     sessionHeaders['User-Agent'] = 'Epicyon/' + version
     if domain:
         sessionHeaders['User-Agent'] += \
-            '; +' + httpPrefix + '://' + domain + '/'
+            '; +' + http_prefix + '://' + domain + '/'
     if not session:
         if not quiet:
             print('WARN: downloadHtml failed, ' +
@@ -290,7 +290,7 @@ def downloadHtml(signingPrivateKeyPem: str,
                                None, quiet, debug, False)
 
 
-def postJson(httpPrefix: str, domainFull: str,
+def postJson(http_prefix: str, domainFull: str,
              session, postJsonObject: {}, federationList: [],
              inboxUrl: str, headers: {}, timeoutSec: int = 60,
              quiet: bool = False) -> str:
@@ -305,7 +305,7 @@ def postJson(httpPrefix: str, domainFull: str,
     sessionHeaders = headers
     sessionHeaders['User-Agent'] = 'Epicyon/' + __version__
     sessionHeaders['User-Agent'] += \
-        '; +' + httpPrefix + '://' + domainFull + '/'
+        '; +' + http_prefix + '://' + domainFull + '/'
 
     try:
         postResult = \

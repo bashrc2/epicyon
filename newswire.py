@@ -49,7 +49,7 @@ def _removeCDATA(text: str) -> str:
     return text
 
 
-def rss2Header(httpPrefix: str,
+def rss2Header(http_prefix: str,
                nickname: str, domainFull: str,
                title: str, translate: {}) -> str:
     """Header for an RSS 2.0 feed
@@ -62,18 +62,18 @@ def rss2Header(httpPrefix: str,
     if title.startswith('News'):
         rssStr += \
             '    <title>Newswire</title>' + \
-            '    <link>' + httpPrefix + '://' + domainFull + \
+            '    <link>' + http_prefix + '://' + domainFull + \
             '/newswire.xml' + '</link>'
     elif title.startswith('Site'):
         rssStr += \
             '    <title>' + domainFull + '</title>' + \
-            '    <link>' + httpPrefix + '://' + domainFull + \
+            '    <link>' + http_prefix + '://' + domainFull + \
             '/blog/rss.xml' + '</link>'
     else:
         rssStr += \
             '    <title>' + translate[title] + '</title>' + \
             '    <link>' + \
-            localActorUrl(httpPrefix, nickname, domainFull) + \
+            localActorUrl(http_prefix, nickname, domainFull) + \
             '/rss.xml' + '</link>'
     return rssStr
 
@@ -920,12 +920,12 @@ def getRSS(base_dir: str, domain: str, session, url: str,
 
 
 def getRSSfromDict(base_dir: str, newswire: {},
-                   httpPrefix: str, domainFull: str,
+                   http_prefix: str, domainFull: str,
                    title: str, translate: {}) -> str:
     """Returns an rss feed from the current newswire dict.
     This allows other instances to subscribe to the same newswire
     """
-    rssStr = rss2Header(httpPrefix,
+    rssStr = rss2Header(http_prefix,
                         None, domainFull,
                         'Newswire', translate)
     if not newswire:
@@ -951,7 +951,7 @@ def getRSSfromDict(base_dir: str, newswire: {},
         url = fields[1]
         if '://' not in url:
             if domainFull not in url:
-                url = httpPrefix + '://' + domainFull + url
+                url = http_prefix + '://' + domainFull + url
         rssStr += '  <link>' + url + '</link>\n'
 
         rssDateStr = pubDate.strftime("%a, %d %b %Y %H:%M:%S UT")

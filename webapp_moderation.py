@@ -36,7 +36,7 @@ def htmlModeration(cssCache: {}, defaultTimeline: str,
                    session, base_dir: str, wfRequest: {}, personCache: {},
                    nickname: str, domain: str, port: int, inboxJson: {},
                    allowDeletion: bool,
-                   httpPrefix: str, projectVersion: str,
+                   http_prefix: str, projectVersion: str,
                    YTReplacementDomain: str,
                    twitterReplacementDomain: str,
                    showPublishedDateOnly: bool,
@@ -65,7 +65,8 @@ def htmlModeration(cssCache: {}, defaultTimeline: str,
                         itemsPerPage, session, base_dir,
                         wfRequest, personCache,
                         nickname, domain, port, inboxJson, 'moderation',
-                        allowDeletion, httpPrefix, projectVersion, True, False,
+                        allowDeletion, http_prefix,
+                        projectVersion, True, False,
                         YTReplacementDomain,
                         twitterReplacementDomain,
                         showPublishedDateOnly,
@@ -80,7 +81,7 @@ def htmlModeration(cssCache: {}, defaultTimeline: str,
 
 
 def htmlAccountInfo(cssCache: {}, translate: {},
-                    base_dir: str, httpPrefix: str,
+                    base_dir: str, http_prefix: str,
                     nickname: str, domain: str, port: int,
                     searchHandle: str, debug: bool,
                     systemLanguage: str, signingPrivateKeyPem: str) -> str:
@@ -105,7 +106,7 @@ def htmlAccountInfo(cssCache: {}, translate: {},
 
     searchHandle = searchNickname + '@' + searchDomain
     searchActor = \
-        localActorUrl(httpPrefix, searchNickname, searchDomain)
+        localActorUrl(http_prefix, searchNickname, searchDomain)
     infoForm += \
         '<center><h1><a href="/users/' + nickname + '/moderation">' + \
         translate['Account Information'] + ':</a> <a href="' + searchActor + \
@@ -127,7 +128,7 @@ def htmlAccountInfo(cssCache: {}, translate: {},
                                    base_dir, searchNickname, searchDomain,
                                    originDomain,
                                    proxyType, searchPort,
-                                   httpPrefix, debug,
+                                   http_prefix, debug,
                                    __version__, wordFrequency, systemLanguage,
                                    signingPrivateKeyPem)
 
@@ -135,7 +136,7 @@ def htmlAccountInfo(cssCache: {}, translate: {},
     followersList = \
         downloadFollowCollection(signingPrivateKeyPem,
                                  'followers', session,
-                                 httpPrefix, searchActor, 1, 5, debug)
+                                 http_prefix, searchActor, 1, 5, debug)
     blockedFollowers = []
     for followerActor in followersList:
         followerNickname = getNicknameFromActor(followerActor)
@@ -149,7 +150,7 @@ def htmlAccountInfo(cssCache: {}, translate: {},
     followingList = \
         downloadFollowCollection(signingPrivateKeyPem,
                                  'following', session,
-                                 httpPrefix, searchActor, 1, 5, debug)
+                                 http_prefix, searchActor, 1, 5, debug)
     blockedFollowing = []
     for followingActor in followingList:
         followingNickname = getNicknameFromActor(followingActor)
@@ -164,7 +165,7 @@ def htmlAccountInfo(cssCache: {}, translate: {},
     ctr = 1
     for postDomain, blockedPostUrls in domainDict.items():
         infoForm += '<a href="' + \
-            httpPrefix + '://' + postDomain + '" ' + \
+            http_prefix + '://' + postDomain + '" ' + \
             'target="_blank" rel="nofollow noopener noreferrer">' + \
             postDomain + '</a> '
         if isBlockedDomain(base_dir, postDomain):
@@ -271,7 +272,7 @@ def htmlAccountInfo(cssCache: {}, translate: {},
 
 
 def htmlModerationInfo(cssCache: {}, translate: {},
-                       base_dir: str, httpPrefix: str,
+                       base_dir: str, http_prefix: str,
                        nickname: str) -> str:
     msgStr1 = \
         'These are globally blocked for all accounts on this instance'

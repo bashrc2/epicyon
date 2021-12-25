@@ -63,7 +63,7 @@ def validEmojiContent(emojiContent: str) -> bool:
 def _reaction(recentPostsCache: {},
               session, base_dir: str, federationList: [],
               nickname: str, domain: str, port: int,
-              ccList: [], httpPrefix: str,
+              ccList: [], http_prefix: str,
               objectUrl: str, emojiContent: str,
               actorReaction: str,
               clientToServer: bool,
@@ -87,7 +87,7 @@ def _reaction(recentPostsCache: {},
     newReactionJson = {
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'EmojiReact',
-        'actor': localActorUrl(httpPrefix, nickname, fullDomain),
+        'actor': localActorUrl(http_prefix, nickname, fullDomain),
         'object': objectUrl,
         'content': emojiContent
     }
@@ -137,7 +137,7 @@ def _reaction(recentPostsCache: {},
                        reactionPostNickname,
                        reactionPostDomain, reactionPostPort,
                        'https://www.w3.org/ns/activitystreams#Public',
-                       httpPrefix, True, clientToServer, federationList,
+                       http_prefix, True, clientToServer, federationList,
                        sendThreads, postLog, cachedWebfingers, personCache,
                        debug, projectVersion, None, groupAccount,
                        signingPrivateKeyPem, 7165392)
@@ -147,7 +147,7 @@ def _reaction(recentPostsCache: {},
 
 def reactionPost(recentPostsCache: {},
                  session, base_dir: str, federationList: [],
-                 nickname: str, domain: str, port: int, httpPrefix: str,
+                 nickname: str, domain: str, port: int, http_prefix: str,
                  reactionNickname: str, reactionDomain: str, reactionPort: int,
                  ccList: [],
                  reactionStatusNumber: int, emojiContent: str,
@@ -160,13 +160,14 @@ def reactionPost(recentPostsCache: {},
     """
     reactionDomain = getFullDomain(reactionDomain, reactionPort)
 
-    actorReaction = localActorUrl(httpPrefix, reactionNickname, reactionDomain)
+    actorReaction = \
+        localActorUrl(http_prefix, reactionNickname, reactionDomain)
     objectUrl = actorReaction + '/statuses/' + str(reactionStatusNumber)
 
     return _reaction(recentPostsCache,
                      session, base_dir, federationList,
                      nickname, domain, port,
-                     ccList, httpPrefix, objectUrl, emojiContent,
+                     ccList, http_prefix, objectUrl, emojiContent,
                      actorReaction, clientToServer,
                      sendThreads, postLog, personCache, cachedWebfingers,
                      debug, projectVersion, signingPrivateKeyPem)
@@ -175,7 +176,7 @@ def reactionPost(recentPostsCache: {},
 def sendReactionViaServer(base_dir: str, session,
                           fromNickname: str, password: str,
                           fromDomain: str, fromPort: int,
-                          httpPrefix: str, reactionUrl: str,
+                          http_prefix: str, reactionUrl: str,
                           emojiContent: str,
                           cachedWebfingers: {}, personCache: {},
                           debug: bool, projectVersion: str,
@@ -192,7 +193,7 @@ def sendReactionViaServer(base_dir: str, session,
 
     fromDomainFull = getFullDomain(fromDomain, fromPort)
 
-    actor = localActorUrl(httpPrefix, fromNickname, fromDomainFull)
+    actor = localActorUrl(http_prefix, fromNickname, fromDomainFull)
 
     newReactionJson = {
         "@context": "https://www.w3.org/ns/activitystreams",
@@ -202,10 +203,10 @@ def sendReactionViaServer(base_dir: str, session,
         'content': emojiContent
     }
 
-    handle = httpPrefix + '://' + fromDomainFull + '/@' + fromNickname
+    handle = http_prefix + '://' + fromDomainFull + '/@' + fromNickname
 
     # lookup the inbox for the To handle
-    wfRequest = webfingerHandle(session, handle, httpPrefix,
+    wfRequest = webfingerHandle(session, handle, http_prefix,
                                 cachedWebfingers,
                                 fromDomain, projectVersion, debug, False,
                                 signingPrivateKeyPem)
@@ -227,7 +228,7 @@ def sendReactionViaServer(base_dir: str, session,
                                     originDomain,
                                     base_dir, session, wfRequest,
                                     personCache,
-                                    projectVersion, httpPrefix,
+                                    projectVersion, http_prefix,
                                     fromNickname, fromDomain,
                                     postToBox, 72873)
 
@@ -248,7 +249,7 @@ def sendReactionViaServer(base_dir: str, session,
         'Content-type': 'application/json',
         'Authorization': authHeader
     }
-    postResult = postJson(httpPrefix, fromDomainFull,
+    postResult = postJson(http_prefix, fromDomainFull,
                           session, newReactionJson, [], inboxUrl,
                           headers, 3, True)
     if not postResult:
@@ -265,7 +266,7 @@ def sendReactionViaServer(base_dir: str, session,
 def sendUndoReactionViaServer(base_dir: str, session,
                               fromNickname: str, password: str,
                               fromDomain: str, fromPort: int,
-                              httpPrefix: str, reactionUrl: str,
+                              http_prefix: str, reactionUrl: str,
                               emojiContent: str,
                               cachedWebfingers: {}, personCache: {},
                               debug: bool, projectVersion: str,
@@ -278,7 +279,7 @@ def sendUndoReactionViaServer(base_dir: str, session,
 
     fromDomainFull = getFullDomain(fromDomain, fromPort)
 
-    actor = localActorUrl(httpPrefix, fromNickname, fromDomainFull)
+    actor = localActorUrl(http_prefix, fromNickname, fromDomainFull)
 
     newUndoReactionJson = {
         "@context": "https://www.w3.org/ns/activitystreams",
@@ -292,10 +293,10 @@ def sendUndoReactionViaServer(base_dir: str, session,
         }
     }
 
-    handle = httpPrefix + '://' + fromDomainFull + '/@' + fromNickname
+    handle = http_prefix + '://' + fromDomainFull + '/@' + fromNickname
 
     # lookup the inbox for the To handle
-    wfRequest = webfingerHandle(session, handle, httpPrefix,
+    wfRequest = webfingerHandle(session, handle, http_prefix,
                                 cachedWebfingers,
                                 fromDomain, projectVersion, debug, False,
                                 signingPrivateKeyPem)
@@ -318,7 +319,7 @@ def sendUndoReactionViaServer(base_dir: str, session,
                                     originDomain,
                                     base_dir, session, wfRequest,
                                     personCache, projectVersion,
-                                    httpPrefix, fromNickname,
+                                    http_prefix, fromNickname,
                                     fromDomain, postToBox,
                                     72625)
 
@@ -339,7 +340,7 @@ def sendUndoReactionViaServer(base_dir: str, session,
         'Content-type': 'application/json',
         'Authorization': authHeader
     }
-    postResult = postJson(httpPrefix, fromDomainFull,
+    postResult = postJson(http_prefix, fromDomainFull,
                           session, newUndoReactionJson, [], inboxUrl,
                           headers, 3, True)
     if not postResult:
@@ -354,7 +355,7 @@ def sendUndoReactionViaServer(base_dir: str, session,
 
 
 def outboxReaction(recentPostsCache: {},
-                   base_dir: str, httpPrefix: str,
+                   base_dir: str, http_prefix: str,
                    nickname: str, domain: str, port: int,
                    messageJson: {}, debug: bool) -> None:
     """ When a reaction request is received by the outbox from c2s
@@ -398,7 +399,7 @@ def outboxReaction(recentPostsCache: {},
 
 
 def outboxUndoReaction(recentPostsCache: {},
-                       base_dir: str, httpPrefix: str,
+                       base_dir: str, http_prefix: str,
                        nickname: str, domain: str, port: int,
                        messageJson: {}, debug: bool) -> None:
     """ When an undo reaction request is received by the outbox from c2s

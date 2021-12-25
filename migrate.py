@@ -22,7 +22,7 @@ from person import getActorJson
 
 def _moveFollowingHandlesForAccount(base_dir: str, nickname: str, domain: str,
                                     session,
-                                    httpPrefix: str, cachedWebfingers: {},
+                                    http_prefix: str, cachedWebfingers: {},
                                     debug: bool,
                                     signingPrivateKeyPem: str) -> int:
     """Goes through all follows for an account and updates any that have moved
@@ -38,14 +38,14 @@ def _moveFollowingHandlesForAccount(base_dir: str, nickname: str, domain: str,
             ctr += \
                 _updateMovedHandle(base_dir, nickname, domain,
                                    followHandle, session,
-                                   httpPrefix, cachedWebfingers,
+                                   http_prefix, cachedWebfingers,
                                    debug, signingPrivateKeyPem)
     return ctr
 
 
 def _updateMovedHandle(base_dir: str, nickname: str, domain: str,
                        handle: str, session,
-                       httpPrefix: str, cachedWebfingers: {},
+                       http_prefix: str, cachedWebfingers: {},
                        debug: bool, signingPrivateKeyPem: str) -> int:
     """Check if an account has moved, and if so then alter following.txt
     for each account.
@@ -59,7 +59,7 @@ def _updateMovedHandle(base_dir: str, nickname: str, domain: str,
     if handle.startswith('@'):
         handle = handle[1:]
     wfRequest = webfingerHandle(session, handle,
-                                httpPrefix, cachedWebfingers,
+                                http_prefix, cachedWebfingers,
                                 domain, __version__, debug, False,
                                 signingPrivateKeyPem)
     if not wfRequest:
@@ -82,10 +82,10 @@ def _updateMovedHandle(base_dir: str, nickname: str, domain: str,
             return ctr
 
     gnunet = False
-    if httpPrefix == 'gnunet':
+    if http_prefix == 'gnunet':
         gnunet = True
     personJson = \
-        getActorJson(domain, personUrl, httpPrefix, gnunet, debug, False,
+        getActorJson(domain, personUrl, http_prefix, gnunet, debug, False,
                      signingPrivateKeyPem, None)
     if not personJson:
         return ctr
@@ -174,7 +174,7 @@ def _updateMovedHandle(base_dir: str, nickname: str, domain: str,
 
 
 def migrateAccounts(base_dir: str, session,
-                    httpPrefix: str, cachedWebfingers: {},
+                    http_prefix: str, cachedWebfingers: {},
                     debug: bool, signingPrivateKeyPem: str) -> int:
     """If followed accounts change then this modifies the
     following lists for each account accordingly.
@@ -190,7 +190,7 @@ def migrateAccounts(base_dir: str, session,
             domain = handle.split('@')[1]
             ctr += \
                 _moveFollowingHandlesForAccount(base_dir, nickname, domain,
-                                                session, httpPrefix,
+                                                session, http_prefix,
                                                 cachedWebfingers, debug,
                                                 signingPrivateKeyPem)
         break

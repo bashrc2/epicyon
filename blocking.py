@@ -414,7 +414,7 @@ def isBlocked(base_dir: str, nickname: str, domain: str,
     return False
 
 
-def outboxBlock(base_dir: str, httpPrefix: str,
+def outboxBlock(base_dir: str, http_prefix: str,
                 nickname: str, domain: str, port: int,
                 messageJson: {}, debug: bool) -> bool:
     """ When a block request is received by the outbox from c2s
@@ -463,7 +463,7 @@ def outboxBlock(base_dir: str, httpPrefix: str,
     return True
 
 
-def outboxUndoBlock(base_dir: str, httpPrefix: str,
+def outboxUndoBlock(base_dir: str, http_prefix: str,
                     nickname: str, domain: str, port: int,
                     messageJson: {}, debug: bool) -> None:
     """ When an undo block request is received by the outbox from c2s
@@ -520,7 +520,7 @@ def outboxUndoBlock(base_dir: str, httpPrefix: str,
 
 
 def mutePost(base_dir: str, nickname: str, domain: str, port: int,
-             httpPrefix: str, postId: str, recentPostsCache: {},
+             http_prefix: str, postId: str, recentPostsCache: {},
              debug: bool) -> None:
     """ Mutes the given post
     """
@@ -544,7 +544,7 @@ def mutePost(base_dir: str, nickname: str, domain: str, port: int,
             alsoUpdatePostId = removeIdEnding(postJsonObject['object'])
 
     domainFull = getFullDomain(domain, port)
-    actor = localActorUrl(httpPrefix, nickname, domainFull)
+    actor = localActorUrl(http_prefix, nickname, domainFull)
 
     if postJsonObj.get('conversation'):
         muteConversation(base_dir, nickname, domain,
@@ -653,7 +653,7 @@ def mutePost(base_dir: str, nickname: str, domain: str, port: int,
 
 
 def unmutePost(base_dir: str, nickname: str, domain: str, port: int,
-               httpPrefix: str, postId: str, recentPostsCache: {},
+               http_prefix: str, postId: str, recentPostsCache: {},
                debug: bool) -> None:
     """ Unmutes the given post
     """
@@ -688,7 +688,7 @@ def unmutePost(base_dir: str, nickname: str, domain: str, port: int,
 
     if postJsonObj.get('ignores'):
         domainFull = getFullDomain(domain, port)
-        actor = localActorUrl(httpPrefix, nickname, domainFull)
+        actor = localActorUrl(http_prefix, nickname, domainFull)
         totalItems = 0
         if postJsonObj['ignores'].get('totalItems'):
             totalItems = postJsonObj['ignores']['totalItems']
@@ -768,7 +768,7 @@ def unmutePost(base_dir: str, nickname: str, domain: str, port: int,
                       alsoUpdatePostId + ' removed referenced html')
 
 
-def outboxMute(base_dir: str, httpPrefix: str,
+def outboxMute(base_dir: str, http_prefix: str,
                nickname: str, domain: str, port: int,
                messageJson: {}, debug: bool,
                recentPostsCache: {}) -> None:
@@ -810,14 +810,14 @@ def outboxMute(base_dir: str, httpPrefix: str,
         return
 
     mutePost(base_dir, nickname, domain, port,
-             httpPrefix, messageJson['object'], recentPostsCache,
+             http_prefix, messageJson['object'], recentPostsCache,
              debug)
 
     if debug:
         print('DEBUG: post muted via c2s - ' + postFilename)
 
 
-def outboxUndoMute(base_dir: str, httpPrefix: str,
+def outboxUndoMute(base_dir: str, http_prefix: str,
                    nickname: str, domain: str, port: int,
                    messageJson: {}, debug: bool,
                    recentPostsCache: {}) -> None:
@@ -866,7 +866,7 @@ def outboxUndoMute(base_dir: str, httpPrefix: str,
         return
 
     unmutePost(base_dir, nickname, domain, port,
-               httpPrefix, messageJson['object']['object'],
+               http_prefix, messageJson['object']['object'],
                recentPostsCache, debug)
 
     if debug:

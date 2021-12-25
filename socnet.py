@@ -16,7 +16,7 @@ from utils import getFullDomain
 
 def instancesGraph(base_dir: str, handles: str,
                    proxyType: str,
-                   port: int, httpPrefix: str,
+                   port: int, http_prefix: str,
                    debug: bool, projectVersion: str,
                    systemLanguage: str, signingPrivateKeyPem: str) -> str:
     """ Returns a dot graph of federating instances
@@ -50,9 +50,9 @@ def instancesGraph(base_dir: str, handles: str,
         domain = handle.split('@')[1]
 
         domainFull = getFullDomain(domain, port)
-        handle = httpPrefix + "://" + domainFull + "/@" + nickname
+        handle = http_prefix + "://" + domainFull + "/@" + nickname
         wfRequest = \
-            webfingerHandle(session, handle, httpPrefix,
+            webfingerHandle(session, handle, http_prefix,
                             cachedWebfingers,
                             domain, projectVersion, debug, False,
                             signingPrivateKeyPem)
@@ -69,7 +69,7 @@ def instancesGraph(base_dir: str, handles: str,
                                         originDomain,
                                         base_dir, session, wfRequest,
                                         personCache,
-                                        projectVersion, httpPrefix,
+                                        projectVersion, http_prefix,
                                         nickname, domain, 'outbox',
                                         27261)
         wordFrequency = {}
@@ -77,7 +77,7 @@ def instancesGraph(base_dir: str, handles: str,
             getPostDomains(session, personUrl, 64, maxMentions, maxEmoji,
                            maxAttachments, federationList,
                            personCache, debug,
-                           projectVersion, httpPrefix, domain,
+                           projectVersion, http_prefix, domain,
                            wordFrequency, [], systemLanguage,
                            signingPrivateKeyPem)
         postDomains.sort()
