@@ -7428,8 +7428,8 @@ class PubServer(BaseHTTPRequestHandler):
         favFile = path.replace('/favicons/', '')
         favFilename = base_dir + urllib.parse.unquote_plus(path)
         print('showCachedFavicon: ' + favFilename)
-        if self.server.faviconsCache.get(favFile):
-            mediaBinary = self.server.faviconsCache[favFile]
+        if self.server.favicons_cache.get(favFile):
+            mediaBinary = self.server.favicons_cache[favFile]
             mimeType = mediaFileMimeType(favFilename)
             self._set_headers_etag(favFilename,
                                    mimeType,
@@ -7465,7 +7465,7 @@ class PubServer(BaseHTTPRequestHandler):
             fitnessPerformance(GETstartTime, self.server.fitness,
                                '_GET', '_showCachedFavicon',
                                self.server.debug)
-            self.server.faviconsCache[favFile] = mediaBinary
+            self.server.favicons_cache[favFile] = mediaBinary
             return
         self._404()
 
@@ -18741,7 +18741,7 @@ def runDaemon(content_license_url: str,
     httpd.instance_id = instance_id
     httpd.person_cache = {}
     httpd.cached_webfingers = {}
-    httpd.faviconsCache = {}
+    httpd.favicons_cache = {}
     httpd.proxy_type = proxy_type
     httpd.session = None
     httpd.sessionLastUpdate = 0
