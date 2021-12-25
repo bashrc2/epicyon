@@ -18749,7 +18749,7 @@ def runDaemon(content_license_url: str,
     httpd.lastPOST = 0
     httpd.GETbusy = False
     httpd.POSTbusy = False
-    httpd.receivedMessage = False
+    httpd.received_message = False
     httpd.inboxQueue = []
     httpd.send_threads = send_threads
     httpd.postLog = []
