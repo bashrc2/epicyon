@@ -1138,15 +1138,15 @@ def saveMediaInFormPOST(mediaBytes, debug: bool,
 
 
 def extractTextFieldsInPOST(postBytes, boundary: str, debug: bool,
-                            unitTestData: str = None) -> {}:
+                            unit_testData: str = None) -> {}:
     """Returns a dictionary containing the text fields of a http form POST
     The boundary argument comes from the http header
     """
-    if not unitTestData:
+    if not unit_testData:
         msgBytes = email.parser.BytesParser().parsebytes(postBytes)
         messageFields = msgBytes.get_payload(decode=True).decode('utf-8')
     else:
-        messageFields = unitTestData
+        messageFields = unit_testData
 
     if debug:
         print('DEBUG: POST arriving ' + messageFields)

@@ -3187,7 +3187,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                        queueFilename: str, destinationFilename: str,
                        max_replies: int, allow_deletion: bool,
                        max_mentions: int, max_emoji: int, translate: {},
-                       unitTest: bool,
+                       unit_test: bool,
                        yt_replace_domain: str,
                        twitter_replacement_domain: str,
                        show_published_date_only: bool,
@@ -3422,7 +3422,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
         # is the sending actor valid?
         if not validSendingActor(session, base_dir, nickname, domain,
                                  personCache, postJsonObject,
-                                 signingPrivateKeyPem, debug, unitTest):
+                                 signingPrivateKeyPem, debug, unit_test):
             return False
 
         if postJsonObject.get('object'):
@@ -3546,7 +3546,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                                           nickname, domain, domainFull,
                                           postJsonObject, personCache,
                                           translate, None, themeName)
-                    if not unitTest:
+                    if not unit_test:
                         if debug:
                             print('Saving inbox post as html to cache')
 
@@ -3850,7 +3850,7 @@ def _receiveFollowRequest(session, base_dir: str, http_prefix: str,
                           messageJson: {}, federationList: [],
                           debug: bool, project_version: str,
                           max_followers: int, onion_domain: str,
-                          signingPrivateKeyPem: str, unitTest: bool) -> bool:
+                          signingPrivateKeyPem: str, unit_test: bool) -> bool:
     """Receives a follow request within the POST section of HTTPServer
     """
     if not messageJson['type'].startswith('Follow'):
@@ -3933,7 +3933,7 @@ def _receiveFollowRequest(session, base_dir: str, http_prefix: str,
     if not validSendingActor(session, base_dir,
                              nicknameToFollow, domainToFollow,
                              personCache, messageJson,
-                             signingPrivateKeyPem, debug, unitTest):
+                             signingPrivateKeyPem, debug, unit_test):
         print('REJECT spam follow request ' + approveHandle)
         return False
 
@@ -4071,7 +4071,7 @@ def runInboxQueue(recentPostsCache: {}, max_recent_posts: int,
                   domain_max_posts_per_day: int,
                   account_max_posts_per_day: int,
                   allow_deletion: bool, debug: bool, max_mentions: int,
-                  max_emoji: int, translate: {}, unitTest: bool,
+                  max_emoji: int, translate: {}, unit_test: bool,
                   yt_replace_domain: str,
                   twitter_replacement_domain: str,
                   show_published_date_only: bool,
@@ -4373,7 +4373,7 @@ def runInboxQueue(recentPostsCache: {}, max_recent_posts: int,
                                  federationList,
                                  debug, project_version,
                                  max_followers, onion_domain,
-                                 signingPrivateKeyPem, unitTest):
+                                 signingPrivateKeyPem, unit_test):
             if os.path.isfile(queueFilename):
                 try:
                     os.remove(queueFilename)
@@ -4502,7 +4502,7 @@ def runInboxQueue(recentPostsCache: {}, max_recent_posts: int,
                                queueFilename, destination,
                                max_replies, allow_deletion,
                                max_mentions, max_emoji,
-                               translate, unitTest,
+                               translate, unit_test,
                                yt_replace_domain,
                                twitter_replacement_domain,
                                show_published_date_only,

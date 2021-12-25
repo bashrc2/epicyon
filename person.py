@@ -1657,7 +1657,7 @@ def validSendingActor(session, base_dir: str,
                       personCache: {},
                       postJsonObject: {},
                       signingPrivateKeyPem: str,
-                      debug: bool, unitTest: bool) -> bool:
+                      debug: bool, unit_test: bool) -> bool:
     """When a post arrives in the inbox this is used to check that
     the sending actor is valid
     """
@@ -1689,7 +1689,7 @@ def validSendingActor(session, base_dir: str,
         print('REJECT: no preferredUsername within actor ' + str(actorJson))
         return False
     # does the actor have a bio ?
-    if not unitTest:
+    if not unit_test:
         bioStr = ''
         if actorJson.get('summary'):
             bioStr = removeHtml(actorJson['summary']).strip()

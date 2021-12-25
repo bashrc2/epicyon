@@ -18283,7 +18283,7 @@ class PubServer(BaseHTTPRequestHandler):
                            '_POST', 'keyId check',
                            self.server.debug)
 
-        if not self.server.unitTest:
+        if not self.server.unit_test:
             if not inboxPermittedMessage(self.server.domain,
                                          messageJson,
                                          self.server.federationList):
@@ -18480,7 +18480,7 @@ def runDaemon(content_license_url: str,
               domain_max_posts_per_day: int = 8640,
               account_max_posts_per_day: int = 864,
               allow_deletion: bool = False,
-              debug: bool = False, unitTest: bool = False,
+              debug: bool = False, unit_test: bool = False,
               instanceOnlySkillsSearch: bool = False,
               sendThreads: [] = [],
               manualFollowerApproval: bool = True) -> None:
@@ -18491,7 +18491,7 @@ def runDaemon(content_license_url: str,
             print('Invalid domain: ' + domain)
             return
 
-    if unitTest:
+    if unit_test:
         serverAddress = (domain, proxy_port)
         pubHandler = partial(PubServerUnitTest)
     else:
@@ -18592,9 +18592,9 @@ def runDaemon(content_license_url: str,
     # list of blocked user agent types within the User-Agent header
     httpd.user_agents_blocked = user_agents_blocked
 
-    httpd.unitTest = unitTest
+    httpd.unit_test = unit_test
     httpd.allow_local_network_access = allow_local_network_access
-    if unitTest:
+    if unit_test:
         # unit tests are run on the local network with LAN addresses
         httpd.allow_local_network_access = True
     httpd.yt_replace_domain = yt_replace_domain
@@ -18624,7 +18624,7 @@ def runDaemon(content_license_url: str,
     # load translations dictionary
     httpd.translate = {}
     httpd.systemLanguage = 'en'
-    if not unitTest:
+    if not unit_test:
         httpd.translate, httpd.systemLanguage = \
             loadTranslationsFromFile(base_dir, language)
         if not httpd.systemLanguage:
@@ -18875,7 +18875,7 @@ def runDaemon(content_license_url: str,
         threadWithTrace(target=runPostsQueue,
                         args=(base_dir, httpd.sendThreads, debug,
                               httpd.send_threads_timeout_mins), daemon=True)
-    if not unitTest:
+    if not unit_test:
         httpd.thrPostsWatchdog = \
             threadWithTrace(target=runPostsWatchdog,
                             args=(project_version, httpd), daemon=True)
@@ -18887,7 +18887,7 @@ def runDaemon(content_license_url: str,
     httpd.thrSharesExpire = \
         threadWithTrace(target=runSharesExpire,
                         args=(project_version, base_dir), daemon=True)
-    if not unitTest:
+    if not unit_test:
         httpd.thrSharesExpireWatchdog = \
             threadWithTrace(target=runSharesExpireWatchdog,
                             args=(project_version, httpd), daemon=True)
@@ -18932,7 +18932,7 @@ def runDaemon(content_license_url: str,
                               account_max_posts_per_day,
                               allow_deletion, debug,
                               max_mentions, max_emoji,
-                              httpd.translate, unitTest,
+                              httpd.translate, unit_test,
                               httpd.yt_replace_domain,
                               httpd.twitter_replacement_domain,
                               httpd.show_published_date_only,
@@ -18980,7 +18980,7 @@ def runDaemon(content_license_url: str,
     # this is the instance actor private key
     httpd.signingPrivateKeyPem = getInstanceActorKey(base_dir, domain)
 
-    if not unitTest:
+    if not unit_test:
         print('Creating inbox queue watchdog')
         httpd.thrWatchdog = \
             threadWithTrace(target=runInboxQueueWatchdog,
