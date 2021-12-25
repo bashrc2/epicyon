@@ -18443,7 +18443,7 @@ def runDaemon(content_license_url: str,
               max_followers: int,
               max_news_posts: int,
               max_mirrored_articles: int,
-              maxNewswireFeedSizeKb: int,
+              max_newswire_feed_size_kb: int,
               max_newswire_postsPerSource: int,
               show_published_date_only: bool,
               votingTimeMins: int,
@@ -18638,7 +18638,7 @@ def runDaemon(content_license_url: str,
     httpd.newswireVotesThreshold = newswireVotesThreshold
     # maximum overall size of an rss/atom feed read by the newswire daemon
     # If the feed is too large then this is probably a DoS attempt
-    httpd.maxNewswireFeedSizeKb = maxNewswireFeedSizeKb
+    httpd.max_newswire_feed_size_kb = max_newswire_feed_size_kb
 
     # For each newswire source (account or rss feed)
     # this is the maximum number of posts to show for each.

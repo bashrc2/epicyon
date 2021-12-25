@@ -196,7 +196,7 @@ parser.add_argument('--max_newswire_posts',
                     default=20,
                     help='Maximum newswire posts in the right column')
 parser.add_argument('--maxFeedSize',
-                    dest='maxNewswireFeedSizeKb', type=int,
+                    dest='max_newswire_feed_size_kb', type=int,
                     default=10240,
                     help='Maximum newswire rss/atom feed size in K')
 parser.add_argument('--max_feed_item_size_kb',
@@ -3038,10 +3038,10 @@ if max_newswire_posts:
     args.max_newswire_posts = int(max_newswire_posts)
 
 # set the maximum size of a newswire rss/atom feed in Kilobytes
-maxNewswireFeedSizeKb = \
-    getConfigParam(base_dir, 'maxNewswireFeedSizeKb')
-if maxNewswireFeedSizeKb:
-    args.maxNewswireFeedSizeKb = int(maxNewswireFeedSizeKb)
+max_newswire_feed_size_kb = \
+    getConfigParam(base_dir, 'max_newswire_feed_size_kb')
+if max_newswire_feed_size_kb:
+    args.max_newswire_feed_size_kb = int(max_newswire_feed_size_kb)
 
 max_mirrored_articles = \
     getConfigParam(base_dir, 'max_mirrored_articles')
@@ -3235,7 +3235,7 @@ if __name__ == "__main__":
               args.max_followers,
               args.max_news_posts,
               args.max_mirrored_articles,
-              args.maxNewswireFeedSizeKb,
+              args.max_newswire_feed_size_kb,
               args.max_newswire_postsPerSource,
               args.dateonly,
               args.votingtime,

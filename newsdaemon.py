@@ -797,7 +797,7 @@ def runNewswireDaemon(base_dir: str, httpd,
         newNewswire = \
             getDictFromNewswire(httpd.session, base_dir, domain,
                                 httpd.max_newswire_postsPerSource,
-                                httpd.maxNewswireFeedSizeKb,
+                                httpd.max_newswire_feed_size_kb,
                                 httpd.maxTags,
                                 httpd.max_feed_item_size_kb,
                                 httpd.max_newswire_posts,
