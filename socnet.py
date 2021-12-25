@@ -15,7 +15,7 @@ from utils import getFullDomain
 
 
 def instancesGraph(base_dir: str, handles: str,
-                   proxyType: str,
+                   proxy_type: str,
                    port: int, http_prefix: str,
                    debug: bool, project_version: str,
                    systemLanguage: str, signingPrivateKeyPem: str) -> str:
@@ -27,7 +27,7 @@ def instancesGraph(base_dir: str, handles: str,
     dotGraphStr = 'digraph instances {\n'
     if ',' not in handles:
         return dotGraphStr + '}\n'
-    session = createSession(proxyType)
+    session = createSession(proxy_type)
     if not session:
         return dotGraphStr + '}\n'
 

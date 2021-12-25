@@ -116,20 +116,20 @@ def htmlAccountInfo(cssCache: {}, translate: {},
 
     infoForm += translate[msgStr1] + '</center><br><br>\n'
 
-    proxyType = 'tor'
+    proxy_type = 'tor'
     if not os.path.isfile('/usr/bin/tor'):
-        proxyType = None
+        proxy_type = None
     if domain.endswith('.i2p'):
-        proxyType = None
+        proxy_type = None
 
-    session = createSession(proxyType)
+    session = createSession(proxy_type)
 
     wordFrequency = {}
     originDomain = None
     domainDict = getPublicPostInfo(session,
                                    base_dir, searchNickname, searchDomain,
                                    originDomain,
-                                   proxyType, searchPort,
+                                   proxy_type, searchPort,
                                    http_prefix, debug,
                                    __version__, wordFrequency, systemLanguage,
                                    signingPrivateKeyPem)

@@ -186,7 +186,7 @@ def postMessageToOutbox(session, translate: {},
                         federationList: [], sendThreads: [],
                         postLog: [], cachedWebfingers: {},
                         personCache: {}, allowDeletion: bool,
-                        proxyType: str, version: str, debug: bool,
+                        proxy_type: str, version: str, debug: bool,
                         yt_replace_domain: str,
                         twitter_replacement_domain: str,
                         show_published_date_only: bool,
@@ -484,7 +484,7 @@ def postMessageToOutbox(session, translate: {},
                   'for the post associated with the Announce activity')
     if not server.session:
         print('DEBUG: creating new session for c2s')
-        server.session = createSession(proxyType)
+        server.session = createSession(proxy_type)
         if not server.session:
             print('ERROR: Failed to create session for postMessageToOutbox')
             return False

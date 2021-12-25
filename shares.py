@@ -1698,7 +1698,7 @@ def _regenerateSharesToken(base_dir: str, domainFull: str,
 
 
 def runFederatedSharesDaemon(base_dir: str, httpd, http_prefix: str,
-                             domainFull: str, proxyType: str, debug: bool,
+                             domainFull: str, proxy_type: str, debug: bool,
                              systemLanguage: str) -> None:
     """Runs the daemon used to update federated shared items
     """
@@ -1741,7 +1741,7 @@ def runFederatedSharesDaemon(base_dir: str, httpd, http_prefix: str,
             time.sleep(fileCheckIntervalSec)
             continue
 
-        session = createSession(proxyType)
+        session = createSession(proxy_type)
         for sharesFileType in getSharesFilesList():
             _updateFederatedSharesCache(session,
                                         shared_items_federated_domains,

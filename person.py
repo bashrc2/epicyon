@@ -1496,16 +1496,16 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
         domain = domain.replace('\n', '').replace('\r', '')
 
     cachedWebfingers = {}
-    proxyType = None
+    proxy_type = None
     if http or domain.endswith('.onion'):
         http_prefix = 'http'
-        proxyType = 'tor'
+        proxy_type = 'tor'
     elif domain.endswith('.i2p'):
         http_prefix = 'http'
-        proxyType = 'i2p'
+        proxy_type = 'i2p'
     elif gnunet:
         http_prefix = 'gnunet'
-        proxyType = 'gnunet'
+        proxy_type = 'gnunet'
     else:
         if '127.0.' not in domain and '192.168.' not in domain:
             http_prefix = 'https'
@@ -1514,7 +1514,7 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
     if existingSession:
         session = existingSession
     else:
-        session = createSession(proxyType)
+        session = createSession(proxy_type)
     if nickname == 'inbox':
         nickname = domain
 

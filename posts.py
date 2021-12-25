@@ -4055,7 +4055,7 @@ def archivePostsForPerson(http_prefix: str, nickname: str, domain: str,
 
 
 def getPublicPostsOfPerson(base_dir: str, nickname: str, domain: str,
-                           raw: bool, simple: bool, proxyType: str,
+                           raw: bool, simple: bool, proxy_type: str,
                            port: int, http_prefix: str,
                            debug: bool, project_version: str,
                            systemLanguage: str,
@@ -4070,7 +4070,7 @@ def getPublicPostsOfPerson(base_dir: str, nickname: str, domain: str,
             print('Signing key missing')
 
     print('Starting new session for getting public posts')
-    session = createSession(proxyType)
+    session = createSession(proxy_type)
     if not session:
         if debug:
             print('Session was not created')
@@ -4125,7 +4125,7 @@ def getPublicPostsOfPerson(base_dir: str, nickname: str, domain: str,
 
 def getPublicPostDomains(session, base_dir: str, nickname: str, domain: str,
                          originDomain: str,
-                         proxyType: str, port: int, http_prefix: str,
+                         proxy_type: str, port: int, http_prefix: str,
                          debug: bool, project_version: str,
                          wordFrequency: {}, domainList: [],
                          systemLanguage: str,
@@ -4133,7 +4133,7 @@ def getPublicPostDomains(session, base_dir: str, nickname: str, domain: str,
     """ Returns a list of domains referenced within public posts
     """
     if not session:
-        session = createSession(proxyType)
+        session = createSession(proxy_type)
     if not session:
         return domainList
     personCache = {}
@@ -4222,14 +4222,14 @@ def downloadFollowCollection(signingPrivateKeyPem: str,
 
 def getPublicPostInfo(session, base_dir: str, nickname: str, domain: str,
                       originDomain: str,
-                      proxyType: str, port: int, http_prefix: str,
+                      proxy_type: str, port: int, http_prefix: str,
                       debug: bool, project_version: str,
                       wordFrequency: {}, systemLanguage: str,
                       signingPrivateKeyPem: str) -> []:
     """ Returns a dict of domains referenced within public posts
     """
     if not session:
-        session = createSession(proxyType)
+        session = createSession(proxy_type)
     if not session:
         return {}
     personCache = {}
@@ -4290,7 +4290,7 @@ def getPublicPostInfo(session, base_dir: str, nickname: str, domain: str,
 
 def getPublicPostDomainsBlocked(session, base_dir: str,
                                 nickname: str, domain: str,
-                                proxyType: str, port: int, http_prefix: str,
+                                proxy_type: str, port: int, http_prefix: str,
                                 debug: bool, project_version: str,
                                 wordFrequency: {}, domainList: [],
                                 systemLanguage: str,
@@ -4302,7 +4302,7 @@ def getPublicPostDomainsBlocked(session, base_dir: str,
     postDomains = \
         getPublicPostDomains(session, base_dir, nickname, domain,
                              originDomain,
-                             proxyType, port, http_prefix,
+                             proxy_type, port, http_prefix,
                              debug, project_version,
                              wordFrequency, domainList, systemLanguage,
                              signingPrivateKeyPem)
@@ -4351,7 +4351,7 @@ def _getNonMutualsOfPerson(base_dir: str,
 
 def checkDomains(session, base_dir: str,
                  nickname: str, domain: str,
-                 proxyType: str, port: int, http_prefix: str,
+                 proxy_type: str, port: int, http_prefix: str,
                  debug: bool, project_version: str,
                  maxBlockedDomains: int, singleCheck: bool,
                  systemLanguage: str,
@@ -4381,7 +4381,7 @@ def checkDomains(session, base_dir: str,
                 getPublicPostDomainsBlocked(session, base_dir,
                                             nonMutualNickname,
                                             nonMutualDomain,
-                                            proxyType, port, http_prefix,
+                                            proxy_type, port, http_prefix,
                                             debug, project_version,
                                             wordFrequency, [],
                                             systemLanguage,
@@ -4403,7 +4403,7 @@ def checkDomains(session, base_dir: str,
                 getPublicPostDomainsBlocked(session, base_dir,
                                             nonMutualNickname,
                                             nonMutualDomain,
-                                            proxyType, port, http_prefix,
+                                            proxy_type, port, http_prefix,
                                             debug, project_version,
                                             wordFrequency, [],
                                             systemLanguage,

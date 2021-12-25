@@ -20,7 +20,7 @@ from http.client import HTTPConnection
 base_directory = None
 
 
-def createSession(proxyType: str):
+def createSession(proxy_type: str):
     session = None
     try:
         session = requests.session()
@@ -38,19 +38,19 @@ def createSession(proxyType: str):
         return None
     if not session:
         return None
-    if proxyType == 'tor':
+    if proxy_type == 'tor':
         session.proxies = {}
         session.proxies['http'] = 'socks5h://localhost:9050'
         session.proxies['https'] = 'socks5h://localhost:9050'
-    elif proxyType == 'i2p':
+    elif proxy_type == 'i2p':
         session.proxies = {}
         session.proxies['http'] = 'socks5h://localhost:4447'
         session.proxies['https'] = 'socks5h://localhost:4447'
-    elif proxyType == 'gnunet':
+    elif proxy_type == 'gnunet':
         session.proxies = {}
         session.proxies['http'] = 'socks5h://localhost:7777'
         session.proxies['https'] = 'socks5h://localhost:7777'
-    # print('New session created with proxy ' + str(proxyType))
+    # print('New session created with proxy ' + str(proxy_type))
     return session
 
 

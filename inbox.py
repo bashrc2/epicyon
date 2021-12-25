@@ -3182,7 +3182,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                        postLog: [], cachedWebfingers: {}, personCache: {},
                        queue: [], domain: str,
                        onion_domain: str, i2p_domain: str,
-                       port: int, proxyType: str,
+                       port: int, proxy_type: str,
                        federationList: [], debug: bool,
                        queueFilename: str, destinationFilename: str,
                        maxReplies: int, allowDeletion: bool,
@@ -4066,7 +4066,7 @@ def runInboxQueue(recentPostsCache: {}, max_recent_posts: int,
                   cachedWebfingers: {}, personCache: {}, queue: [],
                   domain: str,
                   onion_domain: str, i2p_domain: str,
-                  port: int, proxyType: str,
+                  port: int, proxy_type: str,
                   federationList: [], maxReplies: int,
                   domainMaxPostsPerDay: int,
                   accountMaxPostsPerDay: int,
@@ -4089,7 +4089,7 @@ def runInboxQueue(recentPostsCache: {}, max_recent_posts: int,
     currSessionTime = int(time.time())
     sessionLastUpdate = currSessionTime
     print('Starting new session when starting inbox queue')
-    session = createSession(proxyType)
+    session = createSession(proxy_type)
     inboxHandle = 'inbox@' + domain
     if debug:
         print('DEBUG: Inbox queue running')
@@ -4147,7 +4147,7 @@ def runInboxQueue(recentPostsCache: {}, max_recent_posts: int,
         # recreate the session periodically
         if not session or currTime - sessionLastUpdate > 21600:
             print('Regenerating inbox queue session at 6hr interval')
-            session = createSession(proxyType)
+            session = createSession(proxy_type)
             if not session:
                 continue
             sessionLastUpdate = currTime
@@ -4496,7 +4496,7 @@ def runInboxQueue(recentPostsCache: {}, max_recent_posts: int,
                                personCache, queue,
                                domain,
                                onion_domain, i2p_domain,
-                               port, proxyType,
+                               port, proxy_type,
                                federationList,
                                debug,
                                queueFilename, destination,

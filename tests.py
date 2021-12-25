@@ -691,7 +691,7 @@ def createServerAlice(path: str, domain: str, port: int,
     systemLanguage = 'en'
     nickname = 'alice'
     http_prefix = 'http'
-    proxyType = None
+    proxy_type = None
     password = 'alicepass'
     maxReplies = 64
     domainMaxPostsPerDay = 1000
@@ -816,7 +816,7 @@ def createServerAlice(path: str, domain: str, port: int,
               "instance_id", False, path, domain,
               onion_domain, i2p_domain, None, None, port, port,
               http_prefix, federationList, max_mentions, max_emoji, False,
-              proxyType, maxReplies,
+              proxy_type, maxReplies,
               domainMaxPostsPerDay, accountMaxPostsPerDay,
               allowDeletion, True, True, False, sendThreads,
               False)
@@ -835,7 +835,7 @@ def createServerBob(path: str, domain: str, port: int,
     systemLanguage = 'en'
     nickname = 'bob'
     http_prefix = 'http'
-    proxyType = None
+    proxy_type = None
     client_to_server = False
     password = 'bobpass'
     maxReplies = 64
@@ -958,7 +958,7 @@ def createServerBob(path: str, domain: str, port: int,
               "instance_id", False, path, domain,
               onion_domain, i2p_domain, None, None, port, port,
               http_prefix, federationList, max_mentions, max_emoji, False,
-              proxyType, maxReplies,
+              proxy_type, maxReplies,
               domainMaxPostsPerDay, accountMaxPostsPerDay,
               allowDeletion, True, True, False, sendThreads,
               False)
@@ -975,7 +975,7 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
     shared_items_federated_domains = []
     nickname = 'eve'
     http_prefix = 'http'
-    proxyType = None
+    proxy_type = None
     password = 'evepass'
     maxReplies = 64
     allowDeletion = True
@@ -1028,7 +1028,7 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
               "instance_id", False, path, domain,
               onion_domain, i2p_domain, None, None, port, port,
               http_prefix, federationList, max_mentions, max_emoji, False,
-              proxyType, maxReplies, allowDeletion, True, True, False,
+              proxy_type, maxReplies, allowDeletion, True, True, False,
               sendThreads, False)
 
 
@@ -1045,7 +1045,7 @@ def createServerGroup(path: str, domain: str, port: int,
     # systemLanguage = 'en'
     nickname = 'testgroup'
     http_prefix = 'http'
-    proxyType = None
+    proxy_type = None
     password = 'testgrouppass'
     maxReplies = 64
     domainMaxPostsPerDay = 1000
@@ -1100,7 +1100,7 @@ def createServerGroup(path: str, domain: str, port: int,
               "instance_id", False, path, domain,
               onion_domain, i2p_domain, None, None, port, port,
               http_prefix, federationList, max_mentions, max_emoji, False,
-              proxyType, maxReplies,
+              proxy_type, maxReplies,
               domainMaxPostsPerDay, accountMaxPostsPerDay,
               allowDeletion, True, True, False, sendThreads,
               False)
@@ -1116,7 +1116,7 @@ def testPostMessageBetweenServers(base_dir: str) -> None:
 
     systemLanguage = 'en'
     http_prefix = 'http'
-    proxyType = None
+    proxy_type = None
     content_license_url = 'https://creativecommons.org/licenses/by/4.0'
 
     if os.path.isdir(base_dir + '/.tests'):
@@ -1179,7 +1179,7 @@ def testPostMessageBetweenServers(base_dir: str) -> None:
     print('\n\n*******************************************************')
     print('Alice sends to Bob')
     os.chdir(aliceDir)
-    sessionAlice = createSession(proxyType)
+    sessionAlice = createSession(proxy_type)
     inReplyTo = None
     inReplyToAtomUri = None
     subject = None
@@ -1313,7 +1313,7 @@ def testPostMessageBetweenServers(base_dir: str) -> None:
     followPerson(aliceDir, 'alice', aliceDomain, 'bob',
                  bobDomainStr, federationList, False, False)
 
-    sessionBob = createSession(proxyType)
+    sessionBob = createSession(proxy_type)
     bobPostLog = []
     bobPersonCache = {}
     bobCachedWebfingers = {}
@@ -1440,7 +1440,7 @@ def testFollowBetweenServers(base_dir: str) -> None:
 
     systemLanguage = 'en'
     http_prefix = 'http'
-    proxyType = None
+    proxy_type = None
     federationList = []
     content_license_url = 'https://creativecommons.org/licenses/by/4.0'
 
@@ -1511,7 +1511,7 @@ def testFollowBetweenServers(base_dir: str) -> None:
     print('*********************************************************')
     print('Alice sends a follow request to Bob')
     os.chdir(aliceDir)
-    sessionAlice = createSession(proxyType)
+    sessionAlice = createSession(proxy_type)
     inReplyTo = None
     inReplyToAtomUri = None
     subject = None
@@ -1629,7 +1629,7 @@ def testSharedItemsFederation(base_dir: str) -> None:
 
     systemLanguage = 'en'
     http_prefix = 'http'
-    proxyType = None
+    proxy_type = None
     federationList = []
     content_license_url = 'https://creativecommons.org/licenses/by/4.0'
 
@@ -1699,7 +1699,7 @@ def testSharedItemsFederation(base_dir: str) -> None:
     time.sleep(1)
 
     signingPrivateKeyPem = None
-    sessionClient = createSession(proxyType)
+    sessionClient = createSession(proxy_type)
 
     # Get Bob's instance actor
     print('\n\n*********************************************************')
@@ -1729,7 +1729,7 @@ def testSharedItemsFederation(base_dir: str) -> None:
     print('*********************************************************')
     print('Alice sends a follow request to Bob')
     os.chdir(aliceDir)
-    sessionAlice = createSession(proxyType)
+    sessionAlice = createSession(proxy_type)
     inReplyTo = None
     inReplyToAtomUri = None
     subject = None
@@ -1809,7 +1809,7 @@ def testSharedItemsFederation(base_dir: str) -> None:
     sharedItemPrice = "1.30"
     sharedItemCurrency = "EUR"
     signingPrivateKeyPem = None
-    sessionBob = createSession(proxyType)
+    sessionBob = createSession(proxy_type)
     shareJson = \
         sendShareViaServer(bobDir, sessionBob,
                            'bob', bobPassword,
@@ -2035,7 +2035,7 @@ def testGroupFollow(base_dir: str) -> None:
 
     # systemLanguage = 'en'
     http_prefix = 'http'
-    proxyType = None
+    proxy_type = None
     federationList = []
     content_license_url = 'https://creativecommons.org/licenses/by/4.0'
 
@@ -2165,7 +2165,7 @@ def testGroupFollow(base_dir: str) -> None:
     print('*********************************************************')
     print('Alice sends a follow request to the test group')
     os.chdir(aliceDir)
-    sessionAlice = createSession(proxyType)
+    sessionAlice = createSession(proxy_type)
     inReplyTo = None
     inReplyToAtomUri = None
     subject = None
@@ -2242,7 +2242,7 @@ def testGroupFollow(base_dir: str) -> None:
     print('*********************************************************')
     print('Bob sends a follow request to the test group')
     os.chdir(bobDir)
-    sessionBob = createSession(proxyType)
+    sessionBob = createSession(proxy_type)
     inReplyTo = None
     inReplyToAtomUri = None
     subject = None
@@ -2787,7 +2787,7 @@ def testClientToServer(base_dir: str):
 
     systemLanguage = 'en'
     http_prefix = 'http'
-    proxyType = None
+    proxy_type = None
     federationList = []
     low_bandwidth = False
 
@@ -2856,7 +2856,7 @@ def testClientToServer(base_dir: str):
     print('\n\n*******************************************************')
     print('EVENT: Alice sends to Bob via c2s')
 
-    sessionAlice = createSession(proxyType)
+    sessionAlice = createSession(proxy_type)
     followersOnly = False
     attachedImageFilename = base_dir + '/img/logo.png'
     mediaType = getAttachmentMediaType(attachedImageFilename)
@@ -3036,7 +3036,7 @@ def testClientToServer(base_dir: str):
     assert 'alice@' + aliceDomain + ':' + str(alicePort) in \
         open(bobDir + '/accounts/bob@' + bobDomain + '/following.txt').read()
 
-    sessionBob = createSession(proxyType)
+    sessionBob = createSession(proxy_type)
     password = 'bobpass'
     outboxPath = bobDir + '/accounts/bob@' + bobDomain + '/outbox'
     inboxPath = aliceDir + '/accounts/alice@' + aliceDomain + '/inbox'
@@ -5067,7 +5067,7 @@ def testUpdateActor(base_dir: str):
     testServerAliceRunning = False
 
     http_prefix = 'http'
-    proxyType = None
+    proxy_type = None
     federationList = []
 
     if os.path.isdir(base_dir + '/.tests'):
@@ -5111,7 +5111,7 @@ def testUpdateActor(base_dir: str):
     print('\n\n*******************************************************')
     print('Alice updates her PGP key')
 
-    sessionAlice = createSession(proxyType)
+    sessionAlice = createSession(proxy_type)
     cachedWebfingers = {}
     personCache = {}
     password = 'alicepass'

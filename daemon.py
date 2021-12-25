@@ -701,7 +701,7 @@ class PubServer(BaseHTTPRequestHandler):
         if self.server.session:
             return True
         print('DEBUG: creating new session during ' + callingFunction)
-        self.server.session = createSession(self.server.proxyType)
+        self.server.session = createSession(self.server.proxy_type)
         if self.server.session:
             return True
         print('ERROR: GET failed to create session during ' +
@@ -1291,7 +1291,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.cachedWebfingers,
                                    self.server.personCache,
                                    self.server.allowDeletion,
-                                   self.server.proxyType, version,
+                                   self.server.proxy_type, version,
                                    self.server.debug,
                                    self.server.yt_replace_domain,
                                    self.server.twitter_replacement_domain,
@@ -6846,7 +6846,7 @@ class PubServer(BaseHTTPRequestHandler):
     def _getRSS2feed(self, authorized: bool,
                      callingDomain: str, path: str,
                      base_dir: str, http_prefix: str,
-                     domain: str, port: int, proxyType: str,
+                     domain: str, port: int, proxy_type: str,
                      GETstartTime,
                      debug: bool) -> None:
         """Returns an RSS2 feed for the blog
@@ -6893,7 +6893,7 @@ class PubServer(BaseHTTPRequestHandler):
     def _getRSS2site(self, authorized: bool,
                      callingDomain: str, path: str,
                      base_dir: str, http_prefix: str,
-                     domainFull: str, port: int, proxyType: str,
+                     domainFull: str, port: int, proxy_type: str,
                      translate: {},
                      GETstartTime,
                      debug: bool) -> None:
@@ -6948,7 +6948,7 @@ class PubServer(BaseHTTPRequestHandler):
     def _getNewswireFeed(self, authorized: bool,
                          callingDomain: str, path: str,
                          base_dir: str, http_prefix: str,
-                         domain: str, port: int, proxyType: str,
+                         domain: str, port: int, proxy_type: str,
                          GETstartTime,
                          debug: bool) -> None:
         """Returns the newswire feed
@@ -6982,7 +6982,7 @@ class PubServer(BaseHTTPRequestHandler):
     def _getHashtagCategoriesFeed(self, authorized: bool,
                                   callingDomain: str, path: str,
                                   base_dir: str, http_prefix: str,
-                                  domain: str, port: int, proxyType: str,
+                                  domain: str, port: int, proxy_type: str,
                                   GETstartTime,
                                   debug: bool) -> None:
         """Returns the hashtag categories feed
@@ -7014,7 +7014,7 @@ class PubServer(BaseHTTPRequestHandler):
     def _getRSS3feed(self, authorized: bool,
                      callingDomain: str, path: str,
                      base_dir: str, http_prefix: str,
-                     domain: str, port: int, proxyType: str,
+                     domain: str, port: int, proxy_type: str,
                      GETstartTime,
                      debug: bool, systemLanguage: str) -> None:
         """Returns an RSS3 feed
@@ -7635,7 +7635,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _announceButton(self, callingDomain: str, path: str,
                         base_dir: str,
-                        cookie: str, proxyType: str,
+                        cookie: str, proxy_type: str,
                         http_prefix: str,
                         domain: str, domainFull: str, port: int,
                         onion_domain: str, i2p_domain: str,
@@ -7784,7 +7784,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _undoAnnounceButton(self, callingDomain: str, path: str,
                             base_dir: str,
-                            cookie: str, proxyType: str,
+                            cookie: str, proxy_type: str,
                             http_prefix: str,
                             domain: str, domainFull: str, port: int,
                             onion_domain: str, i2p_domain: str,
@@ -7889,7 +7889,7 @@ class PubServer(BaseHTTPRequestHandler):
                              domain: str, domainFull: str, port: int,
                              onion_domain: str, i2p_domain: str,
                              GETstartTime,
-                             proxyType: str, debug: bool) -> None:
+                             proxy_type: str, debug: bool) -> None:
         """Follow approve button was pressed
         """
         originPathStr = path.split('/followapprove=')[0]
@@ -7937,7 +7937,7 @@ class PubServer(BaseHTTPRequestHandler):
                       domain: str, domainFull: str, port: int,
                       onion_domain: str, i2p_domain: str,
                       GETstartTime,
-                      proxyType: str, debug: bool,
+                      proxy_type: str, debug: bool,
                       newswire: {}):
         """Vote for a newswire item
         """
@@ -7993,7 +7993,7 @@ class PubServer(BaseHTTPRequestHandler):
                         domain: str, domainFull: str, port: int,
                         onion_domain: str, i2p_domain: str,
                         GETstartTime,
-                        proxyType: str, debug: bool,
+                        proxy_type: str, debug: bool,
                         newswire: {}):
         """Remove vote for a newswire item
         """
@@ -8047,7 +8047,7 @@ class PubServer(BaseHTTPRequestHandler):
                           domain: str, domainFull: str, port: int,
                           onion_domain: str, i2p_domain: str,
                           GETstartTime,
-                          proxyType: str, debug: bool) -> None:
+                          proxy_type: str, debug: bool) -> None:
         """Follow deny button was pressed
         """
         originPathStr = path.split('/followdeny=')[0]
@@ -8091,7 +8091,7 @@ class PubServer(BaseHTTPRequestHandler):
                     domain: str, domainFull: str,
                     onion_domain: str, i2p_domain: str,
                     GETstartTime,
-                    proxyType: str, cookie: str,
+                    proxy_type: str, cookie: str,
                     debug: str) -> None:
         """Press the like button
         """
@@ -8256,7 +8256,7 @@ class PubServer(BaseHTTPRequestHandler):
                         domain: str, domainFull: str,
                         onion_domain: str, i2p_domain: str,
                         GETstartTime,
-                        proxyType: str, cookie: str,
+                        proxy_type: str, cookie: str,
                         debug: str) -> None:
         """A button is pressed to undo
         """
@@ -8406,7 +8406,7 @@ class PubServer(BaseHTTPRequestHandler):
                         domain: str, domainFull: str,
                         onion_domain: str, i2p_domain: str,
                         GETstartTime,
-                        proxyType: str, cookie: str,
+                        proxy_type: str, cookie: str,
                         debug: str) -> None:
         """Press an emoji reaction button
         Note that this is not the emoji reaction selection icon at the
@@ -8592,7 +8592,7 @@ class PubServer(BaseHTTPRequestHandler):
                             domain: str, domainFull: str,
                             onion_domain: str, i2p_domain: str,
                             GETstartTime,
-                            proxyType: str, cookie: str,
+                            proxy_type: str, cookie: str,
                             debug: str) -> None:
         """A button is pressed to undo emoji reaction
         """
@@ -8760,7 +8760,7 @@ class PubServer(BaseHTTPRequestHandler):
                         domain: str, domainFull: str, port: int,
                         onion_domain: str, i2p_domain: str,
                         GETstartTime,
-                        proxyType: str, cookie: str,
+                        proxy_type: str, cookie: str,
                         debug: str) -> None:
         """Press the emoji reaction picker icon at the bottom of the post
         """
@@ -8853,7 +8853,7 @@ class PubServer(BaseHTTPRequestHandler):
                         domain: str, domainFull: str, port: int,
                         onion_domain: str, i2p_domain: str,
                         GETstartTime,
-                        proxyType: str, cookie: str,
+                        proxy_type: str, cookie: str,
                         debug: str) -> None:
         """Bookmark button was pressed
         """
@@ -8980,7 +8980,7 @@ class PubServer(BaseHTTPRequestHandler):
                             domain: str, domainFull: str, port: int,
                             onion_domain: str, i2p_domain: str,
                             GETstartTime,
-                            proxyType: str, cookie: str,
+                            proxy_type: str, cookie: str,
                             debug: str) -> None:
         """Button pressed to undo a bookmark
         """
@@ -9107,7 +9107,7 @@ class PubServer(BaseHTTPRequestHandler):
                       domain: str, domainFull: str, port: int,
                       onion_domain: str, i2p_domain: str,
                       GETstartTime,
-                      proxyType: str, cookie: str,
+                      proxy_type: str, cookie: str,
                       debug: str) -> None:
         """Delete button is pressed on a post
         """
@@ -9206,7 +9206,7 @@ class PubServer(BaseHTTPRequestHandler):
                     domain: str, domainFull: str, port: int,
                     onion_domain: str, i2p_domain: str,
                     GETstartTime,
-                    proxyType: str, cookie: str,
+                    proxy_type: str, cookie: str,
                     debug: str):
         """Mute button is pressed
         """
@@ -9315,7 +9315,7 @@ class PubServer(BaseHTTPRequestHandler):
                         domain: str, domainFull: str, port: int,
                         onion_domain: str, i2p_domain: str,
                         GETstartTime,
-                        proxyType: str, cookie: str,
+                        proxy_type: str, cookie: str,
                         debug: str):
         """Undo mute button is pressed
         """
@@ -9423,7 +9423,7 @@ class PubServer(BaseHTTPRequestHandler):
                            domain: str, domainFull: str, port: int,
                            onion_domain: str, i2p_domain: str,
                            GETstartTime,
-                           proxyType: str, cookie: str,
+                           proxy_type: str, cookie: str,
                            debug: str) -> bool:
         """Shows the replies to a post
         """
@@ -9645,7 +9645,7 @@ class PubServer(BaseHTTPRequestHandler):
                    domain: str, domainFull: str, port: int,
                    onion_domain: str, i2p_domain: str,
                    GETstartTime,
-                   proxyType: str, cookie: str,
+                   proxy_type: str, cookie: str,
                    debug: str) -> bool:
         """Show roles within profile screen
         """
@@ -9755,7 +9755,7 @@ class PubServer(BaseHTTPRequestHandler):
                     domain: str, domainFull: str, port: int,
                     onion_domain: str, i2p_domain: str,
                     GETstartTime,
-                    proxyType: str, cookie: str,
+                    proxy_type: str, cookie: str,
                     debug: str) -> bool:
         """Show skills on the profile screen
         """
@@ -9880,7 +9880,7 @@ class PubServer(BaseHTTPRequestHandler):
                               domain: str, domainFull: str, port: int,
                               onion_domain: str, i2p_domain: str,
                               GETstartTime,
-                              proxyType: str, cookie: str,
+                              proxy_type: str, cookie: str,
                               debug: str) -> bool:
         """get an individual post from the path /@nickname/statusnumber
         """
@@ -9936,7 +9936,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         domain, domainFull, port,
                                         onion_domain, i2p_domain,
                                         GETstartTime,
-                                        proxyType, cookie, debug,
+                                        proxy_type, cookie, debug,
                                         includeCreateWrapper)
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_showIndividualAtPost',
@@ -9951,7 +9951,7 @@ class PubServer(BaseHTTPRequestHandler):
                           domain: str, domainFull: str, port: int,
                           onion_domain: str, i2p_domain: str,
                           GETstartTime,
-                          proxyType: str, cookie: str,
+                          proxy_type: str, cookie: str,
                           debug: str, includeCreateWrapper: bool) -> bool:
         """Shows an individual post from its filename
         """
@@ -10044,7 +10044,7 @@ class PubServer(BaseHTTPRequestHandler):
                             domain: str, domainFull: str, port: int,
                             onion_domain: str, i2p_domain: str,
                             GETstartTime,
-                            proxyType: str, cookie: str,
+                            proxy_type: str, cookie: str,
                             debug: str) -> bool:
         """Shows an individual post
         """
@@ -10094,7 +10094,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         domain, domainFull, port,
                                         onion_domain, i2p_domain,
                                         GETstartTime,
-                                        proxyType, cookie, debug,
+                                        proxy_type, cookie, debug,
                                         includeCreateWrapper)
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_showIndividualPost',
@@ -10107,7 +10107,7 @@ class PubServer(BaseHTTPRequestHandler):
                         domain: str, domainFull: str, port: int,
                         onion_domain: str, i2p_domain: str,
                         GETstartTime,
-                        proxyType: str, cookie: str,
+                        proxy_type: str, cookie: str,
                         debug: str) -> bool:
         """Shows an individual post from an account which you are following
         and where you have the notify checkbox set on person options
@@ -10138,7 +10138,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         domain, domainFull, port,
                                         onion_domain, i2p_domain,
                                         GETstartTime,
-                                        proxyType, cookie, debug,
+                                        proxy_type, cookie, debug,
                                         includeCreateWrapper)
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_showNotifyPost',
@@ -10151,7 +10151,7 @@ class PubServer(BaseHTTPRequestHandler):
                    domain: str, domainFull: str, port: int,
                    onion_domain: str, i2p_domain: str,
                    GETstartTime,
-                   proxyType: str, cookie: str,
+                   proxy_type: str, cookie: str,
                    debug: str,
                    recentPostsCache: {}, session,
                    defaultTimeline: str,
@@ -10320,7 +10320,7 @@ class PubServer(BaseHTTPRequestHandler):
                  domain: str, domainFull: str, port: int,
                  onion_domain: str, i2p_domain: str,
                  GETstartTime,
-                 proxyType: str, cookie: str,
+                 proxy_type: str, cookie: str,
                  debug: str) -> bool:
         """Shows the DMs timeline
         """
@@ -10465,7 +10465,7 @@ class PubServer(BaseHTTPRequestHandler):
                      domain: str, domainFull: str, port: int,
                      onion_domain: str, i2p_domain: str,
                      GETstartTime,
-                     proxyType: str, cookie: str,
+                     proxy_type: str, cookie: str,
                      debug: str) -> bool:
         """Shows the replies timeline
         """
@@ -10610,7 +10610,7 @@ class PubServer(BaseHTTPRequestHandler):
                            domain: str, domainFull: str, port: int,
                            onion_domain: str, i2p_domain: str,
                            GETstartTime,
-                           proxyType: str, cookie: str,
+                           proxy_type: str, cookie: str,
                            debug: str) -> bool:
         """Shows the media timeline
         """
@@ -10752,7 +10752,7 @@ class PubServer(BaseHTTPRequestHandler):
                            domain: str, domainFull: str, port: int,
                            onion_domain: str, i2p_domain: str,
                            GETstartTime,
-                           proxyType: str, cookie: str,
+                           proxy_type: str, cookie: str,
                            debug: str) -> bool:
         """Shows the blogs timeline
         """
@@ -10895,7 +10895,7 @@ class PubServer(BaseHTTPRequestHandler):
                           domain: str, domainFull: str, port: int,
                           onion_domain: str, i2p_domain: str,
                           GETstartTime,
-                          proxyType: str, cookie: str,
+                          proxy_type: str, cookie: str,
                           debug: str) -> bool:
         """Shows the news timeline
         """
@@ -11046,7 +11046,7 @@ class PubServer(BaseHTTPRequestHandler):
                               domain: str, domainFull: str, port: int,
                               onion_domain: str, i2p_domain: str,
                               GETstartTime,
-                              proxyType: str, cookie: str,
+                              proxy_type: str, cookie: str,
                               debug: str) -> bool:
         """Shows the features timeline (all local blogs)
         """
@@ -11197,7 +11197,7 @@ class PubServer(BaseHTTPRequestHandler):
                             domain: str, domainFull: str, port: int,
                             onion_domain: str, i2p_domain: str,
                             GETstartTime,
-                            proxyType: str, cookie: str,
+                            proxy_type: str, cookie: str,
                             debug: str) -> bool:
         """Shows the shares timeline
         """
@@ -11283,7 +11283,7 @@ class PubServer(BaseHTTPRequestHandler):
                             domain: str, domainFull: str, port: int,
                             onion_domain: str, i2p_domain: str,
                             GETstartTime,
-                            proxyType: str, cookie: str,
+                            proxy_type: str, cookie: str,
                             debug: str) -> bool:
         """Shows the wanted timeline
         """
@@ -11368,7 +11368,7 @@ class PubServer(BaseHTTPRequestHandler):
                                domain: str, domainFull: str, port: int,
                                onion_domain: str, i2p_domain: str,
                                GETstartTime,
-                               proxyType: str, cookie: str,
+                               proxy_type: str, cookie: str,
                                debug: str) -> bool:
         """Shows the bookmarks timeline
         """
@@ -11514,7 +11514,7 @@ class PubServer(BaseHTTPRequestHandler):
                             domain: str, domainFull: str, port: int,
                             onion_domain: str, i2p_domain: str,
                             GETstartTime,
-                            proxyType: str, cookie: str,
+                            proxy_type: str, cookie: str,
                             debug: str) -> bool:
         """Shows the outbox timeline
         """
@@ -11641,7 +11641,7 @@ class PubServer(BaseHTTPRequestHandler):
                          domain: str, domainFull: str, port: int,
                          onion_domain: str, i2p_domain: str,
                          GETstartTime,
-                         proxyType: str, cookie: str,
+                         proxy_type: str, cookie: str,
                          debug: str) -> bool:
         """Shows the moderation timeline
         """
@@ -11784,7 +11784,7 @@ class PubServer(BaseHTTPRequestHandler):
                         domain: str, domainFull: str, port: int,
                         onion_domain: str, i2p_domain: str,
                         GETstartTime,
-                        proxyType: str, cookie: str,
+                        proxy_type: str, cookie: str,
                         debug: str, sharesFileType: str) -> bool:
         """Shows the shares feed
         """
@@ -11900,7 +11900,7 @@ class PubServer(BaseHTTPRequestHandler):
                            domain: str, domainFull: str, port: int,
                            onion_domain: str, i2p_domain: str,
                            GETstartTime,
-                           proxyType: str, cookie: str,
+                           proxy_type: str, cookie: str,
                            debug: str) -> bool:
         """Shows the following feed
         """
@@ -12019,7 +12019,7 @@ class PubServer(BaseHTTPRequestHandler):
                            domain: str, domainFull: str, port: int,
                            onion_domain: str, i2p_domain: str,
                            GETstartTime,
-                           proxyType: str, cookie: str,
+                           proxy_type: str, cookie: str,
                            debug: str) -> bool:
         """Shows the followers feed
         """
@@ -12181,7 +12181,7 @@ class PubServer(BaseHTTPRequestHandler):
                            domain: str, domainFull: str, port: int,
                            onion_domain: str, i2p_domain: str,
                            GETstartTime,
-                           proxyType: str, cookie: str,
+                           proxy_type: str, cookie: str,
                            debug: str) -> bool:
         """Shows the profile for a person
         """
@@ -12278,7 +12278,7 @@ class PubServer(BaseHTTPRequestHandler):
                            domain: str, domainFull: str, port: int,
                            onion_domain: str, i2p_domain: str,
                            GETstartTime,
-                           proxyType: str, cookie: str,
+                           proxy_type: str, cookie: str,
                            debug: str,
                            enable_shared_inbox: bool) -> bool:
         """Shows the instance actor
@@ -12355,7 +12355,7 @@ class PubServer(BaseHTTPRequestHandler):
                       domain: str, domainFull: str, port: int,
                       onion_domain: str, i2p_domain: str,
                       GETstartTime,
-                      proxyType: str, cookie: str,
+                      proxy_type: str, cookie: str,
                       translate: {}, debug: str) -> bool:
         """Shows a blog page
         """
@@ -13424,7 +13424,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.onion_domain,
                                        self.server.i2p_domain,
                                        GETstartTime,
-                                       self.server.proxyType,
+                                       self.server.proxy_type,
                                        None, self.server.debug,
                                        self.server.enable_shared_inbox):
                 return
@@ -13805,7 +13805,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.http_prefix,
                                            self.server.domain,
                                            self.server.port,
-                                           self.server.proxyType,
+                                           self.server.proxy_type,
                                            GETstartTime,
                                            self.server.debug)
             return
@@ -13817,7 +13817,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.http_prefix,
                                   self.server.domain,
                                   self.server.port,
-                                  self.server.proxyType,
+                                  self.server.proxy_type,
                                   GETstartTime,
                                   self.server.debug)
             return
@@ -13832,7 +13832,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.http_prefix,
                                   self.server.domain,
                                   self.server.port,
-                                  self.server.proxyType,
+                                  self.server.proxy_type,
                                   GETstartTime,
                                   self.server.debug)
             else:
@@ -13842,7 +13842,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.http_prefix,
                                   self.server.domainFull,
                                   self.server.port,
-                                  self.server.proxyType,
+                                  self.server.proxy_type,
                                   self.server.translate,
                                   GETstartTime,
                                   self.server.debug)
@@ -13861,7 +13861,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.http_prefix,
                               self.server.domain,
                               self.server.port,
-                              self.server.proxyType,
+                              self.server.proxy_type,
                               GETstartTime,
                               self.server.debug,
                               self.server.systemLanguage)
@@ -14095,7 +14095,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.onion_domain,
                                       self.server.i2p_domain,
                                       GETstartTime,
-                                      self.server.proxyType,
+                                      self.server.proxy_type,
                                       cookie, self.server.translate,
                                       self.server.debug):
                     return
@@ -15243,7 +15243,7 @@ class PubServer(BaseHTTPRequestHandler):
         if authorized and htmlGET and '?repeat=' in self.path:
             self._announceButton(callingDomain, self.path,
                                  self.server.base_dir,
-                                 cookie, self.server.proxyType,
+                                 cookie, self.server.proxy_type,
                                  self.server.http_prefix,
                                  self.server.domain,
                                  self.server.domainFull,
@@ -15267,7 +15267,7 @@ class PubServer(BaseHTTPRequestHandler):
         if authorized and htmlGET and '?unrepeat=' in self.path:
             self._undoAnnounceButton(callingDomain, self.path,
                                      self.server.base_dir,
-                                     cookie, self.server.proxyType,
+                                     cookie, self.server.proxy_type,
                                      self.server.http_prefix,
                                      self.server.domain,
                                      self.server.domainFull,
@@ -15298,7 +15298,7 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.onion_domain,
                                self.server.i2p_domain,
                                GETstartTime,
-                               self.server.proxyType,
+                               self.server.proxy_type,
                                self.server.debug,
                                self.server.newswire)
             self.server.GETbusy = False
@@ -15317,7 +15317,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.onion_domain,
                                  self.server.i2p_domain,
                                  GETstartTime,
-                                 self.server.proxyType,
+                                 self.server.proxy_type,
                                  self.server.debug,
                                  self.server.newswire)
             self.server.GETbusy = False
@@ -15336,7 +15336,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.onion_domain,
                                       self.server.i2p_domain,
                                       GETstartTime,
-                                      self.server.proxyType,
+                                      self.server.proxy_type,
                                       self.server.debug)
             self.server.GETbusy = False
             return
@@ -15358,7 +15358,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.onion_domain,
                                    self.server.i2p_domain,
                                    GETstartTime,
-                                   self.server.proxyType,
+                                   self.server.proxy_type,
                                    self.server.debug)
             self.server.GETbusy = False
             return
@@ -15377,7 +15377,7 @@ class PubServer(BaseHTTPRequestHandler):
                              self.server.onion_domain,
                              self.server.i2p_domain,
                              GETstartTime,
-                             self.server.proxyType,
+                             self.server.proxy_type,
                              cookie,
                              self.server.debug)
             self.server.GETbusy = False
@@ -15397,7 +15397,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.onion_domain,
                                  self.server.i2p_domain,
                                  GETstartTime,
-                                 self.server.proxyType,
+                                 self.server.proxy_type,
                                  cookie, self.server.debug)
             self.server.GETbusy = False
             return
@@ -15418,7 +15418,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.onion_domain,
                                  self.server.i2p_domain,
                                  GETstartTime,
-                                 self.server.proxyType,
+                                 self.server.proxy_type,
                                  cookie,
                                  self.server.debug)
             self.server.GETbusy = False
@@ -15440,7 +15440,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.onion_domain,
                                      self.server.i2p_domain,
                                      GETstartTime,
-                                     self.server.proxyType,
+                                     self.server.proxy_type,
                                      cookie, self.server.debug)
             self.server.GETbusy = False
             return
@@ -15460,7 +15460,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.onion_domain,
                                  self.server.i2p_domain,
                                  GETstartTime,
-                                 self.server.proxyType,
+                                 self.server.proxy_type,
                                  cookie, self.server.debug)
             self.server.GETbusy = False
             return
@@ -15480,7 +15480,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.onion_domain,
                                  self.server.i2p_domain,
                                  GETstartTime,
-                                 self.server.proxyType,
+                                 self.server.proxy_type,
                                  cookie, self.server.debug)
             self.server.GETbusy = False
             return
@@ -15500,7 +15500,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.onion_domain,
                                      self.server.i2p_domain,
                                      GETstartTime,
-                                     self.server.proxyType, cookie,
+                                     self.server.proxy_type, cookie,
                                      self.server.debug)
             self.server.GETbusy = False
             return
@@ -15520,7 +15520,7 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.onion_domain,
                                self.server.i2p_domain,
                                GETstartTime,
-                               self.server.proxyType, cookie,
+                               self.server.proxy_type, cookie,
                                self.server.debug)
             self.server.GETbusy = False
             return
@@ -15540,7 +15540,7 @@ class PubServer(BaseHTTPRequestHandler):
                              self.server.onion_domain,
                              self.server.i2p_domain,
                              GETstartTime,
-                             self.server.proxyType, cookie,
+                             self.server.proxy_type, cookie,
                              self.server.debug)
             self.server.GETbusy = False
             return
@@ -15560,7 +15560,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.onion_domain,
                                  self.server.i2p_domain,
                                  GETstartTime,
-                                 self.server.proxyType, cookie,
+                                 self.server.proxy_type, cookie,
                                  self.server.debug)
             self.server.GETbusy = False
             return
@@ -15787,7 +15787,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.onion_domain,
                                       self.server.i2p_domain,
                                       GETstartTime,
-                                      self.server.proxyType,
+                                      self.server.proxy_type,
                                       cookie, self.server.debug):
             self.server.GETbusy = False
             return
@@ -15808,7 +15808,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.onion_domain,
                                        self.server.i2p_domain,
                                        GETstartTime,
-                                       self.server.proxyType, cookie,
+                                       self.server.proxy_type, cookie,
                                        self.server.debug):
                 self.server.GETbusy = False
                 return
@@ -15829,7 +15829,7 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.onion_domain,
                                self.server.i2p_domain,
                                GETstartTime,
-                               self.server.proxyType,
+                               self.server.proxy_type,
                                cookie, self.server.debug):
                 self.server.GETbusy = False
                 return
@@ -15850,7 +15850,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.onion_domain,
                                 self.server.i2p_domain,
                                 GETstartTime,
-                                self.server.proxyType,
+                                self.server.proxy_type,
                                 cookie, self.server.debug):
                 self.server.GETbusy = False
                 return
@@ -15870,7 +15870,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.onion_domain,
                                     self.server.i2p_domain,
                                     GETstartTime,
-                                    self.server.proxyType,
+                                    self.server.proxy_type,
                                     cookie, self.server.debug):
                 self.server.GETbusy = False
                 return
@@ -15888,7 +15888,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.onion_domain,
                                         self.server.i2p_domain,
                                         GETstartTime,
-                                        self.server.proxyType,
+                                        self.server.proxy_type,
                                         cookie, self.server.debug):
                 self.server.GETbusy = False
                 return
@@ -15909,7 +15909,7 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.onion_domain,
                                self.server.i2p_domain,
                                GETstartTime,
-                               self.server.proxyType,
+                               self.server.proxy_type,
                                cookie, self.server.debug,
                                self.server.recentPostsCache,
                                self.server.session,
@@ -15941,7 +15941,7 @@ class PubServer(BaseHTTPRequestHandler):
                              self.server.onion_domain,
                              self.server.i2p_domain,
                              GETstartTime,
-                             self.server.proxyType,
+                             self.server.proxy_type,
                              cookie, self.server.debug):
                 self.server.GETbusy = False
                 return
@@ -15962,7 +15962,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.onion_domain,
                                  self.server.i2p_domain,
                                  GETstartTime,
-                                 self.server.proxyType,
+                                 self.server.proxy_type,
                                  cookie, self.server.debug):
                 self.server.GETbusy = False
                 return
@@ -15983,7 +15983,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.onion_domain,
                                        self.server.i2p_domain,
                                        GETstartTime,
-                                       self.server.proxyType,
+                                       self.server.proxy_type,
                                        cookie, self.server.debug):
                 self.server.GETbusy = False
                 return
@@ -16004,7 +16004,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.onion_domain,
                                        self.server.i2p_domain,
                                        GETstartTime,
-                                       self.server.proxyType,
+                                       self.server.proxy_type,
                                        cookie, self.server.debug):
                 self.server.GETbusy = False
                 return
@@ -16025,7 +16025,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.onion_domain,
                                       self.server.i2p_domain,
                                       GETstartTime,
-                                      self.server.proxyType,
+                                      self.server.proxy_type,
                                       cookie, self.server.debug):
                 self.server.GETbusy = False
                 return
@@ -16043,7 +16043,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.onion_domain,
                                           self.server.i2p_domain,
                                           GETstartTime,
-                                          self.server.proxyType,
+                                          self.server.proxy_type,
                                           cookie, self.server.debug):
                 self.server.GETbusy = False
                 return
@@ -16064,7 +16064,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.onion_domain,
                                         self.server.i2p_domain,
                                         GETstartTime,
-                                        self.server.proxyType,
+                                        self.server.proxy_type,
                                         cookie, self.server.debug):
                 self.server.GETbusy = False
                 return
@@ -16081,7 +16081,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.onion_domain,
                                         self.server.i2p_domain,
                                         GETstartTime,
-                                        self.server.proxyType,
+                                        self.server.proxy_type,
                                         cookie, self.server.debug):
                 self.server.GETbusy = False
                 return
@@ -16181,7 +16181,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.onion_domain,
                                            self.server.i2p_domain,
                                            GETstartTime,
-                                           self.server.proxyType,
+                                           self.server.proxy_type,
                                            cookie, self.server.debug):
                 self.server.GETbusy = False
                 return
@@ -16203,7 +16203,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.onion_domain,
                                         self.server.i2p_domain,
                                         GETstartTime,
-                                        self.server.proxyType,
+                                        self.server.proxy_type,
                                         cookie, self.server.debug):
                 self.server.GETbusy = False
                 return
@@ -16225,7 +16225,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.onion_domain,
                                      self.server.i2p_domain,
                                      GETstartTime,
-                                     self.server.proxyType,
+                                     self.server.proxy_type,
                                      cookie, self.server.debug):
                 self.server.GETbusy = False
                 return
@@ -16244,7 +16244,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.onion_domain,
                                 self.server.i2p_domain,
                                 GETstartTime,
-                                self.server.proxyType,
+                                self.server.proxy_type,
                                 cookie, self.server.debug, 'shares'):
             self.server.GETbusy = False
             return
@@ -16263,7 +16263,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.onion_domain,
                                    self.server.i2p_domain,
                                    GETstartTime,
-                                   self.server.proxyType,
+                                   self.server.proxy_type,
                                    cookie, self.server.debug):
             self.server.GETbusy = False
             return
@@ -16282,7 +16282,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.onion_domain,
                                    self.server.i2p_domain,
                                    GETstartTime,
-                                   self.server.proxyType,
+                                   self.server.proxy_type,
                                    cookie, self.server.debug):
             self.server.GETbusy = False
             return
@@ -16302,7 +16302,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.onion_domain,
                                    self.server.i2p_domain,
                                    GETstartTime,
-                                   self.server.proxyType,
+                                   self.server.proxy_type,
                                    cookie, self.server.debug):
             self.server.GETbusy = False
             return
@@ -18476,7 +18476,7 @@ def runDaemon(content_license_url: str,
               fed_list: [] = [],
               max_mentions: int = 10, max_emoji: int = 10,
               secure_mode: bool = False,
-              proxyType: str = None, maxReplies: int = 64,
+              proxy_type: str = None, maxReplies: int = 64,
               domainMaxPostsPerDay: int = 8640,
               accountMaxPostsPerDay: int = 864,
               allowDeletion: bool = False,
@@ -18740,7 +18740,7 @@ def runDaemon(content_license_url: str,
     httpd.personCache = {}
     httpd.cachedWebfingers = {}
     httpd.faviconsCache = {}
-    httpd.proxyType = proxyType
+    httpd.proxy_type = proxy_type
     httpd.session = None
     httpd.sessionLastUpdate = 0
     httpd.lastGET = 0
@@ -18925,7 +18925,7 @@ def runDaemon(content_license_url: str,
                               httpd.postLog, httpd.cachedWebfingers,
                               httpd.personCache, httpd.inboxQueue,
                               domain, onion_domain, i2p_domain,
-                              port, proxyType,
+                              port, proxy_type,
                               httpd.federationList,
                               maxReplies,
                               domainMaxPostsPerDay,
@@ -18964,7 +18964,7 @@ def runDaemon(content_license_url: str,
         threadWithTrace(target=runFederatedSharesDaemon,
                         args=(base_dir, httpd,
                               http_prefix, httpd.domainFull,
-                              proxyType, debug,
+                              proxy_type, debug,
                               httpd.systemLanguage), daemon=True)
 
     # flags used when restarting the inbox queue

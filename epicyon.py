@@ -712,22 +712,22 @@ if args.posts:
         args.port = 443
     nickname = args.posts.split('@')[0]
     domain = args.posts.split('@')[1]
-    proxyType = None
+    proxy_type = None
     if args.tor or domain.endswith('.onion'):
-        proxyType = 'tor'
+        proxy_type = 'tor'
         if domain.endswith('.onion'):
             args.port = 80
     elif args.i2p or domain.endswith('.i2p'):
-        proxyType = 'i2p'
+        proxy_type = 'i2p'
         if domain.endswith('.i2p'):
             args.port = 80
     elif args.gnunet:
-        proxyType = 'gnunet'
+        proxy_type = 'gnunet'
     if not args.language:
         args.language = 'en'
     signingPrivateKeyPem = getInstanceActorKey(base_dir, originDomain)
     getPublicPostsOfPerson(base_dir, nickname, domain, False, True,
-                           proxyType, args.port, http_prefix, debug,
+                           proxy_type, args.port, http_prefix, debug,
                            __version__, args.language,
                            signingPrivateKeyPem, originDomain)
     sys.exit()
@@ -746,17 +746,17 @@ if args.postDomains:
         args.port = 443
     nickname = args.postDomains.split('@')[0]
     domain = args.postDomains.split('@')[1]
-    proxyType = None
+    proxy_type = None
     if args.tor or domain.endswith('.onion'):
-        proxyType = 'tor'
+        proxy_type = 'tor'
         if domain.endswith('.onion'):
             args.port = 80
     elif args.i2p or domain.endswith('.i2p'):
-        proxyType = 'i2p'
+        proxy_type = 'i2p'
         if domain.endswith('.i2p'):
             args.port = 80
     elif args.gnunet:
-        proxyType = 'gnunet'
+        proxy_type = 'gnunet'
     wordFrequency = {}
     domainList = []
     if not args.language:
@@ -771,7 +771,7 @@ if args.postDomains:
     domainList = getPublicPostDomains(None,
                                       base_dir, nickname, domain,
                                       originDomain,
-                                      proxyType, args.port,
+                                      proxy_type, args.port,
                                       http_prefix, debug,
                                       __version__,
                                       wordFrequency, domainList,
@@ -798,17 +798,17 @@ if args.postDomainsBlocked:
         args.port = 443
     nickname = args.postDomainsBlocked.split('@')[0]
     domain = args.postDomainsBlocked.split('@')[1]
-    proxyType = None
+    proxy_type = None
     if args.tor or domain.endswith('.onion'):
-        proxyType = 'tor'
+        proxy_type = 'tor'
         if domain.endswith('.onion'):
             args.port = 80
     elif args.i2p or domain.endswith('.i2p'):
-        proxyType = 'i2p'
+        proxy_type = 'i2p'
         if domain.endswith('.i2p'):
             args.port = 80
     elif args.gnunet:
-        proxyType = 'gnunet'
+        proxy_type = 'gnunet'
     wordFrequency = {}
     domainList = []
     if not args.language:
@@ -818,7 +818,7 @@ if args.postDomainsBlocked:
         signingPrivateKeyPem = getInstanceActorKey(base_dir, domain)
     domainList = getPublicPostDomainsBlocked(None,
                                              base_dir, nickname, domain,
-                                             proxyType, args.port,
+                                             proxy_type, args.port,
                                              http_prefix, debug,
                                              __version__,
                                              wordFrequency, domainList,
@@ -844,17 +844,17 @@ if args.checkDomains:
         args.port = 443
     nickname = args.checkDomains.split('@')[0]
     domain = args.checkDomains.split('@')[1]
-    proxyType = None
+    proxy_type = None
     if args.tor or domain.endswith('.onion'):
-        proxyType = 'tor'
+        proxy_type = 'tor'
         if domain.endswith('.onion'):
             args.port = 80
     elif args.i2p or domain.endswith('.i2p'):
-        proxyType = 'i2p'
+        proxy_type = 'i2p'
         if domain.endswith('.i2p'):
             args.port = 80
     elif args.gnunet:
-        proxyType = 'gnunet'
+        proxy_type = 'gnunet'
     maxBlockedDomains = 0
     if not args.language:
         args.language = 'en'
@@ -863,7 +863,7 @@ if args.checkDomains:
         signingPrivateKeyPem = getInstanceActorKey(base_dir, domain)
     checkDomains(None,
                  base_dir, nickname, domain,
-                 proxyType, args.port,
+                 proxy_type, args.port,
                  http_prefix, debug,
                  __version__,
                  maxBlockedDomains, False, args.language,
@@ -878,7 +878,7 @@ if args.socnet:
 
     if not args.http:
         args.port = 443
-    proxyType = 'tor'
+    proxy_type = 'tor'
     if not args.language:
         args.language = 'en'
     if not args.domain:
@@ -890,7 +890,7 @@ if args.socnet:
     if args.secure_mode:
         signingPrivateKeyPem = getInstanceActorKey(base_dir, domain)
     dotGraph = instancesGraph(base_dir, args.socnet,
-                              proxyType, args.port,
+                              proxy_type, args.port,
                               http_prefix, debug,
                               __version__, args.language,
                               signingPrivateKeyPem)
@@ -916,18 +916,18 @@ if args.postsraw:
         args.port = 443
     nickname = args.postsraw.split('@')[0]
     domain = args.postsraw.split('@')[1]
-    proxyType = None
+    proxy_type = None
     if args.tor or domain.endswith('.onion'):
-        proxyType = 'tor'
+        proxy_type = 'tor'
     elif args.i2p or domain.endswith('.i2p'):
-        proxyType = 'i2p'
+        proxy_type = 'i2p'
     elif args.gnunet:
-        proxyType = 'gnunet'
+        proxy_type = 'gnunet'
     if not args.language:
         args.language = 'en'
     signingPrivateKeyPem = getInstanceActorKey(base_dir, originDomain)
     getPublicPostsOfPerson(base_dir, nickname, domain, False, False,
-                           proxyType, args.port, http_prefix, debug,
+                           proxy_type, args.port, http_prefix, debug,
                            __version__, args.language,
                            signingPrivateKeyPem, originDomain)
     sys.exit()
@@ -1166,13 +1166,13 @@ else:
     if configFederationList:
         federationList = configFederationList
 
-proxyType = None
+proxy_type = None
 if args.tor or domain.endswith('.onion'):
-    proxyType = 'tor'
+    proxy_type = 'tor'
 elif args.i2p or domain.endswith('.i2p'):
-    proxyType = 'i2p'
+    proxy_type = 'i2p'
 elif args.gnunet:
-    proxyType = 'gnunet'
+    proxy_type = 'gnunet'
 
 if args.approve:
     if not args.nickname:
@@ -1181,7 +1181,7 @@ if args.approve:
     if '@' not in args.approve:
         print('syntax: --approve nick@domain')
         sys.exit()
-    session = createSession(proxyType)
+    session = createSession(proxy_type)
     sendThreads = []
     postLog = []
     cachedWebfingers = {}
@@ -1209,7 +1209,7 @@ if args.deny:
     if '@' not in args.deny:
         print('syntax: --deny nick@domain')
         sys.exit()
-    session = createSession(proxyType)
+    session = createSession(proxy_type)
     sendThreads = []
     postLog = []
     cachedWebfingers = {}
@@ -1260,7 +1260,7 @@ if args.message:
             sys.exit()
     args.password = args.password.replace('\n', '')
 
-    session = createSession(proxyType)
+    session = createSession(proxy_type)
     if not args.sendto:
         print('Specify an account to sent to: --sendto [nickname@domain]')
         sys.exit()
@@ -1342,7 +1342,7 @@ if args.announce:
             sys.exit()
     args.password = args.password.replace('\n', '')
 
-    session = createSession(proxyType)
+    session = createSession(proxy_type)
     personCache = {}
     cachedWebfingers = {}
     if not domain:
@@ -1378,24 +1378,24 @@ if args.box:
             sys.exit()
     args.password = args.password.replace('\n', '')
 
-    proxyType = None
+    proxy_type = None
     if args.tor or domain.endswith('.onion'):
-        proxyType = 'tor'
+        proxy_type = 'tor'
         if domain.endswith('.onion'):
             args.port = 80
     elif args.i2p or domain.endswith('.i2p'):
-        proxyType = 'i2p'
+        proxy_type = 'i2p'
         if domain.endswith('.i2p'):
             args.port = 80
     elif args.gnunet:
-        proxyType = 'gnunet'
+        proxy_type = 'gnunet'
     if not domain:
         domain = getConfigParam(base_dir, 'domain')
     signingPrivateKeyPem = None
     if args.secure_mode:
         signingPrivateKeyPem = getInstanceActorKey(base_dir, domain)
 
-    session = createSession(proxyType)
+    session = createSession(proxy_type)
     boxJson = c2sBoxJson(base_dir, session,
                          args.nickname, args.password,
                          domain, port, http_prefix,
@@ -1447,7 +1447,7 @@ if args.itemName:
               'with the --duration option')
         sys.exit()
 
-    session = createSession(proxyType)
+    session = createSession(proxy_type)
     personCache = {}
     cachedWebfingers = {}
     if not domain:
@@ -1490,7 +1490,7 @@ if args.undoItemName:
         print('Specify a nickname with the --nickname option')
         sys.exit()
 
-    session = createSession(proxyType)
+    session = createSession(proxy_type)
     personCache = {}
     cachedWebfingers = {}
     if not domain:
@@ -1552,7 +1552,7 @@ if args.wantedItemName:
               'with the --duration option')
         sys.exit()
 
-    session = createSession(proxyType)
+    session = createSession(proxy_type)
     personCache = {}
     cachedWebfingers = {}
     if not domain:
@@ -1595,7 +1595,7 @@ if args.undoWantedItemName:
         print('Specify a nickname with the --nickname option')
         sys.exit()
 
-    session = createSession(proxyType)
+    session = createSession(proxy_type)
     personCache = {}
     cachedWebfingers = {}
     if not domain:
@@ -1629,7 +1629,7 @@ if args.like:
             sys.exit()
     args.password = args.password.replace('\n', '')
 
-    session = createSession(proxyType)
+    session = createSession(proxy_type)
     personCache = {}
     cachedWebfingers = {}
     if not domain:
@@ -1668,7 +1668,7 @@ if args.react:
             sys.exit()
     args.password = args.password.replace('\n', '')
 
-    session = createSession(proxyType)
+    session = createSession(proxy_type)
     personCache = {}
     cachedWebfingers = {}
     if not domain:
@@ -1701,7 +1701,7 @@ if args.undolike:
             sys.exit()
     args.password = args.password.replace('\n', '')
 
-    session = createSession(proxyType)
+    session = createSession(proxy_type)
     personCache = {}
     cachedWebfingers = {}
     if not domain:
@@ -1741,7 +1741,7 @@ if args.undoreact:
             sys.exit()
     args.password = args.password.replace('\n', '')
 
-    session = createSession(proxyType)
+    session = createSession(proxy_type)
     personCache = {}
     cachedWebfingers = {}
     if not domain:
@@ -1775,7 +1775,7 @@ if args.bookmark:
             sys.exit()
     args.password = args.password.replace('\n', '')
 
-    session = createSession(proxyType)
+    session = createSession(proxy_type)
     personCache = {}
     cachedWebfingers = {}
     if not domain:
@@ -1809,7 +1809,7 @@ if args.unbookmark:
             sys.exit()
     args.password = args.password.replace('\n', '')
 
-    session = createSession(proxyType)
+    session = createSession(proxy_type)
     personCache = {}
     cachedWebfingers = {}
     if not domain:
@@ -1842,7 +1842,7 @@ if args.delete:
             sys.exit()
     args.password = args.password.replace('\n', '')
 
-    session = createSession(proxyType)
+    session = createSession(proxy_type)
     personCache = {}
     cachedWebfingers = {}
     if not domain:
@@ -1884,7 +1884,7 @@ if args.follow:
         sys.exit()
     followDomain, followPort = getDomainFromActor(args.follow)
 
-    session = createSession(proxyType)
+    session = createSession(proxy_type)
     personCache = {}
     cachedWebfingers = {}
     followHttpPrefix = http_prefix
@@ -1930,7 +1930,7 @@ if args.unfollow:
         sys.exit()
     followDomain, followPort = getDomainFromActor(args.unfollow)
 
-    session = createSession(proxyType)
+    session = createSession(proxy_type)
     personCache = {}
     cachedWebfingers = {}
     followHttpPrefix = http_prefix
@@ -1967,7 +1967,7 @@ if args.followingList:
             sys.exit()
     args.password = args.password.replace('\n', '')
 
-    session = createSession(proxyType)
+    session = createSession(proxy_type)
     personCache = {}
     cachedWebfingers = {}
     followHttpPrefix = http_prefix
@@ -2000,7 +2000,7 @@ if args.followersList:
             sys.exit()
     args.password = args.password.replace('\n', '')
 
-    session = createSession(proxyType)
+    session = createSession(proxy_type)
     personCache = {}
     cachedWebfingers = {}
     followHttpPrefix = http_prefix
@@ -2034,7 +2034,7 @@ if args.followRequestsList:
             sys.exit()
     args.password = args.password.replace('\n', '')
 
-    session = createSession(proxyType)
+    session = createSession(proxy_type)
     personCache = {}
     cachedWebfingers = {}
     followHttpPrefix = http_prefix
@@ -2077,19 +2077,19 @@ if args.migrations:
     if args.http or domain.endswith('.onion'):
         http_prefix = 'http'
         port = 80
-        proxyType = 'tor'
+        proxy_type = 'tor'
     elif domain.endswith('.i2p'):
         http_prefix = 'http'
         port = 80
-        proxyType = 'i2p'
+        proxy_type = 'i2p'
     elif args.gnunet:
         http_prefix = 'gnunet'
         port = 80
-        proxyType = 'gnunet'
+        proxy_type = 'gnunet'
     else:
         http_prefix = 'https'
         port = 443
-    session = createSession(proxyType)
+    session = createSession(proxy_type)
     if not domain:
         domain = getConfigParam(base_dir, 'domain')
     signingPrivateKeyPem = None
@@ -2174,19 +2174,19 @@ if args.followers:
     if args.http or domain.endswith('.onion'):
         http_prefix = 'http'
         port = 80
-        proxyType = 'tor'
+        proxy_type = 'tor'
     elif domain.endswith('.i2p'):
         http_prefix = 'http'
         port = 80
-        proxyType = 'i2p'
+        proxy_type = 'i2p'
     elif args.gnunet:
         http_prefix = 'gnunet'
         port = 80
-        proxyType = 'gnunet'
+        proxy_type = 'gnunet'
     else:
         http_prefix = 'https'
         port = 443
-    session = createSession(proxyType)
+    session = createSession(proxy_type)
     if nickname == 'inbox':
         nickname = domain
 
@@ -2495,7 +2495,7 @@ if args.skill:
         print('Skill level should be a percentage in the range 0-100')
         sys.exit()
 
-    session = createSession(proxyType)
+    session = createSession(proxy_type)
     personCache = {}
     cachedWebfingers = {}
     if not domain:
@@ -2530,7 +2530,7 @@ if args.availability:
             sys.exit()
     args.password = args.password.replace('\n', '')
 
-    session = createSession(proxyType)
+    session = createSession(proxy_type)
     personCache = {}
     cachedWebfingers = {}
     if not domain:
@@ -2574,22 +2574,22 @@ if args.desktop:
 
     args.password = args.password.replace('\n', '')
 
-    proxyType = None
+    proxy_type = None
     if args.tor or domain.endswith('.onion'):
-        proxyType = 'tor'
+        proxy_type = 'tor'
         if domain.endswith('.onion'):
             args.port = 80
     elif args.i2p or domain.endswith('.i2p'):
-        proxyType = 'i2p'
+        proxy_type = 'i2p'
         if domain.endswith('.i2p'):
             args.port = 80
     elif args.gnunet:
-        proxyType = 'gnunet'
+        proxy_type = 'gnunet'
 
     # only store inbox posts if we are not running as a daemon
     storeInboxPosts = not args.noKeyPress
 
-    runDesktopClient(base_dir, proxyType, http_prefix,
+    runDesktopClient(base_dir, proxy_type, http_prefix,
                      nickname, domain, port, args.password,
                      args.screenreader, args.language,
                      args.notificationSounds,
@@ -2644,7 +2644,7 @@ if args.block:
             print(args.block + ' does not look like an actor url')
             sys.exit()
 
-    session = createSession(proxyType)
+    session = createSession(proxy_type)
     personCache = {}
     cachedWebfingers = {}
     if not domain:
@@ -2676,7 +2676,7 @@ if args.mute:
             sys.exit()
     args.password = args.password.replace('\n', '')
 
-    session = createSession(proxyType)
+    session = createSession(proxy_type)
     personCache = {}
     cachedWebfingers = {}
     if not domain:
@@ -2708,7 +2708,7 @@ if args.unmute:
             sys.exit()
     args.password = args.password.replace('\n', '')
 
-    session = createSession(proxyType)
+    session = createSession(proxy_type)
     personCache = {}
     cachedWebfingers = {}
     if not domain:
@@ -2752,7 +2752,7 @@ if args.unblock:
             print(args.unblock + ' does not look like an actor url')
             sys.exit()
 
-    session = createSession(proxyType)
+    session = createSession(proxy_type)
     personCache = {}
     cachedWebfingers = {}
     if not domain:
@@ -3253,7 +3253,7 @@ if __name__ == "__main__":
               port, proxy_port, http_prefix,
               federationList, args.max_mentions,
               args.max_emoji, args.secure_mode,
-              proxyType, args.maxReplies,
+              proxy_type, args.maxReplies,
               args.domainMaxPostsPerDay,
               args.accountMaxPostsPerDay,
               args.allowdeletion, debug, False,

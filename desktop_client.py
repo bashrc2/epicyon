@@ -1312,7 +1312,7 @@ def _desktopShowFollowing(followingJson: {}, translate: {},
               handleNickname + '@' + handleDomainFull)
 
 
-def runDesktopClient(base_dir: str, proxyType: str, http_prefix: str,
+def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                      nickname: str, domain: str, port: int,
                      password: str, screenreader: str,
                      systemLanguage: str,
@@ -1400,7 +1400,7 @@ def runDesktopClient(base_dir: str, proxyType: str, http_prefix: str,
     sayStr = indent + 'Connecting...'
     _sayCommand(sayStr, sayStr, screenreader,
                 systemLanguage, espeak)
-    session = createSession(proxyType)
+    session = createSession(proxy_type)
 
     sayStr = indent + '/q or /quit to exit'
     _sayCommand(sayStr, sayStr, screenreader,
@@ -1498,7 +1498,7 @@ def runDesktopClient(base_dir: str, proxyType: str, http_prefix: str,
                 desktopShown = True
             prevTimelineFirstId = timelineFirstId
         else:
-            session = createSession(proxyType)
+            session = createSession(proxy_type)
             if not desktopShown:
                 if not session:
                     print('No session\n')
@@ -1506,7 +1506,7 @@ def runDesktopClient(base_dir: str, proxyType: str, http_prefix: str,
                 _desktopClearScreen()
                 _desktopShowBanner()
                 print('No posts\n')
-                if proxyType == 'tor':
+                if proxy_type == 'tor':
                     print('You may need to run the desktop client ' +
                           'with the --http option')
 
@@ -1721,7 +1721,7 @@ def runDesktopClient(base_dir: str, proxyType: str, http_prefix: str,
                         if postJsonObject['object'].get('conversation'):
                             conversationId = \
                                 postJsonObject['object']['conversation']
-                        sessionReply = createSession(proxyType)
+                        sessionReply = createSession(proxy_type)
                         _desktopReplyToPost(sessionReply, postId,
                                             base_dir, nickname, password,
                                             domain, port, http_prefix,
@@ -1740,7 +1740,7 @@ def runDesktopClient(base_dir: str, proxyType: str, http_prefix: str,
                   commandStr.startswith('direct message ') or
                   commandStr.startswith('post ') or
                   commandStr.startswith('send ')):
-                sessionPost = createSession(proxyType)
+                sessionPost = createSession(proxy_type)
                 if commandStr.startswith('dm ') or \
                    commandStr.startswith('direct message ') or \
                    commandStr.startswith('post ') or \
@@ -1799,7 +1799,7 @@ def runDesktopClient(base_dir: str, proxyType: str, http_prefix: str,
                         _sayCommand(sayStr, sayStr,
                                     screenreader,
                                     systemLanguage, espeak)
-                        sessionLike = createSession(proxyType)
+                        sessionLike = createSession(proxy_type)
                         sendLikeViaServer(base_dir, sessionLike,
                                           nickname, password,
                                           domain, port, http_prefix,
@@ -1838,7 +1838,7 @@ def runDesktopClient(base_dir: str, proxyType: str, http_prefix: str,
                         _sayCommand(sayStr, sayStr,
                                     screenreader,
                                     systemLanguage, espeak)
-                        sessionMute = createSession(proxyType)
+                        sessionMute = createSession(proxy_type)
                         sendUndoMuteViaServer(base_dir, sessionMute,
                                               nickname, password,
                                               domain, port,
@@ -1870,7 +1870,7 @@ def runDesktopClient(base_dir: str, proxyType: str, http_prefix: str,
                         _sayCommand(sayStr, sayStr,
                                     screenreader,
                                     systemLanguage, espeak)
-                        sessionMute = createSession(proxyType)
+                        sessionMute = createSession(proxy_type)
                         sendMuteViaServer(base_dir, sessionMute,
                                           nickname, password,
                                           domain, port,
@@ -1911,7 +1911,7 @@ def runDesktopClient(base_dir: str, proxyType: str, http_prefix: str,
                         _sayCommand(sayStr, sayStr,
                                     screenreader,
                                     systemLanguage, espeak)
-                        sessionbm = createSession(proxyType)
+                        sessionbm = createSession(proxy_type)
                         sendUndoBookmarkViaServer(base_dir, sessionbm,
                                                   nickname, password,
                                                   domain, port, http_prefix,
@@ -1942,7 +1942,7 @@ def runDesktopClient(base_dir: str, proxyType: str, http_prefix: str,
                         _sayCommand(sayStr, sayStr,
                                     screenreader,
                                     systemLanguage, espeak)
-                        sessionbm = createSession(proxyType)
+                        sessionbm = createSession(proxy_type)
                         sendBookmarkViaServer(base_dir, sessionbm,
                                               nickname, password,
                                               domain, port, http_prefix,
@@ -1976,7 +1976,7 @@ def runDesktopClient(base_dir: str, proxyType: str, http_prefix: str,
                                 _sayCommand(sayStr, sayStr,
                                             screenreader,
                                             systemLanguage, espeak)
-                                sessionBlock = createSession(proxyType)
+                                sessionBlock = createSession(proxy_type)
                                 sendUndoBlockViaServer(base_dir, sessionBlock,
                                                        nickname, password,
                                                        domain, port,
@@ -2022,7 +2022,7 @@ def runDesktopClient(base_dir: str, proxyType: str, http_prefix: str,
                     _sayCommand(sayStr, sayStr,
                                 screenreader,
                                 systemLanguage, espeak)
-                    sessionBlock = createSession(proxyType)
+                    sessionBlock = createSession(proxy_type)
                     sendBlockViaServer(base_dir, sessionBlock,
                                        nickname, password,
                                        domain, port,
@@ -2052,7 +2052,7 @@ def runDesktopClient(base_dir: str, proxyType: str, http_prefix: str,
                         _sayCommand(sayStr, sayStr,
                                     screenreader,
                                     systemLanguage, espeak)
-                        sessionUnlike = createSession(proxyType)
+                        sessionUnlike = createSession(proxy_type)
                         sendUndoLikeViaServer(base_dir, sessionUnlike,
                                               nickname, password,
                                               domain, port, http_prefix,
@@ -2083,7 +2083,7 @@ def runDesktopClient(base_dir: str, proxyType: str, http_prefix: str,
                         _sayCommand(sayStr, sayStr,
                                     screenreader,
                                     systemLanguage, espeak)
-                        sessionAnnounce = createSession(proxyType)
+                        sessionAnnounce = createSession(proxy_type)
                         sendAnnounceViaServer(base_dir, sessionAnnounce,
                                               nickname, password,
                                               domain, port,
@@ -2116,7 +2116,7 @@ def runDesktopClient(base_dir: str, proxyType: str, http_prefix: str,
                         _sayCommand(sayStr, sayStr,
                                     screenreader,
                                     systemLanguage, espeak)
-                        sessionAnnounce = createSession(proxyType)
+                        sessionAnnounce = createSession(proxy_type)
                         sendUndoAnnounceViaServer(base_dir, sessionAnnounce,
                                                   postJsonObject,
                                                   nickname, password,
@@ -2211,7 +2211,7 @@ def runDesktopClient(base_dir: str, proxyType: str, http_prefix: str,
                             followNickname + '@' + followDomain
                         _sayCommand(sayStr, sayStr,
                                     screenreader, systemLanguage, espeak)
-                        sessionFollow = createSession(proxyType)
+                        sessionFollow = createSession(proxy_type)
                         sendFollowRequestViaServer(base_dir,
                                                    sessionFollow,
                                                    nickname, password,
@@ -2247,7 +2247,7 @@ def runDesktopClient(base_dir: str, proxyType: str, http_prefix: str,
                             followNickname + '@' + followDomain
                         _sayCommand(sayStr, sayStr,
                                     screenreader, systemLanguage, espeak)
-                        sessionUnfollow = createSession(proxyType)
+                        sessionUnfollow = createSession(proxy_type)
                         sendUnfollowRequestViaServer(base_dir, sessionUnfollow,
                                                      nickname, password,
                                                      domain, port,
@@ -2278,7 +2278,7 @@ def runDesktopClient(base_dir: str, proxyType: str, http_prefix: str,
                             approveNickname + '@' + approveDomain
                         _sayCommand(sayStr, sayStr,
                                     screenreader, systemLanguage, espeak)
-                        sessionApprove = createSession(proxyType)
+                        sessionApprove = createSession(proxy_type)
                         approveFollowRequestViaServer(base_dir, sessionApprove,
                                                       nickname, password,
                                                       domain, port,
@@ -2311,7 +2311,7 @@ def runDesktopClient(base_dir: str, proxyType: str, http_prefix: str,
                             denyNickname + '@' + denyDomain
                         _sayCommand(sayStr, sayStr,
                                     screenreader, systemLanguage, espeak)
-                        sessionDeny = createSession(proxyType)
+                        sessionDeny = createSession(proxy_type)
                         denyFollowRequestViaServer(base_dir, sessionDeny,
                                                    nickname, password,
                                                    domain, port,
@@ -2484,7 +2484,7 @@ def runDesktopClient(base_dir: str, proxyType: str, http_prefix: str,
                                 _sayCommand(sayStr, sayStr,
                                             screenreader,
                                             systemLanguage, espeak)
-                                sessionrm = createSession(proxyType)
+                                sessionrm = createSession(proxy_type)
                                 sendDeleteViaServer(base_dir, sessionrm,
                                                     nickname, password,
                                                     domain, port,
