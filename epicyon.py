@@ -231,7 +231,7 @@ parser.add_argument('--proxy', dest='proxyPort', type=int, default=None,
 parser.add_argument('--path', dest='base_dir',
                     type=str, default=os.getcwd(),
                     help='Directory in which to store posts')
-parser.add_argument('--ytdomain', dest='YTReplacementDomain',
+parser.add_argument('--ytdomain', dest='yt_replace_domain',
                     type=str, default=None,
                     help='Domain used to replace youtube.com')
 parser.add_argument('--twitterdomain', dest='twitterReplacementDomain',
@@ -3169,7 +3169,7 @@ if YTDomain:
     if '/' in YTDomain:
         YTDomain = YTDomain.split('/')[0]
     if '.' in YTDomain:
-        args.YTReplacementDomain = YTDomain
+        args.yt_replace_domain = YTDomain
 
 twitterDomain = getConfigParam(base_dir, 'twitterdomain')
 if twitterDomain:
@@ -3248,7 +3248,7 @@ if __name__ == "__main__":
               registration, args.language, __version__,
               instanceId, args.client, base_dir,
               domain, onionDomain, i2pDomain,
-              args.YTReplacementDomain,
+              args.yt_replace_domain,
               args.twitterReplacementDomain,
               port, proxyPort, http_prefix,
               federationList, args.maxMentions,

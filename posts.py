@@ -3453,7 +3453,7 @@ def createModeration(base_dir: str, nickname: str, domain: str, port: int,
 def isImageMedia(session, base_dir: str, http_prefix: str,
                  nickname: str, domain: str,
                  postJsonObject: {}, translate: {},
-                 YTReplacementDomain: str,
+                 yt_replace_domain: str,
                  twitterReplacementDomain: str,
                  allowLocalNetworkAccess: bool,
                  recentPostsCache: {}, debug: bool,
@@ -3468,7 +3468,7 @@ def isImageMedia(session, base_dir: str, http_prefix: str,
             downloadAnnounce(session, base_dir, http_prefix,
                              nickname, domain, postJsonObject,
                              __version__, translate,
-                             YTReplacementDomain,
+                             yt_replace_domain,
                              twitterReplacementDomain,
                              allowLocalNetworkAccess,
                              recentPostsCache, debug,
@@ -4504,7 +4504,7 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
                      nickname: str, domain: str,
                      postJsonObject: {}, projectVersion: str,
                      translate: {},
-                     YTReplacementDomain: str,
+                     yt_replace_domain: str,
                      twitterReplacementDomain: str,
                      allowLocalNetworkAccess: bool,
                      recentPostsCache: {}, debug: bool,
@@ -4722,7 +4722,7 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
                                 recentPostsCache)
                 return None
         postJsonObject = announcedJson
-        replaceYouTube(postJsonObject, YTReplacementDomain, systemLanguage)
+        replaceYouTube(postJsonObject, yt_replace_domain, systemLanguage)
         replaceTwitter(postJsonObject, twitterReplacementDomain,
                        systemLanguage)
         if saveJson(postJsonObject, announceFilename):

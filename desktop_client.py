@@ -697,7 +697,7 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
         nameStr = getNicknameFromActor(actor)
         recentPostsCache = {}
         allowLocalNetworkAccess = False
-        YTReplacementDomain = None
+        yt_replace_domain = None
         twitterReplacementDomain = None
         postJsonObject2 = \
             downloadAnnounce(session, base_dir,
@@ -705,7 +705,7 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
                              nickname, domain,
                              postJsonObject,
                              __version__, translate,
-                             YTReplacementDomain,
+                             yt_replace_domain,
                              twitterReplacementDomain,
                              allowLocalNetworkAccess,
                              recentPostsCache, False,
@@ -2395,7 +2395,7 @@ def runDesktopClient(base_dir: str, proxyType: str, http_prefix: str,
                     if postJsonObject['type'] == 'Announce':
                         recentPostsCache = {}
                         allowLocalNetworkAccess = False
-                        YTReplacementDomain = None
+                        yt_replace_domain = None
                         twitterReplacementDomain = None
                         postJsonObject2 = \
                             downloadAnnounce(session, base_dir,
@@ -2403,7 +2403,7 @@ def runDesktopClient(base_dir: str, proxyType: str, http_prefix: str,
                                              nickname, domain,
                                              postJsonObject,
                                              __version__, translate,
-                                             YTReplacementDomain,
+                                             yt_replace_domain,
                                              twitterReplacementDomain,
                                              allowLocalNetworkAccess,
                                              recentPostsCache, False,

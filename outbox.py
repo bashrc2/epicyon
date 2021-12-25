@@ -187,7 +187,7 @@ def postMessageToOutbox(session, translate: {},
                         postLog: [], cachedWebfingers: {},
                         personCache: {}, allowDeletion: bool,
                         proxyType: str, version: str, debug: bool,
-                        YTReplacementDomain: str,
+                        yt_replace_domain: str,
                         twitterReplacementDomain: str,
                         showPublishedDateOnly: bool,
                         allowLocalNetworkAccess: bool,
@@ -286,7 +286,7 @@ def postMessageToOutbox(session, translate: {},
                 print('DEBUG: domain is blocked: ' + messageJson['actor'])
             return False
         # replace youtube, so that google gets less tracking data
-        replaceYouTube(messageJson, YTReplacementDomain, systemLanguage)
+        replaceYouTube(messageJson, yt_replace_domain, systemLanguage)
         # replace twitter, so that twitter posts can be shown without
         # having a twitter account
         replaceTwitter(messageJson, twitterReplacementDomain, systemLanguage)
@@ -423,7 +423,7 @@ def postMessageToOutbox(session, translate: {},
                                     postToNickname, domain,
                                     messageJson,
                                     translate,
-                                    YTReplacementDomain,
+                                    yt_replace_domain,
                                     twitterReplacementDomain,
                                     allowLocalNetworkAccess,
                                     recentPostsCache, debug, systemLanguage,
@@ -464,7 +464,7 @@ def postMessageToOutbox(session, translate: {},
                                          allowDeletion,
                                          http_prefix, __version__,
                                          boxNameIndex,
-                                         YTReplacementDomain,
+                                         yt_replace_domain,
                                          twitterReplacementDomain,
                                          showPublishedDateOnly,
                                          peertubeInstances,

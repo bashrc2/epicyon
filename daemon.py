@@ -1293,7 +1293,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.allowDeletion,
                                    self.server.proxyType, version,
                                    self.server.debug,
-                                   self.server.YTReplacementDomain,
+                                   self.server.yt_replace_domain,
                                    self.server.twitterReplacementDomain,
                                    self.server.showPublishedDateOnly,
                                    self.server.allowLocalNetworkAccess,
@@ -2720,7 +2720,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.port,
                               None,
                               self.server.projectVersion,
-                              self.server.YTReplacementDomain,
+                              self.server.yt_replace_domain,
                               self.server.twitterReplacementDomain,
                               self.server.showPublishedDateOnly,
                               self.server.peertubeInstances,
@@ -2854,7 +2854,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.port,
                               None,
                               self.server.projectVersion,
-                              self.server.YTReplacementDomain,
+                              self.server.yt_replace_domain,
                               self.server.twitterReplacementDomain,
                               self.server.showPublishedDateOnly,
                               self.server.peertubeInstances,
@@ -3303,7 +3303,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.personCache,
                                       http_prefix,
                                       self.server.projectVersion,
-                                      self.server.YTReplacementDomain,
+                                      self.server.yt_replace_domain,
                                       self.server.twitterReplacementDomain,
                                       self.server.showPublishedDateOnly,
                                       self.server.peertubeInstances,
@@ -3398,7 +3398,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.cachedWebfingers,
                                       self.server.personCache,
                                       port,
-                                      self.server.YTReplacementDomain,
+                                      self.server.yt_replace_domain,
                                       self.server.twitterReplacementDomain,
                                       self.server.showPublishedDateOnly,
                                       self.server.peertubeInstances,
@@ -3466,7 +3466,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.cachedWebfingers,
                                       self.server.personCache,
                                       port,
-                                      self.server.YTReplacementDomain,
+                                      self.server.yt_replace_domain,
                                       self.server.twitterReplacementDomain,
                                       self.server.showPublishedDateOnly,
                                       self.server.peertubeInstances,
@@ -3563,7 +3563,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                self.server.personCache,
                                                self.server.debug,
                                                self.server.projectVersion,
-                                               self.server.YTReplacementDomain,
+                                               self.server.yt_replace_domain,
                                                twitterReplacementDomain,
                                                showPublishedDateOnly,
                                                self.server.defaultTimeline,
@@ -5129,7 +5129,7 @@ class PubServer(BaseHTTPRequestHandler):
 
                         # change YouTube alternate domain
                         if fields.get('ytdomain'):
-                            currYTDomain = self.server.YTReplacementDomain
+                            currYTDomain = self.server.yt_replace_domain
                             if fields['ytdomain'] != currYTDomain:
                                 newYTDomain = fields['ytdomain']
                                 if '://' in newYTDomain:
@@ -5140,12 +5140,12 @@ class PubServer(BaseHTTPRequestHandler):
                                     setConfigParam(base_dir,
                                                    'youtubedomain',
                                                    newYTDomain)
-                                    self.server.YTReplacementDomain = \
+                                    self.server.yt_replace_domain = \
                                         newYTDomain
                         else:
                             setConfigParam(base_dir,
                                            'youtubedomain', '')
-                            self.server.YTReplacementDomain = None
+                            self.server.yt_replace_domain = None
 
                         # change twitter alternate domain
                         if fields.get('twitterdomain'):
@@ -7538,7 +7538,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.personCache,
                               http_prefix,
                               self.server.projectVersion,
-                              self.server.YTReplacementDomain,
+                              self.server.yt_replace_domain,
                               self.server.twitterReplacementDomain,
                               self.server.showPublishedDateOnly,
                               self.server.peertubeInstances,
@@ -7601,7 +7601,7 @@ class PubServer(BaseHTTPRequestHandler):
                              self.server.personCache,
                              http_prefix,
                              self.server.projectVersion,
-                             self.server.YTReplacementDomain,
+                             self.server.yt_replace_domain,
                              self.server.twitterReplacementDomain,
                              self.server.systemLanguage)
         if hashtagStr:
@@ -7750,7 +7750,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.allowDeletion,
                                  http_prefix, self.server.projectVersion,
                                  timelineStr,
-                                 self.server.YTReplacementDomain,
+                                 self.server.yt_replace_domain,
                                  self.server.twitterReplacementDomain,
                                  self.server.showPublishedDateOnly,
                                  self.server.peertubeInstances,
@@ -8210,7 +8210,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      http_prefix,
                                      self.server.projectVersion,
                                      timelineStr,
-                                     self.server.YTReplacementDomain,
+                                     self.server.yt_replace_domain,
                                      self.server.twitterReplacementDomain,
                                      self.server.showPublishedDateOnly,
                                      self.server.peertubeInstances,
@@ -8364,7 +8364,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.allowDeletion,
                                      http_prefix,
                                      self.server.projectVersion, timelineStr,
-                                     self.server.YTReplacementDomain,
+                                     self.server.yt_replace_domain,
                                      self.server.twitterReplacementDomain,
                                      self.server.showPublishedDateOnly,
                                      self.server.peertubeInstances,
@@ -8548,7 +8548,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      http_prefix,
                                      self.server.projectVersion,
                                      timelineStr,
-                                     self.server.YTReplacementDomain,
+                                     self.server.yt_replace_domain,
                                      self.server.twitterReplacementDomain,
                                      self.server.showPublishedDateOnly,
                                      self.server.peertubeInstances,
@@ -8720,7 +8720,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.allowDeletion,
                                      http_prefix,
                                      self.server.projectVersion, timelineStr,
-                                     self.server.YTReplacementDomain,
+                                     self.server.yt_replace_domain,
                                      self.server.twitterReplacementDomain,
                                      self.server.showPublishedDateOnly,
                                      self.server.peertubeInstances,
@@ -8818,7 +8818,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     domain, port, postJsonObject,
                                     self.server.http_prefix,
                                     self.server.projectVersion,
-                                    self.server.YTReplacementDomain,
+                                    self.server.yt_replace_domain,
                                     self.server.twitterReplacementDomain,
                                     self.server.showPublishedDateOnly,
                                     self.server.peertubeInstances,
@@ -8940,7 +8940,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.allowDeletion,
                                      http_prefix, self.server.projectVersion,
                                      timelineStr,
-                                     self.server.YTReplacementDomain,
+                                     self.server.yt_replace_domain,
                                      self.server.twitterReplacementDomain,
                                      self.server.showPublishedDateOnly,
                                      self.server.peertubeInstances,
@@ -9068,7 +9068,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.allowDeletion,
                                      http_prefix,
                                      self.server.projectVersion, timelineStr,
-                                     self.server.YTReplacementDomain,
+                                     self.server.yt_replace_domain,
                                      self.server.twitterReplacementDomain,
                                      self.server.showPublishedDateOnly,
                                      self.server.peertubeInstances,
@@ -9165,7 +9165,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.projectVersion,
                                   self.server.cachedWebfingers,
                                   self.server.personCache, callingDomain,
-                                  self.server.YTReplacementDomain,
+                                  self.server.yt_replace_domain,
                                   self.server.twitterReplacementDomain,
                                   self.server.showPublishedDateOnly,
                                   self.server.peertubeInstances,
@@ -9270,7 +9270,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.allowDeletion,
                                      http_prefix,
                                      self.server.projectVersion, timelineStr,
-                                     self.server.YTReplacementDomain,
+                                     self.server.yt_replace_domain,
                                      self.server.twitterReplacementDomain,
                                      self.server.showPublishedDateOnly,
                                      self.server.peertubeInstances,
@@ -9380,7 +9380,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.allowDeletion,
                                      http_prefix,
                                      self.server.projectVersion, timelineStr,
-                                     self.server.YTReplacementDomain,
+                                     self.server.yt_replace_domain,
                                      self.server.twitterReplacementDomain,
                                      self.server.showPublishedDateOnly,
                                      self.server.peertubeInstances,
@@ -9483,7 +9483,7 @@ class PubServer(BaseHTTPRequestHandler):
                 cachedWebfingers = self.server.cachedWebfingers
                 personCache = self.server.personCache
                 projectVersion = self.server.projectVersion
-                ytDomain = self.server.YTReplacementDomain
+                ytDomain = self.server.yt_replace_domain
                 twitterReplacementDomain = \
                     self.server.twitterReplacementDomain
                 peertubeInstances = self.server.peertubeInstances
@@ -9575,7 +9575,7 @@ class PubServer(BaseHTTPRequestHandler):
                 cachedWebfingers = self.server.cachedWebfingers
                 personCache = self.server.personCache
                 projectVersion = self.server.projectVersion
-                ytDomain = self.server.YTReplacementDomain
+                ytDomain = self.server.yt_replace_domain
                 twitterReplacementDomain = \
                     self.server.twitterReplacementDomain
                 peertubeInstances = self.server.peertubeInstances
@@ -9667,8 +9667,8 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.recentPostsCache
                     cachedWebfingers = \
                         self.server.cachedWebfingers
-                    YTReplacementDomain = \
-                        self.server.YTReplacementDomain
+                    yt_replace_domain = \
+                        self.server.yt_replace_domain
                     twitterReplacementDomain = \
                         self.server.twitterReplacementDomain
                     iconsAsButtons = \
@@ -9697,7 +9697,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.session,
                                     cachedWebfingers,
                                     self.server.personCache,
-                                    YTReplacementDomain,
+                                    yt_replace_domain,
                                     twitterReplacementDomain,
                                     self.server.showPublishedDateOnly,
                                     self.server.newswire,
@@ -9772,8 +9772,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.recentPostsCache
                                 cachedWebfingers = \
                                     self.server.cachedWebfingers
-                                YTReplacementDomain = \
-                                    self.server.YTReplacementDomain
+                                yt_replace_domain = \
+                                    self.server.yt_replace_domain
                                 twitterReplacementDomain = \
                                     self.server.twitterReplacementDomain
                                 showPublishedDateOnly = \
@@ -9813,7 +9813,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                 self.server.session,
                                                 cachedWebfingers,
                                                 self.server.personCache,
-                                                YTReplacementDomain,
+                                                yt_replace_domain,
                                                 twitterReplacementDomain,
                                                 showPublishedDateOnly,
                                                 self.server.newswire,
@@ -9984,7 +9984,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    http_prefix,
                                    self.server.projectVersion,
                                    likedBy, reactBy, reactEmoji,
-                                   self.server.YTReplacementDomain,
+                                   self.server.yt_replace_domain,
                                    self.server.twitterReplacementDomain,
                                    self.server.showPublishedDateOnly,
                                    self.server.peertubeInstances,
@@ -10153,7 +10153,7 @@ class PubServer(BaseHTTPRequestHandler):
                    personCache: {},
                    allowDeletion: bool,
                    projectVersion: str,
-                   YTReplacementDomain: str,
+                   yt_replace_domain: str,
                    twitterReplacementDomain: str) -> bool:
         """Shows the inbox timeline
         """
@@ -10238,7 +10238,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         http_prefix,
                                         projectVersion,
                                         minimalNick,
-                                        YTReplacementDomain,
+                                        yt_replace_domain,
                                         twitterReplacementDomain,
                                         self.server.showPublishedDateOnly,
                                         self.server.newswire,
@@ -10387,7 +10387,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          http_prefix,
                                          self.server.projectVersion,
                                          minimalNick,
-                                         self.server.YTReplacementDomain,
+                                         self.server.yt_replace_domain,
                                          self.server.twitterReplacementDomain,
                                          self.server.showPublishedDateOnly,
                                          self.server.newswire,
@@ -10528,7 +10528,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          http_prefix,
                                          self.server.projectVersion,
                                          minimalNick,
-                                         self.server.YTReplacementDomain,
+                                         self.server.yt_replace_domain,
                                          self.server.twitterReplacementDomain,
                                          self.server.showPublishedDateOnly,
                                          self.server.newswire,
@@ -10667,7 +10667,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        http_prefix,
                                        self.server.projectVersion,
                                        minimalNick,
-                                       self.server.YTReplacementDomain,
+                                       self.server.yt_replace_domain,
                                        self.server.twitterReplacementDomain,
                                        self.server.showPublishedDateOnly,
                                        self.server.newswire,
@@ -10807,7 +10807,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        http_prefix,
                                        self.server.projectVersion,
                                        minimalNick,
-                                       self.server.YTReplacementDomain,
+                                       self.server.yt_replace_domain,
                                        self.server.twitterReplacementDomain,
                                        self.server.showPublishedDateOnly,
                                        self.server.newswire,
@@ -10956,7 +10956,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       http_prefix,
                                       self.server.projectVersion,
                                       minimalNick,
-                                      self.server.YTReplacementDomain,
+                                      self.server.yt_replace_domain,
                                       self.server.twitterReplacementDomain,
                                       self.server.showPublishedDateOnly,
                                       self.server.newswire,
@@ -11104,7 +11104,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           http_prefix,
                                           self.server.projectVersion,
                                           minimalNick,
-                                          self.server.YTReplacementDomain,
+                                          self.server.yt_replace_domain,
                                           self.server.twitterReplacementDomain,
                                           self.server.showPublishedDateOnly,
                                           self.server.newswire,
@@ -11211,7 +11211,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.allowDeletion,
                                    http_prefix,
                                    self.server.projectVersion,
-                                   self.server.YTReplacementDomain,
+                                   self.server.yt_replace_domain,
                                    self.server.twitterReplacementDomain,
                                    self.server.showPublishedDateOnly,
                                    self.server.newswire,
@@ -11295,7 +11295,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.allowDeletion,
                                    http_prefix,
                                    self.server.projectVersion,
-                                   self.server.YTReplacementDomain,
+                                   self.server.yt_replace_domain,
                                    self.server.twitterReplacementDomain,
                                    self.server.showPublishedDateOnly,
                                    self.server.newswire,
@@ -11415,7 +11415,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           http_prefix,
                                           self.server.projectVersion,
                                           minimalNick,
-                                          self.server.YTReplacementDomain,
+                                          self.server.yt_replace_domain,
                                           self.server.twitterReplacementDomain,
                                           self.server.showPublishedDateOnly,
                                           self.server.newswire,
@@ -11553,7 +11553,7 @@ class PubServer(BaseHTTPRequestHandler):
                                http_prefix,
                                self.server.projectVersion,
                                minimalNick,
-                               self.server.YTReplacementDomain,
+                               self.server.yt_replace_domain,
                                self.server.twitterReplacementDomain,
                                self.server.showPublishedDateOnly,
                                self.server.newswire,
@@ -11683,7 +11683,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            True,
                                            http_prefix,
                                            self.server.projectVersion,
-                                           self.server.YTReplacementDomain,
+                                           self.server.yt_replace_domain,
                                            twitterReplacementDomain,
                                            self.server.showPublishedDateOnly,
                                            self.server.newswire,
@@ -11809,7 +11809,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.session,
                                     self.server.cachedWebfingers,
                                     self.server.personCache,
-                                    self.server.YTReplacementDomain,
+                                    self.server.yt_replace_domain,
                                     self.server.twitterReplacementDomain,
                                     self.server.showPublishedDateOnly,
                                     self.server.newswire,
@@ -11930,7 +11930,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.session,
                                     self.server.cachedWebfingers,
                                     self.server.personCache,
-                                    self.server.YTReplacementDomain,
+                                    self.server.yt_replace_domain,
                                     self.server.twitterReplacementDomain,
                                     self.server.showPublishedDateOnly,
                                     self.server.newswire,
@@ -12050,7 +12050,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.session,
                                     self.server.cachedWebfingers,
                                     self.server.personCache,
-                                    self.server.YTReplacementDomain,
+                                    self.server.yt_replace_domain,
                                     self.server.twitterReplacementDomain,
                                     self.server.showPublishedDateOnly,
                                     self.server.newswire,
@@ -12186,7 +12186,7 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.session,
                             self.server.cachedWebfingers,
                             self.server.personCache,
-                            self.server.YTReplacementDomain,
+                            self.server.yt_replace_domain,
                             self.server.twitterReplacementDomain,
                             self.server.showPublishedDateOnly,
                             self.server.newswire,
@@ -12953,7 +12953,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.port,
                               postJsonObject,
                               self.server.projectVersion,
-                              self.server.YTReplacementDomain,
+                              self.server.yt_replace_domain,
                               self.server.twitterReplacementDomain,
                               self.server.showPublishedDateOnly,
                               self.server.peertubeInstances,
@@ -15883,7 +15883,7 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.personCache,
                                self.server.allowDeletion,
                                self.server.projectVersion,
-                               self.server.YTReplacementDomain,
+                               self.server.yt_replace_domain,
                                self.server.twitterReplacementDomain):
                 self.server.GETbusy = False
                 return
@@ -16775,7 +16775,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.content_license_url)
 
                         replaceYouTube(postJsonObject,
-                                       self.server.YTReplacementDomain,
+                                       self.server.yt_replace_domain,
                                        self.server.systemLanguage)
                         replaceTwitter(postJsonObject,
                                        self.server.twitterReplacementDomain,
@@ -18431,7 +18431,7 @@ def runDaemon(content_license_url: str,
               instanceId: str, clientToServer: bool,
               base_dir: str, domain: str,
               onionDomain: str, i2pDomain: str,
-              YTReplacementDomain: str,
+              yt_replace_domain: str,
               twitterReplacementDomain: str,
               port: int = 80, proxyPort: int = 80,
               http_prefix: str = 'https',
@@ -18559,7 +18559,7 @@ def runDaemon(content_license_url: str,
     if unitTest:
         # unit tests are run on the local network with LAN addresses
         httpd.allowLocalNetworkAccess = True
-    httpd.YTReplacementDomain = YTReplacementDomain
+    httpd.yt_replace_domain = yt_replace_domain
     httpd.twitterReplacementDomain = twitterReplacementDomain
 
     # newswire storing rss feeds
@@ -18889,7 +18889,7 @@ def runDaemon(content_license_url: str,
                               domainMaxPostsPerDay, accountMaxPostsPerDay,
                               allowDeletion, debug, maxMentions, maxEmoji,
                               httpd.translate, unitTest,
-                              httpd.YTReplacementDomain,
+                              httpd.yt_replace_domain,
                               httpd.twitterReplacementDomain,
                               httpd.showPublishedDateOnly,
                               httpd.maxFollowers,
