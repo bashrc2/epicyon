@@ -747,7 +747,7 @@ def _getMuteIconHtml(isMuted: bool,
                      postActor: str,
                      messageId: str,
                      nickname: str, domainFull: str,
-                     allowDeletion: bool,
+                     allow_deletion: bool,
                      pageNumberParam: str,
                      boxName: str,
                      timelinePostBookmark: str,
@@ -755,7 +755,7 @@ def _getMuteIconHtml(isMuted: bool,
     """Returns html for mute icon/button
     """
     muteStr = ''
-    if (allowDeletion or
+    if (allow_deletion or
         ('/' + domainFull + '/' in postActor and
          messageId.startswith(postActor))):
         return muteStr
@@ -793,7 +793,7 @@ def _getMuteIconHtml(isMuted: bool,
 
 
 def _getDeleteIconHtml(nickname: str, domainFull: str,
-                       allowDeletion: bool,
+                       allow_deletion: bool,
                        postActor: str,
                        messageId: str,
                        postJsonObject: {},
@@ -802,7 +802,7 @@ def _getDeleteIconHtml(nickname: str, domainFull: str,
     """Returns html for delete icon/button
     """
     deleteStr = ''
-    if (allowDeletion or
+    if (allow_deletion or
         ('/' + domainFull + '/' in postActor and
          messageId.startswith(postActor))):
         if '/users/' + nickname + '/' in messageId:
@@ -1328,7 +1328,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
                          nickname: str, domain: str, port: int,
                          postJsonObject: {},
                          avatarUrl: str, showAvatarOptions: bool,
-                         allowDeletion: bool,
+                         allow_deletion: bool,
                          http_prefix: str, project_version: str,
                          boxName: str,
                          yt_replace_domain: str,
@@ -1730,7 +1730,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
                          postActor,
                          messageId,
                          nickname, domainFull,
-                         allowDeletion,
+                         allow_deletion,
                          pageNumberParam,
                          boxName,
                          timelinePostBookmark,
@@ -1738,7 +1738,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
 
     deleteStr = \
         _getDeleteIconHtml(nickname, domainFull,
-                           allowDeletion,
+                           allow_deletion,
                            postActor,
                            messageId,
                            postJsonObject,

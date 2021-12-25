@@ -115,7 +115,7 @@ def sendDeleteViaServer(base_dir: str, session,
 def outboxDelete(base_dir: str, http_prefix: str,
                  nickname: str, domain: str,
                  messageJson: {}, debug: bool,
-                 allowDeletion: bool,
+                 allow_deletion: bool,
                  recentPostsCache: {}) -> None:
     """ When a delete request is received by the outbox from c2s
     """
@@ -132,7 +132,7 @@ def outboxDelete(base_dir: str, http_prefix: str,
     if debug:
         print('DEBUG: c2s delete request arrived in outbox')
     deletePrefix = http_prefix + '://' + domain
-    if (not allowDeletion and
+    if (not allow_deletion and
         (not messageJson['object'].startswith(deletePrefix) or
          not messageJson['actor'].startswith(deletePrefix))):
         if debug:

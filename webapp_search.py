@@ -671,7 +671,7 @@ def htmlHistorySearch(cssCache: {}, translate: {}, base_dir: str,
             index += 1
             continue
         showIndividualPostIcons = True
-        allowDeletion = False
+        allow_deletion = False
         postStr = \
             individualPostAsHtml(signingPrivateKeyPem,
                                  True, recentPostsCache,
@@ -681,7 +681,7 @@ def htmlHistorySearch(cssCache: {}, translate: {}, base_dir: str,
                                  personCache,
                                  nickname, domain, port,
                                  postJsonObject,
-                                 None, True, allowDeletion,
+                                 None, True, allow_deletion,
                                  http_prefix, project_version,
                                  'search',
                                  yt_replace_domain,
@@ -845,7 +845,7 @@ def htmlHashtagSearch(cssCache: {},
         showIndividualPostIcons = False
         if nickname:
             showIndividualPostIcons = True
-        allowDeletion = False
+        allow_deletion = False
         showRepeats = showIndividualPostIcons
         showIcons = showIndividualPostIcons
         manuallyApprovesFollowers = False
@@ -864,7 +864,7 @@ def htmlHashtagSearch(cssCache: {},
                                  nickname, domain, port,
                                  postJsonObject,
                                  avatarUrl, showAvatarOptions,
-                                 allowDeletion,
+                                 allow_deletion,
                                  http_prefix, project_version,
                                  'search',
                                  yt_replace_domain,
