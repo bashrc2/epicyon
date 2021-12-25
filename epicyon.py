@@ -433,7 +433,7 @@ parser.add_argument("--secure_mode", type=str2bool, nargs='?',
                     help="Requires all GET requests to be signed, " +
                     "so that the sender can be identifies and " +
                     "blocked  if neccessary")
-parser.add_argument("--instanceOnlySkillsSearch", type=str2bool, nargs='?',
+parser.add_argument("--instance_only_skills_search", type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Skills searches only return " +
                     "results from this instance")
@@ -3257,5 +3257,5 @@ if __name__ == "__main__":
               args.domain_max_posts_per_day,
               args.account_max_posts_per_day,
               args.allowdeletion, debug, False,
-              args.instanceOnlySkillsSearch, [],
+              args.instance_only_skills_search, [],
               not args.noapproval)

@@ -3342,7 +3342,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      base_dir,
                                      http_prefix,
                                      searchStr,
-                                     self.server.instanceOnlySkillsSearch,
+                                     self.server.instance_only_skills_search,
                                      64)
                 if skillStr:
                     msg = skillStr.encode('utf-8')
@@ -18481,7 +18481,7 @@ def runDaemon(content_license_url: str,
               account_max_posts_per_day: int = 864,
               allow_deletion: bool = False,
               debug: bool = False, unit_test: bool = False,
-              instanceOnlySkillsSearch: bool = False,
+              instance_only_skills_search: bool = False,
               sendThreads: [] = [],
               manualFollowerApproval: bool = True) -> None:
     if len(domain) == 0:
@@ -18761,7 +18761,7 @@ def runDaemon(content_license_url: str,
     httpd.tokens = {}
     httpd.tokensLookup = {}
     loadTokens(base_dir, httpd.tokens, httpd.tokensLookup)
-    httpd.instanceOnlySkillsSearch = instanceOnlySkillsSearch
+    httpd.instance_only_skills_search = instance_only_skills_search
     # contains threads used to send posts to followers
     httpd.followersThreads = []
 
