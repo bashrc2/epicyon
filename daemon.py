@@ -5562,14 +5562,14 @@ class PubServer(BaseHTTPRequestHandler):
                             setConfigParam(base_dir, "show_node_info_version",
                                            show_node_info_version)
 
-                            verifyAllSignatures = False
+                            verify_all_signatures = False
                             if fields.get('verifyallsignatures'):
                                 if fields['verifyallsignatures'] == 'on':
-                                    verifyAllSignatures = True
-                            self.server.verifyAllSignatures = \
-                                verifyAllSignatures
-                            setConfigParam(base_dir, "verifyAllSignatures",
-                                           verifyAllSignatures)
+                                    verify_all_signatures = True
+                            self.server.verify_all_signatures = \
+                                verify_all_signatures
+                            setConfigParam(base_dir, "verify_all_signatures",
+                                           verify_all_signatures)
 
                             broch_mode = False
                             if fields.get('broch_mode'):
@@ -18412,7 +18412,7 @@ def runDaemon(content_license_url: str,
               show_node_info_accounts: bool,
               show_node_info_version: bool,
               broch_mode: bool,
-              verifyAllSignatures: bool,
+              verify_all_signatures: bool,
               sendThreadsTimeoutMins: int,
               dormantMonths: int,
               maxNewswirePosts: int,
@@ -18579,7 +18579,7 @@ def runDaemon(content_license_url: str,
     httpd.maxNewswirePosts = maxNewswirePosts
 
     # whether to require that all incoming posts have valid jsonld signatures
-    httpd.verifyAllSignatures = verifyAllSignatures
+    httpd.verify_all_signatures = verify_all_signatures
 
     # This counter is used to update the list of blocked domains in memory.
     # It helps to avoid touching the disk and so improves flooding resistance
@@ -18907,7 +18907,7 @@ def runDaemon(content_license_url: str,
                               httpd.maxFollowers,
                               httpd.allowLocalNetworkAccess,
                               httpd.peertubeInstances,
-                              verifyAllSignatures,
+                              verify_all_signatures,
                               httpd.themeName,
                               httpd.systemLanguage,
                               httpd.max_like_count,

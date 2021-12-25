@@ -371,8 +371,8 @@ parser.add_argument("--allowLocalNetworkAccess",
                     help="Whether to allow access to local network " +
                     "addresses. This might be useful when deploying in " +
                     "a mesh network")
-parser.add_argument("--verifyAllSignatures",
-                    dest='verifyAllSignatures',
+parser.add_argument("--verify_all_signatures",
+                    dest='verify_all_signatures',
                     type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Whether to require that all incoming " +
@@ -3108,10 +3108,10 @@ allowLocalNetworkAccess = \
 if allowLocalNetworkAccess is not None:
     args.allowLocalNetworkAccess = bool(allowLocalNetworkAccess)
 
-verifyAllSignatures = \
-    getConfigParam(base_dir, 'verifyAllSignatures')
-if verifyAllSignatures is not None:
-    args.verifyAllSignatures = bool(verifyAllSignatures)
+verify_all_signatures = \
+    getConfigParam(base_dir, 'verify_all_signatures')
+if verify_all_signatures is not None:
+    args.verify_all_signatures = bool(verify_all_signatures)
 
 broch_mode = \
     getConfigParam(base_dir, 'broch_mode')
@@ -3221,7 +3221,7 @@ if __name__ == "__main__":
               args.show_node_info_accounts,
               args.show_node_info_version,
               args.broch_mode,
-              args.verifyAllSignatures,
+              args.verify_all_signatures,
               args.sendThreadsTimeoutMins,
               args.dormantMonths,
               args.maxNewswirePosts,

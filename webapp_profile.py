@@ -1365,7 +1365,7 @@ def _htmlEditProfileInstance(base_dir: str, translate: {},
         instanceStr += \
             editCheckBox(nodeInfoStr, 'show_node_info_version', False)
 
-    if getConfigParam(base_dir, "verifyAllSignatures"):
+    if getConfigParam(base_dir, "verify_all_signatures"):
         instanceStr += \
             editCheckBox(translate['Verify all signatures'],
                          'verifyallsignatures', True)

@@ -4077,7 +4077,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                   maxFollowers: int,
                   allowLocalNetworkAccess: bool,
                   peertubeInstances: [],
-                  verifyAllSignatures: bool,
+                  verify_all_signatures: bool,
                   themeName: str, systemLanguage: str,
                   max_like_count: int, signingPrivateKeyPem: str,
                   default_reply_interval_hrs: int,
@@ -4196,9 +4196,9 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                 'accounts': {}
             }
             # also check if the json signature enforcement has changed
-            verifyAllSigs = getConfigParam(base_dir, "verifyAllSignatures")
+            verifyAllSigs = getConfigParam(base_dir, "verify_all_signatures")
             if verifyAllSigs is not None:
-                verifyAllSignatures = verifyAllSigs
+                verify_all_signatures = verifyAllSigs
             # change the last time that this was done
             quotasLastUpdatePerMin = currTime
 
@@ -4294,12 +4294,12 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                 if debug:
                     pprint(queueJson['httpHeaders'])
 
-            if verifyAllSignatures:
+            if verify_all_signatures:
                 originalJson = queueJson['original']
                 print('Queue: inbox post does not have a jsonld signature ' +
                       keyId + ' ' + str(originalJson))
 
-            if httpSignatureFailed or verifyAllSignatures:
+            if httpSignatureFailed or verify_all_signatures:
                 if os.path.isfile(queueFilename):
                     try:
                         os.remove(queueFilename)
@@ -4310,7 +4310,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                     queue.pop(0)
                 continue
         else:
-            if httpSignatureFailed or verifyAllSignatures:
+            if httpSignatureFailed or verify_all_signatures:
                 # use the original json message received, not one which
                 # may have been modified along the way
                 originalJson = queueJson['original']
