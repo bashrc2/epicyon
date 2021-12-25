@@ -539,7 +539,7 @@ def _getProfileHeaderAfterSearch(base_dir: str,
 
 
 def htmlProfile(signingPrivateKeyPem: str,
-                rssIconAtTop: bool,
+                rss_icon_at_top: bool,
                 cssCache: {}, iconsAsButtons: bool,
                 defaultTimeline: str,
                 recentPostsCache: {}, maxRecentPosts: int,
@@ -568,7 +568,7 @@ def htmlProfile(signingPrivateKeyPem: str,
         return ""
     if isSystemAccount(nickname):
         return htmlFrontScreen(signingPrivateKeyPem,
-                               rssIconAtTop,
+                               rss_icon_at_top,
                                cssCache, iconsAsButtons,
                                defaultTimeline,
                                recentPostsCache, maxRecentPosts,

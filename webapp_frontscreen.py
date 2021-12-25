@@ -94,7 +94,7 @@ def _htmlFrontScreenPosts(recentPostsCache: {}, maxRecentPosts: int,
 
 
 def htmlFrontScreen(signingPrivateKeyPem: str,
-                    rssIconAtTop: bool,
+                    rss_icon_at_top: bool,
                     cssCache: {}, iconsAsButtons: bool,
                     defaultTimeline: str,
                     recentPostsCache: {}, maxRecentPosts: int,
@@ -156,7 +156,7 @@ def htmlFrontScreen(signingPrivateKeyPem: str,
         getLeftColumnContent(base_dir, 'news', domainFull,
                              http_prefix, translate,
                              False, False,
-                             False, None, rssIconAtTop, True,
+                             False, None, rss_icon_at_top, True,
                              True, theme, accessKeys,
                              shared_items_federated_domains)
     profileHeaderStr += \

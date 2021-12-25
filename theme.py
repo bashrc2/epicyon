@@ -210,7 +210,7 @@ def _setRssIconAtTop(base_dir: str, atTop: bool) -> bool:
     configJson = loadJson(configFilename, 0)
     if not configJson:
         return False
-    configJson['rssIconAtTop'] = atTop
+    configJson['rss_icon_at_top'] = atTop
     return saveJson(configJson, configFilename)
 
 

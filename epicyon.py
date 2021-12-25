@@ -347,8 +347,8 @@ parser.add_argument("--log_login_failures",
                     type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Whether to log longin failures")
-parser.add_argument("--rssIconAtTop",
-                    dest='rssIconAtTop',
+parser.add_argument("--rss_icon_at_top",
+                    dest='rss_icon_at_top',
                     type=str2bool, nargs='?',
                     const=True, default=True,
                     help="Whether to show the rss icon at teh top or bottom" +
@@ -3088,10 +3088,10 @@ iconsAsButtons = \
 if iconsAsButtons is not None:
     args.iconsAsButtons = bool(iconsAsButtons)
 
-rssIconAtTop = \
-    getConfigParam(base_dir, 'rssIconAtTop')
-if rssIconAtTop is not None:
-    args.rssIconAtTop = bool(rssIconAtTop)
+rss_icon_at_top = \
+    getConfigParam(base_dir, 'rss_icon_at_top')
+if rss_icon_at_top is not None:
+    args.rss_icon_at_top = bool(rss_icon_at_top)
 
 publish_button_at_top = \
     getConfigParam(base_dir, 'publish_button_at_top')
@@ -3228,7 +3228,7 @@ if __name__ == "__main__":
               args.allow_local_network_access,
               args.max_feed_item_size_kb,
               args.publish_button_at_top,
-              args.rssIconAtTop,
+              args.rss_icon_at_top,
               args.iconsAsButtons,
               args.fullWidthTimelineButtonHeader,
               args.showPublishAsIcon,

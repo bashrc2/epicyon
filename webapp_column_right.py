@@ -54,7 +54,7 @@ def getRightColumnContent(base_dir: str, nickname: str, domainFull: str,
                           showBackButton: bool, timelinePath: str,
                           showPublishButton: bool,
                           showPublishAsIcon: bool,
-                          rssIconAtTop: bool,
+                          rss_icon_at_top: bool,
                           publish_button_at_top: bool,
                           authorized: bool,
                           showHeaderImage: bool,
@@ -108,8 +108,9 @@ def getRightColumnContent(base_dir: str, nickname: str, domainFull: str,
                 nickname + '/' + rightImageFile + '" />\n' + \
                 '      </center>\n'
 
-    if (showPublishButton or editor or rssIconAtTop) and not showHeaderImage:
-        htmlStr += '<div class="columnIcons">'
+    if showPublishButton or editor or rss_icon_at_top:
+        if not showHeaderImage:
+            htmlStr += '<div class="columnIcons">'
 
     if editImageClass == 'rightColEdit':
         htmlStr += '\n      <center>\n'
@@ -166,7 +167,7 @@ def getRightColumnContent(base_dir: str, nickname: str, domainFull: str,
         translate['Newswire RSS Feed'] + ' | " title="' + \
         translate['Newswire RSS Feed'] + '" src="/' + \
         'icons/logorss.png" /></a>\n'
-    if rssIconAtTop:
+    if rss_icon_at_top:
         htmlStr += rssIconStr
 
     # show publish icon at top
@@ -191,8 +192,9 @@ def getRightColumnContent(base_dir: str, nickname: str, domainFull: str,
         if showHeaderImage:
             htmlStr += '      <br>\n'
 
-    if (showPublishButton or editor or rssIconAtTop) and not showHeaderImage:
-        htmlStr += '</div><br>'
+    if showPublishButton or editor or rss_icon_at_top:
+        if not showHeaderImage:
+            htmlStr += '</div><br>'
 
     # show the newswire lines
     newswireContentStr = \
@@ -201,7 +203,7 @@ def getRightColumnContent(base_dir: str, nickname: str, domainFull: str,
     htmlStr += newswireContentStr
 
     # show the rss icon at the bottom, typically on the right hand side
-    if newswireContentStr and not rssIconAtTop:
+    if newswireContentStr and not rss_icon_at_top:
         htmlStr += '<br><div class="columnIcons">' + rssIconStr + '</div>'
     return htmlStr
 
@@ -450,7 +452,7 @@ def htmlNewswireMobile(cssCache: {}, base_dir: str, nickname: str,
                        timelinePath: str,
                        showPublishAsIcon: bool,
                        authorized: bool,
-                       rssIconAtTop: bool,
+                       rss_icon_at_top: bool,
                        iconsAsButtons: bool,
                        defaultTimeline: str,
                        theme: str,
@@ -501,7 +503,7 @@ def htmlNewswireMobile(cssCache: {}, base_dir: str, nickname: str,
                               moderator, editor,
                               newswire, positiveVoting,
                               False, timelinePath, showPublishButton,
-                              showPublishAsIcon, rssIconAtTop, False,
+                              showPublishAsIcon, rss_icon_at_top, False,
                               authorized, False, theme,
                               defaultTimeline, accessKeys)
     if editor and not newswire:

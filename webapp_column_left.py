@@ -116,7 +116,7 @@ def getLeftColumnContent(base_dir: str, nickname: str, domainFull: str,
                          http_prefix: str, translate: {},
                          editor: bool, artist: bool,
                          showBackButton: bool, timelinePath: str,
-                         rssIconAtTop: bool, showHeaderImage: bool,
+                         rss_icon_at_top: bool, showHeaderImage: bool,
                          frontPage: bool, theme: str,
                          accessKeys: {},
                          shared_items_federated_domains: []) -> str:
@@ -148,7 +148,7 @@ def getLeftColumnContent(base_dir: str, nickname: str, domainFull: str,
             '<button class="cancelbtn">' + \
             translate['Go Back'] + '</button></a>\n'
 
-    if (editor or rssIconAtTop) and not showHeaderImage:
+    if (editor or rss_icon_at_top) and not showHeaderImage:
         htmlStr += '<div class="columnIcons">'
 
     if editImageClass == 'leftColEdit':
@@ -190,14 +190,14 @@ def getLeftColumnContent(base_dir: str, nickname: str, domainFull: str,
         '      <a href="' + rssUrl + '"><img class="' + editImageClass + \
         '" loading="lazy" alt="' + rssTitle + '" title="' + rssTitle + \
         '" src="/icons/logorss.png" /></a>\n'
-    if rssIconAtTop:
+    if rss_icon_at_top:
         htmlStr += rssIconStr
     htmlStr += '      </div>\n'
 
     if editImageClass == 'leftColEdit':
         htmlStr += '      </center>\n'
 
-    if (editor or rssIconAtTop) and not showHeaderImage:
+    if (editor or rss_icon_at_top) and not showHeaderImage:
         htmlStr += '</div><br>'
 
     # if showHeaderImage:
@@ -342,7 +342,7 @@ def getLeftColumnContent(base_dir: str, nickname: str, domainFull: str,
         '<p class="login-text"><a href="/terms">' + \
         translate['Terms of Service'] + '</a></p>'
 
-    if linksFileContainsEntries and not rssIconAtTop:
+    if linksFileContainsEntries and not rss_icon_at_top:
         htmlStr += '<br><div class="columnIcons">' + rssIconStr + '</div>'
 
     return htmlStr
@@ -352,7 +352,7 @@ def htmlLinksMobile(cssCache: {}, base_dir: str,
                     nickname: str, domainFull: str,
                     http_prefix: str, translate,
                     timelinePath: str, authorized: bool,
-                    rssIconAtTop: bool,
+                    rss_icon_at_top: bool,
                     iconsAsButtons: bool,
                     defaultTimeline: str,
                     theme: str, accessKeys: {},
@@ -398,7 +398,7 @@ def htmlLinksMobile(cssCache: {}, base_dir: str,
                              http_prefix, translate,
                              editor, artist,
                              False, timelinePath,
-                             rssIconAtTop, False, False,
+                             rss_icon_at_top, False, False,
                              theme, accessKeys,
                              shared_items_federated_domains)
     if editor and not _linksExist(base_dir):
