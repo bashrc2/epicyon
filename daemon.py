@@ -18428,7 +18428,7 @@ def runDaemon(content_license_url: str,
               dormant_months: int,
               max_newswire_posts: int,
               allow_local_network_access: bool,
-              maxFeedItemSizeKb: int,
+              max_feed_item_size_kb: int,
               publishButtonAtTop: bool,
               rssIconAtTop: bool,
               iconsAsButtons: bool,
@@ -18675,7 +18675,7 @@ def runDaemon(content_license_url: str,
     httpd.publishButtonAtTop = publishButtonAtTop
 
     # maximum size of individual RSS feed items, in K
-    httpd.maxFeedItemSizeKb = maxFeedItemSizeKb
+    httpd.max_feed_item_size_kb = max_feed_item_size_kb
 
     # maximum size of a hashtag category, in K
     httpd.maxCategoriesFeedItemSizeKb = 1024

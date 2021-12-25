@@ -199,8 +199,8 @@ parser.add_argument('--maxFeedSize',
                     dest='maxNewswireFeedSizeKb', type=int,
                     default=10240,
                     help='Maximum newswire rss/atom feed size in K')
-parser.add_argument('--maxFeedItemSizeKb',
-                    dest='maxFeedItemSizeKb', type=int,
+parser.add_argument('--max_feed_item_size_kb',
+                    dest='max_feed_item_size_kb', type=int,
                     default=2048,
                     help='Maximum size of an individual rss/atom ' +
                     'feed item in K')
@@ -3058,10 +3058,10 @@ maxFollowers = \
 if maxFollowers is not None:
     args.maxFollowers = int(maxFollowers)
 
-maxFeedItemSizeKb = \
-    getConfigParam(base_dir, 'maxFeedItemSizeKb')
-if maxFeedItemSizeKb is not None:
-    args.maxFeedItemSizeKb = int(maxFeedItemSizeKb)
+max_feed_item_size_kb = \
+    getConfigParam(base_dir, 'max_feed_item_size_kb')
+if max_feed_item_size_kb is not None:
+    args.max_feed_item_size_kb = int(max_feed_item_size_kb)
 
 dormant_months = \
     getConfigParam(base_dir, 'dormant_months')
@@ -3226,7 +3226,7 @@ if __name__ == "__main__":
               args.dormant_months,
               args.max_newswire_posts,
               args.allow_local_network_access,
-              args.maxFeedItemSizeKb,
+              args.max_feed_item_size_kb,
               args.publishButtonAtTop,
               args.rssIconAtTop,
               args.iconsAsButtons,

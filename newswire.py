@@ -381,7 +381,7 @@ def _xml2StrToHashtagCategories(base_dir: str, xmlStr: str,
 def _xml2StrToDict(base_dir: str, domain: str, xmlStr: str,
                    moderated: bool, mirrored: bool,
                    maxPostsPerSource: int,
-                   maxFeedItemSizeKb: int,
+                   max_feed_item_size_kb: int,
                    maxCategoriesFeedItemSizeKb: int,
                    session, debug: bool) -> {}:
     """Converts an xml RSS 2.0 string to a dictionary
@@ -398,7 +398,7 @@ def _xml2StrToDict(base_dir: str, domain: str, xmlStr: str,
 
     rssItems = xmlStr.split('<item>')
     postCtr = 0
-    maxBytes = maxFeedItemSizeKb * 1024
+    maxBytes = max_feed_item_size_kb * 1024
     for rssItem in rssItems:
         if not rssItem:
             continue
@@ -465,7 +465,7 @@ def _xml2StrToDict(base_dir: str, domain: str, xmlStr: str,
 def _xml1StrToDict(base_dir: str, domain: str, xmlStr: str,
                    moderated: bool, mirrored: bool,
                    maxPostsPerSource: int,
-                   maxFeedItemSizeKb: int,
+                   max_feed_item_size_kb: int,
                    maxCategoriesFeedItemSizeKb: int,
                    session, debug: bool) -> {}:
     """Converts an xml RSS 1.0 string to a dictionary
@@ -484,7 +484,7 @@ def _xml1StrToDict(base_dir: str, domain: str, xmlStr: str,
 
     rssItems = xmlStr.split(itemStr)
     postCtr = 0
-    maxBytes = maxFeedItemSizeKb * 1024
+    maxBytes = max_feed_item_size_kb * 1024
     for rssItem in rssItems:
         if not rssItem:
             continue
@@ -553,7 +553,7 @@ def _xml1StrToDict(base_dir: str, domain: str, xmlStr: str,
 def _atomFeedToDict(base_dir: str, domain: str, xmlStr: str,
                     moderated: bool, mirrored: bool,
                     maxPostsPerSource: int,
-                    maxFeedItemSizeKb: int,
+                    max_feed_item_size_kb: int,
                     session, debug: bool) -> {}:
     """Converts an atom feed string to a dictionary
     """
@@ -562,7 +562,7 @@ def _atomFeedToDict(base_dir: str, domain: str, xmlStr: str,
     result = {}
     atomItems = xmlStr.split('<entry>')
     postCtr = 0
-    maxBytes = maxFeedItemSizeKb * 1024
+    maxBytes = max_feed_item_size_kb * 1024
     for atomItem in atomItems:
         if not atomItem:
             continue
@@ -629,7 +629,7 @@ def _atomFeedToDict(base_dir: str, domain: str, xmlStr: str,
 def _jsonFeedV1ToDict(base_dir: str, domain: str, xmlStr: str,
                       moderated: bool, mirrored: bool,
                       maxPostsPerSource: int,
-                      maxFeedItemSizeKb: int,
+                      max_feed_item_size_kb: int,
                       session, debug: bool) -> {}:
     """Converts a json feed string to a dictionary
     See https://jsonfeed.org/version/1.1
@@ -641,7 +641,7 @@ def _jsonFeedV1ToDict(base_dir: str, domain: str, xmlStr: str,
     except BaseException:
         print('EX: _jsonFeedV1ToDict unable to load json ' + str(xmlStr))
         return {}
-    maxBytes = maxFeedItemSizeKb * 1024
+    maxBytes = max_feed_item_size_kb * 1024
     if not feedJson.get('version'):
         return {}
     if not feedJson['version'].startswith('https://jsonfeed.org/version/1'):
@@ -741,7 +741,7 @@ def _jsonFeedV1ToDict(base_dir: str, domain: str, xmlStr: str,
 def _atomFeedYTToDict(base_dir: str, domain: str, xmlStr: str,
                       moderated: bool, mirrored: bool,
                       maxPostsPerSource: int,
-                      maxFeedItemSizeKb: int,
+                      max_feed_item_size_kb: int,
                       session, debug: bool) -> {}:
     """Converts an atom-style YouTube feed string to a dictionary
     """
@@ -752,7 +752,7 @@ def _atomFeedYTToDict(base_dir: str, domain: str, xmlStr: str,
     result = {}
     atomItems = xmlStr.split('<entry>')
     postCtr = 0
-    maxBytes = maxFeedItemSizeKb * 1024
+    maxBytes = max_feed_item_size_kb * 1024
     for atomItem in atomItems:
         if not atomItem:
             continue
@@ -813,7 +813,7 @@ def _atomFeedYTToDict(base_dir: str, domain: str, xmlStr: str,
 def _xmlStrToDict(base_dir: str, domain: str, xmlStr: str,
                   moderated: bool, mirrored: bool,
                   maxPostsPerSource: int,
-                  maxFeedItemSizeKb: int,
+                  max_feed_item_size_kb: int,
                   maxCategoriesFeedItemSizeKb: int,
                   session, debug: bool) -> {}:
     """Converts an xml string to a dictionary
@@ -822,29 +822,29 @@ def _xmlStrToDict(base_dir: str, domain: str, xmlStr: str,
         print('YouTube feed: reading')
         return _atomFeedYTToDict(base_dir, domain,
                                  xmlStr, moderated, mirrored,
-                                 maxPostsPerSource, maxFeedItemSizeKb,
+                                 maxPostsPerSource, max_feed_item_size_kb,
                                  session, debug)
     elif 'rss version="2.0"' in xmlStr:
         return _xml2StrToDict(base_dir, domain,
                               xmlStr, moderated, mirrored,
-                              maxPostsPerSource, maxFeedItemSizeKb,
+                              maxPostsPerSource, max_feed_item_size_kb,
                               maxCategoriesFeedItemSizeKb,
                               session, debug)
     elif '<?xml version="1.0"' in xmlStr:
         return _xml1StrToDict(base_dir, domain,
                               xmlStr, moderated, mirrored,
-                              maxPostsPerSource, maxFeedItemSizeKb,
+                              maxPostsPerSource, max_feed_item_size_kb,
                               maxCategoriesFeedItemSizeKb,
                               session, debug)
     elif 'xmlns="http://www.w3.org/2005/Atom"' in xmlStr:
         return _atomFeedToDict(base_dir, domain,
                                xmlStr, moderated, mirrored,
-                               maxPostsPerSource, maxFeedItemSizeKb,
+                               maxPostsPerSource, max_feed_item_size_kb,
                                session, debug)
     elif 'https://jsonfeed.org/version/1' in xmlStr:
         return _jsonFeedV1ToDict(base_dir, domain,
                                  xmlStr, moderated, mirrored,
-                                 maxPostsPerSource, maxFeedItemSizeKb,
+                                 maxPostsPerSource, max_feed_item_size_kb,
                                  session, debug)
     return {}
 
@@ -864,7 +864,7 @@ def _YTchannelToAtomFeed(url: str) -> str:
 def getRSS(base_dir: str, domain: str, session, url: str,
            moderated: bool, mirrored: bool,
            maxPostsPerSource: int, maxFeedSizeKb: int,
-           maxFeedItemSizeKb: int,
+           max_feed_item_size_kb: int,
            maxCategoriesFeedItemSizeKb: int, debug: bool) -> {}:
     """Returns an RSS url as a dict
     """
@@ -895,7 +895,7 @@ def getRSS(base_dir: str, domain: str, session, url: str,
                 return _xmlStrToDict(base_dir, domain, result.text,
                                      moderated, mirrored,
                                      maxPostsPerSource,
-                                     maxFeedItemSizeKb,
+                                     max_feed_item_size_kb,
                                      maxCategoriesFeedItemSizeKb,
                                      session, debug)
             else:
@@ -1135,7 +1135,7 @@ def _addBlogsToNewswire(base_dir: str, domain: str, newswire: {},
 
 def getDictFromNewswire(session, base_dir: str, domain: str,
                         maxPostsPerSource: int, maxFeedSizeKb: int,
-                        maxTags: int, maxFeedItemSizeKb: int,
+                        maxTags: int, max_feed_item_size_kb: int,
                         max_newswire_posts: int,
                         maxCategoriesFeedItemSizeKb: int,
                         systemLanguage: str, debug: bool) -> {}:
@@ -1178,7 +1178,7 @@ def getDictFromNewswire(session, base_dir: str, domain: str,
         itemsList = getRSS(base_dir, domain, session, url,
                            moderated, mirrored,
                            maxPostsPerSource, maxFeedSizeKb,
-                           maxFeedItemSizeKb,
+                           max_feed_item_size_kb,
                            maxCategoriesFeedItemSizeKb, debug)
         if itemsList:
             for dateStr, item in itemsList.items():
