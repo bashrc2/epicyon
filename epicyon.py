@@ -116,7 +116,7 @@ def str2bool(v) -> bool:
 
 
 parser = argparse.ArgumentParser(description='ActivityPub Server')
-parser.add_argument('--contentLicenseUrl', type=str,
+parser.add_argument('--content_license_url', type=str,
                     default='https://creativecommons.org/licenses/by/4.0',
                     help='Url of the license used for the instance content')
 parser.add_argument('--listsEnabled', type=str,
@@ -1323,7 +1323,7 @@ if args.message:
                       attachedImageDescription, city,
                       cachedWebfingers, personCache, isArticle,
                       args.language, args.lowBandwidth,
-                      args.contentLicenseUrl, args.debug,
+                      args.content_license_url, args.debug,
                       replyTo, replyTo, args.conversationId, subject)
     for i in range(10):
         # TODO detect send success/fail
@@ -2452,7 +2452,7 @@ if args.avatar:
     city = 'London, England'
     if setProfileImage(base_dir, http_prefix, args.nickname, domain,
                        port, args.avatar, 'avatar', '128x128', city,
-                       args.contentLicenseUrl):
+                       args.content_license_url):
         print('Avatar added for ' + args.nickname)
     else:
         print('Avatar was not added for ' + args.nickname)
@@ -2468,7 +2468,7 @@ if args.backgroundImage:
     city = 'London, England'
     if setProfileImage(base_dir, http_prefix, args.nickname, domain,
                        port, args.backgroundImage, 'background',
-                       '256x256', city, args.contentLicenseUrl):
+                       '256x256', city, args.content_license_url):
         print('Background image added for ' + args.nickname)
     else:
         print('Background image was not added for ' + args.nickname)
@@ -2840,7 +2840,7 @@ if args.testdata:
              "City", "0", "GBP",
              "2 months",
              debug, city, args.language, {}, 'shares', args.lowBandwidth,
-             args.contentLicenseUrl)
+             args.content_license_url)
     addShare(base_dir,
              http_prefix, nickname, domain, port,
              "witch hat",
@@ -2851,7 +2851,7 @@ if args.testdata:
              "City", "0", "GBP",
              "3 months",
              debug, city, args.language, {}, 'shares', args.lowBandwidth,
-             args.contentLicenseUrl)
+             args.content_license_url)
 
     deleteAllPosts(base_dir, nickname, domain, 'inbox')
     deleteAllPosts(base_dir, nickname, domain, 'outbox')
@@ -2887,7 +2887,7 @@ if args.testdata:
                      testSubject, testSchedulePost,
                      testEventDate, testEventTime, testLocation,
                      testIsArticle, args.language, conversationId,
-                     lowBandwidth, args.contentLicenseUrl)
+                     lowBandwidth, args.content_license_url)
     createPublicPost(base_dir, nickname, domain, port, http_prefix,
                      "Zoiks!!!",
                      testFollowersOnly,
@@ -2900,7 +2900,7 @@ if args.testdata:
                      testSubject, testSchedulePost,
                      testEventDate, testEventTime, testLocation,
                      testIsArticle, args.language, conversationId,
-                     lowBandwidth, args.contentLicenseUrl)
+                     lowBandwidth, args.content_license_url)
     createPublicPost(base_dir, nickname, domain, port, http_prefix,
                      "Hey scoob we need like a hundred more #milkshakes",
                      testFollowersOnly,
@@ -2913,7 +2913,7 @@ if args.testdata:
                      testSubject, testSchedulePost,
                      testEventDate, testEventTime, testLocation,
                      testIsArticle, args.language, conversationId,
-                     lowBandwidth, args.contentLicenseUrl)
+                     lowBandwidth, args.content_license_url)
     createPublicPost(base_dir, nickname, domain, port, http_prefix,
                      "Getting kinda spooky around here",
                      testFollowersOnly,
@@ -2926,7 +2926,7 @@ if args.testdata:
                      testSubject, testSchedulePost,
                      testEventDate, testEventTime, testLocation,
                      testIsArticle, args.language, conversationId,
-                     lowBandwidth, args.contentLicenseUrl)
+                     lowBandwidth, args.content_license_url)
     createPublicPost(base_dir, nickname, domain, port, http_prefix,
                      "And they would have gotten away with it too" +
                      "if it wasn't for those pesky hackers",
@@ -2940,7 +2940,7 @@ if args.testdata:
                      testSubject, testSchedulePost,
                      testEventDate, testEventTime, testLocation,
                      testIsArticle, args.language, conversationId,
-                     lowBandwidth, args.contentLicenseUrl)
+                     lowBandwidth, args.content_license_url)
     createPublicPost(base_dir, nickname, domain, port, http_prefix,
                      "man these centralized sites are like the worst!",
                      testFollowersOnly,
@@ -2953,7 +2953,7 @@ if args.testdata:
                      testSubject, testSchedulePost,
                      testEventDate, testEventTime, testLocation,
                      testIsArticle, args.language, conversationId,
-                     lowBandwidth, args.contentLicenseUrl)
+                     lowBandwidth, args.content_license_url)
     createPublicPost(base_dir, nickname, domain, port, http_prefix,
                      "another mystery solved #test",
                      testFollowersOnly,
@@ -2966,7 +2966,7 @@ if args.testdata:
                      testSubject, testSchedulePost,
                      testEventDate, testEventTime, testLocation,
                      testIsArticle, args.language, conversationId,
-                     lowBandwidth, args.contentLicenseUrl)
+                     lowBandwidth, args.content_license_url)
     createPublicPost(base_dir, nickname, domain, port, http_prefix,
                      "let's go bowling",
                      testFollowersOnly,
@@ -2979,7 +2979,7 @@ if args.testdata:
                      testSubject, testSchedulePost,
                      testEventDate, testEventTime, testLocation,
                      testIsArticle, args.language, conversationId,
-                     lowBandwidth, args.contentLicenseUrl)
+                     lowBandwidth, args.content_license_url)
     domainFull = domain + ':' + str(port)
     clearFollows(base_dir, nickname, domain)
     followPerson(base_dir, nickname, domain, 'maxboardroom', domainFull,
@@ -3009,12 +3009,12 @@ minimumvotes = getConfigParam(base_dir, 'minvotes')
 if minimumvotes:
     args.minimumvotes = int(minimumvotes)
 
-contentLicenseUrl = ''
-if args.contentLicenseUrl:
-    contentLicenseUrl = args.contentLicenseUrl
-    setConfigParam(base_dir, 'contentLicenseUrl', contentLicenseUrl)
+content_license_url = ''
+if args.content_license_url:
+    content_license_url = args.content_license_url
+    setConfigParam(base_dir, 'content_license_url', content_license_url)
 else:
-    contentLicenseUrl = getConfigParam(base_dir, 'contentLicenseUrl')
+    content_license_url = getConfigParam(base_dir, 'content_license_url')
 
 votingtime = getConfigParam(base_dir, 'votingtime')
 if votingtime:
@@ -3210,7 +3210,7 @@ if args.defaultCurrency:
         print('Default currency set to ' + args.defaultCurrency)
 
 if __name__ == "__main__":
-    runDaemon(contentLicenseUrl,
+    runDaemon(content_license_url,
               listsEnabled,
               args.defaultReplyIntervalHours,
               args.lowBandwidth, args.maxLikeCount,

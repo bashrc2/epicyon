@@ -728,7 +728,7 @@ def createServerAlice(path: str, domain: str, port: int,
         testLocation = None
         testIsArticle = False
         conversationId = None
-        contentLicenseUrl = 'https://creativecommons.org/licenses/by/4.0'
+        content_license_url = 'https://creativecommons.org/licenses/by/4.0'
         createPublicPost(path, nickname, domain, port, http_prefix,
                          "No wise fish would go anywhere without a porpoise",
                          testFollowersOnly,
@@ -742,7 +742,7 @@ def createServerAlice(path: str, domain: str, port: int,
                          testSubject, testSchedulePost,
                          testEventDate, testEventTime, testLocation,
                          testIsArticle, systemLanguage, conversationId,
-                         lowBandwidth, contentLicenseUrl)
+                         lowBandwidth, content_license_url)
         createPublicPost(path, nickname, domain, port, http_prefix,
                          "Curiouser and curiouser!",
                          testFollowersOnly,
@@ -756,7 +756,7 @@ def createServerAlice(path: str, domain: str, port: int,
                          testSubject, testSchedulePost,
                          testEventDate, testEventTime, testLocation,
                          testIsArticle, systemLanguage, conversationId,
-                         lowBandwidth, contentLicenseUrl)
+                         lowBandwidth, content_license_url)
         createPublicPost(path, nickname, domain, port, http_prefix,
                          "In the gardens of memory, in the palace " +
                          "of dreams, that is where you and I shall meet",
@@ -771,7 +771,7 @@ def createServerAlice(path: str, domain: str, port: int,
                          testSubject, testSchedulePost,
                          testEventDate, testEventTime, testLocation,
                          testIsArticle, systemLanguage, conversationId,
-                         lowBandwidth, contentLicenseUrl)
+                         lowBandwidth, content_license_url)
         regenerateIndexForBox(path, nickname, domain, 'outbox')
     global testServerAliceRunning
     testServerAliceRunning = True
@@ -794,9 +794,9 @@ def createServerAlice(path: str, domain: str, port: int,
     maxLikeCount = 10
     defaultReplyIntervalHours = 9999999999
     listsEnabled = ''
-    contentLicenseUrl = 'https://creativecommons.org/licenses/by/4.0'
+    content_license_url = 'https://creativecommons.org/licenses/by/4.0'
     print('Server running: Alice')
-    runDaemon(contentLicenseUrl,
+    runDaemon(content_license_url,
               listsEnabled, defaultReplyIntervalHours,
               lowBandwidth, maxLikeCount,
               sharedItemsFederatedDomains,
@@ -870,7 +870,7 @@ def createServerBob(path: str, domain: str, port: int,
         testLocation = None
         testIsArticle = False
         conversationId = None
-        contentLicenseUrl = 'https://creativecommons.org/licenses/by/4.0'
+        content_license_url = 'https://creativecommons.org/licenses/by/4.0'
         createPublicPost(path, nickname, domain, port, http_prefix,
                          "It's your life, live it your way.",
                          testFollowersOnly,
@@ -884,7 +884,7 @@ def createServerBob(path: str, domain: str, port: int,
                          testSubject, testSchedulePost,
                          testEventDate, testEventTime, testLocation,
                          testIsArticle, systemLanguage, conversationId,
-                         lowBandwidth, contentLicenseUrl)
+                         lowBandwidth, content_license_url)
         createPublicPost(path, nickname, domain, port, http_prefix,
                          "One of the things I've realised is that " +
                          "I am very simple",
@@ -899,7 +899,7 @@ def createServerBob(path: str, domain: str, port: int,
                          testSubject, testSchedulePost,
                          testEventDate, testEventTime, testLocation,
                          testIsArticle, systemLanguage, conversationId,
-                         lowBandwidth, contentLicenseUrl)
+                         lowBandwidth, content_license_url)
         createPublicPost(path, nickname, domain, port, http_prefix,
                          "Quantum physics is a bit of a passion of mine",
                          testFollowersOnly,
@@ -913,7 +913,7 @@ def createServerBob(path: str, domain: str, port: int,
                          testSubject, testSchedulePost,
                          testEventDate, testEventTime, testLocation,
                          testIsArticle, systemLanguage, conversationId,
-                         lowBandwidth, contentLicenseUrl)
+                         lowBandwidth, content_license_url)
         regenerateIndexForBox(path, nickname, domain, 'outbox')
     global testServerBobRunning
     testServerBobRunning = True
@@ -936,9 +936,9 @@ def createServerBob(path: str, domain: str, port: int,
     maxLikeCount = 10
     defaultReplyIntervalHours = 9999999999
     listsEnabled = ''
-    contentLicenseUrl = 'https://creativecommons.org/licenses/by/4.0'
+    content_license_url = 'https://creativecommons.org/licenses/by/4.0'
     print('Server running: Bob')
-    runDaemon(contentLicenseUrl,
+    runDaemon(content_license_url,
               listsEnabled, defaultReplyIntervalHours,
               lowBandwidth, maxLikeCount,
               sharedItemsFederatedDomains,
@@ -1006,9 +1006,9 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
     lowBandwidth = True
     defaultReplyIntervalHours = 9999999999
     listsEnabled = ''
-    contentLicenseUrl = 'https://creativecommons.org/licenses/by/4.0'
+    content_license_url = 'https://creativecommons.org/licenses/by/4.0'
     print('Server running: Eve')
-    runDaemon(contentLicenseUrl,
+    runDaemon(content_license_url,
               listsEnabled, defaultReplyIntervalHours,
               lowBandwidth, maxLikeCount,
               sharedItemsFederatedDomains,
@@ -1078,9 +1078,9 @@ def createServerGroup(path: str, domain: str, port: int,
     lowBandwidth = True
     defaultReplyIntervalHours = 9999999999
     listsEnabled = ''
-    contentLicenseUrl = 'https://creativecommons.org/licenses/by/4.0'
+    content_license_url = 'https://creativecommons.org/licenses/by/4.0'
     print('Server running: Group')
-    runDaemon(contentLicenseUrl,
+    runDaemon(content_license_url,
               listsEnabled, defaultReplyIntervalHours,
               lowBandwidth, maxLikeCount,
               sharedItemsFederatedDomains,
@@ -1117,7 +1117,7 @@ def testPostMessageBetweenServers(base_dir: str) -> None:
     systemLanguage = 'en'
     http_prefix = 'http'
     proxyType = None
-    contentLicenseUrl = 'https://creativecommons.org/licenses/by/4.0'
+    content_license_url = 'https://creativecommons.org/licenses/by/4.0'
 
     if os.path.isdir(base_dir + '/.tests'):
         shutil.rmtree(base_dir + '/.tests', ignore_errors=False, onerror=None)
@@ -1221,7 +1221,7 @@ def testPostMessageBetweenServers(base_dir: str) -> None:
                  alicePersonCache, isArticle, systemLanguage,
                  aliceSharedItemsFederatedDomains,
                  aliceSharedItemFederationTokens, lowBandwidth,
-                 contentLicenseUrl,
+                 content_license_url,
                  inReplyTo, inReplyToAtomUri, subject)
     print('sendResult: ' + str(sendResult))
 
@@ -1442,7 +1442,7 @@ def testFollowBetweenServers(base_dir: str) -> None:
     http_prefix = 'http'
     proxyType = None
     federationList = []
-    contentLicenseUrl = 'https://creativecommons.org/licenses/by/4.0'
+    content_license_url = 'https://creativecommons.org/licenses/by/4.0'
 
     if os.path.isdir(base_dir + '/.tests'):
         shutil.rmtree(base_dir + '/.tests', ignore_errors=False, onerror=None)
@@ -1582,7 +1582,7 @@ def testFollowBetweenServers(base_dir: str) -> None:
                  alicePersonCache, isArticle, systemLanguage,
                  aliceSharedItemsFederatedDomains,
                  aliceSharedItemFederationTokens, lowBandwidth,
-                 contentLicenseUrl,
+                 content_license_url,
                  inReplyTo, inReplyToAtomUri, subject)
     print('sendResult: ' + str(sendResult))
 
@@ -1631,7 +1631,7 @@ def testSharedItemsFederation(base_dir: str) -> None:
     http_prefix = 'http'
     proxyType = None
     federationList = []
-    contentLicenseUrl = 'https://creativecommons.org/licenses/by/4.0'
+    content_license_url = 'https://creativecommons.org/licenses/by/4.0'
 
     if os.path.isdir(base_dir + '/.tests'):
         shutil.rmtree(base_dir + '/.tests', ignore_errors=False, onerror=None)
@@ -1933,7 +1933,7 @@ def testSharedItemsFederation(base_dir: str) -> None:
                  alicePersonCache, isArticle, systemLanguage,
                  aliceSharedItemsFederatedDomains,
                  aliceSharedItemFederationTokens, lowBandwidth,
-                 contentLicenseUrl, True,
+                 content_license_url, True,
                  inReplyTo, inReplyToAtomUri, subject)
     print('sendResult: ' + str(sendResult))
 
@@ -2037,7 +2037,7 @@ def testGroupFollow(base_dir: str) -> None:
     http_prefix = 'http'
     proxyType = None
     federationList = []
-    contentLicenseUrl = 'https://creativecommons.org/licenses/by/4.0'
+    content_license_url = 'https://creativecommons.org/licenses/by/4.0'
 
     if os.path.isdir(base_dir + '/.tests'):
         shutil.rmtree(base_dir + '/.tests', ignore_errors=False, onerror=None)
@@ -2356,7 +2356,7 @@ def testGroupFollow(base_dir: str) -> None:
                  alicePersonCache, isArticle, systemLanguage,
                  aliceSharedItemsFederatedDomains,
                  aliceSharedItemFederationTokens, lowBandwidth,
-                 contentLicenseUrl,
+                 content_license_url,
                  inReplyTo, inReplyToAtomUri, subject)
     print('sendResult: ' + str(sendResult))
 
@@ -2709,7 +2709,7 @@ def _testCreatePerson(base_dir: str):
     mediaType = None
     conversationId = None
     lowBandwidth = True
-    contentLicenseUrl = 'https://creativecommons.org/licenses/by/4.0'
+    content_license_url = 'https://creativecommons.org/licenses/by/4.0'
     createPublicPost(base_dir, nickname, domain, port, http_prefix,
                      content, followersOnly, saveToFile, clientToServer,
                      commentsEnabled, attachImageFilename, mediaType,
@@ -2718,7 +2718,7 @@ def _testCreatePerson(base_dir: str):
                      testSubject, testSchedulePost,
                      testEventDate, testEventTime, testLocation,
                      testIsArticle, systemLanguage, conversationId,
-                     lowBandwidth, contentLicenseUrl)
+                     lowBandwidth, content_license_url)
 
     os.chdir(currDir)
     shutil.rmtree(base_dir, ignore_errors=False, onerror=None)
@@ -2781,7 +2781,7 @@ def testClientToServer(base_dir: str):
 
     global testServerAliceRunning
     global testServerBobRunning
-    contentLicenseUrl = 'https://creativecommons.org/licenses/by/4.0'
+    content_license_url = 'https://creativecommons.org/licenses/by/4.0'
     testServerAliceRunning = False
     testServerBobRunning = False
 
@@ -2898,7 +2898,7 @@ def testClientToServer(base_dir: str):
                           attachedImageDescription, city,
                           cachedWebfingers, personCache, isArticle,
                           systemLanguage, lowBandwidth,
-                          contentLicenseUrl,
+                          content_license_url,
                           True, None, None,
                           conversationId, None)
     print('sendResult: ' + str(sendResult))
@@ -4252,7 +4252,7 @@ def _testReplyToPublicPost(base_dir: str) -> None:
     testIsArticle = False
     conversationId = None
     lowBandwidth = True
-    contentLicenseUrl = 'https://creativecommons.org/licenses/by/4.0'
+    content_license_url = 'https://creativecommons.org/licenses/by/4.0'
     reply = \
         createPublicPost(base_dir, nickname, domain, port, http_prefix,
                          content, followersOnly, saveToFile,
@@ -4263,7 +4263,7 @@ def _testReplyToPublicPost(base_dir: str) -> None:
                          testSubject, testSchedulePost,
                          testEventDate, testEventTime, testLocation,
                          testIsArticle, systemLanguage, conversationId,
-                         lowBandwidth, contentLicenseUrl)
+                         lowBandwidth, content_license_url)
     # print(str(reply))
     assert reply['object']['content'] == \
         '<p><span class=\"h-card\">' + \
@@ -4797,7 +4797,7 @@ def _testLinksWithinPost(base_dir: str) -> None:
     testIsArticle = False
     conversationId = None
     lowBandwidth = True
-    contentLicenseUrl = 'https://creativecommons.org/licenses/by/4.0'
+    content_license_url = 'https://creativecommons.org/licenses/by/4.0'
 
     postJsonObject = \
         createPublicPost(base_dir, nickname, domain, port, http_prefix,
@@ -4809,7 +4809,7 @@ def _testLinksWithinPost(base_dir: str) -> None:
                          testSubject, testSchedulePost,
                          testEventDate, testEventTime, testLocation,
                          testIsArticle, systemLanguage, conversationId,
-                         lowBandwidth, contentLicenseUrl)
+                         lowBandwidth, content_license_url)
 
     assert postJsonObject['object']['content'] == \
         '<p>This is a test post with links.<br><br>' + \
@@ -4846,7 +4846,7 @@ def _testLinksWithinPost(base_dir: str) -> None:
                          testSubject, testSchedulePost,
                          testEventDate, testEventTime, testLocation,
                          testIsArticle, systemLanguage, conversationId,
-                         lowBandwidth, contentLicenseUrl)
+                         lowBandwidth, content_license_url)
     assert postJsonObject['object']['content'] == content
     assert postJsonObject['object']['contentMap'][systemLanguage] == content
 
@@ -5784,7 +5784,7 @@ def _testCanReplyTo(base_dir: str) -> None:
     testIsArticle = False
     conversationId = None
     lowBandwidth = True
-    contentLicenseUrl = 'https://creativecommons.org/licenses/by/4.0'
+    content_license_url = 'https://creativecommons.org/licenses/by/4.0'
 
     postJsonObject = \
         createPublicPost(base_dir, nickname, domain, port, http_prefix,
@@ -5796,7 +5796,7 @@ def _testCanReplyTo(base_dir: str) -> None:
                          testSubject, testSchedulePost,
                          testEventDate, testEventTime, testLocation,
                          testIsArticle, systemLanguage, conversationId,
-                         lowBandwidth, contentLicenseUrl)
+                         lowBandwidth, content_license_url)
     # set the date on the post
     currDateStr = "2021-09-08T20:45:00Z"
     postJsonObject['published'] = currDateStr

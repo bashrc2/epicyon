@@ -1073,7 +1073,7 @@ def _createPostS2S(base_dir: str, nickname: str, domain: str, port: int,
                    postObjectType: str, summary: str,
                    inReplyToAtomUri: str, systemLanguage: str,
                    conversationId: str, lowBandwidth: bool,
-                   contentLicenseUrl: str) -> {}:
+                   content_license_url: str) -> {}:
     """Creates a new server-to-server post
     """
     actorUrl = localActorUrl(http_prefix, nickname, domain)
@@ -1134,7 +1134,7 @@ def _createPostS2S(base_dir: str, nickname: str, domain: str, port: int,
             attachMedia(base_dir, http_prefix, nickname, domain, port,
                         newPost['object'], attachImageFilename,
                         mediaType, imageDescription, city, lowBandwidth,
-                        contentLicenseUrl)
+                        content_license_url)
     return newPost
 
 
@@ -1148,7 +1148,7 @@ def _createPostC2S(base_dir: str, nickname: str, domain: str, port: int,
                    postObjectType: str, summary: str,
                    inReplyToAtomUri: str, systemLanguage: str,
                    conversationId: str, lowBandwidth: str,
-                   contentLicenseUrl: str) -> {}:
+                   content_license_url: str) -> {}:
     """Creates a new client-to-server post
     """
     domainFull = getFullDomain(domain, port)
@@ -1199,7 +1199,7 @@ def _createPostC2S(base_dir: str, nickname: str, domain: str, port: int,
             attachMedia(base_dir, http_prefix, nickname, domain, port,
                         newPost, attachImageFilename,
                         mediaType, imageDescription, city, lowBandwidth,
-                        contentLicenseUrl)
+                        content_license_url)
     return newPost
 
 
@@ -1382,7 +1382,7 @@ def _createPostBase(base_dir: str,
                     eventStatus: str, ticketUrl: str,
                     systemLanguage: str,
                     conversationId: str, lowBandwidth: bool,
-                    contentLicenseUrl: str) -> {}:
+                    content_license_url: str) -> {}:
     """Creates a message
     """
     content = removeInvalidChars(content)
@@ -1518,7 +1518,7 @@ def _createPostBase(base_dir: str,
                            postObjectType, summary,
                            inReplyToAtomUri, systemLanguage,
                            conversationId, lowBandwidth,
-                           contentLicenseUrl)
+                           content_license_url)
     else:
         newPost = \
             _createPostC2S(base_dir, nickname, domain, port,
@@ -1531,7 +1531,7 @@ def _createPostBase(base_dir: str,
                            postObjectType, summary,
                            inReplyToAtomUri, systemLanguage,
                            conversationId, lowBandwidth,
-                           contentLicenseUrl)
+                           content_license_url)
 
     _createPostMentions(ccUrl, newPost, toRecipients, tags)
 
@@ -1768,7 +1768,7 @@ def createPublicPost(base_dir: str,
                      isArticle: bool,
                      systemLanguage: str,
                      conversationId: str, lowBandwidth: bool,
-                     contentLicenseUrl: str) -> {}:
+                     content_license_url: str) -> {}:
     """Public post
     """
     domainFull = getFullDomain(domain, port)
@@ -1800,7 +1800,7 @@ def createPublicPost(base_dir: str,
                            anonymousParticipationEnabled,
                            eventStatus, ticketUrl, systemLanguage,
                            conversationId, lowBandwidth,
-                           contentLicenseUrl)
+                           content_license_url)
 
 
 def _appendCitationsToBlogPost(base_dir: str,
@@ -1844,7 +1844,7 @@ def createBlogPost(base_dir: str,
                    eventDate: str, eventTime: str,
                    location: str, systemLanguage: str,
                    conversationId: str, lowBandwidth: bool,
-                   contentLicenseUrl: str) -> {}:
+                   content_license_url: str) -> {}:
     blogJson = \
         createPublicPost(base_dir,
                          nickname, domain, port, http_prefix,
@@ -1856,7 +1856,7 @@ def createBlogPost(base_dir: str,
                          schedulePost,
                          eventDate, eventTime, location,
                          True, systemLanguage, conversationId,
-                         lowBandwidth, contentLicenseUrl)
+                         lowBandwidth, content_license_url)
     blogJson['object']['url'] = \
         blogJson['object']['url'].replace('/@', '/users/')
     _appendCitationsToBlogPost(base_dir, nickname, domain, blogJson)
@@ -1871,7 +1871,7 @@ def createNewsPost(base_dir: str,
                    imageDescription: str, city: str,
                    subject: str, systemLanguage: str,
                    conversationId: str, lowBandwidth: bool,
-                   contentLicenseUrl: str) -> {}:
+                   content_license_url: str) -> {}:
     clientToServer = False
     inReplyTo = None
     inReplyToAtomUri = None
@@ -1890,7 +1890,7 @@ def createNewsPost(base_dir: str,
                          schedulePost,
                          eventDate, eventTime, location,
                          True, systemLanguage, conversationId,
-                         lowBandwidth, contentLicenseUrl)
+                         lowBandwidth, content_license_url)
     blog['object']['type'] = 'Article'
     return blog
 
@@ -1904,7 +1904,7 @@ def createQuestionPost(base_dir: str,
                        imageDescription: str, city: str,
                        subject: str, durationDays: int,
                        systemLanguage: str, lowBandwidth: bool,
-                       contentLicenseUrl: str) -> {}:
+                       content_license_url: str) -> {}:
     """Question post with multiple choice options
     """
     domainFull = getFullDomain(domain, port)
@@ -1921,7 +1921,7 @@ def createQuestionPost(base_dir: str,
                         False, None, None, None, None, None,
                         None, None, None,
                         None, None, None, None, None, systemLanguage,
-                        None, lowBandwidth, contentLicenseUrl)
+                        None, lowBandwidth, content_license_url)
     messageJson['object']['type'] = 'Question'
     messageJson['object']['oneOf'] = []
     messageJson['object']['votersCount'] = 0
@@ -1954,7 +1954,7 @@ def createUnlistedPost(base_dir: str,
                        eventDate: str, eventTime: str,
                        location: str, systemLanguage: str,
                        conversationId: str, lowBandwidth: bool,
-                       contentLicenseUrl: str) -> {}:
+                       content_license_url: str) -> {}:
     """Unlisted post. This has the #Public and followers links inverted.
     """
     domainFull = getFullDomain(domain, port)
@@ -1972,7 +1972,7 @@ def createUnlistedPost(base_dir: str,
                            None, None, None, None, None,
                            None, None, None, None, None, systemLanguage,
                            conversationId, lowBandwidth,
-                           contentLicenseUrl)
+                           content_license_url)
 
 
 def createFollowersOnlyPost(base_dir: str,
@@ -1989,7 +1989,7 @@ def createFollowersOnlyPost(base_dir: str,
                             eventDate: str, eventTime: str,
                             location: str, systemLanguage: str,
                             conversationId: str, lowBandwidth: bool,
-                            contentLicenseUrl: str) -> {}:
+                            content_license_url: str) -> {}:
     """Followers only post
     """
     domainFull = getFullDomain(domain, port)
@@ -2007,7 +2007,7 @@ def createFollowersOnlyPost(base_dir: str,
                            None, None, None, None, None,
                            None, None, None, None, None, systemLanguage,
                            conversationId, lowBandwidth,
-                           contentLicenseUrl)
+                           content_license_url)
 
 
 def getMentionedPeople(base_dir: str, http_prefix: str,
@@ -2060,7 +2060,7 @@ def createDirectMessagePost(base_dir: str,
                             eventDate: str, eventTime: str,
                             location: str, systemLanguage: str,
                             conversationId: str, lowBandwidth: bool,
-                            contentLicenseUrl: str) -> {}:
+                            content_license_url: str) -> {}:
     """Direct Message post
     """
     content = resolvePetnames(base_dir, nickname, domain, content)
@@ -2085,7 +2085,7 @@ def createDirectMessagePost(base_dir: str,
                         None, None, None, None, None,
                         None, None, None, None, None, systemLanguage,
                         conversationId, lowBandwidth,
-                        contentLicenseUrl)
+                        content_license_url)
     # mentioned recipients go into To rather than Cc
     messageJson['to'] = messageJson['object']['cc']
     messageJson['object']['to'] = messageJson['to']
@@ -2106,7 +2106,7 @@ def createReportPost(base_dir: str,
                      imageDescription: str, city: str,
                      debug: bool, subject: str, systemLanguage: str,
                      lowBandwidth: bool,
-                     contentLicenseUrl: str) -> {}:
+                     content_license_url: str) -> {}:
     """Send a report to moderators
     """
     domainFull = getFullDomain(domain, port)
@@ -2180,7 +2180,7 @@ def createReportPost(base_dir: str,
                             False, None, None, None, None, None,
                             None, None, None,
                             None, None, None, None, None, systemLanguage,
-                            None, lowBandwidth, contentLicenseUrl)
+                            None, lowBandwidth, content_license_url)
         if not postJsonObject:
             continue
 
@@ -2276,7 +2276,7 @@ def sendPost(signingPrivateKeyPem: str, projectVersion: str,
              isArticle: bool, systemLanguage: str,
              sharedItemsFederatedDomains: [],
              sharedItemFederationTokens: {},
-             lowBandwidth: bool, contentLicenseUrl: str,
+             lowBandwidth: bool, content_license_url: str,
              debug: bool = False, inReplyTo: str = None,
              inReplyToAtomUri: str = None, subject: str = None) -> int:
     """Post to another inbox. Used by unit tests.
@@ -2343,7 +2343,7 @@ def sendPost(signingPrivateKeyPem: str, projectVersion: str,
                         None, None, None,
                         None, None, None, None, None, systemLanguage,
                         conversationId, lowBandwidth,
-                        contentLicenseUrl)
+                        content_license_url)
 
     # get the senders private key
     privateKeyPem = _getPersonKey(nickname, domain, base_dir, 'private')
@@ -2425,7 +2425,7 @@ def sendPostViaServer(signingPrivateKeyPem: str, projectVersion: str,
                       cachedWebfingers: {}, personCache: {},
                       isArticle: bool, systemLanguage: str,
                       lowBandwidth: bool,
-                      contentLicenseUrl: str,
+                      content_license_url: str,
                       debug: bool = False,
                       inReplyTo: str = None,
                       inReplyToAtomUri: str = None,
@@ -2512,7 +2512,7 @@ def sendPostViaServer(signingPrivateKeyPem: str, projectVersion: str,
                         None, None, None,
                         None, None, None, None, None, systemLanguage,
                         conversationId, lowBandwidth,
-                        contentLicenseUrl)
+                        content_license_url)
 
     authHeader = createBasicAuthHeader(fromNickname, password)
 

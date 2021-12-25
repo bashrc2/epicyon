@@ -200,7 +200,7 @@ def postMessageToOutbox(session, translate: {},
                         maxLikeCount: int,
                         maxRecentPosts: int, CWlists: {},
                         listsEnabled: str,
-                        contentLicenseUrl: str) -> bool:
+                        content_license_url: str) -> bool:
     """post is received by the outbox
     Client to server message post
     https://www.w3.org/TR/activitypub/#client-to-server-outbox-delivery
@@ -626,7 +626,7 @@ def postMessageToOutbox(session, translate: {},
     outboxShareUpload(base_dir, http_prefix, postToNickname, domain,
                       port, messageJson, debug, city,
                       systemLanguage, translate, lowBandwidth,
-                      contentLicenseUrl)
+                      content_license_url)
 
     if debug:
         print('DEBUG: handle undo share uploads')

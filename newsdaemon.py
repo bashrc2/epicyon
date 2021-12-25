@@ -546,7 +546,7 @@ def _convertRSStoActivityPub(base_dir: str, http_prefix: str,
                              allowLocalNetworkAccess: bool,
                              systemLanguage: str,
                              lowBandwidth: bool,
-                             contentLicenseUrl: str) -> None:
+                             content_license_url: str) -> None:
     """Converts rss items in a newswire into posts
     """
     if not newswire:
@@ -639,7 +639,7 @@ def _convertRSStoActivityPub(base_dir: str, http_prefix: str,
                               imageDescription, city,
                               rssTitle, systemLanguage,
                               conversationId, lowBandwidth,
-                              contentLicenseUrl)
+                              content_license_url)
         if not blog:
             continue
 
@@ -837,7 +837,7 @@ def runNewswireDaemon(base_dir: str, httpd,
                                  httpd.allowLocalNetworkAccess,
                                  httpd.systemLanguage,
                                  httpd.lowBandwidth,
-                                 httpd.contentLicenseUrl)
+                                 httpd.content_license_url)
         print('Newswire feed converted to ActivityPub')
 
         if httpd.maxNewsPosts > 0:

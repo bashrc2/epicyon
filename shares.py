@@ -308,7 +308,7 @@ def addShare(base_dir: str,
              price: str, currency: str,
              systemLanguage: str, translate: {},
              sharesFileType: str, lowBandwidth: bool,
-             contentLicenseUrl: str) -> None:
+             content_license_url: str) -> None:
     """Adds a new share
     """
     if isFilteredGlobally(base_dir,
@@ -363,7 +363,7 @@ def addShare(base_dir: str,
                     convertImageToLowBandwidth(imageFilename)
                 processMetaData(base_dir, nickname, domain,
                                 imageFilename, itemIDfile + '.' + ext,
-                                city, contentLicenseUrl)
+                                city, content_license_url)
                 if moveImage:
                     try:
                         os.remove(imageFilename)
@@ -1032,7 +1032,7 @@ def outboxShareUpload(base_dir: str, http_prefix: str,
                       messageJson: {}, debug: bool, city: str,
                       systemLanguage: str, translate: {},
                       lowBandwidth: bool,
-                      contentLicenseUrl: str) -> None:
+                      content_license_url: str) -> None:
     """ When a shared item is received by the outbox from c2s
     """
     if not messageJson.get('type'):
@@ -1094,7 +1094,7 @@ def outboxShareUpload(base_dir: str, http_prefix: str,
              messageJson['object']['itemPrice'],
              messageJson['object']['itemCurrency'],
              systemLanguage, translate, 'shares',
-             lowBandwidth, contentLicenseUrl)
+             lowBandwidth, content_license_url)
     if debug:
         print('DEBUG: shared item received via c2s')
 

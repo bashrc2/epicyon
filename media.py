@@ -108,7 +108,7 @@ def _removeMetaData(imageFilename: str, outputFilename: str) -> None:
 
 def _spoofMetaData(base_dir: str, nickname: str, domain: str,
                    outputFilename: str, spoofCity: str,
-                   contentLicenseUrl: str) -> None:
+                   content_license_url: str) -> None:
     """Spoof image metadata using a decoy model for a given city
     """
     if not os.path.isfile(outputFilename):
@@ -151,7 +151,7 @@ def _spoofMetaData(base_dir: str, nickname: str, domain: str,
                      '-GPSLongitude=' + str(longitude) + ' ' +
                      '-GPSLatitudeRef=' + latitudeRef + ' ' +
                      '-GPSLatitude=' + str(latitude) + ' ' +
-                     '-copyright="' + contentLicenseUrl + '" ' +
+                     '-copyright="' + content_license_url + '" ' +
                      '-Comment="" ' +
                      outputFilename) != 0:  # nosec
             print('ERROR: exiftool failed to run')
@@ -202,7 +202,7 @@ def convertImageToLowBandwidth(imageFilename: str) -> None:
 
 def processMetaData(base_dir: str, nickname: str, domain: str,
                     imageFilename: str, outputFilename: str,
-                    city: str, contentLicenseUrl: str) -> None:
+                    city: str, content_license_url: str) -> None:
     """Handles image metadata. This tries to spoof the metadata
     if possible, but otherwise just removes it
     """
@@ -211,7 +211,7 @@ def processMetaData(base_dir: str, nickname: str, domain: str,
 
     # now add some spoofed data to misdirect surveillance capitalists
     _spoofMetaData(base_dir, nickname, domain, outputFilename, city,
-                   contentLicenseUrl)
+                   content_license_url)
 
 
 def _isMedia(imageFilename: str) -> bool:
@@ -298,7 +298,7 @@ def attachMedia(base_dir: str, http_prefix: str,
                 postJson: {}, imageFilename: str,
                 mediaType: str, description: str,
                 city: str, lowBandwidth: bool,
-                contentLicenseUrl: str) -> {}:
+                content_license_url: str) -> {}:
     """Attaches media to a json object post
     The description can be None
     """
@@ -357,7 +357,7 @@ def attachMedia(base_dir: str, http_prefix: str,
                 convertImageToLowBandwidth(imageFilename)
             processMetaData(base_dir, nickname, domain,
                             imageFilename, mediaFilename, city,
-                            contentLicenseUrl)
+                            content_license_url)
         else:
             copyfile(imageFilename, mediaFilename)
         _updateEtag(mediaFilename)

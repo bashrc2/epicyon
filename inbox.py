@@ -2795,7 +2795,7 @@ def _bounceDM(senderPostId: str, session, http_prefix: str,
               translate: {}, debug: bool,
               lastBounceMessage: [], systemLanguage: str,
               signingPrivateKeyPem: str,
-              contentLicenseUrl: str) -> bool:
+              content_license_url: str) -> bool:
     """Sends a bounce message back to the sending handle
     if a DM has been rejected
     """
@@ -2855,7 +2855,7 @@ def _bounceDM(senderPostId: str, session, http_prefix: str,
                                 subject, debug, schedulePost,
                                 eventDate, eventTime, location,
                                 systemLanguage, conversationId, lowBandwidth,
-                                contentLicenseUrl)
+                                content_license_url)
     if not postJsonObject:
         print('WARN: unable to create bounce message to ' + sendingHandle)
         return False
@@ -2882,7 +2882,7 @@ def _isValidDM(base_dir: str, nickname: str, domain: str, port: int,
                lastBounceMessage: [],
                handle: str, systemLanguage: str,
                signingPrivateKeyPem: str,
-               contentLicenseUrl: str) -> bool:
+               content_license_url: str) -> bool:
     """Is the given message a valid DM?
     """
     if nickname == 'inbox':
@@ -2961,7 +2961,7 @@ def _isValidDM(base_dir: str, nickname: str, domain: str, port: int,
                                       lastBounceMessage,
                                       systemLanguage,
                                       signingPrivateKeyPem,
-                                      contentLicenseUrl)
+                                      content_license_url)
                 return False
 
     # dm index will be updated
@@ -3198,7 +3198,7 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                        signingPrivateKeyPem: str,
                        defaultReplyIntervalHours: int,
                        CWlists: {}, listsEnabled: str,
-                       contentLicenseUrl: str) -> bool:
+                       content_license_url: str) -> bool:
     """ Anything which needs to be done after initial checks have passed
     """
     actor = keyId
@@ -3481,7 +3481,7 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                                   lastBounceMessage,
                                   handle, systemLanguage,
                                   signingPrivateKeyPem,
-                                  contentLicenseUrl):
+                                  content_license_url):
                     return False
 
             # get the actor being replied to
@@ -4479,7 +4479,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                 saveJson(queueJson['post'], sharedInboxPostFilename)
 
         listsEnabled = getConfigParam(base_dir, "listsEnabled")
-        contentLicenseUrl = getConfigParam(base_dir, "contentLicenseUrl")
+        content_license_url = getConfigParam(base_dir, "content_license_url")
 
         # for posts addressed to specific accounts
         for handle, capsId in recipientsDict.items():
@@ -4513,7 +4513,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                                signingPrivateKeyPem,
                                defaultReplyIntervalHours,
                                CWlists, listsEnabled,
-                               contentLicenseUrl)
+                               content_license_url)
             if debug:
                 pprint(queueJson['post'])
                 print('Queue: Queue post accepted')

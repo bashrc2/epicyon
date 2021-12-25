@@ -441,7 +441,7 @@ def htmlBlogPost(session, authorized: bool,
                  postJsonObject: {},
                  peertubeInstances: [],
                  systemLanguage: str, personCache: {},
-                 debug: bool, contentLicenseUrl: str) -> str:
+                 debug: bool, content_license_url: str) -> str:
     """Returns a html blog post
     """
     blogStr = ''
@@ -464,7 +464,7 @@ def htmlBlogPost(session, authorized: bool,
                                        http_prefix, domainFull, nickname,
                                        systemLanguage, published, modified,
                                        title, snippet, translate, url,
-                                       contentLicenseUrl)
+                                       content_license_url)
     _htmlBlogRemoveCwButton(blogStr, translate)
 
     blogStr += _htmlBlogPostContent(debug, session, authorized, base_dir,

@@ -518,7 +518,7 @@ class PubServer(BaseHTTPRequestHandler):
                              self.server.systemLanguage,
                              conversationId,
                              self.server.lowBandwidth,
-                             self.server.contentLicenseUrl)
+                             self.server.content_license_url)
         if messageJson:
             # name field contains the answer
             messageJson['object']['name'] = answer
@@ -1308,7 +1308,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.maxRecentPosts,
                                    self.server.CWlists,
                                    self.server.listsEnabled,
-                                   self.server.contentLicenseUrl)
+                                   self.server.content_license_url)
 
     def _getOutboxThreadIndex(self, nickname: str,
                               maxOutboxThreadsPerAccount: int) -> int:
@@ -4674,7 +4674,7 @@ class PubServer(BaseHTTPRequestHandler):
                        domain: str, domainFull: str,
                        onionDomain: str, i2pDomain: str,
                        debug: bool, allowLocalNetworkAccess: bool,
-                       systemLanguage: str, contentLicenseUrl: str) -> None:
+                       systemLanguage: str, content_license_url: str) -> None:
         """Updates your user profile after editing via the Edit button
         on the profile screen
         """
@@ -4820,7 +4820,7 @@ class PubServer(BaseHTTPRequestHandler):
                     convertImageToLowBandwidth(filename)
                 processMetaData(base_dir, nickname, domain,
                                 filename, postImageFilename, city,
-                                contentLicenseUrl)
+                                content_license_url)
                 if os.path.isfile(postImageFilename):
                     print('profile update POST ' + mType +
                           ' image, zip or font saved to ' +
@@ -5220,22 +5220,22 @@ class PubServer(BaseHTTPRequestHandler):
                                                'libretranslateApiKey', '')
 
                         # change instance short description
-                        if fields.get('contentLicenseUrl'):
-                            if fields['contentLicenseUrl'] != \
-                               self.server.contentLicenseUrl:
-                                licenseStr = fields['contentLicenseUrl']
+                        if fields.get('content_license_url'):
+                            if fields['content_license_url'] != \
+                               self.server.content_license_url:
+                                licenseStr = fields['content_license_url']
                                 setConfigParam(base_dir,
-                                               'contentLicenseUrl',
+                                               'content_license_url',
                                                licenseStr)
-                                self.server.contentLicenseUrl = \
+                                self.server.content_license_url = \
                                     licenseStr
                         else:
                             licenseStr = \
                                 'https://creativecommons.org/licenses/by/4.0'
                             setConfigParam(base_dir,
-                                           'contentLicenseUrl',
+                                           'content_license_url',
                                            licenseStr)
-                            self.server.contentLicenseUrl = licenseStr
+                            self.server.content_license_url = licenseStr
 
                         # change instance short description
                         currInstanceDescriptionShort = \
@@ -9714,7 +9714,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     rolesList,
                                     None, None, self.server.CWlists,
                                     self.server.listsEnabled,
-                                    self.server.contentLicenseUrl)
+                                    self.server.content_license_url)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -9796,6 +9796,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.sharedItemsFederatedDomains
                                 signingPrivateKeyPem = \
                                     self.server.signingPrivateKeyPem
+                                content_license_url = \
+                                    self.server.content_license_url
                                 msg = \
                                     htmlProfile(signingPrivateKeyPem,
                                                 self.server.rssIconAtTop,
@@ -9829,7 +9831,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                 None, None,
                                                 self.server.CWlists,
                                                 self.server.listsEnabled,
-                                                self.server.contentLicenseUrl)
+                                                content_license_url)
                                 msg = msg.encode('utf-8')
                                 msglen = len(msg)
                                 self._set_headers('text/html', msglen,
@@ -11825,7 +11827,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     pageNumber, sharesPerPage,
                                     self.server.CWlists,
                                     self.server.listsEnabled,
-                                    self.server.contentLicenseUrl)
+                                    self.server.content_license_url)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -11910,8 +11912,8 @@ class PubServer(BaseHTTPRequestHandler):
 
                         city = getSpoofedCity(self.server.city,
                                               base_dir, nickname, domain)
-                    contentLicenseUrl = \
-                        self.server.contentLicenseUrl
+                    content_license_url = \
+                        self.server.content_license_url
                     msg = \
                         htmlProfile(self.server.signingPrivateKeyPem,
                                     self.server.rssIconAtTop,
@@ -11947,7 +11949,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     followsPerPage,
                                     self.server.CWlists,
                                     self.server.listsEnabled,
-                                    contentLicenseUrl).encode('utf-8')
+                                    content_license_url).encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html',
                                       msglen, cookie, callingDomain, False)
@@ -12029,8 +12031,8 @@ class PubServer(BaseHTTPRequestHandler):
 
                         city = getSpoofedCity(self.server.city,
                                               base_dir, nickname, domain)
-                    contentLicenseUrl = \
-                        self.server.contentLicenseUrl
+                    content_license_url = \
+                        self.server.content_license_url
                     msg = \
                         htmlProfile(self.server.signingPrivateKeyPem,
                                     self.server.rssIconAtTop,
@@ -12067,7 +12069,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     followsPerPage,
                                     self.server.CWlists,
                                     self.server.listsEnabled,
-                                    contentLicenseUrl).encode('utf-8')
+                                    content_license_url).encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
                                       cookie, callingDomain, False)
@@ -12201,7 +12203,7 @@ class PubServer(BaseHTTPRequestHandler):
                             None, None, None,
                             self.server.CWlists,
                             self.server.listsEnabled,
-                            self.server.contentLicenseUrl).encode('utf-8')
+                            self.server.content_license_url).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
                               cookie, callingDomain, False)
@@ -14129,7 +14131,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.systemLanguage,
                                        self.server.personCache,
                                        self.server.debug,
-                                       self.server.contentLicenseUrl)
+                                       self.server.content_license_url)
                     if msg is not None:
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
@@ -16388,7 +16390,7 @@ class PubServer(BaseHTTPRequestHandler):
                                length: int, postBytes, boundary: str,
                                callingDomain: str, cookie: str,
                                authorized: bool,
-                               contentLicenseUrl: str) -> int:
+                               content_license_url: str) -> int:
         # Note: this needs to happen synchronously
         # 0=this is not a new post
         # 1=new post success
@@ -16466,7 +16468,7 @@ class PubServer(BaseHTTPRequestHandler):
                     processMetaData(self.server.base_dir,
                                     nickname, self.server.domain,
                                     filename, postImageFilename, city,
-                                    contentLicenseUrl)
+                                    content_license_url)
                     if os.path.isfile(postImageFilename):
                         print('POST media saved to ' + postImageFilename)
                     else:
@@ -16593,7 +16595,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.systemLanguage,
                                      conversationId,
                                      self.server.lowBandwidth,
-                                     self.server.contentLicenseUrl)
+                                     self.server.content_license_url)
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
@@ -16678,7 +16680,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.systemLanguage,
                                    conversationId,
                                    self.server.lowBandwidth,
-                                   self.server.contentLicenseUrl)
+                                   self.server.content_license_url)
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
@@ -16770,7 +16772,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             imgDescription,
                                             city,
                                             self.server.lowBandwidth,
-                                            self.server.contentLicenseUrl)
+                                            self.server.content_license_url)
 
                         replaceYouTube(postJsonObject,
                                        self.server.YTReplacementDomain,
@@ -16829,7 +16831,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.systemLanguage,
                                        conversationId,
                                        self.server.lowBandwidth,
-                                       self.server.contentLicenseUrl)
+                                       self.server.content_license_url)
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
@@ -16881,7 +16883,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.systemLanguage,
                                             conversationId,
                                             self.server.lowBandwidth,
-                                            self.server.contentLicenseUrl)
+                                            self.server.content_license_url)
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
@@ -16912,6 +16914,7 @@ class PubServer(BaseHTTPRequestHandler):
                     conversationId = None
                     if fields.get('conversationId'):
                         conversationId = fields['conversationId']
+                    content_license_url = self.server.content_license_url
 
                     messageJson = \
                         createDirectMessagePost(self.server.base_dir,
@@ -16937,7 +16940,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                 self.server.systemLanguage,
                                                 conversationId,
                                                 self.server.lowBandwidth,
-                                                self.server.contentLicenseUrl)
+                                                content_license_url)
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
@@ -16991,7 +16994,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.systemLanguage,
                                             conversationId,
                                             self.server.lowBandwidth,
-                                            self.server.contentLicenseUrl)
+                                            self.server.content_license_url)
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
@@ -17028,7 +17031,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.debug, fields['subject'],
                                      self.server.systemLanguage,
                                      self.server.lowBandwidth,
-                                     self.server.contentLicenseUrl)
+                                     self.server.content_license_url)
                 if messageJson:
                     if self._postToOutbox(messageJson,
                                           self.server.projectVersion,
@@ -17070,7 +17073,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        intDuration,
                                        self.server.systemLanguage,
                                        self.server.lowBandwidth,
-                                       self.server.contentLicenseUrl)
+                                       self.server.content_license_url)
                 if messageJson:
                     if self.server.debug:
                         print('DEBUG: new Question')
@@ -17143,7 +17146,7 @@ class PubServer(BaseHTTPRequestHandler):
                          self.server.systemLanguage,
                          self.server.translate, sharesFileType,
                          self.server.lowBandwidth,
-                         self.server.contentLicenseUrl)
+                         self.server.content_license_url)
                 if filename:
                     if os.path.isfile(filename):
                         try:
@@ -17158,7 +17161,7 @@ class PubServer(BaseHTTPRequestHandler):
     def _receiveNewPost(self, postType: str, path: str,
                         callingDomain: str, cookie: str,
                         authorized: bool,
-                        contentLicenseUrl: str) -> int:
+                        content_license_url: str) -> int:
         """A new post has been created
         This creates a thread to send the new post
         """
@@ -17262,7 +17265,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             postBytes, boundary,
                                             callingDomain, cookie,
                                             authorized,
-                                            contentLicenseUrl)
+                                            content_license_url)
         return pageNumber
 
     def _cryptoAPIreadHandle(self):
@@ -17561,7 +17564,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.i2pDomain, self.server.debug,
                                 self.server.allowLocalNetworkAccess,
                                 self.server.systemLanguage,
-                                self.server.contentLicenseUrl)
+                                self.server.content_license_url)
             self.server.POSTbusy = False
             return
 
@@ -17971,7 +17974,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._receiveNewPost(currPostType, self.path,
                                      callingDomain, cookie,
                                      authorized,
-                                     self.server.contentLicenseUrl)
+                                     self.server.content_license_url)
             if pageNumber:
                 print(currPostType + ' post received')
                 nickname = self.path.split('/users/')[1]
@@ -18387,7 +18390,7 @@ def loadTokens(base_dir: str, tokensDict: {}, tokensLookup: {}) -> None:
         break
 
 
-def runDaemon(contentLicenseUrl: str,
+def runDaemon(content_license_url: str,
               listsEnabled: str,
               defaultReplyIntervalHours: int,
               lowBandwidth: bool,
@@ -18477,9 +18480,9 @@ def runDaemon(contentLicenseUrl: str,
     assert not scanThemesForScripts(base_dir)
 
     # license for content of the instance
-    if not contentLicenseUrl:
-        contentLicenseUrl = 'https://creativecommons.org/licenses/by/4.0'
-    httpd.contentLicenseUrl = contentLicenseUrl
+    if not content_license_url:
+        content_license_url = 'https://creativecommons.org/licenses/by/4.0'
+    httpd.content_license_url = content_license_url
 
     # fitness metrics
     fitnessFilename = base_dir + '/accounts/fitness.json'

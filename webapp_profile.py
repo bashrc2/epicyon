@@ -560,7 +560,7 @@ def htmlProfile(signingPrivateKeyPem: str,
                 extraJson: {}, pageNumber: int,
                 maxItemsPerPage: int,
                 CWlists: {}, listsEnabled: str,
-                contentLicenseUrl: str) -> str:
+                content_license_url: str) -> str:
     """Show the profile page as html
     """
     nickname = profileJson['preferredUsername']
@@ -1014,7 +1014,7 @@ def htmlProfile(signingPrivateKeyPem: str,
     profileStr = \
         htmlHeaderWithPersonMarkup(cssFilename, instanceTitle,
                                    profileJson, city,
-                                   contentLicenseUrl) + \
+                                   content_license_url) + \
         profileStr + htmlFooter()
     return profileStr
 
@@ -1312,10 +1312,10 @@ def _htmlEditProfileInstance(base_dir: str, translate: {},
         getConfigParam(base_dir, 'instanceDescriptionShort')
     instanceTitle = \
         getConfigParam(base_dir, 'instanceTitle')
-    contentLicenseUrl = \
-        getConfigParam(base_dir, 'contentLicenseUrl')
-    if not contentLicenseUrl:
-        contentLicenseUrl = 'https://creativecommons.org/licenses/by/4.0'
+    content_license_url = \
+        getConfigParam(base_dir, 'content_license_url')
+    if not content_license_url:
+        content_license_url = 'https://creativecommons.org/licenses/by/4.0'
 
     instanceStr = beginEditSection(translate['Instance Settings'])
 
@@ -1333,7 +1333,7 @@ def _htmlEditProfileInstance(base_dir: str, translate: {},
                      '', True)
     instanceStr += \
         editTextField(translate['Content License'],
-                      'contentLicenseUrl', contentLicenseUrl)
+                      'content_license_url', content_license_url)
     instanceStr += '<br>\n'
     instanceStr += \
         editTextField(translate['Custom post submit button text'],

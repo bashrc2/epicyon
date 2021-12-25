@@ -551,7 +551,7 @@ def htmlHeaderWithExternalStyle(cssFilename: str, instanceTitle: str,
 
 def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
                                actorJson: {}, city: str,
-                               contentLicenseUrl: str,
+                               content_license_url: str,
                                lang='en') -> str:
     """html header which includes person markup
     https://schema.org/Person
@@ -685,7 +685,7 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
         '      "name": "' + nameStr + '",\n' + \
         '      "image": "' + actorJson['icon']['url'] + '",\n' + \
         '      "description": "' + description + '",\n' + \
-        '      "license": "' + contentLicenseUrl + '"\n' + \
+        '      "license": "' + content_license_url + '"\n' + \
         '    }\n' + \
         '    </script>\n'
 
@@ -798,7 +798,7 @@ def htmlHeaderWithBlogMarkup(cssFilename: str, instanceTitle: str,
                              published: str, modified: str,
                              title: str, snippet: str,
                              translate: {}, url: str,
-                             contentLicenseUrl: str) -> str:
+                             content_license_url: str) -> str:
     """html header which includes blog post markup
     https://schema.org/BlogPosting
     """
@@ -826,7 +826,7 @@ def htmlHeaderWithBlogMarkup(cssFilename: str, instanceTitle: str,
         '        "name": "' + instanceTitle + '",\n' + \
         '        "sameAs": "' + aboutUrl + '"\n' + \
         '      },\n' + \
-        '      "license": "' + contentLicenseUrl + '",\n' + \
+        '      "license": "' + content_license_url + '",\n' + \
         '      "description": "' + snippet + '"\n' + \
         '    }\n' + \
         '    </script>\n'

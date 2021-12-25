@@ -95,7 +95,7 @@ def setProfileImage(base_dir: str, http_prefix: str,
                     nickname: str, domain: str,
                     port: int, imageFilename: str, imageType: str,
                     resolution: str, city: str,
-                    contentLicenseUrl: str) -> bool:
+                    content_license_url: str) -> bool:
     """Saves the given image file as an avatar or background
     image for the given person
     """
@@ -159,7 +159,7 @@ def setProfileImage(base_dir: str, http_prefix: str,
         subprocess.call(cmd, shell=True)
         processMetaData(base_dir, nickname, domain,
                         profileFilename, profileFilename, city,
-                        contentLicenseUrl)
+                        content_license_url)
         return True
     return False
 
