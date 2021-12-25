@@ -43,6 +43,7 @@ from posts import getUserUrl
 from posts import checkDomains
 from session import createSession
 from session import getJson
+from session import downloadHtml
 from newswire import getRSS
 from filters import addFilter
 from filters import removeFilter
@@ -290,6 +291,8 @@ parser.add_argument('--postsraw', dest='postsraw', type=str,
                     help='Show raw json of posts for the given handle')
 parser.add_argument('--json', dest='json', type=str, default=None,
                     help='Show the json for a given activitypub url')
+parser.add_argument('--htmlpost', dest='htmlpost', type=str, default=None,
+                    help='Show the html for a given activitypub url')
 parser.add_argument('--rss', dest='rss', type=str, default=None,
                     help='Show an rss feed for a given url')
 parser.add_argument('-f', '--federate', nargs='+', dest='federationList',
@@ -949,7 +952,33 @@ if args.json:
             print('Did not obtain instance actor key for ' + domain)
     testJson = getJson(signingPrivateKeyPem, session, args.json, asHeader,
                        None, debug, __version__, httpPrefix, domain)
-    pprint(testJson)
+    if testJson:
+        pprint(testJson)
+    sys.exit()
+
+if args.htmlpost:
+    session = createSession(None)
+    profileStr = 'https://www.w3.org/ns/activitystreams'
+    asHeader = {
+        'Accept': 'text/html; profile="' + profileStr + '"'
+    }
+    if not args.domain:
+        args.domain = getConfigParam(baseDir, 'domain')
+    domain = ''
+    if args.domain:
+        domain = args.domain
+    signingPrivateKeyPem = getInstanceActorKey(baseDir, domain)
+    if debug:
+        print('baseDir: ' + str(baseDir))
+        if signingPrivateKeyPem:
+            print('Obtained instance actor signing key')
+        else:
+            print('Did not obtain instance actor key for ' + domain)
+    testHtml = downloadHtml(signingPrivateKeyPem, session, args.htmlpost,
+                            asHeader, None, debug, __version__,
+                            httpPrefix, domain)
+    if testHtml:
+        print(testHtml)
     sys.exit()
 
 # create cache for actors
