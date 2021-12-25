@@ -3138,17 +3138,17 @@ low_bandwidth = \
 if low_bandwidth is not None:
     args.low_bandwidth = bool(low_bandwidth)
 
-userAgentsBlocked = []
+user_agents_blocked = []
 if args.userAgentBlocks:
-    userAgentsBlockedStr = args.userAgentBlocks
-    setConfigParam(base_dir, 'userAgentsBlocked', userAgentsBlockedStr)
+    user_agents_blockedStr = args.userAgentBlocks
+    setConfigParam(base_dir, 'user_agents_blocked', user_agents_blockedStr)
 else:
-    userAgentsBlockedStr = \
-        getConfigParam(base_dir, 'userAgentsBlocked')
-if userAgentsBlockedStr:
-    agentBlocksList = userAgentsBlockedStr.split(',')
+    user_agents_blockedStr = \
+        getConfigParam(base_dir, 'user_agents_blocked')
+if user_agents_blockedStr:
+    agentBlocksList = user_agents_blockedStr.split(',')
     for agentBlockStr in agentBlocksList:
-        userAgentsBlocked.append(agentBlockStr.strip())
+        user_agents_blocked.append(agentBlockStr.strip())
 
 lists_enabled = ''
 if args.lists_enabled:
@@ -3215,7 +3215,7 @@ if __name__ == "__main__":
               args.default_reply_interval_hrs,
               args.low_bandwidth, args.max_like_count,
               shared_items_federated_domains,
-              userAgentsBlocked,
+              user_agents_blocked,
               args.logLoginFailures,
               args.city,
               args.showNodeInfoAccounts,

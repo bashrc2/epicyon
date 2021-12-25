@@ -598,9 +598,9 @@ class PubServer(BaseHTTPRequestHandler):
             return True
 
         # is the User-Agent type blocked? eg. "Mastodon"
-        if self.server.userAgentsBlocked:
+        if self.server.user_agents_blocked:
             blockedUA = False
-            for agentName in self.server.userAgentsBlocked:
+            for agentName in self.server.user_agents_blocked:
                 if agentName in agentStr:
                     blockedUA = True
                     break
@@ -6395,26 +6395,27 @@ class PubServer(BaseHTTPRequestHandler):
                                            newListsEnabled)
 
                         # save blocked user agents
-                        userAgentsBlocked = []
-                        if fields.get('userAgentsBlockedStr'):
-                            userAgentsBlockedStr = \
-                                fields['userAgentsBlockedStr']
-                            userAgentsBlockedList = \
-                                userAgentsBlockedStr.split('\n')
-                            for ua in userAgentsBlockedList:
-                                if ua in userAgentsBlocked:
+                        user_agents_blocked = []
+                        if fields.get('user_agents_blockedStr'):
+                            user_agents_blockedStr = \
+                                fields['user_agents_blockedStr']
+                            user_agents_blockedList = \
+                                user_agents_blockedStr.split('\n')
+                            for ua in user_agents_blockedList:
+                                if ua in user_agents_blocked:
                                     continue
-                                userAgentsBlocked.append(ua.strip())
-                        if str(self.server.userAgentsBlocked) != \
-                           str(userAgentsBlocked):
-                            self.server.userAgentsBlocked = userAgentsBlocked
-                            userAgentsBlockedStr = ''
-                            for ua in userAgentsBlocked:
-                                if userAgentsBlockedStr:
-                                    userAgentsBlockedStr += ','
-                                userAgentsBlockedStr += ua
-                            setConfigParam(base_dir, 'userAgentsBlocked',
-                                           userAgentsBlockedStr)
+                                user_agents_blocked.append(ua.strip())
+                        if str(self.server.user_agents_blocked) != \
+                           str(user_agents_blocked):
+                            self.server.user_agents_blocked = \
+                                user_agents_blocked
+                            user_agents_blockedStr = ''
+                            for ua in user_agents_blocked:
+                                if user_agents_blockedStr:
+                                    user_agents_blockedStr += ','
+                                user_agents_blockedStr += ua
+                            setConfigParam(base_dir, 'user_agents_blocked',
+                                           user_agents_blockedStr)
 
                         # save peertube instances list
                         peertubeInstancesFile = \
@@ -13050,7 +13051,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   peertubeInstances,
                                   self.server.textModeBanner,
                                   city,
-                                  self.server.userAgentsBlocked,
+                                  self.server.user_agents_blocked,
                                   accessKeys,
                                   default_reply_interval_hrs,
                                   self.server.CWlists,
@@ -18405,7 +18406,7 @@ def runDaemon(content_license_url: str,
               low_bandwidth: bool,
               max_like_count: int,
               shared_items_federated_domains: [],
-              userAgentsBlocked: [],
+              user_agents_blocked: [],
               logLoginFailures: bool,
               city: str,
               showNodeInfoAccounts: bool,
@@ -18561,7 +18562,7 @@ def runDaemon(content_license_url: str,
     httpd.low_bandwidth = low_bandwidth
 
     # list of blocked user agent types within the User-Agent header
-    httpd.userAgentsBlocked = userAgentsBlocked
+    httpd.user_agents_blocked = user_agents_blocked
 
     httpd.unitTest = unitTest
     httpd.allowLocalNetworkAccess = allowLocalNetworkAccess

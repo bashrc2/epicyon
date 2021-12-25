@@ -1592,7 +1592,7 @@ def _htmlEditProfileSharedItems(base_dir: str, nickname: str, domain: str,
 
 
 def _htmlEditProfileFiltering(base_dir: str, nickname: str, domain: str,
-                              userAgentsBlocked: str,
+                              user_agents_blocked: str,
                               translate: {}, replyIntervalHours: int,
                               CWlists: {}, lists_enabled: str) -> str:
     """Filtering and blocking section of edit profile screen
@@ -1759,14 +1759,14 @@ def _htmlEditProfileFiltering(base_dir: str, nickname: str, domain: str,
             '<a href="/users/' + nickname + '/crawlers">' + \
             translate['Known Web Crawlers'] + '</a><br>\n'
 
-        userAgentsBlockedStr = ''
-        for ua in userAgentsBlocked:
-            if userAgentsBlockedStr:
-                userAgentsBlockedStr += '\n'
-            userAgentsBlockedStr += ua
+        user_agents_blockedStr = ''
+        for ua in user_agents_blocked:
+            if user_agents_blockedStr:
+                user_agents_blockedStr += '\n'
+            user_agents_blockedStr += ua
         editProfileForm += \
             editTextArea(translate['Blocked User Agents'],
-                         'userAgentsBlockedStr', userAgentsBlockedStr,
+                         'user_agents_blockedStr', user_agents_blockedStr,
                          200, '', False)
 
         CWlistsStr = ''
@@ -2088,7 +2088,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, base_dir: str, path: str,
                     defaultTimeline: str, theme: str,
                     peertubeInstances: [],
                     textModeBanner: str, city: str,
-                    userAgentsBlocked: str,
+                    user_agents_blocked: str,
                     accessKeys: {},
                     default_reply_interval_hrs: int,
                     CWlists: {}, lists_enabled: str) -> str:
@@ -2300,7 +2300,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, base_dir: str, path: str,
                                                default_reply_interval_hrs)
     editProfileForm += \
         _htmlEditProfileFiltering(base_dir, nickname, domain,
-                                  userAgentsBlocked, translate,
+                                  user_agents_blocked, translate,
                                   replyIntervalHours,
                                   CWlists, lists_enabled)
 
