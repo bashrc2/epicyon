@@ -77,7 +77,7 @@ def _like(recentPostsCache: {},
           send_threads: [], postLog: [],
           person_cache: {}, cached_webfingers: {},
           debug: bool, project_version: str,
-          signingPrivateKeyPem: str) -> {}:
+          signing_priv_key_pem: str) -> {}:
     """Creates a like
     actor is the person doing the liking
     'to' might be a specific person (actor) whose post was liked
@@ -138,7 +138,7 @@ def _like(recentPostsCache: {},
                        http_prefix, True, client_to_server, federationList,
                        send_threads, postLog, cached_webfingers, person_cache,
                        debug, project_version, None, groupAccount,
-                       signingPrivateKeyPem, 7367374)
+                       signing_priv_key_pem, 7367374)
 
     return newLikeJson
 
@@ -152,7 +152,7 @@ def likePost(recentPostsCache: {},
              send_threads: [], postLog: [],
              person_cache: {}, cached_webfingers: {},
              debug: bool, project_version: str,
-             signingPrivateKeyPem: str) -> {}:
+             signing_priv_key_pem: str) -> {}:
     """Likes a given status post. This is only used by unit tests
     """
     likeDomain = getFullDomain(likeDomain, likePort)
@@ -164,7 +164,7 @@ def likePost(recentPostsCache: {},
                  session, base_dir, federationList, nickname, domain, port,
                  ccList, http_prefix, objectUrl, actorLiked, client_to_server,
                  send_threads, postLog, person_cache, cached_webfingers,
-                 debug, project_version, signingPrivateKeyPem)
+                 debug, project_version, signing_priv_key_pem)
 
 
 def sendLikeViaServer(base_dir: str, session,
@@ -173,7 +173,7 @@ def sendLikeViaServer(base_dir: str, session,
                       http_prefix: str, likeUrl: str,
                       cached_webfingers: {}, person_cache: {},
                       debug: bool, project_version: str,
-                      signingPrivateKeyPem: str) -> {}:
+                      signing_priv_key_pem: str) -> {}:
     """Creates a like via c2s
     """
     if not session:
@@ -197,7 +197,7 @@ def sendLikeViaServer(base_dir: str, session,
     wfRequest = webfingerHandle(session, handle, http_prefix,
                                 cached_webfingers,
                                 fromDomain, project_version, debug, False,
-                                signingPrivateKeyPem)
+                                signing_priv_key_pem)
     if not wfRequest:
         if debug:
             print('DEBUG: like webfinger failed for ' + handle)
@@ -212,7 +212,7 @@ def sendLikeViaServer(base_dir: str, session,
     # get the actor inbox for the To handle
     originDomain = fromDomain
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
-     displayName, _) = getPersonBox(signingPrivateKeyPem,
+     displayName, _) = getPersonBox(signing_priv_key_pem,
                                     originDomain,
                                     base_dir, session, wfRequest,
                                     person_cache,
@@ -256,7 +256,7 @@ def sendUndoLikeViaServer(base_dir: str, session,
                           http_prefix: str, likeUrl: str,
                           cached_webfingers: {}, person_cache: {},
                           debug: bool, project_version: str,
-                          signingPrivateKeyPem: str) -> {}:
+                          signing_priv_key_pem: str) -> {}:
     """Undo a like via c2s
     """
     if not session:
@@ -284,7 +284,7 @@ def sendUndoLikeViaServer(base_dir: str, session,
     wfRequest = webfingerHandle(session, handle, http_prefix,
                                 cached_webfingers,
                                 fromDomain, project_version, debug, False,
-                                signingPrivateKeyPem)
+                                signing_priv_key_pem)
     if not wfRequest:
         if debug:
             print('DEBUG: unlike webfinger failed for ' + handle)
@@ -300,7 +300,7 @@ def sendUndoLikeViaServer(base_dir: str, session,
     # get the actor inbox for the To handle
     originDomain = fromDomain
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
-     displayName, _) = getPersonBox(signingPrivateKeyPem,
+     displayName, _) = getPersonBox(signing_priv_key_pem,
                                     originDomain,
                                     base_dir, session, wfRequest,
                                     person_cache, project_version,

@@ -226,7 +226,7 @@ def getUserUrl(wfRequest: {}, sourceId: int, debug: bool) -> str:
     return None
 
 
-def parseUserFeed(signingPrivateKeyPem: str,
+def parseUserFeed(signing_priv_key_pem: str,
                   session, feedUrl: str, asHeader: {},
                   project_version: str, http_prefix: str,
                   originDomain: str, debug: bool, depth: int = 0) -> []:
@@ -241,7 +241,7 @@ def parseUserFeed(signingPrivateKeyPem: str,
         print('http_prefix ' + str(http_prefix))
         print('originDomain ' + str(originDomain))
 
-    feedJson = getJson(signingPrivateKeyPem, session, feedUrl, asHeader, None,
+    feedJson = getJson(signing_priv_key_pem, session, feedUrl, asHeader, None,
                        debug, project_version, http_prefix, originDomain)
     if not feedJson:
         profileStr = 'https://www.w3.org/ns/activitystreams'
@@ -250,7 +250,7 @@ def parseUserFeed(signingPrivateKeyPem: str,
             asHeader = {
                 'Accept': acceptStr
             }
-            feedJson = getJson(signingPrivateKeyPem, session, feedUrl,
+            feedJson = getJson(signing_priv_key_pem, session, feedUrl,
                                asHeader, None, debug, project_version,
                                http_prefix, originDomain)
     if not feedJson:
@@ -280,7 +280,7 @@ def parseUserFeed(signingPrivateKeyPem: str,
         if isinstance(nextUrl, str):
             if '?max_id=0' not in nextUrl:
                 userFeed = \
-                    parseUserFeed(signingPrivateKeyPem,
+                    parseUserFeed(signing_priv_key_pem,
                                   session, nextUrl, asHeader,
                                   project_version, http_prefix,
                                   originDomain, debug, depth + 1)
@@ -300,7 +300,7 @@ def _getPersonBoxActor(session, base_dir: str, actor: str,
                        debug: bool, project_version: str,
                        http_prefix: str, originDomain: str,
                        person_cache: {},
-                       signingPrivateKeyPem: str,
+                       signing_priv_key_pem: str,
                        sourceId: int) -> {}:
     """Returns the actor json for the given actor url
     """
@@ -313,24 +313,24 @@ def _getPersonBoxActor(session, base_dir: str, actor: str,
         asHeader = {
             'Accept': 'application/ld+json; profile="' + profileStr + '"'
         }
-    personJson = getJson(signingPrivateKeyPem, session, actor, asHeader, None,
+    personJson = getJson(signing_priv_key_pem, session, actor, asHeader, None,
                          debug, project_version, http_prefix, originDomain)
     if personJson:
         return personJson
     asHeader = {
         'Accept': 'application/ld+json; profile="' + profileStr + '"'
     }
-    personJson = getJson(signingPrivateKeyPem, session, actor, asHeader, None,
+    personJson = getJson(signing_priv_key_pem, session, actor, asHeader, None,
                          debug, project_version, http_prefix, originDomain)
     if personJson:
         return personJson
     print('Unable to get actor for ' + actor + ' ' + str(sourceId))
-    if not signingPrivateKeyPem:
+    if not signing_priv_key_pem:
         print('No signing key provided when getting actor')
     return None
 
 
-def getPersonBox(signingPrivateKeyPem: str, originDomain: str,
+def getPersonBox(signing_priv_key_pem: str, originDomain: str,
                  base_dir: str, session, wfRequest: {}, person_cache: {},
                  project_version: str, http_prefix: str,
                  nickname: str, domain: str,
@@ -369,7 +369,7 @@ def getPersonBox(signingPrivateKeyPem: str, originDomain: str,
                            profileStr, asHeader,
                            debug, project_version,
                            http_prefix, originDomain,
-                           person_cache, signingPrivateKeyPem,
+                           person_cache, signing_priv_key_pem,
                            sourceId)
     if not personJson:
         return None, None, None, None, None, None, None, None
@@ -530,8 +530,8 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
               person_cache: {}, raw: bool,
               simple: bool, debug: bool,
               project_version: str, http_prefix: str,
-              originDomain: str, systemLanguage: str,
-              signingPrivateKeyPem: str) -> {}:
+              originDomain: str, system_language: str,
+              signing_priv_key_pem: str) -> {}:
     """Gets public posts from an outbox
     """
     if debug:
@@ -558,7 +558,7 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
             print('Returning the raw feed')
         result = []
         i = 0
-        userFeed = parseUserFeed(signingPrivateKeyPem,
+        userFeed = parseUserFeed(signing_priv_key_pem,
                                  session, outboxUrl, asHeader,
                                  project_version, http_prefix,
                                  originDomain, debug)
@@ -572,7 +572,7 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
 
     if debug:
         print('Returning a human readable version of the feed')
-    userFeed = parseUserFeed(signingPrivateKeyPem,
+    userFeed = parseUserFeed(signing_priv_key_pem,
                              session, outboxUrl, asHeader,
                              project_version, http_prefix,
                              originDomain, debug)
@@ -591,7 +591,7 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
         if item['type'] != 'Note' and item['type'] != 'Page':
             thisItem = item['object']
 
-        content = getBaseContentFromPost(item, systemLanguage)
+        content = getBaseContentFromPost(item, system_language)
         content = content.replace('&apos;', "'")
 
         mentions = []
@@ -751,8 +751,8 @@ def getPostDomains(session, outboxUrl: str, maxPosts: int,
                    project_version: str, http_prefix: str,
                    domain: str,
                    wordFrequency: {},
-                   domainList: [], systemLanguage: str,
-                   signingPrivateKeyPem: str) -> []:
+                   domainList: [], system_language: str,
+                   signing_priv_key_pem: str) -> []:
     """Returns a list of domains referenced within public posts
     """
     if not outboxUrl:
@@ -775,7 +775,7 @@ def getPostDomains(session, outboxUrl: str, maxPosts: int,
     postDomains = domainList
 
     i = 0
-    userFeed = parseUserFeed(signingPrivateKeyPem,
+    userFeed = parseUserFeed(signing_priv_key_pem,
                              session, outboxUrl, asHeader,
                              project_version, http_prefix, domain, debug)
     for item in userFeed:
@@ -784,7 +784,7 @@ def getPostDomains(session, outboxUrl: str, maxPosts: int,
             break
         if not hasObjectDict(item):
             continue
-        contentStr = getBaseContentFromPost(item, systemLanguage)
+        contentStr = getBaseContentFromPost(item, system_language)
         if contentStr:
             _updateWordFrequency(contentStr, wordFrequency)
         if item['object'].get('inReplyTo'):
@@ -817,7 +817,7 @@ def _getPostsForBlockedDomains(base_dir: str,
                                debug: bool,
                                project_version: str, http_prefix: str,
                                domain: str,
-                               signingPrivateKeyPem: str) -> {}:
+                               signing_priv_key_pem: str) -> {}:
     """Returns a dictionary of posts for blocked domains
     """
     if not outboxUrl:
@@ -840,7 +840,7 @@ def _getPostsForBlockedDomains(base_dir: str,
     blockedPosts = {}
 
     i = 0
-    userFeed = parseUserFeed(signingPrivateKeyPem,
+    userFeed = parseUserFeed(signing_priv_key_pem,
                              session, outboxUrl, asHeader,
                              project_version, http_prefix, domain, debug)
     for item in userFeed:
@@ -1071,7 +1071,7 @@ def _createPostS2S(base_dir: str, nickname: str, domain: str, port: int,
                    tags: [], attachImageFilename: str,
                    mediaType: str, imageDescription: str, city: str,
                    postObjectType: str, summary: str,
-                   inReplyToAtomUri: str, systemLanguage: str,
+                   inReplyToAtomUri: str, system_language: str,
                    conversationId: str, low_bandwidth: bool,
                    content_license_url: str) -> {}:
     """Creates a new server-to-server post
@@ -1113,7 +1113,7 @@ def _createPostS2S(base_dir: str, nickname: str, domain: str, port: int,
             'mediaType': 'text/html',
             'content': content,
             'contentMap': {
-                systemLanguage: content
+                system_language: content
             },
             'attachment': [],
             'tag': tags,
@@ -1146,7 +1146,7 @@ def _createPostC2S(base_dir: str, nickname: str, domain: str, port: int,
                    tags: [], attachImageFilename: str,
                    mediaType: str, imageDescription: str, city: str,
                    postObjectType: str, summary: str,
-                   inReplyToAtomUri: str, systemLanguage: str,
+                   inReplyToAtomUri: str, system_language: str,
                    conversationId: str, low_bandwidth: str,
                    content_license_url: str) -> {}:
     """Creates a new client-to-server post
@@ -1179,7 +1179,7 @@ def _createPostC2S(base_dir: str, nickname: str, domain: str, port: int,
         'mediaType': 'text/html',
         'content': content,
         'contentMap': {
-            systemLanguage: content
+            system_language: content
         },
         'attachment': [],
         'tag': tags,
@@ -1380,7 +1380,7 @@ def _createPostBase(base_dir: str,
                     repliesModerationOption: str,
                     anonymousParticipationEnabled: bool,
                     eventStatus: str, ticketUrl: str,
-                    systemLanguage: str,
+                    system_language: str,
                     conversationId: str, low_bandwidth: bool,
                     content_license_url: str) -> {}:
     """Creates a message
@@ -1516,7 +1516,7 @@ def _createPostBase(base_dir: str,
                            tags, attachImageFilename,
                            mediaType, imageDescription, city,
                            postObjectType, summary,
-                           inReplyToAtomUri, systemLanguage,
+                           inReplyToAtomUri, system_language,
                            conversationId, low_bandwidth,
                            content_license_url)
     else:
@@ -1529,7 +1529,7 @@ def _createPostBase(base_dir: str,
                            tags, attachImageFilename,
                            mediaType, imageDescription, city,
                            postObjectType, summary,
-                           inReplyToAtomUri, systemLanguage,
+                           inReplyToAtomUri, system_language,
                            conversationId, low_bandwidth,
                            content_license_url)
 
@@ -1661,7 +1661,7 @@ def undoPinnedPost(base_dir: str, nickname: str, domain: str) -> None:
 
 def getPinnedPostAsJson(base_dir: str, http_prefix: str,
                         nickname: str, domain: str,
-                        domainFull: str, systemLanguage: str) -> {}:
+                        domainFull: str, system_language: str) -> {}:
     """Returns the pinned profile post as json
     """
     accountDir = acctDir(base_dir, nickname, domain)
@@ -1682,7 +1682,7 @@ def getPinnedPostAsJson(base_dir: str, http_prefix: str,
                 ],
                 'content': pinnedContent,
                 'contentMap': {
-                    systemLanguage: pinnedContent
+                    system_language: pinnedContent
                 },
                 'id': actor + '/pinned',
                 'inReplyTo': None,
@@ -1701,13 +1701,13 @@ def getPinnedPostAsJson(base_dir: str, http_prefix: str,
 
 def jsonPinPost(base_dir: str, http_prefix: str,
                 nickname: str, domain: str,
-                domainFull: str, systemLanguage: str) -> {}:
+                domainFull: str, system_language: str) -> {}:
     """Returns a pinned post as json
     """
     pinnedPostJson = \
         getPinnedPostAsJson(base_dir, http_prefix,
                             nickname, domain,
-                            domainFull, systemLanguage)
+                            domainFull, system_language)
     itemsList = []
     if pinnedPostJson:
         itemsList = [pinnedPostJson]
@@ -1766,7 +1766,7 @@ def createPublicPost(base_dir: str,
                      eventDate: str, eventTime: str,
                      location: str,
                      isArticle: bool,
-                     systemLanguage: str,
+                     system_language: str,
                      conversationId: str, low_bandwidth: bool,
                      content_license_url: str) -> {}:
     """Public post
@@ -1798,7 +1798,7 @@ def createPublicPost(base_dir: str,
                            maximumAttendeeCapacity,
                            repliesModerationOption,
                            anonymousParticipationEnabled,
-                           eventStatus, ticketUrl, systemLanguage,
+                           eventStatus, ticketUrl, system_language,
                            conversationId, low_bandwidth,
                            content_license_url)
 
@@ -1842,7 +1842,7 @@ def createBlogPost(base_dir: str,
                    inReplyTo: str, inReplyToAtomUri: str,
                    subject: str, schedulePost: bool,
                    eventDate: str, eventTime: str,
-                   location: str, systemLanguage: str,
+                   location: str, system_language: str,
                    conversationId: str, low_bandwidth: bool,
                    content_license_url: str) -> {}:
     blogJson = \
@@ -1855,7 +1855,7 @@ def createBlogPost(base_dir: str,
                          inReplyTo, inReplyToAtomUri, subject,
                          schedulePost,
                          eventDate, eventTime, location,
-                         True, systemLanguage, conversationId,
+                         True, system_language, conversationId,
                          low_bandwidth, content_license_url)
     blogJson['object']['url'] = \
         blogJson['object']['url'].replace('/@', '/users/')
@@ -1869,7 +1869,7 @@ def createNewsPost(base_dir: str,
                    content: str, followersOnly: bool, saveToFile: bool,
                    attachImageFilename: str, mediaType: str,
                    imageDescription: str, city: str,
-                   subject: str, systemLanguage: str,
+                   subject: str, system_language: str,
                    conversationId: str, low_bandwidth: bool,
                    content_license_url: str) -> {}:
     client_to_server = False
@@ -1889,7 +1889,7 @@ def createNewsPost(base_dir: str,
                          inReplyTo, inReplyToAtomUri, subject,
                          schedulePost,
                          eventDate, eventTime, location,
-                         True, systemLanguage, conversationId,
+                         True, system_language, conversationId,
                          low_bandwidth, content_license_url)
     blog['object']['type'] = 'Article'
     return blog
@@ -1903,7 +1903,7 @@ def createQuestionPost(base_dir: str,
                        attachImageFilename: str, mediaType: str,
                        imageDescription: str, city: str,
                        subject: str, durationDays: int,
-                       systemLanguage: str, low_bandwidth: bool,
+                       system_language: str, low_bandwidth: bool,
                        content_license_url: str) -> {}:
     """Question post with multiple choice options
     """
@@ -1920,7 +1920,7 @@ def createQuestionPost(base_dir: str,
                         False, False, None, None, subject,
                         False, None, None, None, None, None,
                         None, None, None,
-                        None, None, None, None, None, systemLanguage,
+                        None, None, None, None, None, system_language,
                         None, low_bandwidth, content_license_url)
     messageJson['object']['type'] = 'Question'
     messageJson['object']['oneOf'] = []
@@ -1952,7 +1952,7 @@ def createUnlistedPost(base_dir: str,
                        inReplyTo: str, inReplyToAtomUri: str,
                        subject: str, schedulePost: bool,
                        eventDate: str, eventTime: str,
-                       location: str, systemLanguage: str,
+                       location: str, system_language: str,
                        conversationId: str, low_bandwidth: bool,
                        content_license_url: str) -> {}:
     """Unlisted post. This has the #Public and followers links inverted.
@@ -1970,7 +1970,7 @@ def createUnlistedPost(base_dir: str,
                            inReplyTo, inReplyToAtomUri, subject,
                            schedulePost, eventDate, eventTime, location,
                            None, None, None, None, None,
-                           None, None, None, None, None, systemLanguage,
+                           None, None, None, None, None, system_language,
                            conversationId, low_bandwidth,
                            content_license_url)
 
@@ -1987,7 +1987,7 @@ def createFollowersOnlyPost(base_dir: str,
                             inReplyToAtomUri: str,
                             subject: str, schedulePost: bool,
                             eventDate: str, eventTime: str,
-                            location: str, systemLanguage: str,
+                            location: str, system_language: str,
                             conversationId: str, low_bandwidth: bool,
                             content_license_url: str) -> {}:
     """Followers only post
@@ -2005,7 +2005,7 @@ def createFollowersOnlyPost(base_dir: str,
                            inReplyTo, inReplyToAtomUri, subject,
                            schedulePost, eventDate, eventTime, location,
                            None, None, None, None, None,
-                           None, None, None, None, None, systemLanguage,
+                           None, None, None, None, None, system_language,
                            conversationId, low_bandwidth,
                            content_license_url)
 
@@ -2058,7 +2058,7 @@ def createDirectMessagePost(base_dir: str,
                             subject: str, debug: bool,
                             schedulePost: bool,
                             eventDate: str, eventTime: str,
-                            location: str, systemLanguage: str,
+                            location: str, system_language: str,
                             conversationId: str, low_bandwidth: bool,
                             content_license_url: str) -> {}:
     """Direct Message post
@@ -2083,7 +2083,7 @@ def createDirectMessagePost(base_dir: str,
                         inReplyTo, inReplyToAtomUri, subject,
                         schedulePost, eventDate, eventTime, location,
                         None, None, None, None, None,
-                        None, None, None, None, None, systemLanguage,
+                        None, None, None, None, None, system_language,
                         conversationId, low_bandwidth,
                         content_license_url)
     # mentioned recipients go into To rather than Cc
@@ -2104,7 +2104,7 @@ def createReportPost(base_dir: str,
                      client_to_server: bool, commentsEnabled: bool,
                      attachImageFilename: str, mediaType: str,
                      imageDescription: str, city: str,
-                     debug: bool, subject: str, systemLanguage: str,
+                     debug: bool, subject: str, system_language: str,
                      low_bandwidth: bool,
                      content_license_url: str) -> {}:
     """Send a report to moderators
@@ -2179,7 +2179,7 @@ def createReportPost(base_dir: str,
                             True, False, None, None, subject,
                             False, None, None, None, None, None,
                             None, None, None,
-                            None, None, None, None, None, systemLanguage,
+                            None, None, None, None, None, system_language,
                             None, low_bandwidth, content_license_url)
         if not post_json_object:
             continue
@@ -2263,7 +2263,7 @@ def threadSendPost(session, postJsonStr: str, federationList: [],
         tries += 1
 
 
-def sendPost(signingPrivateKeyPem: str, project_version: str,
+def sendPost(signing_priv_key_pem: str, project_version: str,
              session, base_dir: str, nickname: str, domain: str, port: int,
              toNickname: str, toDomain: str, toPort: int, cc: str,
              http_prefix: str, content: str, followersOnly: bool,
@@ -2273,7 +2273,7 @@ def sendPost(signingPrivateKeyPem: str, project_version: str,
              imageDescription: str, city: str,
              federationList: [], send_threads: [], postLog: [],
              cached_webfingers: {}, person_cache: {},
-             isArticle: bool, systemLanguage: str,
+             isArticle: bool, system_language: str,
              shared_items_federated_domains: [],
              sharedItemFederationTokens: {},
              low_bandwidth: bool, content_license_url: str,
@@ -2296,7 +2296,7 @@ def sendPost(signingPrivateKeyPem: str, project_version: str,
     wfRequest = webfingerHandle(session, handle, http_prefix,
                                 cached_webfingers,
                                 domain, project_version, debug, False,
-                                signingPrivateKeyPem)
+                                signing_priv_key_pem)
     if not wfRequest:
         return 1
     if not isinstance(wfRequest, dict):
@@ -2314,7 +2314,7 @@ def sendPost(signingPrivateKeyPem: str, project_version: str,
     # get the actor inbox for the To handle
     originDomain = domain
     (inboxUrl, pubKeyId, pubKey, toPersonId, sharedInbox, avatarUrl,
-     displayName, _) = getPersonBox(signingPrivateKeyPem,
+     displayName, _) = getPersonBox(signing_priv_key_pem,
                                     originDomain,
                                     base_dir, session, wfRequest,
                                     person_cache,
@@ -2341,7 +2341,7 @@ def sendPost(signingPrivateKeyPem: str, project_version: str,
                         inReplyToAtomUri, subject,
                         False, None, None, None, None, None,
                         None, None, None,
-                        None, None, None, None, None, systemLanguage,
+                        None, None, None, None, None, system_language,
                         conversationId, low_bandwidth,
                         content_license_url)
 
@@ -2414,7 +2414,7 @@ def sendPost(signingPrivateKeyPem: str, project_version: str,
     return 0
 
 
-def sendPostViaServer(signingPrivateKeyPem: str, project_version: str,
+def sendPostViaServer(signing_priv_key_pem: str, project_version: str,
                       base_dir: str, session, fromNickname: str, password: str,
                       fromDomain: str, fromPort: int,
                       toNickname: str, toDomain: str, toPort: int, cc: str,
@@ -2423,7 +2423,7 @@ def sendPostViaServer(signingPrivateKeyPem: str, project_version: str,
                       attachImageFilename: str, mediaType: str,
                       imageDescription: str, city: str,
                       cached_webfingers: {}, person_cache: {},
-                      isArticle: bool, systemLanguage: str,
+                      isArticle: bool, system_language: str,
                       low_bandwidth: bool,
                       content_license_url: str,
                       debug: bool = False,
@@ -2445,7 +2445,7 @@ def sendPostViaServer(signingPrivateKeyPem: str, project_version: str,
     wfRequest = \
         webfingerHandle(session, handle, http_prefix, cached_webfingers,
                         fromDomainFull, project_version, debug, False,
-                        signingPrivateKeyPem)
+                        signing_priv_key_pem)
     if not wfRequest:
         if debug:
             print('DEBUG: post webfinger failed for ' + handle)
@@ -2462,7 +2462,7 @@ def sendPostViaServer(signingPrivateKeyPem: str, project_version: str,
     # get the actor inbox for the To handle
     originDomain = fromDomain
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
-     displayName, _) = getPersonBox(signingPrivateKeyPem,
+     displayName, _) = getPersonBox(signing_priv_key_pem,
                                     originDomain,
                                     base_dir, session, wfRequest,
                                     person_cache,
@@ -2510,7 +2510,7 @@ def sendPostViaServer(signingPrivateKeyPem: str, project_version: str,
                         inReplyToAtomUri, subject,
                         False, None, None, None, None, None,
                         None, None, None,
-                        None, None, None, None, None, systemLanguage,
+                        None, None, None, None, None, system_language,
                         conversationId, low_bandwidth,
                         content_license_url)
 
@@ -2616,7 +2616,7 @@ def sendSignedJson(post_json_object: {}, session, base_dir: str,
                    send_threads: [], postLog: [], cached_webfingers: {},
                    person_cache: {}, debug: bool, project_version: str,
                    sharedItemsToken: str, groupAccount: bool,
-                   signingPrivateKeyPem: str,
+                   signing_priv_key_pem: str,
                    sourceId: int) -> int:
     """Sends a signed json object to an inbox/outbox
     """
@@ -2655,7 +2655,7 @@ def sendSignedJson(post_json_object: {}, session, base_dir: str,
     wfRequest = webfingerHandle(session, handle, http_prefix,
                                 cached_webfingers,
                                 domain, project_version, debug, groupAccount,
-                                signingPrivateKeyPem)
+                                signing_priv_key_pem)
     if not wfRequest:
         if debug:
             print('DEBUG: webfinger for ' + handle + ' failed')
@@ -2678,7 +2678,7 @@ def sendSignedJson(post_json_object: {}, session, base_dir: str,
     # get the actor inbox/outbox for the To handle
     originDomain = domain
     (inboxUrl, pubKeyId, pubKey, toPersonId, sharedInboxUrl, avatarUrl,
-     displayName, _) = getPersonBox(signingPrivateKeyPem,
+     displayName, _) = getPersonBox(signing_priv_key_pem,
                                     originDomain,
                                     base_dir, session, wfRequest,
                                     person_cache,
@@ -2868,7 +2868,7 @@ def _sendToNamedAddresses(session, base_dir: str,
                           project_version: str,
                           shared_items_federated_domains: [],
                           sharedItemFederationTokens: {},
-                          signingPrivateKeyPem: str) -> None:
+                          signing_priv_key_pem: str) -> None:
     """sends a post to the specific named addresses in to/cc
     """
     if not session:
@@ -3008,7 +3008,7 @@ def _sendToNamedAddresses(session, base_dir: str,
                        send_threads, postLog, cached_webfingers,
                        person_cache, debug, project_version,
                        sharedItemsToken, groupAccount,
-                       signingPrivateKeyPem, 34436782)
+                       signing_priv_key_pem, 34436782)
 
 
 def sendToNamedAddressesThread(session, base_dir: str,
@@ -3021,7 +3021,7 @@ def sendToNamedAddressesThread(session, base_dir: str,
                                project_version: str,
                                shared_items_federated_domains: [],
                                sharedItemFederationTokens: {},
-                               signingPrivateKeyPem: str):
+                               signing_priv_key_pem: str):
     """Returns a thread used to send a post to named addresses
     """
     sendThread = \
@@ -3036,7 +3036,7 @@ def sendToNamedAddressesThread(session, base_dir: str,
                               project_version,
                               shared_items_federated_domains,
                               sharedItemFederationTokens,
-                              signingPrivateKeyPem), daemon=True)
+                              signing_priv_key_pem), daemon=True)
     try:
         sendThread.start()
     except SocketError as ex:
@@ -3051,7 +3051,7 @@ def sendToNamedAddressesThread(session, base_dir: str,
 
 
 def _hasSharedInbox(session, http_prefix: str, domain: str,
-                    debug: bool, signingPrivateKeyPem: str) -> bool:
+                    debug: bool, signing_priv_key_pem: str) -> bool:
     """Returns true if the given domain has a shared inbox
     This tries the new and the old way of webfingering the shared inbox
     """
@@ -3062,7 +3062,7 @@ def _hasSharedInbox(session, http_prefix: str, domain: str,
     for handle in tryHandles:
         wfRequest = webfingerHandle(session, handle, http_prefix, {},
                                     domain, __version__, debug, False,
-                                    signingPrivateKeyPem)
+                                    signing_priv_key_pem)
         if wfRequest:
             if isinstance(wfRequest, dict):
                 if not wfRequest.get('errors'):
@@ -3097,7 +3097,7 @@ def sendToFollowers(session, base_dir: str,
                     project_version: str,
                     shared_items_federated_domains: [],
                     sharedItemFederationTokens: {},
-                    signingPrivateKeyPem: str) -> None:
+                    signing_priv_key_pem: str) -> None:
     """sends a post to the followers of the given nickname
     """
     print('sendToFollowers')
@@ -3157,7 +3157,7 @@ def sendToFollowers(session, base_dir: str,
 
         withSharedInbox = \
             _hasSharedInbox(session, http_prefix, followerDomain, debug,
-                            signingPrivateKeyPem)
+                            signing_priv_key_pem)
         if debug:
             if withSharedInbox:
                 print(followerDomain + ' has shared inbox')
@@ -3218,7 +3218,7 @@ def sendToFollowers(session, base_dir: str,
                            send_threads, postLog, cached_webfingers,
                            person_cache, debug, project_version,
                            sharedItemsToken, groupAccount,
-                           signingPrivateKeyPem, 639342)
+                           signing_priv_key_pem, 639342)
         else:
             # send to individual followers without using a shared inbox
             for handle in followerHandles:
@@ -3247,7 +3247,7 @@ def sendToFollowers(session, base_dir: str,
                                send_threads, postLog, cached_webfingers,
                                person_cache, debug, project_version,
                                sharedItemsToken, groupAccount,
-                               signingPrivateKeyPem, 634219)
+                               signing_priv_key_pem, 634219)
 
         time.sleep(4)
 
@@ -3270,7 +3270,7 @@ def sendToFollowersThread(session, base_dir: str,
                           project_version: str,
                           shared_items_federated_domains: [],
                           sharedItemFederationTokens: {},
-                          signingPrivateKeyPem: str):
+                          signing_priv_key_pem: str):
     """Returns a thread used to send a post to followers
     """
     sendThread = \
@@ -3285,7 +3285,7 @@ def sendToFollowersThread(session, base_dir: str,
                               project_version,
                               shared_items_federated_domains,
                               sharedItemFederationTokens,
-                              signingPrivateKeyPem), daemon=True)
+                              signing_priv_key_pem), daemon=True)
     try:
         sendThread.start()
     except SocketError as ex:
@@ -3461,9 +3461,9 @@ def isImageMedia(session, base_dir: str, http_prefix: str,
                  twitter_replacement_domain: str,
                  allow_local_network_access: bool,
                  recentPostsCache: {}, debug: bool,
-                 systemLanguage: str,
+                 system_language: str,
                  domainFull: str, person_cache: {},
-                 signingPrivateKeyPem: str) -> bool:
+                 signing_priv_key_pem: str) -> bool:
     """Returns true if the given post has attached image media
     """
     if post_json_object['type'] == 'Announce':
@@ -3476,9 +3476,9 @@ def isImageMedia(session, base_dir: str, http_prefix: str,
                              twitter_replacement_domain,
                              allow_local_network_access,
                              recentPostsCache, debug,
-                             systemLanguage,
+                             system_language,
                              domainFull, person_cache,
-                             signingPrivateKeyPem,
+                             signing_priv_key_pem,
                              blockedCache)
         if postJsonAnnounce:
             post_json_object = postJsonAnnounce
@@ -4062,13 +4062,13 @@ def getPublicPostsOfPerson(base_dir: str, nickname: str, domain: str,
                            raw: bool, simple: bool, proxy_type: str,
                            port: int, http_prefix: str,
                            debug: bool, project_version: str,
-                           systemLanguage: str,
-                           signingPrivateKeyPem: str,
+                           system_language: str,
+                           signing_priv_key_pem: str,
                            originDomain: str) -> None:
     """ This is really just for test purposes
     """
     if debug:
-        if signingPrivateKeyPem:
+        if signing_priv_key_pem:
             print('Signing key available')
         else:
             print('Signing key missing')
@@ -4092,7 +4092,7 @@ def getPublicPostsOfPerson(base_dir: str, nickname: str, domain: str,
     wfRequest = \
         webfingerHandle(session, handle, http_prefix, cached_webfingers,
                         originDomain, project_version, debug, groupAccount,
-                        signingPrivateKeyPem)
+                        signing_priv_key_pem)
     if not wfRequest:
         if debug:
             print('No webfinger result was returned for ' + handle)
@@ -4105,7 +4105,7 @@ def getPublicPostsOfPerson(base_dir: str, nickname: str, domain: str,
     if debug:
         print('Getting the outbox for ' + handle)
     (personUrl, pubKeyId, pubKey, personId, shaedInbox, avatarUrl,
-     displayName, _) = getPersonBox(signingPrivateKeyPem,
+     displayName, _) = getPersonBox(signing_priv_key_pem,
                                     originDomain,
                                     base_dir, session, wfRequest,
                                     person_cache,
@@ -4123,8 +4123,8 @@ def getPublicPostsOfPerson(base_dir: str, nickname: str, domain: str,
     _getPosts(session, personUrl, 30, max_mentions, max_emoji,
               maxAttachments, federationList,
               person_cache, raw, simple, debug,
-              project_version, http_prefix, originDomain, systemLanguage,
-              signingPrivateKeyPem)
+              project_version, http_prefix, originDomain, system_language,
+              signing_priv_key_pem)
 
 
 def getPublicPostDomains(session, base_dir: str, nickname: str, domain: str,
@@ -4132,8 +4132,8 @@ def getPublicPostDomains(session, base_dir: str, nickname: str, domain: str,
                          proxy_type: str, port: int, http_prefix: str,
                          debug: bool, project_version: str,
                          wordFrequency: {}, domainList: [],
-                         systemLanguage: str,
-                         signingPrivateKeyPem: str) -> []:
+                         system_language: str,
+                         signing_priv_key_pem: str) -> []:
     """ Returns a list of domains referenced within public posts
     """
     if not session:
@@ -4149,7 +4149,7 @@ def getPublicPostDomains(session, base_dir: str, nickname: str, domain: str,
     wfRequest = \
         webfingerHandle(session, handle, http_prefix, cached_webfingers,
                         domain, project_version, debug, False,
-                        signingPrivateKeyPem)
+                        signing_priv_key_pem)
     if not wfRequest:
         return domainList
     if not isinstance(wfRequest, dict):
@@ -4158,7 +4158,7 @@ def getPublicPostDomains(session, base_dir: str, nickname: str, domain: str,
         return domainList
 
     (personUrl, pubKeyId, pubKey, personId, sharedInbox, avatarUrl,
-     displayName, _) = getPersonBox(signingPrivateKeyPem,
+     displayName, _) = getPersonBox(signing_priv_key_pem,
                                     originDomain,
                                     base_dir, session, wfRequest,
                                     person_cache,
@@ -4173,13 +4173,13 @@ def getPublicPostDomains(session, base_dir: str, nickname: str, domain: str,
                        maxAttachments, federationList,
                        person_cache, debug,
                        project_version, http_prefix, domain,
-                       wordFrequency, domainList, systemLanguage,
-                       signingPrivateKeyPem)
+                       wordFrequency, domainList, system_language,
+                       signing_priv_key_pem)
     postDomains.sort()
     return postDomains
 
 
-def downloadFollowCollection(signingPrivateKeyPem: str,
+def downloadFollowCollection(signing_priv_key_pem: str,
                              followType: str,
                              session, http_prefix: str,
                              actor: str, pageNumber: int,
@@ -4206,7 +4206,7 @@ def downloadFollowCollection(signingPrivateKeyPem: str,
     for pageCtr in range(noOfPages):
         url = actor + '/' + followType + '?page=' + str(pageNumber + pageCtr)
         followersJson = \
-            getJson(signingPrivateKeyPem, session, url, sessionHeaders, None,
+            getJson(signing_priv_key_pem, session, url, sessionHeaders, None,
                     debug, __version__, http_prefix, None)
         if followersJson:
             if followersJson.get('orderedItems'):
@@ -4228,8 +4228,8 @@ def getPublicPostInfo(session, base_dir: str, nickname: str, domain: str,
                       originDomain: str,
                       proxy_type: str, port: int, http_prefix: str,
                       debug: bool, project_version: str,
-                      wordFrequency: {}, systemLanguage: str,
-                      signingPrivateKeyPem: str) -> []:
+                      wordFrequency: {}, system_language: str,
+                      signing_priv_key_pem: str) -> []:
     """ Returns a dict of domains referenced within public posts
     """
     if not session:
@@ -4245,7 +4245,7 @@ def getPublicPostInfo(session, base_dir: str, nickname: str, domain: str,
     wfRequest = \
         webfingerHandle(session, handle, http_prefix, cached_webfingers,
                         domain, project_version, debug, False,
-                        signingPrivateKeyPem)
+                        signing_priv_key_pem)
     if not wfRequest:
         return {}
     if not isinstance(wfRequest, dict):
@@ -4254,7 +4254,7 @@ def getPublicPostInfo(session, base_dir: str, nickname: str, domain: str,
         return {}
 
     (personUrl, pubKeyId, pubKey, personId, sharedInbox, avatarUrl,
-     displayName, _) = getPersonBox(signingPrivateKeyPem,
+     displayName, _) = getPersonBox(signing_priv_key_pem,
                                     originDomain,
                                     base_dir, session, wfRequest,
                                     person_cache,
@@ -4266,11 +4266,13 @@ def getPublicPostInfo(session, base_dir: str, nickname: str, domain: str,
     maxAttachments = 5
     maxPosts = 64
     postDomains = \
-        getPostDomains(session, personUrl, maxPosts, max_mentions, max_emoji,
+        getPostDomains(session, personUrl, maxPosts,
+                       max_mentions, max_emoji,
                        maxAttachments, federationList,
                        person_cache, debug,
                        project_version, http_prefix, domain,
-                       wordFrequency, [], systemLanguage, signingPrivateKeyPem)
+                       wordFrequency, [], system_language,
+                       signing_priv_key_pem)
     postDomains.sort()
     domainsInfo = {}
     for d in postDomains:
@@ -4285,7 +4287,7 @@ def getPublicPostInfo(session, base_dir: str, nickname: str, domain: str,
                                    person_cache,
                                    debug,
                                    project_version, http_prefix,
-                                   domain, signingPrivateKeyPem)
+                                   domain, signing_priv_key_pem)
     for blockedDomain, postUrlList in blockedPosts.items():
         domainsInfo[blockedDomain] += postUrlList
 
@@ -4297,8 +4299,8 @@ def getPublicPostDomainsBlocked(session, base_dir: str,
                                 proxy_type: str, port: int, http_prefix: str,
                                 debug: bool, project_version: str,
                                 wordFrequency: {}, domainList: [],
-                                systemLanguage: str,
-                                signingPrivateKeyPem: str) -> []:
+                                system_language: str,
+                                signing_priv_key_pem: str) -> []:
     """ Returns a list of domains referenced within public posts which
     are globally blocked on this instance
     """
@@ -4308,8 +4310,8 @@ def getPublicPostDomainsBlocked(session, base_dir: str,
                              originDomain,
                              proxy_type, port, http_prefix,
                              debug, project_version,
-                             wordFrequency, domainList, systemLanguage,
-                             signingPrivateKeyPem)
+                             wordFrequency, domainList, system_language,
+                             signing_priv_key_pem)
     if not postDomains:
         return []
 
@@ -4358,8 +4360,8 @@ def checkDomains(session, base_dir: str,
                  proxy_type: str, port: int, http_prefix: str,
                  debug: bool, project_version: str,
                  maxBlockedDomains: int, singleCheck: bool,
-                 systemLanguage: str,
-                 signingPrivateKeyPem: str) -> None:
+                 system_language: str,
+                 signing_priv_key_pem: str) -> None:
     """Checks follower accounts for references to globally blocked domains
     """
     wordFrequency = {}
@@ -4388,8 +4390,8 @@ def checkDomains(session, base_dir: str,
                                             proxy_type, port, http_prefix,
                                             debug, project_version,
                                             wordFrequency, [],
-                                            systemLanguage,
-                                            signingPrivateKeyPem)
+                                            system_language,
+                                            signing_priv_key_pem)
             if blockedDomains:
                 if len(blockedDomains) > maxBlockedDomains:
                     followerWarningStr += handle + '\n'
@@ -4410,8 +4412,8 @@ def checkDomains(session, base_dir: str,
                                             proxy_type, port, http_prefix,
                                             debug, project_version,
                                             wordFrequency, [],
-                                            systemLanguage,
-                                            signingPrivateKeyPem)
+                                            system_language,
+                                            signing_priv_key_pem)
             if blockedDomains:
                 print(handle)
                 for d in blockedDomains:
@@ -4512,9 +4514,9 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
                      twitter_replacement_domain: str,
                      allow_local_network_access: bool,
                      recentPostsCache: {}, debug: bool,
-                     systemLanguage: str,
+                     system_language: str,
                      domainFull: str, person_cache: {},
-                     signingPrivateKeyPem: str,
+                     signing_priv_key_pem: str,
                      blockedCache: {}) -> {}:
     """Download the post referenced by an announce
     """
@@ -4595,7 +4597,7 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
             print('Downloading Announce content for ' +
                   post_json_object['object'])
         announcedJson = \
-            getJson(signingPrivateKeyPem, session,
+            getJson(signing_priv_key_pem, session,
                     post_json_object['object'],
                     asHeader, None, debug, project_version,
                     http_prefix, domain)
@@ -4623,7 +4625,7 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
         if announcedJson['type'] == 'Video':
             convertedJson = \
                 convertVideoToNote(base_dir, nickname, domain,
-                                   systemLanguage,
+                                   system_language,
                                    announcedJson, blockedCache)
             if convertedJson:
                 announcedJson = convertedJson
@@ -4661,7 +4663,7 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
                             recentPostsCache)
             return None
         if not understoodPostLanguage(base_dir, nickname, domain,
-                                      announcedJson, systemLanguage,
+                                      announcedJson, system_language,
                                       http_prefix, domainFull,
                                       person_cache):
             return None
@@ -4729,9 +4731,9 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
                                 recentPostsCache)
                 return None
         post_json_object = announcedJson
-        replaceYouTube(post_json_object, yt_replace_domain, systemLanguage)
+        replaceYouTube(post_json_object, yt_replace_domain, system_language)
         replaceTwitter(post_json_object, twitter_replacement_domain,
-                       systemLanguage)
+                       system_language)
         if saveJson(post_json_object, announceFilename):
             return post_json_object
     return None
@@ -4761,7 +4763,7 @@ def sendBlockViaServer(base_dir: str, session,
                        http_prefix: str, blockedUrl: str,
                        cached_webfingers: {}, person_cache: {},
                        debug: bool, project_version: str,
-                       signingPrivateKeyPem: str) -> {}:
+                       signing_priv_key_pem: str) -> {}:
     """Creates a block via c2s
     """
     if not session:
@@ -4789,7 +4791,7 @@ def sendBlockViaServer(base_dir: str, session,
     wfRequest = webfingerHandle(session, handle, http_prefix,
                                 cached_webfingers,
                                 fromDomain, project_version, debug, False,
-                                signingPrivateKeyPem)
+                                signing_priv_key_pem)
     if not wfRequest:
         if debug:
             print('DEBUG: block webfinger failed for ' + handle)
@@ -4804,7 +4806,7 @@ def sendBlockViaServer(base_dir: str, session,
     # get the actor inbox for the To handle
     originDomain = fromDomain
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
-     displayName, _) = getPersonBox(signingPrivateKeyPem,
+     displayName, _) = getPersonBox(signing_priv_key_pem,
                                     originDomain,
                                     base_dir, session, wfRequest,
                                     person_cache,
@@ -4845,7 +4847,7 @@ def sendMuteViaServer(base_dir: str, session,
                       http_prefix: str, mutedUrl: str,
                       cached_webfingers: {}, person_cache: {},
                       debug: bool, project_version: str,
-                      signingPrivateKeyPem: str) -> {}:
+                      signing_priv_key_pem: str) -> {}:
     """Creates a mute via c2s
     """
     if not session:
@@ -4869,7 +4871,7 @@ def sendMuteViaServer(base_dir: str, session,
     wfRequest = webfingerHandle(session, handle, http_prefix,
                                 cached_webfingers,
                                 fromDomain, project_version, debug, False,
-                                signingPrivateKeyPem)
+                                signing_priv_key_pem)
     if not wfRequest:
         if debug:
             print('DEBUG: mute webfinger failed for ' + handle)
@@ -4884,7 +4886,7 @@ def sendMuteViaServer(base_dir: str, session,
     # get the actor inbox for the To handle
     originDomain = fromDomain
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
-     displayName, _) = getPersonBox(signingPrivateKeyPem,
+     displayName, _) = getPersonBox(signing_priv_key_pem,
                                     originDomain,
                                     base_dir, session, wfRequest,
                                     person_cache,
@@ -4925,7 +4927,7 @@ def sendUndoMuteViaServer(base_dir: str, session,
                           http_prefix: str, mutedUrl: str,
                           cached_webfingers: {}, person_cache: {},
                           debug: bool, project_version: str,
-                          signingPrivateKeyPem: str) -> {}:
+                          signing_priv_key_pem: str) -> {}:
     """Undoes a mute via c2s
     """
     if not session:
@@ -4954,7 +4956,7 @@ def sendUndoMuteViaServer(base_dir: str, session,
     wfRequest = webfingerHandle(session, handle, http_prefix,
                                 cached_webfingers,
                                 fromDomain, project_version, debug, False,
-                                signingPrivateKeyPem)
+                                signing_priv_key_pem)
     if not wfRequest:
         if debug:
             print('DEBUG: undo mute webfinger failed for ' + handle)
@@ -4969,7 +4971,7 @@ def sendUndoMuteViaServer(base_dir: str, session,
     # get the actor inbox for the To handle
     originDomain = fromDomain
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
-     displayName, _) = getPersonBox(signingPrivateKeyPem,
+     displayName, _) = getPersonBox(signing_priv_key_pem,
                                     originDomain,
                                     base_dir, session, wfRequest,
                                     person_cache,
@@ -5011,7 +5013,7 @@ def sendUndoBlockViaServer(base_dir: str, session,
                            http_prefix: str, blockedUrl: str,
                            cached_webfingers: {}, person_cache: {},
                            debug: bool, project_version: str,
-                           signingPrivateKeyPem: str) -> {}:
+                           signing_priv_key_pem: str) -> {}:
     """Creates a block via c2s
     """
     if not session:
@@ -5043,7 +5045,7 @@ def sendUndoBlockViaServer(base_dir: str, session,
     wfRequest = webfingerHandle(session, handle, http_prefix,
                                 cached_webfingers,
                                 fromDomain, project_version, debug, False,
-                                signingPrivateKeyPem)
+                                signing_priv_key_pem)
     if not wfRequest:
         if debug:
             print('DEBUG: unblock webfinger failed for ' + handle)
@@ -5058,7 +5060,7 @@ def sendUndoBlockViaServer(base_dir: str, session,
     # get the actor inbox for the To handle
     originDomain = fromDomain
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
-     displayName, _) = getPersonBox(signingPrivateKeyPem,
+     displayName, _) = getPersonBox(signing_priv_key_pem,
                                     originDomain,
                                     base_dir, session, wfRequest, person_cache,
                                     project_version, http_prefix, fromNickname,
@@ -5128,7 +5130,7 @@ def c2sBoxJson(base_dir: str, session,
                domain: str, port: int,
                http_prefix: str,
                boxName: str, pageNumber: int,
-               debug: bool, signingPrivateKeyPem: str) -> {}:
+               debug: bool, signing_priv_key_pem: str) -> {}:
     """C2S Authenticated GET of posts for a timeline
     """
     if not session:
@@ -5150,7 +5152,7 @@ def c2sBoxJson(base_dir: str, session,
 
     # GET json
     url = actor + '/' + boxName + '?page=' + str(pageNumber)
-    boxJson = getJson(signingPrivateKeyPem, session, url, headers, None,
+    boxJson = getJson(signing_priv_key_pem, session, url, headers, None,
                       debug, __version__, http_prefix, None)
 
     if boxJson is not None and debug:

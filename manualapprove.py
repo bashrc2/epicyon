@@ -28,7 +28,7 @@ def manualDenyFollowRequest(session, base_dir: str,
                             cached_webfingers: {}, person_cache: {},
                             debug: bool,
                             project_version: str,
-                            signingPrivateKeyPem: str) -> None:
+                            signing_priv_key_pem: str) -> None:
     """Manually deny a follow request
     """
     accountsDir = acctDir(base_dir, nickname, domain)
@@ -66,7 +66,7 @@ def manualDenyFollowRequest(session, base_dir: str,
                            send_threads, postLog,
                            cached_webfingers, person_cache,
                            debug, project_version,
-                           signingPrivateKeyPem)
+                           signing_priv_key_pem)
 
     print('Follow request from ' + denyHandle + ' was denied.')
 
@@ -80,7 +80,7 @@ def manualDenyFollowRequestThread(session, base_dir: str,
                                   cached_webfingers: {}, person_cache: {},
                                   debug: bool,
                                   project_version: str,
-                                  signingPrivateKeyPem: str) -> None:
+                                  signing_priv_key_pem: str) -> None:
     """Manually deny a follow request, within a thread so that the
     user interface doesn't lag
     """
@@ -95,7 +95,7 @@ def manualDenyFollowRequestThread(session, base_dir: str,
                               cached_webfingers, person_cache,
                               debug,
                               project_version,
-                              signingPrivateKeyPem), daemon=True)
+                              signing_priv_key_pem), daemon=True)
     thr.start()
     send_threads.append(thr)
 
@@ -129,7 +129,7 @@ def manualApproveFollowRequest(session, base_dir: str,
                                cached_webfingers: {}, person_cache: {},
                                debug: bool,
                                project_version: str,
-                               signingPrivateKeyPem: str) -> None:
+                               signing_priv_key_pem: str) -> None:
     """Manually approve a follow request
     """
     handle = nickname + '@' + domain
@@ -219,7 +219,7 @@ def manualApproveFollowRequest(session, base_dir: str,
                                                    person_cache,
                                                    debug,
                                                    project_version, False,
-                                                   signingPrivateKeyPem)
+                                                   signing_priv_key_pem)
                     updateApprovedFollowers = True
                 else:
                     # this isn't the approved follow so it will remain
@@ -286,7 +286,7 @@ def manualApproveFollowRequestThread(session, base_dir: str,
                                      cached_webfingers: {}, person_cache: {},
                                      debug: bool,
                                      project_version: str,
-                                     signingPrivateKeyPem: str) -> None:
+                                     signing_priv_key_pem: str) -> None:
     """Manually approve a follow request, in a thread so as not to cause
     the UI to lag
     """
@@ -301,6 +301,6 @@ def manualApproveFollowRequestThread(session, base_dir: str,
                               cached_webfingers, person_cache,
                               debug,
                               project_version,
-                              signingPrivateKeyPem), daemon=True)
+                              signing_priv_key_pem), daemon=True)
     thr.start()
     send_threads.append(thr)

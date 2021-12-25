@@ -77,7 +77,7 @@ def getActorLanguagesList(actorJson: {}) -> []:
     return []
 
 
-def getContentFromPost(post_json_object: {}, systemLanguage: str,
+def getContentFromPost(post_json_object: {}, system_language: str,
                        languagesUnderstood: []) -> str:
     """Returns the content from the post in the given language
     including searching for a matching entry within contentMap
@@ -90,9 +90,10 @@ def getContentFromPost(post_json_object: {}, systemLanguage: str,
     content = ''
     if thisPostJson.get('contentMap'):
         if isinstance(thisPostJson['contentMap'], dict):
-            if thisPostJson['contentMap'].get(systemLanguage):
-                if isinstance(thisPostJson['contentMap'][systemLanguage], str):
-                    return thisPostJson['contentMap'][systemLanguage]
+            if thisPostJson['contentMap'].get(system_language):
+                sys_lang = thisPostJson['contentMap'][system_language]
+                if isinstance(sys_lang, str):
+                    return thisPostJson['contentMap'][system_language]
             else:
                 # is there a contentMap entry for one of
                 # the understood languages?
@@ -105,7 +106,7 @@ def getContentFromPost(post_json_object: {}, systemLanguage: str,
     return content
 
 
-def getBaseContentFromPost(post_json_object: {}, systemLanguage: str) -> str:
+def getBaseContentFromPost(post_json_object: {}, system_language: str) -> str:
     """Returns the content from the post in the given language
     """
     thisPostJson = post_json_object
@@ -2675,24 +2676,24 @@ def loadTranslationsFromFile(base_dir: str, language: str) -> ({}, str):
         print('ERROR: translations directory not found')
         return None, None
     if not language:
-        systemLanguage = locale.getdefaultlocale()[0]
+        system_language = locale.getdefaultlocale()[0]
     else:
-        systemLanguage = language
-    if not systemLanguage:
-        systemLanguage = 'en'
-    if '_' in systemLanguage:
-        systemLanguage = systemLanguage.split('_')[0]
-    while '/' in systemLanguage:
-        systemLanguage = systemLanguage.split('/')[1]
-    if '.' in systemLanguage:
-        systemLanguage = systemLanguage.split('.')[0]
+        system_language = language
+    if not system_language:
+        system_language = 'en'
+    if '_' in system_language:
+        system_language = system_language.split('_')[0]
+    while '/' in system_language:
+        system_language = system_language.split('/')[1]
+    if '.' in system_language:
+        system_language = system_language.split('.')[0]
     translationsFile = base_dir + '/translations/' + \
-        systemLanguage + '.json'
+        system_language + '.json'
     if not os.path.isfile(translationsFile):
-        systemLanguage = 'en'
+        system_language = 'en'
         translationsFile = base_dir + '/translations/' + \
-            systemLanguage + '.json'
-    return loadJson(translationsFile), systemLanguage
+            system_language + '.json'
+    return loadJson(translationsFile), system_language
 
 
 def dmAllowedFromDomain(base_dir: str,

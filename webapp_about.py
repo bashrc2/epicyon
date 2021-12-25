@@ -17,7 +17,7 @@ from markdown import markdownToHtml
 
 def htmlAbout(cssCache: {}, base_dir: str, http_prefix: str,
               domainFull: str, onion_domain: str, translate: {},
-              systemLanguage: str) -> str:
+              system_language: str) -> str:
     """Show the about screen
     """
     adminNickname = getConfigParam(base_dir, 'admin')
@@ -45,7 +45,7 @@ def htmlAbout(cssCache: {}, base_dir: str, http_prefix: str,
     aboutForm = \
         htmlHeaderWithWebsiteMarkup(cssFilename, instanceTitle,
                                     http_prefix, domainFull,
-                                    systemLanguage)
+                                    system_language)
     aboutForm += '<div class="container">' + aboutText + '</div>'
     if onion_domain:
         aboutForm += \

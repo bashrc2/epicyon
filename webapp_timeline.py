@@ -445,10 +445,10 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                  peertubeInstances: [],
                  allow_local_network_access: bool,
                  textModeBanner: str,
-                 accessKeys: {}, systemLanguage: str,
+                 accessKeys: {}, system_language: str,
                  max_like_count: int,
                  shared_items_federated_domains: [],
-                 signingPrivateKeyPem: str,
+                 signing_priv_key_pem: str,
                  CWlists: {}, lists_enabled: str) -> str:
     """Show the timeline as html
     """
@@ -894,7 +894,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
 
                     # read the post from disk
                     currTlStr = \
-                        individualPostAsHtml(signingPrivateKeyPem,
+                        individualPostAsHtml(signing_priv_key_pem,
                                              False, recentPostsCache,
                                              max_recent_posts,
                                              translate, pageNumber,
@@ -911,7 +911,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                              show_published_date_only,
                                              peertubeInstances,
                                              allow_local_network_access,
-                                             theme, systemLanguage,
+                                             theme, system_language,
                                              max_like_count,
                                              boxName != 'dm',
                                              showIndividualPostIcons,
@@ -1139,10 +1139,10 @@ def htmlShares(cssCache: {}, defaultTimeline: str,
                peertubeInstances: [],
                allow_local_network_access: bool,
                textModeBanner: str,
-               accessKeys: {}, systemLanguage: str,
+               accessKeys: {}, system_language: str,
                max_like_count: int,
                shared_items_federated_domains: [],
-               signingPrivateKeyPem: str,
+               signing_priv_key_pem: str,
                CWlists: {}, lists_enabled: str) -> str:
     """Show the shares timeline as html
     """
@@ -1170,9 +1170,9 @@ def htmlShares(cssCache: {}, defaultTimeline: str,
                         publish_button_at_top,
                         authorized, None, theme, peertubeInstances,
                         allow_local_network_access, textModeBanner,
-                        accessKeys, systemLanguage, max_like_count,
+                        accessKeys, system_language, max_like_count,
                         shared_items_federated_domains,
-                        signingPrivateKeyPem,
+                        signing_priv_key_pem,
                         CWlists, lists_enabled)
 
 
@@ -1197,10 +1197,10 @@ def htmlWanted(cssCache: {}, defaultTimeline: str,
                peertubeInstances: [],
                allow_local_network_access: bool,
                textModeBanner: str,
-               accessKeys: {}, systemLanguage: str,
+               accessKeys: {}, system_language: str,
                max_like_count: int,
                shared_items_federated_domains: [],
-               signingPrivateKeyPem: str,
+               signing_priv_key_pem: str,
                CWlists: {}, lists_enabled: str) -> str:
     """Show the wanted timeline as html
     """
@@ -1228,9 +1228,9 @@ def htmlWanted(cssCache: {}, defaultTimeline: str,
                         publish_button_at_top,
                         authorized, None, theme, peertubeInstances,
                         allow_local_network_access, textModeBanner,
-                        accessKeys, systemLanguage, max_like_count,
+                        accessKeys, system_language, max_like_count,
                         shared_items_federated_domains,
-                        signingPrivateKeyPem,
+                        signing_priv_key_pem,
                         CWlists, lists_enabled)
 
 
@@ -1256,10 +1256,10 @@ def htmlInbox(cssCache: {}, defaultTimeline: str,
               peertubeInstances: [],
               allow_local_network_access: bool,
               textModeBanner: str,
-              accessKeys: {}, systemLanguage: str,
+              accessKeys: {}, system_language: str,
               max_like_count: int,
               shared_items_federated_domains: [],
-              signingPrivateKeyPem: str,
+              signing_priv_key_pem: str,
               CWlists: {}, lists_enabled: str) -> str:
     """Show the inbox as html
     """
@@ -1287,9 +1287,9 @@ def htmlInbox(cssCache: {}, defaultTimeline: str,
                         publish_button_at_top,
                         authorized, None, theme, peertubeInstances,
                         allow_local_network_access, textModeBanner,
-                        accessKeys, systemLanguage, max_like_count,
+                        accessKeys, system_language, max_like_count,
                         shared_items_federated_domains,
-                        signingPrivateKeyPem,
+                        signing_priv_key_pem,
                         CWlists, lists_enabled)
 
 
@@ -1315,10 +1315,10 @@ def htmlBookmarks(cssCache: {}, defaultTimeline: str,
                   peertubeInstances: [],
                   allow_local_network_access: bool,
                   textModeBanner: str,
-                  accessKeys: {}, systemLanguage: str,
+                  accessKeys: {}, system_language: str,
                   max_like_count: int,
                   shared_items_federated_domains: [],
-                  signingPrivateKeyPem: str,
+                  signing_priv_key_pem: str,
                   CWlists: {}, lists_enabled: str) -> str:
     """Show the bookmarks as html
     """
@@ -1346,8 +1346,8 @@ def htmlBookmarks(cssCache: {}, defaultTimeline: str,
                         publish_button_at_top,
                         authorized, None, theme, peertubeInstances,
                         allow_local_network_access, textModeBanner,
-                        accessKeys, systemLanguage, max_like_count,
-                        shared_items_federated_domains, signingPrivateKeyPem,
+                        accessKeys, system_language, max_like_count,
+                        shared_items_federated_domains, signing_priv_key_pem,
                         CWlists, lists_enabled)
 
 
@@ -1373,10 +1373,10 @@ def htmlInboxDMs(cssCache: {}, defaultTimeline: str,
                  peertubeInstances: [],
                  allow_local_network_access: bool,
                  textModeBanner: str,
-                 accessKeys: {}, systemLanguage: str,
+                 accessKeys: {}, system_language: str,
                  max_like_count: int,
                  shared_items_federated_domains: [],
-                 signingPrivateKeyPem: str,
+                 signing_priv_key_pem: str,
                  CWlists: {}, lists_enabled: str) -> str:
     """Show the DM timeline as html
     """
@@ -1399,9 +1399,9 @@ def htmlInboxDMs(cssCache: {}, defaultTimeline: str,
                         publish_button_at_top,
                         authorized, None, theme, peertubeInstances,
                         allow_local_network_access, textModeBanner,
-                        accessKeys, systemLanguage, max_like_count,
+                        accessKeys, system_language, max_like_count,
                         shared_items_federated_domains,
-                        signingPrivateKeyPem,
+                        signing_priv_key_pem,
                         CWlists, lists_enabled)
 
 
@@ -1427,10 +1427,10 @@ def htmlInboxReplies(cssCache: {}, defaultTimeline: str,
                      peertubeInstances: [],
                      allow_local_network_access: bool,
                      textModeBanner: str,
-                     accessKeys: {}, systemLanguage: str,
+                     accessKeys: {}, system_language: str,
                      max_like_count: int,
                      shared_items_federated_domains: [],
-                     signingPrivateKeyPem: str,
+                     signing_priv_key_pem: str,
                      CWlists: {}, lists_enabled: str) -> str:
     """Show the replies timeline as html
     """
@@ -1453,8 +1453,8 @@ def htmlInboxReplies(cssCache: {}, defaultTimeline: str,
                         publish_button_at_top,
                         authorized, None, theme, peertubeInstances,
                         allow_local_network_access, textModeBanner,
-                        accessKeys, systemLanguage, max_like_count,
-                        shared_items_federated_domains, signingPrivateKeyPem,
+                        accessKeys, system_language, max_like_count,
+                        shared_items_federated_domains, signing_priv_key_pem,
                         CWlists, lists_enabled)
 
 
@@ -1480,10 +1480,10 @@ def htmlInboxMedia(cssCache: {}, defaultTimeline: str,
                    peertubeInstances: [],
                    allow_local_network_access: bool,
                    textModeBanner: str,
-                   accessKeys: {}, systemLanguage: str,
+                   accessKeys: {}, system_language: str,
                    max_like_count: int,
                    shared_items_federated_domains: [],
-                   signingPrivateKeyPem: str,
+                   signing_priv_key_pem: str,
                    CWlists: {}, lists_enabled: str) -> str:
     """Show the media timeline as html
     """
@@ -1506,8 +1506,8 @@ def htmlInboxMedia(cssCache: {}, defaultTimeline: str,
                         publish_button_at_top,
                         authorized, None, theme, peertubeInstances,
                         allow_local_network_access, textModeBanner,
-                        accessKeys, systemLanguage, max_like_count,
-                        shared_items_federated_domains, signingPrivateKeyPem,
+                        accessKeys, system_language, max_like_count,
+                        shared_items_federated_domains, signing_priv_key_pem,
                         CWlists, lists_enabled)
 
 
@@ -1533,10 +1533,10 @@ def htmlInboxBlogs(cssCache: {}, defaultTimeline: str,
                    peertubeInstances: [],
                    allow_local_network_access: bool,
                    textModeBanner: str,
-                   accessKeys: {}, systemLanguage: str,
+                   accessKeys: {}, system_language: str,
                    max_like_count: int,
                    shared_items_federated_domains: [],
-                   signingPrivateKeyPem: str,
+                   signing_priv_key_pem: str,
                    CWlists: {}, lists_enabled: str) -> str:
     """Show the blogs timeline as html
     """
@@ -1559,8 +1559,8 @@ def htmlInboxBlogs(cssCache: {}, defaultTimeline: str,
                         publish_button_at_top,
                         authorized, None, theme, peertubeInstances,
                         allow_local_network_access, textModeBanner,
-                        accessKeys, systemLanguage, max_like_count,
-                        shared_items_federated_domains, signingPrivateKeyPem,
+                        accessKeys, system_language, max_like_count,
+                        shared_items_federated_domains, signing_priv_key_pem,
                         CWlists, lists_enabled)
 
 
@@ -1587,10 +1587,10 @@ def htmlInboxFeatures(cssCache: {}, defaultTimeline: str,
                       peertubeInstances: [],
                       allow_local_network_access: bool,
                       textModeBanner: str,
-                      accessKeys: {}, systemLanguage: str,
+                      accessKeys: {}, system_language: str,
                       max_like_count: int,
                       shared_items_federated_domains: [],
-                      signingPrivateKeyPem: str,
+                      signing_priv_key_pem: str,
                       CWlists: {}, lists_enabled: str) -> str:
     """Show the features timeline as html
     """
@@ -1612,8 +1612,8 @@ def htmlInboxFeatures(cssCache: {}, defaultTimeline: str,
                         publish_button_at_top,
                         authorized, None, theme, peertubeInstances,
                         allow_local_network_access, textModeBanner,
-                        accessKeys, systemLanguage, max_like_count,
-                        shared_items_federated_domains, signingPrivateKeyPem,
+                        accessKeys, system_language, max_like_count,
+                        shared_items_federated_domains, signing_priv_key_pem,
                         CWlists, lists_enabled)
 
 
@@ -1639,10 +1639,10 @@ def htmlInboxNews(cssCache: {}, defaultTimeline: str,
                   peertubeInstances: [],
                   allow_local_network_access: bool,
                   textModeBanner: str,
-                  accessKeys: {}, systemLanguage: str,
+                  accessKeys: {}, system_language: str,
                   max_like_count: int,
                   shared_items_federated_domains: [],
-                  signingPrivateKeyPem: str,
+                  signing_priv_key_pem: str,
                   CWlists: {}, lists_enabled: str) -> str:
     """Show the news timeline as html
     """
@@ -1664,8 +1664,8 @@ def htmlInboxNews(cssCache: {}, defaultTimeline: str,
                         publish_button_at_top,
                         authorized, None, theme, peertubeInstances,
                         allow_local_network_access, textModeBanner,
-                        accessKeys, systemLanguage, max_like_count,
-                        shared_items_federated_domains, signingPrivateKeyPem,
+                        accessKeys, system_language, max_like_count,
+                        shared_items_federated_domains, signing_priv_key_pem,
                         CWlists, lists_enabled)
 
 
@@ -1691,10 +1691,10 @@ def htmlOutbox(cssCache: {}, defaultTimeline: str,
                peertubeInstances: [],
                allow_local_network_access: bool,
                textModeBanner: str,
-               accessKeys: {}, systemLanguage: str,
+               accessKeys: {}, system_language: str,
                max_like_count: int,
                shared_items_federated_domains: [],
-               signingPrivateKeyPem: str,
+               signing_priv_key_pem: str,
                CWlists: {}, lists_enabled: str) -> str:
     """Show the Outbox as html
     """
@@ -1719,6 +1719,6 @@ def htmlOutbox(cssCache: {}, defaultTimeline: str,
                         publish_button_at_top,
                         authorized, None, theme, peertubeInstances,
                         allow_local_network_access, textModeBanner,
-                        accessKeys, systemLanguage, max_like_count,
-                        shared_items_federated_domains, signingPrivateKeyPem,
+                        accessKeys, system_language, max_like_count,
+                        shared_items_federated_domains, signing_priv_key_pem,
                         CWlists, lists_enabled)

@@ -207,8 +207,8 @@ def htmlNewPost(cssCache: {}, media_instance: bool, translate: {},
                 show_published_date_only: bool,
                 peertubeInstances: [],
                 allow_local_network_access: bool,
-                systemLanguage: str,
-                max_like_count: int, signingPrivateKeyPem: str,
+                system_language: str,
+                max_like_count: int, signing_priv_key_pem: str,
                 CWlists: {}, lists_enabled: str,
                 boxName: str) -> str:
     """New post screen
@@ -259,7 +259,7 @@ def htmlNewPost(cssCache: {}, media_instance: bool, translate: {},
                         translate['this post'] + '</a></p>\n'
                     if post_json_object:
                         newPostText += \
-                            individualPostAsHtml(signingPrivateKeyPem,
+                            individualPostAsHtml(signing_priv_key_pem,
                                                  True, recentPostsCache,
                                                  max_recent_posts,
                                                  translate, None,
@@ -276,7 +276,7 @@ def htmlNewPost(cssCache: {}, media_instance: bool, translate: {},
                                                  show_published_date_only,
                                                  peertubeInstances,
                                                  allow_local_network_access,
-                                                 theme, systemLanguage,
+                                                 theme, system_language,
                                                  max_like_count,
                                                  False, False, False,
                                                  False, False, False,

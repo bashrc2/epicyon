@@ -50,10 +50,10 @@ def htmlModeration(cssCache: {}, defaultTimeline: str,
                    theme: str, peertubeInstances: [],
                    allow_local_network_access: bool,
                    textModeBanner: str,
-                   accessKeys: {}, systemLanguage: str,
+                   accessKeys: {}, system_language: str,
                    max_like_count: int,
                    shared_items_federated_domains: [],
-                   signingPrivateKeyPem: str,
+                   signing_priv_key_pem: str,
                    CWlists: {}, lists_enabled: str) -> str:
     """Show the moderation feed as html
     This is what you see when selecting the "mod" timeline
@@ -77,21 +77,21 @@ def htmlModeration(cssCache: {}, defaultTimeline: str,
                         publish_button_at_top,
                         authorized, moderationActionStr, theme,
                         peertubeInstances, allow_local_network_access,
-                        textModeBanner, accessKeys, systemLanguage,
+                        textModeBanner, accessKeys, system_language,
                         max_like_count, shared_items_federated_domains,
-                        signingPrivateKeyPem, CWlists, lists_enabled)
+                        signing_priv_key_pem, CWlists, lists_enabled)
 
 
 def htmlAccountInfo(cssCache: {}, translate: {},
                     base_dir: str, http_prefix: str,
                     nickname: str, domain: str, port: int,
                     searchHandle: str, debug: bool,
-                    systemLanguage: str, signingPrivateKeyPem: str) -> str:
+                    system_language: str, signing_priv_key_pem: str) -> str:
     """Shows which domains a search handle interacts with.
     This screen is shown if a moderator enters a handle and selects info
     on the moderation screen
     """
-    signingPrivateKeyPem = None
+    signing_priv_key_pem = None
     msgStr1 = 'This account interacts with the following instances'
 
     infoForm = ''
@@ -131,12 +131,12 @@ def htmlAccountInfo(cssCache: {}, translate: {},
                                    originDomain,
                                    proxy_type, searchPort,
                                    http_prefix, debug,
-                                   __version__, wordFrequency, systemLanguage,
-                                   signingPrivateKeyPem)
+                                   __version__, wordFrequency, system_language,
+                                   signing_priv_key_pem)
 
     # get a list of any blocked followers
     followersList = \
-        downloadFollowCollection(signingPrivateKeyPem,
+        downloadFollowCollection(signing_priv_key_pem,
                                  'followers', session,
                                  http_prefix, searchActor, 1, 5, debug)
     blockedFollowers = []
@@ -150,7 +150,7 @@ def htmlAccountInfo(cssCache: {}, translate: {},
 
     # get a list of any blocked following
     followingList = \
-        downloadFollowCollection(signingPrivateKeyPem,
+        downloadFollowCollection(signing_priv_key_pem,
                                  'following', session,
                                  http_prefix, searchActor, 1, 5, debug)
     blockedFollowing = []

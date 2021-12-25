@@ -191,11 +191,11 @@ def postMessageToOutbox(session, translate: {},
                         twitter_replacement_domain: str,
                         show_published_date_only: bool,
                         allow_local_network_access: bool,
-                        city: str, systemLanguage: str,
+                        city: str, system_language: str,
                         shared_items_federated_domains: [],
                         sharedItemFederationTokens: {},
                         low_bandwidth: bool,
-                        signingPrivateKeyPem: str,
+                        signing_priv_key_pem: str,
                         peertubeInstances: str, theme: str,
                         max_like_count: int,
                         max_recent_posts: int, CWlists: {},
@@ -223,7 +223,7 @@ def postMessageToOutbox(session, translate: {},
     # check that the outgoing post doesn't contain any markup
     # which can be used to implement exploits
     if hasObjectDict(messageJson):
-        contentStr = getBaseContentFromPost(messageJson, systemLanguage)
+        contentStr = getBaseContentFromPost(messageJson, system_language)
         if contentStr:
             if dangerousMarkup(contentStr, allow_local_network_access):
                 print('POST to outbox contains dangerous markup: ' +
@@ -286,10 +286,11 @@ def postMessageToOutbox(session, translate: {},
                 print('DEBUG: domain is blocked: ' + messageJson['actor'])
             return False
         # replace youtube, so that google gets less tracking data
-        replaceYouTube(messageJson, yt_replace_domain, systemLanguage)
+        replaceYouTube(messageJson, yt_replace_domain, system_language)
         # replace twitter, so that twitter posts can be shown without
         # having a twitter account
-        replaceTwitter(messageJson, twitter_replacement_domain, systemLanguage)
+        replaceTwitter(messageJson, twitter_replacement_domain,
+                       system_language)
         # https://www.w3.org/TR/activitypub/#create-activity-outbox
         messageJson['object']['attributedTo'] = messageJson['actor']
         if messageJson['object'].get('attachment'):
@@ -426,9 +427,9 @@ def postMessageToOutbox(session, translate: {},
                                     yt_replace_domain,
                                     twitter_replacement_domain,
                                     allow_local_network_access,
-                                    recentPostsCache, debug, systemLanguage,
+                                    recentPostsCache, debug, system_language,
                                     domainFull, person_cache,
-                                    signingPrivateKeyPem):
+                                    signing_priv_key_pem):
                         inboxUpdateIndex('tlmedia', base_dir,
                                          postToNickname + '@' + domain,
                                          savedFilename, debug)
@@ -452,7 +453,7 @@ def postMessageToOutbox(session, translate: {},
                     manuallyApproveFollowers = \
                         followerApprovalActive(base_dir,
                                                postToNickname, domain)
-                    individualPostAsHtml(signingPrivateKeyPem,
+                    individualPostAsHtml(signing_priv_key_pem,
                                          False, recentPostsCache,
                                          max_recent_posts,
                                          translate, pageNumber,
@@ -469,7 +470,7 @@ def postMessageToOutbox(session, translate: {},
                                          show_published_date_only,
                                          peertubeInstances,
                                          allow_local_network_access,
-                                         theme, systemLanguage,
+                                         theme, system_language,
                                          max_like_count,
                                          boxNameIndex != 'dm',
                                          showIndividualPostIcons,
@@ -523,7 +524,7 @@ def postMessageToOutbox(session, translate: {},
                               version,
                               shared_items_federated_domains,
                               sharedItemFederationTokens,
-                              signingPrivateKeyPem)
+                              signing_priv_key_pem)
     followers_threads.append(followersThread)
 
     if debug:
@@ -625,7 +626,7 @@ def postMessageToOutbox(session, translate: {},
         print('DEBUG: handle share uploads')
     outboxShareUpload(base_dir, http_prefix, postToNickname, domain,
                       port, messageJson, debug, city,
-                      systemLanguage, translate, low_bandwidth,
+                      system_language, translate, low_bandwidth,
                       content_license_url)
 
     if debug:
@@ -664,6 +665,6 @@ def postMessageToOutbox(session, translate: {},
                                    version,
                                    shared_items_federated_domains,
                                    sharedItemFederationTokens,
-                                   signingPrivateKeyPem)
+                                   signing_priv_key_pem)
     followers_threads.append(namedAddressesThread)
     return True

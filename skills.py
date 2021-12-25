@@ -178,7 +178,7 @@ def sendSkillViaServer(base_dir: str, session, nickname: str, password: str,
                        skill: str, skillLevelPercent: int,
                        cached_webfingers: {}, person_cache: {},
                        debug: bool, project_version: str,
-                       signingPrivateKeyPem: str) -> {}:
+                       signing_priv_key_pem: str) -> {}:
     """Sets a skill for a person via c2s
     """
     if not session:
@@ -211,7 +211,7 @@ def sendSkillViaServer(base_dir: str, session, nickname: str, password: str,
         webfingerHandle(session, handle, http_prefix,
                         cached_webfingers,
                         domain, project_version, debug, False,
-                        signingPrivateKeyPem)
+                        signing_priv_key_pem)
     if not wfRequest:
         if debug:
             print('DEBUG: skill webfinger failed for ' + handle)
@@ -226,7 +226,7 @@ def sendSkillViaServer(base_dir: str, session, nickname: str, password: str,
     # get the actor inbox for the To handle
     originDomain = domain
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
-     displayName, _) = getPersonBox(signingPrivateKeyPem,
+     displayName, _) = getPersonBox(signing_priv_key_pem,
                                     originDomain,
                                     base_dir, session, wfRequest,
                                     person_cache, project_version,

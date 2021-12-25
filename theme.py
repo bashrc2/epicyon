@@ -138,20 +138,20 @@ def getThemesList(base_dir: str) -> []:
 
 
 def _copyThemeHelpFiles(base_dir: str, themeName: str,
-                        systemLanguage: str) -> None:
+                        system_language: str) -> None:
     """Copies any theme specific help files from the welcome subdirectory
     """
-    if not systemLanguage:
-        systemLanguage = 'en'
+    if not system_language:
+        system_language = 'en'
     themeDir = base_dir + '/theme/' + themeName + '/welcome'
     if not os.path.isdir(themeDir):
         themeDir = base_dir + '/defaultwelcome'
     for subdir, dirs, files in os.walk(themeDir):
         for helpMarkdownFile in files:
-            if not helpMarkdownFile.endswith('_' + systemLanguage + '.md'):
+            if not helpMarkdownFile.endswith('_' + system_language + '.md'):
                 continue
             destHelpMarkdownFile = \
-                helpMarkdownFile.replace('_' + systemLanguage + '.md', '.md')
+                helpMarkdownFile.replace('_' + system_language + '.md', '.md')
             if destHelpMarkdownFile == 'profile.md' or \
                destHelpMarkdownFile == 'final.md':
                 destHelpMarkdownFile = 'welcome_' + destHelpMarkdownFile
@@ -495,16 +495,16 @@ def _setCustomFont(base_dir: str):
 def setThemeFromDesigner(base_dir: str, themeName: str, domain: str,
                          themeParams: {},
                          allow_local_network_access: bool,
-                         systemLanguage: str):
+                         system_language: str):
     customThemeFilename = base_dir + '/accounts/theme.json'
     saveJson(themeParams, customThemeFilename)
     setTheme(base_dir, themeName, domain,
-             allow_local_network_access, systemLanguage)
+             allow_local_network_access, system_language)
 
 
 def resetThemeDesignerSettings(base_dir: str, themeName: str, domain: str,
                                allow_local_network_access: bool,
-                               systemLanguage: str) -> None:
+                               system_language: str) -> None:
     """Resets the theme designer settings
     """
     customVariablesFile = base_dir + '/accounts/theme.json'
@@ -815,7 +815,7 @@ def _setClearCacheFlag(base_dir: str) -> None:
 
 
 def setTheme(base_dir: str, name: str, domain: str,
-             allow_local_network_access: bool, systemLanguage: str) -> bool:
+             allow_local_network_access: bool, system_language: str) -> bool:
     """Sets the theme with the given name as the current theme
     """
     result = False
@@ -826,7 +826,7 @@ def setTheme(base_dir: str, name: str, domain: str,
     if prevThemeName != name:
         resetThemeDesignerSettings(base_dir, name, domain,
                                    allow_local_network_access,
-                                   systemLanguage)
+                                   system_language)
 
     _removeTheme(base_dir)
 
@@ -876,7 +876,7 @@ def setTheme(base_dir: str, name: str, domain: str,
     else:
         disableGrayscale(base_dir)
 
-    _copyThemeHelpFiles(base_dir, name, systemLanguage)
+    _copyThemeHelpFiles(base_dir, name, system_language)
     _setThemeInConfig(base_dir, name)
     _setClearCacheFlag(base_dir)
     return result

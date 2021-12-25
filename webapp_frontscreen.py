@@ -33,9 +33,9 @@ def _htmlFrontScreenPosts(recentPostsCache: {}, max_recent_posts: int,
                           show_published_date_only: bool,
                           peertubeInstances: [],
                           allow_local_network_access: bool,
-                          themeName: str, systemLanguage: str,
+                          themeName: str, system_language: str,
                           max_like_count: int,
-                          signingPrivateKeyPem: str, CWlists: {},
+                          signing_priv_key_pem: str, CWlists: {},
                           lists_enabled: str) -> str:
     """Shows posts on the front screen of a news instance
     These should only be public blog posts from the features timeline
@@ -64,7 +64,7 @@ def _htmlFrontScreenPosts(recentPostsCache: {}, max_recent_posts: int,
         for item in outboxFeed['orderedItems']:
             if item['type'] == 'Create':
                 postStr = \
-                    individualPostAsHtml(signingPrivateKeyPem,
+                    individualPostAsHtml(signing_priv_key_pem,
                                          True, recentPostsCache,
                                          max_recent_posts,
                                          translate, None,
@@ -79,7 +79,7 @@ def _htmlFrontScreenPosts(recentPostsCache: {}, max_recent_posts: int,
                                          show_published_date_only,
                                          peertubeInstances,
                                          allow_local_network_access,
-                                         themeName, systemLanguage,
+                                         themeName, system_language,
                                          max_like_count,
                                          False, False, False,
                                          True, False, False,
@@ -93,7 +93,7 @@ def _htmlFrontScreenPosts(recentPostsCache: {}, max_recent_posts: int,
     return profileStr
 
 
-def htmlFrontScreen(signingPrivateKeyPem: str,
+def htmlFrontScreen(signing_priv_key_pem: str,
                     rss_icon_at_top: bool,
                     cssCache: {}, icons_as_buttons: bool,
                     defaultTimeline: str,
@@ -109,7 +109,7 @@ def htmlFrontScreen(signingPrivateKeyPem: str,
                     peertubeInstances: [],
                     allow_local_network_access: bool,
                     accessKeys: {},
-                    systemLanguage: str, max_like_count: int,
+                    system_language: str, max_like_count: int,
                     shared_items_federated_domains: [],
                     extraJson: {},
                     pageNumber: int,
@@ -184,9 +184,9 @@ def htmlFrontScreen(signingPrivateKeyPem: str,
                               show_published_date_only,
                               peertubeInstances,
                               allow_local_network_access,
-                              theme, systemLanguage,
+                              theme, system_language,
                               max_like_count,
-                              signingPrivateKeyPem,
+                              signing_priv_key_pem,
                               CWlists, lists_enabled) + licenseStr
 
     # Footer which is only used for system accounts

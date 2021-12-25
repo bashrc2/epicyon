@@ -1008,7 +1008,7 @@ def _addAccountBlogsToNewswire(base_dir: str, nickname: str, domain: str,
                                newswire: {},
                                maxBlogsPerAccount: int,
                                indexFilename: str,
-                               maxTags: int, systemLanguage: str,
+                               maxTags: int, system_language: str,
                                session, debug: bool) -> None:
     """Adds blogs for the given account to the newswire
     """
@@ -1063,7 +1063,7 @@ def _addAccountBlogsToNewswire(base_dir: str, nickname: str, domain: str,
                         votes = loadJson(fullPostFilename + '.votes')
                     content = \
                         getBaseContentFromPost(post_json_object,
-                                               systemLanguage)
+                                               system_language)
                     description = firstParagraphFromString(content)
                     description = removeHtml(description)
                     tagsFromPost = _getHashtagsFromPost(post_json_object)
@@ -1084,7 +1084,7 @@ def _addAccountBlogsToNewswire(base_dir: str, nickname: str, domain: str,
 
 def _addBlogsToNewswire(base_dir: str, domain: str, newswire: {},
                         maxBlogsPerAccount: int,
-                        maxTags: int, systemLanguage: str,
+                        maxTags: int, system_language: str,
                         session, debug: bool) -> None:
     """Adds blogs from each user account into the newswire
     """
@@ -1114,7 +1114,7 @@ def _addBlogsToNewswire(base_dir: str, domain: str, newswire: {},
                 _addAccountBlogsToNewswire(base_dir, nickname, domain,
                                            newswire, maxBlogsPerAccount,
                                            blogsIndex, maxTags,
-                                           systemLanguage, session,
+                                           system_language, session,
                                            debug)
         break
 
@@ -1140,7 +1140,7 @@ def getDictFromNewswire(session, base_dir: str, domain: str,
                         maxTags: int, max_feed_item_size_kb: int,
                         max_newswire_posts: int,
                         maxCategoriesFeedItemSizeKb: int,
-                        systemLanguage: str, debug: bool) -> {}:
+                        system_language: str, debug: bool) -> {}:
     """Gets rss feeds as a dictionary from newswire file
     """
     subscriptionsFilename = base_dir + '/accounts/newswire.txt'
@@ -1188,7 +1188,7 @@ def getDictFromNewswire(session, base_dir: str, domain: str,
 
     # add blogs from each user account
     _addBlogsToNewswire(base_dir, domain, result,
-                        maxPostsPerSource, maxTags, systemLanguage,
+                        maxPostsPerSource, maxTags, system_language,
                         session, debug)
 
     # sort into chronological order, latest first

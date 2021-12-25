@@ -515,7 +515,7 @@ class PubServer(BaseHTTPRequestHandler):
                              eventDate,
                              eventTime,
                              location, False,
-                             self.server.systemLanguage,
+                             self.server.system_language,
                              conversationId,
                              self.server.low_bandwidth,
                              self.server.content_license_url)
@@ -738,7 +738,7 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.project_version,
                             self.server.http_prefix,
                             self.server.domain, self.server.onion_domain,
-                            self.server.signingPrivateKeyPem)
+                            self.server.signing_priv_key_pem)
         if not pubKey:
             if self.server.debug:
                 print('AUTH: secure mode failed to ' +
@@ -1046,7 +1046,7 @@ class PubServer(BaseHTTPRequestHandler):
                     onion_domain: str, i2p_domain: str,
                     translate: {},
                     registration: bool,
-                    systemLanguage: str,
+                    system_language: str,
                     project_version: str,
                     customEmoji: [],
                     show_node_info_accounts: bool) -> bool:
@@ -1074,7 +1074,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                    i2p_domain,
                                                    translate,
                                                    registration,
-                                                   systemLanguage,
+                                                   system_language,
                                                    project_version,
                                                    customEmoji,
                                                    show_node_info_accounts,
@@ -1110,14 +1110,14 @@ class PubServer(BaseHTTPRequestHandler):
                   onion_domain: str, i2p_domain: str,
                   translate: {},
                   registration: bool,
-                  systemLanguage: str,
+                  system_language: str,
                   project_version: str,
                   customEmoji: [],
                   show_node_info_accounts: bool) -> bool:
         return self._mastoApiV1(path, callingDomain, uaStr, authorized,
                                 http_prefix, base_dir, nickname, domain,
                                 domainFull, onion_domain, i2p_domain,
-                                translate, registration, systemLanguage,
+                                translate, registration, system_language,
                                 project_version, customEmoji,
                                 show_node_info_accounts)
 
@@ -1297,11 +1297,11 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.twitter_replacement_domain,
                                    self.server.show_published_date_only,
                                    self.server.allow_local_network_access,
-                                   city, self.server.systemLanguage,
+                                   city, self.server.system_language,
                                    self.server.shared_items_federated_domains,
                                    self.server.sharedItemFederationTokens,
                                    self.server.low_bandwidth,
-                                   self.server.signingPrivateKeyPem,
+                                   self.server.signing_priv_key_pem,
                                    self.server.peertubeInstances,
                                    self.server.themeName,
                                    self.server.max_like_count,
@@ -1542,7 +1542,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.path,
                                  self.server.debug,
                                  self.server.blockedCache,
-                                 self.server.systemLanguage)
+                                 self.server.system_language)
         if queueFilename:
             # add json to the queue
             if queueFilename not in self.server.inboxQueue:
@@ -1915,8 +1915,8 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.port,
                                             searchHandle,
                                             self.server.debug,
-                                            self.server.systemLanguage,
-                                            self.server.signingPrivateKeyPem)
+                                            self.server.system_language,
+                                            self.server.signing_priv_key_pem)
                     else:
                         msg = \
                             htmlModerationInfo(self.server.cssCache,
@@ -2133,7 +2133,7 @@ class PubServer(BaseHTTPRequestHandler):
                        debug: bool, accessKeys: {},
                        defaultTimeline: str, themeName: str,
                        allow_local_network_access: bool,
-                       systemLanguage: str) -> None:
+                       system_language: str) -> None:
         """Receive POST from webapp_themeDesigner
         """
         usersPath = '/users/' + nickname
@@ -2170,9 +2170,9 @@ class PubServer(BaseHTTPRequestHandler):
             if 'submitThemeDesignerReset=' in themeParams:
                 resetThemeDesignerSettings(base_dir, themeName, domain,
                                            allow_local_network_access,
-                                           systemLanguage)
+                                           system_language)
                 setTheme(base_dir, themeName, domain,
-                         allow_local_network_access, systemLanguage)
+                         allow_local_network_access, system_language)
 
             if callingDomain.endswith('.onion') and onion_domain:
                 originPathStr = \
@@ -2219,7 +2219,7 @@ class PubServer(BaseHTTPRequestHandler):
         setThemeFromDesigner(base_dir, themeName, domain,
                              themeDesignerParams,
                              allow_local_network_access,
-                             systemLanguage)
+                             system_language)
 
         # set boolean values
         if 'rss-icon-at-top' in themeDesignerParams:
@@ -2727,9 +2727,9 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.show_published_date_only,
                               self.server.peertubeInstances,
                               self.server.allow_local_network_access,
-                              self.server.systemLanguage,
+                              self.server.system_language,
                               self.server.max_like_count,
-                              self.server.signingPrivateKeyPem,
+                              self.server.signing_priv_key_pem,
                               self.server.CWlists,
                               self.server.lists_enabled,
                               self.server.defaultTimeline).encode('utf-8')
@@ -2746,7 +2746,7 @@ class PubServer(BaseHTTPRequestHandler):
             if isModerator(self.server.base_dir, chooserNickname):
                 if debug:
                     print('Showing info for ' + optionsActor)
-                signingPrivateKeyPem = self.server.signingPrivateKeyPem
+                signing_priv_key_pem = self.server.signing_priv_key_pem
                 msg = \
                     htmlAccountInfo(self.server.cssCache,
                                     self.server.translate,
@@ -2757,8 +2757,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.port,
                                     optionsActor,
                                     self.server.debug,
-                                    self.server.systemLanguage,
-                                    signingPrivateKeyPem).encode('utf-8')
+                                    self.server.system_language,
+                                    signing_priv_key_pem).encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
                                   cookie, callingDomain, False)
@@ -2861,9 +2861,9 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.show_published_date_only,
                               self.server.peertubeInstances,
                               self.server.allow_local_network_access,
-                              self.server.systemLanguage,
+                              self.server.system_language,
                               self.server.max_like_count,
-                              self.server.signingPrivateKeyPem,
+                              self.server.signing_priv_key_pem,
                               self.server.CWlists,
                               self.server.lists_enabled,
                               self.server.defaultTimeline).encode('utf-8')
@@ -3036,7 +3036,7 @@ class PubServer(BaseHTTPRequestHandler):
             else:
                 print('Sending follow request from ' +
                       followerNickname + ' to ' + followingActor)
-                if not self.server.signingPrivateKeyPem:
+                if not self.server.signing_priv_key_pem:
                     print('Sending follow request with no signing key')
                 sendFollowRequest(self.server.session,
                                   base_dir, followerNickname,
@@ -3052,7 +3052,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.cached_webfingers,
                                   self.server.person_cache, debug,
                                   self.server.project_version,
-                                  self.server.signingPrivateKeyPem)
+                                  self.server.signing_priv_key_pem)
         if callingDomain.endswith('.onion') and onion_domain:
             originPathStr = 'http://' + onion_domain + usersPath
         elif (callingDomain.endswith('.i2p') and i2p_domain):
@@ -3311,9 +3311,9 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.peertubeInstances,
                                       self.server.allow_local_network_access,
                                       self.server.themeName,
-                                      self.server.systemLanguage,
+                                      self.server.system_language,
                                       self.server.max_like_count,
-                                      self.server.signingPrivateKeyPem,
+                                      self.server.signing_priv_key_pem,
                                       self.server.CWlists,
                                       self.server.lists_enabled)
                 if hashtagStr:
@@ -3406,9 +3406,9 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.peertubeInstances,
                                       self.server.allow_local_network_access,
                                       self.server.themeName, 'outbox',
-                                      self.server.systemLanguage,
+                                      self.server.system_language,
                                       self.server.max_like_count,
-                                      self.server.signingPrivateKeyPem,
+                                      self.server.signing_priv_key_pem,
                                       self.server.CWlists,
                                       self.server.lists_enabled)
                 if historyStr:
@@ -3474,9 +3474,9 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.peertubeInstances,
                                       self.server.allow_local_network_access,
                                       self.server.themeName, 'bookmarks',
-                                      self.server.systemLanguage,
+                                      self.server.system_language,
                                       self.server.max_like_count,
-                                      self.server.signingPrivateKeyPem,
+                                      self.server.signing_priv_key_pem,
                                       self.server.CWlists,
                                       self.server.lists_enabled)
                 if bookmarksStr:
@@ -3524,7 +3524,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           actor,
                                           self.server.person_cache,
                                           None, True,
-                                          self.server.signingPrivateKeyPem)
+                                          self.server.signing_priv_key_pem)
                     profilePathStr += \
                         '?options=' + actor + ';1;' + avatarUrl
 
@@ -3545,8 +3545,8 @@ class PubServer(BaseHTTPRequestHandler):
                     if self.server.keyShortcuts.get(nickname):
                         accessKeys = self.server.keyShortcuts[nickname]
 
-                    signingPrivateKeyPem = \
-                        self.server.signingPrivateKeyPem
+                    signing_priv_key_pem = \
+                        self.server.signing_priv_key_pem
                     twitter_replacement_domain = \
                         self.server.twitter_replacement_domain
                     profileStr = \
@@ -3574,9 +3574,9 @@ class PubServer(BaseHTTPRequestHandler):
                                                allow_local_network_access,
                                                self.server.themeName,
                                                accessKeys,
-                                               self.server.systemLanguage,
+                                               self.server.system_language,
                                                self.server.max_like_count,
-                                               signingPrivateKeyPem,
+                                               signing_priv_key_pem,
                                                self.server.CWlists,
                                                self.server.lists_enabled)
                 if profileStr:
@@ -4633,7 +4633,7 @@ class PubServer(BaseHTTPRequestHandler):
                     post_json_object['object']['content'] = \
                         newsPostContent
                     contentMap = post_json_object['object']['contentMap']
-                    contentMap[self.server.systemLanguage] = newsPostContent
+                    contentMap[self.server.system_language] = newsPostContent
                     # update newswire
                     pubDate = post_json_object['object']['published']
                     publishedDate = \
@@ -4677,7 +4677,7 @@ class PubServer(BaseHTTPRequestHandler):
                        domain: str, domainFull: str,
                        onion_domain: str, i2p_domain: str,
                        debug: bool, allow_local_network_access: bool,
-                       systemLanguage: str, content_license_url: str) -> None:
+                       system_language: str, content_license_url: str) -> None:
         """Updates your user profile after editing via the Edit button
         on the profile screen
         """
@@ -5013,7 +5013,7 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.themeName = fields['themeDropdown']
                             setTheme(base_dir, self.server.themeName, domain,
                                      allow_local_network_access,
-                                     systemLanguage)
+                                     system_language)
                             self.server.textModeBanner = \
                                 getTextModeBanner(self.server.base_dir)
                             self.server.iconsCache = {}
@@ -5953,7 +5953,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.allow_local_network_access
                                 setTheme(base_dir, currTheme, domain,
                                          allow_local_network_access,
-                                         systemLanguage)
+                                         system_language)
                                 self.server.textModeBanner = \
                                     getTextModeBanner(base_dir)
                                 self.server.iconsCache = {}
@@ -6871,7 +6871,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      port,
                                      maxPostsInRSSFeed, 1,
                                      True,
-                                     self.server.systemLanguage)
+                                     self.server.system_language)
                 if msg is not None:
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
@@ -6921,7 +6921,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      port,
                                      maxPostsInRSSFeed, 1,
                                      False,
-                                     self.server.systemLanguage)
+                                     self.server.system_language)
             break
         if msg:
             msg = rss2Header(http_prefix,
@@ -7016,7 +7016,7 @@ class PubServer(BaseHTTPRequestHandler):
                      base_dir: str, http_prefix: str,
                      domain: str, port: int, proxy_type: str,
                      GETstartTime,
-                     debug: bool, systemLanguage: str) -> None:
+                     debug: bool, system_language: str) -> None:
         """Returns an RSS3 feed
         """
         nickname = path.split('/blog/')[1]
@@ -7035,7 +7035,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.translate,
                                      nickname, domain, port,
                                      maxPostsInRSSFeed, 1,
-                                     systemLanguage)
+                                     system_language)
                 if msg is not None:
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
@@ -7551,9 +7551,9 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.peertubeInstances,
                               self.server.allow_local_network_access,
                               self.server.themeName,
-                              self.server.systemLanguage,
+                              self.server.system_language,
                               self.server.max_like_count,
-                              self.server.signingPrivateKeyPem,
+                              self.server.signing_priv_key_pem,
                               self.server.CWlists,
                               self.server.lists_enabled)
         if hashtagStr:
@@ -7610,7 +7610,7 @@ class PubServer(BaseHTTPRequestHandler):
                              self.server.project_version,
                              self.server.yt_replace_domain,
                              self.server.twitter_replacement_domain,
-                             self.server.systemLanguage)
+                             self.server.system_language)
         if hashtagStr:
             msg = hashtagStr.encode('utf-8')
             msglen = len(msg)
@@ -7702,7 +7702,7 @@ class PubServer(BaseHTTPRequestHandler):
                            self.server.cached_webfingers,
                            debug,
                            self.server.project_version,
-                           self.server.signingPrivateKeyPem)
+                           self.server.signing_priv_key_pem)
         announceFilename = None
         if announceJson:
             # save the announce straight to the outbox
@@ -7744,7 +7744,7 @@ class PubServer(BaseHTTPRequestHandler):
                 followerApprovalActive(base_dir,
                                        self.postToNickname, domain)
             showRepeats = not isDM(announceJson)
-            individualPostAsHtml(self.server.signingPrivateKeyPem, False,
+            individualPostAsHtml(self.server.signing_priv_key_pem, False,
                                  self.server.recentPostsCache,
                                  self.server.max_recent_posts,
                                  self.server.translate,
@@ -7764,7 +7764,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.peertubeInstances,
                                  self.server.allow_local_network_access,
                                  self.server.themeName,
-                                 self.server.systemLanguage,
+                                 self.server.system_language,
                                  self.server.max_like_count,
                                  showRepeats,
                                  showIndividualPostIcons,
@@ -7916,7 +7916,7 @@ class PubServer(BaseHTTPRequestHandler):
                                              self.server.person_cache,
                                              debug,
                                              self.server.project_version,
-                                             self.server.signingPrivateKeyPem)
+                                             self.server.signing_priv_key_pem)
         originPathStrAbsolute = \
             http_prefix + '://' + domainFull + originPathStr
         if callingDomain.endswith('.onion') and onion_domain:
@@ -8071,7 +8071,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.person_cache,
                                           debug,
                                           self.server.project_version,
-                                          self.server.signingPrivateKeyPem)
+                                          self.server.signing_priv_key_pem)
         originPathStrAbsolute = \
             http_prefix + '://' + domainFull + originPathStr
         if callingDomain.endswith('.onion') and onion_domain:
@@ -8203,7 +8203,7 @@ class PubServer(BaseHTTPRequestHandler):
                     followerApprovalActive(base_dir,
                                            self.postToNickname, domain)
                 showRepeats = not isDM(likedPostJson)
-                individualPostAsHtml(self.server.signingPrivateKeyPem, False,
+                individualPostAsHtml(self.server.signing_priv_key_pem, False,
                                      self.server.recentPostsCache,
                                      self.server.max_recent_posts,
                                      self.server.translate,
@@ -8224,7 +8224,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.peertubeInstances,
                                      self.server.allow_local_network_access,
                                      self.server.themeName,
-                                     self.server.systemLanguage,
+                                     self.server.system_language,
                                      self.server.max_like_count,
                                      showRepeats,
                                      showIndividualPostIcons,
@@ -8358,7 +8358,7 @@ class PubServer(BaseHTTPRequestHandler):
                     followerApprovalActive(base_dir,
                                            self.postToNickname, domain)
                 showRepeats = not isDM(likedPostJson)
-                individualPostAsHtml(self.server.signingPrivateKeyPem, False,
+                individualPostAsHtml(self.server.signing_priv_key_pem, False,
                                      self.server.recentPostsCache,
                                      self.server.max_recent_posts,
                                      self.server.translate,
@@ -8378,7 +8378,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.peertubeInstances,
                                      self.server.allow_local_network_access,
                                      self.server.themeName,
-                                     self.server.systemLanguage,
+                                     self.server.system_language,
                                      self.server.max_like_count,
                                      showRepeats,
                                      showIndividualPostIcons,
@@ -8541,7 +8541,7 @@ class PubServer(BaseHTTPRequestHandler):
                     followerApprovalActive(base_dir,
                                            self.postToNickname, domain)
                 showRepeats = not isDM(reactionPostJson)
-                individualPostAsHtml(self.server.signingPrivateKeyPem, False,
+                individualPostAsHtml(self.server.signing_priv_key_pem, False,
                                      self.server.recentPostsCache,
                                      self.server.max_recent_posts,
                                      self.server.translate,
@@ -8562,7 +8562,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.peertubeInstances,
                                      self.server.allow_local_network_access,
                                      self.server.themeName,
-                                     self.server.systemLanguage,
+                                     self.server.system_language,
                                      self.server.max_like_count,
                                      showRepeats,
                                      showIndividualPostIcons,
@@ -8714,7 +8714,7 @@ class PubServer(BaseHTTPRequestHandler):
                     followerApprovalActive(base_dir,
                                            self.postToNickname, domain)
                 showRepeats = not isDM(reactionPostJson)
-                individualPostAsHtml(self.server.signingPrivateKeyPem, False,
+                individualPostAsHtml(self.server.signing_priv_key_pem, False,
                                      self.server.recentPostsCache,
                                      self.server.max_recent_posts,
                                      self.server.translate,
@@ -8734,7 +8734,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.peertubeInstances,
                                      self.server.allow_local_network_access,
                                      self.server.themeName,
-                                     self.server.systemLanguage,
+                                     self.server.system_language,
                                      self.server.max_like_count,
                                      showRepeats,
                                      showIndividualPostIcons,
@@ -8832,9 +8832,9 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.peertubeInstances,
                                     self.server.allow_local_network_access,
                                     self.server.themeName,
-                                    self.server.systemLanguage,
+                                    self.server.system_language,
                                     self.server.max_like_count,
-                                    self.server.signingPrivateKeyPem,
+                                    self.server.signing_priv_key_pem,
                                     self.server.CWlists,
                                     self.server.lists_enabled,
                                     timelineStr, pageNumber)
@@ -8934,7 +8934,7 @@ class PubServer(BaseHTTPRequestHandler):
                     followerApprovalActive(base_dir,
                                            self.postToNickname, domain)
                 showRepeats = not isDM(bookmarkPostJson)
-                individualPostAsHtml(self.server.signingPrivateKeyPem, False,
+                individualPostAsHtml(self.server.signing_priv_key_pem, False,
                                      self.server.recentPostsCache,
                                      self.server.max_recent_posts,
                                      self.server.translate,
@@ -8954,7 +8954,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.peertubeInstances,
                                      self.server.allow_local_network_access,
                                      self.server.themeName,
-                                     self.server.systemLanguage,
+                                     self.server.system_language,
                                      self.server.max_like_count,
                                      showRepeats,
                                      showIndividualPostIcons,
@@ -9062,7 +9062,7 @@ class PubServer(BaseHTTPRequestHandler):
                     followerApprovalActive(base_dir,
                                            self.postToNickname, domain)
                 showRepeats = not isDM(bookmarkPostJson)
-                individualPostAsHtml(self.server.signingPrivateKeyPem, False,
+                individualPostAsHtml(self.server.signing_priv_key_pem, False,
                                      self.server.recentPostsCache,
                                      self.server.max_recent_posts,
                                      self.server.translate,
@@ -9082,7 +9082,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.peertubeInstances,
                                      self.server.allow_local_network_access,
                                      self.server.themeName,
-                                     self.server.systemLanguage,
+                                     self.server.system_language,
                                      self.server.max_like_count,
                                      showRepeats,
                                      showIndividualPostIcons,
@@ -9179,9 +9179,9 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.peertubeInstances,
                                   self.server.allow_local_network_access,
                                   self.server.themeName,
-                                  self.server.systemLanguage,
+                                  self.server.system_language,
                                   self.server.max_like_count,
-                                  self.server.signingPrivateKeyPem,
+                                  self.server.signing_priv_key_pem,
                                   self.server.CWlists,
                                   self.server.lists_enabled)
             if deleteStr:
@@ -9263,7 +9263,7 @@ class PubServer(BaseHTTPRequestHandler):
                 allowDownloads = False
                 showAvatarOptions = True
                 avatarUrl = None
-                individualPostAsHtml(self.server.signingPrivateKeyPem,
+                individualPostAsHtml(self.server.signing_priv_key_pem,
                                      allowDownloads,
                                      self.server.recentPostsCache,
                                      self.server.max_recent_posts,
@@ -9284,7 +9284,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.peertubeInstances,
                                      self.server.allow_local_network_access,
                                      self.server.themeName,
-                                     self.server.systemLanguage,
+                                     self.server.system_language,
                                      self.server.max_like_count,
                                      showRepeats,
                                      showIndividualPostIcons,
@@ -9373,7 +9373,7 @@ class PubServer(BaseHTTPRequestHandler):
                 allowDownloads = False
                 showAvatarOptions = True
                 avatarUrl = None
-                individualPostAsHtml(self.server.signingPrivateKeyPem,
+                individualPostAsHtml(self.server.signing_priv_key_pem,
                                      allowDownloads,
                                      self.server.recentPostsCache,
                                      self.server.max_recent_posts,
@@ -9394,7 +9394,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.peertubeInstances,
                                      self.server.allow_local_network_access,
                                      self.server.themeName,
-                                     self.server.systemLanguage,
+                                     self.server.system_language,
                                      self.server.max_like_count,
                                      showRepeats,
                                      showIndividualPostIcons,
@@ -9516,9 +9516,9 @@ class PubServer(BaseHTTPRequestHandler):
                                     peertubeInstances,
                                     self.server.allow_local_network_access,
                                     self.server.themeName,
-                                    self.server.systemLanguage,
+                                    self.server.system_language,
                                     self.server.max_like_count,
-                                    self.server.signingPrivateKeyPem,
+                                    self.server.signing_priv_key_pem,
                                     self.server.CWlists,
                                     self.server.lists_enabled)
                 msg = msg.encode('utf-8')
@@ -9608,9 +9608,9 @@ class PubServer(BaseHTTPRequestHandler):
                                     peertubeInstances,
                                     self.server.allow_local_network_access,
                                     self.server.themeName,
-                                    self.server.systemLanguage,
+                                    self.server.system_language,
                                     self.server.max_like_count,
-                                    self.server.signingPrivateKeyPem,
+                                    self.server.signing_priv_key_pem,
                                     self.server.CWlists,
                                     self.server.lists_enabled)
                 msg = msg.encode('utf-8')
@@ -9691,7 +9691,7 @@ class PubServer(BaseHTTPRequestHandler):
                         getSpoofedCity(self.server.city,
                                        base_dir, nickname, domain)
                     msg = \
-                        htmlProfile(self.server.signingPrivateKeyPem,
+                        htmlProfile(self.server.signing_priv_key_pem,
                                     self.server.rss_icon_at_top,
                                     self.server.cssCache,
                                     icons_as_buttons,
@@ -9716,7 +9716,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.textModeBanner,
                                     self.server.debug,
                                     accessKeys, city,
-                                    self.server.systemLanguage,
+                                    self.server.system_language,
                                     self.server.max_like_count,
                                     self.server.shared_items_federated_domains,
                                     rolesList,
@@ -9802,12 +9802,12 @@ class PubServer(BaseHTTPRequestHandler):
                                                       nickname, domain)
                                 shared_items_federated_domains = \
                                     self.server.shared_items_federated_domains
-                                signingPrivateKeyPem = \
-                                    self.server.signingPrivateKeyPem
+                                signing_priv_key_pem = \
+                                    self.server.signing_priv_key_pem
                                 content_license_url = \
                                     self.server.content_license_url
                                 msg = \
-                                    htmlProfile(signingPrivateKeyPem,
+                                    htmlProfile(signing_priv_key_pem,
                                                 self.server.rss_icon_at_top,
                                                 self.server.cssCache,
                                                 icons_as_buttons,
@@ -9832,7 +9832,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                 self.server.textModeBanner,
                                                 self.server.debug,
                                                 accessKeys, city,
-                                                self.server.systemLanguage,
+                                                self.server.system_language,
                                                 self.server.max_like_count,
                                                 shared_items_federated_domains,
                                                 skills,
@@ -9998,9 +9998,9 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.peertubeInstances,
                                    self.server.allow_local_network_access,
                                    self.server.themeName,
-                                   self.server.systemLanguage,
+                                   self.server.system_language,
                                    self.server.max_like_count,
-                                   self.server.signingPrivateKeyPem,
+                                   self.server.signing_priv_key_pem,
                                    self.server.CWlists,
                                    self.server.lists_enabled)
             msg = msg.encode('utf-8')
@@ -10262,10 +10262,10 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.allow_local_network_access,
                                         self.server.textModeBanner,
                                         accessKeys,
-                                        self.server.systemLanguage,
+                                        self.server.system_language,
                                         self.server.max_like_count,
                                         shared_items_federated_domains,
-                                        self.server.signingPrivateKeyPem,
+                                        self.server.signing_priv_key_pem,
                                         self.server.CWlists,
                                         self.server.lists_enabled)
                         if GETstartTime:
@@ -10414,10 +10414,10 @@ class PubServer(BaseHTTPRequestHandler):
                                          allow_local_network_access,
                                          self.server.textModeBanner,
                                          accessKeys,
-                                         self.server.systemLanguage,
+                                         self.server.system_language,
                                          self.server.max_like_count,
                                          shared_items_federated_domains,
-                                         self.server.signingPrivateKeyPem,
+                                         self.server.signing_priv_key_pem,
                                          self.server.CWlists,
                                          self.server.lists_enabled)
                         msg = msg.encode('utf-8')
@@ -10559,10 +10559,10 @@ class PubServer(BaseHTTPRequestHandler):
                                          allow_local_network_access,
                                          self.server.textModeBanner,
                                          accessKeys,
-                                         self.server.systemLanguage,
+                                         self.server.system_language,
                                          self.server.max_like_count,
                                          shared_items_federated_domains,
-                                         self.server.signingPrivateKeyPem,
+                                         self.server.signing_priv_key_pem,
                                          self.server.CWlists,
                                          self.server.lists_enabled)
                     msg = msg.encode('utf-8')
@@ -10701,10 +10701,10 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.allow_local_network_access,
                                        self.server.textModeBanner,
                                        accessKeys,
-                                       self.server.systemLanguage,
+                                       self.server.system_language,
                                        self.server.max_like_count,
                                        fed_domains,
-                                       self.server.signingPrivateKeyPem,
+                                       self.server.signing_priv_key_pem,
                                        self.server.CWlists,
                                        self.server.lists_enabled)
                     msg = msg.encode('utf-8')
@@ -10843,10 +10843,10 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.allow_local_network_access,
                                        self.server.textModeBanner,
                                        accessKeys,
-                                       self.server.systemLanguage,
+                                       self.server.system_language,
                                        self.server.max_like_count,
                                        fed_domains,
-                                       self.server.signingPrivateKeyPem,
+                                       self.server.signing_priv_key_pem,
                                        self.server.CWlists,
                                        self.server.lists_enabled)
                     msg = msg.encode('utf-8')
@@ -10995,10 +10995,10 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.allow_local_network_access,
                                       self.server.textModeBanner,
                                       accessKeys,
-                                      self.server.systemLanguage,
+                                      self.server.system_language,
                                       self.server.max_like_count,
                                       fed_domains,
-                                      self.server.signingPrivateKeyPem,
+                                      self.server.signing_priv_key_pem,
                                       self.server.CWlists,
                                       self.server.lists_enabled)
                     msg = msg.encode('utf-8')
@@ -11146,10 +11146,10 @@ class PubServer(BaseHTTPRequestHandler):
                                           allow_local_network_access,
                                           self.server.textModeBanner,
                                           accessKeys,
-                                          self.server.systemLanguage,
+                                          self.server.system_language,
                                           self.server.max_like_count,
                                           shared_items_federated_domains,
-                                          self.server.signingPrivateKeyPem,
+                                          self.server.signing_priv_key_pem,
                                           self.server.CWlists,
                                           self.server.lists_enabled)
                     msg = msg.encode('utf-8')
@@ -11254,10 +11254,10 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.allow_local_network_access,
                                    self.server.textModeBanner,
                                    accessKeys,
-                                   self.server.systemLanguage,
+                                   self.server.system_language,
                                    self.server.max_like_count,
                                    self.server.shared_items_federated_domains,
-                                   self.server.signingPrivateKeyPem,
+                                   self.server.signing_priv_key_pem,
                                    self.server.CWlists,
                                    self.server.lists_enabled)
                     msg = msg.encode('utf-8')
@@ -11339,10 +11339,10 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.allow_local_network_access,
                                    self.server.textModeBanner,
                                    accessKeys,
-                                   self.server.systemLanguage,
+                                   self.server.system_language,
                                    self.server.max_like_count,
                                    self.server.shared_items_federated_domains,
-                                   self.server.signingPrivateKeyPem,
+                                   self.server.signing_priv_key_pem,
                                    self.server.CWlists,
                                    self.server.lists_enabled)
                     msg = msg.encode('utf-8')
@@ -11464,10 +11464,10 @@ class PubServer(BaseHTTPRequestHandler):
                                           allow_local_network_access,
                                           self.server.textModeBanner,
                                           accessKeys,
-                                          self.server.systemLanguage,
+                                          self.server.system_language,
                                           self.server.max_like_count,
                                           shared_items_federated_domains,
-                                          self.server.signingPrivateKeyPem,
+                                          self.server.signing_priv_key_pem,
                                           self.server.CWlists,
                                           self.server.lists_enabled)
                         msg = msg.encode('utf-8')
@@ -11602,10 +11602,10 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.allow_local_network_access,
                                self.server.textModeBanner,
                                accessKeys,
-                               self.server.systemLanguage,
+                               self.server.system_language,
                                self.server.max_like_count,
                                self.server.shared_items_federated_domains,
-                               self.server.signingPrivateKeyPem,
+                               self.server.signing_priv_key_pem,
                                self.server.CWlists,
                                self.server.lists_enabled)
                 msg = msg.encode('utf-8')
@@ -11736,10 +11736,10 @@ class PubServer(BaseHTTPRequestHandler):
                                            allow_local_network_access,
                                            self.server.textModeBanner,
                                            accessKeys,
-                                           self.server.systemLanguage,
+                                           self.server.system_language,
                                            self.server.max_like_count,
                                            shared_items_federated_domains,
-                                           self.server.signingPrivateKeyPem,
+                                           self.server.signing_priv_key_pem,
                                            self.server.CWlists,
                                            self.server.lists_enabled)
                         msg = msg.encode('utf-8')
@@ -11831,7 +11831,7 @@ class PubServer(BaseHTTPRequestHandler):
                     city = getSpoofedCity(self.server.city,
                                           base_dir, nickname, domain)
                     msg = \
-                        htmlProfile(self.server.signingPrivateKeyPem,
+                        htmlProfile(self.server.signing_priv_key_pem,
                                     self.server.rss_icon_at_top,
                                     self.server.cssCache,
                                     self.server.icons_as_buttons,
@@ -11857,7 +11857,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.textModeBanner,
                                     self.server.debug,
                                     accessKeys, city,
-                                    self.server.systemLanguage,
+                                    self.server.system_language,
                                     self.server.max_like_count,
                                     self.server.shared_items_federated_domains,
                                     shares,
@@ -11952,7 +11952,7 @@ class PubServer(BaseHTTPRequestHandler):
                     content_license_url = \
                         self.server.content_license_url
                     msg = \
-                        htmlProfile(self.server.signingPrivateKeyPem,
+                        htmlProfile(self.server.signing_priv_key_pem,
                                     self.server.rss_icon_at_top,
                                     self.server.cssCache,
                                     self.server.icons_as_buttons,
@@ -11978,7 +11978,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.textModeBanner,
                                     self.server.debug,
                                     accessKeys, city,
-                                    self.server.systemLanguage,
+                                    self.server.system_language,
                                     self.server.max_like_count,
                                     self.server.shared_items_federated_domains,
                                     following,
@@ -12071,7 +12071,7 @@ class PubServer(BaseHTTPRequestHandler):
                     content_license_url = \
                         self.server.content_license_url
                     msg = \
-                        htmlProfile(self.server.signingPrivateKeyPem,
+                        htmlProfile(self.server.signing_priv_key_pem,
                                     self.server.rss_icon_at_top,
                                     self.server.cssCache,
                                     self.server.icons_as_buttons,
@@ -12098,7 +12098,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.textModeBanner,
                                     self.server.debug,
                                     accessKeys, city,
-                                    self.server.systemLanguage,
+                                    self.server.system_language,
                                     self.server.max_like_count,
                                     self.server.shared_items_federated_domains,
                                     followers,
@@ -12138,13 +12138,13 @@ class PubServer(BaseHTTPRequestHandler):
                                path: str,
                                http_prefix: str,
                                nickname: str, domain: str,
-                               domainFull: str, systemLanguage: str) -> None:
+                               domainFull: str, system_language: str) -> None:
         """Returns the featured posts collections in
         actor/collections/featured
         """
         featuredCollection = \
             jsonPinPost(base_dir, http_prefix,
-                        nickname, domain, domainFull, systemLanguage)
+                        nickname, domain, domainFull, system_language)
         msg = json.dumps(featuredCollection,
                          ensure_ascii=False).encode('utf-8')
         msglen = len(msg)
@@ -12207,7 +12207,7 @@ class PubServer(BaseHTTPRequestHandler):
                 city = getSpoofedCity(self.server.city,
                                       base_dir, nickname, domain)
             msg = \
-                htmlProfile(self.server.signingPrivateKeyPem,
+                htmlProfile(self.server.signing_priv_key_pem,
                             self.server.rss_icon_at_top,
                             self.server.cssCache,
                             self.server.icons_as_buttons,
@@ -12234,7 +12234,7 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.textModeBanner,
                             self.server.debug,
                             accessKeys, city,
-                            self.server.systemLanguage,
+                            self.server.system_language,
                             self.server.max_like_count,
                             self.server.shared_items_federated_domains,
                             None, None, None,
@@ -12390,7 +12390,7 @@ class PubServer(BaseHTTPRequestHandler):
                            domain, port,
                            maxPostsInBlogsFeed, pageNumber,
                            self.server.peertubeInstances,
-                           self.server.systemLanguage,
+                           self.server.system_language,
                            self.server.person_cache,
                            self.server.debug)
         if msg is not None:
@@ -12995,9 +12995,9 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.show_published_date_only,
                               self.server.peertubeInstances,
                               self.server.allow_local_network_access,
-                              self.server.systemLanguage,
+                              self.server.system_language,
                               self.server.max_like_count,
-                              self.server.signingPrivateKeyPem,
+                              self.server.signing_priv_key_pem,
                               self.server.CWlists,
                               self.server.lists_enabled,
                               self.server.defaultTimeline).encode('utf-8')
@@ -13185,7 +13185,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    path, domain, port,
                                    http_prefix,
                                    postUrl,
-                                   self.server.systemLanguage).encode('utf-8')
+                                   self.server.system_language).encode('utf-8')
             if msg:
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
@@ -13362,7 +13362,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.base_dir,
                               self.server.http_prefix,
                               self.server.domainFull,
-                              self.server.systemLanguage,
+                              self.server.system_language,
                               False).encode('utf-8')
                 msglen = len(msg)
                 self._logout_headers('text/html', msglen, callingDomain)
@@ -13697,7 +13697,7 @@ class PubServer(BaseHTTPRequestHandler):
                           self.server.i2p_domain,
                           self.server.translate,
                           self.server.registration,
-                          self.server.systemLanguage,
+                          self.server.system_language,
                           self.server.project_version,
                           self.server.customEmoji,
                           self.server.show_node_info_accounts):
@@ -13864,7 +13864,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.proxy_type,
                               GETstartTime,
                               self.server.debug,
-                              self.server.systemLanguage)
+                              self.server.system_language)
             return
 
         usersInPath = False
@@ -13918,7 +13918,7 @@ class PubServer(BaseHTTPRequestHandler):
                 xmlStr = \
                     getSSMLbox(self.server.base_dir,
                                self.path, self.server.domain,
-                               self.server.systemLanguage,
+                               self.server.system_language,
                                self.server.instanceTitle,
                                'inbox')
                 if xmlStr:
@@ -13956,7 +13956,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.http_prefix,
                                     nickname, self.server.domain,
                                     self.server.domainFull,
-                                    self.server.systemLanguage)
+                                    self.server.system_language)
             messageJson = {}
             if pinnedPostJson:
                 postId = removeIdEnding(pinnedPostJson['id'])
@@ -13990,7 +13990,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.http_prefix,
                                         nickname, self.server.domain,
                                         self.server.domainFull,
-                                        self.server.systemLanguage)
+                                        self.server.system_language)
             return
 
         if not htmlGET and \
@@ -14061,7 +14061,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.port,
                                    maxPostsInBlogsFeed,
                                    self.server.peertubeInstances,
-                                   self.server.systemLanguage,
+                                   self.server.system_language,
                                    self.server.person_cache,
                                    self.server.debug)
                 if msg is not None:
@@ -14165,7 +14165,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.domainFull,
                                        post_json_object,
                                        self.server.peertubeInstances,
-                                       self.server.systemLanguage,
+                                       self.server.system_language,
                                        self.server.person_cache,
                                        self.server.debug,
                                        self.server.content_license_url)
@@ -14396,14 +14396,14 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.base_dir, 'http',
                               self.server.onion_domain,
                               None, self.server.translate,
-                              self.server.systemLanguage)
+                              self.server.system_language)
             elif callingDomain.endswith('.i2p'):
                 msg = \
                     htmlAbout(self.server.cssCache,
                               self.server.base_dir, 'http',
                               self.server.i2p_domain,
                               None, self.server.translate,
-                              self.server.systemLanguage)
+                              self.server.system_language)
             else:
                 msg = \
                     htmlAbout(self.server.cssCache,
@@ -14412,7 +14412,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.domainFull,
                               self.server.onion_domain,
                               self.server.translate,
-                              self.server.systemLanguage)
+                              self.server.system_language)
             msg = msg.encode('utf-8')
             msglen = len(msg)
             self._login_headers('text/html', msglen, callingDomain)
@@ -14492,7 +14492,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.domain):
                 msg = \
                     htmlWelcomeScreen(self.server.base_dir, nickname,
-                                      self.server.systemLanguage,
+                                      self.server.system_language,
                                       self.server.translate,
                                       self.server.themeName)
                 msg = msg.encode('utf-8')
@@ -14520,7 +14520,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.domain,
                                        self.server.http_prefix,
                                        self.server.domainFull,
-                                       self.server.systemLanguage,
+                                       self.server.system_language,
                                        self.server.translate,
                                        self.server.themeName)
                 msg = msg.encode('utf-8')
@@ -14548,7 +14548,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.domain,
                                      self.server.http_prefix,
                                      self.server.domainFull,
-                                     self.server.systemLanguage,
+                                     self.server.system_language,
                                      self.server.translate,
                                      self.server.themeName)
                 msg = msg.encode('utf-8')
@@ -14917,7 +14917,7 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.base_dir,
                             self.server.http_prefix,
                             self.server.domainFull,
-                            self.server.systemLanguage,
+                            self.server.system_language,
                             True).encode('utf-8')
             msglen = len(msg)
             self._login_headers('text/html', msglen, callingDomain)
@@ -15694,7 +15694,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.path,
                                        replyPageNumber,
                                        nickname, self.server.domain,
-                                       postUrl, self.server.systemLanguage)
+                                       postUrl, self.server.system_language)
                     if msg:
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
@@ -16119,8 +16119,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.port,
                                 searchHandle,
                                 self.server.debug,
-                                self.server.systemLanguage,
-                                self.server.signingPrivateKeyPem)
+                                self.server.system_language,
+                                self.server.signing_priv_key_pem)
             msg = msg.encode('utf-8')
             msglen = len(msg)
             self._login_headers('text/html',
@@ -16156,8 +16156,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.port,
                                 searchHandle,
                                 self.server.debug,
-                                self.server.systemLanguage,
-                                self.server.signingPrivateKeyPem)
+                                self.server.system_language,
+                                self.server.signing_priv_key_pem)
             msg = msg.encode('utf-8')
             msglen = len(msg)
             self._login_headers('text/html',
@@ -16629,7 +16629,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      fields['subject'], fields['schedulePost'],
                                      fields['eventDate'], fields['eventTime'],
                                      fields['location'], False,
-                                     self.server.systemLanguage,
+                                     self.server.system_language,
                                      conversationId,
                                      self.server.low_bandwidth,
                                      self.server.content_license_url)
@@ -16639,7 +16639,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if pinToProfile:
                         contentStr = \
                             getBaseContentFromPost(messageJson,
-                                                   self.server.systemLanguage)
+                                                   self.server.system_language)
                         followersOnly = False
                         pinPost(self.server.base_dir,
                                 nickname, self.server.domain, contentStr,
@@ -16714,7 +16714,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    fields['eventDate'],
                                    fields['eventTime'],
                                    fields['location'],
-                                   self.server.systemLanguage,
+                                   self.server.system_language,
                                    conversationId,
                                    self.server.low_bandwidth,
                                    self.server.content_license_url)
@@ -16787,7 +16787,7 @@ class PubServer(BaseHTTPRequestHandler):
                         post_json_object['object']['content'] = \
                             fields['message']
                         contentMap = post_json_object['object']['contentMap']
-                        contentMap[self.server.systemLanguage] = \
+                        contentMap[self.server.system_language] = \
                             fields['message']
 
                         imgDescription = ''
@@ -16815,10 +16815,10 @@ class PubServer(BaseHTTPRequestHandler):
 
                         replaceYouTube(post_json_object,
                                        self.server.yt_replace_domain,
-                                       self.server.systemLanguage)
+                                       self.server.system_language)
                         replaceTwitter(post_json_object,
                                        self.server.twitter_replacement_domain,
-                                       self.server.systemLanguage)
+                                       self.server.system_language)
                         saveJson(post_json_object, postFilename)
                         # also save to the news actor
                         if nickname != 'news':
@@ -16867,7 +16867,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        fields['eventDate'],
                                        fields['eventTime'],
                                        fields['location'],
-                                       self.server.systemLanguage,
+                                       self.server.system_language,
                                        conversationId,
                                        self.server.low_bandwidth,
                                        self.server.content_license_url)
@@ -16919,7 +16919,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             fields['eventDate'],
                                             fields['eventTime'],
                                             fields['location'],
-                                            self.server.systemLanguage,
+                                            self.server.system_language,
                                             conversationId,
                                             self.server.low_bandwidth,
                                             self.server.content_license_url)
@@ -16976,7 +16976,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                 fields['eventDate'],
                                                 fields['eventTime'],
                                                 fields['location'],
-                                                self.server.systemLanguage,
+                                                self.server.system_language,
                                                 conversationId,
                                                 self.server.low_bandwidth,
                                                 content_license_url)
@@ -17030,7 +17030,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             fields['eventDate'],
                                             fields['eventTime'],
                                             fields['location'],
-                                            self.server.systemLanguage,
+                                            self.server.system_language,
                                             conversationId,
                                             self.server.low_bandwidth,
                                             self.server.content_license_url)
@@ -17068,7 +17068,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      fields['imageDescription'],
                                      city,
                                      self.server.debug, fields['subject'],
-                                     self.server.systemLanguage,
+                                     self.server.system_language,
                                      self.server.low_bandwidth,
                                      self.server.content_license_url)
                 if messageJson:
@@ -17110,7 +17110,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        city,
                                        fields['subject'],
                                        intDuration,
-                                       self.server.systemLanguage,
+                                       self.server.system_language,
                                        self.server.low_bandwidth,
                                        self.server.content_license_url)
                 if messageJson:
@@ -17182,7 +17182,7 @@ class PubServer(BaseHTTPRequestHandler):
                          durationStr,
                          self.server.debug,
                          city, itemPrice, itemCurrency,
-                         self.server.systemLanguage,
+                         self.server.system_language,
                          self.server.translate, sharesFileType,
                          self.server.low_bandwidth,
                          self.server.content_license_url)
@@ -17602,7 +17602,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.onion_domain,
                                 self.server.i2p_domain, self.server.debug,
                                 self.server.allow_local_network_access,
-                                self.server.systemLanguage,
+                                self.server.system_language,
                                 self.server.content_license_url)
             self.server.POSTbusy = False
             return
@@ -17944,7 +17944,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.defaultTimeline,
                                     self.server.themeName,
                                     self.server.allow_local_network_access,
-                                    self.server.systemLanguage)
+                                    self.server.system_language)
                 self.server.POSTbusy = False
                 return
 
@@ -18531,7 +18531,7 @@ def runDaemon(content_license_url: str,
         httpd.fitness = loadJson(fitness_filename)
 
     # initialize authorized fetch key
-    httpd.signingPrivateKeyPem = None
+    httpd.signing_priv_key_pem = None
 
     httpd.show_node_info_accounts = show_node_info_accounts
     httpd.show_node_info_version = show_node_info_version
@@ -18625,14 +18625,14 @@ def runDaemon(content_license_url: str,
 
     # load translations dictionary
     httpd.translate = {}
-    httpd.systemLanguage = 'en'
+    httpd.system_language = 'en'
     if not unit_test:
-        httpd.translate, httpd.systemLanguage = \
+        httpd.translate, httpd.system_language = \
             loadTranslationsFromFile(base_dir, language)
-        if not httpd.systemLanguage:
+        if not httpd.system_language:
             print('ERROR: no system language loaded')
             sys.exit()
-        print('System language: ' + httpd.systemLanguage)
+        print('System language: ' + httpd.system_language)
         if not httpd.translate:
             print('ERROR: no translations were loaded')
             sys.exit()
@@ -18943,9 +18943,9 @@ def runDaemon(content_license_url: str,
                               httpd.peertubeInstances,
                               verify_all_signatures,
                               httpd.themeName,
-                              httpd.systemLanguage,
+                              httpd.system_language,
                               httpd.max_like_count,
-                              httpd.signingPrivateKeyPem,
+                              httpd.signing_priv_key_pem,
                               httpd.default_reply_interval_hrs,
                               httpd.CWlists), daemon=True)
 
@@ -18967,7 +18967,7 @@ def runDaemon(content_license_url: str,
                         args=(base_dir, httpd,
                               http_prefix, httpd.domainFull,
                               proxy_type, debug,
-                              httpd.systemLanguage), daemon=True)
+                              httpd.system_language), daemon=True)
 
     # flags used when restarting the inbox queue
     httpd.restartInboxQueueInProgress = False
@@ -18975,12 +18975,12 @@ def runDaemon(content_license_url: str,
 
     updateHashtagCategories(base_dir)
 
-    print('Adding hashtag categories for language ' + httpd.systemLanguage)
-    loadHashtagCategories(base_dir, httpd.systemLanguage)
+    print('Adding hashtag categories for language ' + httpd.system_language)
+    loadHashtagCategories(base_dir, httpd.system_language)
 
     # signing key used for authorized fetch
     # this is the instance actor private key
-    httpd.signingPrivateKeyPem = getInstanceActorKey(base_dir, domain)
+    httpd.signing_priv_key_pem = getInstanceActorKey(base_dir, domain)
 
     if not unit_test:
         print('Creating inbox queue watchdog')

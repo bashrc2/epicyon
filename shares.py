@@ -46,7 +46,7 @@ from content import getPriceFromString
 from blocking import isBlocked
 
 
-def _loadDfcIds(base_dir: str, systemLanguage: str,
+def _loadDfcIds(base_dir: str, system_language: str,
                 productType: str,
                 http_prefix: str, domainFull: str) -> {}:
     """Loads the product types ontology
@@ -74,12 +74,12 @@ def _loadDfcIds(base_dir: str, systemLanguage: str,
     for label in productTypes['@graph'][0]['rdfs:label']:
         if not label.get('@language'):
             continue
-        if label['@language'] == systemLanguage:
+        if label['@language'] == system_language:
             languageExists = True
             break
     if not languageExists:
         print('productTypes ontology does not contain the language ' +
-              systemLanguage)
+              system_language)
         return None
     dfcIds = {}
     for item in productTypes['@graph']:
@@ -92,7 +92,7 @@ def _loadDfcIds(base_dir: str, systemLanguage: str,
                 continue
             if not label.get('@value'):
                 continue
-            if label['@language'] == systemLanguage:
+            if label['@language'] == system_language:
                 itemId = \
                     item['@id'].replace('http://static.datafoodconsortium.org',
                                         http_prefix + '://' + domainFull)
@@ -199,7 +199,7 @@ def _dfcProductTypeFromCategory(base_dir: str,
     return None
 
 
-def _getshareDfcId(base_dir: str, systemLanguage: str,
+def _getshareDfcId(base_dir: str, system_language: str,
                    itemType: str, itemCategory: str,
                    translate: {},
                    http_prefix: str, domainFull: str,
@@ -217,7 +217,7 @@ def _getshareDfcId(base_dir: str, systemLanguage: str,
         itemType = itemType.replace('.', '')
         return 'epicyon#' + itemType
     if not dfcIds:
-        dfcIds = _loadDfcIds(base_dir, systemLanguage, matchedProductType,
+        dfcIds = _loadDfcIds(base_dir, system_language, matchedProductType,
                              http_prefix, domainFull)
         if not dfcIds:
             return ''
@@ -306,7 +306,7 @@ def addShare(base_dir: str,
              itemQty: float, itemType: str, itemCategory: str, location: str,
              duration: str, debug: bool, city: str,
              price: str, currency: str,
-             systemLanguage: str, translate: {},
+             system_language: str, translate: {},
              sharesFileType: str, low_bandwidth: bool,
              content_license_url: str) -> None:
     """Adds a new share
@@ -329,7 +329,7 @@ def addShare(base_dir: str,
     domainFull = getFullDomain(domain, port)
     actor = localActorUrl(http_prefix, nickname, domainFull)
     itemID = _getValidSharedItemID(actor, displayName)
-    dfcId = _getshareDfcId(base_dir, systemLanguage,
+    dfcId = _getshareDfcId(base_dir, system_language,
                            itemType, itemCategory, translate,
                            http_prefix, domainFull)
 
@@ -561,7 +561,7 @@ def sendShareViaServer(base_dir, session,
                        cached_webfingers: {}, person_cache: {},
                        debug: bool, project_version: str,
                        itemPrice: str, itemCurrency: str,
-                       signingPrivateKeyPem: str) -> {}:
+                       signing_priv_key_pem: str) -> {}:
     """Creates an item share via c2s
     """
     if not session:
@@ -612,7 +612,7 @@ def sendShareViaServer(base_dir, session,
         webfingerHandle(session, handle, http_prefix,
                         cached_webfingers,
                         fromDomain, project_version, debug, False,
-                        signingPrivateKeyPem)
+                        signing_priv_key_pem)
     if not wfRequest:
         if debug:
             print('DEBUG: share webfinger failed for ' + handle)
@@ -627,7 +627,7 @@ def sendShareViaServer(base_dir, session,
     # get the actor inbox for the To handle
     originDomain = fromDomain
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
-     displayName, _) = getPersonBox(signingPrivateKeyPem,
+     displayName, _) = getPersonBox(signing_priv_key_pem,
                                     originDomain,
                                     base_dir, session, wfRequest,
                                     person_cache, project_version,
@@ -682,7 +682,7 @@ def sendUndoShareViaServer(base_dir: str, session,
                            http_prefix: str, displayName: str,
                            cached_webfingers: {}, person_cache: {},
                            debug: bool, project_version: str,
-                           signingPrivateKeyPem: str) -> {}:
+                           signing_priv_key_pem: str) -> {}:
     """Undoes a share via c2s
     """
     if not session:
@@ -716,7 +716,7 @@ def sendUndoShareViaServer(base_dir: str, session,
     wfRequest = \
         webfingerHandle(session, handle, http_prefix, cached_webfingers,
                         fromDomain, project_version, debug, False,
-                        signingPrivateKeyPem)
+                        signing_priv_key_pem)
     if not wfRequest:
         if debug:
             print('DEBUG: unshare webfinger failed for ' + handle)
@@ -731,7 +731,7 @@ def sendUndoShareViaServer(base_dir: str, session,
     # get the actor inbox for the To handle
     originDomain = fromDomain
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
-     displayName, _) = getPersonBox(signingPrivateKeyPem,
+     displayName, _) = getPersonBox(signing_priv_key_pem,
                                     originDomain,
                                     base_dir, session, wfRequest,
                                     person_cache, project_version,
@@ -781,7 +781,7 @@ def sendWantedViaServer(base_dir, session,
                         cached_webfingers: {}, person_cache: {},
                         debug: bool, project_version: str,
                         itemMaxPrice: str, itemCurrency: str,
-                        signingPrivateKeyPem: str) -> {}:
+                        signing_priv_key_pem: str) -> {}:
     """Creates a wanted item via c2s
     """
     if not session:
@@ -832,7 +832,7 @@ def sendWantedViaServer(base_dir, session,
         webfingerHandle(session, handle, http_prefix,
                         cached_webfingers,
                         fromDomain, project_version, debug, False,
-                        signingPrivateKeyPem)
+                        signing_priv_key_pem)
     if not wfRequest:
         if debug:
             print('DEBUG: share webfinger failed for ' + handle)
@@ -847,7 +847,7 @@ def sendWantedViaServer(base_dir, session,
     # get the actor inbox for the To handle
     originDomain = fromDomain
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
-     displayName, _) = getPersonBox(signingPrivateKeyPem,
+     displayName, _) = getPersonBox(signing_priv_key_pem,
                                     originDomain,
                                     base_dir, session, wfRequest,
                                     person_cache, project_version,
@@ -902,7 +902,7 @@ def sendUndoWantedViaServer(base_dir: str, session,
                             http_prefix: str, displayName: str,
                             cached_webfingers: {}, person_cache: {},
                             debug: bool, project_version: str,
-                            signingPrivateKeyPem: str) -> {}:
+                            signing_priv_key_pem: str) -> {}:
     """Undoes a wanted item via c2s
     """
     if not session:
@@ -936,7 +936,7 @@ def sendUndoWantedViaServer(base_dir: str, session,
     wfRequest = \
         webfingerHandle(session, handle, http_prefix, cached_webfingers,
                         fromDomain, project_version, debug, False,
-                        signingPrivateKeyPem)
+                        signing_priv_key_pem)
     if not wfRequest:
         if debug:
             print('DEBUG: unwant webfinger failed for ' + handle)
@@ -951,7 +951,7 @@ def sendUndoWantedViaServer(base_dir: str, session,
     # get the actor inbox for the To handle
     originDomain = fromDomain
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
-     displayName, _) = getPersonBox(signingPrivateKeyPem,
+     displayName, _) = getPersonBox(signing_priv_key_pem,
                                     originDomain,
                                     base_dir, session, wfRequest,
                                     person_cache, project_version,
@@ -995,7 +995,7 @@ def getSharedItemsCatalogViaServer(base_dir, session,
                                    nickname: str, password: str,
                                    domain: str, port: int,
                                    http_prefix: str, debug: bool,
-                                   signingPrivateKeyPem: str) -> {}:
+                                   signing_priv_key_pem: str) -> {}:
     """Returns the shared items catalog via c2s
     """
     if not session:
@@ -1014,7 +1014,7 @@ def getSharedItemsCatalogViaServer(base_dir, session,
     url = localActorUrl(http_prefix, nickname, domainFull) + '/catalog'
     if debug:
         print('Shared items catalog request to: ' + url)
-    catalogJson = getJson(signingPrivateKeyPem, session, url, headers, None,
+    catalogJson = getJson(signing_priv_key_pem, session, url, headers, None,
                           debug, __version__, http_prefix, None)
     if not catalogJson:
         if debug:
@@ -1030,7 +1030,7 @@ def getSharedItemsCatalogViaServer(base_dir, session,
 def outboxShareUpload(base_dir: str, http_prefix: str,
                       nickname: str, domain: str, port: int,
                       messageJson: {}, debug: bool, city: str,
-                      systemLanguage: str, translate: {},
+                      system_language: str, translate: {},
                       low_bandwidth: bool,
                       content_license_url: str) -> None:
     """ When a shared item is received by the outbox from c2s
@@ -1093,7 +1093,7 @@ def outboxShareUpload(base_dir: str, http_prefix: str,
              debug, city,
              messageJson['object']['itemPrice'],
              messageJson['object']['itemCurrency'],
-             systemLanguage, translate, 'shares',
+             system_language, translate, 'shares',
              low_bandwidth, content_license_url)
     if debug:
         print('DEBUG: shared item received via c2s')
@@ -1543,7 +1543,7 @@ def _updateFederatedSharesCache(session, shared_items_federated_domains: [],
                                 base_dir: str, domainFull: str,
                                 http_prefix: str,
                                 tokensJson: {}, debug: bool,
-                                systemLanguage: str,
+                                system_language: str,
                                 sharesFileType: str) -> None:
     """Updates the cache of federated shares for the instance.
     This enables shared items to be available even when other instances
@@ -1590,7 +1590,7 @@ def _updateFederatedSharesCache(session, shared_items_federated_domains: [],
         if saveJson(catalogJson, catalogFilename):
             print('Downloaded shared items catalog for ' + federatedDomainFull)
             sharesJson = _dfcToSharesFormat(catalogJson,
-                                            base_dir, systemLanguage,
+                                            base_dir, system_language,
                                             http_prefix, domainFull)
             if sharesJson:
                 sharesFilename = \
@@ -1699,7 +1699,7 @@ def _regenerateSharesToken(base_dir: str, domainFull: str,
 
 def runFederatedSharesDaemon(base_dir: str, httpd, http_prefix: str,
                              domainFull: str, proxy_type: str, debug: bool,
-                             systemLanguage: str) -> None:
+                             system_language: str) -> None:
     """Runs the daemon used to update federated shared items
     """
     secondsPerHour = 60 * 60
@@ -1746,13 +1746,13 @@ def runFederatedSharesDaemon(base_dir: str, httpd, http_prefix: str,
             _updateFederatedSharesCache(session,
                                         shared_items_federated_domains,
                                         base_dir, domainFull, http_prefix,
-                                        tokensJson, debug, systemLanguage,
+                                        tokensJson, debug, system_language,
                                         sharesFileType)
         time.sleep(secondsPerHour * 6)
 
 
 def _dfcToSharesFormat(catalogJson: {},
-                       base_dir: str, systemLanguage: str,
+                       base_dir: str, system_language: str,
                        http_prefix: str, domainFull: str) -> {}:
     """Converts DFC format into the internal formal used to store shared items.
     This simplifies subsequent search and display
@@ -1765,7 +1765,7 @@ def _dfcToSharesFormat(catalogJson: {},
     productTypesList = getCategoryTypes(base_dir)
     for productType in productTypesList:
         dfcIds[productType] = \
-            _loadDfcIds(base_dir, systemLanguage, productType,
+            _loadDfcIds(base_dir, system_language, productType,
                         http_prefix, domainFull)
 
     currTime = int(time.time())

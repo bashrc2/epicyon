@@ -24,7 +24,7 @@ def _moveFollowingHandlesForAccount(base_dir: str, nickname: str, domain: str,
                                     session,
                                     http_prefix: str, cached_webfingers: {},
                                     debug: bool,
-                                    signingPrivateKeyPem: str) -> int:
+                                    signing_priv_key_pem: str) -> int:
     """Goes through all follows for an account and updates any that have moved
     """
     ctr = 0
@@ -39,14 +39,14 @@ def _moveFollowingHandlesForAccount(base_dir: str, nickname: str, domain: str,
                 _updateMovedHandle(base_dir, nickname, domain,
                                    followHandle, session,
                                    http_prefix, cached_webfingers,
-                                   debug, signingPrivateKeyPem)
+                                   debug, signing_priv_key_pem)
     return ctr
 
 
 def _updateMovedHandle(base_dir: str, nickname: str, domain: str,
                        handle: str, session,
                        http_prefix: str, cached_webfingers: {},
-                       debug: bool, signingPrivateKeyPem: str) -> int:
+                       debug: bool, signing_priv_key_pem: str) -> int:
     """Check if an account has moved, and if so then alter following.txt
     for each account.
     Returns 1 if moved, 0 otherwise
@@ -61,7 +61,7 @@ def _updateMovedHandle(base_dir: str, nickname: str, domain: str,
     wfRequest = webfingerHandle(session, handle,
                                 http_prefix, cached_webfingers,
                                 domain, __version__, debug, False,
-                                signingPrivateKeyPem)
+                                signing_priv_key_pem)
     if not wfRequest:
         print('updateMovedHandle unable to webfinger ' + handle)
         return ctr
@@ -86,7 +86,7 @@ def _updateMovedHandle(base_dir: str, nickname: str, domain: str,
         gnunet = True
     personJson = \
         getActorJson(domain, personUrl, http_prefix, gnunet, debug, False,
-                     signingPrivateKeyPem, None)
+                     signing_priv_key_pem, None)
     if not personJson:
         return ctr
     if not personJson.get('movedTo'):
@@ -175,7 +175,7 @@ def _updateMovedHandle(base_dir: str, nickname: str, domain: str,
 
 def migrateAccounts(base_dir: str, session,
                     http_prefix: str, cached_webfingers: {},
-                    debug: bool, signingPrivateKeyPem: str) -> int:
+                    debug: bool, signing_priv_key_pem: str) -> int:
     """If followed accounts change then this modifies the
     following lists for each account accordingly.
     Returns the number of accounts migrated
@@ -192,6 +192,6 @@ def migrateAccounts(base_dir: str, session,
                 _moveFollowingHandlesForAccount(base_dir, nickname, domain,
                                                 session, http_prefix,
                                                 cached_webfingers, debug,
-                                                signingPrivateKeyPem)
+                                                signing_priv_key_pem)
         break
     return ctr

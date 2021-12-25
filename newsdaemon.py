@@ -287,7 +287,7 @@ def hashtagRuleTree(operators: [],
 
 def _hashtagAdd(base_dir: str, http_prefix: str, domainFull: str,
                 post_json_object: {},
-                actionStr: str, hashtags: [], systemLanguage: str,
+                actionStr: str, hashtags: [], system_language: str,
                 translate: {}) -> None:
     """Adds a hashtag via a hashtag rule
     """
@@ -322,7 +322,7 @@ def _hashtagAdd(base_dir: str, http_prefix: str, domainFull: str,
     hashtagHtml = \
         " <a href=\"" + hashtagUrl + "\" class=\"addedHashtag\" " + \
         "rel=\"tag\">#<span>" + htId + "</span></a>"
-    content = getBaseContentFromPost(post_json_object, systemLanguage)
+    content = getBaseContentFromPost(post_json_object, system_language)
     if hashtagHtml in content:
         return
 
@@ -342,7 +342,7 @@ def _hashtagAdd(base_dir: str, http_prefix: str, domainFull: str,
 
 
 def _hashtagRemove(http_prefix: str, domainFull: str, post_json_object: {},
-                   actionStr: str, hashtags: [], systemLanguage: str) -> None:
+                   actionStr: str, hashtags: [], system_language: str) -> None:
     """Removes a hashtag via a hashtag rule
     """
     rmHashtag = actionStr.split('remove ', 1)[1].strip()
@@ -357,11 +357,11 @@ def _hashtagRemove(http_prefix: str, domainFull: str, post_json_object: {},
     hashtagHtml = \
         "<a href=\"" + hashtagUrl + "\" class=\"addedHashtag\" " + \
         "rel=\"tag\">#<span>" + htId + "</span></a>"
-    content = getBaseContentFromPost(post_json_object, systemLanguage)
+    content = getBaseContentFromPost(post_json_object, system_language)
     if hashtagHtml in content:
         content = content.replace(hashtagHtml, '').replace('  ', ' ')
         post_json_object['object']['content'] = content
-        post_json_object['object']['contentMap'][systemLanguage] = content
+        post_json_object['object']['contentMap'][system_language] = content
     rmTagObject = None
     for t in post_json_object['object']['tag']:
         if t.get('type') and t.get('name'):
@@ -381,7 +381,7 @@ def _newswireHashtagProcessing(session, base_dir: str, post_json_object: {},
                                federationList: [],
                                send_threads: [], postLog: [],
                                moderated: bool, url: str,
-                               systemLanguage: str,
+                               system_language: str,
                                translate: {}) -> bool:
     """Applies hashtag rules to a news post.
     Returns true if the post should be saved to the news timeline
@@ -399,7 +399,7 @@ def _newswireHashtagProcessing(session, base_dir: str, post_json_object: {},
     # get the full text content of the post
     content = ''
     if post_json_object['object'].get('content'):
-        content += getBaseContentFromPost(post_json_object, systemLanguage)
+        content += getBaseContentFromPost(post_json_object, system_language)
     if post_json_object['object'].get('summary'):
         content += ' ' + post_json_object['object']['summary']
     content = content.lower()
@@ -426,12 +426,12 @@ def _newswireHashtagProcessing(session, base_dir: str, post_json_object: {},
         if actionStr.startswith('add '):
             # add a hashtag
             _hashtagAdd(base_dir, http_prefix, domainFull,
-                        post_json_object, actionStr, hashtags, systemLanguage,
+                        post_json_object, actionStr, hashtags, system_language,
                         translate)
         elif actionStr.startswith('remove '):
             # remove a hashtag
             _hashtagRemove(http_prefix, domainFull, post_json_object,
-                           actionStr, hashtags, systemLanguage)
+                           actionStr, hashtags, system_language)
         elif actionStr.startswith('block') or actionStr.startswith('drop'):
             # Block this item
             return False
@@ -544,7 +544,7 @@ def _convertRSStoActivityPub(base_dir: str, http_prefix: str,
                              send_threads: [], postLog: [],
                              max_mirrored_articles: int,
                              allow_local_network_access: bool,
-                             systemLanguage: str,
+                             system_language: str,
                              low_bandwidth: bool,
                              content_license_url: str) -> None:
     """Converts rss items in a newswire into posts
@@ -637,7 +637,7 @@ def _convertRSStoActivityPub(base_dir: str, http_prefix: str,
                               followersOnly, saveToFile,
                               attachImageFilename, mediaType,
                               imageDescription, city,
-                              rssTitle, systemLanguage,
+                              rssTitle, system_language,
                               conversationId, low_bandwidth,
                               content_license_url)
         if not blog:
@@ -669,7 +669,7 @@ def _convertRSStoActivityPub(base_dir: str, http_prefix: str,
         blog['object']['published'] = dateStr
 
         blog['object']['content'] = rssDescription
-        blog['object']['contentMap'][systemLanguage] = rssDescription
+        blog['object']['contentMap'][system_language] = rssDescription
 
         domainFull = getFullDomain(domain, port)
 
@@ -685,7 +685,7 @@ def _convertRSStoActivityPub(base_dir: str, http_prefix: str,
                                               person_cache, cached_webfingers,
                                               federationList,
                                               send_threads, postLog,
-                                              moderated, url, systemLanguage,
+                                              moderated, url, system_language,
                                               translate)
 
         # save the post and update the index
@@ -708,7 +708,7 @@ def _convertRSStoActivityPub(base_dir: str, http_prefix: str,
                     "\" class=\"addedHashtag\" " + \
                     "rel=\"tag\">#<span>" + \
                     htId + "</span></a>"
-                content = getBaseContentFromPost(blog, systemLanguage)
+                content = getBaseContentFromPost(blog, system_language)
                 if hashtagHtml not in content:
                     if content.endswith('</p>'):
                         content = \
@@ -717,7 +717,7 @@ def _convertRSStoActivityPub(base_dir: str, http_prefix: str,
                     else:
                         content += hashtagHtml
                     blog['object']['content'] = content
-                    blog['object']['contentMap'][systemLanguage] = content
+                    blog['object']['contentMap'][system_language] = content
 
             # update the newswire tags if new ones have been found by
             # _newswireHashtagProcessing
@@ -802,7 +802,7 @@ def runNewswireDaemon(base_dir: str, httpd,
                                 httpd.max_feed_item_size_kb,
                                 httpd.max_newswire_posts,
                                 httpd.maxCategoriesFeedItemSizeKb,
-                                httpd.systemLanguage,
+                                httpd.system_language,
                                 httpd.debug)
 
         if not httpd.newswire:
@@ -835,7 +835,7 @@ def runNewswireDaemon(base_dir: str, httpd,
                                  httpd.postLog,
                                  httpd.max_mirrored_articles,
                                  httpd.allow_local_network_access,
-                                 httpd.systemLanguage,
+                                 httpd.system_language,
                                  httpd.low_bandwidth,
                                  httpd.content_license_url)
         print('Newswire feed converted to ActivityPub')

@@ -88,7 +88,7 @@ def urlExists(session, url: str, timeoutSec: int = 3,
 
 def _getJsonRequest(session, url: str, domainFull: str, sessionHeaders: {},
                     sessionParams: {}, timeoutSec: int,
-                    signingPrivateKeyPem: str, quiet: bool, debug: bool,
+                    signing_priv_key_pem: str, quiet: bool, debug: bool,
                     returnJson: bool) -> {}:
     """http GET for json
     """
@@ -138,7 +138,7 @@ def _getJsonRequest(session, url: str, domainFull: str, sessionHeaders: {},
 
 def _getJsonSigned(session, url: str, domainFull: str, sessionHeaders: {},
                    sessionParams: {}, timeoutSec: int,
-                   signingPrivateKeyPem: str, quiet: bool, debug: bool) -> {}:
+                   signing_priv_key_pem: str, quiet: bool, debug: bool) -> {}:
     """Authorized fetch - a signed version of GET
     """
     if not domainFull:
@@ -188,7 +188,7 @@ def _getJsonSigned(session, url: str, domainFull: str, sessionHeaders: {},
     if sessionHeaders.get('Accept'):
         contentType = sessionHeaders['Accept']
     signatureHeaderJson = \
-        createSignedHeader(None, signingPrivateKeyPem, 'actor', domain, port,
+        createSignedHeader(None, signing_priv_key_pem, 'actor', domain, port,
                            toDomain, toPort, path, http_prefix, withDigest,
                            messageStr, contentType)
     if debug:
@@ -210,7 +210,7 @@ def _getJsonSigned(session, url: str, domainFull: str, sessionHeaders: {},
                            debug, returnJson)
 
 
-def getJson(signingPrivateKeyPem: str,
+def getJson(signing_priv_key_pem: str,
             session, url: str, headers: {}, params: {}, debug: bool,
             version: str = '1.2.0', http_prefix: str = 'https',
             domain: str = 'testdomain',
@@ -238,10 +238,10 @@ def getJson(signingPrivateKeyPem: str,
     if debug:
         HTTPConnection.debuglevel = 1
 
-    if signingPrivateKeyPem:
+    if signing_priv_key_pem:
         return _getJsonSigned(session, url, domain,
                               sessionHeaders, sessionParams,
-                              timeoutSec, signingPrivateKeyPem,
+                              timeoutSec, signing_priv_key_pem,
                               quiet, debug)
     else:
         return _getJsonRequest(session, url, domain, sessionHeaders,
@@ -249,7 +249,7 @@ def getJson(signingPrivateKeyPem: str,
                                None, quiet, debug, True)
 
 
-def downloadHtml(signingPrivateKeyPem: str,
+def downloadHtml(signing_priv_key_pem: str,
                  session, url: str, headers: {}, params: {}, debug: bool,
                  version: str = '1.2.0', http_prefix: str = 'https',
                  domain: str = 'testdomain',
@@ -279,10 +279,10 @@ def downloadHtml(signingPrivateKeyPem: str,
     if debug:
         HTTPConnection.debuglevel = 1
 
-    if signingPrivateKeyPem:
+    if signing_priv_key_pem:
         return _getJsonSigned(session, url, domain,
                               sessionHeaders, sessionParams,
-                              timeoutSec, signingPrivateKeyPem,
+                              timeoutSec, signing_priv_key_pem,
                               quiet, debug)
     else:
         return _getJsonRequest(session, url, domain, sessionHeaders,

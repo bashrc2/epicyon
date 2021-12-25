@@ -233,7 +233,7 @@ def setBlogAddress(actorJson: {}, blogAddress: str) -> None:
     _setActorPropertyUrl(actorJson, 'Blog', removeHtml(blogAddress))
 
 
-def updateAvatarImageCache(signingPrivateKeyPem: str,
+def updateAvatarImageCache(signing_priv_key_pem: str,
                            session, base_dir: str, http_prefix: str,
                            actor: str, avatarUrl: str,
                            person_cache: {}, allowDownloads: bool,
@@ -305,7 +305,7 @@ def updateAvatarImageCache(signingPrivateKeyPem: str,
                 'Accept': 'application/ld+json; profile="' + prof + '"'
             }
         personJson = \
-            getJson(signingPrivateKeyPem, session, actor, sessionHeaders, None,
+            getJson(signing_priv_key_pem, session, actor, sessionHeaders, None,
                     debug, __version__, http_prefix, None)
         if personJson:
             if not personJson.get('id'):
@@ -736,7 +736,7 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
 
 def htmlHeaderWithWebsiteMarkup(cssFilename: str, instanceTitle: str,
                                 http_prefix: str, domain: str,
-                                systemLanguage: str) -> str:
+                                system_language: str) -> str:
     """html header which includes website markup
     https://schema.org/WebSite
     """
@@ -753,7 +753,7 @@ def htmlHeaderWithWebsiteMarkup(cssFilename: str, instanceTitle: str,
         '      "name": "' + instanceTitle + '",\n' + \
         '      "url": "' + http_prefix + '://' + domain + '",\n' + \
         '      "license": "' + licenseUrl + '",\n' + \
-        '      "inLanguage": "' + systemLanguage + '",\n' + \
+        '      "inLanguage": "' + system_language + '",\n' + \
         '      "isAccessibleForFree": true,\n' + \
         '      "genre": "' + genreUrl + '",\n' + \
         '      "accessMode": ["textual", "visual"],\n' + \
@@ -781,20 +781,20 @@ def htmlHeaderWithWebsiteMarkup(cssFilename: str, instanceTitle: str,
         '" property="og:title" />\n' + \
         '    <meta content="' + http_prefix + '://' + domain + \
         '/logo.png" property="og:image" />\n' + \
-        '    <meta content="' + systemLanguage + \
+        '    <meta content="' + system_language + \
         '" property="og:locale" />\n' + \
         '    <meta content="summary_large_image" property="twitter:card" />\n'
 
     htmlStr = \
         htmlHeaderWithExternalStyle(cssFilename, instanceTitle,
                                     ogMetadata + websiteMarkup,
-                                    systemLanguage)
+                                    system_language)
     return htmlStr
 
 
 def htmlHeaderWithBlogMarkup(cssFilename: str, instanceTitle: str,
                              http_prefix: str, domain: str, nickname: str,
-                             systemLanguage: str,
+                             system_language: str,
                              published: str, modified: str,
                              title: str, snippet: str,
                              translate: {}, url: str,
@@ -833,7 +833,7 @@ def htmlHeaderWithBlogMarkup(cssFilename: str, instanceTitle: str,
 
     ogMetadata = \
         '    <meta property="og:locale" content="' + \
-        systemLanguage + '" />\n' + \
+        system_language + '" />\n' + \
         '    <meta property="og:type" content="article" />\n' + \
         '    <meta property="og:title" content="' + title + '" />\n' + \
         '    <meta property="og:url" content="' + url + '" />\n' + \
@@ -846,7 +846,7 @@ def htmlHeaderWithBlogMarkup(cssFilename: str, instanceTitle: str,
 
     htmlStr = \
         htmlHeaderWithExternalStyle(cssFilename, instanceTitle,
-                                    ogMetadata + blogMarkup, systemLanguage)
+                                    ogMetadata + blogMarkup, system_language)
     return htmlStr
 
 
@@ -1234,7 +1234,7 @@ def getAvatarImageUrl(session,
                       base_dir: str, http_prefix: str,
                       postActor: str, person_cache: {},
                       avatarUrl: str, allowDownloads: bool,
-                      signingPrivateKeyPem: str) -> str:
+                      signing_priv_key_pem: str) -> str:
     """Returns the avatar image url
     """
     # get the avatar image url for the post actor
@@ -1243,12 +1243,12 @@ def getAvatarImageUrl(session,
             getPersonAvatarUrl(base_dir, postActor, person_cache,
                                allowDownloads)
         avatarUrl = \
-            updateAvatarImageCache(signingPrivateKeyPem,
+            updateAvatarImageCache(signing_priv_key_pem,
                                    session, base_dir, http_prefix,
                                    postActor, avatarUrl, person_cache,
                                    allowDownloads)
     else:
-        updateAvatarImageCache(signingPrivateKeyPem,
+        updateAvatarImageCache(signing_priv_key_pem,
                                session, base_dir, http_prefix,
                                postActor, avatarUrl, person_cache,
                                allowDownloads)

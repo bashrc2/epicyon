@@ -18,7 +18,7 @@ def instancesGraph(base_dir: str, handles: str,
                    proxy_type: str,
                    port: int, http_prefix: str,
                    debug: bool, project_version: str,
-                   systemLanguage: str, signingPrivateKeyPem: str) -> str:
+                   system_language: str, signing_priv_key_pem: str) -> str:
     """ Returns a dot graph of federating instances
     based upon a few sample handles.
     The handles argument should contain a comma separated list
@@ -55,7 +55,7 @@ def instancesGraph(base_dir: str, handles: str,
             webfingerHandle(session, handle, http_prefix,
                             cached_webfingers,
                             domain, project_version, debug, False,
-                            signingPrivateKeyPem)
+                            signing_priv_key_pem)
         if not wfRequest:
             return dotGraphStr + '}\n'
         if not isinstance(wfRequest, dict):
@@ -65,7 +65,7 @@ def instancesGraph(base_dir: str, handles: str,
 
         originDomain = None
         (personUrl, pubKeyId, pubKey, personId, shaedInbox, avatarUrl,
-         displayName, _) = getPersonBox(signingPrivateKeyPem,
+         displayName, _) = getPersonBox(signing_priv_key_pem,
                                         originDomain,
                                         base_dir, session, wfRequest,
                                         person_cache,
@@ -78,8 +78,8 @@ def instancesGraph(base_dir: str, handles: str,
                            maxAttachments, federationList,
                            person_cache, debug,
                            project_version, http_prefix, domain,
-                           wordFrequency, [], systemLanguage,
-                           signingPrivateKeyPem)
+                           wordFrequency, [], system_language,
+                           signing_priv_key_pem)
         postDomains.sort()
         for fedDomain in postDomains:
             dotLineStr = '    "' + domain + '" -> "' + fedDomain + '";\n'

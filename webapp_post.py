@@ -284,7 +284,7 @@ def _getPostFromRecentCache(session,
                             pageNumber: int,
                             recentPostsCache: {},
                             max_recent_posts: int,
-                            signingPrivateKeyPem: str) -> str:
+                            signing_priv_key_pem: str) -> str:
     """Attempts to get the html post from the recent posts cache in memory
     """
     if boxName == 'tlmedia':
@@ -309,7 +309,7 @@ def _getPostFromRecentCache(session,
 
         _logPostTiming(enableTimingLog, postStartTime, '2.1')
 
-    updateAvatarImageCache(signingPrivateKeyPem,
+    updateAvatarImageCache(signing_priv_key_pem,
                            session, base_dir, http_prefix,
                            postActor, avatarUrl, person_cache,
                            allowDownloads)
@@ -382,7 +382,7 @@ def _getReplyIconHtml(base_dir: str, nickname: str, domain: str,
                       isPublicRepeat: bool,
                       showIcons: bool, commentsEnabled: bool,
                       post_json_object: {}, pageNumberParam: str,
-                      translate: {}, systemLanguage: str,
+                      translate: {}, system_language: str,
                       conversationId: str) -> str:
     """Returns html for the reply icon/button
     """
@@ -409,7 +409,7 @@ def _getReplyIconHtml(base_dir: str, nickname: str, domain: str,
         if isinstance(post_json_object['object']['attributedTo'], str):
             replyToLink += \
                 '?mention=' + post_json_object['object']['attributedTo']
-    content = getBaseContentFromPost(post_json_object, systemLanguage)
+    content = getBaseContentFromPost(post_json_object, system_language)
     if content:
         mentionedActors = getMentionsFromHtml(content)
         if mentionedActors:
@@ -1319,7 +1319,7 @@ def _getFooterWithIcons(showIcons: bool,
     return footerStr
 
 
-def individualPostAsHtml(signingPrivateKeyPem: str,
+def individualPostAsHtml(signing_priv_key_pem: str,
                          allowDownloads: bool,
                          recentPostsCache: {}, max_recent_posts: int,
                          translate: {},
@@ -1336,7 +1336,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
                          show_published_date_only: bool,
                          peertubeInstances: [],
                          allow_local_network_access: bool,
-                         themeName: str, systemLanguage: str,
+                         themeName: str, system_language: str,
                          max_like_count: int,
                          showRepeats: bool,
                          showIcons: bool,
@@ -1404,7 +1404,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
                                 pageNumber,
                                 recentPostsCache,
                                 max_recent_posts,
-                                signingPrivateKeyPem)
+                                signing_priv_key_pem)
     if postHtml:
         return postHtml
     if useCacheOnly and post_json_object['type'] != 'Announce':
@@ -1417,7 +1417,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
                           base_dir, http_prefix,
                           postActor, person_cache,
                           avatarUrl, allowDownloads,
-                          signingPrivateKeyPem)
+                          signing_priv_key_pem)
 
     _logPostTiming(enableTimingLog, postStartTime, '5')
 
@@ -1432,14 +1432,14 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
             webfingerHandle(session, postActorHandle, http_prefix,
                             cached_webfingers,
                             domain, __version__, False, False,
-                            signingPrivateKeyPem)
+                            signing_priv_key_pem)
 
         avatarUrl2 = None
         displayName = None
         if postActorWf:
             originDomain = domain
             (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl2,
-             displayName, _) = getPersonBox(signingPrivateKeyPem,
+             displayName, _) = getPersonBox(signing_priv_key_pem,
                                             originDomain,
                                             base_dir, session,
                                             postActorWf,
@@ -1503,9 +1503,9 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
                              twitter_replacement_domain,
                              allow_local_network_access,
                              recentPostsCache, False,
-                             systemLanguage,
+                             system_language,
                              domainFull, person_cache,
-                             signingPrivateKeyPem,
+                             signing_priv_key_pem,
                              blockedCache)
         if not postJsonAnnounce:
             # if the announce could not be downloaded then mark it as rejected
@@ -1532,7 +1532,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
                                     pageNumber,
                                     recentPostsCache,
                                     max_recent_posts,
-                                    signingPrivateKeyPem)
+                                    signing_priv_key_pem)
         if postHtml:
             return postHtml
 
@@ -1639,7 +1639,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
                                  publicReply,
                                  showIcons, commentsEnabled,
                                  post_json_object, pageNumberParam,
-                                 translate, systemLanguage,
+                                 translate, system_language,
                                  conversationId)
 
     _logPostTiming(enableTimingLog, postStartTime, '10')
@@ -1845,7 +1845,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
     if post_json_object['object'].get('cipherText'):
         post_json_object['object']['content'] = \
             E2EEdecryptMessageFromDevice(post_json_object['object'])
-        post_json_object['object']['contentMap'][systemLanguage] = \
+        post_json_object['object']['contentMap'][system_language] = \
             post_json_object['object']['content']
 
     domainFull = getFullDomain(domain, port)
@@ -1855,12 +1855,12 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
     languagesUnderstood = []
     if actorJson:
         languagesUnderstood = getActorLanguagesList(actorJson)
-    contentStr = getContentFromPost(post_json_object, systemLanguage,
+    contentStr = getContentFromPost(post_json_object, system_language,
                                     languagesUnderstood)
     if not contentStr:
         contentStr = \
             autoTranslatePost(base_dir, post_json_object,
-                              systemLanguage, translate)
+                              system_language, translate)
         if not contentStr:
             return ''
 
@@ -2004,8 +2004,8 @@ def htmlIndividualPost(cssCache: {},
                        show_published_date_only: bool,
                        peertubeInstances: [],
                        allow_local_network_access: bool,
-                       themeName: str, systemLanguage: str,
-                       max_like_count: int, signingPrivateKeyPem: str,
+                       themeName: str, system_language: str,
+                       max_like_count: int, signing_priv_key_pem: str,
                        CWlists: {}, lists_enabled: str) -> str:
     """Show an individual post as html
     """
@@ -2057,7 +2057,7 @@ def htmlIndividualPost(cssCache: {},
         postStr += followStr + '</p>\n'
 
     postStr += \
-        individualPostAsHtml(signingPrivateKeyPem,
+        individualPostAsHtml(signing_priv_key_pem,
                              True, recentPostsCache, max_recent_posts,
                              translate, None,
                              base_dir, session,
@@ -2070,7 +2070,7 @@ def htmlIndividualPost(cssCache: {},
                              show_published_date_only,
                              peertubeInstances,
                              allow_local_network_access, themeName,
-                             systemLanguage, max_like_count,
+                             system_language, max_like_count,
                              False, authorized, False, False, False, False,
                              CWlists, lists_enabled)
     messageId = removeIdEnding(post_json_object['id'])
@@ -2086,7 +2086,7 @@ def htmlIndividualPost(cssCache: {},
             post_json_object = loadJson(postFilename)
             if post_json_object:
                 postStr = \
-                    individualPostAsHtml(signingPrivateKeyPem,
+                    individualPostAsHtml(signing_priv_key_pem,
                                          True, recentPostsCache,
                                          max_recent_posts,
                                          translate, None,
@@ -2101,7 +2101,7 @@ def htmlIndividualPost(cssCache: {},
                                          show_published_date_only,
                                          peertubeInstances,
                                          allow_local_network_access,
-                                         themeName, systemLanguage,
+                                         themeName, system_language,
                                          max_like_count,
                                          False, authorized,
                                          False, False, False, False,
@@ -2122,7 +2122,7 @@ def htmlIndividualPost(cssCache: {},
             # add items to the html output
             for item in repliesJson['orderedItems']:
                 postStr += \
-                    individualPostAsHtml(signingPrivateKeyPem,
+                    individualPostAsHtml(signing_priv_key_pem,
                                          True, recentPostsCache,
                                          max_recent_posts,
                                          translate, None,
@@ -2136,7 +2136,7 @@ def htmlIndividualPost(cssCache: {},
                                          show_published_date_only,
                                          peertubeInstances,
                                          allow_local_network_access,
-                                         themeName, systemLanguage,
+                                         themeName, system_language,
                                          max_like_count,
                                          False, authorized,
                                          False, False, False, False,
@@ -2164,9 +2164,9 @@ def htmlPostReplies(cssCache: {},
                     show_published_date_only: bool,
                     peertubeInstances: [],
                     allow_local_network_access: bool,
-                    themeName: str, systemLanguage: str,
+                    themeName: str, system_language: str,
                     max_like_count: int,
-                    signingPrivateKeyPem: str, CWlists: {},
+                    signing_priv_key_pem: str, CWlists: {},
                     lists_enabled: str) -> str:
     """Show the replies to an individual post as html
     """
@@ -2174,7 +2174,7 @@ def htmlPostReplies(cssCache: {},
     if repliesJson.get('orderedItems'):
         for item in repliesJson['orderedItems']:
             repliesStr += \
-                individualPostAsHtml(signingPrivateKeyPem,
+                individualPostAsHtml(signing_priv_key_pem,
                                      True, recentPostsCache,
                                      max_recent_posts,
                                      translate, None,
@@ -2188,7 +2188,7 @@ def htmlPostReplies(cssCache: {},
                                      show_published_date_only,
                                      peertubeInstances,
                                      allow_local_network_access,
-                                     themeName, systemLanguage,
+                                     themeName, system_language,
                                      max_like_count,
                                      False, False, False, False, False, False,
                                      CWlists, lists_enabled)
@@ -2217,8 +2217,8 @@ def htmlEmojiReactionPicker(cssCache: {},
                             show_published_date_only: bool,
                             peertubeInstances: [],
                             allow_local_network_access: bool,
-                            themeName: str, systemLanguage: str,
-                            max_like_count: int, signingPrivateKeyPem: str,
+                            themeName: str, system_language: str,
+                            max_like_count: int, signing_priv_key_pem: str,
                             CWlists: {}, lists_enabled: str,
                             boxName: str, pageNumber: int) -> str:
     """Returns the emoji picker screen
@@ -2226,7 +2226,7 @@ def htmlEmojiReactionPicker(cssCache: {},
     reactedToPostStr = \
         '<br><center><label class="followText">' + \
         translate['Select reaction'].title() + '</label></center>\n' + \
-        individualPostAsHtml(signingPrivateKeyPem,
+        individualPostAsHtml(signing_priv_key_pem,
                              True, recentPostsCache,
                              max_recent_posts,
                              translate, None,
@@ -2240,7 +2240,7 @@ def htmlEmojiReactionPicker(cssCache: {},
                              show_published_date_only,
                              peertubeInstances,
                              allow_local_network_access,
-                             themeName, systemLanguage,
+                             themeName, system_language,
                              max_like_count,
                              False, False, False, False, False, False,
                              CWlists, lists_enabled)

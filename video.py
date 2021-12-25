@@ -16,7 +16,7 @@ from filters import isFiltered
 
 
 def convertVideoToNote(base_dir: str, nickname: str, domain: str,
-                       systemLanguage: str,
+                       system_language: str,
                        post_json_object: {}, blockedCache: {}) -> {}:
     """Converts a PeerTube Video ActivityPub(ish) object into
     a Note, so that it can then be displayed in a timeline
@@ -54,7 +54,7 @@ def convertVideoToNote(base_dir: str, nickname: str, domain: str,
         return None
 
     # get the language of the video
-    postLanguage = systemLanguage
+    postLanguage = system_language
     if post_json_object.get('language'):
         if isinstance(post_json_object['language'], dict):
             if post_json_object['language'].get('identifier'):

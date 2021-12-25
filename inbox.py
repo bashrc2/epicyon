@@ -289,9 +289,9 @@ def _inboxStorePostToHtmlCache(recentPostsCache: {}, max_recent_posts: int,
                                show_published_date_only: bool,
                                peertubeInstances: [],
                                allow_local_network_access: bool,
-                               themeName: str, systemLanguage: str,
+                               themeName: str, system_language: str,
                                max_like_count: int,
-                               signingPrivateKeyPem: str,
+                               signing_priv_key_pem: str,
                                CWlists: {},
                                lists_enabled: str) -> None:
     """Converts the json post into html and stores it in a cache
@@ -305,7 +305,7 @@ def _inboxStorePostToHtmlCache(recentPostsCache: {}, max_recent_posts: int,
     notDM = not isDM(post_json_object)
     yt_replace_domain = getConfigParam(base_dir, 'youtubedomain')
     twitter_replacement_domain = getConfigParam(base_dir, 'twitterdomain')
-    individualPostAsHtml(signingPrivateKeyPem,
+    individualPostAsHtml(signing_priv_key_pem,
                          True, recentPostsCache, max_recent_posts,
                          translate, pageNumber,
                          base_dir, session, cached_webfingers,
@@ -316,7 +316,7 @@ def _inboxStorePostToHtmlCache(recentPostsCache: {}, max_recent_posts: int,
                          yt_replace_domain, twitter_replacement_domain,
                          show_published_date_only,
                          peertubeInstances, allow_local_network_access,
-                         themeName, systemLanguage, max_like_count,
+                         themeName, system_language, max_like_count,
                          notDM, True, True, False, True, False,
                          CWlists, lists_enabled)
 
@@ -456,7 +456,7 @@ def savePostToInboxQueue(base_dir: str, http_prefix: str,
                          messageBytes: str,
                          httpHeaders: {},
                          postPath: str, debug: bool,
-                         blockedCache: [], systemLanguage: str) -> str:
+                         blockedCache: [], system_language: str) -> str:
     """Saves the given json to the inbox queue for the person
     keyId specifies the actor sending the post
     """
@@ -521,7 +521,7 @@ def savePostToInboxQueue(base_dir: str, http_prefix: str,
                             return None
         if post_json_object['object'].get('content'):
             contentStr = \
-                getBaseContentFromPost(post_json_object, systemLanguage)
+                getBaseContentFromPost(post_json_object, system_language)
             if contentStr:
                 if isFiltered(base_dir, nickname, domain, contentStr):
                     if debug:
@@ -998,14 +998,14 @@ def _receiveLike(recentPostsCache: {},
                  send_threads: [], postLog: [], cached_webfingers: {},
                  person_cache: {}, messageJson: {}, federationList: [],
                  debug: bool,
-                 signingPrivateKeyPem: str,
+                 signing_priv_key_pem: str,
                  max_recent_posts: int, translate: {},
                  allow_deletion: bool,
                  yt_replace_domain: str,
                  twitter_replacement_domain: str,
                  peertubeInstances: [],
                  allow_local_network_access: bool,
-                 themeName: str, systemLanguage: str,
+                 themeName: str, system_language: str,
                  max_like_count: int, CWlists: {},
                  lists_enabled: str) -> bool:
     """Receives a Like activity within the POST section of HTTPServer
@@ -1092,7 +1092,7 @@ def _receiveLike(recentPostsCache: {},
             manuallyApproveFollowers = \
                 followerApprovalActive(base_dir, handleName, domain)
             notDM = not isDM(likedPostJson)
-            individualPostAsHtml(signingPrivateKeyPem, False,
+            individualPostAsHtml(signing_priv_key_pem, False,
                                  recentPostsCache, max_recent_posts,
                                  translate, pageNumber, base_dir,
                                  session, cached_webfingers, person_cache,
@@ -1105,7 +1105,7 @@ def _receiveLike(recentPostsCache: {},
                                  show_published_date_only,
                                  peertubeInstances,
                                  allow_local_network_access,
-                                 themeName, systemLanguage,
+                                 themeName, system_language,
                                  max_like_count, notDM,
                                  showIndividualPostIcons,
                                  manuallyApproveFollowers,
@@ -1120,14 +1120,14 @@ def _receiveUndoLike(recentPostsCache: {},
                      send_threads: [], postLog: [], cached_webfingers: {},
                      person_cache: {}, messageJson: {}, federationList: [],
                      debug: bool,
-                     signingPrivateKeyPem: str,
+                     signing_priv_key_pem: str,
                      max_recent_posts: int, translate: {},
                      allow_deletion: bool,
                      yt_replace_domain: str,
                      twitter_replacement_domain: str,
                      peertubeInstances: [],
                      allow_local_network_access: bool,
-                     themeName: str, systemLanguage: str,
+                     themeName: str, system_language: str,
                      max_like_count: int, CWlists: {},
                      lists_enabled: str) -> bool:
     """Receives an undo like activity within the POST section of HTTPServer
@@ -1203,7 +1203,7 @@ def _receiveUndoLike(recentPostsCache: {},
             manuallyApproveFollowers = \
                 followerApprovalActive(base_dir, handleName, domain)
             notDM = not isDM(likedPostJson)
-            individualPostAsHtml(signingPrivateKeyPem, False,
+            individualPostAsHtml(signing_priv_key_pem, False,
                                  recentPostsCache, max_recent_posts,
                                  translate, pageNumber, base_dir,
                                  session, cached_webfingers, person_cache,
@@ -1216,7 +1216,7 @@ def _receiveUndoLike(recentPostsCache: {},
                                  show_published_date_only,
                                  peertubeInstances,
                                  allow_local_network_access,
-                                 themeName, systemLanguage,
+                                 themeName, system_language,
                                  max_like_count, notDM,
                                  showIndividualPostIcons,
                                  manuallyApproveFollowers,
@@ -1232,14 +1232,14 @@ def _receiveReaction(recentPostsCache: {},
                      send_threads: [], postLog: [], cached_webfingers: {},
                      person_cache: {}, messageJson: {}, federationList: [],
                      debug: bool,
-                     signingPrivateKeyPem: str,
+                     signing_priv_key_pem: str,
                      max_recent_posts: int, translate: {},
                      allow_deletion: bool,
                      yt_replace_domain: str,
                      twitter_replacement_domain: str,
                      peertubeInstances: [],
                      allow_local_network_access: bool,
-                     themeName: str, systemLanguage: str,
+                     themeName: str, system_language: str,
                      max_like_count: int, CWlists: {},
                      lists_enabled: str) -> bool:
     """Receives an emoji reaction within the POST section of HTTPServer
@@ -1351,7 +1351,7 @@ def _receiveReaction(recentPostsCache: {},
             manuallyApproveFollowers = \
                 followerApprovalActive(base_dir, handleName, domain)
             notDM = not isDM(reactionPostJson)
-            individualPostAsHtml(signingPrivateKeyPem, False,
+            individualPostAsHtml(signing_priv_key_pem, False,
                                  recentPostsCache, max_recent_posts,
                                  translate, pageNumber, base_dir,
                                  session, cached_webfingers, person_cache,
@@ -1364,7 +1364,7 @@ def _receiveReaction(recentPostsCache: {},
                                  show_published_date_only,
                                  peertubeInstances,
                                  allow_local_network_access,
-                                 themeName, systemLanguage,
+                                 themeName, system_language,
                                  max_like_count, notDM,
                                  showIndividualPostIcons,
                                  manuallyApproveFollowers,
@@ -1379,14 +1379,14 @@ def _receiveUndoReaction(recentPostsCache: {},
                          send_threads: [], postLog: [], cached_webfingers: {},
                          person_cache: {}, messageJson: {}, federationList: [],
                          debug: bool,
-                         signingPrivateKeyPem: str,
+                         signing_priv_key_pem: str,
                          max_recent_posts: int, translate: {},
                          allow_deletion: bool,
                          yt_replace_domain: str,
                          twitter_replacement_domain: str,
                          peertubeInstances: [],
                          allow_local_network_access: bool,
-                         themeName: str, systemLanguage: str,
+                         themeName: str, system_language: str,
                          max_like_count: int, CWlists: {},
                          lists_enabled: str) -> bool:
     """Receives an undo emoji reaction within the POST section of HTTPServer
@@ -1478,7 +1478,7 @@ def _receiveUndoReaction(recentPostsCache: {},
             manuallyApproveFollowers = \
                 followerApprovalActive(base_dir, handleName, domain)
             notDM = not isDM(reactionPostJson)
-            individualPostAsHtml(signingPrivateKeyPem, False,
+            individualPostAsHtml(signing_priv_key_pem, False,
                                  recentPostsCache, max_recent_posts,
                                  translate, pageNumber, base_dir,
                                  session, cached_webfingers, person_cache,
@@ -1491,7 +1491,7 @@ def _receiveUndoReaction(recentPostsCache: {},
                                  show_published_date_only,
                                  peertubeInstances,
                                  allow_local_network_access,
-                                 themeName, systemLanguage,
+                                 themeName, system_language,
                                  max_like_count, notDM,
                                  showIndividualPostIcons,
                                  manuallyApproveFollowers,
@@ -1505,14 +1505,14 @@ def _receiveBookmark(recentPostsCache: {},
                      http_prefix: str, domain: str, port: int,
                      send_threads: [], postLog: [], cached_webfingers: {},
                      person_cache: {}, messageJson: {}, federationList: [],
-                     debug: bool, signingPrivateKeyPem: str,
+                     debug: bool, signing_priv_key_pem: str,
                      max_recent_posts: int, translate: {},
                      allow_deletion: bool,
                      yt_replace_domain: str,
                      twitter_replacement_domain: str,
                      peertubeInstances: [],
                      allow_local_network_access: bool,
-                     themeName: str, systemLanguage: str,
+                     themeName: str, system_language: str,
                      max_like_count: int, CWlists: {},
                      lists_enabled: {}) -> bool:
     """Receives a bookmark activity within the POST section of HTTPServer
@@ -1588,7 +1588,7 @@ def _receiveBookmark(recentPostsCache: {},
         manuallyApproveFollowers = \
             followerApprovalActive(base_dir, nickname, domain)
         notDM = not isDM(bookmarkedPostJson)
-        individualPostAsHtml(signingPrivateKeyPem, False,
+        individualPostAsHtml(signing_priv_key_pem, False,
                              recentPostsCache, max_recent_posts,
                              translate, pageNumber, base_dir,
                              session, cached_webfingers, person_cache,
@@ -1601,7 +1601,7 @@ def _receiveBookmark(recentPostsCache: {},
                              show_published_date_only,
                              peertubeInstances,
                              allow_local_network_access,
-                             themeName, systemLanguage,
+                             themeName, system_language,
                              max_like_count, notDM,
                              showIndividualPostIcons,
                              manuallyApproveFollowers,
@@ -1615,14 +1615,14 @@ def _receiveUndoBookmark(recentPostsCache: {},
                          http_prefix: str, domain: str, port: int,
                          send_threads: [], postLog: [], cached_webfingers: {},
                          person_cache: {}, messageJson: {}, federationList: [],
-                         debug: bool, signingPrivateKeyPem: str,
+                         debug: bool, signing_priv_key_pem: str,
                          max_recent_posts: int, translate: {},
                          allow_deletion: bool,
                          yt_replace_domain: str,
                          twitter_replacement_domain: str,
                          peertubeInstances: [],
                          allow_local_network_access: bool,
-                         themeName: str, systemLanguage: str,
+                         themeName: str, system_language: str,
                          max_like_count: int, CWlists: {},
                          lists_enabled: str) -> bool:
     """Receives an undo bookmark activity within the POST section of HTTPServer
@@ -1699,7 +1699,7 @@ def _receiveUndoBookmark(recentPostsCache: {},
         manuallyApproveFollowers = \
             followerApprovalActive(base_dir, nickname, domain)
         notDM = not isDM(bookmarkedPostJson)
-        individualPostAsHtml(signingPrivateKeyPem, False,
+        individualPostAsHtml(signing_priv_key_pem, False,
                              recentPostsCache, max_recent_posts,
                              translate, pageNumber, base_dir,
                              session, cached_webfingers, person_cache,
@@ -1712,7 +1712,7 @@ def _receiveUndoBookmark(recentPostsCache: {},
                              show_published_date_only,
                              peertubeInstances,
                              allow_local_network_access,
-                             themeName, systemLanguage,
+                             themeName, system_language,
                              max_like_count, notDM,
                              showIndividualPostIcons,
                              manuallyApproveFollowers,
@@ -1805,8 +1805,8 @@ def _receiveAnnounce(recentPostsCache: {},
                      yt_replace_domain: str,
                      twitter_replacement_domain: str,
                      allow_local_network_access: bool,
-                     themeName: str, systemLanguage: str,
-                     signingPrivateKeyPem: str,
+                     themeName: str, system_language: str,
+                     signing_priv_key_pem: str,
                      max_recent_posts: int,
                      allow_deletion: bool,
                      peertubeInstances: [],
@@ -1906,7 +1906,7 @@ def _receiveAnnounce(recentPostsCache: {},
     if debug:
         print('Generating html for announce ' + messageJson['id'])
     announceHtml = \
-        individualPostAsHtml(signingPrivateKeyPem, True,
+        individualPostAsHtml(signing_priv_key_pem, True,
                              recentPostsCache, max_recent_posts,
                              translate, pageNumber, base_dir,
                              session, cached_webfingers, person_cache,
@@ -1919,7 +1919,7 @@ def _receiveAnnounce(recentPostsCache: {},
                              show_published_date_only,
                              peertubeInstances,
                              allow_local_network_access,
-                             themeName, systemLanguage,
+                             themeName, system_language,
                              max_like_count, notDM,
                              showIndividualPostIcons,
                              manuallyApproveFollowers,
@@ -1941,9 +1941,9 @@ def _receiveAnnounce(recentPostsCache: {},
                                         twitter_replacement_domain,
                                         allow_local_network_access,
                                         recentPostsCache, debug,
-                                        systemLanguage,
+                                        system_language,
                                         domainFull, person_cache,
-                                        signingPrivateKeyPem,
+                                        signing_priv_key_pem,
                                         blockedCache)
     if not post_json_object:
         print('WARN: unable to download announce: ' + str(messageJson))
@@ -2007,7 +2007,7 @@ def _receiveAnnounce(recentPostsCache: {},
                                         person_cache, debug,
                                         __version__, http_prefix,
                                         domain, onion_domain,
-                                        signingPrivateKeyPem)
+                                        signing_priv_key_pem)
                     if pubKey:
                         if debug:
                             print('DEBUG: public key obtained for announce: ' +
@@ -2189,7 +2189,7 @@ def _estimateNumberOfEmoji(content: str) -> int:
 def _validPostContent(base_dir: str, nickname: str, domain: str,
                       messageJson: {}, max_mentions: int, max_emoji: int,
                       allow_local_network_access: bool, debug: bool,
-                      systemLanguage: str,
+                      system_language: str,
                       http_prefix: str, domainFull: str,
                       person_cache: {}) -> bool:
     """Is the content of a received post valid?
@@ -2230,7 +2230,7 @@ def _validPostContent(base_dir: str, nickname: str, domain: str,
                   messageJson['object']['content']):
         return True
 
-    contentStr = getBaseContentFromPost(messageJson, systemLanguage)
+    contentStr = getBaseContentFromPost(messageJson, system_language)
     if dangerousMarkup(contentStr, allow_local_network_access):
         if messageJson['object'].get('id'):
             print('REJECT ARBITRARY HTML: ' + messageJson['object']['id'])
@@ -2265,7 +2265,7 @@ def _validPostContent(base_dir: str, nickname: str, domain: str,
                 return False
     # check that the post is in a language suitable for this account
     if not understoodPostLanguage(base_dir, nickname, domain,
-                                  messageJson, systemLanguage,
+                                  messageJson, system_language,
                                   http_prefix, domainFull,
                                   person_cache):
         return False
@@ -2294,7 +2294,7 @@ def _validPostContent(base_dir: str, nickname: str, domain: str,
 def _obtainAvatarForReplyPost(session, base_dir: str, http_prefix: str,
                               domain: str, onion_domain: str, person_cache: {},
                               post_json_object: {}, debug: bool,
-                              signingPrivateKeyPem: str) -> None:
+                              signing_priv_key_pem: str) -> None:
     """Tries to obtain the actor for the person being replied to
     so that their avatar can later be shown
     """
@@ -2325,7 +2325,7 @@ def _obtainAvatarForReplyPost(session, base_dir: str, http_prefix: str,
             getPersonPubKey(base_dir, session, lookupActor,
                             person_cache, debug,
                             __version__, http_prefix,
-                            domain, onion_domain, signingPrivateKeyPem)
+                            domain, onion_domain, signing_priv_key_pem)
         if pubKey:
             if debug:
                 print('DEBUG: public key obtained for reply: ' + lookupActor)
@@ -2612,9 +2612,9 @@ def _sendToGroupMembers(session, base_dir: str, handle: str, port: int,
                         http_prefix: str, federationList: [],
                         send_threads: [], postLog: [], cached_webfingers: {},
                         person_cache: {}, debug: bool,
-                        systemLanguage: str,
+                        system_language: str,
                         onion_domain: str, i2p_domain: str,
-                        signingPrivateKeyPem: str) -> None:
+                        signing_priv_key_pem: str) -> None:
     """When a post arrives for a group send it out to the group members
     """
     if debug:
@@ -2665,7 +2665,7 @@ def _sendToGroupMembers(session, base_dir: str, handle: str, port: int,
                        http_prefix, postId, False, False,
                        send_threads, postLog,
                        person_cache, cached_webfingers,
-                       debug, __version__, signingPrivateKeyPem)
+                       debug, __version__, signing_priv_key_pem)
 
     sendToFollowersThread(session, base_dir, nickname, domain,
                           onion_domain, i2p_domain, port,
@@ -2675,7 +2675,7 @@ def _sendToGroupMembers(session, base_dir: str, handle: str, port: int,
                           announceJson, debug, __version__,
                           shared_items_federated_domains,
                           sharedItemFederationTokens,
-                          signingPrivateKeyPem)
+                          signing_priv_key_pem)
 
 
 def _inboxUpdateCalendar(base_dir: str, handle: str,
@@ -2795,8 +2795,8 @@ def _bounceDM(senderPostId: str, session, http_prefix: str,
               send_threads: [], postLog: [],
               cached_webfingers: {}, person_cache: {},
               translate: {}, debug: bool,
-              lastBounceMessage: [], systemLanguage: str,
-              signingPrivateKeyPem: str,
+              lastBounceMessage: [], system_language: str,
+              signing_priv_key_pem: str,
               content_license_url: str) -> bool:
     """Sends a bounce message back to the sending handle
     if a DM has been rejected
@@ -2856,7 +2856,7 @@ def _bounceDM(senderPostId: str, session, http_prefix: str,
                                 inReplyTo, inReplyToAtomUri,
                                 subject, debug, schedulePost,
                                 eventDate, eventTime, location,
-                                systemLanguage, conversationId, low_bandwidth,
+                                system_language, conversationId, low_bandwidth,
                                 content_license_url)
     if not post_json_object:
         print('WARN: unable to create bounce message to ' + sendingHandle)
@@ -2869,7 +2869,7 @@ def _bounceDM(senderPostId: str, session, http_prefix: str,
                    http_prefix, False, False, federationList,
                    send_threads, postLog, cached_webfingers,
                    person_cache, debug, __version__, None, groupAccount,
-                   signingPrivateKeyPem, 7238634)
+                   signing_priv_key_pem, 7238634)
     return True
 
 
@@ -2882,8 +2882,8 @@ def _isValidDM(base_dir: str, nickname: str, domain: str, port: int,
                person_cache: {},
                translate: {}, debug: bool,
                lastBounceMessage: [],
-               handle: str, systemLanguage: str,
-               signingPrivateKeyPem: str,
+               handle: str, system_language: str,
+               signing_priv_key_pem: str,
                content_license_url: str) -> bool:
     """Is the given message a valid DM?
     """
@@ -2961,8 +2961,8 @@ def _isValidDM(base_dir: str, nickname: str, domain: str, port: int,
                                       person_cache,
                                       translate, debug,
                                       lastBounceMessage,
-                                      systemLanguage,
-                                      signingPrivateKeyPem,
+                                      system_language,
+                                      signing_priv_key_pem,
                                       content_license_url)
                 return False
 
@@ -2980,14 +2980,14 @@ def _receiveQuestionVote(base_dir: str, nickname: str, domain: str,
                          i2p_domain: str, port: int,
                          federationList: [], send_threads: [], postLog: [],
                          cached_webfingers: {}, person_cache: {},
-                         signingPrivateKeyPem: str,
+                         signing_priv_key_pem: str,
                          max_recent_posts: int, translate: {},
                          allow_deletion: bool,
                          yt_replace_domain: str,
                          twitter_replacement_domain: str,
                          peertubeInstances: [],
                          allow_local_network_access: bool,
-                         themeName: str, systemLanguage: str,
+                         themeName: str, system_language: str,
                          max_like_count: int,
                          CWlists: {}, lists_enabled: bool) -> None:
     """Updates the votes on a Question/poll
@@ -3019,7 +3019,7 @@ def _receiveQuestionVote(base_dir: str, nickname: str, domain: str,
     manuallyApproveFollowers = \
         followerApprovalActive(base_dir, nickname, domain)
     notDM = not isDM(questionJson)
-    individualPostAsHtml(signingPrivateKeyPem, False,
+    individualPostAsHtml(signing_priv_key_pem, False,
                          recentPostsCache, max_recent_posts,
                          translate, pageNumber, base_dir,
                          session, cached_webfingers, person_cache,
@@ -3032,7 +3032,7 @@ def _receiveQuestionVote(base_dir: str, nickname: str, domain: str,
                          show_published_date_only,
                          peertubeInstances,
                          allow_local_network_access,
-                         themeName, systemLanguage,
+                         themeName, system_language,
                          max_like_count, notDM,
                          showIndividualPostIcons,
                          manuallyApproveFollowers,
@@ -3060,7 +3060,7 @@ def _receiveQuestionVote(base_dir: str, nickname: str, domain: str,
                           post_json_object, debug, __version__,
                           shared_items_federated_domains,
                           sharedItemFederationTokens,
-                          signingPrivateKeyPem)
+                          signing_priv_key_pem)
 
 
 def _createReplyNotificationFile(base_dir: str, nickname: str, domain: str,
@@ -3196,9 +3196,9 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                        allow_local_network_access: bool,
                        peertubeInstances: [],
                        lastBounceMessage: [],
-                       themeName: str, systemLanguage: str,
+                       themeName: str, system_language: str,
                        max_like_count: int,
-                       signingPrivateKeyPem: str,
+                       signing_priv_key_pem: str,
                        default_reply_interval_hrs: int,
                        CWlists: {}, lists_enabled: str,
                        content_license_url: str) -> bool:
@@ -3223,14 +3223,14 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                     person_cache,
                     messageJson,
                     federationList,
-                    debug, signingPrivateKeyPem,
+                    debug, signing_priv_key_pem,
                     max_recent_posts, translate,
                     allow_deletion,
                     yt_replace_domain,
                     twitter_replacement_domain,
                     peertubeInstances,
                     allow_local_network_access,
-                    themeName, systemLanguage,
+                    themeName, system_language,
                     max_like_count, CWlists, lists_enabled):
         if debug:
             print('DEBUG: Like accepted from ' + actor)
@@ -3245,14 +3245,14 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                         person_cache,
                         messageJson,
                         federationList,
-                        debug, signingPrivateKeyPem,
+                        debug, signing_priv_key_pem,
                         max_recent_posts, translate,
                         allow_deletion,
                         yt_replace_domain,
                         twitter_replacement_domain,
                         peertubeInstances,
                         allow_local_network_access,
-                        themeName, systemLanguage,
+                        themeName, system_language,
                         max_like_count, CWlists, lists_enabled):
         if debug:
             print('DEBUG: Undo like accepted from ' + actor)
@@ -3268,14 +3268,14 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                         person_cache,
                         messageJson,
                         federationList,
-                        debug, signingPrivateKeyPem,
+                        debug, signing_priv_key_pem,
                         max_recent_posts, translate,
                         allow_deletion,
                         yt_replace_domain,
                         twitter_replacement_domain,
                         peertubeInstances,
                         allow_local_network_access,
-                        themeName, systemLanguage,
+                        themeName, system_language,
                         max_like_count, CWlists, lists_enabled):
         if debug:
             print('DEBUG: Reaction accepted from ' + actor)
@@ -3290,14 +3290,14 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                             person_cache,
                             messageJson,
                             federationList,
-                            debug, signingPrivateKeyPem,
+                            debug, signing_priv_key_pem,
                             max_recent_posts, translate,
                             allow_deletion,
                             yt_replace_domain,
                             twitter_replacement_domain,
                             peertubeInstances,
                             allow_local_network_access,
-                            themeName, systemLanguage,
+                            themeName, system_language,
                             max_like_count, CWlists, lists_enabled):
         if debug:
             print('DEBUG: Undo reaction accepted from ' + actor)
@@ -3312,14 +3312,14 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                         person_cache,
                         messageJson,
                         federationList,
-                        debug, signingPrivateKeyPem,
+                        debug, signing_priv_key_pem,
                         max_recent_posts, translate,
                         allow_deletion,
                         yt_replace_domain,
                         twitter_replacement_domain,
                         peertubeInstances,
                         allow_local_network_access,
-                        themeName, systemLanguage,
+                        themeName, system_language,
                         max_like_count, CWlists, lists_enabled):
         if debug:
             print('DEBUG: Bookmark accepted from ' + actor)
@@ -3334,14 +3334,14 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                             person_cache,
                             messageJson,
                             federationList,
-                            debug, signingPrivateKeyPem,
+                            debug, signing_priv_key_pem,
                             max_recent_posts, translate,
                             allow_deletion,
                             yt_replace_domain,
                             twitter_replacement_domain,
                             peertubeInstances,
                             allow_local_network_access,
-                            themeName, systemLanguage,
+                            themeName, system_language,
                             max_like_count, CWlists, lists_enabled):
         if debug:
             print('DEBUG: Undo bookmark accepted from ' + actor)
@@ -3363,8 +3363,8 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                         yt_replace_domain,
                         twitter_replacement_domain,
                         allow_local_network_access,
-                        themeName, systemLanguage,
-                        signingPrivateKeyPem,
+                        themeName, system_language,
+                        signing_priv_key_pem,
                         max_recent_posts,
                         allow_deletion,
                         peertubeInstances,
@@ -3419,12 +3419,12 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
     if _validPostContent(base_dir, nickname, domain,
                          post_json_object, max_mentions, max_emoji,
                          allow_local_network_access, debug,
-                         systemLanguage, http_prefix,
+                         system_language, http_prefix,
                          domainFull, person_cache):
         # is the sending actor valid?
         if not validSendingActor(session, base_dir, nickname, domain,
                                  person_cache, post_json_object,
-                                 signingPrivateKeyPem, debug, unit_test):
+                                 signing_priv_key_pem, debug, unit_test):
             return False
 
         if post_json_object.get('object'):
@@ -3439,11 +3439,11 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
             return False
 
         # replace YouTube links, so they get less tracking data
-        replaceYouTube(post_json_object, yt_replace_domain, systemLanguage)
+        replaceYouTube(post_json_object, yt_replace_domain, system_language)
         # replace twitter link domains, so that you can view twitter posts
         # without having an account
         replaceTwitter(post_json_object, twitter_replacement_domain,
-                       systemLanguage)
+                       system_language)
 
         # list of indexes to be updated
         updateIndexList = ['inbox']
@@ -3456,14 +3456,14 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                              session, onion_domain, i2p_domain, port,
                              federationList, send_threads, postLog,
                              cached_webfingers, person_cache,
-                             signingPrivateKeyPem,
+                             signing_priv_key_pem,
                              max_recent_posts, translate,
                              allow_deletion,
                              yt_replace_domain,
                              twitter_replacement_domain,
                              peertubeInstances,
                              allow_local_network_access,
-                             themeName, systemLanguage,
+                             themeName, system_language,
                              max_like_count,
                              CWlists, lists_enabled)
 
@@ -3482,8 +3482,8 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                                   person_cache,
                                   translate, debug,
                                   lastBounceMessage,
-                                  handle, systemLanguage,
-                                  signingPrivateKeyPem,
+                                  handle, system_language,
+                                  signing_priv_key_pem,
                                   content_license_url):
                     return False
 
@@ -3504,8 +3504,8 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                             yt_replace_domain,
                             twitter_replacement_domain,
                             allow_local_network_access,
-                            recentPostsCache, debug, systemLanguage,
-                            domainFull, person_cache, signingPrivateKeyPem):
+                            recentPostsCache, debug, system_language,
+                            domainFull, person_cache, signing_priv_key_pem):
                 # media index will be updated
                 updateIndexList.append('tlmedia')
             if isBlogPost(post_json_object):
@@ -3516,7 +3516,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
         _obtainAvatarForReplyPost(session, base_dir,
                                   http_prefix, domain, onion_domain,
                                   person_cache, post_json_object, debug,
-                                  signingPrivateKeyPem)
+                                  signing_priv_key_pem)
 
         # save the post to file
         if saveJson(post_json_object, destinationFilename):
@@ -3568,9 +3568,9 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                                                    show_published_date_only,
                                                    peertubeInstances,
                                                    allow_local_network_access,
-                                                   themeName, systemLanguage,
+                                                   themeName, system_language,
                                                    max_like_count,
-                                                   signingPrivateKeyPem,
+                                                   signing_priv_key_pem,
                                                    CWlists, lists_enabled)
                         if debug:
                             timeDiff = \
@@ -3612,9 +3612,9 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                                     post_json_object,
                                     http_prefix, federationList, send_threads,
                                     postLog, cached_webfingers, person_cache,
-                                    debug, systemLanguage,
+                                    debug, system_language,
                                     onion_domain, i2p_domain,
-                                    signingPrivateKeyPem)
+                                    signing_priv_key_pem)
 
     # if the post wasn't saved
     if not os.path.isfile(destinationFilename):
@@ -3852,7 +3852,7 @@ def _receiveFollowRequest(session, base_dir: str, http_prefix: str,
                           messageJson: {}, federationList: [],
                           debug: bool, project_version: str,
                           max_followers: int, onion_domain: str,
-                          signingPrivateKeyPem: str, unit_test: bool) -> bool:
+                          signing_priv_key_pem: str, unit_test: bool) -> bool:
     """Receives a follow request within the POST section of HTTPServer
     """
     if not messageJson['type'].startswith('Follow'):
@@ -3935,7 +3935,7 @@ def _receiveFollowRequest(session, base_dir: str, http_prefix: str,
     if not validSendingActor(session, base_dir,
                              nicknameToFollow, domainToFollow,
                              person_cache, messageJson,
-                             signingPrivateKeyPem, debug, unit_test):
+                             signing_priv_key_pem, debug, unit_test):
         print('REJECT spam follow request ' + approveHandle)
         return False
 
@@ -3972,7 +3972,7 @@ def _receiveFollowRequest(session, base_dir: str, http_prefix: str,
         if not getPersonPubKey(base_dir, session, messageJson['actor'],
                                person_cache, debug, project_version,
                                http_prefix, domainToFollow, onion_domain,
-                               signingPrivateKeyPem):
+                               signing_priv_key_pem):
             if debug:
                 print('Unable to obtain following actor: ' +
                       messageJson['actor'])
@@ -4009,7 +4009,7 @@ def _receiveFollowRequest(session, base_dir: str, http_prefix: str,
             if not getPersonPubKey(base_dir, session, messageJson['actor'],
                                    person_cache, debug, project_version,
                                    http_prefix, domainToFollow, onion_domain,
-                                   signingPrivateKeyPem):
+                                   signing_priv_key_pem):
                 if debug:
                     print('Unable to obtain following actor: ' +
                           messageJson['actor'])
@@ -4058,7 +4058,7 @@ def _receiveFollowRequest(session, base_dir: str, http_prefix: str,
                                   messageJson, send_threads, postLog,
                                   cached_webfingers, person_cache,
                                   debug, project_version, True,
-                                  signingPrivateKeyPem)
+                                  signing_priv_key_pem)
 
 
 def runInboxQueue(recentPostsCache: {}, max_recent_posts: int,
@@ -4081,8 +4081,8 @@ def runInboxQueue(recentPostsCache: {}, max_recent_posts: int,
                   allow_local_network_access: bool,
                   peertubeInstances: [],
                   verify_all_signatures: bool,
-                  themeName: str, systemLanguage: str,
-                  max_like_count: int, signingPrivateKeyPem: str,
+                  themeName: str, system_language: str,
+                  max_like_count: int, signing_priv_key_pem: str,
                   default_reply_interval_hrs: int,
                   CWlists: {}) -> None:
     """Processes received items and moves them to the appropriate
@@ -4236,7 +4236,7 @@ def runInboxQueue(recentPostsCache: {}, max_recent_posts: int,
                 getPersonPubKey(base_dir, session, keyId,
                                 person_cache, debug,
                                 project_version, http_prefix,
-                                domain, onion_domain, signingPrivateKeyPem)
+                                domain, onion_domain, signing_priv_key_pem)
             if pubKey:
                 if debug:
                     print('DEBUG: public key: ' + str(pubKey))
@@ -4375,7 +4375,7 @@ def runInboxQueue(recentPostsCache: {}, max_recent_posts: int,
                                  federationList,
                                  debug, project_version,
                                  max_followers, onion_domain,
-                                 signingPrivateKeyPem, unit_test):
+                                 signing_priv_key_pem, unit_test):
             if os.path.isfile(queueFilename):
                 try:
                     os.remove(queueFilename)
@@ -4511,9 +4511,9 @@ def runInboxQueue(recentPostsCache: {}, max_recent_posts: int,
                                allow_local_network_access,
                                peertubeInstances,
                                lastBounceMessage,
-                               themeName, systemLanguage,
+                               themeName, system_language,
                                max_like_count,
-                               signingPrivateKeyPem,
+                               signing_priv_key_pem,
                                default_reply_interval_hrs,
                                CWlists, lists_enabled,
                                content_license_url)

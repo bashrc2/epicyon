@@ -1429,7 +1429,7 @@ def _detectUsersPath(url: str) -> str:
 
 def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
                  debug: bool, quiet: bool,
-                 signingPrivateKeyPem: str,
+                 signing_priv_key_pem: str,
                  existingSession) -> ({}, {}):
     """Returns the actor json
     """
@@ -1537,7 +1537,7 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
         wfRequest = webfingerHandle(session, handle,
                                     http_prefix, cached_webfingers,
                                     hostDomain, __version__, debug,
-                                    groupAccount, signingPrivateKeyPem)
+                                    groupAccount, signing_priv_key_pem)
         if not wfRequest:
             if not quiet:
                 print('getActorJson Unable to webfinger ' + handle)
@@ -1594,7 +1594,7 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
             'Accept': headerMimeType + '; profile="' + profileStr + '"'
         }
         personJson = \
-            getJson(signingPrivateKeyPem, session, personUrl, asHeader, None,
+            getJson(signing_priv_key_pem, session, personUrl, asHeader, None,
                     debug, __version__, http_prefix, hostDomain, 20, quiet)
         if personJson:
             if not quiet:
@@ -1658,7 +1658,7 @@ def validSendingActor(session, base_dir: str,
                       nickname: str, domain: str,
                       person_cache: {},
                       post_json_object: {},
-                      signingPrivateKeyPem: str,
+                      signing_priv_key_pem: str,
                       debug: bool, unit_test: bool) -> bool:
     """When a post arrives in the inbox this is used to check that
     the sending actor is valid
@@ -1681,7 +1681,7 @@ def validSendingActor(session, base_dir: str,
         # download the actor
         actorJson, _ = getActorJson(domain, sendingActor,
                                     True, False, debug, True,
-                                    signingPrivateKeyPem, session)
+                                    signing_priv_key_pem, session)
         if actorJson:
             downloadedActor = True
     if not actorJson:

@@ -191,7 +191,7 @@ def _htmlBlogPostContent(debug: bool, session, authorized: bool,
                          post_json_object: {},
                          handle: str, restrictToDomain: bool,
                          peertubeInstances: [],
-                         systemLanguage: str,
+                         system_language: str,
                          person_cache: {},
                          blogSeparator: str = '<hr>') -> str:
     """Returns the content for a single blog post
@@ -271,7 +271,7 @@ def _htmlBlogPostContent(debug: bool, session, authorized: bool,
     languagesUnderstood = []
     if actorJson:
         languagesUnderstood = getActorLanguagesList(actorJson)
-    jsonContent = getContentFromPost(post_json_object, systemLanguage,
+    jsonContent = getContentFromPost(post_json_object, system_language,
                                      languagesUnderstood)
     if jsonContent:
         contentStr = addEmbeddedElements(translate, jsonContent,
@@ -351,7 +351,7 @@ def _htmlBlogPostRSS2(authorized: bool,
                       nickname: str, domain: str, domainFull: str,
                       post_json_object: {},
                       handle: str, restrictToDomain: bool,
-                      systemLanguage: str) -> str:
+                      system_language: str) -> str:
     """Returns the RSS version 2 feed for a single blog post
     """
     rssStr = ''
@@ -368,7 +368,7 @@ def _htmlBlogPostRSS2(authorized: bool,
                 titleStr = post_json_object['object']['summary']
                 rssDateStr = pubDate.strftime("%a, %d %b %Y %H:%M:%S UT")
                 content = \
-                    getBaseContentFromPost(post_json_object, systemLanguage)
+                    getBaseContentFromPost(post_json_object, system_language)
                 description = firstParagraphFromString(content)
                 rssStr = '     <item>'
                 rssStr += '         <title>' + titleStr + '</title>'
@@ -385,7 +385,7 @@ def _htmlBlogPostRSS3(authorized: bool,
                       nickname: str, domain: str, domainFull: str,
                       post_json_object: {},
                       handle: str, restrictToDomain: bool,
-                      systemLanguage: str) -> str:
+                      system_language: str) -> str:
     """Returns the RSS version 3 feed for a single blog post
     """
     rssStr = ''
@@ -402,7 +402,7 @@ def _htmlBlogPostRSS3(authorized: bool,
                 titleStr = post_json_object['object']['summary']
                 rssDateStr = pubDate.strftime("%a, %d %b %Y %H:%M:%S UT")
                 content = \
-                    getBaseContentFromPost(post_json_object, systemLanguage)
+                    getBaseContentFromPost(post_json_object, system_language)
                 description = firstParagraphFromString(content)
                 rssStr = 'title: ' + titleStr + '\n'
                 rssStr += 'link: ' + messageLink + '\n'
@@ -424,10 +424,10 @@ def _htmlBlogRemoveCwButton(blogStr: str, translate: {}) -> str:
 
 
 def _getSnippetFromBlogContent(post_json_object: {},
-                               systemLanguage: str) -> str:
+                               system_language: str) -> str:
     """Returns a snippet of text from the blog post as a preview
     """
-    content = getBaseContentFromPost(post_json_object, systemLanguage)
+    content = getBaseContentFromPost(post_json_object, system_language)
     if '<p>' in content:
         content = content.split('<p>', 1)[1]
         if '</p>' in content:
@@ -445,7 +445,7 @@ def htmlBlogPost(session, authorized: bool,
                  nickname: str, domain: str, domainFull: str,
                  post_json_object: {},
                  peertubeInstances: [],
-                 systemLanguage: str, person_cache: {},
+                 system_language: str, person_cache: {},
                  debug: bool, content_license_url: str) -> str:
     """Returns a html blog post
     """
@@ -464,10 +464,10 @@ def htmlBlogPost(session, authorized: bool,
     url = ''
     if post_json_object['object'].get('url'):
         url = post_json_object['object']['url']
-    snippet = _getSnippetFromBlogContent(post_json_object, systemLanguage)
+    snippet = _getSnippetFromBlogContent(post_json_object, system_language)
     blogStr = htmlHeaderWithBlogMarkup(cssFilename, instanceTitle,
                                        http_prefix, domainFull, nickname,
-                                       systemLanguage, published, modified,
+                                       system_language, published, modified,
                                        title, snippet, translate, url,
                                        content_license_url)
     _htmlBlogRemoveCwButton(blogStr, translate)
@@ -477,7 +477,7 @@ def htmlBlogPost(session, authorized: bool,
                                     nickname, domain,
                                     domainFull, post_json_object,
                                     None, False,
-                                    peertubeInstances, systemLanguage,
+                                    peertubeInstances, system_language,
                                     person_cache)
 
     # show rss links
@@ -506,7 +506,7 @@ def htmlBlogPage(authorized: bool, session,
                  base_dir: str, http_prefix: str, translate: {},
                  nickname: str, domain: str, port: int,
                  noOfItems: int, pageNumber: int,
-                 peertubeInstances: [], systemLanguage: str,
+                 peertubeInstances: [], system_language: str,
                  person_cache: {}, debug: bool) -> str:
     """Returns a html blog page containing posts
     """
@@ -570,7 +570,7 @@ def htmlBlogPage(authorized: bool, session,
                                         domainFull, item,
                                         None, True,
                                         peertubeInstances,
-                                        systemLanguage,
+                                        system_language,
                                         person_cache)
 
     if len(timelineJson['orderedItems']) >= noOfItems:
@@ -599,7 +599,7 @@ def htmlBlogPageRSS2(authorized: bool, session,
                      base_dir: str, http_prefix: str, translate: {},
                      nickname: str, domain: str, port: int,
                      noOfItems: int, pageNumber: int,
-                     includeHeader: bool, systemLanguage: str) -> str:
+                     includeHeader: bool, system_language: str) -> str:
     """Returns an RSS version 2 feed containing posts
     """
     if ' ' in nickname or '@' in nickname or \
@@ -642,7 +642,7 @@ def htmlBlogPageRSS2(authorized: bool, session,
                                   http_prefix, translate,
                                   nickname, domain,
                                   domainFull, item,
-                                  None, True, systemLanguage)
+                                  None, True, system_language)
 
     if includeHeader:
         return blogRSS2 + rss2Footer()
@@ -654,7 +654,7 @@ def htmlBlogPageRSS3(authorized: bool, session,
                      base_dir: str, http_prefix: str, translate: {},
                      nickname: str, domain: str, port: int,
                      noOfItems: int, pageNumber: int,
-                     systemLanguage: str) -> str:
+                     system_language: str) -> str:
     """Returns an RSS version 3 feed containing posts
     """
     if ' ' in nickname or '@' in nickname or \
@@ -689,7 +689,7 @@ def htmlBlogPageRSS3(authorized: bool, session,
                                   nickname, domain,
                                   domainFull, item,
                                   None, True,
-                                  systemLanguage)
+                                  system_language)
 
     return blogRSS3
 
@@ -729,7 +729,7 @@ def htmlBlogView(authorized: bool,
                  session, base_dir: str, http_prefix: str,
                  translate: {}, domain: str, port: int,
                  noOfItems: int,
-                 peertubeInstances: [], systemLanguage: str,
+                 peertubeInstances: [], system_language: str,
                  person_cache: {}, debug: bool) -> str:
     """Show the blog main page
     """
@@ -749,7 +749,7 @@ def htmlBlogView(authorized: bool,
                                 base_dir, http_prefix, translate,
                                 nickname, domain, port,
                                 noOfItems, 1, peertubeInstances,
-                                systemLanguage, person_cache, debug)
+                                system_language, person_cache, debug)
 
     domainFull = getFullDomain(domain, port)
 
@@ -775,7 +775,7 @@ def htmlEditBlog(media_instance: bool, translate: {},
                  path: str,
                  pageNumber: int,
                  nickname: str, domain: str,
-                 postUrl: str, systemLanguage: str) -> str:
+                 postUrl: str, system_language: str) -> str:
     """Edit a blog post after it was created
     """
     postFilename = locatePost(base_dir, nickname, domain, postUrl)
@@ -896,7 +896,7 @@ def htmlEditBlog(media_instance: bool, translate: {},
     editBlogForm += '    <br>'
     messageBoxHeight = 800
 
-    contentStr = getBaseContentFromPost(post_json_object, systemLanguage)
+    contentStr = getBaseContentFromPost(post_json_object, system_language)
     contentStr = contentStr.replace('<p>', '').replace('</p>', '\n')
 
     editBlogForm += \

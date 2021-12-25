@@ -296,7 +296,7 @@ def _speakerEndpointJson(displayName: str, summary: str,
     return speakerJson
 
 
-def _SSMLheader(systemLanguage: str, instanceTitle: str) -> str:
+def _SSMLheader(system_language: str, instanceTitle: str) -> str:
     """Returns a header for an SSML document
     """
     return '<?xml version="1.0"?>\n' + \
@@ -306,7 +306,7 @@ def _SSMLheader(systemLanguage: str, instanceTitle: str) -> str:
         '         http://www.w3.org/TR/speech-synthesis11/synthesis.xsd"\n' + \
         '       version="1.1">\n' + \
         '  <metadata>\n' + \
-        '    <dc:title xml:lang="' + systemLanguage + '">' + \
+        '    <dc:title xml:lang="' + system_language + '">' + \
         instanceTitle + ' inbox</dc:title>\n' + \
         '  </metadata>\n'
 
@@ -350,7 +350,7 @@ def _speakerEndpointSSML(displayName: str, summary: str,
 
 def getSSMLbox(base_dir: str, path: str,
                domain: str,
-               systemLanguage: str,
+               system_language: str,
                instanceTitle: str,
                boxName: str) -> str:
     """Returns SSML for the given timeline
@@ -373,7 +373,7 @@ def getSSMLbox(base_dir: str, path: str,
                                 speakerJson['say'],
                                 speakerJson['imageDescription'],
                                 speakerJson['detectedLinks'],
-                                systemLanguage,
+                                system_language,
                                 instanceTitle, gender)
 
 

@@ -90,7 +90,7 @@ def setActorLanguages(base_dir: str, actorJson: {}, languagesStr: str) -> None:
 
 
 def understoodPostLanguage(base_dir: str, nickname: str, domain: str,
-                           messageJson: {}, systemLanguage: str,
+                           messageJson: {}, system_language: str,
                            http_prefix: str, domainFull: str,
                            person_cache: {}) -> bool:
     """Returns true if the post is written in a language
@@ -103,7 +103,7 @@ def understoodPostLanguage(base_dir: str, nickname: str, domain: str,
         return True
     if not isinstance(msgObject['contentMap'], dict):
         return True
-    if msgObject['contentMap'].get(systemLanguage):
+    if msgObject['contentMap'].get(system_language):
         return True
     personUrl = localActorUrl(http_prefix, nickname, domainFull)
     actorJson = getPersonFromCache(base_dir, personUrl, person_cache, False)
@@ -274,7 +274,7 @@ def libretranslate(url: str, text: str,
 
 
 def autoTranslatePost(base_dir: str, post_json_object: {},
-                      systemLanguage: str, translate: {}) -> str:
+                      system_language: str, translate: {}) -> str:
     """Tries to automatically translate the given post
     """
     if not hasObjectDict(post_json_object):
@@ -297,7 +297,7 @@ def autoTranslatePost(base_dir: str, post_json_object: {},
             content = msgObject['contentMap'][lang]
             translatedText = \
                 libretranslate(libretranslateUrl, content,
-                               lang, systemLanguage,
+                               lang, system_language,
                                libretranslateApiKey)
             if translatedText:
                 if removeHtml(translatedText) == removeHtml(content):

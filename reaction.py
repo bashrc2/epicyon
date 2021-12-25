@@ -70,7 +70,7 @@ def _reaction(recentPostsCache: {},
               send_threads: [], postLog: [],
               person_cache: {}, cached_webfingers: {},
               debug: bool, project_version: str,
-              signingPrivateKeyPem: str) -> {}:
+              signing_priv_key_pem: str) -> {}:
     """Creates an emoji reaction
     actor is the person doing the reacting
     'to' might be a specific person (actor) whose post was reaction
@@ -140,7 +140,7 @@ def _reaction(recentPostsCache: {},
                        http_prefix, True, client_to_server, federationList,
                        send_threads, postLog, cached_webfingers, person_cache,
                        debug, project_version, None, groupAccount,
-                       signingPrivateKeyPem, 7165392)
+                       signing_priv_key_pem, 7165392)
 
     return newReactionJson
 
@@ -155,7 +155,7 @@ def reactionPost(recentPostsCache: {},
                  send_threads: [], postLog: [],
                  person_cache: {}, cached_webfingers: {},
                  debug: bool, project_version: str,
-                 signingPrivateKeyPem: str) -> {}:
+                 signing_priv_key_pem: str) -> {}:
     """Adds a reaction to a given status post. This is only used by unit tests
     """
     reactionDomain = getFullDomain(reactionDomain, reactionPort)
@@ -170,7 +170,7 @@ def reactionPost(recentPostsCache: {},
                      ccList, http_prefix, objectUrl, emojiContent,
                      actorReaction, client_to_server,
                      send_threads, postLog, person_cache, cached_webfingers,
-                     debug, project_version, signingPrivateKeyPem)
+                     debug, project_version, signing_priv_key_pem)
 
 
 def sendReactionViaServer(base_dir: str, session,
@@ -180,7 +180,7 @@ def sendReactionViaServer(base_dir: str, session,
                           emojiContent: str,
                           cached_webfingers: {}, person_cache: {},
                           debug: bool, project_version: str,
-                          signingPrivateKeyPem: str) -> {}:
+                          signing_priv_key_pem: str) -> {}:
     """Creates a reaction via c2s
     """
     if not session:
@@ -209,7 +209,7 @@ def sendReactionViaServer(base_dir: str, session,
     wfRequest = webfingerHandle(session, handle, http_prefix,
                                 cached_webfingers,
                                 fromDomain, project_version, debug, False,
-                                signingPrivateKeyPem)
+                                signing_priv_key_pem)
     if not wfRequest:
         if debug:
             print('DEBUG: reaction webfinger failed for ' + handle)
@@ -224,7 +224,7 @@ def sendReactionViaServer(base_dir: str, session,
     # get the actor inbox for the To handle
     originDomain = fromDomain
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
-     displayName, _) = getPersonBox(signingPrivateKeyPem,
+     displayName, _) = getPersonBox(signing_priv_key_pem,
                                     originDomain,
                                     base_dir, session, wfRequest,
                                     person_cache,
@@ -270,7 +270,7 @@ def sendUndoReactionViaServer(base_dir: str, session,
                               emojiContent: str,
                               cached_webfingers: {}, person_cache: {},
                               debug: bool, project_version: str,
-                              signingPrivateKeyPem: str) -> {}:
+                              signing_priv_key_pem: str) -> {}:
     """Undo a reaction via c2s
     """
     if not session:
@@ -299,7 +299,7 @@ def sendUndoReactionViaServer(base_dir: str, session,
     wfRequest = webfingerHandle(session, handle, http_prefix,
                                 cached_webfingers,
                                 fromDomain, project_version, debug, False,
-                                signingPrivateKeyPem)
+                                signing_priv_key_pem)
     if not wfRequest:
         if debug:
             print('DEBUG: unreaction webfinger failed for ' + handle)
@@ -315,7 +315,7 @@ def sendUndoReactionViaServer(base_dir: str, session,
     # get the actor inbox for the To handle
     originDomain = fromDomain
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
-     displayName, _) = getPersonBox(signingPrivateKeyPem,
+     displayName, _) = getPersonBox(signing_priv_key_pem,
                                     originDomain,
                                     base_dir, session, wfRequest,
                                     person_cache, project_version,

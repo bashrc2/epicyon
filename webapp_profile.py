@@ -137,9 +137,9 @@ def htmlProfileAfterSearch(cssCache: {},
                            allow_local_network_access: bool,
                            themeName: str,
                            accessKeys: {},
-                           systemLanguage: str,
+                           system_language: str,
                            max_like_count: int,
-                           signingPrivateKeyPem: str,
+                           signing_priv_key_pem: str,
                            CWlists: {}, lists_enabled: str) -> str:
     """Show a profile page after a search for a fediverse address
     """
@@ -151,7 +151,7 @@ def htmlProfileAfterSearch(cssCache: {},
         gnunet = True
     profileJson, asHeader = \
         getActorJson(domain, profileHandle, http, gnunet, debug, False,
-                     signingPrivateKeyPem, session)
+                     signing_priv_key_pem, session)
     if not profileJson:
         return None
 
@@ -321,7 +321,7 @@ def htmlProfileAfterSearch(cssCache: {},
             '</div>\n'
 
     userFeed = \
-        parseUserFeed(signingPrivateKeyPem,
+        parseUserFeed(signing_priv_key_pem,
                       session, outboxUrl, asHeader, project_version,
                       http_prefix, domain, debug)
     if userFeed:
@@ -333,19 +333,22 @@ def htmlProfileAfterSearch(cssCache: {},
                 continue
 
             profileStr += \
-                individualPostAsHtml(signingPrivateKeyPem,
-                                     True, recentPostsCache, max_recent_posts,
+                individualPostAsHtml(signing_priv_key_pem,
+                                     True, recentPostsCache,
+                                     max_recent_posts,
                                      translate, None, base_dir,
                                      session, cached_webfingers, person_cache,
                                      nickname, domain, port,
-                                     post_json_object, avatarUrl, False, False,
+                                     post_json_object, avatarUrl,
+                                     False, False,
                                      http_prefix, project_version, 'inbox',
                                      yt_replace_domain,
                                      twitter_replacement_domain,
                                      show_published_date_only,
                                      peertubeInstances,
                                      allow_local_network_access,
-                                     themeName, systemLanguage, max_like_count,
+                                     themeName, system_language,
+                                     max_like_count,
                                      False, False, False, False, False, False,
                                      CWlists, lists_enabled)
             i += 1
@@ -538,7 +541,7 @@ def _getProfileHeaderAfterSearch(base_dir: str,
     return htmlStr
 
 
-def htmlProfile(signingPrivateKeyPem: str,
+def htmlProfile(signing_priv_key_pem: str,
                 rss_icon_at_top: bool,
                 cssCache: {}, icons_as_buttons: bool,
                 defaultTimeline: str,
@@ -555,7 +558,7 @@ def htmlProfile(signingPrivateKeyPem: str,
                 allow_local_network_access: bool,
                 textModeBanner: str,
                 debug: bool, accessKeys: {}, city: str,
-                systemLanguage: str, max_like_count: int,
+                system_language: str, max_like_count: int,
                 shared_items_federated_domains: [],
                 extraJson: {}, pageNumber: int,
                 maxItemsPerPage: int,
@@ -567,7 +570,7 @@ def htmlProfile(signingPrivateKeyPem: str,
     if not nickname:
         return ""
     if isSystemAccount(nickname):
-        return htmlFrontScreen(signingPrivateKeyPem,
+        return htmlFrontScreen(signing_priv_key_pem,
                                rss_icon_at_top,
                                cssCache, icons_as_buttons,
                                defaultTimeline,
@@ -581,7 +584,7 @@ def htmlProfile(signingPrivateKeyPem: str,
                                show_published_date_only,
                                newswire, theme, extraJson,
                                allow_local_network_access, accessKeys,
-                               systemLanguage, max_like_count,
+                               system_language, max_like_count,
                                shared_items_federated_domains, None,
                                pageNumber, maxItemsPerPage, CWlists,
                                lists_enabled)
@@ -963,9 +966,9 @@ def htmlProfile(signingPrivateKeyPem: str,
                               show_published_date_only,
                               peertubeInstances,
                               allow_local_network_access,
-                              theme, systemLanguage,
+                              theme, system_language,
                               max_like_count,
-                              signingPrivateKeyPem,
+                              signing_priv_key_pem,
                               CWlists, lists_enabled) + licenseStr
     if not isGroup:
         if selected == 'following':
@@ -978,7 +981,7 @@ def htmlProfile(signingPrivateKeyPem: str,
                                       project_version, ["unfollow"], selected,
                                       usersPath, pageNumber, maxItemsPerPage,
                                       dormant_months, debug,
-                                      signingPrivateKeyPem)
+                                      signing_priv_key_pem)
     if selected == 'followers':
         profileStr += \
             _htmlProfileFollowing(translate, base_dir, http_prefix,
@@ -989,7 +992,7 @@ def htmlProfile(signingPrivateKeyPem: str,
                                   project_version, ["block"],
                                   selected, usersPath, pageNumber,
                                   maxItemsPerPage, dormant_months, debug,
-                                  signingPrivateKeyPem)
+                                  signing_priv_key_pem)
     if not isGroup:
         if selected == 'roles':
             profileStr += \
@@ -1033,9 +1036,9 @@ def _htmlProfilePosts(recentPostsCache: {}, max_recent_posts: int,
                       show_published_date_only: bool,
                       peertubeInstances: [],
                       allow_local_network_access: bool,
-                      themeName: str, systemLanguage: str,
+                      themeName: str, system_language: str,
                       max_like_count: int,
-                      signingPrivateKeyPem: str,
+                      signing_priv_key_pem: str,
                       CWlists: {}, lists_enabled: str) -> str:
     """Shows posts on the profile screen
     These should only be public posts
@@ -1064,7 +1067,7 @@ def _htmlProfilePosts(recentPostsCache: {}, max_recent_posts: int,
         for item in outboxFeed['orderedItems']:
             if item['type'] == 'Create':
                 postStr = \
-                    individualPostAsHtml(signingPrivateKeyPem,
+                    individualPostAsHtml(signing_priv_key_pem,
                                          True, recentPostsCache,
                                          max_recent_posts,
                                          translate, None,
@@ -1078,7 +1081,7 @@ def _htmlProfilePosts(recentPostsCache: {}, max_recent_posts: int,
                                          show_published_date_only,
                                          peertubeInstances,
                                          allow_local_network_access,
-                                         themeName, systemLanguage,
+                                         themeName, system_language,
                                          max_like_count,
                                          False, False, False,
                                          True, False, False,
@@ -1102,7 +1105,7 @@ def _htmlProfileFollowing(translate: {}, base_dir: str, http_prefix: str,
                           pageNumber: int,
                           maxItemsPerPage: int,
                           dormant_months: int, debug: bool,
-                          signingPrivateKeyPem: str) -> str:
+                          signing_priv_key_pem: str) -> str:
     """Shows following on the profile screen
     """
     profileStr = ''
@@ -1129,7 +1132,7 @@ def _htmlProfileFollowing(translate: {}, base_dir: str, http_prefix: str,
                           dormant_months)
 
         profileStr += \
-            _individualFollowAsHtml(signingPrivateKeyPem,
+            _individualFollowAsHtml(signing_priv_key_pem,
                                     translate, base_dir, session,
                                     cached_webfingers, person_cache,
                                     domain, followingActor,
@@ -2334,7 +2337,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, base_dir: str, path: str,
     return editProfileForm
 
 
-def _individualFollowAsHtml(signingPrivateKeyPem: str,
+def _individualFollowAsHtml(signing_priv_key_pem: str,
                             translate: {},
                             base_dir: str, session,
                             cached_webfingers: {},
@@ -2366,11 +2369,11 @@ def _individualFollowAsHtml(signingPrivateKeyPem: str,
             webfingerHandle(session, followUrlHandle, http_prefix,
                             cached_webfingers,
                             domain, __version__, debug, False,
-                            signingPrivateKeyPem)
+                            signing_priv_key_pem)
 
         originDomain = domain
         (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl2,
-         displayName, isGroup) = getPersonBox(signingPrivateKeyPem,
+         displayName, isGroup) = getPersonBox(signing_priv_key_pem,
                                               originDomain,
                                               base_dir, session,
                                               followUrlWf,

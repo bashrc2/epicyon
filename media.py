@@ -54,7 +54,7 @@ def _getBlurHash() -> str:
 
 def _replaceSiloDomain(post_json_object: {},
                        siloDomain: str, replacementDomain: str,
-                       systemLanguage: str) -> None:
+                       system_language: str) -> None:
     """Replace a silo domain with a replacement domain
     """
     if not replacementDomain:
@@ -63,31 +63,31 @@ def _replaceSiloDomain(post_json_object: {},
         return
     if not post_json_object['object'].get('content'):
         return
-    contentStr = getBaseContentFromPost(post_json_object, systemLanguage)
+    contentStr = getBaseContentFromPost(post_json_object, system_language)
     if siloDomain not in contentStr:
         return
     contentStr = contentStr.replace(siloDomain, replacementDomain)
     post_json_object['object']['content'] = contentStr
     if post_json_object['object'].get('contentMap'):
-        post_json_object['object']['contentMap'][systemLanguage] = contentStr
+        post_json_object['object']['contentMap'][system_language] = contentStr
 
 
 def replaceYouTube(post_json_object: {}, replacementDomain: str,
-                   systemLanguage: str) -> None:
+                   system_language: str) -> None:
     """Replace YouTube with a replacement domain
     This denies Google some, but not all, tracking data
     """
     _replaceSiloDomain(post_json_object, 'www.youtube.com',
-                       replacementDomain, systemLanguage)
+                       replacementDomain, system_language)
 
 
 def replaceTwitter(post_json_object: {}, replacementDomain: str,
-                   systemLanguage: str) -> None:
+                   system_language: str) -> None:
     """Replace Twitter with a replacement domain
     This allows you to view twitter posts without having a twitter account
     """
     _replaceSiloDomain(post_json_object, 'twitter.com',
-                       replacementDomain, systemLanguage)
+                       replacementDomain, system_language)
 
 
 def _removeMetaData(imageFilename: str, outputFilename: str) -> None:

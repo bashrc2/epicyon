@@ -64,7 +64,7 @@ def webfingerHandle(session, handle: str, http_prefix: str,
                     cached_webfingers: {},
                     fromDomain: str, project_version: str,
                     debug: bool, groupAccount: bool,
-                    signingPrivateKeyPem: str) -> {}:
+                    signing_priv_key_pem: str) -> {}:
     """Gets webfinger result for the given ActivityPub handle
     """
     if not session:
@@ -92,7 +92,7 @@ def webfingerHandle(session, handle: str, http_prefix: str,
     }
     try:
         result = \
-            getJson(signingPrivateKeyPem, session, url, hdr, par,
+            getJson(signing_priv_key_pem, session, url, hdr, par,
                     debug, project_version, http_prefix, fromDomain)
     except Exception as ex:
         print('ERROR: webfingerHandle ' + str(ex))

@@ -140,7 +140,7 @@ def getPersonPubKey(base_dir: str, session, personUrl: str,
                     person_cache: {}, debug: bool,
                     project_version: str, http_prefix: str,
                     domain: str, onion_domain: str,
-                    signingPrivateKeyPem: str) -> str:
+                    signing_priv_key_pem: str) -> str:
     if not personUrl:
         return None
     personUrl = personUrl.replace('#main-key', '')
@@ -166,7 +166,7 @@ def getPersonPubKey(base_dir: str, session, personUrl: str,
             'Accept': 'application/activity+json; profile="' + profileStr + '"'
         }
         personJson = \
-            getJson(signingPrivateKeyPem,
+            getJson(signing_priv_key_pem,
                     session, personUrl, asHeader, None, debug,
                     project_version, http_prefix, personDomain)
         if not personJson:

@@ -603,9 +603,9 @@ def htmlHistorySearch(cssCache: {}, translate: {}, base_dir: str,
                       peertubeInstances: [],
                       allow_local_network_access: bool,
                       themeName: str, boxName: str,
-                      systemLanguage: str,
+                      system_language: str,
                       max_like_count: int,
-                      signingPrivateKeyPem: str,
+                      signing_priv_key_pem: str,
                       CWlists: {},
                       lists_enabled: str) -> str:
     """Show a page containing search results for your post history
@@ -673,7 +673,7 @@ def htmlHistorySearch(cssCache: {}, translate: {}, base_dir: str,
         showIndividualPostIcons = True
         allow_deletion = False
         postStr = \
-            individualPostAsHtml(signingPrivateKeyPem,
+            individualPostAsHtml(signing_priv_key_pem,
                                  True, recentPostsCache,
                                  max_recent_posts,
                                  translate, None,
@@ -689,7 +689,7 @@ def htmlHistorySearch(cssCache: {}, translate: {}, base_dir: str,
                                  show_published_date_only,
                                  peertubeInstances,
                                  allow_local_network_access,
-                                 themeName, systemLanguage, max_like_count,
+                                 themeName, system_language, max_like_count,
                                  showIndividualPostIcons,
                                  showIndividualPostIcons,
                                  False, False, False, False,
@@ -715,9 +715,9 @@ def htmlHashtagSearch(cssCache: {},
                       show_published_date_only: bool,
                       peertubeInstances: [],
                       allow_local_network_access: bool,
-                      themeName: str, systemLanguage: str,
+                      themeName: str, system_language: str,
                       max_like_count: int,
-                      signingPrivateKeyPem: str,
+                      signing_priv_key_pem: str,
                       CWlists: {}, lists_enabled: str) -> str:
     """Show a page containing search results for a hashtag
     or after selecting a hashtag from the swarm
@@ -855,7 +855,7 @@ def htmlHashtagSearch(cssCache: {},
         avatarUrl = None
         showAvatarOptions = True
         postStr = \
-            individualPostAsHtml(signingPrivateKeyPem,
+            individualPostAsHtml(signing_priv_key_pem,
                                  allowDownloads, recentPostsCache,
                                  max_recent_posts,
                                  translate, None,
@@ -872,7 +872,7 @@ def htmlHashtagSearch(cssCache: {},
                                  show_published_date_only,
                                  peertubeInstances,
                                  allow_local_network_access,
-                                 themeName, systemLanguage, max_like_count,
+                                 themeName, system_language, max_like_count,
                                  showRepeats, showIcons,
                                  manuallyApprovesFollowers,
                                  showPublicOnly,
@@ -905,7 +905,7 @@ def rssHashtagSearch(nickname: str, domain: str, port: int,
                      http_prefix: str, project_version: str,
                      yt_replace_domain: str,
                      twitter_replacement_domain: str,
-                     systemLanguage: str) -> str:
+                     system_language: str) -> str:
     """Show an rss feed for a hashtag
     """
     if hashtag.startswith('#'):
@@ -987,7 +987,7 @@ def rssHashtagSearch(nickname: str, domain: str, port: int,
                         post_json_object['object']['summary'] + \
                         '</title>'
                 description = \
-                    getBaseContentFromPost(post_json_object, systemLanguage)
+                    getBaseContentFromPost(post_json_object, system_language)
                 description = firstParagraphFromString(description)
                 hashtagFeed += \
                     '         <description>' + description + '</description>'

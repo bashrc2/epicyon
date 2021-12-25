@@ -643,7 +643,7 @@ def htmlEditNewswire(cssCache: {}, translate: {}, base_dir: str, path: str,
 def htmlEditNewsPost(cssCache: {}, translate: {}, base_dir: str, path: str,
                      domain: str, port: int,
                      http_prefix: str, postUrl: str,
-                     systemLanguage: str) -> str:
+                     system_language: str) -> str:
     """Edits a news post on the news/features timeline
     """
     if '/users/' not in path:
@@ -704,7 +704,7 @@ def htmlEditNewsPost(cssCache: {}, translate: {}, base_dir: str, path: str,
         '  <input type="text" name="newsPostTitle" value="' + \
         newsPostTitle + '"><br>\n'
 
-    newsPostContent = getBaseContentFromPost(post_json_object, systemLanguage)
+    newsPostContent = getBaseContentFromPost(post_json_object, system_language)
     editNewsPostForm += \
         '  <textarea id="message" name="editedNewsPost" ' + \
         'style="height:600px" spellcheck="true">' + \

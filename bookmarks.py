@@ -376,7 +376,7 @@ def sendBookmarkViaServer(base_dir: str, session,
                           http_prefix: str, bookmarkUrl: str,
                           cached_webfingers: {}, person_cache: {},
                           debug: bool, project_version: str,
-                          signingPrivateKeyPem: str) -> {}:
+                          signing_priv_key_pem: str) -> {}:
     """Creates a bookmark via c2s
     """
     if not session:
@@ -406,7 +406,7 @@ def sendBookmarkViaServer(base_dir: str, session,
     wfRequest = webfingerHandle(session, handle, http_prefix,
                                 cached_webfingers,
                                 domain, project_version, debug, False,
-                                signingPrivateKeyPem)
+                                signing_priv_key_pem)
     if not wfRequest:
         if debug:
             print('DEBUG: bookmark webfinger failed for ' + handle)
@@ -421,7 +421,7 @@ def sendBookmarkViaServer(base_dir: str, session,
     # get the actor inbox for the To handle
     originDomain = domain
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
-     displayName, _) = getPersonBox(signingPrivateKeyPem,
+     displayName, _) = getPersonBox(signing_priv_key_pem,
                                     originDomain,
                                     base_dir, session, wfRequest,
                                     person_cache,
@@ -466,7 +466,7 @@ def sendUndoBookmarkViaServer(base_dir: str, session,
                               http_prefix: str, bookmarkUrl: str,
                               cached_webfingers: {}, person_cache: {},
                               debug: bool, project_version: str,
-                              signingPrivateKeyPem: str) -> {}:
+                              signing_priv_key_pem: str) -> {}:
     """Removes a bookmark via c2s
     """
     if not session:
@@ -496,7 +496,7 @@ def sendUndoBookmarkViaServer(base_dir: str, session,
     wfRequest = webfingerHandle(session, handle, http_prefix,
                                 cached_webfingers,
                                 domain, project_version, debug, False,
-                                signingPrivateKeyPem)
+                                signing_priv_key_pem)
     if not wfRequest:
         if debug:
             print('DEBUG: unbookmark webfinger failed for ' + handle)
@@ -511,7 +511,7 @@ def sendUndoBookmarkViaServer(base_dir: str, session,
     # get the actor inbox for the To handle
     originDomain = domain
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
-     displayName, _) = getPersonBox(signingPrivateKeyPem,
+     displayName, _) = getPersonBox(signing_priv_key_pem,
                                     originDomain,
                                     base_dir, session, wfRequest,
                                     person_cache,

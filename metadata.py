@@ -87,7 +87,7 @@ def metaDataInstance(showAccounts: bool,
                      instanceDescription: str,
                      http_prefix: str, base_dir: str,
                      adminNickname: str, domain: str, domainFull: str,
-                     registration: bool, systemLanguage: str,
+                     registration: bool, system_language: str,
                      version: str) -> {}:
     """ /api/v1/instance endpoint
     """
@@ -163,7 +163,7 @@ def metaDataInstance(showAccounts: bool,
             'username': adminActor['preferredUsername']
         },
         'description': instanceDescription,
-        'languages': [systemLanguage],
+        'languages': [system_language],
         'short_description': instanceDescriptionShort,
         'stats': {
             'domain_count': 2,
