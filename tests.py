@@ -713,7 +713,7 @@ def createServerAlice(path: str, domain: str, port: int,
     if hasPosts:
         testFollowersOnly = False
         testSaveToFile = True
-        clientToServer = False
+        client_to_server = False
         testCommentsEnabled = True
         testAttachImageFilename = None
         testMediaType = None
@@ -733,7 +733,7 @@ def createServerAlice(path: str, domain: str, port: int,
                          "No wise fish would go anywhere without a porpoise",
                          testFollowersOnly,
                          testSaveToFile,
-                         clientToServer,
+                         client_to_server,
                          testCommentsEnabled,
                          testAttachImageFilename,
                          testMediaType,
@@ -747,7 +747,7 @@ def createServerAlice(path: str, domain: str, port: int,
                          "Curiouser and curiouser!",
                          testFollowersOnly,
                          testSaveToFile,
-                         clientToServer,
+                         client_to_server,
                          testCommentsEnabled,
                          testAttachImageFilename,
                          testMediaType,
@@ -762,7 +762,7 @@ def createServerAlice(path: str, domain: str, port: int,
                          "of dreams, that is where you and I shall meet",
                          testFollowersOnly,
                          testSaveToFile,
-                         clientToServer,
+                         client_to_server,
                          testCommentsEnabled,
                          testAttachImageFilename,
                          testMediaType,
@@ -836,7 +836,7 @@ def createServerBob(path: str, domain: str, port: int,
     nickname = 'bob'
     http_prefix = 'http'
     proxyType = None
-    clientToServer = False
+    client_to_server = False
     password = 'bobpass'
     maxReplies = 64
     domainMaxPostsPerDay = 1000
@@ -875,7 +875,7 @@ def createServerBob(path: str, domain: str, port: int,
                          "It's your life, live it your way.",
                          testFollowersOnly,
                          testSaveToFile,
-                         clientToServer,
+                         client_to_server,
                          testCommentsEnabled,
                          testAttachImageFilename,
                          testMediaType,
@@ -890,7 +890,7 @@ def createServerBob(path: str, domain: str, port: int,
                          "I am very simple",
                          testFollowersOnly,
                          testSaveToFile,
-                         clientToServer,
+                         client_to_server,
                          testCommentsEnabled,
                          testAttachImageFilename,
                          testMediaType,
@@ -904,7 +904,7 @@ def createServerBob(path: str, domain: str, port: int,
                          "Quantum physics is a bit of a passion of mine",
                          testFollowersOnly,
                          testSaveToFile,
-                         clientToServer,
+                         client_to_server,
                          testCommentsEnabled,
                          testAttachImageFilename,
                          testMediaType,
@@ -1186,7 +1186,7 @@ def testPostMessageBetweenServers(base_dir: str) -> None:
     alicePostLog = []
     followersOnly = False
     saveToFile = True
-    clientToServer = False
+    client_to_server = False
     ccUrl = None
     alicePersonCache = {}
     aliceCachedWebfingers = {}
@@ -1214,7 +1214,7 @@ def testPostMessageBetweenServers(base_dir: str) -> None:
                  'Why is a mouse when it spins? ' +
                  'यह एक परीक्षण है #sillyquestion',
                  followersOnly,
-                 saveToFile, clientToServer, True,
+                 saveToFile, client_to_server, True,
                  attachedImageFilename, mediaType,
                  attachedImageDescription, city, federationList,
                  aliceSendThreads, alicePostLog, aliceCachedWebfingers,
@@ -1518,7 +1518,7 @@ def testFollowBetweenServers(base_dir: str) -> None:
     alicePostLog = []
     followersOnly = False
     saveToFile = True
-    clientToServer = False
+    client_to_server = False
     ccUrl = None
     alicePersonCache = {}
     aliceCachedWebfingers = {}
@@ -1530,7 +1530,7 @@ def testFollowBetweenServers(base_dir: str) -> None:
                           'alice', aliceDomain, alicePort, http_prefix,
                           'bob', bobDomain, bobActor,
                           bobPort, http_prefix,
-                          clientToServer, federationList,
+                          client_to_server, federationList,
                           aliceSendThreads, alicePostLog,
                           aliceCachedWebfingers, alicePersonCache,
                           True, __version__, signingPrivateKeyPem)
@@ -1576,7 +1576,7 @@ def testFollowBetweenServers(base_dir: str) -> None:
                  sessionAlice, aliceDir, 'alice', aliceDomain, alicePort,
                  'bob', bobDomain, bobPort, ccUrl,
                  http_prefix, 'Alice message', followersOnly, saveToFile,
-                 clientToServer, True,
+                 client_to_server, True,
                  None, None, None, city, federationList,
                  aliceSendThreads, alicePostLog, aliceCachedWebfingers,
                  alicePersonCache, isArticle, systemLanguage,
@@ -1736,7 +1736,7 @@ def testSharedItemsFederation(base_dir: str) -> None:
     alicePostLog = []
     followersOnly = False
     saveToFile = True
-    clientToServer = False
+    client_to_server = False
     ccUrl = None
     alicePersonCache = {}
     aliceCachedWebfingers = {}
@@ -1747,7 +1747,7 @@ def testSharedItemsFederation(base_dir: str) -> None:
                           'alice', aliceDomain, alicePort, http_prefix,
                           'bob', bobDomain, bobActor,
                           bobPort, http_prefix,
-                          clientToServer, federationList,
+                          client_to_server, federationList,
                           aliceSendThreads, alicePostLog,
                           aliceCachedWebfingers, alicePersonCache,
                           True, __version__, signingPrivateKeyPem)
@@ -1927,7 +1927,7 @@ def testSharedItemsFederation(base_dir: str) -> None:
                  sessionAlice, aliceDir, 'alice', aliceDomain, alicePort,
                  'bob', bobDomain, bobPort, ccUrl,
                  http_prefix, 'Alice message', followersOnly, saveToFile,
-                 clientToServer, True,
+                 client_to_server, True,
                  None, None, None, city, federationList,
                  aliceSendThreads, alicePostLog, aliceCachedWebfingers,
                  alicePersonCache, isArticle, systemLanguage,
@@ -2172,7 +2172,7 @@ def testGroupFollow(base_dir: str) -> None:
     alicePostLog = []
     followersOnly = False
     saveToFile = True
-    clientToServer = False
+    client_to_server = False
     ccUrl = None
     alicePersonCache = {}
     aliceCachedWebfingers = {}
@@ -2186,7 +2186,7 @@ def testGroupFollow(base_dir: str) -> None:
                           'alice', aliceDomain, alicePort, http_prefix,
                           'testgroup', testgroupDomain, testgroupActor,
                           testgroupPort, http_prefix,
-                          clientToServer, federationList,
+                          client_to_server, federationList,
                           aliceSendThreads, alicePostLog,
                           aliceCachedWebfingers, alicePersonCache,
                           True, __version__, signingPrivateKeyPem)
@@ -2249,7 +2249,7 @@ def testGroupFollow(base_dir: str) -> None:
     bobPostLog = []
     followersOnly = False
     saveToFile = True
-    clientToServer = False
+    client_to_server = False
     ccUrl = None
     bobPersonCache = {}
     bobCachedWebfingers = {}
@@ -2263,7 +2263,7 @@ def testGroupFollow(base_dir: str) -> None:
                           'bob', bobDomain, bobPort, http_prefix,
                           'testgroup', testgroupDomain, testgroupActor,
                           testgroupPort, http_prefix,
-                          clientToServer, federationList,
+                          client_to_server, federationList,
                           bobSendThreads, bobPostLog,
                           bobCachedWebfingers, bobPersonCache,
                           True, __version__, signingPrivateKeyPem)
@@ -2350,7 +2350,7 @@ def testGroupFollow(base_dir: str) -> None:
                  sessionAlice, aliceDir, 'alice', aliceDomain, alicePort,
                  'testgroup', testgroupDomain, testgroupPort, ccUrl,
                  http_prefix, "Alice group message", followersOnly,
-                 saveToFile, clientToServer, True,
+                 saveToFile, client_to_server, True,
                  None, None, None, city, federationList,
                  aliceSendThreads, alicePostLog, aliceCachedWebfingers,
                  alicePersonCache, isArticle, systemLanguage,
@@ -2676,7 +2676,7 @@ def _testCreatePerson(base_dir: str):
     password = 'mypass'
     port = 80
     http_prefix = 'https'
-    clientToServer = False
+    client_to_server = False
     base_dir = currDir + '/.tests_createperson'
     if os.path.isdir(base_dir):
         shutil.rmtree(base_dir, ignore_errors=False, onerror=None)
@@ -2711,7 +2711,7 @@ def _testCreatePerson(base_dir: str):
     low_bandwidth = True
     content_license_url = 'https://creativecommons.org/licenses/by/4.0'
     createPublicPost(base_dir, nickname, domain, port, http_prefix,
-                     content, followersOnly, saveToFile, clientToServer,
+                     content, followersOnly, saveToFile, client_to_server,
                      commentsEnabled, attachImageFilename, mediaType,
                      'Not suitable for Vogons', 'London, England',
                      testInReplyTo, testInReplyToAtomUri,
@@ -4236,7 +4236,7 @@ def _testReplyToPublicPost(base_dir: str) -> None:
     content = "@ninjarodent@rat.site This is a test."
     followersOnly = False
     saveToFile = False
-    clientToServer = False
+    client_to_server = False
     commentsEnabled = True
     attachImageFilename = None
     mediaType = None
@@ -4256,7 +4256,7 @@ def _testReplyToPublicPost(base_dir: str) -> None:
     reply = \
         createPublicPost(base_dir, nickname, domain, port, http_prefix,
                          content, followersOnly, saveToFile,
-                         clientToServer, commentsEnabled,
+                         client_to_server, commentsEnabled,
                          attachImageFilename, mediaType,
                          imageDescription, city, testInReplyTo,
                          testInReplyToAtomUri,
@@ -4781,7 +4781,7 @@ def _testLinksWithinPost(base_dir: str) -> None:
         'ftp://ftp.ncdc.noaa.gov/pub/data/ghcn/v4/\n\nhttps://libreserver.org'
     followersOnly = False
     saveToFile = False
-    clientToServer = False
+    client_to_server = False
     commentsEnabled = True
     attachImageFilename = None
     mediaType = None
@@ -4802,7 +4802,7 @@ def _testLinksWithinPost(base_dir: str) -> None:
     postJsonObject = \
         createPublicPost(base_dir, nickname, domain, port, http_prefix,
                          content, followersOnly, saveToFile,
-                         clientToServer, commentsEnabled,
+                         client_to_server, commentsEnabled,
                          attachImageFilename, mediaType,
                          imageDescription, city,
                          testInReplyTo, testInReplyToAtomUri,
@@ -5768,7 +5768,7 @@ def _testCanReplyTo(base_dir: str) -> None:
         'ftp://ftp.ncdc.noaa.gov/pub/data/ghcn/v4/\n\nhttps://libreserver.org'
     followersOnly = False
     saveToFile = False
-    clientToServer = False
+    client_to_server = False
     commentsEnabled = True
     attachImageFilename = None
     mediaType = None
@@ -5789,7 +5789,7 @@ def _testCanReplyTo(base_dir: str) -> None:
     postJsonObject = \
         createPublicPost(base_dir, nickname, domain, port, http_prefix,
                          content, followersOnly, saveToFile,
-                         clientToServer, commentsEnabled,
+                         client_to_server, commentsEnabled,
                          attachImageFilename, mediaType,
                          imageDescription, city,
                          testInReplyTo, testInReplyToAtomUri,

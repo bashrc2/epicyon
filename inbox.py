@@ -2830,7 +2830,7 @@ def _bounceDM(senderPostId: str, session, http_prefix: str,
     content = translate['DM bounce']
     followersOnly = False
     saveToFile = False
-    clientToServer = False
+    client_to_server = False
     commentsEnabled = False
     attachImageFilename = None
     mediaType = None
@@ -2847,7 +2847,7 @@ def _bounceDM(senderPostId: str, session, http_prefix: str,
     postJsonObject = \
         createDirectMessagePost(base_dir, nickname, domain, port,
                                 http_prefix, content, followersOnly,
-                                saveToFile, clientToServer,
+                                saveToFile, client_to_server,
                                 commentsEnabled,
                                 attachImageFilename, mediaType,
                                 imageDescription, city,

@@ -744,7 +744,7 @@ def followedAccountAccepts(session, base_dir: str, http_prefix: str,
               nicknameToFollow + '@' + domainToFollow +
               ' port ' + str(port) + ' to ' +
               acceptHandle + ' port ' + str(fromPort))
-    clientToServer = False
+    client_to_server = False
 
     if removeFollowActivity:
         # remove the follow request json
@@ -768,7 +768,7 @@ def followedAccountAccepts(session, base_dir: str, http_prefix: str,
     return sendSignedJson(acceptJson, session, base_dir,
                           nicknameToFollow, domainToFollow, port,
                           nickname, domain, fromPort, '',
-                          http_prefix, True, clientToServer,
+                          http_prefix, True, client_to_server,
                           federationList,
                           sendThreads, postLog, cachedWebfingers,
                           personCache, debug, project_version, None,
@@ -818,7 +818,7 @@ def followedAccountRejects(session, base_dir: str, http_prefix: str,
               nicknameToFollow + '@' + domainToFollow +
               ' port ' + str(port) + ' to ' +
               nickname + '@' + domain + ' port ' + str(fromPort))
-    clientToServer = False
+    client_to_server = False
     denyHandle = getFullDomain(nickname + '@' + domain, fromPort)
     groupAccount = False
     if hasGroupType(base_dir, personUrl, personCache):
@@ -836,7 +836,7 @@ def followedAccountRejects(session, base_dir: str, http_prefix: str,
     return sendSignedJson(rejectJson, session, base_dir,
                           nicknameToFollow, domainToFollow, port,
                           nickname, domain, fromPort, '',
-                          http_prefix, True, clientToServer,
+                          http_prefix, True, client_to_server,
                           federationList,
                           sendThreads, postLog, cachedWebfingers,
                           personCache, debug, project_version, None,
@@ -849,7 +849,7 @@ def sendFollowRequest(session, base_dir: str,
                       followNickname: str, followDomain: str,
                       followedActor: str,
                       followPort: int, followHttpPrefix: str,
-                      clientToServer: bool, federationList: [],
+                      client_to_server: bool, federationList: [],
                       sendThreads: [], postLog: [], cachedWebfingers: {},
                       personCache: {}, debug: bool,
                       project_version: str, signingPrivateKeyPem: str) -> {}:
@@ -928,7 +928,7 @@ def sendFollowRequest(session, base_dir: str,
     sendSignedJson(newFollowJson, session, base_dir, nickname, domain, port,
                    followNickname, followDomain, followPort,
                    'https://www.w3.org/ns/activitystreams#Public',
-                   http_prefix, True, clientToServer,
+                   http_prefix, True, client_to_server,
                    federationList,
                    sendThreads, postLog, cachedWebfingers, personCache,
                    debug, project_version, None, groupAccount,

@@ -1292,7 +1292,7 @@ if args.message:
     ccUrl = None
     sendMessage = args.message
     followersOnly = args.followersonly
-    clientToServer = args.client
+    client_to_server = args.client
     attachedImageDescription = args.imageDescription
     city = 'London, England'
     sendThreads = []

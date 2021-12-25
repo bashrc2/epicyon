@@ -1363,7 +1363,7 @@ def _createPostBase(base_dir: str,
                     nickname: str, domain: str, port: int,
                     toUrl: str, ccUrl: str, http_prefix: str, content: str,
                     followersOnly: bool, saveToFile: bool,
-                    clientToServer: bool, commentsEnabled: bool,
+                    client_to_server: bool, commentsEnabled: bool,
                     attachImageFilename: str,
                     mediaType: str, imageDescription: str, city: str,
                     isModerationReport: bool,
@@ -1506,7 +1506,7 @@ def _createPostBase(base_dir: str,
     if isArticle:
         postObjectType = 'Article'
 
-    if not clientToServer:
+    if not client_to_server:
         newPost = \
             _createPostS2S(base_dir, nickname, domain, port,
                            http_prefix, content, statusNumber,
@@ -1757,7 +1757,7 @@ def regenerateIndexForBox(base_dir: str,
 def createPublicPost(base_dir: str,
                      nickname: str, domain: str, port: int, http_prefix: str,
                      content: str, followersOnly: bool, saveToFile: bool,
-                     clientToServer: bool, commentsEnabled: bool,
+                     client_to_server: bool, commentsEnabled: bool,
                      attachImageFilename: str, mediaType: str,
                      imageDescription: str, city: str,
                      inReplyTo: str,
@@ -1788,7 +1788,7 @@ def createPublicPost(base_dir: str,
                            'https://www.w3.org/ns/activitystreams#Public',
                            localActor + '/followers',
                            http_prefix, content, followersOnly, saveToFile,
-                           clientToServer, commentsEnabled,
+                           client_to_server, commentsEnabled,
                            attachImageFilename, mediaType,
                            imageDescription, city,
                            isModerationReport, isArticle,
@@ -1836,7 +1836,7 @@ def _appendCitationsToBlogPost(base_dir: str,
 def createBlogPost(base_dir: str,
                    nickname: str, domain: str, port: int, http_prefix: str,
                    content: str, followersOnly: bool, saveToFile: bool,
-                   clientToServer: bool, commentsEnabled: bool,
+                   client_to_server: bool, commentsEnabled: bool,
                    attachImageFilename: str, mediaType: str,
                    imageDescription: str, city: str,
                    inReplyTo: str, inReplyToAtomUri: str,
@@ -1849,7 +1849,7 @@ def createBlogPost(base_dir: str,
         createPublicPost(base_dir,
                          nickname, domain, port, http_prefix,
                          content, followersOnly, saveToFile,
-                         clientToServer, commentsEnabled,
+                         client_to_server, commentsEnabled,
                          attachImageFilename, mediaType,
                          imageDescription, city,
                          inReplyTo, inReplyToAtomUri, subject,
@@ -1872,7 +1872,7 @@ def createNewsPost(base_dir: str,
                    subject: str, systemLanguage: str,
                    conversationId: str, low_bandwidth: bool,
                    content_license_url: str) -> {}:
-    clientToServer = False
+    client_to_server = False
     inReplyTo = None
     inReplyToAtomUri = None
     schedulePost = False
@@ -1883,7 +1883,7 @@ def createNewsPost(base_dir: str,
         createPublicPost(base_dir,
                          'news', domain, port, http_prefix,
                          content, followersOnly, saveToFile,
-                         clientToServer, False,
+                         client_to_server, False,
                          attachImageFilename, mediaType,
                          imageDescription, city,
                          inReplyTo, inReplyToAtomUri, subject,
@@ -1899,7 +1899,7 @@ def createQuestionPost(base_dir: str,
                        nickname: str, domain: str, port: int, http_prefix: str,
                        content: str, qOptions: [],
                        followersOnly: bool, saveToFile: bool,
-                       clientToServer: bool, commentsEnabled: bool,
+                       client_to_server: bool, commentsEnabled: bool,
                        attachImageFilename: str, mediaType: str,
                        imageDescription: str, city: str,
                        subject: str, durationDays: int,
@@ -1914,7 +1914,7 @@ def createQuestionPost(base_dir: str,
                         'https://www.w3.org/ns/activitystreams#Public',
                         localActor + '/followers',
                         http_prefix, content, followersOnly, saveToFile,
-                        clientToServer, commentsEnabled,
+                        client_to_server, commentsEnabled,
                         attachImageFilename, mediaType,
                         imageDescription, city,
                         False, False, None, None, subject,
@@ -1946,7 +1946,7 @@ def createQuestionPost(base_dir: str,
 def createUnlistedPost(base_dir: str,
                        nickname: str, domain: str, port: int, http_prefix: str,
                        content: str, followersOnly: bool, saveToFile: bool,
-                       clientToServer: bool, commentsEnabled: bool,
+                       client_to_server: bool, commentsEnabled: bool,
                        attachImageFilename: str, mediaType: str,
                        imageDescription: str, city: str,
                        inReplyTo: str, inReplyToAtomUri: str,
@@ -1963,7 +1963,7 @@ def createUnlistedPost(base_dir: str,
                            localActor + '/followers',
                            'https://www.w3.org/ns/activitystreams#Public',
                            http_prefix, content, followersOnly, saveToFile,
-                           clientToServer, commentsEnabled,
+                           client_to_server, commentsEnabled,
                            attachImageFilename, mediaType,
                            imageDescription, city,
                            False, False,
@@ -1980,7 +1980,7 @@ def createFollowersOnlyPost(base_dir: str,
                             http_prefix: str,
                             content: str, followersOnly: bool,
                             saveToFile: bool,
-                            clientToServer: bool, commentsEnabled: bool,
+                            client_to_server: bool, commentsEnabled: bool,
                             attachImageFilename: str, mediaType: str,
                             imageDescription: str, city: str,
                             inReplyTo: str,
@@ -1998,7 +1998,7 @@ def createFollowersOnlyPost(base_dir: str,
                            localActor + '/followers',
                            None,
                            http_prefix, content, followersOnly, saveToFile,
-                           clientToServer, commentsEnabled,
+                           client_to_server, commentsEnabled,
                            attachImageFilename, mediaType,
                            imageDescription, city,
                            False, False,
@@ -2049,7 +2049,7 @@ def createDirectMessagePost(base_dir: str,
                             nickname: str, domain: str, port: int,
                             http_prefix: str,
                             content: str, followersOnly: bool,
-                            saveToFile: bool, clientToServer: bool,
+                            saveToFile: bool, client_to_server: bool,
                             commentsEnabled: bool,
                             attachImageFilename: str, mediaType: str,
                             imageDescription: str, city: str,
@@ -2076,7 +2076,7 @@ def createDirectMessagePost(base_dir: str,
         _createPostBase(base_dir, nickname, domain, port,
                         postTo, postCc,
                         http_prefix, content, followersOnly, saveToFile,
-                        clientToServer, commentsEnabled,
+                        client_to_server, commentsEnabled,
                         attachImageFilename, mediaType,
                         imageDescription, city,
                         False, False,
@@ -2101,7 +2101,7 @@ def createDirectMessagePost(base_dir: str,
 def createReportPost(base_dir: str,
                      nickname: str, domain: str, port: int, http_prefix: str,
                      content: str, followersOnly: bool, saveToFile: bool,
-                     clientToServer: bool, commentsEnabled: bool,
+                     client_to_server: bool, commentsEnabled: bool,
                      attachImageFilename: str, mediaType: str,
                      imageDescription: str, city: str,
                      debug: bool, subject: str, systemLanguage: str,
@@ -2173,7 +2173,7 @@ def createReportPost(base_dir: str,
             _createPostBase(base_dir, nickname, domain, port,
                             toUrl, postCc,
                             http_prefix, content, followersOnly, saveToFile,
-                            clientToServer, commentsEnabled,
+                            client_to_server, commentsEnabled,
                             attachImageFilename, mediaType,
                             imageDescription, city,
                             True, False, None, None, subject,
@@ -2267,7 +2267,7 @@ def sendPost(signingPrivateKeyPem: str, project_version: str,
              session, base_dir: str, nickname: str, domain: str, port: int,
              toNickname: str, toDomain: str, toPort: int, cc: str,
              http_prefix: str, content: str, followersOnly: bool,
-             saveToFile: bool, clientToServer: bool,
+             saveToFile: bool, client_to_server: bool,
              commentsEnabled: bool,
              attachImageFilename: str, mediaType: str,
              imageDescription: str, city: str,
@@ -2304,7 +2304,7 @@ def sendPost(signingPrivateKeyPem: str, project_version: str,
               str(wfRequest))
         return 1
 
-    if not clientToServer:
+    if not client_to_server:
         postToBox = 'inbox'
     else:
         postToBox = 'outbox'
@@ -2333,7 +2333,7 @@ def sendPost(signingPrivateKeyPem: str, project_version: str,
     postJsonObject = \
         _createPostBase(base_dir, nickname, domain, port,
                         toPersonId, cc, http_prefix, content,
-                        followersOnly, saveToFile, clientToServer,
+                        followersOnly, saveToFile, client_to_server,
                         commentsEnabled,
                         attachImageFilename, mediaType,
                         imageDescription, city,
@@ -2483,7 +2483,7 @@ def sendPostViaServer(signingPrivateKeyPem: str, project_version: str,
     # Get the json for the c2s post, not saving anything to file
     # Note that base_dir is set to None
     saveToFile = False
-    clientToServer = True
+    client_to_server = True
     if toDomain.lower().endswith('public'):
         toPersonId = 'https://www.w3.org/ns/activitystreams#Public'
         cc = localActorUrl(http_prefix, fromNickname, fromDomainFull) + \
@@ -2502,7 +2502,7 @@ def sendPostViaServer(signingPrivateKeyPem: str, project_version: str,
         _createPostBase(base_dir,
                         fromNickname, fromDomain, fromPort,
                         toPersonId, cc, http_prefix, content,
-                        followersOnly, saveToFile, clientToServer,
+                        followersOnly, saveToFile, client_to_server,
                         commentsEnabled,
                         attachImageFilename, mediaType,
                         imageDescription, city,
@@ -2610,7 +2610,7 @@ def _addFollowersToPublicPost(postJsonObject: {}) -> None:
 def sendSignedJson(postJsonObject: {}, session, base_dir: str,
                    nickname: str, domain: str, port: int,
                    toNickname: str, toDomain: str, toPort: int, cc: str,
-                   http_prefix: str, saveToFile: bool, clientToServer: bool,
+                   http_prefix: str, saveToFile: bool, client_to_server: bool,
                    federationList: [],
                    sendThreads: [], postLog: [], cachedWebfingers: {},
                    personCache: {}, debug: bool, project_version: str,
@@ -2668,7 +2668,7 @@ def sendSignedJson(postJsonObject: {}, session, base_dir: str,
             print('DEBUG: webfinger for ' + handle +
                   ' failed with errors ' + str(wfRequest['errors']))
 
-    if not clientToServer:
+    if not client_to_server:
         postToBox = 'inbox'
     else:
         postToBox = 'outbox'
@@ -2944,7 +2944,7 @@ def _sendToNamedAddresses(session, base_dir: str,
         print('DEBUG: Sending individually addressed posts: ' +
               str(recipients))
     # this is after the message has arrived at the server
-    clientToServer = False
+    client_to_server = False
     for address in recipients:
         toNickname = getNicknameFromActor(address)
         if not toNickname:
@@ -2999,7 +2999,7 @@ def _sendToNamedAddresses(session, base_dir: str,
         sendSignedJson(postJsonObject, session, base_dir,
                        nickname, fromDomain, port,
                        toNickname, toDomain, toPort,
-                       cc, fromHttpPrefix, True, clientToServer,
+                       cc, fromHttpPrefix, True, client_to_server,
                        federationList,
                        sendThreads, postLog, cachedWebfingers,
                        personCache, debug, project_version,
@@ -3117,7 +3117,7 @@ def sendToFollowers(session, base_dir: str,
     # print(str(grouped))
 
     # this is after the message has arrived at the server
-    clientToServer = False
+    client_to_server = False
 
     # for each instance
     sendingStartTime = datetime.datetime.utcnow()
@@ -3209,7 +3209,7 @@ def sendToFollowers(session, base_dir: str,
             sendSignedJson(postJsonObject, session, base_dir,
                            nickname, fromDomain, port,
                            toNickname, toDomain, toPort,
-                           cc, fromHttpPrefix, True, clientToServer,
+                           cc, fromHttpPrefix, True, client_to_server,
                            federationList,
                            sendThreads, postLog, cachedWebfingers,
                            personCache, debug, project_version,
@@ -3238,7 +3238,7 @@ def sendToFollowers(session, base_dir: str,
                 sendSignedJson(postJsonObject, session, base_dir,
                                nickname, fromDomain, port,
                                toNickname, toDomain, toPort,
-                               cc, fromHttpPrefix, True, clientToServer,
+                               cc, fromHttpPrefix, True, client_to_server,
                                federationList,
                                sendThreads, postLog, cachedWebfingers,
                                personCache, debug, project_version,

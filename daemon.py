@@ -16683,7 +16683,7 @@ class PubServer(BaseHTTPRequestHandler):
                 # submit button on newblog screen
                 followersOnly = False
                 saveToFile = False
-                clientToServer = False
+                client_to_server = False
                 city = None
                 conversationId = None
                 if fields.get('conversationId'):
@@ -16694,7 +16694,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.http_prefix,
                                    fields['message'],
                                    followersOnly, saveToFile,
-                                   clientToServer, commentsEnabled,
+                                   client_to_server, commentsEnabled,
                                    filename, attachmentMediaType,
                                    fields['imageDescription'],
                                    city,
@@ -16831,7 +16831,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.domain)
                 followersOnly = False
                 saveToFile = False
-                clientToServer = False
+                client_to_server = False
 
                 conversationId = None
                 if fields.get('conversationId'):
@@ -16844,7 +16844,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.http_prefix,
                                        mentionsStr + fields['message'],
                                        followersOnly, saveToFile,
-                                       clientToServer, commentsEnabled,
+                                       client_to_server, commentsEnabled,
                                        filename, attachmentMediaType,
                                        fields['imageDescription'],
                                        city,
@@ -16881,7 +16881,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.domain)
                 followersOnly = True
                 saveToFile = False
-                clientToServer = False
+                client_to_server = False
 
                 conversationId = None
                 if fields.get('conversationId'):
@@ -16895,7 +16895,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.http_prefix,
                                             mentionsStr + fields['message'],
                                             followersOnly, saveToFile,
-                                            clientToServer,
+                                            client_to_server,
                                             commentsEnabled,
                                             filename, attachmentMediaType,
                                             fields['imageDescription'],
@@ -16936,7 +16936,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.domain)
                     followersOnly = True
                     saveToFile = False
-                    clientToServer = False
+                    client_to_server = False
 
                     conversationId = None
                     if fields.get('conversationId'):
@@ -16952,7 +16952,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                 mentionsStr +
                                                 fields['message'],
                                                 followersOnly, saveToFile,
-                                                clientToServer,
+                                                client_to_server,
                                                 commentsEnabled,
                                                 filename, attachmentMediaType,
                                                 fields['imageDescription'],
@@ -16997,7 +16997,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.domain)
                 followersOnly = True
                 saveToFile = False
-                clientToServer = False
+                client_to_server = False
                 commentsEnabled = False
                 conversationId = None
                 messageJson = \
@@ -17008,7 +17008,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.http_prefix,
                                             mentionsStr + fields['message'],
                                             followersOnly, saveToFile,
-                                            clientToServer, commentsEnabled,
+                                            client_to_server, commentsEnabled,
                                             filename, attachmentMediaType,
                                             fields['imageDescription'],
                                             city,
@@ -18456,7 +18456,7 @@ def runDaemon(content_license_url: str,
               max_recent_posts: int,
               enable_shared_inbox: bool, registration: bool,
               language: str, project_version: str,
-              instance_id: str, clientToServer: bool,
+              instance_id: str, client_to_server: bool,
               base_dir: str, domain: str,
               onionDomain: str, i2pDomain: str,
               yt_replace_domain: str,
@@ -18998,7 +18998,7 @@ def runDaemon(content_license_url: str,
         print('Starting federated shares daemon')
         httpd.thrFederatedSharesDaemon.start()
 
-    if clientToServer:
+    if client_to_server:
         print('Running ActivityPub client on ' +
               domain + ' port ' + str(proxyPort))
     else:
