@@ -1582,8 +1582,8 @@ class PubServer(BaseHTTPRequestHandler):
                 tokenStr = self.headers['Cookie'].split('=', 1)[1].strip()
                 if ';' in tokenStr:
                     tokenStr = tokenStr.split(';')[0].strip()
-                if self.server.tokensLookup.get(tokenStr):
-                    nickname = self.server.tokensLookup[tokenStr]
+                if self.server.tokens_lookup.get(tokenStr):
+                    nickname = self.server.tokens_lookup[tokenStr]
                     if not isSystemAccount(nickname):
                         self.authorizedNickname = nickname
                         # default to the inbox of the person
@@ -1606,7 +1606,7 @@ class PubServer(BaseHTTPRequestHandler):
                       'authorization failed, header=' +
                       self.headers['Cookie'].replace('epicyon=', '') +
                       ' tokenStr=' + tokenStr + ' tokens=' +
-                      str(self.server.tokensLookup))
+                      str(self.server.tokens_lookup))
                 return False
             print('AUTH: Header cookie was not authorized')
             return False
@@ -1625,7 +1625,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         # remove any token
         if self.server.tokens.get(nickname):
-            del self.server.tokensLookup[self.server.tokens[nickname]]
+            del self.server.tokens_lookup[self.server.tokens[nickname]]
             del self.server.tokens[nickname]
         self._redirect_headers(self.server.http_prefix + '://' +
                                self.server.domainFull + '/login',
@@ -1802,7 +1802,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    loginHandle + '.json')
 
                 index = self.server.tokens[loginNickname]
-                self.server.tokensLookup[index] = loginNickname
+                self.server.tokens_lookup[index] = loginNickname
                 cookieStr = 'SET:epicyon=' + \
                     self.server.tokens[loginNickname] + '; SameSite=Strict'
                 if callingDomain.endswith('.onion') and onion_domain:
@@ -18408,7 +18408,7 @@ def runSharesExpireWatchdog(project_version: str, httpd) -> None:
         print('Restarting shares expiry...')
 
 
-def loadTokens(base_dir: str, tokensDict: {}, tokensLookup: {}) -> None:
+def loadTokens(base_dir: str, tokensDict: {}, tokens_lookup: {}) -> None:
     for subdir, dirs, files in os.walk(base_dir + '/accounts'):
         for handle in dirs:
             if '@' in handle:
@@ -18426,7 +18426,7 @@ def loadTokens(base_dir: str, tokensDict: {}, tokensLookup: {}) -> None:
                 if not token:
                     continue
                 tokensDict[nickname] = token
-                tokensLookup[token] = nickname
+                tokens_lookup[token] = nickname
         break
 
 
@@ -18761,8 +18761,8 @@ def runDaemon(content_license_url: str,
     httpd.log_login_failures = log_login_failures
     httpd.max_replies = max_replies
     httpd.tokens = {}
-    httpd.tokensLookup = {}
-    loadTokens(base_dir, httpd.tokens, httpd.tokensLookup)
+    httpd.tokens_lookup = {}
+    loadTokens(base_dir, httpd.tokens, httpd.tokens_lookup)
     httpd.instance_only_skills_search = instance_only_skills_search
     # contains threads used to send posts to followers
     httpd.followersThreads = []
