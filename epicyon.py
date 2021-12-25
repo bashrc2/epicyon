@@ -383,7 +383,7 @@ parser.add_argument("--brochMode",
                     const=True, default=False,
                     help="Enable broch mode")
 parser.add_argument("--nodeinfoaccounts",
-                    dest='showNodeInfoAccounts',
+                    dest='show_node_info_accounts',
                     type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Show numbers of accounts within nodeinfo metadata")
@@ -3123,10 +3123,10 @@ log_login_failures = \
 if log_login_failures is not None:
     args.log_login_failures = bool(log_login_failures)
 
-showNodeInfoAccounts = \
-    getConfigParam(base_dir, 'showNodeInfoAccounts')
-if showNodeInfoAccounts is not None:
-    args.showNodeInfoAccounts = bool(showNodeInfoAccounts)
+show_node_info_accounts = \
+    getConfigParam(base_dir, 'show_node_info_accounts')
+if show_node_info_accounts is not None:
+    args.show_node_info_accounts = bool(show_node_info_accounts)
 
 showNodeInfoVersion = \
     getConfigParam(base_dir, 'showNodeInfoVersion')
@@ -3218,7 +3218,7 @@ if __name__ == "__main__":
               user_agents_blocked,
               args.log_login_failures,
               args.city,
-              args.showNodeInfoAccounts,
+              args.show_node_info_accounts,
               args.showNodeInfoVersion,
               args.brochMode,
               args.verifyAllSignatures,

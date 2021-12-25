@@ -93,7 +93,7 @@ def mastoApiV1Response(path: str, callingDomain: str,
                        systemLanguage: str,
                        projectVersion: str,
                        customEmoji: [],
-                       showNodeInfoAccounts: bool,
+                       show_node_info_accounts: bool,
                        brochMode: bool) -> ({}, str):
     """This is a vestigil mastodon API for the purpose
        of returning an empty result to sites like
@@ -216,10 +216,10 @@ def mastoApiV1Response(path: str, callingDomain: str,
             http_prefix = 'http'
 
         if brochMode:
-            showNodeInfoAccounts = False
+            show_node_info_accounts = False
 
         sendJson = \
-            metaDataInstance(showNodeInfoAccounts,
+            metaDataInstance(show_node_info_accounts,
                              instanceTitle,
                              instanceDescriptionShort,
                              instanceDescription,

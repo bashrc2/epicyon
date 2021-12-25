@@ -1049,7 +1049,7 @@ class PubServer(BaseHTTPRequestHandler):
                     systemLanguage: str,
                     projectVersion: str,
                     customEmoji: [],
-                    showNodeInfoAccounts: bool) -> bool:
+                    show_node_info_accounts: bool) -> bool:
         """This is a vestigil mastodon API for the purpose
         of returning an empty result to sites like
         https://mastopeek.app-dist.eu
@@ -1077,7 +1077,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                    systemLanguage,
                                                    projectVersion,
                                                    customEmoji,
-                                                   showNodeInfoAccounts,
+                                                   show_node_info_accounts,
                                                    brochMode)
 
         if sendJson is not None:
@@ -1113,13 +1113,13 @@ class PubServer(BaseHTTPRequestHandler):
                   systemLanguage: str,
                   projectVersion: str,
                   customEmoji: [],
-                  showNodeInfoAccounts: bool) -> bool:
+                  show_node_info_accounts: bool) -> bool:
         return self._mastoApiV1(path, callingDomain, uaStr, authorized,
                                 http_prefix, base_dir, nickname, domain,
                                 domainFull, onionDomain, i2pDomain,
                                 translate, registration, systemLanguage,
                                 projectVersion, customEmoji,
-                                showNodeInfoAccounts)
+                                show_node_info_accounts)
 
     def _nodeinfo(self, uaStr: str, callingDomain: str) -> bool:
         if not self.path.startswith('/nodeinfo/2.0'):
@@ -1139,9 +1139,9 @@ class PubServer(BaseHTTPRequestHandler):
         if not self.server.showNodeInfoVersion or brochMode:
             nodeInfoVersion = '0.0.0'
 
-        showNodeInfoAccounts = self.server.showNodeInfoAccounts
+        show_node_info_accounts = self.server.show_node_info_accounts
         if brochMode:
-            showNodeInfoAccounts = False
+            show_node_info_accounts = False
 
         instanceUrl = self._getInstanceUrl(callingDomain)
         aboutUrl = instanceUrl + '/about'
@@ -1150,7 +1150,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 aboutUrl, termsOfServiceUrl,
                                 self.server.registration,
                                 nodeInfoVersion,
-                                showNodeInfoAccounts)
+                                show_node_info_accounts)
         if info:
             msg = json.dumps(info).encode('utf-8')
             msglen = len(msg)
@@ -5544,14 +5544,14 @@ class PubServer(BaseHTTPRequestHandler):
                         # on all incoming posts
                         if path.startswith('/users/' +
                                            adminNickname + '/'):
-                            showNodeInfoAccounts = False
-                            if fields.get('showNodeInfoAccounts'):
-                                if fields['showNodeInfoAccounts'] == 'on':
-                                    showNodeInfoAccounts = True
-                            self.server.showNodeInfoAccounts = \
-                                showNodeInfoAccounts
-                            setConfigParam(base_dir, "showNodeInfoAccounts",
-                                           showNodeInfoAccounts)
+                            show_node_info_accounts = False
+                            if fields.get('show_node_info_accounts'):
+                                if fields['show_node_info_accounts'] == 'on':
+                                    show_node_info_accounts = True
+                            self.server.show_node_info_accounts = \
+                                show_node_info_accounts
+                            setConfigParam(base_dir, "show_node_info_accounts",
+                                           show_node_info_accounts)
 
                             showNodeInfoVersion = False
                             if fields.get('showNodeInfoVersion'):
@@ -13672,7 +13672,7 @@ class PubServer(BaseHTTPRequestHandler):
                           self.server.systemLanguage,
                           self.server.projectVersion,
                           self.server.customEmoji,
-                          self.server.showNodeInfoAccounts):
+                          self.server.show_node_info_accounts):
             return
 
         fitnessPerformance(GETstartTime, self.server.fitness,
@@ -18409,7 +18409,7 @@ def runDaemon(content_license_url: str,
               user_agents_blocked: [],
               log_login_failures: bool,
               city: str,
-              showNodeInfoAccounts: bool,
+              show_node_info_accounts: bool,
               showNodeInfoVersion: bool,
               brochMode: bool,
               verifyAllSignatures: bool,
@@ -18503,7 +18503,7 @@ def runDaemon(content_license_url: str,
     # initialize authorized fetch key
     httpd.signingPrivateKeyPem = None
 
-    httpd.showNodeInfoAccounts = showNodeInfoAccounts
+    httpd.show_node_info_accounts = show_node_info_accounts
     httpd.showNodeInfoVersion = showNodeInfoVersion
 
     # ASCII/ANSI text banner used in shell browsers, such as Lynx

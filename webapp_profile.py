@@ -1349,12 +1349,12 @@ def _htmlEditProfileInstance(base_dir: str, translate: {},
 
     nodeInfoStr = \
         translate['Show numbers of accounts within instance metadata']
-    if getConfigParam(base_dir, "showNodeInfoAccounts"):
+    if getConfigParam(base_dir, "show_node_info_accounts"):
         instanceStr += \
-            editCheckBox(nodeInfoStr, 'showNodeInfoAccounts', True)
+            editCheckBox(nodeInfoStr, 'show_node_info_accounts', True)
     else:
         instanceStr += \
-            editCheckBox(nodeInfoStr, 'showNodeInfoAccounts', False)
+            editCheckBox(nodeInfoStr, 'show_node_info_accounts', False)
 
     nodeInfoStr = \
         translate['Show version number within instance metadata']
