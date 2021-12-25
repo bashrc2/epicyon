@@ -1196,9 +1196,9 @@ def followPerson(baseDir: str, nickname: str, domain: str,
                     f.seek(0, 0)
                     f.write(handleToFollow + '\n' + content)
                     print('DEBUG: follow added')
-        except Exception as e:
+        except Exception as ex:
             print('WARN: Failed to write entry to follow file ' +
-                  filename + ' ' + str(e))
+                  filename + ' ' + str(ex))
     else:
         # first follow
         if debug:

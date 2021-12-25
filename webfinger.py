@@ -94,8 +94,8 @@ def webfingerHandle(session, handle: str, httpPrefix: str,
         result = \
             getJson(signingPrivateKeyPem, session, url, hdr, par,
                     debug, projectVersion, httpPrefix, fromDomain)
-    except Exception as e:
-        print('ERROR: webfingerHandle ' + str(e))
+    except Exception as ex:
+        print('ERROR: webfingerHandle ' + str(ex))
         return None
 
     if result:

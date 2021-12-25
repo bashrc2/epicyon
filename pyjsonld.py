@@ -439,8 +439,8 @@ def load_document(url):
             }
             return doc
         return None
-    except JsonLdError as e:
-        raise e
+    except JsonLdError as ex:
+        raise ex
     except Exception as cause:
         raise JsonLdError(
             'Could not retrieve a JSON-LD document from the URL.',

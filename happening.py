@@ -104,9 +104,9 @@ def saveEventPost(baseDir: str, handle: str, postId: str,
                     if eventId + '\n' not in content:
                         tlEventsFile.seek(0, 0)
                         tlEventsFile.write(eventId + '\n' + content)
-            except OSError as e:
+            except OSError as ex:
                 print('EX: Failed to write entry to events file ' +
-                      tlEventsFilename + ' ' + str(e))
+                      tlEventsFilename + ' ' + str(ex))
                 return False
         else:
             try:

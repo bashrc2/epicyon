@@ -262,8 +262,8 @@ def _saveIndividualPostAsHtmlToCache(baseDir: str,
         with open(cachedPostFilename, 'w+') as fp:
             fp.write(postHtml)
             return True
-    except Exception as e:
-        print('ERROR: saving post to cache, ' + str(e))
+    except Exception as ex:
+        print('ERROR: saving post to cache, ' + str(ex))
     return False
 
 

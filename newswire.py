@@ -903,19 +903,19 @@ def getRSS(baseDir: str, domain: str, session, url: str,
                       'or contains invalid characters: ' + url)
         else:
             print('WARN: no result returned for feed ' + url)
-    except requests.exceptions.RequestException as e:
+    except requests.exceptions.RequestException as ex:
         print('WARN: getRSS failed\nurl: ' + str(url) + ', ' +
               'headers: ' + str(sessionHeaders) + ', ' +
-              'params: ' + str(sessionParams) + ', ' + str(e))
-    except ValueError as e:
+              'params: ' + str(sessionParams) + ', ' + str(ex))
+    except ValueError as ex:
         print('WARN: getRSS failed\nurl: ' + str(url) + ', ' +
               'headers: ' + str(sessionHeaders) + ', ' +
-              'params: ' + str(sessionParams) + ', ' + str(e))
-    except SocketError as e:
-        if e.errno == errno.ECONNRESET:
-            print('WARN: connection was reset during getRSS ' + str(e))
+              'params: ' + str(sessionParams) + ', ' + str(ex))
+    except SocketError as ex:
+        if ex.errno == errno.ECONNRESET:
+            print('WARN: connection was reset during getRSS ' + str(ex))
         else:
-            print('WARN: getRSS, ' + str(e))
+            print('WARN: getRSS, ' + str(ex))
     return None
 
 
@@ -940,8 +940,8 @@ def getRSSfromDict(baseDir: str, newswire: {},
             published = publishedWithOffset.strftime("%Y-%m-%dT%H:%M:%SZ")
         try:
             pubDate = datetime.strptime(published, "%Y-%m-%dT%H:%M:%SZ")
-        except Exception as e:
-            print('WARN: Unable to convert date ' + published + ' ' + str(e))
+        except Exception as ex:
+            print('WARN: Unable to convert date ' + published + ' ' + str(ex))
             continue
         rssStr += \
             '<item>\n' + \

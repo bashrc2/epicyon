@@ -175,9 +175,9 @@ def storeBasicCredentials(baseDir: str, nickname: str, password: str) -> bool:
                                 fout.write(line)
                             else:
                                 fout.write(storeStr + '\n')
-            except OSError as e:
+            except OSError as ex:
                 print('EX: unable to save password ' + passwordFile +
-                      ' ' + str(e))
+                      ' ' + str(ex))
                 return False
 
             try:
@@ -215,8 +215,8 @@ def removePassword(baseDir: str, nickname: str) -> None:
                     for line in fin:
                         if not line.startswith(nickname + ':'):
                             fout.write(line)
-        except OSError as e:
-            print('EX: unable to remove password from file ' + str(e))
+        except OSError as ex:
+            print('EX: unable to remove password from file ' + str(ex))
             return
 
         try:

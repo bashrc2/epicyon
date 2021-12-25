@@ -63,8 +63,8 @@ def removeFilter(baseDir: str, nickname: str, domain: str,
                     line = line.replace('\n', '')
                     if line != words:
                         fpnew.write(line + '\n')
-    except OSError as e:
-        print('EX: unable to remove filter ' + filtersFilename + ' ' + str(e))
+    except OSError as ex:
+        print('EX: unable to remove filter ' + filtersFilename + ' ' + str(ex))
     if os.path.isfile(newFiltersFilename):
         os.rename(newFiltersFilename, filtersFilename)
         return True
@@ -87,9 +87,9 @@ def removeGlobalFilter(baseDir: str, words: str) -> bool:
                     line = line.replace('\n', '')
                     if line != words:
                         fpnew.write(line + '\n')
-    except OSError as e:
+    except OSError as ex:
         print('EX: unable to remove global filter ' +
-              filtersFilename + ' ' + str(e))
+              filtersFilename + ' ' + str(ex))
     if os.path.isfile(newFiltersFilename):
         os.rename(newFiltersFilename, filtersFilename)
         return True
@@ -130,8 +130,8 @@ def _isFilteredBase(filename: str, content: str) -> bool:
                         if word not in content:
                             return False
                     return True
-    except OSError as e:
-        print('EX: _isFilteredBase ' + filename + ' ' + str(e))
+    except OSError as ex:
+        print('EX: _isFilteredBase ' + filename + ' ' + str(ex))
     return False
 
 

@@ -1043,9 +1043,9 @@ def reenableAccount(baseDir: str, nickname: str) -> None:
                 for suspended in lines:
                     if suspended.strip('\n').strip('\r') != nickname:
                         suspendedFile.write(suspended)
-        except OSError as e:
+        except OSError as ex:
             print('EX: unable to save ' + suspendedFilename +
-                  ' ' + str(e))
+                  ' ' + str(ex))
 
 
 def suspendAccount(baseDir: str, nickname: str, domain: str) -> None:

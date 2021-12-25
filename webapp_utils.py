@@ -292,9 +292,9 @@ def updateAvatarImageCache(signingPrivateKeyPem: str,
                     if debug:
                         print('avatar image downloaded for ' + actor)
                     return avatarImageFilename.replace(baseDir + '/cache', '')
-        except Exception as e:
+        except Exception as ex:
             print('EX: Failed to download avatar image: ' +
-                  str(avatarUrl) + ' ' + str(e))
+                  str(avatarUrl) + ' ' + str(ex))
         prof = 'https://www.w3.org/ns/activitystreams'
         if '/channel/' not in actor or '/accounts/' not in actor:
             sessionHeaders = {
@@ -879,9 +879,9 @@ def loadIndividualPostAsHtmlFromCache(baseDir: str,
             with open(cachedPostFilename, 'r') as file:
                 postHtml = file.read()
                 break
-        except Exception as e:
+        except Exception as ex:
             print('ERROR: loadIndividualPostAsHtmlFromCache ' +
-                  str(tries) + ' ' + str(e))
+                  str(tries) + ' ' + str(ex))
             # no sleep
             tries += 1
     if postHtml:

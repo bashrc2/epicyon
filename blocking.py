@@ -157,9 +157,9 @@ def removeGlobalBlock(baseDir: str,
                                     line.replace('\n', '').replace('\r', '')
                                 if unblockHandle not in line:
                                     fpnew.write(handle + '\n')
-                except OSError as e:
+                except OSError as ex:
                     print('EX: failed to remove global block ' +
-                          unblockingFilename + ' ' + str(e))
+                          unblockingFilename + ' ' + str(ex))
                     return False
 
                 if os.path.isfile(unblockingFilename + '.new'):
@@ -182,9 +182,9 @@ def removeGlobalBlock(baseDir: str,
                                     line.replace('\n', '').replace('\r', '')
                                 if unblockHashtag not in line:
                                     fpnew.write(blockLine + '\n')
-                except OSError as e:
+                except OSError as ex:
                     print('EX: failed to remove global hashtag block ' +
-                          unblockingFilename + ' ' + str(e))
+                          unblockingFilename + ' ' + str(ex))
                     return False
 
                 if os.path.isfile(unblockingFilename + '.new'):
@@ -214,9 +214,9 @@ def removeBlock(baseDir: str, nickname: str, domain: str,
                             handle = line.replace('\n', '').replace('\r', '')
                             if unblockHandle not in line:
                                 fpnew.write(handle + '\n')
-            except OSError as e:
+            except OSError as ex:
                 print('EX: failed to remove block ' +
-                      unblockingFilename + ' ' + str(e))
+                      unblockingFilename + ' ' + str(ex))
                 return False
 
             if os.path.isfile(unblockingFilename + '.new'):
@@ -291,8 +291,8 @@ def updateBlockedCache(baseDir: str,
             # update the cache
             blockedCache.clear()
             blockedCache += blockedLines
-    except OSError as e:
-        print('EX: unable to read ' + globalBlockingFilename + ' ' + str(e))
+    except OSError as ex:
+        print('EX: unable to read ' + globalBlockingFilename + ' ' + str(ex))
     return currTime
 
 
@@ -340,9 +340,9 @@ def isBlockedDomain(baseDir: str, domain: str,
                         if shortDomain:
                             if '*@' + shortDomain in blockedStr:
                                 return True
-                except OSError as e:
+                except OSError as ex:
                     print('EX: unable to read ' + globalBlockingFilename +
-                          ' ' + str(e))
+                          ' ' + str(ex))
     else:
         allowFilename = baseDir + '/accounts/allowedinstances.txt'
         # instance allow list
@@ -927,9 +927,9 @@ def setBrochMode(baseDir: str, domainFull: str, enabled: bool) -> None:
                                 handleDomain = handle.split('@')[1]
                                 if handleDomain not in allowedDomains:
                                     allowedDomains.append(handleDomain)
-                    except OSError as e:
+                    except OSError as ex:
                         print('EX: failed to read ' + followingFilename +
-                              ' ' + str(e))
+                              ' ' + str(ex))
             break
 
         # write the allow file
@@ -939,8 +939,8 @@ def setBrochMode(baseDir: str, domainFull: str, enabled: bool) -> None:
                 for d in allowedDomains:
                     allowFile.write(d + '\n')
                 print('Broch mode enabled')
-        except OSError as e:
-            print('EX: Broch mode not enabled due to file write ' + str(e))
+        except OSError as ex:
+            print('EX: Broch mode not enabled due to file write ' + str(ex))
             return
 
     setConfigParam(baseDir, "brochMode", enabled)

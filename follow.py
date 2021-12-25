@@ -139,9 +139,9 @@ def _removeFromFollowBase(baseDir: str,
                     for approveHandle in approvefile:
                         if acceptDenyActor not in approveHandle:
                             approvefilenew.write(approveHandle)
-    except OSError as e:
+    except OSError as ex:
         print('EX: _removeFromFollowBase ' +
-              approveFollowsFilename + ' ' + str(e))
+              approveFollowsFilename + ' ' + str(ex))
 
     os.rename(approveFollowsFilename + '.new', approveFollowsFilename)
 
@@ -322,8 +322,8 @@ def unfollowAccount(baseDir: str, nickname: str, domain: str,
                     if checkHandle != handleToUnfollowLower and \
                        checkHandle != '!' + handleToUnfollowLower:
                         f.write(line)
-        except OSError as e:
-            print('EX: unable to write ' + filename + ' ' + str(e))
+        except OSError as ex:
+            print('EX: unable to write ' + filename + ' ' + str(ex))
 
     # write to an unfollowed file so that if a follow accept
     # later arrives then it can be ignored

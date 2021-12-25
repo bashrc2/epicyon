@@ -171,9 +171,9 @@ def setHashtagCategory(baseDir: str, hashtag: str, category: str,
         with open(categoryFilename, 'w+') as fp:
             fp.write(category)
             categoryWritten = True
-    except OSError as e:
+    except OSError as ex:
         print('EX: unable to write category ' + categoryFilename +
-              ' ' + str(e))
+              ' ' + str(ex))
 
     if categoryWritten:
         if update:

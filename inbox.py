@@ -258,9 +258,9 @@ def storeHashTags(baseDir: str, nickname: str, domain: str,
                         if tagline not in content:
                             tagsFile.seek(0, 0)
                             tagsFile.write(tagline + content)
-                except OSError as e:
+                except OSError as ex:
                     print('EX: Failed to write entry to tags file ' +
-                          tagsFilename + ' ' + str(e))
+                          tagsFilename + ' ' + str(ex))
                 removeOldHashtags(baseDir, 3)
 
         # automatically assign a category to the tag if possible
@@ -2740,15 +2740,15 @@ def inboxUpdateIndex(boxname: str, baseDir: str, handle: str,
                     indexFile.write(destinationFilename + '\n' + content)
                 written = True
                 return True
-        except OSError as e:
-            print('EX: Failed to write entry to index ' + str(e))
+        except OSError as ex:
+            print('EX: Failed to write entry to index ' + str(ex))
     else:
         try:
             with open(indexFilename, 'w+') as indexFile:
                 indexFile.write(destinationFilename + '\n')
                 written = True
-        except OSError as e:
-            print('EX: Failed to write initial entry to index ' + str(e))
+        except OSError as ex:
+            print('EX: Failed to write initial entry to index ' + str(ex))
 
     return written
 
@@ -4035,10 +4035,10 @@ def _receiveFollowRequest(session, baseDir: str, httpPrefix: str,
                                 else:
                                     followersFile.write('!' + approveHandle +
                                                         '\n' + content)
-                    except Exception as e:
+                    except Exception as ex:
                         print('WARN: ' +
                               'Failed to write entry to followers file ' +
-                              str(e))
+                              str(ex))
             else:
                 try:
                     with open(followersFilename, 'w+') as followersFile:

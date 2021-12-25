@@ -901,8 +901,8 @@ def deleteAllPosts(baseDir: str,
                 os.unlink(filePath)
             elif os.path.isdir(filePath):
                 shutil.rmtree(filePath, ignore_errors=False, onerror=None)
-        except Exception as e:
-            print('ERROR: deleteAllPosts ' + str(e))
+        except Exception as ex:
+            print('ERROR: deleteAllPosts ' + str(ex))
 
 
 def savePostToBox(baseDir: str, httpPrefix: str, postId: str,
@@ -963,9 +963,9 @@ def _updateHashtagsIndex(baseDir: str, tag: {}, newPostId: str) -> None:
                     if tagline not in content:
                         tagsFile.seek(0, 0)
                         tagsFile.write(tagline + content)
-            except Exception as e:
+            except Exception as ex:
                 print('WARN: Failed to write entry to tags file ' +
-                      tagsFilename + ' ' + str(e))
+                      tagsFilename + ' ' + str(ex))
 
 
 def _addSchedulePost(baseDir: str, nickname: str, domain: str,
@@ -985,9 +985,9 @@ def _addSchedulePost(baseDir: str, nickname: str, domain: str,
                         scheduleFile.seek(0, 0)
                         scheduleFile.write(indexStr + '\n' + content)
                         print('DEBUG: scheduled post added to index')
-            except Exception as e:
+            except Exception as ex:
                 print('WARN: Failed to write entry to scheduled posts index ' +
-                      scheduleIndexFilename + ' ' + str(e))
+                      scheduleIndexFilename + ' ' + str(ex))
     else:
         with open(scheduleIndexFilename, 'w+') as scheduleFile:
             scheduleFile.write(indexStr + '\n')
@@ -2223,8 +2223,8 @@ def threadSendPost(session, postJsonStr: str, federationList: [],
             if debug:
                 print('Obtained postJsonString for ' + inboxUrl +
                       ' unauthorized: ' + str(unauthorized))
-        except Exception as e:
-            print('ERROR: postJsonString failed ' + str(e))
+        except Exception as ex:
+            print('ERROR: postJsonString failed ' + str(ex))
         if unauthorized:
             print('WARN: threadSendPost: Post is unauthorized ' +
                   inboxUrl + ' ' + postJsonStr)
@@ -2358,8 +2358,8 @@ def sendPost(signingPrivateKeyPem: str, projectVersion: str,
             signedPostJsonObject = postJsonObject.copy()
             generateJsonSignature(signedPostJsonObject, privateKeyPem)
             postJsonObject = signedPostJsonObject
-        except Exception as e:
-            print('WARN: failed to JSON-LD sign post, ' + str(e))
+        except Exception as ex:
+            print('WARN: failed to JSON-LD sign post, ' + str(ex))
             pass
 
     # convert json to string so that there are no
@@ -2729,8 +2729,8 @@ def sendSignedJson(postJsonObject: {}, session, baseDir: str,
             signedPostJsonObject = postJsonObject.copy()
             generateJsonSignature(signedPostJsonObject, privateKeyPem)
             postJsonObject = signedPostJsonObject
-        except Exception as e:
-            print('WARN: failed to JSON-LD sign post, ' + str(e))
+        except Exception as ex:
+            print('WARN: failed to JSON-LD sign post, ' + str(ex))
             pass
 
     # convert json to string so that there are no
@@ -3033,13 +3033,13 @@ def sendToNamedAddressesThread(session, baseDir: str,
                               signingPrivateKeyPem), daemon=True)
     try:
         sendThread.start()
-    except SocketError as e:
+    except SocketError as ex:
         print('WARN: socket error while starting ' +
-              'thread to send to named addresses. ' + str(e))
+              'thread to send to named addresses. ' + str(ex))
         return None
-    except ValueError as e:
+    except ValueError as ex:
         print('WARN: error while starting ' +
-              'thread to send to named addresses. ' + str(e))
+              'thread to send to named addresses. ' + str(ex))
         return None
     return sendThread
 
@@ -3282,13 +3282,13 @@ def sendToFollowersThread(session, baseDir: str,
                               signingPrivateKeyPem), daemon=True)
     try:
         sendThread.start()
-    except SocketError as e:
+    except SocketError as ex:
         print('WARN: socket error while starting ' +
-              'thread to send to followers. ' + str(e))
+              'thread to send to followers. ' + str(ex))
         return None
-    except ValueError as e:
+    except ValueError as ex:
         print('WARN: error while starting ' +
-              'thread to send to followers. ' + str(e))
+              'thread to send to followers. ' + str(ex))
         return None
     return sendThread
 

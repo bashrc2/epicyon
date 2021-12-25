@@ -216,6 +216,6 @@ def receiveGitPatch(baseDir: str, nickname: str, domain: str,
             with open(patchNotifyFilename, 'w+') as patchFile:
                 patchFile.write(patchStr)
                 return True
-    except OSError as e:
-        print('EX: receiveGitPatch ' + patchFilename + ' ' + str(e))
+    except OSError as ex:
+        print('EX: receiveGitPatch ' + patchFilename + ' ' + str(ex))
     return False

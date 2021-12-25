@@ -239,9 +239,9 @@ def manualApproveFollowRequest(session, baseDir: str,
                             followersFile.seek(0, 0)
                             followersFile.write(approveHandleFull + '\n' +
                                                 content)
-                except Exception as e:
+                except Exception as ex:
                     print('WARN: Manual follow accept. ' +
-                          'Failed to write entry to followers file ' + str(e))
+                          'Failed to write entry to followers file ' + str(ex))
             else:
                 print('WARN: Manual follow accept: ' + approveHandleFull +
                       ' already exists in ' + followersFilename)

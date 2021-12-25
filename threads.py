@@ -24,8 +24,8 @@ class threadWithTrace(threading.Thread):
                 threading.Thread.__init__(self, *self._args, **self._keywords)
                 self.killed = False
                 break
-            except Exception as e:
-                print('ERROR: threads.py/__init__ failed - ' + str(e))
+            except Exception as ex:
+                print('ERROR: threads.py/__init__ failed - ' + str(ex))
                 time.sleep(1)
                 tries += 1
 
@@ -37,8 +37,8 @@ class threadWithTrace(threading.Thread):
                 self.run = self.__run
                 threading.Thread.start(self)
                 break
-            except Exception as e:
-                print('ERROR: threads.py/start failed - ' + str(e))
+            except Exception as ex:
+                print('ERROR: threads.py/start failed - ' + str(ex))
                 time.sleep(1)
                 tries += 1
         # note that this is set True even if all tries failed
@@ -49,8 +49,8 @@ class threadWithTrace(threading.Thread):
         try:
             self.__run_backup()
             self.run = self.__run_backup
-        except Exception as e:
-            print('ERROR: threads.py/__run failed - ' + str(e))
+        except Exception as ex:
+            print('ERROR: threads.py/__run failed - ' + str(ex))
             pass
 
     def globaltrace(self, frame, event, arg):

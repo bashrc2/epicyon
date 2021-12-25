@@ -234,9 +234,9 @@ def updateBookmarksCollection(recentPostsCache: {},
                             bmIndexFile.write(bookmarkIndex + '\n' + content)
                             if debug:
                                 print('DEBUG: bookmark added to index')
-                except Exception as e:
+                except Exception as ex:
                     print('WARN: Failed to write entry to bookmarks index ' +
-                          bookmarksIndexFilename + ' ' + str(e))
+                          bookmarksIndexFilename + ' ' + str(ex))
         else:
             try:
                 with open(bookmarksIndexFilename, 'w+') as bookmarksIndexFile:
