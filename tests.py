@@ -791,14 +791,14 @@ def createServerAlice(path: str, domain: str, port: int,
     city = 'London, England'
     logLoginFailures = False
     userAgentsBlocked = []
-    maxLikeCount = 10
+    max_like_count = 10
     default_reply_interval_hrs = 9999999999
     lists_enabled = ''
     content_license_url = 'https://creativecommons.org/licenses/by/4.0'
     print('Server running: Alice')
     runDaemon(content_license_url,
               lists_enabled, default_reply_interval_hrs,
-              low_bandwidth, maxLikeCount,
+              low_bandwidth, max_like_count,
               shared_items_federated_domains,
               userAgentsBlocked,
               logLoginFailures, city,
@@ -933,14 +933,14 @@ def createServerBob(path: str, domain: str, port: int,
     city = 'London, England'
     logLoginFailures = False
     userAgentsBlocked = []
-    maxLikeCount = 10
+    max_like_count = 10
     default_reply_interval_hrs = 9999999999
     lists_enabled = ''
     content_license_url = 'https://creativecommons.org/licenses/by/4.0'
     print('Server running: Bob')
     runDaemon(content_license_url,
               lists_enabled, default_reply_interval_hrs,
-              low_bandwidth, maxLikeCount,
+              low_bandwidth, max_like_count,
               shared_items_federated_domains,
               userAgentsBlocked,
               logLoginFailures, city,
@@ -1002,7 +1002,7 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
     city = 'London, England'
     logLoginFailures = False
     userAgentsBlocked = []
-    maxLikeCount = 10
+    max_like_count = 10
     low_bandwidth = True
     default_reply_interval_hrs = 9999999999
     lists_enabled = ''
@@ -1010,7 +1010,7 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
     print('Server running: Eve')
     runDaemon(content_license_url,
               lists_enabled, default_reply_interval_hrs,
-              low_bandwidth, maxLikeCount,
+              low_bandwidth, max_like_count,
               shared_items_federated_domains,
               userAgentsBlocked,
               logLoginFailures, city,
@@ -1074,7 +1074,7 @@ def createServerGroup(path: str, domain: str, port: int,
     city = 'London, England'
     logLoginFailures = False
     userAgentsBlocked = []
-    maxLikeCount = 10
+    max_like_count = 10
     low_bandwidth = True
     default_reply_interval_hrs = 9999999999
     lists_enabled = ''
@@ -1082,7 +1082,7 @@ def createServerGroup(path: str, domain: str, port: int,
     print('Server running: Group')
     runDaemon(content_license_url,
               lists_enabled, default_reply_interval_hrs,
-              low_bandwidth, maxLikeCount,
+              low_bandwidth, max_like_count,
               shared_items_federated_domains,
               userAgentsBlocked,
               logLoginFailures, city,

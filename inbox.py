@@ -289,7 +289,7 @@ def _inboxStorePostToHtmlCache(recentPostsCache: {}, maxRecentPosts: int,
                                peertubeInstances: [],
                                allowLocalNetworkAccess: bool,
                                themeName: str, systemLanguage: str,
-                               maxLikeCount: int,
+                               max_like_count: int,
                                signingPrivateKeyPem: str,
                                CWlists: {},
                                lists_enabled: str) -> None:
@@ -315,7 +315,7 @@ def _inboxStorePostToHtmlCache(recentPostsCache: {}, maxRecentPosts: int,
                          yt_replace_domain, twitterReplacementDomain,
                          showPublishedDateOnly,
                          peertubeInstances, allowLocalNetworkAccess,
-                         themeName, systemLanguage, maxLikeCount,
+                         themeName, systemLanguage, max_like_count,
                          notDM, True, True, False, True, False,
                          CWlists, lists_enabled)
 
@@ -1004,7 +1004,7 @@ def _receiveLike(recentPostsCache: {},
                  peertubeInstances: [],
                  allowLocalNetworkAccess: bool,
                  themeName: str, systemLanguage: str,
-                 maxLikeCount: int, CWlists: {},
+                 max_like_count: int, CWlists: {},
                  lists_enabled: str) -> bool:
     """Receives a Like activity within the POST section of HTTPServer
     """
@@ -1104,7 +1104,7 @@ def _receiveLike(recentPostsCache: {},
                                  peertubeInstances,
                                  allowLocalNetworkAccess,
                                  themeName, systemLanguage,
-                                 maxLikeCount, notDM,
+                                 max_like_count, notDM,
                                  showIndividualPostIcons,
                                  manuallyApproveFollowers,
                                  False, True, False, CWlists,
@@ -1126,7 +1126,7 @@ def _receiveUndoLike(recentPostsCache: {},
                      peertubeInstances: [],
                      allowLocalNetworkAccess: bool,
                      themeName: str, systemLanguage: str,
-                     maxLikeCount: int, CWlists: {},
+                     max_like_count: int, CWlists: {},
                      lists_enabled: str) -> bool:
     """Receives an undo like activity within the POST section of HTTPServer
     """
@@ -1215,7 +1215,7 @@ def _receiveUndoLike(recentPostsCache: {},
                                  peertubeInstances,
                                  allowLocalNetworkAccess,
                                  themeName, systemLanguage,
-                                 maxLikeCount, notDM,
+                                 max_like_count, notDM,
                                  showIndividualPostIcons,
                                  manuallyApproveFollowers,
                                  False, True, False, CWlists,
@@ -1238,7 +1238,7 @@ def _receiveReaction(recentPostsCache: {},
                      peertubeInstances: [],
                      allowLocalNetworkAccess: bool,
                      themeName: str, systemLanguage: str,
-                     maxLikeCount: int, CWlists: {},
+                     max_like_count: int, CWlists: {},
                      lists_enabled: str) -> bool:
     """Receives an emoji reaction within the POST section of HTTPServer
     """
@@ -1363,7 +1363,7 @@ def _receiveReaction(recentPostsCache: {},
                                  peertubeInstances,
                                  allowLocalNetworkAccess,
                                  themeName, systemLanguage,
-                                 maxLikeCount, notDM,
+                                 max_like_count, notDM,
                                  showIndividualPostIcons,
                                  manuallyApproveFollowers,
                                  False, True, False, CWlists,
@@ -1385,7 +1385,7 @@ def _receiveUndoReaction(recentPostsCache: {},
                          peertubeInstances: [],
                          allowLocalNetworkAccess: bool,
                          themeName: str, systemLanguage: str,
-                         maxLikeCount: int, CWlists: {},
+                         max_like_count: int, CWlists: {},
                          lists_enabled: str) -> bool:
     """Receives an undo emoji reaction within the POST section of HTTPServer
     """
@@ -1490,7 +1490,7 @@ def _receiveUndoReaction(recentPostsCache: {},
                                  peertubeInstances,
                                  allowLocalNetworkAccess,
                                  themeName, systemLanguage,
-                                 maxLikeCount, notDM,
+                                 max_like_count, notDM,
                                  showIndividualPostIcons,
                                  manuallyApproveFollowers,
                                  False, True, False, CWlists,
@@ -1511,7 +1511,7 @@ def _receiveBookmark(recentPostsCache: {},
                      peertubeInstances: [],
                      allowLocalNetworkAccess: bool,
                      themeName: str, systemLanguage: str,
-                     maxLikeCount: int, CWlists: {},
+                     max_like_count: int, CWlists: {},
                      lists_enabled: {}) -> bool:
     """Receives a bookmark activity within the POST section of HTTPServer
     """
@@ -1600,7 +1600,7 @@ def _receiveBookmark(recentPostsCache: {},
                              peertubeInstances,
                              allowLocalNetworkAccess,
                              themeName, systemLanguage,
-                             maxLikeCount, notDM,
+                             max_like_count, notDM,
                              showIndividualPostIcons,
                              manuallyApproveFollowers,
                              False, True, False, CWlists,
@@ -1621,7 +1621,7 @@ def _receiveUndoBookmark(recentPostsCache: {},
                          peertubeInstances: [],
                          allowLocalNetworkAccess: bool,
                          themeName: str, systemLanguage: str,
-                         maxLikeCount: int, CWlists: {},
+                         max_like_count: int, CWlists: {},
                          lists_enabled: str) -> bool:
     """Receives an undo bookmark activity within the POST section of HTTPServer
     """
@@ -1711,7 +1711,7 @@ def _receiveUndoBookmark(recentPostsCache: {},
                              peertubeInstances,
                              allowLocalNetworkAccess,
                              themeName, systemLanguage,
-                             maxLikeCount, notDM,
+                             max_like_count, notDM,
                              showIndividualPostIcons,
                              manuallyApproveFollowers,
                              False, True, False, CWlists, lists_enabled)
@@ -1808,7 +1808,7 @@ def _receiveAnnounce(recentPostsCache: {},
                      maxRecentPosts: int,
                      allowDeletion: bool,
                      peertubeInstances: [],
-                     maxLikeCount: int, CWlists: {},
+                     max_like_count: int, CWlists: {},
                      lists_enabled: str) -> bool:
     """Receives an announce activity within the POST section of HTTPServer
     """
@@ -1918,7 +1918,7 @@ def _receiveAnnounce(recentPostsCache: {},
                              peertubeInstances,
                              allowLocalNetworkAccess,
                              themeName, systemLanguage,
-                             maxLikeCount, notDM,
+                             max_like_count, notDM,
                              showIndividualPostIcons,
                              manuallyApproveFollowers,
                              False, True, False, CWlists,
@@ -2985,7 +2985,7 @@ def _receiveQuestionVote(base_dir: str, nickname: str, domain: str,
                          peertubeInstances: [],
                          allowLocalNetworkAccess: bool,
                          themeName: str, systemLanguage: str,
-                         maxLikeCount: int,
+                         max_like_count: int,
                          CWlists: {}, lists_enabled: bool) -> None:
     """Updates the votes on a Question/poll
     """
@@ -3030,7 +3030,7 @@ def _receiveQuestionVote(base_dir: str, nickname: str, domain: str,
                          peertubeInstances,
                          allowLocalNetworkAccess,
                          themeName, systemLanguage,
-                         maxLikeCount, notDM,
+                         max_like_count, notDM,
                          showIndividualPostIcons,
                          manuallyApproveFollowers,
                          False, True, False, CWlists,
@@ -3194,7 +3194,7 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                        peertubeInstances: [],
                        lastBounceMessage: [],
                        themeName: str, systemLanguage: str,
-                       maxLikeCount: int,
+                       max_like_count: int,
                        signingPrivateKeyPem: str,
                        default_reply_interval_hrs: int,
                        CWlists: {}, lists_enabled: str,
@@ -3228,7 +3228,7 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                     peertubeInstances,
                     allowLocalNetworkAccess,
                     themeName, systemLanguage,
-                    maxLikeCount, CWlists, lists_enabled):
+                    max_like_count, CWlists, lists_enabled):
         if debug:
             print('DEBUG: Like accepted from ' + actor)
         return False
@@ -3250,7 +3250,7 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                         peertubeInstances,
                         allowLocalNetworkAccess,
                         themeName, systemLanguage,
-                        maxLikeCount, CWlists, lists_enabled):
+                        max_like_count, CWlists, lists_enabled):
         if debug:
             print('DEBUG: Undo like accepted from ' + actor)
         return False
@@ -3273,7 +3273,7 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                         peertubeInstances,
                         allowLocalNetworkAccess,
                         themeName, systemLanguage,
-                        maxLikeCount, CWlists, lists_enabled):
+                        max_like_count, CWlists, lists_enabled):
         if debug:
             print('DEBUG: Reaction accepted from ' + actor)
         return False
@@ -3295,7 +3295,7 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                             peertubeInstances,
                             allowLocalNetworkAccess,
                             themeName, systemLanguage,
-                            maxLikeCount, CWlists, lists_enabled):
+                            max_like_count, CWlists, lists_enabled):
         if debug:
             print('DEBUG: Undo reaction accepted from ' + actor)
         return False
@@ -3317,7 +3317,7 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                         peertubeInstances,
                         allowLocalNetworkAccess,
                         themeName, systemLanguage,
-                        maxLikeCount, CWlists, lists_enabled):
+                        max_like_count, CWlists, lists_enabled):
         if debug:
             print('DEBUG: Bookmark accepted from ' + actor)
         return False
@@ -3339,7 +3339,7 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                             peertubeInstances,
                             allowLocalNetworkAccess,
                             themeName, systemLanguage,
-                            maxLikeCount, CWlists, lists_enabled):
+                            max_like_count, CWlists, lists_enabled):
         if debug:
             print('DEBUG: Undo bookmark accepted from ' + actor)
         return False
@@ -3365,7 +3365,7 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                         maxRecentPosts,
                         allowDeletion,
                         peertubeInstances,
-                        maxLikeCount, CWlists, lists_enabled):
+                        max_like_count, CWlists, lists_enabled):
         if debug:
             print('DEBUG: Announce accepted from ' + actor)
 
@@ -3461,7 +3461,7 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                              peertubeInstances,
                              allowLocalNetworkAccess,
                              themeName, systemLanguage,
-                             maxLikeCount,
+                             max_like_count,
                              CWlists, lists_enabled)
 
         isReplyToMutedPost = False
@@ -3566,7 +3566,7 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                                                    peertubeInstances,
                                                    allowLocalNetworkAccess,
                                                    themeName, systemLanguage,
-                                                   maxLikeCount,
+                                                   max_like_count,
                                                    signingPrivateKeyPem,
                                                    CWlists, lists_enabled)
                         if debug:
@@ -4079,7 +4079,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                   peertubeInstances: [],
                   verifyAllSignatures: bool,
                   themeName: str, systemLanguage: str,
-                  maxLikeCount: int, signingPrivateKeyPem: str,
+                  max_like_count: int, signingPrivateKeyPem: str,
                   default_reply_interval_hrs: int,
                   CWlists: {}) -> None:
     """Processes received items and moves them to the appropriate
@@ -4509,7 +4509,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                                peertubeInstances,
                                lastBounceMessage,
                                themeName, systemLanguage,
-                               maxLikeCount,
+                               max_like_count,
                                signingPrivateKeyPem,
                                default_reply_interval_hrs,
                                CWlists, lists_enabled,

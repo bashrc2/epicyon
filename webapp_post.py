@@ -601,7 +601,7 @@ def _getLikeIconHtml(nickname: str, domainFull: str,
                      translate: {}, pageNumberParam: str,
                      timelinePostBookmark: str,
                      boxName: str,
-                     maxLikeCount: int) -> str:
+                     max_like_count: int) -> str:
     """Returns html for like icon/button
     """
     if not showLikeButton or isModerationPost:
@@ -619,10 +619,10 @@ def _getLikeIconHtml(nickname: str, domainFull: str,
 
     likeCountStr = ''
     if likeCount > 0:
-        if likeCount <= maxLikeCount:
+        if likeCount <= max_like_count:
             likeCountStr = ' (' + str(likeCount) + ')'
         else:
-            likeCountStr = ' (' + str(maxLikeCount) + '+)'
+            likeCountStr = ' (' + str(max_like_count) + '+)'
         if likedByPerson(postJsonObject, nickname, domainFull):
             if likeCount == 1:
                 # liked by the reader only
@@ -1337,7 +1337,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
                          peertubeInstances: [],
                          allowLocalNetworkAccess: bool,
                          themeName: str, systemLanguage: str,
-                         maxLikeCount: int,
+                         max_like_count: int,
                          showRepeats: bool,
                          showIcons: bool,
                          manuallyApprovesFollowers: bool,
@@ -1691,7 +1691,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
                                postStartTime,
                                translate, pageNumberParam,
                                timelinePostBookmark,
-                               boxName, maxLikeCount)
+                               boxName, max_like_count)
 
     _logPostTiming(enableTimingLog, postStartTime, '12.5')
 
@@ -2005,7 +2005,7 @@ def htmlIndividualPost(cssCache: {},
                        peertubeInstances: [],
                        allowLocalNetworkAccess: bool,
                        themeName: str, systemLanguage: str,
-                       maxLikeCount: int, signingPrivateKeyPem: str,
+                       max_like_count: int, signingPrivateKeyPem: str,
                        CWlists: {}, lists_enabled: str) -> str:
     """Show an individual post as html
     """
@@ -2069,7 +2069,7 @@ def htmlIndividualPost(cssCache: {},
                              showPublishedDateOnly,
                              peertubeInstances,
                              allowLocalNetworkAccess, themeName,
-                             systemLanguage, maxLikeCount,
+                             systemLanguage, max_like_count,
                              False, authorized, False, False, False, False,
                              CWlists, lists_enabled)
     messageId = removeIdEnding(postJsonObject['id'])
@@ -2101,7 +2101,7 @@ def htmlIndividualPost(cssCache: {},
                                          peertubeInstances,
                                          allowLocalNetworkAccess,
                                          themeName, systemLanguage,
-                                         maxLikeCount,
+                                         max_like_count,
                                          False, authorized,
                                          False, False, False, False,
                                          CWlists, lists_enabled) + postStr
@@ -2136,7 +2136,7 @@ def htmlIndividualPost(cssCache: {},
                                          peertubeInstances,
                                          allowLocalNetworkAccess,
                                          themeName, systemLanguage,
-                                         maxLikeCount,
+                                         max_like_count,
                                          False, authorized,
                                          False, False, False, False,
                                          CWlists, lists_enabled)
@@ -2164,7 +2164,7 @@ def htmlPostReplies(cssCache: {},
                     peertubeInstances: [],
                     allowLocalNetworkAccess: bool,
                     themeName: str, systemLanguage: str,
-                    maxLikeCount: int,
+                    max_like_count: int,
                     signingPrivateKeyPem: str, CWlists: {},
                     lists_enabled: str) -> str:
     """Show the replies to an individual post as html
@@ -2188,7 +2188,7 @@ def htmlPostReplies(cssCache: {},
                                      peertubeInstances,
                                      allowLocalNetworkAccess,
                                      themeName, systemLanguage,
-                                     maxLikeCount,
+                                     max_like_count,
                                      False, False, False, False, False, False,
                                      CWlists, lists_enabled)
 
@@ -2217,7 +2217,7 @@ def htmlEmojiReactionPicker(cssCache: {},
                             peertubeInstances: [],
                             allowLocalNetworkAccess: bool,
                             themeName: str, systemLanguage: str,
-                            maxLikeCount: int, signingPrivateKeyPem: str,
+                            max_like_count: int, signingPrivateKeyPem: str,
                             CWlists: {}, lists_enabled: str,
                             boxName: str, pageNumber: int) -> str:
     """Returns the emoji picker screen
@@ -2240,7 +2240,7 @@ def htmlEmojiReactionPicker(cssCache: {},
                              peertubeInstances,
                              allowLocalNetworkAccess,
                              themeName, systemLanguage,
-                             maxLikeCount,
+                             max_like_count,
                              False, False, False, False, False, False,
                              CWlists, lists_enabled)
 

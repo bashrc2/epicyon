@@ -208,7 +208,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
                 peertubeInstances: [],
                 allowLocalNetworkAccess: bool,
                 systemLanguage: str,
-                maxLikeCount: int, signingPrivateKeyPem: str,
+                max_like_count: int, signingPrivateKeyPem: str,
                 CWlists: {}, lists_enabled: str,
                 boxName: str) -> str:
     """New post screen
@@ -277,7 +277,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
                                                  peertubeInstances,
                                                  allowLocalNetworkAccess,
                                                  theme, systemLanguage,
-                                                 maxLikeCount,
+                                                 max_like_count,
                                                  False, False, False,
                                                  False, False, False,
                                                  CWlists, lists_enabled)

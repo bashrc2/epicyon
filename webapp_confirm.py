@@ -36,7 +36,7 @@ def htmlConfirmDelete(cssCache: {},
                       peertubeInstances: [],
                       allowLocalNetworkAccess: bool,
                       themeName: str, systemLanguage: str,
-                      maxLikeCount: int, signingPrivateKeyPem: str,
+                      max_like_count: int, signingPrivateKeyPem: str,
                       CWlists: {}, lists_enabled: str) -> str:
     """Shows a screen asking to confirm the deletion of a post
     """
@@ -76,7 +76,7 @@ def htmlConfirmDelete(cssCache: {},
                              twitterReplacementDomain,
                              showPublishedDateOnly,
                              peertubeInstances, allowLocalNetworkAccess,
-                             themeName, systemLanguage, maxLikeCount,
+                             themeName, systemLanguage, max_like_count,
                              False, False, False, False, False, False,
                              CWlists, lists_enabled)
     deletePostStr += '<center>'

@@ -487,7 +487,7 @@ parser.add_argument('--minimumvotes', dest='minimumvotes', type=int,
                     default=1,
                     help='Minimum number of votes to remove or add' +
                     ' a newswire item')
-parser.add_argument('--maxLikeCount', dest='maxLikeCount', type=int,
+parser.add_argument('--max_like_count', dest='max_like_count', type=int,
                     default=10,
                     help='Maximum number of likes displayed on a post')
 parser.add_argument('--votingtime', dest='votingtime', type=int,
@@ -3073,10 +3073,10 @@ sendThreadsTimeoutMins = \
 if sendThreadsTimeoutMins is not None:
     args.sendThreadsTimeoutMins = int(sendThreadsTimeoutMins)
 
-maxLikeCount = \
-    getConfigParam(base_dir, 'maxLikeCount')
-if maxLikeCount is not None:
-    args.maxLikeCount = int(maxLikeCount)
+max_like_count = \
+    getConfigParam(base_dir, 'max_like_count')
+if max_like_count is not None:
+    args.max_like_count = int(max_like_count)
 
 showPublishAsIcon = \
     getConfigParam(base_dir, 'showPublishAsIcon')
@@ -3213,7 +3213,7 @@ if __name__ == "__main__":
     runDaemon(content_license_url,
               lists_enabled,
               args.default_reply_interval_hrs,
-              args.low_bandwidth, args.maxLikeCount,
+              args.low_bandwidth, args.max_like_count,
               shared_items_federated_domains,
               userAgentsBlocked,
               args.logLoginFailures,

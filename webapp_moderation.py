@@ -51,7 +51,7 @@ def htmlModeration(cssCache: {}, defaultTimeline: str,
                    allowLocalNetworkAccess: bool,
                    textModeBanner: str,
                    accessKeys: {}, systemLanguage: str,
-                   maxLikeCount: int,
+                   max_like_count: int,
                    shared_items_federated_domains: [],
                    signingPrivateKeyPem: str,
                    CWlists: {}, lists_enabled: str) -> str:
@@ -76,7 +76,7 @@ def htmlModeration(cssCache: {}, defaultTimeline: str,
                         authorized, moderationActionStr, theme,
                         peertubeInstances, allowLocalNetworkAccess,
                         textModeBanner, accessKeys, systemLanguage,
-                        maxLikeCount, shared_items_federated_domains,
+                        max_like_count, shared_items_federated_domains,
                         signingPrivateKeyPem, CWlists, lists_enabled)
 
 
