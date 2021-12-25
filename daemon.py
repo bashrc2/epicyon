@@ -10175,7 +10175,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   maxPostsInFeed, 'inbox',
                                   authorized,
                                   0,
-                                  self.server.positiveVoting,
+                                  self.server.positive_voting,
                                   self.server.voting_time_mins)
                 if inboxFeed:
                     if GETstartTime:
@@ -10207,7 +10207,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               maxPostsInFeed, 'inbox',
                                               authorized,
                                               0,
-                                              self.server.positiveVoting,
+                                              self.server.positive_voting,
                                               self.server.voting_time_mins)
                             if GETstartTime:
                                 fitnessPerformance(GETstartTime,
@@ -10247,7 +10247,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         twitterReplacementDomain,
                                         self.server.show_published_date_only,
                                         self.server.newswire,
-                                        self.server.positiveVoting,
+                                        self.server.positive_voting,
                                         self.server.show_publish_as_icon,
                                         full_width_tl_button_header,
                                         self.server.icons_as_buttons,
@@ -10333,7 +10333,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   http_prefix,
                                   maxPostsInFeed, 'dm',
                                   authorized,
-                                  0, self.server.positiveVoting,
+                                  0, self.server.positive_voting,
                                   self.server.voting_time_mins)
                 if inboxDMFeed:
                     if self._requestHTTP():
@@ -10360,7 +10360,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               maxPostsInFeed, 'dm',
                                               authorized,
                                               0,
-                                              self.server.positiveVoting,
+                                              self.server.positive_voting,
                                               self.server.voting_time_mins)
                         full_width_tl_button_header = \
                             self.server.full_width_tl_button_header
@@ -10398,7 +10398,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.twitterReplacementDomain,
                                          self.server.show_published_date_only,
                                          self.server.newswire,
-                                         self.server.positiveVoting,
+                                         self.server.positive_voting,
                                          self.server.show_publish_as_icon,
                                          full_width_tl_button_header,
                                          self.server.icons_as_buttons,
@@ -10476,7 +10476,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   http_prefix,
                                   maxPostsInFeed, 'tlreplies',
                                   True,
-                                  0, self.server.positiveVoting,
+                                  0, self.server.positive_voting,
                                   self.server.voting_time_mins)
                 if not inboxRepliesFeed:
                     inboxRepliesFeed = []
@@ -10503,7 +10503,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           http_prefix,
                                           maxPostsInFeed, 'tlreplies',
                                           True,
-                                          0, self.server.positiveVoting,
+                                          0, self.server.positive_voting,
                                           self.server.voting_time_mins)
                     full_width_tl_button_header = \
                         self.server.full_width_tl_button_header
@@ -10541,7 +10541,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.twitterReplacementDomain,
                                          self.server.show_published_date_only,
                                          self.server.newswire,
-                                         self.server.positiveVoting,
+                                         self.server.positive_voting,
                                          self.server.show_publish_as_icon,
                                          full_width_tl_button_header,
                                          self.server.icons_as_buttons,
@@ -10619,7 +10619,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   http_prefix,
                                   maxPostsInMediaFeed, 'tlmedia',
                                   True,
-                                  0, self.server.positiveVoting,
+                                  0, self.server.positive_voting,
                                   self.server.voting_time_mins)
                 if not inboxMediaFeed:
                     inboxMediaFeed = []
@@ -10646,7 +10646,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           http_prefix,
                                           maxPostsInMediaFeed, 'tlmedia',
                                           True,
-                                          0, self.server.positiveVoting,
+                                          0, self.server.positive_voting,
                                           self.server.voting_time_mins)
                     full_width_tl_button_header = \
                         self.server.full_width_tl_button_header
@@ -10682,7 +10682,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.twitterReplacementDomain,
                                        self.server.show_published_date_only,
                                        self.server.newswire,
-                                       self.server.positiveVoting,
+                                       self.server.positive_voting,
                                        self.server.show_publish_as_icon,
                                        full_width_tl_button_header,
                                        self.server.icons_as_buttons,
@@ -10761,7 +10761,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   http_prefix,
                                   maxPostsInBlogsFeed, 'tlblogs',
                                   True,
-                                  0, self.server.positiveVoting,
+                                  0, self.server.positive_voting,
                                   self.server.voting_time_mins)
                 if not inboxBlogsFeed:
                     inboxBlogsFeed = []
@@ -10788,7 +10788,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           http_prefix,
                                           maxPostsInBlogsFeed, 'tlblogs',
                                           True,
-                                          0, self.server.positiveVoting,
+                                          0, self.server.positive_voting,
                                           self.server.voting_time_mins)
                     full_width_tl_button_header = \
                         self.server.full_width_tl_button_header
@@ -10824,7 +10824,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.twitterReplacementDomain,
                                        self.server.show_published_date_only,
                                        self.server.newswire,
-                                       self.server.positiveVoting,
+                                       self.server.positive_voting,
                                        self.server.show_publish_as_icon,
                                        full_width_tl_button_header,
                                        self.server.icons_as_buttons,
@@ -10905,7 +10905,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   maxPostsInNewsFeed, 'tlnews',
                                   True,
                                   self.server.newswireVotesThreshold,
-                                  self.server.positiveVoting,
+                                  self.server.positive_voting,
                                   self.server.voting_time_mins)
                 if not inboxNewsFeed:
                     inboxNewsFeed = []
@@ -10933,7 +10933,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           maxPostsInBlogsFeed, 'tlnews',
                                           True,
                                           self.server.newswireVotesThreshold,
-                                          self.server.positiveVoting,
+                                          self.server.positive_voting,
                                           self.server.voting_time_mins)
                     currNickname = path.split('/users/')[1]
                     if '/' in currNickname:
@@ -10976,7 +10976,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.show_published_date_only,
                                       self.server.newswire,
                                       moderator, editor, artist,
-                                      self.server.positiveVoting,
+                                      self.server.positive_voting,
                                       self.server.show_publish_as_icon,
                                       full_width_tl_button_header,
                                       self.server.icons_as_buttons,
@@ -11056,7 +11056,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   maxPostsInNewsFeed, 'tlfeatures',
                                   True,
                                   self.server.newswireVotesThreshold,
-                                  self.server.positiveVoting,
+                                  self.server.positive_voting,
                                   self.server.voting_time_mins)
                 if not inboxFeaturesFeed:
                     inboxFeaturesFeed = []
@@ -11084,7 +11084,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           maxPostsInBlogsFeed, 'tlfeatures',
                                           True,
                                           self.server.newswireVotesThreshold,
-                                          self.server.positiveVoting,
+                                          self.server.positive_voting,
                                           self.server.voting_time_mins)
                     currNickname = path.split('/users/')[1]
                     if '/' in currNickname:
@@ -11125,7 +11125,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.twitterReplacementDomain,
                                           self.server.show_published_date_only,
                                           self.server.newswire,
-                                          self.server.positiveVoting,
+                                          self.server.positive_voting,
                                           self.server.show_publish_as_icon,
                                           full_width_tl_button_header,
                                           self.server.icons_as_buttons,
@@ -11234,7 +11234,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.twitterReplacementDomain,
                                    self.server.show_published_date_only,
                                    self.server.newswire,
-                                   self.server.positiveVoting,
+                                   self.server.positive_voting,
                                    self.server.show_publish_as_icon,
                                    full_width_tl_button_header,
                                    self.server.icons_as_buttons,
@@ -11319,7 +11319,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.twitterReplacementDomain,
                                    self.server.show_published_date_only,
                                    self.server.newswire,
-                                   self.server.positiveVoting,
+                                   self.server.positive_voting,
                                    self.server.show_publish_as_icon,
                                    full_width_tl_button_header,
                                    self.server.icons_as_buttons,
@@ -11375,7 +11375,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   http_prefix,
                                   maxPostsInFeed, 'tlbookmarks',
                                   authorized,
-                                  0, self.server.positiveVoting,
+                                  0, self.server.positive_voting,
                                   self.server.voting_time_mins)
                 if bookmarksFeed:
                     if self._requestHTTP():
@@ -11403,7 +11403,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               maxPostsInFeed,
                                               'tlbookmarks',
                                               authorized,
-                                              0, self.server.positiveVoting,
+                                              0, self.server.positive_voting,
                                               self.server.voting_time_mins)
                         full_width_tl_button_header = \
                             self.server.full_width_tl_button_header
@@ -11441,7 +11441,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.twitterReplacementDomain,
                                           self.server.show_published_date_only,
                                           self.server.newswire,
-                                          self.server.positiveVoting,
+                                          self.server.positive_voting,
                                           self.server.show_publish_as_icon,
                                           full_width_tl_button_header,
                                           self.server.icons_as_buttons,
@@ -11515,7 +11515,7 @@ class PubServer(BaseHTTPRequestHandler):
                           http_prefix, maxPostsInFeed, 'outbox',
                           authorized,
                           self.server.newswireVotesThreshold,
-                          self.server.positiveVoting,
+                          self.server.positive_voting,
                           self.server.voting_time_mins)
         if outboxFeed:
             nickname = \
@@ -11543,7 +11543,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   maxPostsInFeed, 'outbox',
                                   authorized,
                                   self.server.newswireVotesThreshold,
-                                  self.server.positiveVoting,
+                                  self.server.positive_voting,
                                   self.server.voting_time_mins)
             else:
                 pageNumber = 1
@@ -11579,7 +11579,7 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.twitterReplacementDomain,
                                self.server.show_published_date_only,
                                self.server.newswire,
-                               self.server.positiveVoting,
+                               self.server.positive_voting,
                                self.server.show_publish_as_icon,
                                full_width_tl_button_header,
                                self.server.icons_as_buttons,
@@ -11646,7 +11646,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   http_prefix,
                                   maxPostsInFeed, 'moderation',
                                   True,
-                                  0, self.server.positiveVoting,
+                                  0, self.server.positive_voting,
                                   self.server.voting_time_mins)
                 if moderationFeed:
                     if self._requestHTTP():
@@ -11672,7 +11672,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               http_prefix,
                                               maxPostsInFeed, 'moderation',
                                               True,
-                                              0, self.server.positiveVoting,
+                                              0, self.server.positive_voting,
                                               self.server.voting_time_mins)
                         full_width_tl_button_header = \
                             self.server.full_width_tl_button_header
@@ -11713,7 +11713,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            twitterReplacementDomain,
                                            show_published_date_only,
                                            self.server.newswire,
-                                           self.server.positiveVoting,
+                                           self.server.positive_voting,
                                            self.server.show_publish_as_icon,
                                            full_width_tl_button_header,
                                            self.server.icons_as_buttons,
@@ -14978,7 +14978,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.http_prefix,
                                          self.server.translate,
                                          self.server.newswire,
-                                         self.server.positiveVoting,
+                                         self.server.positive_voting,
                                          timelinePath,
                                          show_publish_as_icon,
                                          authorized,
@@ -18447,7 +18447,7 @@ def runDaemon(content_license_url: str,
               max_newswire_postsPerSource: int,
               show_published_date_only: bool,
               voting_time_mins: int,
-              positiveVoting: bool,
+              positive_voting: bool,
               newswireVotesThreshold: int,
               newsInstance: bool,
               blogsInstance: bool,
@@ -18632,7 +18632,7 @@ def runDaemon(content_license_url: str,
     httpd.voting_time_mins = voting_time_mins
     # on the newswire, whether moderators vote positively for items
     # or against them (veto)
-    httpd.positiveVoting = positiveVoting
+    httpd.positive_voting = positive_voting
     # number of votes needed to remove a newswire item from the news timeline
     # or if positive voting is anabled to add the item to the news timeline
     httpd.newswireVotesThreshold = newswireVotesThreshold

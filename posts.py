@@ -3365,12 +3365,12 @@ def createMediaTimeline(session, base_dir: str, nickname: str, domain: str,
 def createNewsTimeline(session, base_dir: str, nickname: str, domain: str,
                        port: int, http_prefix: str, itemsPerPage: int,
                        headerOnly: bool, newswireVotesThreshold: int,
-                       positiveVoting: bool, voting_time_mins: int,
+                       positive_voting: bool, voting_time_mins: int,
                        pageNumber: int) -> {}:
     return _createBoxIndexed({}, session, base_dir, 'outbox', 'news',
                              domain, port, http_prefix,
                              itemsPerPage, headerOnly, True,
-                             newswireVotesThreshold, positiveVoting,
+                             newswireVotesThreshold, positive_voting,
                              voting_time_mins, pageNumber)
 
 
@@ -3601,7 +3601,7 @@ def removePostInteractions(postJsonObject: {}, force: bool) -> bool:
 def _passedNewswireVoting(newswireVotesThreshold: int,
                           base_dir: str, domain: str,
                           postFilename: str,
-                          positiveVoting: bool,
+                          positive_voting: bool,
                           voting_time_mins: int) -> bool:
     """Returns true if the post has passed through newswire voting
     """
@@ -3632,7 +3632,7 @@ def _passedNewswireVoting(newswireVotesThreshold: int,
     votesJson = loadJson(votesFilename, 0, 2)
     if not votesJson:
         return True
-    if not positiveVoting:
+    if not positive_voting:
         if votesOnNewswireItem(votesJson) >= \
            newswireVotesThreshold:
             # Too many veto votes.
@@ -3653,7 +3653,7 @@ def _createBoxIndexed(recentPostsCache: {},
                       session, base_dir: str, boxname: str,
                       nickname: str, domain: str, port: int, http_prefix: str,
                       itemsPerPage: int, headerOnly: bool, authorized: bool,
-                      newswireVotesThreshold: int, positiveVoting: bool,
+                      newswireVotesThreshold: int, positive_voting: bool,
                       voting_time_mins: int, pageNumber: int) -> {}:
     """Constructs the box feed for a person with the given nickname
     """
@@ -3735,7 +3735,7 @@ def _createBoxIndexed(recentPostsCache: {},
                 if not _passedNewswireVoting(newswireVotesThreshold,
                                              base_dir, domain,
                                              postFilename,
-                                             positiveVoting,
+                                             positive_voting,
                                              voting_time_mins):
                     continue
 

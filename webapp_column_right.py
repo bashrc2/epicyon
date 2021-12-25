@@ -33,14 +33,14 @@ from webapp_utils import headerButtonsFrontScreen
 from webapp_utils import editTextField
 
 
-def _votesIndicator(totalVotes: int, positiveVoting: bool) -> str:
+def _votesIndicator(totalVotes: int, positive_voting: bool) -> str:
     """Returns an indicator of the number of votes on a newswire item
     """
     if totalVotes <= 0:
         return ''
     totalVotesStr = ' '
     for v in range(totalVotes):
-        if positiveVoting:
+        if positive_voting:
             totalVotesStr += '✓'
         else:
             totalVotesStr += '✗'
@@ -50,7 +50,7 @@ def _votesIndicator(totalVotes: int, positiveVoting: bool) -> str:
 def getRightColumnContent(base_dir: str, nickname: str, domainFull: str,
                           http_prefix: str, translate: {},
                           moderator: bool, editor: bool,
-                          newswire: {}, positiveVoting: bool,
+                          newswire: {}, positive_voting: bool,
                           showBackButton: bool, timelinePath: str,
                           showPublishButton: bool,
                           show_publish_as_icon: bool,
@@ -199,7 +199,7 @@ def getRightColumnContent(base_dir: str, nickname: str, domainFull: str,
     # show the newswire lines
     newswireContentStr = \
         _htmlNewswire(base_dir, newswire, nickname, moderator, translate,
-                      positiveVoting)
+                      positive_voting)
     htmlStr += newswireContentStr
 
     # show the rss icon at the bottom, typically on the right hand side
@@ -215,7 +215,7 @@ def _getBrokenFavSubstitute() -> str:
 
 
 def _htmlNewswire(base_dir: str, newswire: {}, nickname: str, moderator: bool,
-                  translate: {}, positiveVoting: bool) -> str:
+                  translate: {}, positive_voting: bool) -> str:
     """Converts a newswire dict into html
     """
     separatorStr = htmlPostSeparator(base_dir, 'right')
@@ -269,7 +269,7 @@ def _htmlNewswire(base_dir: str, newswire: {}, nickname: str, moderator: bool,
             if moderator:
                 totalVotes = votesOnNewswireItem(item[2])
                 totalVotesStr = \
-                    _votesIndicator(totalVotes, positiveVoting)
+                    _votesIndicator(totalVotes, positive_voting)
 
             title = removeLongWords(item[0], 16, []).replace('\n', '<br>')
             title = limitRepeatedWords(title, 6)
@@ -298,7 +298,7 @@ def _htmlNewswire(base_dir: str, newswire: {}, nickname: str, moderator: bool,
                     # show a number of ticks or crosses for how many
                     # votes for or against
                     totalVotesStr = \
-                        _votesIndicator(totalVotes, positiveVoting)
+                        _votesIndicator(totalVotes, positive_voting)
 
             title = removeLongWords(item[0], 16, []).replace('\n', '<br>')
             title = limitRepeatedWords(title, 6)
@@ -448,7 +448,7 @@ def htmlNewswireMobile(cssCache: {}, base_dir: str, nickname: str,
                        domain: str, domainFull: str,
                        http_prefix: str, translate: {},
                        newswire: {},
-                       positiveVoting: bool,
+                       positive_voting: bool,
                        timelinePath: str,
                        show_publish_as_icon: bool,
                        authorized: bool,
@@ -501,7 +501,7 @@ def htmlNewswireMobile(cssCache: {}, base_dir: str, nickname: str,
         getRightColumnContent(base_dir, nickname, domainFull,
                               http_prefix, translate,
                               moderator, editor,
-                              newswire, positiveVoting,
+                              newswire, positive_voting,
                               False, timelinePath, showPublishButton,
                               show_publish_as_icon, rss_icon_at_top, False,
                               authorized, False, theme,
