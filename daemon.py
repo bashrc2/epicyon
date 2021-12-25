@@ -12269,7 +12269,7 @@ class PubServer(BaseHTTPRequestHandler):
                            GETstartTime,
                            proxyType: str, cookie: str,
                            debug: str,
-                           enableSharedInbox: bool) -> bool:
+                           enable_shared_inbox: bool) -> bool:
         """Shows the instance actor
         """
         if debug:
@@ -12298,7 +12298,7 @@ class PubServer(BaseHTTPRequestHandler):
             if r in actorJson:
                 del actorJson[r]
         actorJson['endpoints'] = {}
-        if enableSharedInbox:
+        if enable_shared_inbox:
             actorJson['endpoints'] = {
                 'sharedInbox': actorDomainUrl + '/inbox'
             }
@@ -13415,7 +13415,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        GETstartTime,
                                        self.server.proxyType,
                                        None, self.server.debug,
-                                       self.server.enableSharedInbox):
+                                       self.server.enable_shared_inbox):
                 return
             else:
                 self._404()
@@ -13777,7 +13777,7 @@ class PubServer(BaseHTTPRequestHandler):
            self.path == '/actor/inbox' or \
            self.path == '/users/' + self.server.domain:
             # if shared inbox is not enabled
-            if not self.server.enableSharedInbox:
+            if not self.server.enable_shared_inbox:
                 self._503()
                 return
 
@@ -17521,7 +17521,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.path = self.path.replace('/sharedInbox/', '/sharedInbox')
 
         if self.path == '/inbox':
-            if not self.server.enableSharedInbox:
+            if not self.server.enable_shared_inbox:
                 self._503()
                 self.server.POSTbusy = False
                 return
@@ -18453,7 +18453,7 @@ def runDaemon(content_license_url: str,
               blogs_instance: bool,
               media_instance: bool,
               max_recent_posts: int,
-              enableSharedInbox: bool, registration: bool,
+              enable_shared_inbox: bool, registration: bool,
               language: str, projectVersion: str,
               instanceId: str, clientToServer: bool,
               base_dir: str, domain: str,
@@ -18702,7 +18702,7 @@ def runDaemon(content_license_url: str,
         httpd.registration = True
     else:
         httpd.registration = False
-    httpd.enableSharedInbox = enableSharedInbox
+    httpd.enable_shared_inbox = enable_shared_inbox
     httpd.outboxThread = {}
     httpd.outboxThreadIndex = {}
     httpd.newPostThread = {}
