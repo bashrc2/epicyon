@@ -18471,7 +18471,7 @@ def runDaemon(content_license_url: str,
               onion_domain: str, i2p_domain: str,
               yt_replace_domain: str,
               twitter_replacement_domain: str,
-              port: int = 80, proxyPort: int = 80,
+              port: int = 80, proxy_port: int = 80,
               http_prefix: str = 'https',
               fedList: [] = [],
               maxMentions: int = 10, maxEmoji: int = 10,
@@ -18492,10 +18492,10 @@ def runDaemon(content_license_url: str,
             return
 
     if unitTest:
-        serverAddress = (domain, proxyPort)
+        serverAddress = (domain, proxy_port)
         pubHandler = partial(PubServerUnitTest)
     else:
-        serverAddress = ('', proxyPort)
+        serverAddress = ('', proxy_port)
         pubHandler = partial(PubServer)
 
     if not os.path.isdir(base_dir + '/accounts'):
@@ -19014,8 +19014,8 @@ def runDaemon(content_license_url: str,
 
     if client_to_server:
         print('Running ActivityPub client on ' +
-              domain + ' port ' + str(proxyPort))
+              domain + ' port ' + str(proxy_port))
     else:
         print('Running ActivityPub server on ' +
-              domain + ' port ' + str(proxyPort))
+              domain + ' port ' + str(proxy_port))
     httpd.serve_forever()

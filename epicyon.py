@@ -226,7 +226,7 @@ parser.add_argument('--followers',
 parser.add_argument('--postcache', dest='max_recent_posts', type=int,
                     default=512,
                     help='The maximum number of recent posts to store in RAM')
-parser.add_argument('--proxy', dest='proxyPort', type=int, default=None,
+parser.add_argument('--proxy', dest='proxy_port', type=int, default=None,
                     help='Proxy port number to run on')
 parser.add_argument('--path', dest='base_dir',
                     type=str, default=os.getcwd(),
@@ -1138,11 +1138,11 @@ else:
     else:
         port = 443
 
-configProxyPort = getConfigParam(base_dir, 'proxyPort')
+configProxyPort = getConfigParam(base_dir, 'proxy_port')
 if configProxyPort:
-    proxyPort = configProxyPort
+    proxy_port = configProxyPort
 else:
-    proxyPort = port
+    proxy_port = port
 
 nickname = None
 if args.nickname:
@@ -2062,9 +2062,9 @@ if args.domain:
 if args.port:
     port = args.port
     setConfigParam(base_dir, 'port', port)
-if args.proxyPort:
-    proxyPort = args.proxyPort
-    setConfigParam(base_dir, 'proxyPort', proxyPort)
+if args.proxy_port:
+    proxy_port = args.proxy_port
+    setConfigParam(base_dir, 'proxy_port', proxy_port)
 if args.gnunet:
     http_prefix = 'gnunet'
 if args.dat or args.hyper:
@@ -3250,7 +3250,7 @@ if __name__ == "__main__":
               domain, onion_domain, i2p_domain,
               args.yt_replace_domain,
               args.twitter_replacement_domain,
-              port, proxyPort, http_prefix,
+              port, proxy_port, http_prefix,
               federationList, args.maxMentions,
               args.maxEmoji, args.secureMode,
               proxyType, args.maxReplies,
