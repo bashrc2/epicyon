@@ -787,7 +787,7 @@ def createServerAlice(path: str, domain: str, port: int,
     verifyAllSignatures = True
     brochMode = False
     show_node_info_accounts = True
-    showNodeInfoVersion = True
+    show_node_info_version = True
     city = 'London, England'
     log_login_failures = False
     user_agents_blocked = []
@@ -803,7 +803,7 @@ def createServerAlice(path: str, domain: str, port: int,
               user_agents_blocked,
               log_login_failures, city,
               show_node_info_accounts,
-              showNodeInfoVersion,
+              show_node_info_version,
               brochMode,
               verifyAllSignatures,
               sendThreadsTimeoutMins,
@@ -929,7 +929,7 @@ def createServerBob(path: str, domain: str, port: int,
     verifyAllSignatures = True
     brochMode = False
     show_node_info_accounts = True
-    showNodeInfoVersion = True
+    show_node_info_version = True
     city = 'London, England'
     log_login_failures = False
     user_agents_blocked = []
@@ -945,7 +945,7 @@ def createServerBob(path: str, domain: str, port: int,
               user_agents_blocked,
               log_login_failures, city,
               show_node_info_accounts,
-              showNodeInfoVersion,
+              show_node_info_version,
               brochMode,
               verifyAllSignatures,
               sendThreadsTimeoutMins,
@@ -998,7 +998,7 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
     verifyAllSignatures = True
     brochMode = False
     show_node_info_accounts = True
-    showNodeInfoVersion = True
+    show_node_info_version = True
     city = 'London, England'
     log_login_failures = False
     user_agents_blocked = []
@@ -1015,7 +1015,7 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
               user_agents_blocked,
               log_login_failures, city,
               show_node_info_accounts,
-              showNodeInfoVersion,
+              show_node_info_version,
               brochMode,
               verifyAllSignatures,
               sendThreadsTimeoutMins,
@@ -1070,7 +1070,7 @@ def createServerGroup(path: str, domain: str, port: int,
     verifyAllSignatures = True
     brochMode = False
     show_node_info_accounts = True
-    showNodeInfoVersion = True
+    show_node_info_version = True
     city = 'London, England'
     log_login_failures = False
     user_agents_blocked = []
@@ -1087,7 +1087,7 @@ def createServerGroup(path: str, domain: str, port: int,
               user_agents_blocked,
               log_login_failures, city,
               show_node_info_accounts,
-              showNodeInfoVersion,
+              show_node_info_version,
               brochMode,
               verifyAllSignatures,
               sendThreadsTimeoutMins,

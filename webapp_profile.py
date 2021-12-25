@@ -1358,12 +1358,12 @@ def _htmlEditProfileInstance(base_dir: str, translate: {},
 
     nodeInfoStr = \
         translate['Show version number within instance metadata']
-    if getConfigParam(base_dir, "showNodeInfoVersion"):
+    if getConfigParam(base_dir, "show_node_info_version"):
         instanceStr += \
-            editCheckBox(nodeInfoStr, 'showNodeInfoVersion', True)
+            editCheckBox(nodeInfoStr, 'show_node_info_version', True)
     else:
         instanceStr += \
-            editCheckBox(nodeInfoStr, 'showNodeInfoVersion', False)
+            editCheckBox(nodeInfoStr, 'show_node_info_version', False)
 
     if getConfigParam(base_dir, "verifyAllSignatures"):
         instanceStr += \

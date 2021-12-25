@@ -1136,7 +1136,7 @@ class PubServer(BaseHTTPRequestHandler):
         brochMode = brochModeIsActive(self.server.base_dir)
 
         nodeInfoVersion = self.server.projectVersion
-        if not self.server.showNodeInfoVersion or brochMode:
+        if not self.server.show_node_info_version or brochMode:
             nodeInfoVersion = '0.0.0'
 
         show_node_info_accounts = self.server.show_node_info_accounts
@@ -5553,14 +5553,14 @@ class PubServer(BaseHTTPRequestHandler):
                             setConfigParam(base_dir, "show_node_info_accounts",
                                            show_node_info_accounts)
 
-                            showNodeInfoVersion = False
-                            if fields.get('showNodeInfoVersion'):
-                                if fields['showNodeInfoVersion'] == 'on':
-                                    showNodeInfoVersion = True
-                            self.server.showNodeInfoVersion = \
-                                showNodeInfoVersion
-                            setConfigParam(base_dir, "showNodeInfoVersion",
-                                           showNodeInfoVersion)
+                            show_node_info_version = False
+                            if fields.get('show_node_info_version'):
+                                if fields['show_node_info_version'] == 'on':
+                                    show_node_info_version = True
+                            self.server.show_node_info_version = \
+                                show_node_info_version
+                            setConfigParam(base_dir, "show_node_info_version",
+                                           show_node_info_version)
 
                             verifyAllSignatures = False
                             if fields.get('verifyallsignatures'):
@@ -18410,7 +18410,7 @@ def runDaemon(content_license_url: str,
               log_login_failures: bool,
               city: str,
               show_node_info_accounts: bool,
-              showNodeInfoVersion: bool,
+              show_node_info_version: bool,
               brochMode: bool,
               verifyAllSignatures: bool,
               sendThreadsTimeoutMins: int,
@@ -18504,7 +18504,7 @@ def runDaemon(content_license_url: str,
     httpd.signingPrivateKeyPem = None
 
     httpd.show_node_info_accounts = show_node_info_accounts
-    httpd.showNodeInfoVersion = showNodeInfoVersion
+    httpd.show_node_info_version = show_node_info_version
 
     # ASCII/ANSI text banner used in shell browsers, such as Lynx
     httpd.textModeBanner = getTextModeBanner(base_dir)

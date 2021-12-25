@@ -388,7 +388,7 @@ parser.add_argument("--nodeinfoaccounts",
                     const=True, default=False,
                     help="Show numbers of accounts within nodeinfo metadata")
 parser.add_argument("--nodeinfoversion",
-                    dest='showNodeInfoVersion',
+                    dest='show_node_info_version',
                     type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Show version number within nodeinfo metadata")
@@ -3128,10 +3128,10 @@ show_node_info_accounts = \
 if show_node_info_accounts is not None:
     args.show_node_info_accounts = bool(show_node_info_accounts)
 
-showNodeInfoVersion = \
-    getConfigParam(base_dir, 'showNodeInfoVersion')
-if showNodeInfoVersion is not None:
-    args.showNodeInfoVersion = bool(showNodeInfoVersion)
+show_node_info_version = \
+    getConfigParam(base_dir, 'show_node_info_version')
+if show_node_info_version is not None:
+    args.show_node_info_version = bool(show_node_info_version)
 
 low_bandwidth = \
     getConfigParam(base_dir, 'low_bandwidth')
@@ -3219,7 +3219,7 @@ if __name__ == "__main__":
               args.log_login_failures,
               args.city,
               args.show_node_info_accounts,
-              args.showNodeInfoVersion,
+              args.show_node_info_version,
               args.brochMode,
               args.verifyAllSignatures,
               args.sendThreadsTimeoutMins,
