@@ -87,7 +87,7 @@ def mastoApiV1Response(path: str, callingDomain: str,
                        http_prefix: str,
                        base_dir: str, nickname: str, domain: str,
                        domainFull: str,
-                       onion_domain: str, i2pDomain: str,
+                       onion_domain: str, i2p_domain: str,
                        translate: {},
                        registration: bool,
                        systemLanguage: str,
@@ -211,8 +211,8 @@ def mastoApiV1Response(path: str, callingDomain: str,
         if callingDomain.endswith('.onion') and onion_domain:
             domainFull = onion_domain
             http_prefix = 'http'
-        elif (callingDomain.endswith('.i2p') and i2pDomain):
-            domainFull = i2pDomain
+        elif (callingDomain.endswith('.i2p') and i2p_domain):
+            domainFull = i2p_domain
             http_prefix = 'http'
 
         if broch_mode:

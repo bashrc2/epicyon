@@ -440,8 +440,8 @@ class PubServer(BaseHTTPRequestHandler):
            self.server.onion_domain:
             instanceUrl = 'http://' + self.server.onion_domain
         elif (callingDomain.endswith('.i2p') and
-              self.server.i2pDomain):
-            instanceUrl = 'http://' + self.server.i2pDomain
+              self.server.i2p_domain):
+            instanceUrl = 'http://' + self.server.i2p_domain
         else:
             instanceUrl = \
                 self.server.http_prefix + '://' + self.server.domainFull
@@ -1043,7 +1043,7 @@ class PubServer(BaseHTTPRequestHandler):
                     http_prefix: str,
                     base_dir: str, nickname: str, domain: str,
                     domainFull: str,
-                    onion_domain: str, i2pDomain: str,
+                    onion_domain: str, i2p_domain: str,
                     translate: {},
                     registration: bool,
                     systemLanguage: str,
@@ -1071,7 +1071,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                    nickname, domain,
                                                    domainFull,
                                                    onion_domain,
-                                                   i2pDomain,
+                                                   i2p_domain,
                                                    translate,
                                                    registration,
                                                    systemLanguage,
@@ -1107,7 +1107,7 @@ class PubServer(BaseHTTPRequestHandler):
                   authorized: bool, http_prefix: str,
                   base_dir: str, nickname: str, domain: str,
                   domainFull: str,
-                  onion_domain: str, i2pDomain: str,
+                  onion_domain: str, i2p_domain: str,
                   translate: {},
                   registration: bool,
                   systemLanguage: str,
@@ -1116,7 +1116,7 @@ class PubServer(BaseHTTPRequestHandler):
                   show_node_info_accounts: bool) -> bool:
         return self._mastoApiV1(path, callingDomain, uaStr, authorized,
                                 http_prefix, base_dir, nickname, domain,
-                                domainFull, onion_domain, i2pDomain,
+                                domainFull, onion_domain, i2p_domain,
                                 translate, registration, systemLanguage,
                                 project_version, customEmoji,
                                 show_node_info_accounts)
@@ -1184,9 +1184,9 @@ class PubServer(BaseHTTPRequestHandler):
                 wfResult = \
                     webfingerMeta('http', self.server.onion_domain)
             elif (callingDomain.endswith('.i2p') and
-                  self.server.i2pDomain):
+                  self.server.i2p_domain):
                 wfResult = \
-                    webfingerMeta('http', self.server.i2pDomain)
+                    webfingerMeta('http', self.server.i2p_domain)
             else:
                 wfResult = \
                     webfingerMeta(self.server.http_prefix,
@@ -1214,9 +1214,9 @@ class PubServer(BaseHTTPRequestHandler):
                 wfResult = \
                     webfingerNodeInfo('http', self.server.onion_domain)
             elif (callingDomain.endswith('.i2p') and
-                  self.server.i2pDomain):
+                  self.server.i2p_domain):
                 wfResult = \
-                    webfingerNodeInfo('http', self.server.i2pDomain)
+                    webfingerNodeInfo('http', self.server.i2p_domain)
             else:
                 wfResult = \
                     webfingerNodeInfo(self.server.http_prefix,
@@ -1281,7 +1281,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.domain,
                                    self.server.domainFull,
                                    self.server.onion_domain,
-                                   self.server.i2pDomain,
+                                   self.server.i2p_domain,
                                    self.server.port,
                                    self.server.recentPostsCache,
                                    self.server.followersThreads,
@@ -1635,7 +1635,7 @@ class PubServer(BaseHTTPRequestHandler):
     def _loginScreen(self, path: str, callingDomain: str, cookie: str,
                      base_dir: str, http_prefix: str,
                      domain: str, domainFull: str, port: int,
-                     onion_domain: str, i2pDomain: str,
+                     onion_domain: str, i2p_domain: str,
                      debug: bool) -> None:
         """Shows the login screen
         """
@@ -1693,8 +1693,8 @@ class PubServer(BaseHTTPRequestHandler):
                         self._redirect_headers('http://' + onion_domain +
                                                '/login', cookie,
                                                callingDomain)
-                    elif (callingDomain.endswith('.i2p') and i2pDomain):
-                        self._redirect_headers('http://' + i2pDomain +
+                    elif (callingDomain.endswith('.i2p') and i2p_domain):
+                        self._redirect_headers('http://' + i2p_domain +
                                                '/login', cookie,
                                                callingDomain)
                     else:
@@ -1711,8 +1711,8 @@ class PubServer(BaseHTTPRequestHandler):
                         self._redirect_headers('http://' + onion_domain +
                                                '/login', cookie,
                                                callingDomain)
-                    elif (callingDomain.endswith('.i2p') and i2pDomain):
-                        self._redirect_headers('http://' + i2pDomain +
+                    elif (callingDomain.endswith('.i2p') and i2p_domain):
+                        self._redirect_headers('http://' + i2p_domain +
                                                '/login', cookie,
                                                callingDomain)
                     else:
@@ -1812,9 +1812,9 @@ class PubServer(BaseHTTPRequestHandler):
                                            loginNickname + '/' +
                                            self.server.defaultTimeline,
                                            cookieStr, callingDomain)
-                elif (callingDomain.endswith('.i2p') and i2pDomain):
+                elif (callingDomain.endswith('.i2p') and i2p_domain):
                     self._redirect_headers('http://' +
-                                           i2pDomain +
+                                           i2p_domain +
                                            '/users/' +
                                            loginNickname + '/' +
                                            self.server.defaultTimeline,
@@ -1833,7 +1833,7 @@ class PubServer(BaseHTTPRequestHandler):
     def _moderatorActions(self, path: str, callingDomain: str, cookie: str,
                           base_dir: str, http_prefix: str,
                           domain: str, domainFull: str, port: int,
-                          onion_domain: str, i2pDomain: str,
+                          onion_domain: str, i2p_domain: str,
                           debug: bool) -> None:
         """Actions on the moderator screen
         """
@@ -2042,7 +2042,7 @@ class PubServer(BaseHTTPRequestHandler):
                       callingDomain: str, cookie: str,
                       base_dir: str, http_prefix: str, nickname: str,
                       domain: str, domainFull: str, port: int,
-                      onion_domain: str, i2pDomain: str,
+                      onion_domain: str, i2p_domain: str,
                       debug: bool, accessKeys: {},
                       defaultTimeline: str) -> None:
         """Receive POST from webapp_accesskeys
@@ -2082,9 +2082,9 @@ class PubServer(BaseHTTPRequestHandler):
                 originPathStr = \
                     'http://' + onion_domain + usersPath + '/' + \
                     defaultTimeline
-            elif callingDomain.endswith('.i2p') and i2pDomain:
+            elif callingDomain.endswith('.i2p') and i2p_domain:
                 originPathStr = \
-                    'http://' + i2pDomain + usersPath + '/' + defaultTimeline
+                    'http://' + i2p_domain + usersPath + '/' + defaultTimeline
             self._redirect_headers(originPathStr, cookie, callingDomain)
             self.server.POSTbusy = False
             return
@@ -2118,9 +2118,9 @@ class PubServer(BaseHTTPRequestHandler):
         if callingDomain.endswith('.onion') and onion_domain:
             originPathStr = \
                 'http://' + onion_domain + usersPath + '/' + defaultTimeline
-        elif callingDomain.endswith('.i2p') and i2pDomain:
+        elif callingDomain.endswith('.i2p') and i2p_domain:
             originPathStr = \
-                'http://' + i2pDomain + usersPath + '/' + defaultTimeline
+                'http://' + i2p_domain + usersPath + '/' + defaultTimeline
         self._redirect_headers(originPathStr, cookie, callingDomain)
         self.server.POSTbusy = False
         return
@@ -2129,7 +2129,7 @@ class PubServer(BaseHTTPRequestHandler):
                        callingDomain: str, cookie: str,
                        base_dir: str, http_prefix: str, nickname: str,
                        domain: str, domainFull: str, port: int,
-                       onion_domain: str, i2pDomain: str,
+                       onion_domain: str, i2p_domain: str,
                        debug: bool, accessKeys: {},
                        defaultTimeline: str, themeName: str,
                        allow_local_network_access: bool,
@@ -2178,9 +2178,9 @@ class PubServer(BaseHTTPRequestHandler):
                 originPathStr = \
                     'http://' + onion_domain + usersPath + '/' + \
                     defaultTimeline
-            elif callingDomain.endswith('.i2p') and i2pDomain:
+            elif callingDomain.endswith('.i2p') and i2p_domain:
                 originPathStr = \
-                    'http://' + i2pDomain + usersPath + '/' + defaultTimeline
+                    'http://' + i2p_domain + usersPath + '/' + defaultTimeline
             self._redirect_headers(originPathStr, cookie, callingDomain)
             self.server.POSTbusy = False
             return
@@ -2253,9 +2253,9 @@ class PubServer(BaseHTTPRequestHandler):
         if callingDomain.endswith('.onion') and onion_domain:
             originPathStr = \
                 'http://' + onion_domain + usersPath + '/' + defaultTimeline
-        elif callingDomain.endswith('.i2p') and i2pDomain:
+        elif callingDomain.endswith('.i2p') and i2p_domain:
             originPathStr = \
-                'http://' + i2pDomain + usersPath + '/' + defaultTimeline
+                'http://' + i2p_domain + usersPath + '/' + defaultTimeline
         self._redirect_headers(originPathStr, cookie, callingDomain)
         self.server.POSTbusy = False
         return
@@ -2264,7 +2264,7 @@ class PubServer(BaseHTTPRequestHandler):
                        callingDomain: str, cookie: str,
                        base_dir: str, http_prefix: str,
                        domain: str, domainFull: str, port: int,
-                       onion_domain: str, i2pDomain: str,
+                       onion_domain: str, i2p_domain: str,
                        debug: bool) -> None:
         """Receive POST from person options screen
         """
@@ -2276,8 +2276,8 @@ class PubServer(BaseHTTPRequestHandler):
         if not chooserNickname:
             if callingDomain.endswith('.onion') and onion_domain:
                 originPathStr = 'http://' + onion_domain + usersPath
-            elif (callingDomain.endswith('.i2p') and i2pDomain):
-                originPathStr = 'http://' + i2pDomain + usersPath
+            elif (callingDomain.endswith('.i2p') and i2p_domain):
+                originPathStr = 'http://' + i2p_domain + usersPath
             print('WARN: unable to find nickname in ' + originPathStr)
             self._redirect_headers(originPathStr, cookie, callingDomain)
             self.server.POSTbusy = False
@@ -2360,8 +2360,8 @@ class PubServer(BaseHTTPRequestHandler):
         if not optionsNickname:
             if callingDomain.endswith('.onion') and onion_domain:
                 originPathStr = 'http://' + onion_domain + usersPath
-            elif (callingDomain.endswith('.i2p') and i2pDomain):
-                originPathStr = 'http://' + i2pDomain + usersPath
+            elif (callingDomain.endswith('.i2p') and i2p_domain):
+                originPathStr = 'http://' + i2p_domain + usersPath
             print('WARN: unable to find nickname in ' + optionsActor)
             self._redirect_headers(originPathStr, cookie, callingDomain)
             self.server.POSTbusy = False
@@ -2782,8 +2782,8 @@ class PubServer(BaseHTTPRequestHandler):
                              domain, optionsActor)
                 if callingDomain.endswith('.onion') and onion_domain:
                     thisActor = 'http://' + onion_domain + usersPath
-                elif (callingDomain.endswith('.i2p') and i2pDomain):
-                    thisActor = 'http://' + i2pDomain + usersPath
+                elif (callingDomain.endswith('.i2p') and i2p_domain):
+                    thisActor = 'http://' + i2p_domain + usersPath
                 actorPathStr = \
                     thisActor + '/' + self.server.defaultTimeline + \
                     '?page=' + str(pageNumber)
@@ -2805,8 +2805,8 @@ class PubServer(BaseHTTPRequestHandler):
                                domain, optionsActor)
                 if callingDomain.endswith('.onion') and onion_domain:
                     thisActor = 'http://' + onion_domain + usersPath
-                elif (callingDomain.endswith('.i2p') and i2pDomain):
-                    thisActor = 'http://' + i2pDomain + usersPath
+                elif (callingDomain.endswith('.i2p') and i2p_domain):
+                    thisActor = 'http://' + i2p_domain + usersPath
                 actorPathStr = \
                     thisActor + '/' + self.server.defaultTimeline + \
                     '?page=' + str(pageNumber)
@@ -2877,8 +2877,8 @@ class PubServer(BaseHTTPRequestHandler):
         # redirect back from person options screen
         if callingDomain.endswith('.onion') and onion_domain:
             originPathStr = 'http://' + onion_domain + usersPath
-        elif callingDomain.endswith('.i2p') and i2pDomain:
-            originPathStr = 'http://' + i2pDomain + usersPath
+        elif callingDomain.endswith('.i2p') and i2p_domain:
+            originPathStr = 'http://' + i2p_domain + usersPath
         self._redirect_headers(originPathStr, cookie, callingDomain)
         self.server.POSTbusy = False
         return
@@ -2887,7 +2887,7 @@ class PubServer(BaseHTTPRequestHandler):
                          authorized: bool, path: str,
                          base_dir: str, http_prefix: str,
                          domain: str, domainFull: str, port: int,
-                         onion_domain: str, i2pDomain: str,
+                         onion_domain: str, i2p_domain: str,
                          debug: bool) -> None:
         """Confirm to unfollow
         """
@@ -2965,8 +2965,8 @@ class PubServer(BaseHTTPRequestHandler):
 
         if callingDomain.endswith('.onion') and onion_domain:
             originPathStr = 'http://' + onion_domain + usersPath
-        elif (callingDomain.endswith('.i2p') and i2pDomain):
-            originPathStr = 'http://' + i2pDomain + usersPath
+        elif (callingDomain.endswith('.i2p') and i2p_domain):
+            originPathStr = 'http://' + i2p_domain + usersPath
         self._redirect_headers(originPathStr, cookie, callingDomain)
         self.server.POSTbusy = False
 
@@ -2974,7 +2974,7 @@ class PubServer(BaseHTTPRequestHandler):
                        authorized: bool, path: str,
                        base_dir: str, http_prefix: str,
                        domain: str, domainFull: str, port: int,
-                       onion_domain: str, i2pDomain: str,
+                       onion_domain: str, i2p_domain: str,
                        debug: bool) -> None:
         """Confirm to follow
         """
@@ -3055,8 +3055,8 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.signingPrivateKeyPem)
         if callingDomain.endswith('.onion') and onion_domain:
             originPathStr = 'http://' + onion_domain + usersPath
-        elif (callingDomain.endswith('.i2p') and i2pDomain):
-            originPathStr = 'http://' + i2pDomain + usersPath
+        elif (callingDomain.endswith('.i2p') and i2p_domain):
+            originPathStr = 'http://' + i2p_domain + usersPath
         self._redirect_headers(originPathStr, cookie, callingDomain)
         self.server.POSTbusy = False
 
@@ -3064,7 +3064,7 @@ class PubServer(BaseHTTPRequestHandler):
                       authorized: bool, path: str,
                       base_dir: str, http_prefix: str,
                       domain: str, domainFull: str, port: int,
-                      onion_domain: str, i2pDomain: str,
+                      onion_domain: str, i2p_domain: str,
                       debug: bool) -> None:
         """Confirms a block
         """
@@ -3074,8 +3074,8 @@ class PubServer(BaseHTTPRequestHandler):
         if not blockerNickname:
             if callingDomain.endswith('.onion') and onion_domain:
                 originPathStr = 'http://' + onion_domain + usersPath
-            elif (callingDomain.endswith('.i2p') and i2pDomain):
-                originPathStr = 'http://' + i2pDomain + usersPath
+            elif (callingDomain.endswith('.i2p') and i2p_domain):
+                originPathStr = 'http://' + i2p_domain + usersPath
             print('WARN: unable to find nickname in ' + originPathStr)
             self._redirect_headers(originPathStr,
                                    cookie, callingDomain)
@@ -3114,8 +3114,8 @@ class PubServer(BaseHTTPRequestHandler):
             if not blockingNickname:
                 if callingDomain.endswith('.onion') and onion_domain:
                     originPathStr = 'http://' + onion_domain + usersPath
-                elif (callingDomain.endswith('.i2p') and i2pDomain):
-                    originPathStr = 'http://' + i2pDomain + usersPath
+                elif (callingDomain.endswith('.i2p') and i2p_domain):
+                    originPathStr = 'http://' + i2p_domain + usersPath
                 print('WARN: unable to find nickname in ' + blockingActor)
                 self._redirect_headers(originPathStr,
                                        cookie, callingDomain)
@@ -3142,8 +3142,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     blockingNickname, blockingDomainFull)
         if callingDomain.endswith('.onion') and onion_domain:
             originPathStr = 'http://' + onion_domain + usersPath
-        elif (callingDomain.endswith('.i2p') and i2pDomain):
-            originPathStr = 'http://' + i2pDomain + usersPath
+        elif (callingDomain.endswith('.i2p') and i2p_domain):
+            originPathStr = 'http://' + i2p_domain + usersPath
         self._redirect_headers(originPathStr, cookie, callingDomain)
         self.server.POSTbusy = False
 
@@ -3151,7 +3151,7 @@ class PubServer(BaseHTTPRequestHandler):
                         authorized: bool, path: str,
                         base_dir: str, http_prefix: str,
                         domain: str, domainFull: str, port: int,
-                        onion_domain: str, i2pDomain: str,
+                        onion_domain: str, i2p_domain: str,
                         debug: bool) -> None:
         """Confirms a unblock
         """
@@ -3161,8 +3161,8 @@ class PubServer(BaseHTTPRequestHandler):
         if not blockerNickname:
             if callingDomain.endswith('.onion') and onion_domain:
                 originPathStr = 'http://' + onion_domain + usersPath
-            elif (callingDomain.endswith('.i2p') and i2pDomain):
-                originPathStr = 'http://' + i2pDomain + usersPath
+            elif (callingDomain.endswith('.i2p') and i2p_domain):
+                originPathStr = 'http://' + i2p_domain + usersPath
             print('WARN: unable to find nickname in ' + originPathStr)
             self._redirect_headers(originPathStr,
                                    cookie, callingDomain)
@@ -3201,8 +3201,8 @@ class PubServer(BaseHTTPRequestHandler):
             if not blockingNickname:
                 if callingDomain.endswith('.onion') and onion_domain:
                     originPathStr = 'http://' + onion_domain + usersPath
-                elif (callingDomain.endswith('.i2p') and i2pDomain):
-                    originPathStr = 'http://' + i2pDomain + usersPath
+                elif (callingDomain.endswith('.i2p') and i2p_domain):
+                    originPathStr = 'http://' + i2p_domain + usersPath
                 print('WARN: unable to find nickname in ' + blockingActor)
                 self._redirect_headers(originPathStr,
                                        cookie, callingDomain)
@@ -3225,8 +3225,8 @@ class PubServer(BaseHTTPRequestHandler):
                             blockingNickname, blockingDomainFull)
         if callingDomain.endswith('.onion') and onion_domain:
             originPathStr = 'http://' + onion_domain + usersPath
-        elif (callingDomain.endswith('.i2p') and i2pDomain):
-            originPathStr = 'http://' + i2pDomain + usersPath
+        elif (callingDomain.endswith('.i2p') and i2p_domain):
+            originPathStr = 'http://' + i2p_domain + usersPath
         self._redirect_headers(originPathStr,
                                cookie, callingDomain)
         self.server.POSTbusy = False
@@ -3236,7 +3236,7 @@ class PubServer(BaseHTTPRequestHandler):
                             base_dir: str, http_prefix: str,
                             domain: str, domainFull: str,
                             port: int, searchForEmoji: bool,
-                            onion_domain: str, i2pDomain: str,
+                            onion_domain: str, i2p_domain: str,
                             GETstartTime, GETtimings: {},
                             debug: bool) -> None:
         """Receive a search query
@@ -3532,7 +3532,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             base_dir, http_prefix,
                                             domain, domainFull,
                                             GETstartTime,
-                                            onion_domain, i2pDomain,
+                                            onion_domain, i2p_domain,
                                             cookie, debug, authorized)
                     return
                 else:
@@ -3670,7 +3670,7 @@ class PubServer(BaseHTTPRequestHandler):
                      authorized: bool, path: str,
                      base_dir: str, http_prefix: str,
                      domain: str, domainFull: str,
-                     onion_domain: str, i2pDomain: str,
+                     onion_domain: str, i2p_domain: str,
                      debug: bool) -> None:
         """Receive a vote via POST
         """
@@ -3690,8 +3690,8 @@ class PubServer(BaseHTTPRequestHandler):
         if not nickname:
             if callingDomain.endswith('.onion') and onion_domain:
                 actor = 'http://' + onion_domain + usersPath
-            elif (callingDomain.endswith('.i2p') and i2pDomain):
-                actor = 'http://' + i2pDomain + usersPath
+            elif (callingDomain.endswith('.i2p') and i2p_domain):
+                actor = 'http://' + i2p_domain + usersPath
             actorPathStr = \
                 actor + '/' + self.server.defaultTimeline + \
                 '?page=' + str(pageNumber)
@@ -3742,8 +3742,8 @@ class PubServer(BaseHTTPRequestHandler):
         self._sendReplyToQuestion(nickname, messageId, answer)
         if callingDomain.endswith('.onion') and onion_domain:
             actor = 'http://' + onion_domain + usersPath
-        elif (callingDomain.endswith('.i2p') and i2pDomain):
-            actor = 'http://' + i2pDomain + usersPath
+        elif (callingDomain.endswith('.i2p') and i2p_domain):
+            actor = 'http://' + i2p_domain + usersPath
         actorPathStr = \
             actor + '/' + self.server.defaultTimeline + \
             '?page=' + str(pageNumber)
@@ -3757,7 +3757,7 @@ class PubServer(BaseHTTPRequestHandler):
                       authorized: bool, path: str,
                       base_dir: str, http_prefix: str,
                       domain: str, domainFull: str,
-                      onion_domain: str, i2pDomain: str,
+                      onion_domain: str, i2p_domain: str,
                       debug: bool) -> None:
         """Receives an image via POST
         """
@@ -3819,7 +3819,7 @@ class PubServer(BaseHTTPRequestHandler):
                      authorized: bool, path: str,
                      base_dir: str, http_prefix: str,
                      domain: str, domainFull: str,
-                     onion_domain: str, i2pDomain: str,
+                     onion_domain: str, i2p_domain: str,
                      debug: bool) -> None:
         """Removes a shared item
         """
@@ -3876,8 +3876,8 @@ class PubServer(BaseHTTPRequestHandler):
 
         if callingDomain.endswith('.onion') and onion_domain:
             originPathStr = 'http://' + onion_domain + usersPath
-        elif (callingDomain.endswith('.i2p') and i2pDomain):
-            originPathStr = 'http://' + i2pDomain + usersPath
+        elif (callingDomain.endswith('.i2p') and i2p_domain):
+            originPathStr = 'http://' + i2p_domain + usersPath
         self._redirect_headers(originPathStr + '/tlshares',
                                cookie, callingDomain)
         self.server.POSTbusy = False
@@ -3886,7 +3886,7 @@ class PubServer(BaseHTTPRequestHandler):
                       authorized: bool, path: str,
                       base_dir: str, http_prefix: str,
                       domain: str, domainFull: str,
-                      onion_domain: str, i2pDomain: str,
+                      onion_domain: str, i2p_domain: str,
                       debug: bool) -> None:
         """Removes a wanted item
         """
@@ -3943,8 +3943,8 @@ class PubServer(BaseHTTPRequestHandler):
 
         if callingDomain.endswith('.onion') and onion_domain:
             originPathStr = 'http://' + onion_domain + usersPath
-        elif (callingDomain.endswith('.i2p') and i2pDomain):
-            originPathStr = 'http://' + i2pDomain + usersPath
+        elif (callingDomain.endswith('.i2p') and i2p_domain):
+            originPathStr = 'http://' + i2p_domain + usersPath
         self._redirect_headers(originPathStr + '/tlwanted',
                                cookie, callingDomain)
         self.server.POSTbusy = False
@@ -3953,7 +3953,7 @@ class PubServer(BaseHTTPRequestHandler):
                     authorized: bool, path: str,
                     base_dir: str, http_prefix: str,
                     domain: str, domainFull: str,
-                    onion_domain: str, i2pDomain: str,
+                    onion_domain: str, i2p_domain: str,
                     debug: bool) -> None:
         """Endpoint for removing posts after confirmation
         """
@@ -4037,8 +4037,8 @@ class PubServer(BaseHTTPRequestHandler):
                     self._postToOutboxThread(deleteJson)
         if callingDomain.endswith('.onion') and onion_domain:
             originPathStr = 'http://' + onion_domain + usersPath
-        elif (callingDomain.endswith('.i2p') and i2pDomain):
-            originPathStr = 'http://' + i2pDomain + usersPath
+        elif (callingDomain.endswith('.i2p') and i2p_domain):
+            originPathStr = 'http://' + i2p_domain + usersPath
         if pageNumber == 1:
             self._redirect_headers(originPathStr + '/outbox', cookie,
                                    callingDomain)
@@ -4053,7 +4053,7 @@ class PubServer(BaseHTTPRequestHandler):
                      authorized: bool, path: str,
                      base_dir: str, http_prefix: str,
                      domain: str, domainFull: str,
-                     onion_domain: str, i2pDomain: str, debug: bool,
+                     onion_domain: str, i2p_domain: str, debug: bool,
                      defaultTimeline: str,
                      allow_local_network_access: bool) -> None:
         """Updates the left links column of the timeline
@@ -4194,7 +4194,7 @@ class PubServer(BaseHTTPRequestHandler):
                             authorized: bool, path: str,
                             base_dir: str, http_prefix: str,
                             domain: str, domainFull: str,
-                            onion_domain: str, i2pDomain: str, debug: bool,
+                            onion_domain: str, i2p_domain: str, debug: bool,
                             defaultTimeline: str,
                             allow_local_network_access: bool) -> None:
         """On the screen after selecting a hashtag from the swarm, this sets
@@ -4296,7 +4296,7 @@ class PubServer(BaseHTTPRequestHandler):
                         authorized: bool, path: str,
                         base_dir: str, http_prefix: str,
                         domain: str, domainFull: str,
-                        onion_domain: str, i2pDomain: str, debug: bool,
+                        onion_domain: str, i2p_domain: str, debug: bool,
                         defaultTimeline: str) -> None:
         """Updates the right newswire column of the timeline
         """
@@ -4451,7 +4451,7 @@ class PubServer(BaseHTTPRequestHandler):
                          authorized: bool, path: str,
                          base_dir: str, http_prefix: str,
                          domain: str, domainFull: str,
-                         onion_domain: str, i2pDomain: str, debug: bool,
+                         onion_domain: str, i2p_domain: str, debug: bool,
                          defaultTimeline: str,
                          newswire: {}) -> None:
         """Updates the citations for a blog post after hitting
@@ -4541,7 +4541,7 @@ class PubServer(BaseHTTPRequestHandler):
                       authorized: bool, path: str,
                       base_dir: str, http_prefix: str,
                       domain: str, domainFull: str,
-                      onion_domain: str, i2pDomain: str, debug: bool,
+                      onion_domain: str, i2p_domain: str, debug: bool,
                       defaultTimeline: str) -> None:
         """edits a news post after receiving POST
         """
@@ -4675,7 +4675,7 @@ class PubServer(BaseHTTPRequestHandler):
                        authorized: bool, path: str,
                        base_dir: str, http_prefix: str,
                        domain: str, domainFull: str,
-                       onion_domain: str, i2pDomain: str,
+                       onion_domain: str, i2p_domain: str,
                        debug: bool, allow_local_network_access: bool,
                        systemLanguage: str, content_license_url: str) -> None:
         """Updates your user profile after editing via the Edit button
@@ -7057,7 +7057,7 @@ class PubServer(BaseHTTPRequestHandler):
                            base_dir: str, http_prefix: str,
                            domain: str, domainFull: str,
                            GETstartTime,
-                           onion_domain: str, i2pDomain: str,
+                           onion_domain: str, i2p_domain: str,
                            cookie: str, debug: bool,
                            authorized: bool) -> None:
         """Show person options screen
@@ -7187,9 +7187,9 @@ class PubServer(BaseHTTPRequestHandler):
         if callingDomain.endswith('.onion') and onion_domain:
             originPathStrAbsolute = \
                 'http://' + onion_domain + originPathStr
-        elif callingDomain.endswith('.i2p') and i2pDomain:
+        elif callingDomain.endswith('.i2p') and i2p_domain:
             originPathStrAbsolute = \
-                'http://' + i2pDomain + originPathStr
+                'http://' + i2p_domain + originPathStr
         else:
             originPathStrAbsolute = \
                 http_prefix + '://' + domainFull + originPathStr
@@ -7503,7 +7503,7 @@ class PubServer(BaseHTTPRequestHandler):
                        path: str, cookie: str,
                        base_dir: str, http_prefix: str,
                        domain: str, domainFull: str, port: int,
-                       onion_domain: str, i2pDomain: str,
+                       onion_domain: str, i2p_domain: str,
                        GETstartTime) -> None:
         """Return the result of a hashtag search
         """
@@ -7571,7 +7571,7 @@ class PubServer(BaseHTTPRequestHandler):
                     'http://' + onion_domain + originPathStr
             elif (callingDomain.endswith('.i2p') and onion_domain):
                 originPathStrAbsolute = \
-                    'http://' + i2pDomain + originPathStr
+                    'http://' + i2p_domain + originPathStr
             self._redirect_headers(originPathStrAbsolute + '/search',
                                    cookie, callingDomain)
         fitnessPerformance(GETstartTime, self.server.fitness,
@@ -7582,7 +7582,7 @@ class PubServer(BaseHTTPRequestHandler):
                            path: str, cookie: str,
                            base_dir: str, http_prefix: str,
                            domain: str, domainFull: str, port: int,
-                           onion_domain: str, i2pDomain: str,
+                           onion_domain: str, i2p_domain: str,
                            GETstartTime) -> None:
         """Return an RSS 2 feed for a hashtag
         """
@@ -7626,7 +7626,7 @@ class PubServer(BaseHTTPRequestHandler):
                     'http://' + onion_domain + originPathStr
             elif (callingDomain.endswith('.i2p') and onion_domain):
                 originPathStrAbsolute = \
-                    'http://' + i2pDomain + originPathStr
+                    'http://' + i2p_domain + originPathStr
             self._redirect_headers(originPathStrAbsolute + '/search',
                                    cookie, callingDomain)
         fitnessPerformance(GETstartTime, self.server.fitness,
@@ -7638,7 +7638,7 @@ class PubServer(BaseHTTPRequestHandler):
                         cookie: str, proxyType: str,
                         http_prefix: str,
                         domain: str, domainFull: str, port: int,
-                        onion_domain: str, i2pDomain: str,
+                        onion_domain: str, i2p_domain: str,
                         GETstartTime,
                         repeatPrivate: bool,
                         debug: bool) -> None:
@@ -7787,7 +7787,7 @@ class PubServer(BaseHTTPRequestHandler):
                             cookie: str, proxyType: str,
                             http_prefix: str,
                             domain: str, domainFull: str, port: int,
-                            onion_domain: str, i2pDomain: str,
+                            onion_domain: str, i2p_domain: str,
                             GETstartTime,
                             repeatPrivate: bool, debug: bool,
                             recentPostsCache: {}) -> None:
@@ -7887,7 +7887,7 @@ class PubServer(BaseHTTPRequestHandler):
                              cookie: str,
                              base_dir: str, http_prefix: str,
                              domain: str, domainFull: str, port: int,
-                             onion_domain: str, i2pDomain: str,
+                             onion_domain: str, i2p_domain: str,
                              GETstartTime,
                              proxyType: str, debug: bool) -> None:
         """Follow approve button was pressed
@@ -7922,9 +7922,9 @@ class PubServer(BaseHTTPRequestHandler):
         if callingDomain.endswith('.onion') and onion_domain:
             originPathStrAbsolute = \
                 'http://' + onion_domain + originPathStr
-        elif (callingDomain.endswith('.i2p') and i2pDomain):
+        elif (callingDomain.endswith('.i2p') and i2p_domain):
             originPathStrAbsolute = \
-                'http://' + i2pDomain + originPathStr
+                'http://' + i2p_domain + originPathStr
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_followApproveButton',
                            self.server.debug)
@@ -7935,7 +7935,7 @@ class PubServer(BaseHTTPRequestHandler):
                       cookie: str,
                       base_dir: str, http_prefix: str,
                       domain: str, domainFull: str, port: int,
-                      onion_domain: str, i2pDomain: str,
+                      onion_domain: str, i2p_domain: str,
                       GETstartTime,
                       proxyType: str, debug: bool,
                       newswire: {}):
@@ -7978,9 +7978,9 @@ class PubServer(BaseHTTPRequestHandler):
         if callingDomain.endswith('.onion') and onion_domain:
             originPathStrAbsolute = \
                 'http://' + onion_domain + originPathStr
-        elif (callingDomain.endswith('.i2p') and i2pDomain):
+        elif (callingDomain.endswith('.i2p') and i2p_domain):
             originPathStrAbsolute = \
-                'http://' + i2pDomain + originPathStr
+                'http://' + i2p_domain + originPathStr
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_newswireVote',
                            self.server.debug)
@@ -7991,7 +7991,7 @@ class PubServer(BaseHTTPRequestHandler):
                         cookie: str,
                         base_dir: str, http_prefix: str,
                         domain: str, domainFull: str, port: int,
-                        onion_domain: str, i2pDomain: str,
+                        onion_domain: str, i2p_domain: str,
                         GETstartTime,
                         proxyType: str, debug: bool,
                         newswire: {}):
@@ -8032,9 +8032,9 @@ class PubServer(BaseHTTPRequestHandler):
         if callingDomain.endswith('.onion') and onion_domain:
             originPathStrAbsolute = \
                 'http://' + onion_domain + originPathStr
-        elif (callingDomain.endswith('.i2p') and i2pDomain):
+        elif (callingDomain.endswith('.i2p') and i2p_domain):
             originPathStrAbsolute = \
-                'http://' + i2pDomain + originPathStr
+                'http://' + i2p_domain + originPathStr
         self._redirect_headers(originPathStrAbsolute,
                                cookie, callingDomain)
         fitnessPerformance(GETstartTime, self.server.fitness,
@@ -8045,7 +8045,7 @@ class PubServer(BaseHTTPRequestHandler):
                           cookie: str,
                           base_dir: str, http_prefix: str,
                           domain: str, domainFull: str, port: int,
-                          onion_domain: str, i2pDomain: str,
+                          onion_domain: str, i2p_domain: str,
                           GETstartTime,
                           proxyType: str, debug: bool) -> None:
         """Follow deny button was pressed
@@ -8077,9 +8077,9 @@ class PubServer(BaseHTTPRequestHandler):
         if callingDomain.endswith('.onion') and onion_domain:
             originPathStrAbsolute = \
                 'http://' + onion_domain + originPathStr
-        elif callingDomain.endswith('.i2p') and i2pDomain:
+        elif callingDomain.endswith('.i2p') and i2p_domain:
             originPathStrAbsolute = \
-                'http://' + i2pDomain + originPathStr
+                'http://' + i2p_domain + originPathStr
         self._redirect_headers(originPathStrAbsolute,
                                cookie, callingDomain)
         fitnessPerformance(GETstartTime, self.server.fitness,
@@ -8089,7 +8089,7 @@ class PubServer(BaseHTTPRequestHandler):
     def _likeButton(self, callingDomain: str, path: str,
                     base_dir: str, http_prefix: str,
                     domain: str, domainFull: str,
-                    onion_domain: str, i2pDomain: str,
+                    onion_domain: str, i2p_domain: str,
                     GETstartTime,
                     proxyType: str, cookie: str,
                     debug: str) -> None:
@@ -8254,7 +8254,7 @@ class PubServer(BaseHTTPRequestHandler):
     def _undoLikeButton(self, callingDomain: str, path: str,
                         base_dir: str, http_prefix: str,
                         domain: str, domainFull: str,
-                        onion_domain: str, i2pDomain: str,
+                        onion_domain: str, i2p_domain: str,
                         GETstartTime,
                         proxyType: str, cookie: str,
                         debug: str) -> None:
@@ -8404,7 +8404,7 @@ class PubServer(BaseHTTPRequestHandler):
     def _reactionButton(self, callingDomain: str, path: str,
                         base_dir: str, http_prefix: str,
                         domain: str, domainFull: str,
-                        onion_domain: str, i2pDomain: str,
+                        onion_domain: str, i2p_domain: str,
                         GETstartTime,
                         proxyType: str, cookie: str,
                         debug: str) -> None:
@@ -8590,7 +8590,7 @@ class PubServer(BaseHTTPRequestHandler):
     def _undoReactionButton(self, callingDomain: str, path: str,
                             base_dir: str, http_prefix: str,
                             domain: str, domainFull: str,
-                            onion_domain: str, i2pDomain: str,
+                            onion_domain: str, i2p_domain: str,
                             GETstartTime,
                             proxyType: str, cookie: str,
                             debug: str) -> None:
@@ -8758,7 +8758,7 @@ class PubServer(BaseHTTPRequestHandler):
     def _reactionPicker(self, callingDomain: str, path: str,
                         base_dir: str, http_prefix: str,
                         domain: str, domainFull: str, port: int,
-                        onion_domain: str, i2pDomain: str,
+                        onion_domain: str, i2p_domain: str,
                         GETstartTime,
                         proxyType: str, cookie: str,
                         debug: str) -> None:
@@ -8851,7 +8851,7 @@ class PubServer(BaseHTTPRequestHandler):
     def _bookmarkButton(self, callingDomain: str, path: str,
                         base_dir: str, http_prefix: str,
                         domain: str, domainFull: str, port: int,
-                        onion_domain: str, i2pDomain: str,
+                        onion_domain: str, i2p_domain: str,
                         GETstartTime,
                         proxyType: str, cookie: str,
                         debug: str) -> None:
@@ -8978,7 +8978,7 @@ class PubServer(BaseHTTPRequestHandler):
     def _undoBookmarkButton(self, callingDomain: str, path: str,
                             base_dir: str, http_prefix: str,
                             domain: str, domainFull: str, port: int,
-                            onion_domain: str, i2pDomain: str,
+                            onion_domain: str, i2p_domain: str,
                             GETstartTime,
                             proxyType: str, cookie: str,
                             debug: str) -> None:
@@ -9105,7 +9105,7 @@ class PubServer(BaseHTTPRequestHandler):
     def _deleteButton(self, callingDomain: str, path: str,
                       base_dir: str, http_prefix: str,
                       domain: str, domainFull: str, port: int,
-                      onion_domain: str, i2pDomain: str,
+                      onion_domain: str, i2p_domain: str,
                       GETstartTime,
                       proxyType: str, cookie: str,
                       debug: str) -> None:
@@ -9144,8 +9144,8 @@ class PubServer(BaseHTTPRequestHandler):
                 # You can only delete your own posts
                 if callingDomain.endswith('.onion') and onion_domain:
                     actor = 'http://' + onion_domain + usersPath
-                elif callingDomain.endswith('.i2p') and i2pDomain:
-                    actor = 'http://' + i2pDomain + usersPath
+                elif callingDomain.endswith('.i2p') and i2p_domain:
+                    actor = 'http://' + i2p_domain + usersPath
                 self._redirect_headers(actor + '/' + timelineStr,
                                        cookie, callingDomain)
                 return
@@ -9154,8 +9154,8 @@ class PubServer(BaseHTTPRequestHandler):
                 print('WARN: unable to find nickname in ' + actor)
                 if callingDomain.endswith('.onion') and onion_domain:
                     actor = 'http://' + onion_domain + usersPath
-                elif callingDomain.endswith('.i2p') and i2pDomain:
-                    actor = 'http://' + i2pDomain + usersPath
+                elif callingDomain.endswith('.i2p') and i2p_domain:
+                    actor = 'http://' + i2p_domain + usersPath
                 self._redirect_headers(actor + '/' + timelineStr,
                                        cookie, callingDomain)
                 return
@@ -9193,8 +9193,8 @@ class PubServer(BaseHTTPRequestHandler):
                 return
         if callingDomain.endswith('.onion') and onion_domain:
             actor = 'http://' + onion_domain + usersPath
-        elif (callingDomain.endswith('.i2p') and i2pDomain):
-            actor = 'http://' + i2pDomain + usersPath
+        elif (callingDomain.endswith('.i2p') and i2p_domain):
+            actor = 'http://' + i2p_domain + usersPath
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_deleteButton',
                            self.server.debug)
@@ -9204,7 +9204,7 @@ class PubServer(BaseHTTPRequestHandler):
     def _muteButton(self, callingDomain: str, path: str,
                     base_dir: str, http_prefix: str,
                     domain: str, domainFull: str, port: int,
-                    onion_domain: str, i2pDomain: str,
+                    onion_domain: str, i2p_domain: str,
                     GETstartTime,
                     proxyType: str, cookie: str,
                     debug: str):
@@ -9300,9 +9300,9 @@ class PubServer(BaseHTTPRequestHandler):
             actor = \
                 'http://' + onion_domain + \
                 path.split('?mute=')[0]
-        elif (callingDomain.endswith('.i2p') and i2pDomain):
+        elif (callingDomain.endswith('.i2p') and i2p_domain):
             actor = \
-                'http://' + i2pDomain + \
+                'http://' + i2p_domain + \
                 path.split('?mute=')[0]
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_muteButton', self.server.debug)
@@ -9313,7 +9313,7 @@ class PubServer(BaseHTTPRequestHandler):
     def _undoMuteButton(self, callingDomain: str, path: str,
                         base_dir: str, http_prefix: str,
                         domain: str, domainFull: str, port: int,
-                        onion_domain: str, i2pDomain: str,
+                        onion_domain: str, i2p_domain: str,
                         GETstartTime,
                         proxyType: str, cookie: str,
                         debug: str):
@@ -9408,9 +9408,9 @@ class PubServer(BaseHTTPRequestHandler):
         if callingDomain.endswith('.onion') and onion_domain:
             actor = \
                 'http://' + onion_domain + path.split('?unmute=')[0]
-        elif callingDomain.endswith('.i2p') and i2pDomain:
+        elif callingDomain.endswith('.i2p') and i2p_domain:
             actor = \
-                'http://' + i2pDomain + path.split('?unmute=')[0]
+                'http://' + i2p_domain + path.split('?unmute=')[0]
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_undoMuteButton', self.server.debug)
         self._redirect_headers(actor + '/' + timelineStr +
@@ -9421,7 +9421,7 @@ class PubServer(BaseHTTPRequestHandler):
                            callingDomain: str, path: str,
                            base_dir: str, http_prefix: str,
                            domain: str, domainFull: str, port: int,
-                           onion_domain: str, i2pDomain: str,
+                           onion_domain: str, i2p_domain: str,
                            GETstartTime,
                            proxyType: str, cookie: str,
                            debug: str) -> bool:
@@ -9643,7 +9643,7 @@ class PubServer(BaseHTTPRequestHandler):
                    callingDomain: str, path: str,
                    base_dir: str, http_prefix: str,
                    domain: str, domainFull: str, port: int,
-                   onion_domain: str, i2pDomain: str,
+                   onion_domain: str, i2p_domain: str,
                    GETstartTime,
                    proxyType: str, cookie: str,
                    debug: str) -> bool:
@@ -9753,7 +9753,7 @@ class PubServer(BaseHTTPRequestHandler):
                     callingDomain: str, path: str,
                     base_dir: str, http_prefix: str,
                     domain: str, domainFull: str, port: int,
-                    onion_domain: str, i2pDomain: str,
+                    onion_domain: str, i2p_domain: str,
                     GETstartTime,
                     proxyType: str, cookie: str,
                     debug: str) -> bool:
@@ -9878,7 +9878,7 @@ class PubServer(BaseHTTPRequestHandler):
                               callingDomain: str, path: str,
                               base_dir: str, http_prefix: str,
                               domain: str, domainFull: str, port: int,
-                              onion_domain: str, i2pDomain: str,
+                              onion_domain: str, i2p_domain: str,
                               GETstartTime,
                               proxyType: str, cookie: str,
                               debug: str) -> bool:
@@ -9934,7 +9934,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         authorized, callingDomain, path,
                                         base_dir, http_prefix, nickname,
                                         domain, domainFull, port,
-                                        onion_domain, i2pDomain,
+                                        onion_domain, i2p_domain,
                                         GETstartTime,
                                         proxyType, cookie, debug,
                                         includeCreateWrapper)
@@ -9949,7 +9949,7 @@ class PubServer(BaseHTTPRequestHandler):
                           callingDomain: str, path: str,
                           base_dir: str, http_prefix: str, nickname: str,
                           domain: str, domainFull: str, port: int,
-                          onion_domain: str, i2pDomain: str,
+                          onion_domain: str, i2p_domain: str,
                           GETstartTime,
                           proxyType: str, cookie: str,
                           debug: str, includeCreateWrapper: bool) -> bool:
@@ -10042,7 +10042,7 @@ class PubServer(BaseHTTPRequestHandler):
                             callingDomain: str, path: str,
                             base_dir: str, http_prefix: str,
                             domain: str, domainFull: str, port: int,
-                            onion_domain: str, i2pDomain: str,
+                            onion_domain: str, i2p_domain: str,
                             GETstartTime,
                             proxyType: str, cookie: str,
                             debug: str) -> bool:
@@ -10092,7 +10092,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         authorized, callingDomain, path,
                                         base_dir, http_prefix, nickname,
                                         domain, domainFull, port,
-                                        onion_domain, i2pDomain,
+                                        onion_domain, i2p_domain,
                                         GETstartTime,
                                         proxyType, cookie, debug,
                                         includeCreateWrapper)
@@ -10105,7 +10105,7 @@ class PubServer(BaseHTTPRequestHandler):
                         callingDomain: str, path: str,
                         base_dir: str, http_prefix: str,
                         domain: str, domainFull: str, port: int,
-                        onion_domain: str, i2pDomain: str,
+                        onion_domain: str, i2p_domain: str,
                         GETstartTime,
                         proxyType: str, cookie: str,
                         debug: str) -> bool:
@@ -10136,7 +10136,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         authorized, callingDomain, path,
                                         base_dir, http_prefix, nickname,
                                         domain, domainFull, port,
-                                        onion_domain, i2pDomain,
+                                        onion_domain, i2p_domain,
                                         GETstartTime,
                                         proxyType, cookie, debug,
                                         includeCreateWrapper)
@@ -10149,7 +10149,7 @@ class PubServer(BaseHTTPRequestHandler):
                    callingDomain: str, path: str,
                    base_dir: str, http_prefix: str,
                    domain: str, domainFull: str, port: int,
-                   onion_domain: str, i2pDomain: str,
+                   onion_domain: str, i2p_domain: str,
                    GETstartTime,
                    proxyType: str, cookie: str,
                    debug: str,
@@ -10318,7 +10318,7 @@ class PubServer(BaseHTTPRequestHandler):
                  callingDomain: str, path: str,
                  base_dir: str, http_prefix: str,
                  domain: str, domainFull: str, port: int,
-                 onion_domain: str, i2pDomain: str,
+                 onion_domain: str, i2p_domain: str,
                  GETstartTime,
                  proxyType: str, cookie: str,
                  debug: str) -> bool:
@@ -10461,7 +10461,7 @@ class PubServer(BaseHTTPRequestHandler):
                      callingDomain: str, path: str,
                      base_dir: str, http_prefix: str,
                      domain: str, domainFull: str, port: int,
-                     onion_domain: str, i2pDomain: str,
+                     onion_domain: str, i2p_domain: str,
                      GETstartTime,
                      proxyType: str, cookie: str,
                      debug: str) -> bool:
@@ -10604,7 +10604,7 @@ class PubServer(BaseHTTPRequestHandler):
                            callingDomain: str, path: str,
                            base_dir: str, http_prefix: str,
                            domain: str, domainFull: str, port: int,
-                           onion_domain: str, i2pDomain: str,
+                           onion_domain: str, i2p_domain: str,
                            GETstartTime,
                            proxyType: str, cookie: str,
                            debug: str) -> bool:
@@ -10746,7 +10746,7 @@ class PubServer(BaseHTTPRequestHandler):
                            callingDomain: str, path: str,
                            base_dir: str, http_prefix: str,
                            domain: str, domainFull: str, port: int,
-                           onion_domain: str, i2pDomain: str,
+                           onion_domain: str, i2p_domain: str,
                            GETstartTime,
                            proxyType: str, cookie: str,
                            debug: str) -> bool:
@@ -10889,7 +10889,7 @@ class PubServer(BaseHTTPRequestHandler):
                           callingDomain: str, path: str,
                           base_dir: str, http_prefix: str,
                           domain: str, domainFull: str, port: int,
-                          onion_domain: str, i2pDomain: str,
+                          onion_domain: str, i2p_domain: str,
                           GETstartTime,
                           proxyType: str, cookie: str,
                           debug: str) -> bool:
@@ -11040,7 +11040,7 @@ class PubServer(BaseHTTPRequestHandler):
                               callingDomain: str, path: str,
                               base_dir: str, http_prefix: str,
                               domain: str, domainFull: str, port: int,
-                              onion_domain: str, i2pDomain: str,
+                              onion_domain: str, i2p_domain: str,
                               GETstartTime,
                               proxyType: str, cookie: str,
                               debug: str) -> bool:
@@ -11189,7 +11189,7 @@ class PubServer(BaseHTTPRequestHandler):
                             callingDomain: str, path: str,
                             base_dir: str, http_prefix: str,
                             domain: str, domainFull: str, port: int,
-                            onion_domain: str, i2pDomain: str,
+                            onion_domain: str, i2p_domain: str,
                             GETstartTime,
                             proxyType: str, cookie: str,
                             debug: str) -> bool:
@@ -11275,7 +11275,7 @@ class PubServer(BaseHTTPRequestHandler):
                             callingDomain: str, path: str,
                             base_dir: str, http_prefix: str,
                             domain: str, domainFull: str, port: int,
-                            onion_domain: str, i2pDomain: str,
+                            onion_domain: str, i2p_domain: str,
                             GETstartTime,
                             proxyType: str, cookie: str,
                             debug: str) -> bool:
@@ -11360,7 +11360,7 @@ class PubServer(BaseHTTPRequestHandler):
                                callingDomain: str, path: str,
                                base_dir: str, http_prefix: str,
                                domain: str, domainFull: str, port: int,
-                               onion_domain: str, i2pDomain: str,
+                               onion_domain: str, i2p_domain: str,
                                GETstartTime,
                                proxyType: str, cookie: str,
                                debug: str) -> bool:
@@ -11504,7 +11504,7 @@ class PubServer(BaseHTTPRequestHandler):
                             callingDomain: str, path: str,
                             base_dir: str, http_prefix: str,
                             domain: str, domainFull: str, port: int,
-                            onion_domain: str, i2pDomain: str,
+                            onion_domain: str, i2p_domain: str,
                             GETstartTime,
                             proxyType: str, cookie: str,
                             debug: str) -> bool:
@@ -11631,7 +11631,7 @@ class PubServer(BaseHTTPRequestHandler):
                          callingDomain: str, path: str,
                          base_dir: str, http_prefix: str,
                          domain: str, domainFull: str, port: int,
-                         onion_domain: str, i2pDomain: str,
+                         onion_domain: str, i2p_domain: str,
                          GETstartTime,
                          proxyType: str, cookie: str,
                          debug: str) -> bool:
@@ -11774,7 +11774,7 @@ class PubServer(BaseHTTPRequestHandler):
                         callingDomain: str, path: str,
                         base_dir: str, http_prefix: str,
                         domain: str, domainFull: str, port: int,
-                        onion_domain: str, i2pDomain: str,
+                        onion_domain: str, i2p_domain: str,
                         GETstartTime,
                         proxyType: str, cookie: str,
                         debug: str, sharesFileType: str) -> bool:
@@ -11890,7 +11890,7 @@ class PubServer(BaseHTTPRequestHandler):
                            callingDomain: str, path: str,
                            base_dir: str, http_prefix: str,
                            domain: str, domainFull: str, port: int,
-                           onion_domain: str, i2pDomain: str,
+                           onion_domain: str, i2p_domain: str,
                            GETstartTime,
                            proxyType: str, cookie: str,
                            debug: str) -> bool:
@@ -12009,7 +12009,7 @@ class PubServer(BaseHTTPRequestHandler):
                            callingDomain: str, path: str,
                            base_dir: str, http_prefix: str,
                            domain: str, domainFull: str, port: int,
-                           onion_domain: str, i2pDomain: str,
+                           onion_domain: str, i2p_domain: str,
                            GETstartTime,
                            proxyType: str, cookie: str,
                            debug: str) -> bool:
@@ -12171,7 +12171,7 @@ class PubServer(BaseHTTPRequestHandler):
                            callingDomain: str, path: str,
                            base_dir: str, http_prefix: str,
                            domain: str, domainFull: str, port: int,
-                           onion_domain: str, i2pDomain: str,
+                           onion_domain: str, i2p_domain: str,
                            GETstartTime,
                            proxyType: str, cookie: str,
                            debug: str) -> bool:
@@ -12268,7 +12268,7 @@ class PubServer(BaseHTTPRequestHandler):
     def _showInstanceActor(self, callingDomain: str, path: str,
                            base_dir: str, http_prefix: str,
                            domain: str, domainFull: str, port: int,
-                           onion_domain: str, i2pDomain: str,
+                           onion_domain: str, i2p_domain: str,
                            GETstartTime,
                            proxyType: str, cookie: str,
                            debug: str,
@@ -12288,8 +12288,8 @@ class PubServer(BaseHTTPRequestHandler):
         acceptStr = self.headers['Accept']
         if onion_domain and callingDomain.endswith('.onion'):
             actorDomainUrl = 'http://' + onion_domain
-        elif i2pDomain and callingDomain.endswith('.i2p'):
-            actorDomainUrl = 'http://' + i2pDomain
+        elif i2p_domain and callingDomain.endswith('.i2p'):
+            actorDomainUrl = 'http://' + i2p_domain
         else:
             actorDomainUrl = http_prefix + '://' + domainFull
         actorUrl = actorDomainUrl + '/users/Actor'
@@ -12320,9 +12320,9 @@ class PubServer(BaseHTTPRequestHandler):
         if onion_domain and callingDomain.endswith('.onion'):
             msgStr = msgStr.replace(http_prefix + '://' + domainFull,
                                     'http://' + onion_domain)
-        elif i2pDomain and callingDomain.endswith('.i2p'):
+        elif i2p_domain and callingDomain.endswith('.i2p'):
             msgStr = msgStr.replace(http_prefix + '://' + domainFull,
-                                    'http://' + i2pDomain)
+                                    'http://' + i2p_domain)
         msg = msgStr.encode('utf-8')
         msglen = len(msg)
         if 'application/ld+json' in acceptStr:
@@ -12345,7 +12345,7 @@ class PubServer(BaseHTTPRequestHandler):
                       callingDomain: str, path: str,
                       base_dir: str, http_prefix: str,
                       domain: str, domainFull: str, port: int,
-                      onion_domain: str, i2pDomain: str,
+                      onion_domain: str, i2p_domain: str,
                       GETstartTime,
                       proxyType: str, cookie: str,
                       translate: {}, debug: str) -> bool:
@@ -12401,7 +12401,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _redirectToLoginScreen(self, callingDomain: str, path: str,
                                http_prefix: str, domainFull: str,
-                               onion_domain: str, i2pDomain: str,
+                               onion_domain: str, i2p_domain: str,
                                GETstartTime,
                                authorized: bool, debug: bool):
         """Redirects to the login screen if necessary
@@ -12448,9 +12448,9 @@ class PubServer(BaseHTTPRequestHandler):
                 self._redirect_headers('http://' +
                                        onion_domain + divertPath,
                                        None, callingDomain)
-            elif callingDomain.endswith('.i2p') and i2pDomain:
+            elif callingDomain.endswith('.i2p') and i2p_domain:
                 self._redirect_headers('http://' +
-                                       i2pDomain + divertPath,
+                                       i2p_domain + divertPath,
                                        None, callingDomain)
             else:
                 self._redirect_headers(http_prefix + '://' +
@@ -12854,7 +12854,7 @@ class PubServer(BaseHTTPRequestHandler):
     def _confirmDeleteEvent(self, callingDomain: str, path: str,
                             base_dir: str, http_prefix: str, cookie: str,
                             translate: {}, domainFull: str,
-                            onion_domain: str, i2pDomain: str,
+                            onion_domain: str, i2p_domain: str,
                             GETstartTime) -> bool:
         """Confirm whether to delete a calendar event
         """
@@ -12891,9 +12891,9 @@ class PubServer(BaseHTTPRequestHandler):
                 actor = \
                     'http://' + onion_domain + \
                     path.split('/eventdelete')[0]
-            elif callingDomain.endswith('.i2p') and i2pDomain:
+            elif callingDomain.endswith('.i2p') and i2p_domain:
                 actor = \
-                    'http://' + i2pDomain + \
+                    'http://' + i2p_domain + \
                     path.split('/eventdelete')[0]
             self._redirect_headers(actor + '/calendar',
                                    cookie, callingDomain)
@@ -13308,10 +13308,10 @@ class PubServer(BaseHTTPRequestHandler):
                     print('GET domain blocked: ' + callingDomain)
                     self._400()
                     return
-            elif self.server.i2pDomain:
+            elif self.server.i2p_domain:
                 if callingDomain != self.server.domain and \
                    callingDomain != self.server.domainFull and \
-                   callingDomain != self.server.i2pDomain:
+                   callingDomain != self.server.i2p_domain:
                     print('GET domain blocked: ' + callingDomain)
                     self._400()
                     return
@@ -13367,9 +13367,9 @@ class PubServer(BaseHTTPRequestHandler):
                                           '/users/news', None,
                                           callingDomain)
                 elif (callingDomain.endswith('.i2p') and
-                      self.server.i2pDomain):
+                      self.server.i2p_domain):
                     self._logout_redirect('http://' +
-                                          self.server.i2pDomain +
+                                          self.server.i2p_domain +
                                           '/users/news', None,
                                           callingDomain)
                 else:
@@ -13414,7 +13414,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.domainFull,
                                        self.server.port,
                                        self.server.onion_domain,
-                                       self.server.i2pDomain,
+                                       self.server.i2p_domain,
                                        GETstartTime,
                                        self.server.proxyType,
                                        None, self.server.debug,
@@ -13686,7 +13686,7 @@ class PubServer(BaseHTTPRequestHandler):
                           self.server.domain,
                           self.server.domainFull,
                           self.server.onion_domain,
-                          self.server.i2pDomain,
+                          self.server.i2p_domain,
                           self.server.translate,
                           self.server.registration,
                           self.server.systemLanguage,
@@ -14085,7 +14085,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.domainFull,
                                       self.server.port,
                                       self.server.onion_domain,
-                                      self.server.i2pDomain,
+                                      self.server.i2p_domain,
                                       GETstartTime,
                                       self.server.proxyType,
                                       cookie, self.server.translate,
@@ -14130,7 +14130,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.domainFull,
                                         GETstartTime,
                                         self.server.onion_domain,
-                                        self.server.i2pDomain,
+                                        self.server.i2p_domain,
                                         cookie, self.server.debug,
                                         authorized)
                 return
@@ -14204,8 +14204,8 @@ class PubServer(BaseHTTPRequestHandler):
                    self.server.onion_domain:
                     actor = 'http://' + self.server.onion_domain + usersPath
                 elif (callingDomain.endswith('.i2p') and
-                      self.server.i2pDomain):
-                    actor = 'http://' + self.server.i2pDomain + usersPath
+                      self.server.i2p_domain):
+                    actor = 'http://' + self.server.i2p_domain + usersPath
                 self._redirect_headers(actor + '/tlshares',
                                        cookie, callingDomain)
                 return
@@ -14243,8 +14243,8 @@ class PubServer(BaseHTTPRequestHandler):
                    self.server.onion_domain:
                     actor = 'http://' + self.server.onion_domain + usersPath
                 elif (callingDomain.endswith('.i2p') and
-                      self.server.i2pDomain):
-                    actor = 'http://' + self.server.i2pDomain + usersPath
+                      self.server.i2p_domain):
+                    actor = 'http://' + self.server.i2p_domain + usersPath
                 self._redirect_headers(actor + '/tlwanted',
                                        cookie, callingDomain)
                 return
@@ -14276,8 +14276,8 @@ class PubServer(BaseHTTPRequestHandler):
                    self.server.onion_domain:
                     actor = 'http://' + self.server.onion_domain + usersPath
                 elif (callingDomain.endswith('.i2p') and
-                      self.server.i2pDomain):
-                    actor = 'http://' + self.server.i2pDomain + usersPath
+                      self.server.i2p_domain):
+                    actor = 'http://' + self.server.i2p_domain + usersPath
                 self._redirect_headers(actor + '/tlshares',
                                        cookie, callingDomain)
                 return
@@ -14309,8 +14309,8 @@ class PubServer(BaseHTTPRequestHandler):
                    self.server.onion_domain:
                     actor = 'http://' + self.server.onion_domain + usersPath
                 elif (callingDomain.endswith('.i2p') and
-                      self.server.i2pDomain):
-                    actor = 'http://' + self.server.i2pDomain + usersPath
+                      self.server.i2p_domain):
+                    actor = 'http://' + self.server.i2p_domain + usersPath
                 self._redirect_headers(actor + '/tlwanted',
                                        cookie, callingDomain)
                 return
@@ -14335,10 +14335,10 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.base_dir, 'http',
                                          self.server.onion_domain)
             elif (callingDomain.endswith('.i2p') and
-                  self.server.i2pDomain):
+                  self.server.i2p_domain):
                 msg = htmlTermsOfService(self.server.cssCache,
                                          self.server.base_dir, 'http',
-                                         self.server.i2pDomain)
+                                         self.server.i2p_domain)
             else:
                 msg = htmlTermsOfService(self.server.cssCache,
                                          self.server.base_dir,
@@ -14393,7 +14393,7 @@ class PubServer(BaseHTTPRequestHandler):
                 msg = \
                     htmlAbout(self.server.cssCache,
                               self.server.base_dir, 'http',
-                              self.server.i2pDomain,
+                              self.server.i2p_domain,
                               None, self.server.translate,
                               self.server.systemLanguage)
             else:
@@ -14564,7 +14564,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.http_prefix,
                                            self.server.domainFull,
                                            self.server.onion_domain,
-                                           self.server.i2pDomain,
+                                           self.server.i2p_domain,
                                            GETstartTime,
                                            authorized, self.server.debug):
                 return
@@ -14931,9 +14931,9 @@ class PubServer(BaseHTTPRequestHandler):
                                       '/users/news', None,
                                       callingDomain)
             elif (callingDomain.endswith('.i2p') and
-                  self.server.i2pDomain):
+                  self.server.i2p_domain):
                 self._logout_redirect('http://' +
-                                      self.server.i2pDomain +
+                                      self.server.i2p_domain +
                                       '/users/news', None,
                                       callingDomain)
             else:
@@ -15049,7 +15049,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.domainFull,
                                         self.server.port,
                                         self.server.onion_domain,
-                                        self.server.i2pDomain,
+                                        self.server.i2p_domain,
                                         GETstartTime)
                 self.server.GETbusy = False
                 return
@@ -15061,7 +15061,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.domainFull,
                                 self.server.port,
                                 self.server.onion_domain,
-                                self.server.i2pDomain,
+                                self.server.i2p_domain,
                                 GETstartTime)
             self.server.GETbusy = False
             return
@@ -15196,7 +15196,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.translate,
                                             self.server.domainFull,
                                             self.server.onion_domain,
-                                            self.server.i2pDomain,
+                                            self.server.i2p_domain,
                                             GETstartTime):
                     self.server.GETbusy = False
                     return
@@ -15241,7 +15241,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.domainFull,
                                  self.server.port,
                                  self.server.onion_domain,
-                                 self.server.i2pDomain,
+                                 self.server.i2p_domain,
                                  GETstartTime,
                                  repeatPrivate,
                                  self.server.debug)
@@ -15265,7 +15265,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.domainFull,
                                      self.server.port,
                                      self.server.onion_domain,
-                                     self.server.i2pDomain,
+                                     self.server.i2p_domain,
                                      GETstartTime,
                                      repeatPrivate,
                                      self.server.debug,
@@ -15288,7 +15288,7 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.domainFull,
                                self.server.port,
                                self.server.onion_domain,
-                               self.server.i2pDomain,
+                               self.server.i2p_domain,
                                GETstartTime,
                                self.server.proxyType,
                                self.server.debug,
@@ -15307,7 +15307,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.domainFull,
                                  self.server.port,
                                  self.server.onion_domain,
-                                 self.server.i2pDomain,
+                                 self.server.i2p_domain,
                                  GETstartTime,
                                  self.server.proxyType,
                                  self.server.debug,
@@ -15326,7 +15326,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.domainFull,
                                       self.server.port,
                                       self.server.onion_domain,
-                                      self.server.i2pDomain,
+                                      self.server.i2p_domain,
                                       GETstartTime,
                                       self.server.proxyType,
                                       self.server.debug)
@@ -15348,7 +15348,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.domainFull,
                                    self.server.port,
                                    self.server.onion_domain,
-                                   self.server.i2pDomain,
+                                   self.server.i2p_domain,
                                    GETstartTime,
                                    self.server.proxyType,
                                    self.server.debug)
@@ -15367,7 +15367,7 @@ class PubServer(BaseHTTPRequestHandler):
                              self.server.domain,
                              self.server.domainFull,
                              self.server.onion_domain,
-                             self.server.i2pDomain,
+                             self.server.i2p_domain,
                              GETstartTime,
                              self.server.proxyType,
                              cookie,
@@ -15387,7 +15387,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.domain,
                                  self.server.domainFull,
                                  self.server.onion_domain,
-                                 self.server.i2pDomain,
+                                 self.server.i2p_domain,
                                  GETstartTime,
                                  self.server.proxyType,
                                  cookie, self.server.debug)
@@ -15408,7 +15408,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.domain,
                                  self.server.domainFull,
                                  self.server.onion_domain,
-                                 self.server.i2pDomain,
+                                 self.server.i2p_domain,
                                  GETstartTime,
                                  self.server.proxyType,
                                  cookie,
@@ -15430,7 +15430,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.domain,
                                      self.server.domainFull,
                                      self.server.onion_domain,
-                                     self.server.i2pDomain,
+                                     self.server.i2p_domain,
                                      GETstartTime,
                                      self.server.proxyType,
                                      cookie, self.server.debug)
@@ -15450,7 +15450,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.domainFull,
                                  self.server.port,
                                  self.server.onion_domain,
-                                 self.server.i2pDomain,
+                                 self.server.i2p_domain,
                                  GETstartTime,
                                  self.server.proxyType,
                                  cookie, self.server.debug)
@@ -15470,7 +15470,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.domainFull,
                                  self.server.port,
                                  self.server.onion_domain,
-                                 self.server.i2pDomain,
+                                 self.server.i2p_domain,
                                  GETstartTime,
                                  self.server.proxyType,
                                  cookie, self.server.debug)
@@ -15490,7 +15490,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.domainFull,
                                      self.server.port,
                                      self.server.onion_domain,
-                                     self.server.i2pDomain,
+                                     self.server.i2p_domain,
                                      GETstartTime,
                                      self.server.proxyType, cookie,
                                      self.server.debug)
@@ -15510,7 +15510,7 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.domainFull,
                                self.server.port,
                                self.server.onion_domain,
-                               self.server.i2pDomain,
+                               self.server.i2p_domain,
                                GETstartTime,
                                self.server.proxyType, cookie,
                                self.server.debug)
@@ -15530,7 +15530,7 @@ class PubServer(BaseHTTPRequestHandler):
                              self.server.domainFull,
                              self.server.port,
                              self.server.onion_domain,
-                             self.server.i2pDomain,
+                             self.server.i2p_domain,
                              GETstartTime,
                              self.server.proxyType, cookie,
                              self.server.debug)
@@ -15550,7 +15550,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.domainFull,
                                  self.server.port,
                                  self.server.onion_domain,
-                                 self.server.i2pDomain,
+                                 self.server.i2p_domain,
                                  GETstartTime,
                                  self.server.proxyType, cookie,
                                  self.server.debug)
@@ -15777,7 +15777,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.domainFull,
                                       self.server.port,
                                       self.server.onion_domain,
-                                      self.server.i2pDomain,
+                                      self.server.i2p_domain,
                                       GETstartTime,
                                       self.server.proxyType,
                                       cookie, self.server.debug):
@@ -15798,7 +15798,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.domainFull,
                                        self.server.port,
                                        self.server.onion_domain,
-                                       self.server.i2pDomain,
+                                       self.server.i2p_domain,
                                        GETstartTime,
                                        self.server.proxyType, cookie,
                                        self.server.debug):
@@ -15819,7 +15819,7 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.domainFull,
                                self.server.port,
                                self.server.onion_domain,
-                               self.server.i2pDomain,
+                               self.server.i2p_domain,
                                GETstartTime,
                                self.server.proxyType,
                                cookie, self.server.debug):
@@ -15840,7 +15840,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.domainFull,
                                 self.server.port,
                                 self.server.onion_domain,
-                                self.server.i2pDomain,
+                                self.server.i2p_domain,
                                 GETstartTime,
                                 self.server.proxyType,
                                 cookie, self.server.debug):
@@ -15860,7 +15860,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.domainFull,
                                     self.server.port,
                                     self.server.onion_domain,
-                                    self.server.i2pDomain,
+                                    self.server.i2p_domain,
                                     GETstartTime,
                                     self.server.proxyType,
                                     cookie, self.server.debug):
@@ -15878,7 +15878,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.domainFull,
                                         self.server.port,
                                         self.server.onion_domain,
-                                        self.server.i2pDomain,
+                                        self.server.i2p_domain,
                                         GETstartTime,
                                         self.server.proxyType,
                                         cookie, self.server.debug):
@@ -15899,7 +15899,7 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.domainFull,
                                self.server.port,
                                self.server.onion_domain,
-                               self.server.i2pDomain,
+                               self.server.i2p_domain,
                                GETstartTime,
                                self.server.proxyType,
                                cookie, self.server.debug,
@@ -15931,7 +15931,7 @@ class PubServer(BaseHTTPRequestHandler):
                              self.server.domainFull,
                              self.server.port,
                              self.server.onion_domain,
-                             self.server.i2pDomain,
+                             self.server.i2p_domain,
                              GETstartTime,
                              self.server.proxyType,
                              cookie, self.server.debug):
@@ -15952,7 +15952,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.domainFull,
                                  self.server.port,
                                  self.server.onion_domain,
-                                 self.server.i2pDomain,
+                                 self.server.i2p_domain,
                                  GETstartTime,
                                  self.server.proxyType,
                                  cookie, self.server.debug):
@@ -15973,7 +15973,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.domainFull,
                                        self.server.port,
                                        self.server.onion_domain,
-                                       self.server.i2pDomain,
+                                       self.server.i2p_domain,
                                        GETstartTime,
                                        self.server.proxyType,
                                        cookie, self.server.debug):
@@ -15994,7 +15994,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.domainFull,
                                        self.server.port,
                                        self.server.onion_domain,
-                                       self.server.i2pDomain,
+                                       self.server.i2p_domain,
                                        GETstartTime,
                                        self.server.proxyType,
                                        cookie, self.server.debug):
@@ -16015,7 +16015,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.domainFull,
                                       self.server.port,
                                       self.server.onion_domain,
-                                      self.server.i2pDomain,
+                                      self.server.i2p_domain,
                                       GETstartTime,
                                       self.server.proxyType,
                                       cookie, self.server.debug):
@@ -16033,7 +16033,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.domainFull,
                                           self.server.port,
                                           self.server.onion_domain,
-                                          self.server.i2pDomain,
+                                          self.server.i2p_domain,
                                           GETstartTime,
                                           self.server.proxyType,
                                           cookie, self.server.debug):
@@ -16054,7 +16054,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.domainFull,
                                         self.server.port,
                                         self.server.onion_domain,
-                                        self.server.i2pDomain,
+                                        self.server.i2p_domain,
                                         GETstartTime,
                                         self.server.proxyType,
                                         cookie, self.server.debug):
@@ -16071,7 +16071,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.domainFull,
                                         self.server.port,
                                         self.server.onion_domain,
-                                        self.server.i2pDomain,
+                                        self.server.i2p_domain,
                                         GETstartTime,
                                         self.server.proxyType,
                                         cookie, self.server.debug):
@@ -16171,7 +16171,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.domainFull,
                                            self.server.port,
                                            self.server.onion_domain,
-                                           self.server.i2pDomain,
+                                           self.server.i2p_domain,
                                            GETstartTime,
                                            self.server.proxyType,
                                            cookie, self.server.debug):
@@ -16193,7 +16193,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.domainFull,
                                         self.server.port,
                                         self.server.onion_domain,
-                                        self.server.i2pDomain,
+                                        self.server.i2p_domain,
                                         GETstartTime,
                                         self.server.proxyType,
                                         cookie, self.server.debug):
@@ -16215,7 +16215,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.domainFull,
                                      self.server.port,
                                      self.server.onion_domain,
-                                     self.server.i2pDomain,
+                                     self.server.i2p_domain,
                                      GETstartTime,
                                      self.server.proxyType,
                                      cookie, self.server.debug):
@@ -16234,7 +16234,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.domainFull,
                                 self.server.port,
                                 self.server.onion_domain,
-                                self.server.i2pDomain,
+                                self.server.i2p_domain,
                                 GETstartTime,
                                 self.server.proxyType,
                                 cookie, self.server.debug, 'shares'):
@@ -16253,7 +16253,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.domainFull,
                                    self.server.port,
                                    self.server.onion_domain,
-                                   self.server.i2pDomain,
+                                   self.server.i2p_domain,
                                    GETstartTime,
                                    self.server.proxyType,
                                    cookie, self.server.debug):
@@ -16272,7 +16272,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.domainFull,
                                    self.server.port,
                                    self.server.onion_domain,
-                                   self.server.i2pDomain,
+                                   self.server.i2p_domain,
                                    GETstartTime,
                                    self.server.proxyType,
                                    cookie, self.server.debug):
@@ -16292,7 +16292,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.domainFull,
                                    self.server.port,
                                    self.server.onion_domain,
-                                   self.server.i2pDomain,
+                                   self.server.i2p_domain,
                                    GETstartTime,
                                    self.server.proxyType,
                                    cookie, self.server.debug):
@@ -17476,10 +17476,10 @@ class PubServer(BaseHTTPRequestHandler):
                     print('POST domain blocked: ' + callingDomain)
                     self._400()
                     return
-            elif self.server.i2pDomain:
+            elif self.server.i2p_domain:
                 if callingDomain != self.server.domain and \
                    callingDomain != self.server.domainFull and \
-                   callingDomain != self.server.i2pDomain:
+                   callingDomain != self.server.i2p_domain:
                     print('POST domain blocked: ' + callingDomain)
                     self._400()
                     return
@@ -17558,7 +17558,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.base_dir, self.server.http_prefix,
                               self.server.domain, self.server.domainFull,
                               self.server.port,
-                              self.server.onion_domain, self.server.i2pDomain,
+                              self.server.onion_domain, self.server.i2p_domain,
                               self.server.debug)
             self.server.POSTbusy = False
             return
@@ -17575,7 +17575,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.domain,
                                      self.server.domainFull,
                                      self.server.onion_domain,
-                                     self.server.i2pDomain,
+                                     self.server.i2p_domain,
                                      self.server.debug,
                                      self.server.defaultTimeline,
                                      self.server.allow_local_network_access)
@@ -17590,7 +17590,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.domain,
                                 self.server.domainFull,
                                 self.server.onion_domain,
-                                self.server.i2pDomain, self.server.debug,
+                                self.server.i2p_domain, self.server.debug,
                                 self.server.allow_local_network_access,
                                 self.server.systemLanguage,
                                 self.server.content_license_url)
@@ -17603,7 +17603,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.domain,
                               self.server.domainFull,
                               self.server.onion_domain,
-                              self.server.i2pDomain, self.server.debug,
+                              self.server.i2p_domain, self.server.debug,
                               self.server.defaultTimeline,
                               self.server.allow_local_network_access)
             self.server.POSTbusy = False
@@ -17615,7 +17615,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.domain,
                                  self.server.domainFull,
                                  self.server.onion_domain,
-                                 self.server.i2pDomain, self.server.debug,
+                                 self.server.i2p_domain, self.server.debug,
                                  self.server.defaultTimeline)
             self.server.POSTbusy = False
             return
@@ -17627,7 +17627,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.domain,
                                   self.server.domainFull,
                                   self.server.onion_domain,
-                                  self.server.i2pDomain, self.server.debug,
+                                  self.server.i2p_domain, self.server.debug,
                                   self.server.defaultTimeline,
                                   self.server.newswire)
             self.server.POSTbusy = False
@@ -17639,7 +17639,7 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.domain,
                                self.server.domainFull,
                                self.server.onion_domain,
-                               self.server.i2pDomain, self.server.debug,
+                               self.server.i2p_domain, self.server.debug,
                                self.server.defaultTimeline)
             self.server.POSTbusy = False
             return
@@ -17662,7 +17662,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.domainFull,
                                    self.server.port,
                                    self.server.onion_domain,
-                                   self.server.i2pDomain,
+                                   self.server.i2p_domain,
                                    self.server.debug)
             self.server.POSTbusy = False
             return
@@ -17697,7 +17697,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.port,
                                      searchForEmoji,
                                      self.server.onion_domain,
-                                     self.server.i2pDomain,
+                                     self.server.i2p_domain,
                                      POSTstartTime, {},
                                      self.server.debug)
             self.server.POSTbusy = False
@@ -17725,7 +17725,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.domain,
                                   self.server.domainFull,
                                   self.server.onion_domain,
-                                  self.server.i2pDomain,
+                                  self.server.i2p_domain,
                                   self.server.debug)
                 self.server.POSTbusy = False
                 return
@@ -17739,7 +17739,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.domain,
                                   self.server.domainFull,
                                   self.server.onion_domain,
-                                  self.server.i2pDomain,
+                                  self.server.i2p_domain,
                                   self.server.debug)
                 self.server.POSTbusy = False
                 return
@@ -17753,7 +17753,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.domain,
                                    self.server.domainFull,
                                    self.server.onion_domain,
-                                   self.server.i2pDomain,
+                                   self.server.i2p_domain,
                                    self.server.debug)
                 self.server.POSTbusy = False
                 return
@@ -17778,7 +17778,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.domain,
                                  self.server.domainFull,
                                  self.server.onion_domain,
-                                 self.server.i2pDomain,
+                                 self.server.i2p_domain,
                                  self.server.debug)
                 self.server.POSTbusy = False
                 return
@@ -17797,7 +17797,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.domainFull,
                                     self.server.port,
                                     self.server.onion_domain,
-                                    self.server.i2pDomain,
+                                    self.server.i2p_domain,
                                     self.server.debug)
                 self.server.POSTbusy = False
                 return
@@ -17816,7 +17816,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.domainFull,
                                       self.server.port,
                                       self.server.onion_domain,
-                                      self.server.i2pDomain,
+                                      self.server.i2p_domain,
                                       self.server.debug)
                 self.server.POSTbusy = False
                 return
@@ -17835,7 +17835,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.domainFull,
                                      self.server.port,
                                      self.server.onion_domain,
-                                     self.server.i2pDomain,
+                                     self.server.i2p_domain,
                                      self.server.debug)
                 self.server.POSTbusy = False
                 return
@@ -17854,7 +17854,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.domainFull,
                                    self.server.port,
                                    self.server.onion_domain,
-                                   self.server.i2pDomain,
+                                   self.server.i2p_domain,
                                    self.server.debug)
                 self.server.POSTbusy = False
                 return
@@ -17874,7 +17874,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.domainFull,
                                     self.server.port,
                                     self.server.onion_domain,
-                                    self.server.i2pDomain,
+                                    self.server.i2p_domain,
                                     self.server.debug)
                 self.server.POSTbusy = False
                 return
@@ -17900,7 +17900,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.domainFull,
                                    self.server.port,
                                    self.server.onion_domain,
-                                   self.server.i2pDomain,
+                                   self.server.i2p_domain,
                                    self.server.debug,
                                    accessKeys,
                                    self.server.defaultTimeline)
@@ -17928,7 +17928,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.domainFull,
                                     self.server.port,
                                     self.server.onion_domain,
-                                    self.server.i2pDomain,
+                                    self.server.i2p_domain,
                                     self.server.debug,
                                     accessKeys,
                                     self.server.defaultTimeline,
@@ -17957,7 +17957,7 @@ class PubServer(BaseHTTPRequestHandler):
             originDomain = self.headers.get('Origin')
             if originDomain != self.server.domainFull and \
                originDomain != self.server.onion_domain and \
-               originDomain != self.server.i2pDomain and \
+               originDomain != self.server.i2p_domain and \
                originDomain in self.server.shared_items_federated_domains:
                 if self.server.debug:
                     print('DEBUG: ' +
@@ -18023,10 +18023,10 @@ class PubServer(BaseHTTPRequestHandler):
                     self._redirect_headers(actorPathStr, cookie,
                                            callingDomain)
                 elif (callingDomain.endswith('.i2p') and
-                      self.server.i2pDomain):
+                      self.server.i2p_domain):
                     actorPathStr = \
                         localActorUrl('http', nickname,
-                                      self.server.i2pDomain) + \
+                                      self.server.i2p_domain) + \
                         '/' + postRedirect + \
                         '?page=' + str(pageNumber)
                     self._redirect_headers(actorPathStr, cookie,
@@ -18108,7 +18108,7 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.domain,
                                self.server.domainFull,
                                self.server.onion_domain,
-                               self.server.i2pDomain,
+                               self.server.i2p_domain,
                                self.server.debug)
             self.server.POSTbusy = False
             return
@@ -18460,7 +18460,7 @@ def runDaemon(content_license_url: str,
               language: str, project_version: str,
               instance_id: str, client_to_server: bool,
               base_dir: str, domain: str,
-              onion_domain: str, i2pDomain: str,
+              onion_domain: str, i2p_domain: str,
               yt_replace_domain: str,
               twitterReplacementDomain: str,
               port: int = 80, proxyPort: int = 80,
@@ -18609,7 +18609,7 @@ def runDaemon(content_license_url: str,
 
     httpd.manualFollowerApproval = manualFollowerApproval
     httpd.onion_domain = onion_domain
-    httpd.i2pDomain = i2pDomain
+    httpd.i2p_domain = i2p_domain
     httpd.media_instance = media_instance
     httpd.blogs_instance = blogs_instance
 
@@ -18910,16 +18910,20 @@ def runDaemon(content_license_url: str,
     print('Creating inbox queue')
     httpd.thrInboxQueue = \
         threadWithTrace(target=runInboxQueue,
-                        args=(httpd.recentPostsCache, httpd.max_recent_posts,
+                        args=(httpd.recentPostsCache,
+                              httpd.max_recent_posts,
                               project_version,
                               base_dir, http_prefix, httpd.sendThreads,
                               httpd.postLog, httpd.cachedWebfingers,
                               httpd.personCache, httpd.inboxQueue,
-                              domain, onion_domain, i2pDomain, port, proxyType,
+                              domain, onion_domain, i2p_domain,
+                              port, proxyType,
                               httpd.federationList,
                               maxReplies,
-                              domainMaxPostsPerDay, accountMaxPostsPerDay,
-                              allowDeletion, debug, maxMentions, maxEmoji,
+                              domainMaxPostsPerDay,
+                              accountMaxPostsPerDay,
+                              allowDeletion, debug,
+                              maxMentions, maxEmoji,
                               httpd.translate, unitTest,
                               httpd.yt_replace_domain,
                               httpd.twitterReplacementDomain,

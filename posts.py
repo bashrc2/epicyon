@@ -2858,7 +2858,7 @@ def _isProfileUpdate(postJsonObject: {}) -> bool:
 
 def _sendToNamedAddresses(session, base_dir: str,
                           nickname: str, domain: str,
-                          onion_domain: str, i2pDomain: str, port: int,
+                          onion_domain: str, i2p_domain: str, port: int,
                           http_prefix: str, federationList: [],
                           sendThreads: [], postLog: [],
                           cachedWebfingers: {}, personCache: {},
@@ -2979,10 +2979,10 @@ def _sendToNamedAddresses(session, base_dir: str,
                 fromDomain = onion_domain
                 fromDomainFull = onion_domain
                 fromHttpPrefix = 'http'
-        elif i2pDomain:
+        elif i2p_domain:
             if toDomain.endswith('.i2p'):
-                fromDomain = i2pDomain
-                fromDomainFull = i2pDomain
+                fromDomain = i2p_domain
+                fromDomainFull = i2p_domain
                 fromHttpPrefix = 'http'
         cc = []
 
@@ -3009,7 +3009,7 @@ def _sendToNamedAddresses(session, base_dir: str,
 
 def sendToNamedAddressesThread(session, base_dir: str,
                                nickname: str, domain: str,
-                               onion_domain: str, i2pDomain: str, port: int,
+                               onion_domain: str, i2p_domain: str, port: int,
                                http_prefix: str, federationList: [],
                                sendThreads: [], postLog: [],
                                cachedWebfingers: {}, personCache: {},
@@ -3024,7 +3024,7 @@ def sendToNamedAddressesThread(session, base_dir: str,
         threadWithTrace(target=_sendToNamedAddresses,
                         args=(session, base_dir,
                               nickname, domain,
-                              onion_domain, i2pDomain, port,
+                              onion_domain, i2p_domain, port,
                               http_prefix, federationList,
                               sendThreads, postLog,
                               cachedWebfingers, personCache,
@@ -3085,7 +3085,7 @@ def _sendingProfileUpdate(postJsonObject: {}) -> bool:
 def sendToFollowers(session, base_dir: str,
                     nickname: str,
                     domain: str,
-                    onion_domain: str, i2pDomain: str, port: int,
+                    onion_domain: str, i2p_domain: str, port: int,
                     http_prefix: str, federationList: [],
                     sendThreads: [], postLog: [],
                     cachedWebfingers: {}, personCache: {},
@@ -3178,9 +3178,9 @@ def sendToFollowers(session, base_dir: str,
             if toDomain.endswith('.onion'):
                 fromDomain = onion_domain
                 fromHttpPrefix = 'http'
-        elif i2pDomain:
+        elif i2p_domain:
             if toDomain.endswith('.i2p'):
-                fromDomain = i2pDomain
+                fromDomain = i2p_domain
                 fromHttpPrefix = 'http'
 
         if withSharedInbox:
@@ -3258,7 +3258,7 @@ def sendToFollowers(session, base_dir: str,
 def sendToFollowersThread(session, base_dir: str,
                           nickname: str,
                           domain: str,
-                          onion_domain: str, i2pDomain: str, port: int,
+                          onion_domain: str, i2p_domain: str, port: int,
                           http_prefix: str, federationList: [],
                           sendThreads: [], postLog: [],
                           cachedWebfingers: {}, personCache: {},
@@ -3273,7 +3273,7 @@ def sendToFollowersThread(session, base_dir: str,
         threadWithTrace(target=sendToFollowers,
                         args=(session, base_dir,
                               nickname, domain,
-                              onion_domain, i2pDomain, port,
+                              onion_domain, i2p_domain, port,
                               http_prefix, federationList,
                               sendThreads, postLog,
                               cachedWebfingers, personCache,

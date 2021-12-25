@@ -165,7 +165,7 @@ parser.add_argument('-o', '--onion', dest='onion', type=str,
                     default=None,
                     help='Onion domain name of the server if ' +
                     'primarily on clearnet')
-parser.add_argument('--i2pDomain', dest='i2pDomain', type=str,
+parser.add_argument('--i2p_domain', dest='i2p_domain', type=str,
                     default=None,
                     help='i2p domain name of the server if ' +
                     'primarily on clearnet')
@@ -1058,15 +1058,15 @@ if args.onion:
     onion_domain = args.onion
     setConfigParam(base_dir, 'onion', onion_domain)
 
-i2pDomain = None
-if args.i2pDomain:
-    if not args.i2pDomain.endswith('.i2p'):
-        print(args.i2pDomain + ' does not look like an i2p domain')
+i2p_domain = None
+if args.i2p_domain:
+    if not args.i2p_domain.endswith('.i2p'):
+        print(args.i2p_domain + ' does not look like an i2p domain')
         sys.exit()
-    if '://' in args.i2pDomain:
+    if '://' in args.i2p_domain:
         args.onion = args.onion.split('://')[1]
-    i2pDomain = args.i2pDomain
-    setConfigParam(base_dir, 'i2pDomain', i2pDomain)
+    i2p_domain = args.i2p_domain
+    setConfigParam(base_dir, 'i2p_domain', i2p_domain)
 
 if not args.language:
     languageCode = getConfigParam(base_dir, 'language')
@@ -1121,11 +1121,11 @@ else:
     onion_domain = None
 
 # get i2p domain name from configuration
-configi2pDomain = getConfigParam(base_dir, 'i2pDomain')
-if configi2pDomain:
-    i2pDomain = configi2pDomain
+configi2p_domain = getConfigParam(base_dir, 'i2p_domain')
+if configi2p_domain:
+    i2p_domain = configi2p_domain
 else:
-    i2pDomain = None
+    i2p_domain = None
 
 # get port number from configuration
 configPort = getConfigParam(base_dir, 'port')
@@ -3247,7 +3247,7 @@ if __name__ == "__main__":
               not args.nosharedinbox,
               registration, args.language, __version__,
               instance_id, args.client, base_dir,
-              domain, onion_domain, i2pDomain,
+              domain, onion_domain, i2p_domain,
               args.yt_replace_domain,
               args.twitterReplacementDomain,
               port, proxyPort, http_prefix,
