@@ -18413,7 +18413,7 @@ def runDaemon(content_license_url: str,
               show_node_info_version: bool,
               broch_mode: bool,
               verify_all_signatures: bool,
-              sendThreadsTimeoutMins: int,
+              send_threads_timeout_mins: int,
               dormantMonths: int,
               maxNewswirePosts: int,
               allowLocalNetworkAccess: bool,
@@ -18840,13 +18840,13 @@ def runDaemon(content_license_url: str,
     httpd.thrCache.start()
 
     # number of mins after which sending posts or updates will expire
-    httpd.sendThreadsTimeoutMins = sendThreadsTimeoutMins
+    httpd.send_threads_timeout_mins = send_threads_timeout_mins
 
     print('Creating posts queue')
     httpd.thrPostsQueue = \
         threadWithTrace(target=runPostsQueue,
                         args=(base_dir, httpd.sendThreads, debug,
-                              httpd.sendThreadsTimeoutMins), daemon=True)
+                              httpd.send_threads_timeout_mins), daemon=True)
     if not unitTest:
         httpd.thrPostsWatchdog = \
             threadWithTrace(target=runPostsWatchdog,

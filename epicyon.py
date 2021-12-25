@@ -186,8 +186,8 @@ parser.add_argument('--default_reply_interval_hrs',
                     default=1000,
                     help='How many hours after publication of a post ' +
                     'are replies to it permitted')
-parser.add_argument('--sendThreadsTimeoutMins',
-                    dest='sendThreadsTimeoutMins', type=int,
+parser.add_argument('--send_threads_timeout_mins',
+                    dest='send_threads_timeout_mins', type=int,
                     default=30,
                     help='How many minutes before a thread to send out ' +
                     'posts expires')
@@ -3068,10 +3068,10 @@ dormantMonths = \
 if dormantMonths is not None:
     args.dormantMonths = int(dormantMonths)
 
-sendThreadsTimeoutMins = \
-    getConfigParam(base_dir, 'sendThreadsTimeoutMins')
-if sendThreadsTimeoutMins is not None:
-    args.sendThreadsTimeoutMins = int(sendThreadsTimeoutMins)
+send_threads_timeout_mins = \
+    getConfigParam(base_dir, 'send_threads_timeout_mins')
+if send_threads_timeout_mins is not None:
+    args.send_threads_timeout_mins = int(send_threads_timeout_mins)
 
 max_like_count = \
     getConfigParam(base_dir, 'max_like_count')
@@ -3222,7 +3222,7 @@ if __name__ == "__main__":
               args.show_node_info_version,
               args.broch_mode,
               args.verify_all_signatures,
-              args.sendThreadsTimeoutMins,
+              args.send_threads_timeout_mins,
               args.dormantMonths,
               args.maxNewswirePosts,
               args.allowLocalNetworkAccess,
