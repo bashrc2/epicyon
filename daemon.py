@@ -18473,7 +18473,7 @@ def runDaemon(content_license_url: str,
               twitter_replacement_domain: str,
               port: int = 80, proxy_port: int = 80,
               http_prefix: str = 'https',
-              fedList: [] = [],
+              fed_list: [] = [],
               maxMentions: int = 10, maxEmoji: int = 10,
               secureMode: bool = False,
               proxyType: str = None, maxReplies: int = 64,
@@ -18732,7 +18732,7 @@ def runDaemon(content_license_url: str,
     saveDomainQrcode(base_dir, http_prefix, httpd.domainFull)
     httpd.http_prefix = http_prefix
     httpd.debug = debug
-    httpd.federationList = fedList.copy()
+    httpd.federationList = fed_list.copy()
     httpd.shared_items_federated_domains = \
         shared_items_federated_domains.copy()
     httpd.base_dir = base_dir
