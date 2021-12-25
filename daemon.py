@@ -708,10 +708,10 @@ class PubServer(BaseHTTPRequestHandler):
               callingFunction)
         return False
 
-    def _secureMode(self, force: bool = False) -> bool:
+    def _secure_mode(self, force: bool = False) -> bool:
         """http authentication of GET requests for json
         """
-        if not self.server.secureMode and not force:
+        if not self.server.secure_mode and not force:
             return True
 
         keyId = self._signedGETkeyId()
@@ -9530,7 +9530,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    '_GET', '_showRepliesToPost',
                                    self.server.debug)
             else:
-                if self._secureMode():
+                if self._secure_mode():
                     msg = json.dumps(repliesJson, ensure_ascii=False)
                     msg = msg.encode('utf-8')
                     protocolStr = 'application/json'
@@ -9622,7 +9622,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    '_GET', '_showRepliesToPost',
                                    self.server.debug)
             else:
-                if self._secureMode():
+                if self._secure_mode():
                     msg = json.dumps(repliesJson,
                                      ensure_ascii=False)
                     msg = msg.encode('utf-8')
@@ -9732,7 +9732,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        '_GET', '_showRoles',
                                        self.server.debug)
             else:
-                if self._secureMode():
+                if self._secure_mode():
                     rolesList = getActorRolesList(actorJson)
                     msg = json.dumps(rolesList,
                                      ensure_ascii=False)
@@ -9850,7 +9850,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                    '_GET', '_showSkills',
                                                    self.server.debug)
                         else:
-                            if self._secureMode():
+                            if self._secure_mode():
                                 actorSkillsList = \
                                     getOccupationSkills(actorJson)
                                 skills = getSkillsFromList(actorSkillsList)
@@ -10012,7 +10012,7 @@ class PubServer(BaseHTTPRequestHandler):
                                '_GET', '_showPostFromFile',
                                self.server.debug)
         else:
-            if self._secureMode():
+            if self._secure_mode():
                 if not includeCreateWrapper and \
                    postJsonObject['type'] == 'Create' and \
                    hasObjectDict(postJsonObject):
@@ -11618,7 +11618,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    '_GET', '_showOutboxTimeline',
                                    self.server.debug)
             else:
-                if self._secureMode():
+                if self._secure_mode():
                     msg = json.dumps(outboxFeed,
                                      ensure_ascii=False)
                     msg = msg.encode('utf-8')
@@ -11877,7 +11877,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.GETbusy = False
                     return True
             else:
-                if self._secureMode():
+                if self._secure_mode():
                     msg = json.dumps(shares,
                                      ensure_ascii=False)
                     msg = msg.encode('utf-8')
@@ -11997,7 +11997,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.debug)
                     return True
             else:
-                if self._secureMode():
+                if self._secure_mode():
                     msg = json.dumps(following,
                                      ensure_ascii=False).encode('utf-8')
                     msglen = len(msg)
@@ -12117,7 +12117,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.debug)
                     return True
             else:
-                if self._secureMode():
+                if self._secure_mode():
                     msg = json.dumps(followers,
                                      ensure_ascii=False).encode('utf-8')
                     msglen = len(msg)
@@ -12250,7 +12250,7 @@ class PubServer(BaseHTTPRequestHandler):
                                '_GET', '_showPersonProfile',
                                self.server.debug)
         else:
-            if self._secureMode():
+            if self._secure_mode():
                 acceptStr = self.headers['Accept']
                 msgStr = json.dumps(actorJson, ensure_ascii=False)
                 msg = msgStr.encode('utf-8')
@@ -16320,7 +16320,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.GETbusy = False
             return
 
-        if not self._secureMode():
+        if not self._secure_mode():
             if self.server.debug:
                 print('WARN: Unauthorized GET')
             self._404()
@@ -18475,7 +18475,7 @@ def runDaemon(content_license_url: str,
               http_prefix: str = 'https',
               fed_list: [] = [],
               max_mentions: int = 10, max_emoji: int = 10,
-              secureMode: bool = False,
+              secure_mode: bool = False,
               proxyType: str = None, maxReplies: int = 64,
               domainMaxPostsPerDay: int = 8640,
               accountMaxPostsPerDay: int = 864,
@@ -18718,7 +18718,7 @@ def runDaemon(content_license_url: str,
     httpd.outboxThreadIndex = {}
     httpd.newPostThread = {}
     httpd.project_version = project_version
-    httpd.secureMode = secureMode
+    httpd.secure_mode = secure_mode
     # max POST size of 30M
     httpd.maxPostLength = 1024 * 1024 * 30
     httpd.maxMediaSize = httpd.maxPostLength
