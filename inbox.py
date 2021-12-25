@@ -549,12 +549,12 @@ def savePostToInboxQueue(base_dir: str, http_prefix: str,
 
     # NOTE: don't change post_json_object['id'] before signature check
 
-    inboxQueueDir = createInboxQueueDir(nickname, domain, base_dir)
+    inbox_queueDir = createInboxQueueDir(nickname, domain, base_dir)
 
     handle = nickname + '@' + domain
     destination = base_dir + '/accounts/' + \
         handle + '/inbox/' + postId.replace('/', '#') + '.json'
-    filename = inboxQueueDir + '/' + postId.replace('/', '#') + '.json'
+    filename = inbox_queueDir + '/' + postId.replace('/', '#') + '.json'
 
     sharedInboxItem = False
     if nickname == 'inbox':
@@ -3668,15 +3668,15 @@ def runInboxQueueWatchdog(project_version: str, httpd) -> None:
     """This tries to keep the inbox thread running even if it dies
     """
     print('Starting inbox queue watchdog')
-    inboxQueueOriginal = httpd.thrInboxQueue.clone(runInboxQueue)
+    inbox_queueOriginal = httpd.thrInboxQueue.clone(runInboxQueue)
     httpd.thrInboxQueue.start()
     while True:
         time.sleep(20)
         if not httpd.thrInboxQueue.is_alive() or httpd.restartInboxQueue:
             httpd.restartInboxQueueInProgress = True
             httpd.thrInboxQueue.kill()
-            httpd.thrInboxQueue = inboxQueueOriginal.clone(runInboxQueue)
-            httpd.inboxQueue.clear()
+            httpd.thrInboxQueue = inbox_queueOriginal.clone(runInboxQueue)
+            httpd.inbox_queue.clear()
             httpd.thrInboxQueue.start()
             print('Restarting inbox queue...')
             httpd.restartInboxQueueInProgress = False

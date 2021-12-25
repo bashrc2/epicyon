@@ -1473,14 +1473,14 @@ class PubServer(BaseHTTPRequestHandler):
             return 3
 
         # if the inbox queue is full then return a busy code
-        if len(self.server.inboxQueue) >= self.server.max_queue_length:
+        if len(self.server.inbox_queue) >= self.server.max_queue_length:
             if messageDomain:
                 print('Queue: Inbox queue is full. Incoming post from ' +
                       messageJson['actor'])
             else:
                 print('Queue: Inbox queue is full')
             self._503()
-            clearQueueItems(self.server.base_dir, self.server.inboxQueue)
+            clearQueueItems(self.server.base_dir, self.server.inbox_queue)
             if not self.server.restartInboxQueueInProgress:
                 self.server.restartInboxQueue = True
             self.server.POSTbusy = False
@@ -1545,8 +1545,8 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.system_language)
         if queueFilename:
             # add json to the queue
-            if queueFilename not in self.server.inboxQueue:
-                self.server.inboxQueue.append(queueFilename)
+            if queueFilename not in self.server.inbox_queue:
+                self.server.inbox_queue.append(queueFilename)
             if self.server.debug:
                 timeDiff = int((time.time() - beginSaveTime) * 1000)
                 if timeDiff > 200:
@@ -18750,7 +18750,7 @@ def runDaemon(content_license_url: str,
     httpd.GETbusy = False
     httpd.POSTbusy = False
     httpd.received_message = False
-    httpd.inboxQueue = []
+    httpd.inbox_queue = []
     httpd.send_threads = send_threads
     httpd.postLog = []
     httpd.max_queue_length = 64
@@ -18925,7 +18925,7 @@ def runDaemon(content_license_url: str,
                               project_version,
                               base_dir, http_prefix, httpd.send_threads,
                               httpd.postLog, httpd.cached_webfingers,
-                              httpd.person_cache, httpd.inboxQueue,
+                              httpd.person_cache, httpd.inbox_queue,
                               domain, onion_domain, i2p_domain,
                               port, proxy_type,
                               httpd.federationList,
