@@ -2237,9 +2237,9 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.showPublishAsIcon = False
         if 'icons-as-buttons' in themeDesignerParams:
             if themeDesignerParams['icons-as-buttons'].lower() == 'true':
-                self.server.iconsAsButtons = True
+                self.server.icons_as_buttons = True
             else:
-                self.server.iconsAsButtons = False
+                self.server.icons_as_buttons = False
         if 'full-width-timeline-buttons' in themeDesignerParams:
             themeValue = themeDesignerParams['full-width-timeline-buttons']
             if themeValue.lower() == 'true':
@@ -5021,9 +5021,9 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.fullWidthTimelineButtonHeader = \
                                 getConfigParam(self.server.base_dir,
                                                'fullWidthTimelineButtonHeader')
-                            self.server.iconsAsButtons = \
+                            self.server.icons_as_buttons = \
                                 getConfigParam(self.server.base_dir,
-                                               'iconsAsButtons')
+                                               'icons_as_buttons')
                             self.server.rss_icon_at_top = \
                                 getConfigParam(self.server.base_dir,
                                                'rss_icon_at_top')
@@ -5962,9 +5962,9 @@ class PubServer(BaseHTTPRequestHandler):
                                     getConfigParam(base_dir,
                                                    'fullWidthTimeline' +
                                                    'ButtonHeader')
-                                self.server.iconsAsButtons = \
+                                self.server.icons_as_buttons = \
                                     getConfigParam(base_dir,
-                                                   'iconsAsButtons')
+                                                   'icons_as_buttons')
                                 self.server.rss_icon_at_top = \
                                     getConfigParam(base_dir,
                                                    'rss_icon_at_top')
@@ -9675,8 +9675,8 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.yt_replace_domain
                     twitterReplacementDomain = \
                         self.server.twitterReplacementDomain
-                    iconsAsButtons = \
-                        self.server.iconsAsButtons
+                    icons_as_buttons = \
+                        self.server.icons_as_buttons
 
                     accessKeys = self.server.accessKeys
                     if self.server.keyShortcuts.get(nickname):
@@ -9690,7 +9690,7 @@ class PubServer(BaseHTTPRequestHandler):
                         htmlProfile(self.server.signingPrivateKeyPem,
                                     self.server.rss_icon_at_top,
                                     self.server.cssCache,
-                                    iconsAsButtons,
+                                    icons_as_buttons,
                                     defaultTimeline,
                                     recentPostsCache,
                                     self.server.maxRecentPosts,
@@ -9782,8 +9782,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.twitterReplacementDomain
                                 showPublishedDateOnly = \
                                     self.server.showPublishedDateOnly
-                                iconsAsButtons = \
-                                    self.server.iconsAsButtons
+                                icons_as_buttons = \
+                                    self.server.icons_as_buttons
                                 allow_local_network_access = \
                                     self.server.allow_local_network_access
                                 accessKeys = self.server.accessKeys
@@ -9806,7 +9806,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     htmlProfile(signingPrivateKeyPem,
                                                 self.server.rss_icon_at_top,
                                                 self.server.cssCache,
-                                                iconsAsButtons,
+                                                icons_as_buttons,
                                                 defaultTimeline,
                                                 recentPostsCache,
                                                 self.server.maxRecentPosts,
@@ -10249,7 +10249,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.positiveVoting,
                                         self.server.showPublishAsIcon,
                                         fullWidthTimelineButtonHeader,
-                                        self.server.iconsAsButtons,
+                                        self.server.icons_as_buttons,
                                         self.server.rss_icon_at_top,
                                         self.server.publish_button_at_top,
                                         authorized,
@@ -10400,7 +10400,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.positiveVoting,
                                          self.server.showPublishAsIcon,
                                          fullWidthTimelineButtonHeader,
-                                         self.server.iconsAsButtons,
+                                         self.server.icons_as_buttons,
                                          self.server.rss_icon_at_top,
                                          self.server.publish_button_at_top,
                                          authorized, self.server.themeName,
@@ -10543,7 +10543,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.positiveVoting,
                                          self.server.showPublishAsIcon,
                                          fullWidthTimelineButtonHeader,
-                                         self.server.iconsAsButtons,
+                                         self.server.icons_as_buttons,
                                          self.server.rss_icon_at_top,
                                          self.server.publish_button_at_top,
                                          authorized, self.server.themeName,
@@ -10684,7 +10684,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.positiveVoting,
                                        self.server.showPublishAsIcon,
                                        fullWidthTimelineButtonHeader,
-                                       self.server.iconsAsButtons,
+                                       self.server.icons_as_buttons,
                                        self.server.rss_icon_at_top,
                                        self.server.publish_button_at_top,
                                        authorized,
@@ -10826,7 +10826,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.positiveVoting,
                                        self.server.showPublishAsIcon,
                                        fullWidthTimelineButtonHeader,
-                                       self.server.iconsAsButtons,
+                                       self.server.icons_as_buttons,
                                        self.server.rss_icon_at_top,
                                        self.server.publish_button_at_top,
                                        authorized,
@@ -10978,7 +10978,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.positiveVoting,
                                       self.server.showPublishAsIcon,
                                       fullWidthTimelineButtonHeader,
-                                      self.server.iconsAsButtons,
+                                      self.server.icons_as_buttons,
                                       self.server.rss_icon_at_top,
                                       self.server.publish_button_at_top,
                                       authorized,
@@ -11127,7 +11127,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.positiveVoting,
                                           self.server.showPublishAsIcon,
                                           fullWidthTimelineButtonHeader,
-                                          self.server.iconsAsButtons,
+                                          self.server.icons_as_buttons,
                                           self.server.rss_icon_at_top,
                                           self.server.publish_button_at_top,
                                           authorized,
@@ -11234,7 +11234,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.positiveVoting,
                                    self.server.showPublishAsIcon,
                                    self.server.fullWidthTimelineButtonHeader,
-                                   self.server.iconsAsButtons,
+                                   self.server.icons_as_buttons,
                                    self.server.rss_icon_at_top,
                                    self.server.publish_button_at_top,
                                    authorized, self.server.themeName,
@@ -11318,7 +11318,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.positiveVoting,
                                    self.server.showPublishAsIcon,
                                    self.server.fullWidthTimelineButtonHeader,
-                                   self.server.iconsAsButtons,
+                                   self.server.icons_as_buttons,
                                    self.server.rss_icon_at_top,
                                    self.server.publish_button_at_top,
                                    authorized, self.server.themeName,
@@ -11440,7 +11440,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.positiveVoting,
                                           self.server.showPublishAsIcon,
                                           fullWidthTimelineButtonHeader,
-                                          self.server.iconsAsButtons,
+                                          self.server.icons_as_buttons,
                                           self.server.rss_icon_at_top,
                                           self.server.publish_button_at_top,
                                           authorized,
@@ -11578,7 +11578,7 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.positiveVoting,
                                self.server.showPublishAsIcon,
                                fullWidthTimelineButtonHeader,
-                               self.server.iconsAsButtons,
+                               self.server.icons_as_buttons,
                                self.server.rss_icon_at_top,
                                self.server.publish_button_at_top,
                                authorized,
@@ -11710,7 +11710,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.positiveVoting,
                                            self.server.showPublishAsIcon,
                                            fullWidthTimelineButtonHeader,
-                                           self.server.iconsAsButtons,
+                                           self.server.icons_as_buttons,
                                            self.server.rss_icon_at_top,
                                            self.server.publish_button_at_top,
                                            authorized, moderationActionStr,
@@ -11817,7 +11817,7 @@ class PubServer(BaseHTTPRequestHandler):
                         htmlProfile(self.server.signingPrivateKeyPem,
                                     self.server.rss_icon_at_top,
                                     self.server.cssCache,
-                                    self.server.iconsAsButtons,
+                                    self.server.icons_as_buttons,
                                     self.server.defaultTimeline,
                                     self.server.recentPostsCache,
                                     self.server.maxRecentPosts,
@@ -11938,7 +11938,7 @@ class PubServer(BaseHTTPRequestHandler):
                         htmlProfile(self.server.signingPrivateKeyPem,
                                     self.server.rss_icon_at_top,
                                     self.server.cssCache,
-                                    self.server.iconsAsButtons,
+                                    self.server.icons_as_buttons,
                                     self.server.defaultTimeline,
                                     self.server.recentPostsCache,
                                     self.server.maxRecentPosts,
@@ -12057,7 +12057,7 @@ class PubServer(BaseHTTPRequestHandler):
                         htmlProfile(self.server.signingPrivateKeyPem,
                                     self.server.rss_icon_at_top,
                                     self.server.cssCache,
-                                    self.server.iconsAsButtons,
+                                    self.server.icons_as_buttons,
                                     self.server.defaultTimeline,
                                     self.server.recentPostsCache,
                                     self.server.maxRecentPosts,
@@ -12193,7 +12193,7 @@ class PubServer(BaseHTTPRequestHandler):
                 htmlProfile(self.server.signingPrivateKeyPem,
                             self.server.rss_icon_at_top,
                             self.server.cssCache,
-                            self.server.iconsAsButtons,
+                            self.server.icons_as_buttons,
                             self.server.defaultTimeline,
                             self.server.recentPostsCache,
                             self.server.maxRecentPosts,
@@ -14959,7 +14959,7 @@ class PubServer(BaseHTTPRequestHandler):
                     '/users/' + nickname + '/' + self.server.defaultTimeline
                 showPublishAsIcon = self.server.showPublishAsIcon
                 rss_icon_at_top = self.server.rss_icon_at_top
-                iconsAsButtons = self.server.iconsAsButtons
+                icons_as_buttons = self.server.icons_as_buttons
                 defaultTimeline = self.server.defaultTimeline
                 accessKeys = self.server.accessKeys
                 if self.server.keyShortcuts.get(nickname):
@@ -14977,7 +14977,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          showPublishAsIcon,
                                          authorized,
                                          rss_icon_at_top,
-                                         iconsAsButtons,
+                                         icons_as_buttons,
                                          defaultTimeline,
                                          self.server.themeName,
                                          accessKeys).encode('utf-8')
@@ -15004,7 +15004,7 @@ class PubServer(BaseHTTPRequestHandler):
                     accessKeys = self.server.keyShortcuts[nickname]
                 timelinePath = \
                     '/users/' + nickname + '/' + self.server.defaultTimeline
-                iconsAsButtons = self.server.iconsAsButtons
+                icons_as_buttons = self.server.icons_as_buttons
                 defaultTimeline = self.server.defaultTimeline
                 sharedItemsDomains = \
                     self.server.shared_items_federated_domains
@@ -15016,7 +15016,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       timelinePath,
                                       authorized,
                                       self.server.rss_icon_at_top,
-                                      iconsAsButtons,
+                                      icons_as_buttons,
                                       defaultTimeline,
                                       self.server.themeName,
                                       accessKeys,
@@ -18431,7 +18431,7 @@ def runDaemon(content_license_url: str,
               max_feed_item_size_kb: int,
               publish_button_at_top: bool,
               rss_icon_at_top: bool,
-              iconsAsButtons: bool,
+              icons_as_buttons: bool,
               fullWidthTimelineButtonHeader: bool,
               showPublishAsIcon: bool,
               maxFollowers: int,
@@ -18665,7 +18665,7 @@ def runDaemon(content_license_url: str,
     httpd.fullWidthTimelineButtonHeader = fullWidthTimelineButtonHeader
 
     # whether to show icons in the header (eg calendar) as buttons
-    httpd.iconsAsButtons = iconsAsButtons
+    httpd.icons_as_buttons = icons_as_buttons
 
     # whether to show the RSS icon at the top or the bottom of the timeline
     httpd.rss_icon_at_top = rss_icon_at_top

@@ -337,8 +337,8 @@ parser.add_argument("--fullWidthTimelineButtonHeader",
                     help="Whether to show the timeline " +
                     "button header containing inbox and outbox " +
                     "as the full width of the screen")
-parser.add_argument("--iconsAsButtons",
-                    dest='iconsAsButtons',
+parser.add_argument("--icons_as_buttons",
+                    dest='icons_as_buttons',
                     type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Show header icons as buttons")
@@ -3083,10 +3083,10 @@ showPublishAsIcon = \
 if showPublishAsIcon is not None:
     args.showPublishAsIcon = bool(showPublishAsIcon)
 
-iconsAsButtons = \
-    getConfigParam(base_dir, 'iconsAsButtons')
-if iconsAsButtons is not None:
-    args.iconsAsButtons = bool(iconsAsButtons)
+icons_as_buttons = \
+    getConfigParam(base_dir, 'icons_as_buttons')
+if icons_as_buttons is not None:
+    args.icons_as_buttons = bool(icons_as_buttons)
 
 rss_icon_at_top = \
     getConfigParam(base_dir, 'rss_icon_at_top')
@@ -3229,7 +3229,7 @@ if __name__ == "__main__":
               args.max_feed_item_size_kb,
               args.publish_button_at_top,
               args.rss_icon_at_top,
-              args.iconsAsButtons,
+              args.icons_as_buttons,
               args.fullWidthTimelineButtonHeader,
               args.showPublishAsIcon,
               args.maxFollowers,

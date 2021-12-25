@@ -197,7 +197,7 @@ def _setIconsAsButtons(base_dir: str, useButtons: bool) -> bool:
     configJson = loadJson(configFilename, 0)
     if not configJson:
         return False
-    configJson['iconsAsButtons'] = useButtons
+    configJson['icons_as_buttons'] = useButtons
     return saveJson(configJson, configFilename)
 
 

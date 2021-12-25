@@ -353,7 +353,7 @@ def htmlLinksMobile(cssCache: {}, base_dir: str,
                     http_prefix: str, translate,
                     timelinePath: str, authorized: bool,
                     rss_icon_at_top: bool,
-                    iconsAsButtons: bool,
+                    icons_as_buttons: bool,
                     defaultTimeline: str,
                     theme: str, accessKeys: {},
                     shared_items_federated_domains: []) -> str:
@@ -392,7 +392,7 @@ def htmlLinksMobile(cssCache: {}, base_dir: str,
     htmlStr += '<center>' + \
         headerButtonsFrontScreen(translate, nickname,
                                  'links', authorized,
-                                 iconsAsButtons) + '</center>'
+                                 icons_as_buttons) + '</center>'
     htmlStr += \
         getLeftColumnContent(base_dir, nickname, domainFull,
                              http_prefix, translate,

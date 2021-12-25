@@ -98,13 +98,13 @@ def _getHelpForTimeline(base_dir: str, boxName: str) -> str:
 
 
 def _htmlTimelineNewPost(manuallyApproveFollowers: bool,
-                         boxName: str, iconsAsButtons: bool,
+                         boxName: str, icons_as_buttons: bool,
                          usersPath: str, translate: {}) -> str:
     """Returns html for the new post button
     """
     newPostButtonStr = ''
     if boxName == 'dm':
-        if not iconsAsButtons:
+        if not icons_as_buttons:
             newPostButtonStr += \
                 '<a class="imageAnchor" href="' + usersPath + \
                 '/newdm?nodropdown"><img loading="lazy" src="/' + \
@@ -120,7 +120,7 @@ def _htmlTimelineNewPost(manuallyApproveFollowers: bool,
     elif (boxName == 'tlblogs' or
           boxName == 'tlnews' or
           boxName == 'tlfeatures'):
-        if not iconsAsButtons:
+        if not icons_as_buttons:
             newPostButtonStr += \
                 '<a class="imageAnchor" href="' + usersPath + \
                 '/newblog"><img loading="lazy" src="/' + \
@@ -134,7 +134,7 @@ def _htmlTimelineNewPost(manuallyApproveFollowers: bool,
                 '<button class="button"><span>' + \
                 translate['Post'] + '</span></button></a>'
     elif boxName == 'tlshares':
-        if not iconsAsButtons:
+        if not icons_as_buttons:
             newPostButtonStr += \
                 '<a class="imageAnchor" href="' + usersPath + \
                 '/newshare?nodropdown"><img loading="lazy" src="/' + \
@@ -148,7 +148,7 @@ def _htmlTimelineNewPost(manuallyApproveFollowers: bool,
                 '<button class="button"><span>' + \
                 translate['Post'] + '</span></button></a>'
     elif boxName == 'tlwanted':
-        if not iconsAsButtons:
+        if not icons_as_buttons:
             newPostButtonStr += \
                 '<a class="imageAnchor" href="' + usersPath + \
                 '/newwanted?nodropdown"><img loading="lazy" src="/' + \
@@ -163,7 +163,7 @@ def _htmlTimelineNewPost(manuallyApproveFollowers: bool,
                 translate['Post'] + '</span></button></a>'
     else:
         if not manuallyApproveFollowers:
-            if not iconsAsButtons:
+            if not icons_as_buttons:
                 newPostButtonStr += \
                     '<a class="imageAnchor" href="' + usersPath + \
                     '/newpost"><img loading="lazy" src="/' + \
@@ -177,7 +177,7 @@ def _htmlTimelineNewPost(manuallyApproveFollowers: bool,
                     '<button class="button"><span>' + \
                     translate['Post'] + '</span></button></a>'
         else:
-            if not iconsAsButtons:
+            if not icons_as_buttons:
                 newPostButtonStr += \
                     '<a class="imageAnchor" href="' + usersPath + \
                     '/newfollowers"><img loading="lazy" src="/' + \
@@ -436,7 +436,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                  positiveVoting: bool,
                  showPublishAsIcon: bool,
                  fullWidthTimelineButtonHeader: bool,
-                 iconsAsButtons: bool,
+                 icons_as_buttons: bool,
                  rss_icon_at_top: bool,
                  publish_button_at_top: bool,
                  authorized: bool,
@@ -686,13 +686,13 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     newPostButtonStr = ''
     # start of headericons div
     if not newsHeader:
-        if not iconsAsButtons:
+        if not icons_as_buttons:
             newPostButtonStr += '<div class="headericons">'
 
     # what screen to go to when a new post is created
     newPostButtonStr += \
         _htmlTimelineNewPost(manuallyApproveFollowers, boxName,
-                             iconsAsButtons, usersPath, translate)
+                             icons_as_buttons, usersPath, translate)
 
     # keyboard navigation
     tlStr += \
@@ -727,7 +727,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                   domain, timelineStartTime,
                                   newCalendarEvent, calendarPath,
                                   calendarImage, followApprovals,
-                                  iconsAsButtons, accessKeys)
+                                  icons_as_buttons, accessKeys)
 
     # start the timeline
     tlStr += \
@@ -770,7 +770,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                   domain, timelineStartTime,
                                   newCalendarEvent, calendarPath,
                                   calendarImage, followApprovals,
-                                  iconsAsButtons, accessKeys)
+                                  icons_as_buttons, accessKeys)
 
     tlStr += '  <div id="timelineposts" class="timeline-posts">\n'
 
@@ -1132,7 +1132,7 @@ def htmlShares(cssCache: {}, defaultTimeline: str,
                newswire: {}, positiveVoting: bool,
                showPublishAsIcon: bool,
                fullWidthTimelineButtonHeader: bool,
-               iconsAsButtons: bool,
+               icons_as_buttons: bool,
                rss_icon_at_top: bool,
                publish_button_at_top: bool,
                authorized: bool, theme: str,
@@ -1165,7 +1165,8 @@ def htmlShares(cssCache: {}, defaultTimeline: str,
                         newswire, False, False, artist,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
-                        iconsAsButtons, rss_icon_at_top, publish_button_at_top,
+                        icons_as_buttons, rss_icon_at_top,
+                        publish_button_at_top,
                         authorized, None, theme, peertubeInstances,
                         allow_local_network_access, textModeBanner,
                         accessKeys, systemLanguage, max_like_count,
@@ -1187,7 +1188,7 @@ def htmlWanted(cssCache: {}, defaultTimeline: str,
                newswire: {}, positiveVoting: bool,
                showPublishAsIcon: bool,
                fullWidthTimelineButtonHeader: bool,
-               iconsAsButtons: bool,
+               icons_as_buttons: bool,
                rss_icon_at_top: bool,
                publish_button_at_top: bool,
                authorized: bool, theme: str,
@@ -1220,7 +1221,8 @@ def htmlWanted(cssCache: {}, defaultTimeline: str,
                         newswire, False, False, artist,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
-                        iconsAsButtons, rss_icon_at_top, publish_button_at_top,
+                        icons_as_buttons, rss_icon_at_top,
+                        publish_button_at_top,
                         authorized, None, theme, peertubeInstances,
                         allow_local_network_access, textModeBanner,
                         accessKeys, systemLanguage, max_like_count,
@@ -1243,7 +1245,7 @@ def htmlInbox(cssCache: {}, defaultTimeline: str,
               newswire: {}, positiveVoting: bool,
               showPublishAsIcon: bool,
               fullWidthTimelineButtonHeader: bool,
-              iconsAsButtons: bool,
+              icons_as_buttons: bool,
               rss_icon_at_top: bool,
               publish_button_at_top: bool,
               authorized: bool, theme: str,
@@ -1276,7 +1278,8 @@ def htmlInbox(cssCache: {}, defaultTimeline: str,
                         newswire, False, False, artist,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
-                        iconsAsButtons, rss_icon_at_top, publish_button_at_top,
+                        icons_as_buttons, rss_icon_at_top,
+                        publish_button_at_top,
                         authorized, None, theme, peertubeInstances,
                         allow_local_network_access, textModeBanner,
                         accessKeys, systemLanguage, max_like_count,
@@ -1299,7 +1302,7 @@ def htmlBookmarks(cssCache: {}, defaultTimeline: str,
                   newswire: {}, positiveVoting: bool,
                   showPublishAsIcon: bool,
                   fullWidthTimelineButtonHeader: bool,
-                  iconsAsButtons: bool,
+                  icons_as_buttons: bool,
                   rss_icon_at_top: bool,
                   publish_button_at_top: bool,
                   authorized: bool, theme: str,
@@ -1332,7 +1335,8 @@ def htmlBookmarks(cssCache: {}, defaultTimeline: str,
                         newswire, False, False, artist,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
-                        iconsAsButtons, rss_icon_at_top, publish_button_at_top,
+                        icons_as_buttons, rss_icon_at_top,
+                        publish_button_at_top,
                         authorized, None, theme, peertubeInstances,
                         allow_local_network_access, textModeBanner,
                         accessKeys, systemLanguage, max_like_count,
@@ -1355,7 +1359,7 @@ def htmlInboxDMs(cssCache: {}, defaultTimeline: str,
                  newswire: {}, positiveVoting: bool,
                  showPublishAsIcon: bool,
                  fullWidthTimelineButtonHeader: bool,
-                 iconsAsButtons: bool,
+                 icons_as_buttons: bool,
                  rss_icon_at_top: bool,
                  publish_button_at_top: bool,
                  authorized: bool, theme: str,
@@ -1383,7 +1387,8 @@ def htmlInboxDMs(cssCache: {}, defaultTimeline: str,
                         newswire, False, False, artist, positiveVoting,
                         showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
-                        iconsAsButtons, rss_icon_at_top, publish_button_at_top,
+                        icons_as_buttons, rss_icon_at_top,
+                        publish_button_at_top,
                         authorized, None, theme, peertubeInstances,
                         allow_local_network_access, textModeBanner,
                         accessKeys, systemLanguage, max_like_count,
@@ -1406,7 +1411,7 @@ def htmlInboxReplies(cssCache: {}, defaultTimeline: str,
                      newswire: {}, positiveVoting: bool,
                      showPublishAsIcon: bool,
                      fullWidthTimelineButtonHeader: bool,
-                     iconsAsButtons: bool,
+                     icons_as_buttons: bool,
                      rss_icon_at_top: bool,
                      publish_button_at_top: bool,
                      authorized: bool, theme: str,
@@ -1435,7 +1440,8 @@ def htmlInboxReplies(cssCache: {}, defaultTimeline: str,
                         newswire, False, False, artist,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
-                        iconsAsButtons, rss_icon_at_top, publish_button_at_top,
+                        icons_as_buttons, rss_icon_at_top,
+                        publish_button_at_top,
                         authorized, None, theme, peertubeInstances,
                         allow_local_network_access, textModeBanner,
                         accessKeys, systemLanguage, max_like_count,
@@ -1458,7 +1464,7 @@ def htmlInboxMedia(cssCache: {}, defaultTimeline: str,
                    newswire: {}, positiveVoting: bool,
                    showPublishAsIcon: bool,
                    fullWidthTimelineButtonHeader: bool,
-                   iconsAsButtons: bool,
+                   icons_as_buttons: bool,
                    rss_icon_at_top: bool,
                    publish_button_at_top: bool,
                    authorized: bool, theme: str,
@@ -1487,7 +1493,8 @@ def htmlInboxMedia(cssCache: {}, defaultTimeline: str,
                         newswire, False, False, artist,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
-                        iconsAsButtons, rss_icon_at_top, publish_button_at_top,
+                        icons_as_buttons, rss_icon_at_top,
+                        publish_button_at_top,
                         authorized, None, theme, peertubeInstances,
                         allow_local_network_access, textModeBanner,
                         accessKeys, systemLanguage, max_like_count,
@@ -1510,7 +1517,7 @@ def htmlInboxBlogs(cssCache: {}, defaultTimeline: str,
                    newswire: {}, positiveVoting: bool,
                    showPublishAsIcon: bool,
                    fullWidthTimelineButtonHeader: bool,
-                   iconsAsButtons: bool,
+                   icons_as_buttons: bool,
                    rss_icon_at_top: bool,
                    publish_button_at_top: bool,
                    authorized: bool, theme: str,
@@ -1539,7 +1546,8 @@ def htmlInboxBlogs(cssCache: {}, defaultTimeline: str,
                         newswire, False, False, artist,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
-                        iconsAsButtons, rss_icon_at_top, publish_button_at_top,
+                        icons_as_buttons, rss_icon_at_top,
+                        publish_button_at_top,
                         authorized, None, theme, peertubeInstances,
                         allow_local_network_access, textModeBanner,
                         accessKeys, systemLanguage, max_like_count,
@@ -1562,7 +1570,7 @@ def htmlInboxFeatures(cssCache: {}, defaultTimeline: str,
                       newswire: {}, positiveVoting: bool,
                       showPublishAsIcon: bool,
                       fullWidthTimelineButtonHeader: bool,
-                      iconsAsButtons: bool,
+                      icons_as_buttons: bool,
                       rss_icon_at_top: bool,
                       publish_button_at_top: bool,
                       authorized: bool,
@@ -1591,7 +1599,8 @@ def htmlInboxFeatures(cssCache: {}, defaultTimeline: str,
                         newswire, False, False, False,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
-                        iconsAsButtons, rss_icon_at_top, publish_button_at_top,
+                        icons_as_buttons, rss_icon_at_top,
+                        publish_button_at_top,
                         authorized, None, theme, peertubeInstances,
                         allow_local_network_access, textModeBanner,
                         accessKeys, systemLanguage, max_like_count,
@@ -1614,7 +1623,7 @@ def htmlInboxNews(cssCache: {}, defaultTimeline: str,
                   newswire: {}, moderator: bool, editor: bool, artist: bool,
                   positiveVoting: bool, showPublishAsIcon: bool,
                   fullWidthTimelineButtonHeader: bool,
-                  iconsAsButtons: bool,
+                  icons_as_buttons: bool,
                   rss_icon_at_top: bool,
                   publish_button_at_top: bool,
                   authorized: bool, theme: str,
@@ -1642,7 +1651,8 @@ def htmlInboxNews(cssCache: {}, defaultTimeline: str,
                         newswire, moderator, editor, artist,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
-                        iconsAsButtons, rss_icon_at_top, publish_button_at_top,
+                        icons_as_buttons, rss_icon_at_top,
+                        publish_button_at_top,
                         authorized, None, theme, peertubeInstances,
                         allow_local_network_access, textModeBanner,
                         accessKeys, systemLanguage, max_like_count,
@@ -1665,7 +1675,7 @@ def htmlOutbox(cssCache: {}, defaultTimeline: str,
                newswire: {}, positiveVoting: bool,
                showPublishAsIcon: bool,
                fullWidthTimelineButtonHeader: bool,
-               iconsAsButtons: bool,
+               icons_as_buttons: bool,
                rss_icon_at_top: bool,
                publish_button_at_top: bool,
                authorized: bool, theme: str,
@@ -1694,8 +1704,10 @@ def htmlOutbox(cssCache: {}, defaultTimeline: str,
                         twitterReplacementDomain,
                         showPublishedDateOnly,
                         newswire, False, False, artist, positiveVoting,
-                        showPublishAsIcon, fullWidthTimelineButtonHeader,
-                        iconsAsButtons, rss_icon_at_top, publish_button_at_top,
+                        showPublishAsIcon,
+                        fullWidthTimelineButtonHeader,
+                        icons_as_buttons, rss_icon_at_top,
+                        publish_button_at_top,
                         authorized, None, theme, peertubeInstances,
                         allow_local_network_access, textModeBanner,
                         accessKeys, systemLanguage, max_like_count,

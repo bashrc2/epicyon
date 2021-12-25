@@ -453,7 +453,7 @@ def htmlNewswireMobile(cssCache: {}, base_dir: str, nickname: str,
                        showPublishAsIcon: bool,
                        authorized: bool,
                        rss_icon_at_top: bool,
-                       iconsAsButtons: bool,
+                       icons_as_buttons: bool,
                        defaultTimeline: str,
                        theme: str,
                        accessKeys: {}) -> str:
@@ -496,7 +496,7 @@ def htmlNewswireMobile(cssCache: {}, base_dir: str, nickname: str,
     htmlStr += '<center>' + \
         headerButtonsFrontScreen(translate, nickname,
                                  'newswire', authorized,
-                                 iconsAsButtons) + '</center>'
+                                 icons_as_buttons) + '</center>'
     htmlStr += \
         getRightColumnContent(base_dir, nickname, domainFull,
                               http_prefix, translate,

@@ -46,7 +46,7 @@ def headerButtonsTimeline(defaultTimeline: str,
                           calendarPath: str,
                           calendarImage: str,
                           followApprovals: str,
-                          iconsAsButtons: bool,
+                          icons_as_buttons: bool,
                           accessKeys: {}) -> str:
     """Returns the header at the top of the timeline, containing
     buttons for inbox, outbox, search, calendar, etc
@@ -157,7 +157,7 @@ def headerButtonsTimeline(defaultTimeline: str,
         twodays = datetime.now() + timedelta(2)
         if dayEventsCheck(base_dir, nickname, domain, now):
             # happening today button
-            if not iconsAsButtons:
+            if not icons_as_buttons:
                 happeningStr += \
                     '<a href="' + usersPath + '/calendar?year=' + \
                     str(now.year) + '?month=' + str(now.month) + \
@@ -174,7 +174,7 @@ def headerButtonsTimeline(defaultTimeline: str,
 
         elif dayEventsCheck(base_dir, nickname, domain, tomorrow):
             # happening tomorrow button
-            if not iconsAsButtons:
+            if not icons_as_buttons:
                 happeningStr += \
                     '<a href="' + usersPath + '/calendar?year=' + \
                     str(tomorrow.year) + '?month=' + str(tomorrow.month) + \
@@ -189,7 +189,7 @@ def headerButtonsTimeline(defaultTimeline: str,
                     '<button class="button">' + \
                     translate['Happening Tomorrow'] + '</button></a>'
         elif dayEventsCheck(base_dir, nickname, domain, twodays):
-            if not iconsAsButtons:
+            if not icons_as_buttons:
                 happeningStr += \
                     '<a href="' + usersPath + \
                     '/calendar" tabindex="-1">' + \
@@ -216,7 +216,7 @@ def headerButtonsTimeline(defaultTimeline: str,
             moderationButtonStr + happeningStr + newPostButtonStr
 
     if not featuresHeader:
-        if not iconsAsButtons:
+        if not icons_as_buttons:
             # the search icon
             tlStr += \
                 '<a class="imageAnchor" href="' + usersPath + \
@@ -244,7 +244,7 @@ def headerButtonsTimeline(defaultTimeline: str,
         if newCalendarEvent:
             # indicate that the calendar icon is highlighted
             calendarAltText = '*' + calendarAltText + '*'
-        if not iconsAsButtons:
+        if not icons_as_buttons:
             tlStr += \
                 '      <a class="imageAnchor" href="' + \
                 usersPath + calendarPath + \
@@ -261,7 +261,7 @@ def headerButtonsTimeline(defaultTimeline: str,
 
     if not featuresHeader:
         # the show/hide button, for a simpler header appearance
-        if not iconsAsButtons:
+        if not icons_as_buttons:
             tlStr += \
                 '      <a class="imageAnchor" href="' + \
                 usersPath + '/minimal' + \
@@ -283,7 +283,7 @@ def headerButtonsTimeline(defaultTimeline: str,
             '<span>' + translate['User'] + '</span></button></a>'
 
     # the newswire button to show right column links
-    if not iconsAsButtons:
+    if not icons_as_buttons:
         tlStr += \
             '<a class="imageAnchorMobile" href="' + \
             usersPath + '/newswiremobile">' + \
@@ -301,7 +301,7 @@ def headerButtonsTimeline(defaultTimeline: str,
             '</span></button></a>'
 
     # the links button to show left column links
-    if not iconsAsButtons:
+    if not icons_as_buttons:
         tlStr += \
             '<a class="imageAnchorMobile" href="' + \
             usersPath + '/linksmobile">' + \
@@ -327,7 +327,7 @@ def headerButtonsTimeline(defaultTimeline: str,
     if not featuresHeader:
         tlStr += followApprovals
 
-    if not iconsAsButtons:
+    if not icons_as_buttons:
         # end of headericons div
         tlStr += '</div>'
 

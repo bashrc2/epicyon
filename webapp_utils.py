@@ -94,7 +94,7 @@ def htmlHashtagBlocked(cssCache: {}, base_dir: str, translate: {}) -> str:
 def headerButtonsFrontScreen(translate: {},
                              nickname: str, boxName: str,
                              authorized: bool,
-                             iconsAsButtons: bool) -> str:
+                             icons_as_buttons: bool) -> str:
     """Returns the header buttons for the front page of a news instance
     """
     headerStr = ''
@@ -120,7 +120,7 @@ def headerButtonsFrontScreen(translate: {},
                 '<button class="buttonMobile">' + \
                 '<span>' + translate['Login'] + \
                 '</span></button></a>'
-        if iconsAsButtons:
+        if icons_as_buttons:
             headerStr += \
                 '        <a href="/users/news/newswiremobile">' + \
                 '<button class="' + buttonNewswire + '">' + \

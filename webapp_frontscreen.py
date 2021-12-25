@@ -95,7 +95,7 @@ def _htmlFrontScreenPosts(recentPostsCache: {}, maxRecentPosts: int,
 
 def htmlFrontScreen(signingPrivateKeyPem: str,
                     rss_icon_at_top: bool,
-                    cssCache: {}, iconsAsButtons: bool,
+                    cssCache: {}, icons_as_buttons: bool,
                     defaultTimeline: str,
                     recentPostsCache: {}, maxRecentPosts: int,
                     translate: {}, projectVersion: str,
@@ -131,7 +131,7 @@ def htmlFrontScreen(signingPrivateKeyPem: str,
 
     loginButton = headerButtonsFrontScreen(translate, nickname,
                                            'features', authorized,
-                                           iconsAsButtons)
+                                           icons_as_buttons)
 
     # If this is the news account then show a different banner
     bannerFile, bannerFilename = \
