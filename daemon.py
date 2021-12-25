@@ -17229,25 +17229,25 @@ class PubServer(BaseHTTPRequestHandler):
                 path = path.split('?page=')[0]
 
         # get the username who posted
-        newPostThreadName = None
+        new_post_thread_name = None
         if '/users/' in path:
-            newPostThreadName = path.split('/users/')[1]
-            if '/' in newPostThreadName:
-                newPostThreadName = newPostThreadName.split('/')[0]
-        if not newPostThreadName:
-            newPostThreadName = '*'
+            new_post_thread_name = path.split('/users/')[1]
+            if '/' in new_post_thread_name:
+                new_post_thread_name = new_post_thread_name.split('/')[0]
+        if not new_post_thread_name:
+            new_post_thread_name = '*'
 
-        if self.server.newPostThread.get(newPostThreadName):
+        if self.server.new_post_thread.get(new_post_thread_name):
             print('Waiting for previous new post thread to end')
             waitCtr = 0
-            while (self.server.newPostThread[newPostThreadName].is_alive() and
-                   waitCtr < 8):
+            np_thread = self.server.new_post_thread[new_post_thread_name]
+            while np_thread.is_alive() and waitCtr < 8:
                 time.sleep(1)
                 waitCtr += 1
             if waitCtr >= 8:
                 print('Killing previous new post thread for ' +
-                      newPostThreadName)
-                self.server.newPostThread[newPostThreadName].kill()
+                      new_post_thread_name)
+                np_thread.kill()
 
         # make a copy of self.headers
         headers = {}
@@ -17298,7 +17298,7 @@ class PubServer(BaseHTTPRequestHandler):
                 # Note sending new posts needs to be synchronous,
                 # otherwise any attachments can get mangled if
                 # other events happen during their decoding
-                print('Creating new post from: ' + newPostThreadName)
+                print('Creating new post from: ' + new_post_thread_name)
                 self._receiveNewPostProcess(postType,
                                             path, headers, length,
                                             postBytes, boundary,
@@ -18718,7 +18718,7 @@ def runDaemon(content_license_url: str,
     httpd.enable_shared_inbox = enable_shared_inbox
     httpd.outboxThread = {}
     httpd.outbox_thread_index = {}
-    httpd.newPostThread = {}
+    httpd.new_post_thread = {}
     httpd.project_version = project_version
     httpd.secure_mode = secure_mode
     # max POST size of 30M
