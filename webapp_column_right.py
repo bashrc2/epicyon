@@ -55,7 +55,7 @@ def getRightColumnContent(base_dir: str, nickname: str, domainFull: str,
                           showPublishButton: bool,
                           showPublishAsIcon: bool,
                           rssIconAtTop: bool,
-                          publishButtonAtTop: bool,
+                          publish_button_at_top: bool,
                           authorized: bool,
                           showHeaderImage: bool,
                           theme: str,
@@ -88,7 +88,7 @@ def getRightColumnContent(base_dir: str, nickname: str, domainFull: str,
             translate['Login'] + '</button></a>\n'
 
     # show publish button at the top if needed
-    if publishButtonAtTop:
+    if publish_button_at_top:
         htmlStr += '<center>' + publishButtonStr + '</center>'
 
     # show a column header image, eg. title of the theme or newswire banner
@@ -122,7 +122,7 @@ def getRightColumnContent(base_dir: str, nickname: str, domainFull: str,
             '<button class="cancelbtn">' + \
             translate['Go Back'] + '</button></a>\n'
 
-    if showPublishButton and not publishButtonAtTop:
+    if showPublishButton and not publish_button_at_top:
         if not showPublishAsIcon:
             htmlStr += publishButtonStr
 

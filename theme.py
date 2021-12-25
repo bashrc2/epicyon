@@ -224,7 +224,7 @@ def _setPublishButtonAtTop(base_dir: str, atTop: bool) -> bool:
     configJson = loadJson(configFilename, 0)
     if not configJson:
         return False
-    configJson['publishButtonAtTop'] = atTop
+    configJson['publish_button_at_top'] = atTop
     return saveJson(configJson, configFilename)
 
 

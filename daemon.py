@@ -2227,9 +2227,9 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.rssIconAtTop = False
         if 'publish-button-at-top' in themeDesignerParams:
             if themeDesignerParams['publish-button-at-top'].lower() == 'true':
-                self.server.publishButtonAtTop = True
+                self.server.publish_button_at_top = True
             else:
-                self.server.publishButtonAtTop = False
+                self.server.publish_button_at_top = False
         if 'newswire-publish-icon' in themeDesignerParams:
             if themeDesignerParams['newswire-publish-icon'].lower() == 'true':
                 self.server.showPublishAsIcon = True
@@ -5027,9 +5027,9 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.rssIconAtTop = \
                                 getConfigParam(self.server.base_dir,
                                                'rssIconAtTop')
-                            self.server.publishButtonAtTop = \
+                            self.server.publish_button_at_top = \
                                 getConfigParam(self.server.base_dir,
-                                               'publishButtonAtTop')
+                                               'publish_button_at_top')
                             setNewsAvatar(base_dir,
                                           fields['themeDropdown'],
                                           http_prefix,
@@ -5968,9 +5968,9 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.rssIconAtTop = \
                                     getConfigParam(base_dir,
                                                    'rssIconAtTop')
-                                self.server.publishButtonAtTop = \
+                                self.server.publish_button_at_top = \
                                     getConfigParam(base_dir,
-                                                   'publishButtonAtTop')
+                                                   'publish_button_at_top')
 
                     # only receive DMs from accounts you follow
                     followDMsFilename = \
@@ -10251,7 +10251,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         fullWidthTimelineButtonHeader,
                                         self.server.iconsAsButtons,
                                         self.server.rssIconAtTop,
-                                        self.server.publishButtonAtTop,
+                                        self.server.publish_button_at_top,
                                         authorized,
                                         self.server.themeName,
                                         self.server.peertubeInstances,
@@ -10402,7 +10402,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          fullWidthTimelineButtonHeader,
                                          self.server.iconsAsButtons,
                                          self.server.rssIconAtTop,
-                                         self.server.publishButtonAtTop,
+                                         self.server.publish_button_at_top,
                                          authorized, self.server.themeName,
                                          self.server.peertubeInstances,
                                          allow_local_network_access,
@@ -10545,7 +10545,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          fullWidthTimelineButtonHeader,
                                          self.server.iconsAsButtons,
                                          self.server.rssIconAtTop,
-                                         self.server.publishButtonAtTop,
+                                         self.server.publish_button_at_top,
                                          authorized, self.server.themeName,
                                          self.server.peertubeInstances,
                                          allow_local_network_access,
@@ -10686,7 +10686,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        fullWidthTimelineButtonHeader,
                                        self.server.iconsAsButtons,
                                        self.server.rssIconAtTop,
-                                       self.server.publishButtonAtTop,
+                                       self.server.publish_button_at_top,
                                        authorized,
                                        self.server.themeName,
                                        self.server.peertubeInstances,
@@ -10828,7 +10828,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        fullWidthTimelineButtonHeader,
                                        self.server.iconsAsButtons,
                                        self.server.rssIconAtTop,
-                                       self.server.publishButtonAtTop,
+                                       self.server.publish_button_at_top,
                                        authorized,
                                        self.server.themeName,
                                        self.server.peertubeInstances,
@@ -10980,7 +10980,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       fullWidthTimelineButtonHeader,
                                       self.server.iconsAsButtons,
                                       self.server.rssIconAtTop,
-                                      self.server.publishButtonAtTop,
+                                      self.server.publish_button_at_top,
                                       authorized,
                                       self.server.themeName,
                                       self.server.peertubeInstances,
@@ -11129,7 +11129,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           fullWidthTimelineButtonHeader,
                                           self.server.iconsAsButtons,
                                           self.server.rssIconAtTop,
-                                          self.server.publishButtonAtTop,
+                                          self.server.publish_button_at_top,
                                           authorized,
                                           self.server.themeName,
                                           self.server.peertubeInstances,
@@ -11236,7 +11236,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.fullWidthTimelineButtonHeader,
                                    self.server.iconsAsButtons,
                                    self.server.rssIconAtTop,
-                                   self.server.publishButtonAtTop,
+                                   self.server.publish_button_at_top,
                                    authorized, self.server.themeName,
                                    self.server.peertubeInstances,
                                    self.server.allow_local_network_access,
@@ -11320,7 +11320,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.fullWidthTimelineButtonHeader,
                                    self.server.iconsAsButtons,
                                    self.server.rssIconAtTop,
-                                   self.server.publishButtonAtTop,
+                                   self.server.publish_button_at_top,
                                    authorized, self.server.themeName,
                                    self.server.peertubeInstances,
                                    self.server.allow_local_network_access,
@@ -11442,7 +11442,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           fullWidthTimelineButtonHeader,
                                           self.server.iconsAsButtons,
                                           self.server.rssIconAtTop,
-                                          self.server.publishButtonAtTop,
+                                          self.server.publish_button_at_top,
                                           authorized,
                                           self.server.themeName,
                                           self.server.peertubeInstances,
@@ -11580,7 +11580,7 @@ class PubServer(BaseHTTPRequestHandler):
                                fullWidthTimelineButtonHeader,
                                self.server.iconsAsButtons,
                                self.server.rssIconAtTop,
-                               self.server.publishButtonAtTop,
+                               self.server.publish_button_at_top,
                                authorized,
                                self.server.themeName,
                                self.server.peertubeInstances,
@@ -11712,7 +11712,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            fullWidthTimelineButtonHeader,
                                            self.server.iconsAsButtons,
                                            self.server.rssIconAtTop,
-                                           self.server.publishButtonAtTop,
+                                           self.server.publish_button_at_top,
                                            authorized, moderationActionStr,
                                            self.server.themeName,
                                            self.server.peertubeInstances,
@@ -18429,7 +18429,7 @@ def runDaemon(content_license_url: str,
               max_newswire_posts: int,
               allow_local_network_access: bool,
               max_feed_item_size_kb: int,
-              publishButtonAtTop: bool,
+              publish_button_at_top: bool,
               rssIconAtTop: bool,
               iconsAsButtons: bool,
               fullWidthTimelineButtonHeader: bool,
@@ -18672,7 +18672,7 @@ def runDaemon(content_license_url: str,
 
     # Whether to show the newswire publish button at the top,
     # above the header image
-    httpd.publishButtonAtTop = publishButtonAtTop
+    httpd.publish_button_at_top = publish_button_at_top
 
     # maximum size of individual RSS feed items, in K
     httpd.max_feed_item_size_kb = max_feed_item_size_kb

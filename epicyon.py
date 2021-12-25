@@ -358,8 +358,8 @@ parser.add_argument("--low_bandwidth",
                     type=str2bool, nargs='?',
                     const=True, default=True,
                     help="Whether to use low bandwidth images")
-parser.add_argument("--publishButtonAtTop",
-                    dest='publishButtonAtTop',
+parser.add_argument("--publish_button_at_top",
+                    dest='publish_button_at_top',
                     type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Whether to show the publish button at the top of " +
@@ -3093,10 +3093,10 @@ rssIconAtTop = \
 if rssIconAtTop is not None:
     args.rssIconAtTop = bool(rssIconAtTop)
 
-publishButtonAtTop = \
-    getConfigParam(base_dir, 'publishButtonAtTop')
-if publishButtonAtTop is not None:
-    args.publishButtonAtTop = bool(publishButtonAtTop)
+publish_button_at_top = \
+    getConfigParam(base_dir, 'publish_button_at_top')
+if publish_button_at_top is not None:
+    args.publish_button_at_top = bool(publish_button_at_top)
 
 fullWidthTimelineButtonHeader = \
     getConfigParam(base_dir, 'fullWidthTimelineButtonHeader')
@@ -3227,7 +3227,7 @@ if __name__ == "__main__":
               args.max_newswire_posts,
               args.allow_local_network_access,
               args.max_feed_item_size_kb,
-              args.publishButtonAtTop,
+              args.publish_button_at_top,
               args.rssIconAtTop,
               args.iconsAsButtons,
               args.fullWidthTimelineButtonHeader,
