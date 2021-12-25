@@ -3532,17 +3532,17 @@ def _testTheme():
 def _testRecentPostsCache():
     print('testRecentPostsCache')
     recentPostsCache = {}
-    maxRecentPosts = 3
+    max_recent_posts = 3
     htmlStr = '<html></html>'
     for i in range(5):
         postJsonObject = {
             "id": "https://somesite.whatever/users/someuser/statuses/" + str(i)
         }
-        updateRecentPostsCache(recentPostsCache, maxRecentPosts,
+        updateRecentPostsCache(recentPostsCache, max_recent_posts,
                                postJsonObject, htmlStr)
-    assert len(recentPostsCache['index']) == maxRecentPosts
-    assert len(recentPostsCache['json'].items()) == maxRecentPosts
-    assert len(recentPostsCache['html'].items()) == maxRecentPosts
+    assert len(recentPostsCache['index']) == max_recent_posts
+    assert len(recentPostsCache['json'].items()) == max_recent_posts
+    assert len(recentPostsCache['html'].items()) == max_recent_posts
 
 
 def _testRemoveTextFormatting():

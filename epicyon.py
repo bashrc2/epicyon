@@ -223,7 +223,7 @@ parser.add_argument('--followers',
                     dest='followers', type=str,
                     default='',
                     help='Show list of followers for the given actor')
-parser.add_argument('--postcache', dest='maxRecentPosts', type=int,
+parser.add_argument('--postcache', dest='max_recent_posts', type=int,
                     default=512,
                     help='The maximum number of recent posts to store in RAM')
 parser.add_argument('--proxy', dest='proxyPort', type=int, default=None,
@@ -3243,7 +3243,7 @@ if __name__ == "__main__":
               args.minimumvotes,
               args.newsinstance,
               args.blogsinstance, args.mediainstance,
-              args.maxRecentPosts,
+              args.max_recent_posts,
               not args.nosharedinbox,
               registration, args.language, __version__,
               instanceId, args.client, base_dir,

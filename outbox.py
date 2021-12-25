@@ -198,7 +198,7 @@ def postMessageToOutbox(session, translate: {},
                         signingPrivateKeyPem: str,
                         peertubeInstances: str, theme: str,
                         max_like_count: int,
-                        maxRecentPosts: int, CWlists: {},
+                        max_recent_posts: int, CWlists: {},
                         lists_enabled: str,
                         content_license_url: str) -> bool:
     """post is received by the outbox
@@ -454,7 +454,7 @@ def postMessageToOutbox(session, translate: {},
                                                postToNickname, domain)
                     individualPostAsHtml(signingPrivateKeyPem,
                                          False, recentPostsCache,
-                                         maxRecentPosts,
+                                         max_recent_posts,
                                          translate, pageNumber,
                                          base_dir, session,
                                          cachedWebfingers,

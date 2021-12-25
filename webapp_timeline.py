@@ -419,7 +419,7 @@ def _pageNumberButtons(usersPath: str, boxName: str, pageNumber: int) -> str:
 
 
 def htmlTimeline(cssCache: {}, defaultTimeline: str,
-                 recentPostsCache: {}, maxRecentPosts: int,
+                 recentPostsCache: {}, max_recent_posts: int,
                  translate: {}, pageNumber: int,
                  itemsPerPage: int, session, base_dir: str,
                  cachedWebfingers: {}, personCache: {},
@@ -896,7 +896,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                     currTlStr = \
                         individualPostAsHtml(signingPrivateKeyPem,
                                              False, recentPostsCache,
-                                             maxRecentPosts,
+                                             max_recent_posts,
                                              translate, pageNumber,
                                              base_dir, session,
                                              cachedWebfingers,
@@ -1119,7 +1119,7 @@ def _htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
 
 
 def htmlShares(cssCache: {}, defaultTimeline: str,
-               recentPostsCache: {}, maxRecentPosts: int,
+               recentPostsCache: {}, max_recent_posts: int,
                translate: {}, pageNumber: int, itemsPerPage: int,
                session, base_dir: str,
                cachedWebfingers: {}, personCache: {},
@@ -1151,7 +1151,7 @@ def htmlShares(cssCache: {}, defaultTimeline: str,
     artist = isArtist(base_dir, nickname)
 
     return htmlTimeline(cssCache, defaultTimeline,
-                        recentPostsCache, maxRecentPosts,
+                        recentPostsCache, max_recent_posts,
                         translate, pageNumber,
                         itemsPerPage, session, base_dir,
                         cachedWebfingers, personCache,
@@ -1177,7 +1177,7 @@ def htmlShares(cssCache: {}, defaultTimeline: str,
 
 
 def htmlWanted(cssCache: {}, defaultTimeline: str,
-               recentPostsCache: {}, maxRecentPosts: int,
+               recentPostsCache: {}, max_recent_posts: int,
                translate: {}, pageNumber: int, itemsPerPage: int,
                session, base_dir: str,
                cachedWebfingers: {}, personCache: {},
@@ -1209,7 +1209,7 @@ def htmlWanted(cssCache: {}, defaultTimeline: str,
     artist = isArtist(base_dir, nickname)
 
     return htmlTimeline(cssCache, defaultTimeline,
-                        recentPostsCache, maxRecentPosts,
+                        recentPostsCache, max_recent_posts,
                         translate, pageNumber,
                         itemsPerPage, session, base_dir,
                         cachedWebfingers, personCache,
@@ -1235,7 +1235,7 @@ def htmlWanted(cssCache: {}, defaultTimeline: str,
 
 
 def htmlInbox(cssCache: {}, defaultTimeline: str,
-              recentPostsCache: {}, maxRecentPosts: int,
+              recentPostsCache: {}, max_recent_posts: int,
               translate: {}, pageNumber: int, itemsPerPage: int,
               session, base_dir: str,
               cachedWebfingers: {}, personCache: {},
@@ -1268,7 +1268,7 @@ def htmlInbox(cssCache: {}, defaultTimeline: str,
     artist = isArtist(base_dir, nickname)
 
     return htmlTimeline(cssCache, defaultTimeline,
-                        recentPostsCache, maxRecentPosts,
+                        recentPostsCache, max_recent_posts,
                         translate, pageNumber,
                         itemsPerPage, session, base_dir,
                         cachedWebfingers, personCache,
@@ -1294,7 +1294,7 @@ def htmlInbox(cssCache: {}, defaultTimeline: str,
 
 
 def htmlBookmarks(cssCache: {}, defaultTimeline: str,
-                  recentPostsCache: {}, maxRecentPosts: int,
+                  recentPostsCache: {}, max_recent_posts: int,
                   translate: {}, pageNumber: int, itemsPerPage: int,
                   session, base_dir: str,
                   cachedWebfingers: {}, personCache: {},
@@ -1327,7 +1327,7 @@ def htmlBookmarks(cssCache: {}, defaultTimeline: str,
     artist = isArtist(base_dir, nickname)
 
     return htmlTimeline(cssCache, defaultTimeline,
-                        recentPostsCache, maxRecentPosts,
+                        recentPostsCache, max_recent_posts,
                         translate, pageNumber,
                         itemsPerPage, session, base_dir,
                         cachedWebfingers, personCache,
@@ -1352,7 +1352,7 @@ def htmlBookmarks(cssCache: {}, defaultTimeline: str,
 
 
 def htmlInboxDMs(cssCache: {}, defaultTimeline: str,
-                 recentPostsCache: {}, maxRecentPosts: int,
+                 recentPostsCache: {}, max_recent_posts: int,
                  translate: {}, pageNumber: int, itemsPerPage: int,
                  session, base_dir: str,
                  cachedWebfingers: {}, personCache: {},
@@ -1382,7 +1382,7 @@ def htmlInboxDMs(cssCache: {}, defaultTimeline: str,
     """
     artist = isArtist(base_dir, nickname)
     return htmlTimeline(cssCache, defaultTimeline,
-                        recentPostsCache, maxRecentPosts,
+                        recentPostsCache, max_recent_posts,
                         translate, pageNumber,
                         itemsPerPage, session, base_dir,
                         cachedWebfingers, personCache,
@@ -1404,7 +1404,7 @@ def htmlInboxDMs(cssCache: {}, defaultTimeline: str,
 
 
 def htmlInboxReplies(cssCache: {}, defaultTimeline: str,
-                     recentPostsCache: {}, maxRecentPosts: int,
+                     recentPostsCache: {}, max_recent_posts: int,
                      translate: {}, pageNumber: int, itemsPerPage: int,
                      session, base_dir: str,
                      cachedWebfingers: {}, personCache: {},
@@ -1434,7 +1434,7 @@ def htmlInboxReplies(cssCache: {}, defaultTimeline: str,
     """
     artist = isArtist(base_dir, nickname)
     return htmlTimeline(cssCache, defaultTimeline,
-                        recentPostsCache, maxRecentPosts,
+                        recentPostsCache, max_recent_posts,
                         translate, pageNumber,
                         itemsPerPage, session, base_dir,
                         cachedWebfingers, personCache,
@@ -1457,7 +1457,7 @@ def htmlInboxReplies(cssCache: {}, defaultTimeline: str,
 
 
 def htmlInboxMedia(cssCache: {}, defaultTimeline: str,
-                   recentPostsCache: {}, maxRecentPosts: int,
+                   recentPostsCache: {}, max_recent_posts: int,
                    translate: {}, pageNumber: int, itemsPerPage: int,
                    session, base_dir: str,
                    cachedWebfingers: {}, personCache: {},
@@ -1487,7 +1487,7 @@ def htmlInboxMedia(cssCache: {}, defaultTimeline: str,
     """
     artist = isArtist(base_dir, nickname)
     return htmlTimeline(cssCache, defaultTimeline,
-                        recentPostsCache, maxRecentPosts,
+                        recentPostsCache, max_recent_posts,
                         translate, pageNumber,
                         itemsPerPage, session, base_dir,
                         cachedWebfingers, personCache,
@@ -1510,7 +1510,7 @@ def htmlInboxMedia(cssCache: {}, defaultTimeline: str,
 
 
 def htmlInboxBlogs(cssCache: {}, defaultTimeline: str,
-                   recentPostsCache: {}, maxRecentPosts: int,
+                   recentPostsCache: {}, max_recent_posts: int,
                    translate: {}, pageNumber: int, itemsPerPage: int,
                    session, base_dir: str,
                    cachedWebfingers: {}, personCache: {},
@@ -1540,7 +1540,7 @@ def htmlInboxBlogs(cssCache: {}, defaultTimeline: str,
     """
     artist = isArtist(base_dir, nickname)
     return htmlTimeline(cssCache, defaultTimeline,
-                        recentPostsCache, maxRecentPosts,
+                        recentPostsCache, max_recent_posts,
                         translate, pageNumber,
                         itemsPerPage, session, base_dir,
                         cachedWebfingers, personCache,
@@ -1563,7 +1563,7 @@ def htmlInboxBlogs(cssCache: {}, defaultTimeline: str,
 
 
 def htmlInboxFeatures(cssCache: {}, defaultTimeline: str,
-                      recentPostsCache: {}, maxRecentPosts: int,
+                      recentPostsCache: {}, max_recent_posts: int,
                       translate: {}, pageNumber: int, itemsPerPage: int,
                       session, base_dir: str,
                       cachedWebfingers: {}, personCache: {},
@@ -1593,7 +1593,7 @@ def htmlInboxFeatures(cssCache: {}, defaultTimeline: str,
     """Show the features timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
-                        recentPostsCache, maxRecentPosts,
+                        recentPostsCache, max_recent_posts,
                         translate, pageNumber,
                         itemsPerPage, session, base_dir,
                         cachedWebfingers, personCache,
@@ -1616,7 +1616,7 @@ def htmlInboxFeatures(cssCache: {}, defaultTimeline: str,
 
 
 def htmlInboxNews(cssCache: {}, defaultTimeline: str,
-                  recentPostsCache: {}, maxRecentPosts: int,
+                  recentPostsCache: {}, max_recent_posts: int,
                   translate: {}, pageNumber: int, itemsPerPage: int,
                   session, base_dir: str,
                   cachedWebfingers: {}, personCache: {},
@@ -1645,7 +1645,7 @@ def htmlInboxNews(cssCache: {}, defaultTimeline: str,
     """Show the news timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
-                        recentPostsCache, maxRecentPosts,
+                        recentPostsCache, max_recent_posts,
                         translate, pageNumber,
                         itemsPerPage, session, base_dir,
                         cachedWebfingers, personCache,
@@ -1668,7 +1668,7 @@ def htmlInboxNews(cssCache: {}, defaultTimeline: str,
 
 
 def htmlOutbox(cssCache: {}, defaultTimeline: str,
-               recentPostsCache: {}, maxRecentPosts: int,
+               recentPostsCache: {}, max_recent_posts: int,
                translate: {}, pageNumber: int, itemsPerPage: int,
                session, base_dir: str,
                cachedWebfingers: {}, personCache: {},
@@ -1700,7 +1700,7 @@ def htmlOutbox(cssCache: {}, defaultTimeline: str,
         followerApprovalActive(base_dir, nickname, domain)
     artist = isArtist(base_dir, nickname)
     return htmlTimeline(cssCache, defaultTimeline,
-                        recentPostsCache, maxRecentPosts,
+                        recentPostsCache, max_recent_posts,
                         translate, pageNumber,
                         itemsPerPage, session, base_dir,
                         cachedWebfingers, personCache,

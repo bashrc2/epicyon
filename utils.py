@@ -2001,7 +2001,7 @@ def getCachedPostFilename(base_dir: str, nickname: str, domain: str,
     return cachedPostFilename + '.html'
 
 
-def updateRecentPostsCache(recentPostsCache: {}, maxRecentPosts: int,
+def updateRecentPostsCache(recentPostsCache: {}, max_recent_posts: int,
                            postJsonObject: {}, htmlStr: str) -> None:
     """Store recent posts in memory so that they can be quickly recalled
     """
@@ -2019,7 +2019,7 @@ def updateRecentPostsCache(recentPostsCache: {}, maxRecentPosts: int,
         recentPostsCache['json'][postId] = json.dumps(postJsonObject)
         recentPostsCache['html'][postId] = htmlStr
 
-        while len(recentPostsCache['html'].items()) > maxRecentPosts:
+        while len(recentPostsCache['html'].items()) > max_recent_posts:
             postId = recentPostsCache['index'][0]
             recentPostsCache['index'].pop(0)
             if recentPostsCache['json'].get(postId):

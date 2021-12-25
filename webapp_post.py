@@ -283,7 +283,7 @@ def _getPostFromRecentCache(session,
                             postStartTime,
                             pageNumber: int,
                             recentPostsCache: {},
-                            maxRecentPosts: int,
+                            max_recent_posts: int,
                             signingPrivateKeyPem: str) -> str:
     """Attempts to get the html post from the recent posts cache in memory
     """
@@ -324,7 +324,7 @@ def _getPostFromRecentCache(session,
 
     postHtml = \
         preparePostFromHtmlCache(nickname, postHtml, boxName, pageNumber)
-    updateRecentPostsCache(recentPostsCache, maxRecentPosts,
+    updateRecentPostsCache(recentPostsCache, max_recent_posts,
                            postJsonObject, postHtml)
     _logPostTiming(enableTimingLog, postStartTime, '3')
     return postHtml
@@ -1321,7 +1321,7 @@ def _getFooterWithIcons(showIcons: bool,
 
 def individualPostAsHtml(signingPrivateKeyPem: str,
                          allowDownloads: bool,
-                         recentPostsCache: {}, maxRecentPosts: int,
+                         recentPostsCache: {}, max_recent_posts: int,
                          translate: {},
                          pageNumber: int, base_dir: str,
                          session, cachedWebfingers: {}, personCache: {},
@@ -1403,7 +1403,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
                                 postStartTime,
                                 pageNumber,
                                 recentPostsCache,
-                                maxRecentPosts,
+                                max_recent_posts,
                                 signingPrivateKeyPem)
     if postHtml:
         return postHtml
@@ -1531,7 +1531,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
                                     postStartTime,
                                     pageNumber,
                                     recentPostsCache,
-                                    maxRecentPosts,
+                                    max_recent_posts,
                                     signingPrivateKeyPem)
         if postHtml:
             return postHtml
@@ -1982,7 +1982,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
        boxName != 'bookmarks':
         _saveIndividualPostAsHtmlToCache(base_dir, nickname, domain,
                                          postJsonObject, postHtml)
-        updateRecentPostsCache(recentPostsCache, maxRecentPosts,
+        updateRecentPostsCache(recentPostsCache, max_recent_posts,
                                postJsonObject, postHtml)
 
     _logPostTiming(enableTimingLog, postStartTime, '19')
@@ -1991,7 +1991,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
 
 
 def htmlIndividualPost(cssCache: {},
-                       recentPostsCache: {}, maxRecentPosts: int,
+                       recentPostsCache: {}, max_recent_posts: int,
                        translate: {},
                        base_dir: str, session, cachedWebfingers: {},
                        personCache: {},
@@ -2058,7 +2058,7 @@ def htmlIndividualPost(cssCache: {},
 
     postStr += \
         individualPostAsHtml(signingPrivateKeyPem,
-                             True, recentPostsCache, maxRecentPosts,
+                             True, recentPostsCache, max_recent_posts,
                              translate, None,
                              base_dir, session, cachedWebfingers, personCache,
                              nickname, domain, port, postJsonObject,
@@ -2087,7 +2087,7 @@ def htmlIndividualPost(cssCache: {},
                 postStr = \
                     individualPostAsHtml(signingPrivateKeyPem,
                                          True, recentPostsCache,
-                                         maxRecentPosts,
+                                         max_recent_posts,
                                          translate, None,
                                          base_dir, session, cachedWebfingers,
                                          personCache,
@@ -2123,7 +2123,7 @@ def htmlIndividualPost(cssCache: {},
                 postStr += \
                     individualPostAsHtml(signingPrivateKeyPem,
                                          True, recentPostsCache,
-                                         maxRecentPosts,
+                                         max_recent_posts,
                                          translate, None,
                                          base_dir, session, cachedWebfingers,
                                          personCache,
@@ -2153,7 +2153,7 @@ def htmlIndividualPost(cssCache: {},
 
 
 def htmlPostReplies(cssCache: {},
-                    recentPostsCache: {}, maxRecentPosts: int,
+                    recentPostsCache: {}, max_recent_posts: int,
                     translate: {}, base_dir: str,
                     session, cachedWebfingers: {}, personCache: {},
                     nickname: str, domain: str, port: int, repliesJson: {},
@@ -2175,7 +2175,7 @@ def htmlPostReplies(cssCache: {},
             repliesStr += \
                 individualPostAsHtml(signingPrivateKeyPem,
                                      True, recentPostsCache,
-                                     maxRecentPosts,
+                                     max_recent_posts,
                                      translate, None,
                                      base_dir, session, cachedWebfingers,
                                      personCache,
@@ -2204,7 +2204,7 @@ def htmlPostReplies(cssCache: {},
 
 
 def htmlEmojiReactionPicker(cssCache: {},
-                            recentPostsCache: {}, maxRecentPosts: int,
+                            recentPostsCache: {}, max_recent_posts: int,
                             translate: {},
                             base_dir: str, session, cachedWebfingers: {},
                             personCache: {},
@@ -2227,7 +2227,7 @@ def htmlEmojiReactionPicker(cssCache: {},
         translate['Select reaction'].title() + '</label></center>\n' + \
         individualPostAsHtml(signingPrivateKeyPem,
                              True, recentPostsCache,
-                             maxRecentPosts,
+                             max_recent_posts,
                              translate, None,
                              base_dir, session, cachedWebfingers,
                              personCache,

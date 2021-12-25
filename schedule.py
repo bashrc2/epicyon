@@ -126,7 +126,7 @@ def _updatePostSchedule(base_dir: str, handle: str, httpd,
                                        httpd.peertubeInstances,
                                        httpd.themeName,
                                        httpd.max_like_count,
-                                       httpd.maxRecentPosts,
+                                       httpd.max_recent_posts,
                                        httpd.CWlists,
                                        httpd.lists_enabled,
                                        httpd.content_license_url):
