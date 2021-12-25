@@ -1324,15 +1324,15 @@ class PubServer(BaseHTTPRequestHandler):
         if not self.server.outboxThread.get(accountOutboxThreadName):
             self.server.outboxThread[accountOutboxThreadName] = \
                 [None] * maxOutboxThreadsPerAccount
-            self.server.outboxThreadIndex[accountOutboxThreadName] = 0
+            self.server.outbox_thread_index[accountOutboxThreadName] = 0
             return 0
 
         # increment the ring buffer index
-        index = self.server.outboxThreadIndex[accountOutboxThreadName] + 1
+        index = self.server.outbox_thread_index[accountOutboxThreadName] + 1
         if index >= maxOutboxThreadsPerAccount:
             index = 0
 
-        self.server.outboxThreadIndex[accountOutboxThreadName] = index
+        self.server.outbox_thread_index[accountOutboxThreadName] = index
 
         # remove any existing thread from the current index in the buffer
         if self.server.outboxThread.get(accountOutboxThreadName):
@@ -1352,7 +1352,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         print('Creating outbox thread ' +
               accountOutboxThreadName + '/' +
-              str(self.server.outboxThreadIndex[accountOutboxThreadName]))
+              str(self.server.outbox_thread_index[accountOutboxThreadName]))
         self.server.outboxThread[accountOutboxThreadName][index] = \
             threadWithTrace(target=self._postToOutbox,
                             args=(messageJson.copy(),
@@ -18717,7 +18717,7 @@ def runDaemon(content_license_url: str,
         httpd.registration = False
     httpd.enable_shared_inbox = enable_shared_inbox
     httpd.outboxThread = {}
-    httpd.outboxThreadIndex = {}
+    httpd.outbox_thread_index = {}
     httpd.newPostThread = {}
     httpd.project_version = project_version
     httpd.secure_mode = secure_mode
