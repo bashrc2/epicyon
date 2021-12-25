@@ -1072,7 +1072,7 @@ def _createPostS2S(base_dir: str, nickname: str, domain: str, port: int,
                    mediaType: str, imageDescription: str, city: str,
                    postObjectType: str, summary: str,
                    inReplyToAtomUri: str, systemLanguage: str,
-                   conversationId: str, lowBandwidth: bool,
+                   conversationId: str, low_bandwidth: bool,
                    content_license_url: str) -> {}:
     """Creates a new server-to-server post
     """
@@ -1133,7 +1133,7 @@ def _createPostS2S(base_dir: str, nickname: str, domain: str, port: int,
         newPost['object'] = \
             attachMedia(base_dir, http_prefix, nickname, domain, port,
                         newPost['object'], attachImageFilename,
-                        mediaType, imageDescription, city, lowBandwidth,
+                        mediaType, imageDescription, city, low_bandwidth,
                         content_license_url)
     return newPost
 
@@ -1147,7 +1147,7 @@ def _createPostC2S(base_dir: str, nickname: str, domain: str, port: int,
                    mediaType: str, imageDescription: str, city: str,
                    postObjectType: str, summary: str,
                    inReplyToAtomUri: str, systemLanguage: str,
-                   conversationId: str, lowBandwidth: str,
+                   conversationId: str, low_bandwidth: str,
                    content_license_url: str) -> {}:
     """Creates a new client-to-server post
     """
@@ -1198,7 +1198,7 @@ def _createPostC2S(base_dir: str, nickname: str, domain: str, port: int,
         newPost = \
             attachMedia(base_dir, http_prefix, nickname, domain, port,
                         newPost, attachImageFilename,
-                        mediaType, imageDescription, city, lowBandwidth,
+                        mediaType, imageDescription, city, low_bandwidth,
                         content_license_url)
     return newPost
 
@@ -1381,7 +1381,7 @@ def _createPostBase(base_dir: str,
                     anonymousParticipationEnabled: bool,
                     eventStatus: str, ticketUrl: str,
                     systemLanguage: str,
-                    conversationId: str, lowBandwidth: bool,
+                    conversationId: str, low_bandwidth: bool,
                     content_license_url: str) -> {}:
     """Creates a message
     """
@@ -1517,7 +1517,7 @@ def _createPostBase(base_dir: str,
                            mediaType, imageDescription, city,
                            postObjectType, summary,
                            inReplyToAtomUri, systemLanguage,
-                           conversationId, lowBandwidth,
+                           conversationId, low_bandwidth,
                            content_license_url)
     else:
         newPost = \
@@ -1530,7 +1530,7 @@ def _createPostBase(base_dir: str,
                            mediaType, imageDescription, city,
                            postObjectType, summary,
                            inReplyToAtomUri, systemLanguage,
-                           conversationId, lowBandwidth,
+                           conversationId, low_bandwidth,
                            content_license_url)
 
     _createPostMentions(ccUrl, newPost, toRecipients, tags)
@@ -1767,7 +1767,7 @@ def createPublicPost(base_dir: str,
                      location: str,
                      isArticle: bool,
                      systemLanguage: str,
-                     conversationId: str, lowBandwidth: bool,
+                     conversationId: str, low_bandwidth: bool,
                      content_license_url: str) -> {}:
     """Public post
     """
@@ -1799,7 +1799,7 @@ def createPublicPost(base_dir: str,
                            repliesModerationOption,
                            anonymousParticipationEnabled,
                            eventStatus, ticketUrl, systemLanguage,
-                           conversationId, lowBandwidth,
+                           conversationId, low_bandwidth,
                            content_license_url)
 
 
@@ -1843,7 +1843,7 @@ def createBlogPost(base_dir: str,
                    subject: str, schedulePost: bool,
                    eventDate: str, eventTime: str,
                    location: str, systemLanguage: str,
-                   conversationId: str, lowBandwidth: bool,
+                   conversationId: str, low_bandwidth: bool,
                    content_license_url: str) -> {}:
     blogJson = \
         createPublicPost(base_dir,
@@ -1856,7 +1856,7 @@ def createBlogPost(base_dir: str,
                          schedulePost,
                          eventDate, eventTime, location,
                          True, systemLanguage, conversationId,
-                         lowBandwidth, content_license_url)
+                         low_bandwidth, content_license_url)
     blogJson['object']['url'] = \
         blogJson['object']['url'].replace('/@', '/users/')
     _appendCitationsToBlogPost(base_dir, nickname, domain, blogJson)
@@ -1870,7 +1870,7 @@ def createNewsPost(base_dir: str,
                    attachImageFilename: str, mediaType: str,
                    imageDescription: str, city: str,
                    subject: str, systemLanguage: str,
-                   conversationId: str, lowBandwidth: bool,
+                   conversationId: str, low_bandwidth: bool,
                    content_license_url: str) -> {}:
     clientToServer = False
     inReplyTo = None
@@ -1890,7 +1890,7 @@ def createNewsPost(base_dir: str,
                          schedulePost,
                          eventDate, eventTime, location,
                          True, systemLanguage, conversationId,
-                         lowBandwidth, content_license_url)
+                         low_bandwidth, content_license_url)
     blog['object']['type'] = 'Article'
     return blog
 
@@ -1903,7 +1903,7 @@ def createQuestionPost(base_dir: str,
                        attachImageFilename: str, mediaType: str,
                        imageDescription: str, city: str,
                        subject: str, durationDays: int,
-                       systemLanguage: str, lowBandwidth: bool,
+                       systemLanguage: str, low_bandwidth: bool,
                        content_license_url: str) -> {}:
     """Question post with multiple choice options
     """
@@ -1921,7 +1921,7 @@ def createQuestionPost(base_dir: str,
                         False, None, None, None, None, None,
                         None, None, None,
                         None, None, None, None, None, systemLanguage,
-                        None, lowBandwidth, content_license_url)
+                        None, low_bandwidth, content_license_url)
     messageJson['object']['type'] = 'Question'
     messageJson['object']['oneOf'] = []
     messageJson['object']['votersCount'] = 0
@@ -1953,7 +1953,7 @@ def createUnlistedPost(base_dir: str,
                        subject: str, schedulePost: bool,
                        eventDate: str, eventTime: str,
                        location: str, systemLanguage: str,
-                       conversationId: str, lowBandwidth: bool,
+                       conversationId: str, low_bandwidth: bool,
                        content_license_url: str) -> {}:
     """Unlisted post. This has the #Public and followers links inverted.
     """
@@ -1971,7 +1971,7 @@ def createUnlistedPost(base_dir: str,
                            schedulePost, eventDate, eventTime, location,
                            None, None, None, None, None,
                            None, None, None, None, None, systemLanguage,
-                           conversationId, lowBandwidth,
+                           conversationId, low_bandwidth,
                            content_license_url)
 
 
@@ -1988,7 +1988,7 @@ def createFollowersOnlyPost(base_dir: str,
                             subject: str, schedulePost: bool,
                             eventDate: str, eventTime: str,
                             location: str, systemLanguage: str,
-                            conversationId: str, lowBandwidth: bool,
+                            conversationId: str, low_bandwidth: bool,
                             content_license_url: str) -> {}:
     """Followers only post
     """
@@ -2006,7 +2006,7 @@ def createFollowersOnlyPost(base_dir: str,
                            schedulePost, eventDate, eventTime, location,
                            None, None, None, None, None,
                            None, None, None, None, None, systemLanguage,
-                           conversationId, lowBandwidth,
+                           conversationId, low_bandwidth,
                            content_license_url)
 
 
@@ -2059,7 +2059,7 @@ def createDirectMessagePost(base_dir: str,
                             schedulePost: bool,
                             eventDate: str, eventTime: str,
                             location: str, systemLanguage: str,
-                            conversationId: str, lowBandwidth: bool,
+                            conversationId: str, low_bandwidth: bool,
                             content_license_url: str) -> {}:
     """Direct Message post
     """
@@ -2084,7 +2084,7 @@ def createDirectMessagePost(base_dir: str,
                         schedulePost, eventDate, eventTime, location,
                         None, None, None, None, None,
                         None, None, None, None, None, systemLanguage,
-                        conversationId, lowBandwidth,
+                        conversationId, low_bandwidth,
                         content_license_url)
     # mentioned recipients go into To rather than Cc
     messageJson['to'] = messageJson['object']['cc']
@@ -2105,7 +2105,7 @@ def createReportPost(base_dir: str,
                      attachImageFilename: str, mediaType: str,
                      imageDescription: str, city: str,
                      debug: bool, subject: str, systemLanguage: str,
-                     lowBandwidth: bool,
+                     low_bandwidth: bool,
                      content_license_url: str) -> {}:
     """Send a report to moderators
     """
@@ -2180,7 +2180,7 @@ def createReportPost(base_dir: str,
                             False, None, None, None, None, None,
                             None, None, None,
                             None, None, None, None, None, systemLanguage,
-                            None, lowBandwidth, content_license_url)
+                            None, low_bandwidth, content_license_url)
         if not postJsonObject:
             continue
 
@@ -2276,7 +2276,7 @@ def sendPost(signingPrivateKeyPem: str, projectVersion: str,
              isArticle: bool, systemLanguage: str,
              shared_items_federated_domains: [],
              sharedItemFederationTokens: {},
-             lowBandwidth: bool, content_license_url: str,
+             low_bandwidth: bool, content_license_url: str,
              debug: bool = False, inReplyTo: str = None,
              inReplyToAtomUri: str = None, subject: str = None) -> int:
     """Post to another inbox. Used by unit tests.
@@ -2342,7 +2342,7 @@ def sendPost(signingPrivateKeyPem: str, projectVersion: str,
                         False, None, None, None, None, None,
                         None, None, None,
                         None, None, None, None, None, systemLanguage,
-                        conversationId, lowBandwidth,
+                        conversationId, low_bandwidth,
                         content_license_url)
 
     # get the senders private key
@@ -2424,7 +2424,7 @@ def sendPostViaServer(signingPrivateKeyPem: str, projectVersion: str,
                       imageDescription: str, city: str,
                       cachedWebfingers: {}, personCache: {},
                       isArticle: bool, systemLanguage: str,
-                      lowBandwidth: bool,
+                      low_bandwidth: bool,
                       content_license_url: str,
                       debug: bool = False,
                       inReplyTo: str = None,
@@ -2511,7 +2511,7 @@ def sendPostViaServer(signingPrivateKeyPem: str, projectVersion: str,
                         False, None, None, None, None, None,
                         None, None, None,
                         None, None, None, None, None, systemLanguage,
-                        conversationId, lowBandwidth,
+                        conversationId, low_bandwidth,
                         content_license_url)
 
     authHeader = createBasicAuthHeader(fromNickname, password)

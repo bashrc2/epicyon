@@ -353,8 +353,8 @@ parser.add_argument("--rssIconAtTop",
                     const=True, default=True,
                     help="Whether to show the rss icon at teh top or bottom" +
                     "of the timeline")
-parser.add_argument("--lowBandwidth",
-                    dest='lowBandwidth',
+parser.add_argument("--low_bandwidth",
+                    dest='low_bandwidth',
                     type=str2bool, nargs='?',
                     const=True, default=True,
                     help="Whether to use low bandwidth images")
@@ -1322,7 +1322,7 @@ if args.message:
                       args.commentsEnabled, attach, mediaType,
                       attachedImageDescription, city,
                       cachedWebfingers, personCache, isArticle,
-                      args.language, args.lowBandwidth,
+                      args.language, args.low_bandwidth,
                       args.content_license_url, args.debug,
                       replyTo, replyTo, args.conversationId, subject)
     for i in range(10):
@@ -2598,7 +2598,7 @@ if args.desktop:
                      storeInboxPosts,
                      args.notifyShowNewPosts,
                      args.language,
-                     args.debug, args.lowBandwidth)
+                     args.debug, args.low_bandwidth)
     sys.exit()
 
 if federationList:
@@ -2839,7 +2839,7 @@ if args.testdata:
              "mechanical",
              "City", "0", "GBP",
              "2 months",
-             debug, city, args.language, {}, 'shares', args.lowBandwidth,
+             debug, city, args.language, {}, 'shares', args.low_bandwidth,
              args.content_license_url)
     addShare(base_dir,
              http_prefix, nickname, domain, port,
@@ -2850,7 +2850,7 @@ if args.testdata:
              "clothing",
              "City", "0", "GBP",
              "3 months",
-             debug, city, args.language, {}, 'shares', args.lowBandwidth,
+             debug, city, args.language, {}, 'shares', args.low_bandwidth,
              args.content_license_url)
 
     deleteAllPosts(base_dir, nickname, domain, 'inbox')
@@ -2873,7 +2873,7 @@ if args.testdata:
     testLocation = None
     testIsArticle = False
     conversationId = None
-    lowBandwidth = False
+    low_bandwidth = False
 
     createPublicPost(base_dir, nickname, domain, port, http_prefix,
                      "like this is totally just a #test man",
@@ -2887,7 +2887,7 @@ if args.testdata:
                      testSubject, testSchedulePost,
                      testEventDate, testEventTime, testLocation,
                      testIsArticle, args.language, conversationId,
-                     lowBandwidth, args.content_license_url)
+                     low_bandwidth, args.content_license_url)
     createPublicPost(base_dir, nickname, domain, port, http_prefix,
                      "Zoiks!!!",
                      testFollowersOnly,
@@ -2900,7 +2900,7 @@ if args.testdata:
                      testSubject, testSchedulePost,
                      testEventDate, testEventTime, testLocation,
                      testIsArticle, args.language, conversationId,
-                     lowBandwidth, args.content_license_url)
+                     low_bandwidth, args.content_license_url)
     createPublicPost(base_dir, nickname, domain, port, http_prefix,
                      "Hey scoob we need like a hundred more #milkshakes",
                      testFollowersOnly,
@@ -2913,7 +2913,7 @@ if args.testdata:
                      testSubject, testSchedulePost,
                      testEventDate, testEventTime, testLocation,
                      testIsArticle, args.language, conversationId,
-                     lowBandwidth, args.content_license_url)
+                     low_bandwidth, args.content_license_url)
     createPublicPost(base_dir, nickname, domain, port, http_prefix,
                      "Getting kinda spooky around here",
                      testFollowersOnly,
@@ -2926,7 +2926,7 @@ if args.testdata:
                      testSubject, testSchedulePost,
                      testEventDate, testEventTime, testLocation,
                      testIsArticle, args.language, conversationId,
-                     lowBandwidth, args.content_license_url)
+                     low_bandwidth, args.content_license_url)
     createPublicPost(base_dir, nickname, domain, port, http_prefix,
                      "And they would have gotten away with it too" +
                      "if it wasn't for those pesky hackers",
@@ -2940,7 +2940,7 @@ if args.testdata:
                      testSubject, testSchedulePost,
                      testEventDate, testEventTime, testLocation,
                      testIsArticle, args.language, conversationId,
-                     lowBandwidth, args.content_license_url)
+                     low_bandwidth, args.content_license_url)
     createPublicPost(base_dir, nickname, domain, port, http_prefix,
                      "man these centralized sites are like the worst!",
                      testFollowersOnly,
@@ -2953,7 +2953,7 @@ if args.testdata:
                      testSubject, testSchedulePost,
                      testEventDate, testEventTime, testLocation,
                      testIsArticle, args.language, conversationId,
-                     lowBandwidth, args.content_license_url)
+                     low_bandwidth, args.content_license_url)
     createPublicPost(base_dir, nickname, domain, port, http_prefix,
                      "another mystery solved #test",
                      testFollowersOnly,
@@ -2966,7 +2966,7 @@ if args.testdata:
                      testSubject, testSchedulePost,
                      testEventDate, testEventTime, testLocation,
                      testIsArticle, args.language, conversationId,
-                     lowBandwidth, args.content_license_url)
+                     low_bandwidth, args.content_license_url)
     createPublicPost(base_dir, nickname, domain, port, http_prefix,
                      "let's go bowling",
                      testFollowersOnly,
@@ -2979,7 +2979,7 @@ if args.testdata:
                      testSubject, testSchedulePost,
                      testEventDate, testEventTime, testLocation,
                      testIsArticle, args.language, conversationId,
-                     lowBandwidth, args.content_license_url)
+                     low_bandwidth, args.content_license_url)
     domainFull = domain + ':' + str(port)
     clearFollows(base_dir, nickname, domain)
     followPerson(base_dir, nickname, domain, 'maxboardroom', domainFull,
@@ -3133,10 +3133,10 @@ showNodeInfoVersion = \
 if showNodeInfoVersion is not None:
     args.showNodeInfoVersion = bool(showNodeInfoVersion)
 
-lowBandwidth = \
-    getConfigParam(base_dir, 'lowBandwidth')
-if lowBandwidth is not None:
-    args.lowBandwidth = bool(lowBandwidth)
+low_bandwidth = \
+    getConfigParam(base_dir, 'low_bandwidth')
+if low_bandwidth is not None:
+    args.low_bandwidth = bool(low_bandwidth)
 
 userAgentsBlocked = []
 if args.userAgentBlocks:
@@ -3213,7 +3213,7 @@ if __name__ == "__main__":
     runDaemon(content_license_url,
               lists_enabled,
               args.default_reply_interval_hrs,
-              args.lowBandwidth, args.maxLikeCount,
+              args.low_bandwidth, args.maxLikeCount,
               shared_items_federated_domains,
               userAgentsBlocked,
               args.logLoginFailures,

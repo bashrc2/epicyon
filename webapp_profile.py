@@ -1251,9 +1251,9 @@ def _htmlEditProfileGraphicDesign(base_dir: str, translate: {}) -> str:
 
     graphicsStr = beginEditSection(translate['Graphic Design'])
 
-    lowBandwidth = getConfigParam(base_dir, 'lowBandwidth')
-    if not lowBandwidth:
-        lowBandwidth = False
+    low_bandwidth = getConfigParam(base_dir, 'low_bandwidth')
+    if not low_bandwidth:
+        low_bandwidth = False
     graphicsStr += _htmlThemesDropdown(base_dir, translate)
     graphicsStr += \
         '      <label class="labels">' + \
@@ -1268,8 +1268,8 @@ def _htmlEditProfileGraphicDesign(base_dir: str, translate: {}) -> str:
         '      <button type="submit" class="button" ' + \
         'name="submitExportTheme">➤</button><br>\n'
     graphicsStr += \
-        editCheckBox(translate['Low Bandwidth'], 'lowBandwidth',
-                     bool(lowBandwidth))
+        editCheckBox(translate['Low Bandwidth'], 'low_bandwidth',
+                     bool(low_bandwidth))
 
     graphicsStr += endEditSection()
     return graphicsStr

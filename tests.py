@@ -697,7 +697,7 @@ def createServerAlice(path: str, domain: str, port: int,
     domainMaxPostsPerDay = 1000
     accountMaxPostsPerDay = 1000
     allowDeletion = True
-    lowBandwidth = True
+    low_bandwidth = True
     privateKeyPem, publicKeyPem, person, wfEndpoint = \
         createPerson(path, nickname, domain, port, http_prefix, True,
                      False, password)
@@ -742,7 +742,7 @@ def createServerAlice(path: str, domain: str, port: int,
                          testSubject, testSchedulePost,
                          testEventDate, testEventTime, testLocation,
                          testIsArticle, systemLanguage, conversationId,
-                         lowBandwidth, content_license_url)
+                         low_bandwidth, content_license_url)
         createPublicPost(path, nickname, domain, port, http_prefix,
                          "Curiouser and curiouser!",
                          testFollowersOnly,
@@ -756,7 +756,7 @@ def createServerAlice(path: str, domain: str, port: int,
                          testSubject, testSchedulePost,
                          testEventDate, testEventTime, testLocation,
                          testIsArticle, systemLanguage, conversationId,
-                         lowBandwidth, content_license_url)
+                         low_bandwidth, content_license_url)
         createPublicPost(path, nickname, domain, port, http_prefix,
                          "In the gardens of memory, in the palace " +
                          "of dreams, that is where you and I shall meet",
@@ -771,7 +771,7 @@ def createServerAlice(path: str, domain: str, port: int,
                          testSubject, testSchedulePost,
                          testEventDate, testEventTime, testLocation,
                          testIsArticle, systemLanguage, conversationId,
-                         lowBandwidth, content_license_url)
+                         low_bandwidth, content_license_url)
         regenerateIndexForBox(path, nickname, domain, 'outbox')
     global testServerAliceRunning
     testServerAliceRunning = True
@@ -798,7 +798,7 @@ def createServerAlice(path: str, domain: str, port: int,
     print('Server running: Alice')
     runDaemon(content_license_url,
               lists_enabled, default_reply_interval_hrs,
-              lowBandwidth, maxLikeCount,
+              low_bandwidth, maxLikeCount,
               shared_items_federated_domains,
               userAgentsBlocked,
               logLoginFailures, city,
@@ -842,7 +842,7 @@ def createServerBob(path: str, domain: str, port: int,
     domainMaxPostsPerDay = 1000
     accountMaxPostsPerDay = 1000
     allowDeletion = True
-    lowBandwidth = True
+    low_bandwidth = True
     privateKeyPem, publicKeyPem, person, wfEndpoint = \
         createPerson(path, nickname, domain, port, http_prefix, True,
                      False, password)
@@ -884,7 +884,7 @@ def createServerBob(path: str, domain: str, port: int,
                          testSubject, testSchedulePost,
                          testEventDate, testEventTime, testLocation,
                          testIsArticle, systemLanguage, conversationId,
-                         lowBandwidth, content_license_url)
+                         low_bandwidth, content_license_url)
         createPublicPost(path, nickname, domain, port, http_prefix,
                          "One of the things I've realised is that " +
                          "I am very simple",
@@ -899,7 +899,7 @@ def createServerBob(path: str, domain: str, port: int,
                          testSubject, testSchedulePost,
                          testEventDate, testEventTime, testLocation,
                          testIsArticle, systemLanguage, conversationId,
-                         lowBandwidth, content_license_url)
+                         low_bandwidth, content_license_url)
         createPublicPost(path, nickname, domain, port, http_prefix,
                          "Quantum physics is a bit of a passion of mine",
                          testFollowersOnly,
@@ -913,7 +913,7 @@ def createServerBob(path: str, domain: str, port: int,
                          testSubject, testSchedulePost,
                          testEventDate, testEventTime, testLocation,
                          testIsArticle, systemLanguage, conversationId,
-                         lowBandwidth, content_license_url)
+                         low_bandwidth, content_license_url)
         regenerateIndexForBox(path, nickname, domain, 'outbox')
     global testServerBobRunning
     testServerBobRunning = True
@@ -940,7 +940,7 @@ def createServerBob(path: str, domain: str, port: int,
     print('Server running: Bob')
     runDaemon(content_license_url,
               lists_enabled, default_reply_interval_hrs,
-              lowBandwidth, maxLikeCount,
+              low_bandwidth, maxLikeCount,
               shared_items_federated_domains,
               userAgentsBlocked,
               logLoginFailures, city,
@@ -1003,14 +1003,14 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
     logLoginFailures = False
     userAgentsBlocked = []
     maxLikeCount = 10
-    lowBandwidth = True
+    low_bandwidth = True
     default_reply_interval_hrs = 9999999999
     lists_enabled = ''
     content_license_url = 'https://creativecommons.org/licenses/by/4.0'
     print('Server running: Eve')
     runDaemon(content_license_url,
               lists_enabled, default_reply_interval_hrs,
-              lowBandwidth, maxLikeCount,
+              low_bandwidth, maxLikeCount,
               shared_items_federated_domains,
               userAgentsBlocked,
               logLoginFailures, city,
@@ -1075,14 +1075,14 @@ def createServerGroup(path: str, domain: str, port: int,
     logLoginFailures = False
     userAgentsBlocked = []
     maxLikeCount = 10
-    lowBandwidth = True
+    low_bandwidth = True
     default_reply_interval_hrs = 9999999999
     lists_enabled = ''
     content_license_url = 'https://creativecommons.org/licenses/by/4.0'
     print('Server running: Group')
     runDaemon(content_license_url,
               lists_enabled, default_reply_interval_hrs,
-              lowBandwidth, maxLikeCount,
+              low_bandwidth, maxLikeCount,
               shared_items_federated_domains,
               userAgentsBlocked,
               logLoginFailures, city,
@@ -1205,7 +1205,7 @@ def testPostMessageBetweenServers(base_dir: str) -> None:
     outboxPath = aliceDir + '/accounts/alice@' + aliceDomain + '/outbox'
     assert len([name for name in os.listdir(outboxPath)
                 if os.path.isfile(os.path.join(outboxPath, name))]) == 0
-    lowBandwidth = False
+    low_bandwidth = False
     signingPrivateKeyPem = None
     sendResult = \
         sendPost(signingPrivateKeyPem, __version__,
@@ -1220,7 +1220,7 @@ def testPostMessageBetweenServers(base_dir: str) -> None:
                  aliceSendThreads, alicePostLog, aliceCachedWebfingers,
                  alicePersonCache, isArticle, systemLanguage,
                  aliceSharedItemsFederatedDomains,
-                 aliceSharedItemFederationTokens, lowBandwidth,
+                 aliceSharedItemFederationTokens, low_bandwidth,
                  content_license_url,
                  inReplyTo, inReplyToAtomUri, subject)
     print('sendResult: ' + str(sendResult))
@@ -1569,7 +1569,7 @@ def testFollowBetweenServers(base_dir: str) -> None:
     alicePostLog = []
     isArticle = False
     city = 'London, England'
-    lowBandwidth = False
+    low_bandwidth = False
     signingPrivateKeyPem = None
     sendResult = \
         sendPost(signingPrivateKeyPem, __version__,
@@ -1581,7 +1581,7 @@ def testFollowBetweenServers(base_dir: str) -> None:
                  aliceSendThreads, alicePostLog, aliceCachedWebfingers,
                  alicePersonCache, isArticle, systemLanguage,
                  aliceSharedItemsFederatedDomains,
-                 aliceSharedItemFederationTokens, lowBandwidth,
+                 aliceSharedItemFederationTokens, low_bandwidth,
                  content_license_url,
                  inReplyTo, inReplyToAtomUri, subject)
     print('sendResult: ' + str(sendResult))
@@ -1920,7 +1920,7 @@ def testSharedItemsFederation(base_dir: str) -> None:
     alicePostLog = []
     isArticle = False
     city = 'London, England'
-    lowBandwidth = False
+    low_bandwidth = False
     signingPrivateKeyPem = None
     sendResult = \
         sendPost(signingPrivateKeyPem, __version__,
@@ -1932,7 +1932,7 @@ def testSharedItemsFederation(base_dir: str) -> None:
                  aliceSendThreads, alicePostLog, aliceCachedWebfingers,
                  alicePersonCache, isArticle, systemLanguage,
                  aliceSharedItemsFederatedDomains,
-                 aliceSharedItemFederationTokens, lowBandwidth,
+                 aliceSharedItemFederationTokens, low_bandwidth,
                  content_license_url, True,
                  inReplyTo, inReplyToAtomUri, subject)
     print('sendResult: ' + str(sendResult))
@@ -2328,7 +2328,7 @@ def testGroupFollow(base_dir: str) -> None:
     alicePostLog = []
     isArticle = False
     city = 'London, England'
-    lowBandwidth = False
+    low_bandwidth = False
     signingPrivateKeyPem = None
 
     queuePath = \
@@ -2355,7 +2355,7 @@ def testGroupFollow(base_dir: str) -> None:
                  aliceSendThreads, alicePostLog, aliceCachedWebfingers,
                  alicePersonCache, isArticle, systemLanguage,
                  aliceSharedItemsFederatedDomains,
-                 aliceSharedItemFederationTokens, lowBandwidth,
+                 aliceSharedItemFederationTokens, low_bandwidth,
                  content_license_url,
                  inReplyTo, inReplyToAtomUri, subject)
     print('sendResult: ' + str(sendResult))
@@ -2708,7 +2708,7 @@ def _testCreatePerson(base_dir: str):
     attachImageFilename = None
     mediaType = None
     conversationId = None
-    lowBandwidth = True
+    low_bandwidth = True
     content_license_url = 'https://creativecommons.org/licenses/by/4.0'
     createPublicPost(base_dir, nickname, domain, port, http_prefix,
                      content, followersOnly, saveToFile, clientToServer,
@@ -2718,7 +2718,7 @@ def _testCreatePerson(base_dir: str):
                      testSubject, testSchedulePost,
                      testEventDate, testEventTime, testLocation,
                      testIsArticle, systemLanguage, conversationId,
-                     lowBandwidth, content_license_url)
+                     low_bandwidth, content_license_url)
 
     os.chdir(currDir)
     shutil.rmtree(base_dir, ignore_errors=False, onerror=None)
@@ -2789,7 +2789,7 @@ def testClientToServer(base_dir: str):
     http_prefix = 'http'
     proxyType = None
     federationList = []
-    lowBandwidth = False
+    low_bandwidth = False
 
     if os.path.isdir(base_dir + '/.tests'):
         shutil.rmtree(base_dir + '/.tests', ignore_errors=False, onerror=None)
@@ -2897,7 +2897,7 @@ def testClientToServer(base_dir: str):
                           attachedImageFilename, mediaType,
                           attachedImageDescription, city,
                           cachedWebfingers, personCache, isArticle,
-                          systemLanguage, lowBandwidth,
+                          systemLanguage, low_bandwidth,
                           content_license_url,
                           True, None, None,
                           conversationId, None)
@@ -4251,7 +4251,7 @@ def _testReplyToPublicPost(base_dir: str) -> None:
     testLocation = None
     testIsArticle = False
     conversationId = None
-    lowBandwidth = True
+    low_bandwidth = True
     content_license_url = 'https://creativecommons.org/licenses/by/4.0'
     reply = \
         createPublicPost(base_dir, nickname, domain, port, http_prefix,
@@ -4263,7 +4263,7 @@ def _testReplyToPublicPost(base_dir: str) -> None:
                          testSubject, testSchedulePost,
                          testEventDate, testEventTime, testLocation,
                          testIsArticle, systemLanguage, conversationId,
-                         lowBandwidth, content_license_url)
+                         low_bandwidth, content_license_url)
     # print(str(reply))
     assert reply['object']['content'] == \
         '<p><span class=\"h-card\">' + \
@@ -4796,7 +4796,7 @@ def _testLinksWithinPost(base_dir: str) -> None:
     testLocation = None
     testIsArticle = False
     conversationId = None
-    lowBandwidth = True
+    low_bandwidth = True
     content_license_url = 'https://creativecommons.org/licenses/by/4.0'
 
     postJsonObject = \
@@ -4809,7 +4809,7 @@ def _testLinksWithinPost(base_dir: str) -> None:
                          testSubject, testSchedulePost,
                          testEventDate, testEventTime, testLocation,
                          testIsArticle, systemLanguage, conversationId,
-                         lowBandwidth, content_license_url)
+                         low_bandwidth, content_license_url)
 
     assert postJsonObject['object']['content'] == \
         '<p>This is a test post with links.<br><br>' + \
@@ -4846,7 +4846,7 @@ def _testLinksWithinPost(base_dir: str) -> None:
                          testSubject, testSchedulePost,
                          testEventDate, testEventTime, testLocation,
                          testIsArticle, systemLanguage, conversationId,
-                         lowBandwidth, content_license_url)
+                         low_bandwidth, content_license_url)
     assert postJsonObject['object']['content'] == content
     assert postJsonObject['object']['contentMap'][systemLanguage] == content
 
@@ -5783,7 +5783,7 @@ def _testCanReplyTo(base_dir: str) -> None:
     testLocation = None
     testIsArticle = False
     conversationId = None
-    lowBandwidth = True
+    low_bandwidth = True
     content_license_url = 'https://creativecommons.org/licenses/by/4.0'
 
     postJsonObject = \
@@ -5796,7 +5796,7 @@ def _testCanReplyTo(base_dir: str) -> None:
                          testSubject, testSchedulePost,
                          testEventDate, testEventTime, testLocation,
                          testIsArticle, systemLanguage, conversationId,
-                         lowBandwidth, content_license_url)
+                         low_bandwidth, content_license_url)
     # set the date on the post
     currDateStr = "2021-09-08T20:45:00Z"
     postJsonObject['published'] = currDateStr

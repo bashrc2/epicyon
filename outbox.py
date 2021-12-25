@@ -194,7 +194,7 @@ def postMessageToOutbox(session, translate: {},
                         city: str, systemLanguage: str,
                         shared_items_federated_domains: [],
                         sharedItemFederationTokens: {},
-                        lowBandwidth: bool,
+                        low_bandwidth: bool,
                         signingPrivateKeyPem: str,
                         peertubeInstances: str, theme: str,
                         maxLikeCount: int,
@@ -625,7 +625,7 @@ def postMessageToOutbox(session, translate: {},
         print('DEBUG: handle share uploads')
     outboxShareUpload(base_dir, http_prefix, postToNickname, domain,
                       port, messageJson, debug, city,
-                      systemLanguage, translate, lowBandwidth,
+                      systemLanguage, translate, low_bandwidth,
                       content_license_url)
 
     if debug:

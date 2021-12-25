@@ -418,7 +418,7 @@ def _desktopReplyToPost(session, postId: str,
                         debug: bool, subject: str,
                         screenreader: str, systemLanguage: str,
                         espeak, conversationId: str,
-                        lowBandwidth: bool,
+                        low_bandwidth: bool,
                         content_license_url: str,
                         signingPrivateKeyPem: str) -> None:
     """Use the desktop client to send a reply to the most recent post
@@ -473,7 +473,7 @@ def _desktopReplyToPost(session, postId: str,
                          commentsEnabled, attach, mediaType,
                          attachedImageDescription, city,
                          cachedWebfingers, personCache, isArticle,
-                         systemLanguage, lowBandwidth,
+                         systemLanguage, low_bandwidth,
                          content_license_url,
                          debug, postId, postId,
                          conversationId, subject) == 0:
@@ -489,7 +489,7 @@ def _desktopNewPost(session,
                     cachedWebfingers: {}, personCache: {},
                     debug: bool,
                     screenreader: str, systemLanguage: str,
-                    espeak, lowBandwidth: bool,
+                    espeak, low_bandwidth: bool,
                     content_license_url: str,
                     signingPrivateKeyPem: str) -> None:
     """Use the desktop client to create a new post
@@ -540,7 +540,7 @@ def _desktopNewPost(session,
                          commentsEnabled, attach, mediaType,
                          attachedImageDescription, city,
                          cachedWebfingers, personCache, isArticle,
-                         systemLanguage, lowBandwidth,
+                         systemLanguage, low_bandwidth,
                          content_license_url,
                          debug, None, None,
                          conversationId, subject) == 0:
@@ -1129,7 +1129,7 @@ def _desktopNewDM(session, toHandle: str,
                   cachedWebfingers: {}, personCache: {},
                   debug: bool,
                   screenreader: str, systemLanguage: str,
-                  espeak, lowBandwidth: bool,
+                  espeak, low_bandwidth: bool,
                   content_license_url: str,
                   signingPrivateKeyPem: str) -> None:
     """Use the desktop client to create a new direct message
@@ -1152,7 +1152,7 @@ def _desktopNewDM(session, toHandle: str,
                           cachedWebfingers, personCache,
                           debug,
                           screenreader, systemLanguage,
-                          espeak, lowBandwidth,
+                          espeak, low_bandwidth,
                           content_license_url,
                           signingPrivateKeyPem)
 
@@ -1163,7 +1163,7 @@ def _desktopNewDMbase(session, toHandle: str,
                       cachedWebfingers: {}, personCache: {},
                       debug: bool,
                       screenreader: str, systemLanguage: str,
-                      espeak, lowBandwidth: bool,
+                      espeak, low_bandwidth: bool,
                       content_license_url: str,
                       signingPrivateKeyPem: str) -> None:
     """Use the desktop client to create a new direct message
@@ -1254,7 +1254,7 @@ def _desktopNewDMbase(session, toHandle: str,
                          commentsEnabled, attach, mediaType,
                          attachedImageDescription, city,
                          cachedWebfingers, personCache, isArticle,
-                         systemLanguage, lowBandwidth,
+                         systemLanguage, low_bandwidth,
                          content_license_url,
                          debug, None, None,
                          conversationId, subject) == 0:
@@ -1322,7 +1322,7 @@ def runDesktopClient(base_dir: str, proxyType: str, http_prefix: str,
                      storeInboxPosts: bool,
                      showNewPosts: bool,
                      language: str,
-                     debug: bool, lowBandwidth: bool) -> None:
+                     debug: bool, low_bandwidth: bool) -> None:
     """Runs the desktop and screen reader client,
     which announces new inbox items
     """
@@ -1729,7 +1729,7 @@ def runDesktopClient(base_dir: str, proxyType: str, http_prefix: str,
                                             debug, subject,
                                             screenreader, systemLanguage,
                                             espeak, conversationId,
-                                            lowBandwidth,
+                                            low_bandwidth,
                                             content_license_url,
                                             signingPrivateKeyPem)
                 refreshTimeline = True
@@ -1765,7 +1765,7 @@ def runDesktopClient(base_dir: str, proxyType: str, http_prefix: str,
                                       cachedWebfingers, personCache,
                                       debug,
                                       screenreader, systemLanguage,
-                                      espeak, lowBandwidth,
+                                      espeak, low_bandwidth,
                                       content_license_url,
                                       signingPrivateKeyPem)
                         refreshTimeline = True
@@ -1777,7 +1777,7 @@ def runDesktopClient(base_dir: str, proxyType: str, http_prefix: str,
                                     cachedWebfingers, personCache,
                                     debug,
                                     screenreader, systemLanguage,
-                                    espeak, lowBandwidth,
+                                    espeak, low_bandwidth,
                                     content_license_url,
                                     signingPrivateKeyPem)
                     refreshTimeline = True

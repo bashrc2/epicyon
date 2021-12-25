@@ -163,41 +163,41 @@ def _spoofMetaData(base_dir: str, nickname: str, domain: str,
 def convertImageToLowBandwidth(imageFilename: str) -> None:
     """Converts an image to a low bandwidth version
     """
-    lowBandwidthFilename = imageFilename + '.low'
-    if os.path.isfile(lowBandwidthFilename):
+    low_bandwidthFilename = imageFilename + '.low'
+    if os.path.isfile(low_bandwidthFilename):
         try:
-            os.remove(lowBandwidthFilename)
+            os.remove(low_bandwidthFilename)
         except OSError:
             print('EX: convertImageToLowBandwidth unable to delete ' +
-                  lowBandwidthFilename)
+                  low_bandwidthFilename)
 
     cmd = \
         '/usr/bin/convert +noise Multiplicative ' + \
         '-evaluate median 10% -dither Floyd-Steinberg ' + \
-        '-monochrome  ' + imageFilename + ' ' + lowBandwidthFilename
+        '-monochrome  ' + imageFilename + ' ' + low_bandwidthFilename
     print('Low bandwidth image conversion: ' + cmd)
     subprocess.call(cmd, shell=True)
     # wait for conversion to happen
     ctr = 0
-    while not os.path.isfile(lowBandwidthFilename):
+    while not os.path.isfile(low_bandwidthFilename):
         print('Waiting for low bandwidth image conversion ' + str(ctr))
         time.sleep(0.2)
         ctr += 1
         if ctr > 100:
             print('WARN: timed out waiting for low bandwidth image conversion')
             break
-    if os.path.isfile(lowBandwidthFilename):
+    if os.path.isfile(low_bandwidthFilename):
         try:
             os.remove(imageFilename)
         except OSError:
             print('EX: convertImageToLowBandwidth unable to delete ' +
                   imageFilename)
-        os.rename(lowBandwidthFilename, imageFilename)
+        os.rename(low_bandwidthFilename, imageFilename)
         if os.path.isfile(imageFilename):
             print('Image converted to low bandwidth ' + imageFilename)
     else:
         print('Low bandwidth converted image not found: ' +
-              lowBandwidthFilename)
+              low_bandwidthFilename)
 
 
 def processMetaData(base_dir: str, nickname: str, domain: str,
@@ -297,7 +297,7 @@ def attachMedia(base_dir: str, http_prefix: str,
                 nickname: str, domain: str, port: int,
                 postJson: {}, imageFilename: str,
                 mediaType: str, description: str,
-                city: str, lowBandwidth: bool,
+                city: str, low_bandwidth: bool,
                 content_license_url: str) -> {}:
     """Attaches media to a json object post
     The description can be None
@@ -353,7 +353,7 @@ def attachMedia(base_dir: str, http_prefix: str,
 
     if base_dir:
         if mediaType.startswith('image/'):
-            if lowBandwidth:
+            if low_bandwidth:
                 convertImageToLowBandwidth(imageFilename)
             processMetaData(base_dir, nickname, domain,
                             imageFilename, mediaFilename, city,

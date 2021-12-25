@@ -517,7 +517,7 @@ class PubServer(BaseHTTPRequestHandler):
                              location, False,
                              self.server.systemLanguage,
                              conversationId,
-                             self.server.lowBandwidth,
+                             self.server.low_bandwidth,
                              self.server.content_license_url)
         if messageJson:
             # name field contains the answer
@@ -1300,7 +1300,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    city, self.server.systemLanguage,
                                    self.server.shared_items_federated_domains,
                                    self.server.sharedItemFederationTokens,
-                                   self.server.lowBandwidth,
+                                   self.server.low_bandwidth,
                                    self.server.signingPrivateKeyPem,
                                    self.server.peertubeInstances,
                                    self.server.themeName,
@@ -4816,7 +4816,7 @@ class PubServer(BaseHTTPRequestHandler):
                 city = getSpoofedCity(self.server.city,
                                       base_dir, nickname, domain)
 
-                if self.server.lowBandwidth:
+                if self.server.low_bandwidth:
                     convertImageToLowBandwidth(filename)
                 processMetaData(base_dir, nickname, domain,
                                 filename, postImageFilename, city,
@@ -6203,15 +6203,15 @@ class PubServer(BaseHTTPRequestHandler):
                     if path.startswith('/users/' + adminNickname + '/') or \
                        isArtist(base_dir, nickname):
                         currLowBandwidth = \
-                            getConfigParam(base_dir, 'lowBandwidth')
-                        lowBandwidth = False
-                        if fields.get('lowBandwidth'):
-                            if fields['lowBandwidth'] == 'on':
-                                lowBandwidth = True
-                        if currLowBandwidth != lowBandwidth:
-                            setConfigParam(base_dir, 'lowBandwidth',
-                                           lowBandwidth)
-                            self.server.lowBandwidth = lowBandwidth
+                            getConfigParam(base_dir, 'low_bandwidth')
+                        low_bandwidth = False
+                        if fields.get('low_bandwidth'):
+                            if fields['low_bandwidth'] == 'on':
+                                low_bandwidth = True
+                        if currLowBandwidth != low_bandwidth:
+                            setConfigParam(base_dir, 'low_bandwidth',
+                                           low_bandwidth)
+                            self.server.low_bandwidth = low_bandwidth
 
                     # save filtered words list
                     filterFilename = \
@@ -16471,7 +16471,7 @@ class PubServer(BaseHTTPRequestHandler):
                     city = getSpoofedCity(self.server.city,
                                           self.server.base_dir,
                                           nickname, self.server.domain)
-                    if self.server.lowBandwidth:
+                    if self.server.low_bandwidth:
                         convertImageToLowBandwidth(filename)
                     processMetaData(self.server.base_dir,
                                     nickname, self.server.domain,
@@ -16602,7 +16602,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      fields['location'], False,
                                      self.server.systemLanguage,
                                      conversationId,
-                                     self.server.lowBandwidth,
+                                     self.server.low_bandwidth,
                                      self.server.content_license_url)
                 if messageJson:
                     if fields['schedulePost']:
@@ -16687,7 +16687,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    fields['location'],
                                    self.server.systemLanguage,
                                    conversationId,
-                                   self.server.lowBandwidth,
+                                   self.server.low_bandwidth,
                                    self.server.content_license_url)
                 if messageJson:
                     if fields['schedulePost']:
@@ -16779,7 +16779,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             attachmentMediaType,
                                             imgDescription,
                                             city,
-                                            self.server.lowBandwidth,
+                                            self.server.low_bandwidth,
                                             self.server.content_license_url)
 
                         replaceYouTube(postJsonObject,
@@ -16838,7 +16838,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        fields['location'],
                                        self.server.systemLanguage,
                                        conversationId,
-                                       self.server.lowBandwidth,
+                                       self.server.low_bandwidth,
                                        self.server.content_license_url)
                 if messageJson:
                     if fields['schedulePost']:
@@ -16890,7 +16890,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             fields['location'],
                                             self.server.systemLanguage,
                                             conversationId,
-                                            self.server.lowBandwidth,
+                                            self.server.low_bandwidth,
                                             self.server.content_license_url)
                 if messageJson:
                     if fields['schedulePost']:
@@ -16947,7 +16947,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                 fields['location'],
                                                 self.server.systemLanguage,
                                                 conversationId,
-                                                self.server.lowBandwidth,
+                                                self.server.low_bandwidth,
                                                 content_license_url)
                 if messageJson:
                     if fields['schedulePost']:
@@ -17001,7 +17001,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             fields['location'],
                                             self.server.systemLanguage,
                                             conversationId,
-                                            self.server.lowBandwidth,
+                                            self.server.low_bandwidth,
                                             self.server.content_license_url)
                 if messageJson:
                     if fields['schedulePost']:
@@ -17038,7 +17038,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      city,
                                      self.server.debug, fields['subject'],
                                      self.server.systemLanguage,
-                                     self.server.lowBandwidth,
+                                     self.server.low_bandwidth,
                                      self.server.content_license_url)
                 if messageJson:
                     if self._postToOutbox(messageJson,
@@ -17080,7 +17080,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        fields['subject'],
                                        intDuration,
                                        self.server.systemLanguage,
-                                       self.server.lowBandwidth,
+                                       self.server.low_bandwidth,
                                        self.server.content_license_url)
                 if messageJson:
                     if self.server.debug:
@@ -17153,7 +17153,7 @@ class PubServer(BaseHTTPRequestHandler):
                          city, itemPrice, itemCurrency,
                          self.server.systemLanguage,
                          self.server.translate, sharesFileType,
-                         self.server.lowBandwidth,
+                         self.server.low_bandwidth,
                          self.server.content_license_url)
                 if filename:
                     if os.path.isfile(filename):
@@ -18402,7 +18402,7 @@ def loadTokens(base_dir: str, tokensDict: {}, tokensLookup: {}) -> None:
 def runDaemon(content_license_url: str,
               lists_enabled: str,
               default_reply_interval_hrs: int,
-              lowBandwidth: bool,
+              low_bandwidth: bool,
               maxLikeCount: int,
               shared_items_federated_domains: [],
               userAgentsBlocked: [],
@@ -18558,7 +18558,7 @@ def runDaemon(content_license_url: str,
     loadAccessKeysForAccounts(base_dir, httpd.keyShortcuts, httpd.accessKeys)
 
     # wheither to use low bandwidth images
-    httpd.lowBandwidth = lowBandwidth
+    httpd.low_bandwidth = low_bandwidth
 
     # list of blocked user agent types within the User-Agent header
     httpd.userAgentsBlocked = userAgentsBlocked
