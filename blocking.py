@@ -529,19 +529,19 @@ def mutePost(base_dir: str, nickname: str, domain: str, port: int,
     if not postFilename:
         print('mutePost: file not found ' + postId)
         return
-    postJsonObject = loadJson(postFilename)
-    if not postJsonObject:
+    post_json_object = loadJson(postFilename)
+    if not post_json_object:
         print('mutePost: object not loaded ' + postId)
         return
-    print('mutePost: ' + str(postJsonObject))
+    print('mutePost: ' + str(post_json_object))
 
-    postJsonObj = postJsonObject
+    postJsonObj = post_json_object
     alsoUpdatePostId = None
-    if hasObjectDict(postJsonObject):
-        postJsonObj = postJsonObject['object']
+    if hasObjectDict(post_json_object):
+        postJsonObj = post_json_object['object']
     else:
-        if hasObjectString(postJsonObject, debug):
-            alsoUpdatePostId = removeIdEnding(postJsonObject['object'])
+        if hasObjectString(post_json_object, debug):
+            alsoUpdatePostId = removeIdEnding(post_json_object['object'])
 
     domainFull = getFullDomain(domain, port)
     actor = localActorUrl(http_prefix, nickname, domainFull)
@@ -581,13 +581,13 @@ def mutePost(base_dir: str, nickname: str, domain: str, port: int,
         itemsList.append(newIgnore)
         postJsonObj['ignores']['totalItems'] = igIt
     postJsonObj['muted'] = True
-    if saveJson(postJsonObject, postFilename):
+    if saveJson(post_json_object, postFilename):
         print('mutePost: saved ' + postFilename)
 
     # remove cached post so that the muted version gets recreated
     # without its content text and/or image
     cachedPostFilename = \
-        getCachedPostFilename(base_dir, nickname, domain, postJsonObject)
+        getCachedPostFilename(base_dir, nickname, domain, post_json_object)
     if cachedPostFilename:
         if os.path.isfile(cachedPostFilename):
             try:
@@ -611,11 +611,11 @@ def mutePost(base_dir: str, nickname: str, domain: str, port: int,
     # if the post is in the recent posts cache then mark it as muted
     if recentPostsCache.get('index'):
         postId = \
-            removeIdEnding(postJsonObject['id']).replace('/', '#')
+            removeIdEnding(post_json_object['id']).replace('/', '#')
         if postId in recentPostsCache['index']:
             print('MUTE: ' + postId + ' is in recent posts cache')
         if recentPostsCache.get('json'):
-            recentPostsCache['json'][postId] = json.dumps(postJsonObject)
+            recentPostsCache['json'][postId] = json.dumps(post_json_object)
             print('MUTE: ' + postId +
                   ' marked as muted in recent posts memory cache')
         if recentPostsCache.get('html'):
@@ -660,8 +660,8 @@ def unmutePost(base_dir: str, nickname: str, domain: str, port: int,
     postFilename = locatePost(base_dir, nickname, domain, postId)
     if not postFilename:
         return
-    postJsonObject = loadJson(postFilename)
-    if not postJsonObject:
+    post_json_object = loadJson(postFilename)
+    if not post_json_object:
         return
 
     muteFilename = postFilename + '.muted'
@@ -674,13 +674,13 @@ def unmutePost(base_dir: str, nickname: str, domain: str, port: int,
                       str(muteFilename))
         print('UNMUTE: ' + muteFilename + ' file removed')
 
-    postJsonObj = postJsonObject
+    postJsonObj = post_json_object
     alsoUpdatePostId = None
-    if hasObjectDict(postJsonObject):
-        postJsonObj = postJsonObject['object']
+    if hasObjectDict(post_json_object):
+        postJsonObj = post_json_object['object']
     else:
-        if hasObjectString(postJsonObject, debug):
-            alsoUpdatePostId = removeIdEnding(postJsonObject['object'])
+        if hasObjectString(post_json_object, debug):
+            alsoUpdatePostId = removeIdEnding(post_json_object['object'])
 
     if postJsonObj.get('conversation'):
         unmuteConversation(base_dir, nickname, domain,
@@ -708,12 +708,12 @@ def unmutePost(base_dir: str, nickname: str, domain: str, port: int,
             igItLen = len(postJsonObj['ignores']['items'])
             postJsonObj['ignores']['totalItems'] = igItLen
     postJsonObj['muted'] = False
-    saveJson(postJsonObject, postFilename)
+    saveJson(post_json_object, postFilename)
 
     # remove cached post so that the muted version gets recreated
     # with its content text and/or image
     cachedPostFilename = \
-        getCachedPostFilename(base_dir, nickname, domain, postJsonObject)
+        getCachedPostFilename(base_dir, nickname, domain, post_json_object)
     if cachedPostFilename:
         if os.path.isfile(cachedPostFilename):
             try:
@@ -726,11 +726,11 @@ def unmutePost(base_dir: str, nickname: str, domain: str, port: int,
     # if the post is in the recent posts cache then mark it as unmuted
     if recentPostsCache.get('index'):
         postId = \
-            removeIdEnding(postJsonObject['id']).replace('/', '#')
+            removeIdEnding(post_json_object['id']).replace('/', '#')
         if postId in recentPostsCache['index']:
             print('UNMUTE: ' + postId + ' is in recent posts cache')
         if recentPostsCache.get('json'):
-            recentPostsCache['json'][postId] = json.dumps(postJsonObject)
+            recentPostsCache['json'][postId] = json.dumps(post_json_object)
             print('UNMUTE: ' + postId +
                   ' marked as unmuted in recent posts cache')
         if recentPostsCache.get('html'):
@@ -1006,20 +1006,20 @@ def loadCWLists(base_dir: str, verbose: bool) -> {}:
     return result
 
 
-def addCWfromLists(postJsonObject: {}, CWlists: {}, translate: {},
+def addCWfromLists(post_json_object: {}, CWlists: {}, translate: {},
                    lists_enabled: str) -> None:
     """Adds content warnings by matching the post content
     against domains or keywords
     """
     if not lists_enabled:
         return
-    if not postJsonObject['object'].get('content'):
+    if not post_json_object['object'].get('content'):
         return
     cw = ''
-    if postJsonObject['object'].get('summary'):
-        cw = postJsonObject['object']['summary']
+    if post_json_object['object'].get('summary'):
+        cw = post_json_object['object']['summary']
 
-    content = postJsonObject['object']['content']
+    content = post_json_object['object']['content']
     for name, item in CWlists.items():
         if name not in lists_enabled:
             continue
@@ -1061,8 +1061,8 @@ def addCWfromLists(postJsonObject: {}, CWlists: {}, translate: {},
                         cw = warning
                     break
     if cw:
-        postJsonObject['object']['summary'] = cw
-        postJsonObject['object']['sensitive'] = True
+        post_json_object['object']['summary'] = cw
+        post_json_object['object']['sensitive'] = True
 
 
 def getCWlistVariable(listName: str) -> str:

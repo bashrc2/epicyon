@@ -16,14 +16,14 @@ from utils import acctDir
 def insertQuestion(base_dir: str, translate: {},
                    nickname: str, domain: str, port: int,
                    content: str,
-                   postJsonObject: {}, pageNumber: int) -> str:
+                   post_json_object: {}, pageNumber: int) -> str:
     """ Inserts question selection into a post
     """
-    if not isQuestion(postJsonObject):
+    if not isQuestion(post_json_object):
         return content
-    if len(postJsonObject['object']['oneOf']) == 0:
+    if len(post_json_object['object']['oneOf']) == 0:
         return content
-    messageId = removeIdEnding(postJsonObject['id'])
+    messageId = removeIdEnding(post_json_object['id'])
     if '#' in messageId:
         messageId = messageId.split('#', 1)[0]
     pageNumberStr = ''
@@ -47,7 +47,7 @@ def insertQuestion(base_dir: str, translate: {},
         content += \
             '<input type="hidden" name="messageId" value="' + \
             messageId + '">\n<br>\n'
-        for choice in postJsonObject['object']['oneOf']:
+        for choice in post_json_object['object']['oneOf']:
             if not choice.get('type'):
                 continue
             if not choice.get('name'):
@@ -65,7 +65,7 @@ def insertQuestion(base_dir: str, translate: {},
 
         # get the maximum number of votes
         maxVotes = 1
-        for questionOption in postJsonObject['object']['oneOf']:
+        for questionOption in post_json_object['object']['oneOf']:
             if not questionOption.get('name'):
                 continue
             if not questionOption.get('replies'):
@@ -80,7 +80,7 @@ def insertQuestion(base_dir: str, translate: {},
 
         # show the votes as sliders
         questionCtr = 1
-        for questionOption in postJsonObject['object']['oneOf']:
+        for questionOption in post_json_object['object']['oneOf']:
             if not questionOption.get('name'):
                 continue
             if not questionOption.get('replies'):

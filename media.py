@@ -52,41 +52,41 @@ def _getBlurHash() -> str:
     return random.choice(hashes)
 
 
-def _replaceSiloDomain(postJsonObject: {},
+def _replaceSiloDomain(post_json_object: {},
                        siloDomain: str, replacementDomain: str,
                        systemLanguage: str) -> None:
     """Replace a silo domain with a replacement domain
     """
     if not replacementDomain:
         return
-    if not hasObjectDict(postJsonObject):
+    if not hasObjectDict(post_json_object):
         return
-    if not postJsonObject['object'].get('content'):
+    if not post_json_object['object'].get('content'):
         return
-    contentStr = getBaseContentFromPost(postJsonObject, systemLanguage)
+    contentStr = getBaseContentFromPost(post_json_object, systemLanguage)
     if siloDomain not in contentStr:
         return
     contentStr = contentStr.replace(siloDomain, replacementDomain)
-    postJsonObject['object']['content'] = contentStr
-    if postJsonObject['object'].get('contentMap'):
-        postJsonObject['object']['contentMap'][systemLanguage] = contentStr
+    post_json_object['object']['content'] = contentStr
+    if post_json_object['object'].get('contentMap'):
+        post_json_object['object']['contentMap'][systemLanguage] = contentStr
 
 
-def replaceYouTube(postJsonObject: {}, replacementDomain: str,
+def replaceYouTube(post_json_object: {}, replacementDomain: str,
                    systemLanguage: str) -> None:
     """Replace YouTube with a replacement domain
     This denies Google some, but not all, tracking data
     """
-    _replaceSiloDomain(postJsonObject, 'www.youtube.com',
+    _replaceSiloDomain(post_json_object, 'www.youtube.com',
                        replacementDomain, systemLanguage)
 
 
-def replaceTwitter(postJsonObject: {}, replacementDomain: str,
+def replaceTwitter(post_json_object: {}, replacementDomain: str,
                    systemLanguage: str) -> None:
     """Replace Twitter with a replacement domain
     This allows you to view twitter posts without having a twitter account
     """
-    _replaceSiloDomain(postJsonObject, 'twitter.com',
+    _replaceSiloDomain(post_json_object, 'twitter.com',
                        replacementDomain, systemLanguage)
 
 

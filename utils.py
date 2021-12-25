@@ -77,14 +77,14 @@ def getActorLanguagesList(actorJson: {}) -> []:
     return []
 
 
-def getContentFromPost(postJsonObject: {}, systemLanguage: str,
+def getContentFromPost(post_json_object: {}, systemLanguage: str,
                        languagesUnderstood: []) -> str:
     """Returns the content from the post in the given language
     including searching for a matching entry within contentMap
     """
-    thisPostJson = postJsonObject
-    if hasObjectDict(postJsonObject):
-        thisPostJson = postJsonObject['object']
+    thisPostJson = post_json_object
+    if hasObjectDict(post_json_object):
+        thisPostJson = post_json_object['object']
     if not thisPostJson.get('content'):
         return ''
     content = ''
@@ -105,12 +105,12 @@ def getContentFromPost(postJsonObject: {}, systemLanguage: str,
     return content
 
 
-def getBaseContentFromPost(postJsonObject: {}, systemLanguage: str) -> str:
+def getBaseContentFromPost(post_json_object: {}, systemLanguage: str) -> str:
     """Returns the content from the post in the given language
     """
-    thisPostJson = postJsonObject
-    if hasObjectDict(postJsonObject):
-        thisPostJson = postJsonObject['object']
+    thisPostJson = post_json_object
+    if hasObjectDict(post_json_object):
+        thisPostJson = post_json_object['object']
     if not thisPostJson.get('content'):
         return ''
     return thisPostJson['content']
@@ -1359,15 +1359,15 @@ def locatePost(base_dir: str, nickname: str, domain: str,
     return None
 
 
-def _getPublishedDate(postJsonObject: {}) -> str:
+def _getPublishedDate(post_json_object: {}) -> str:
     """Returns the published date on the given post
     """
     published = None
-    if postJsonObject.get('published'):
-        published = postJsonObject['published']
-    elif hasObjectDict(postJsonObject):
-        if postJsonObject['object'].get('published'):
-            published = postJsonObject['object']['published']
+    if post_json_object.get('published'):
+        published = post_json_object['published']
+    elif hasObjectDict(post_json_object):
+        if post_json_object['object'].get('published'):
+            published = post_json_object['object']['published']
     if not published:
         return None
     if not isinstance(published, str):
@@ -1414,21 +1414,21 @@ def setReplyIntervalHours(base_dir: str, nickname: str, domain: str,
 def canReplyTo(base_dir: str, nickname: str, domain: str,
                postUrl: str, replyIntervalHours: int,
                currDateStr: str = None,
-               postJsonObject: {} = None) -> bool:
+               post_json_object: {} = None) -> bool:
     """Is replying to the given post permitted?
     This is a spam mitigation feature, so that spammers can't
     add a lot of replies to old post which you don't notice.
     """
     if '/statuses/' not in postUrl:
         return True
-    if not postJsonObject:
+    if not post_json_object:
         postFilename = locatePost(base_dir, nickname, domain, postUrl)
         if not postFilename:
             return False
-        postJsonObject = loadJson(postFilename)
-    if not postJsonObject:
+        post_json_object = loadJson(postFilename)
+    if not post_json_object:
         return False
-    published = _getPublishedDate(postJsonObject)
+    published = _getPublishedDate(post_json_object)
     if not published:
         return False
     try:
@@ -1502,19 +1502,19 @@ def removeModerationPostFromIndex(base_dir: str, postUrl: str,
 
 
 def _isReplyToBlogPost(base_dir: str, nickname: str, domain: str,
-                       postJsonObject: str):
+                       post_json_object: str):
     """Is the given post a reply to a blog post?
     """
-    if not hasObjectDict(postJsonObject):
+    if not hasObjectDict(post_json_object):
         return False
-    if not postJsonObject['object'].get('inReplyTo'):
+    if not post_json_object['object'].get('inReplyTo'):
         return False
-    if not isinstance(postJsonObject['object']['inReplyTo'], str):
+    if not isinstance(post_json_object['object']['inReplyTo'], str):
         return False
     blogsIndexFilename = acctDir(base_dir, nickname, domain) + '/tlblogs.index'
     if not os.path.isfile(blogsIndexFilename):
         return False
-    postId = removeIdEnding(postJsonObject['object']['inReplyTo'])
+    postId = removeIdEnding(post_json_object['object']['inReplyTo'])
     postId = postId.replace('/', '#')
     if postId in open(blogsIndexFilename).read():
         return True
@@ -1561,19 +1561,19 @@ def _isBookmarked(base_dir: str, nickname: str, domain: str,
     return False
 
 
-def removePostFromCache(postJsonObject: {}, recentPostsCache: {}) -> None:
+def removePostFromCache(post_json_object: {}, recentPostsCache: {}) -> None:
     """ if the post exists in the recent posts cache then remove it
     """
     if not recentPostsCache:
         return
 
-    if not postJsonObject.get('id'):
+    if not post_json_object.get('id'):
         return
 
     if not recentPostsCache.get('index'):
         return
 
-    postId = postJsonObject['id']
+    postId = post_json_object['id']
     if '#' in postId:
         postId = postId.split('#', 1)[0]
     postId = removeIdEnding(postId).replace('/', '#')
@@ -1594,11 +1594,11 @@ def removePostFromCache(postJsonObject: {}, recentPostsCache: {}) -> None:
 
 
 def _deleteCachedHtml(base_dir: str, nickname: str, domain: str,
-                      postJsonObject: {}):
+                      post_json_object: {}):
     """Removes cached html file for the given post
     """
     cachedPostFilename = \
-        getCachedPostFilename(base_dir, nickname, domain, postJsonObject)
+        getCachedPostFilename(base_dir, nickname, domain, post_json_object)
     if cachedPostFilename:
         if os.path.isfile(cachedPostFilename):
             try:
@@ -1609,25 +1609,25 @@ def _deleteCachedHtml(base_dir: str, nickname: str, domain: str,
                       str(cachedPostFilename))
 
 
-def _deleteHashtagsOnPost(base_dir: str, postJsonObject: {}) -> None:
+def _deleteHashtagsOnPost(base_dir: str, post_json_object: {}) -> None:
     """Removes hashtags when a post is deleted
     """
     removeHashtagIndex = False
-    if hasObjectDict(postJsonObject):
-        if postJsonObject['object'].get('content'):
-            if '#' in postJsonObject['object']['content']:
+    if hasObjectDict(post_json_object):
+        if post_json_object['object'].get('content'):
+            if '#' in post_json_object['object']['content']:
                 removeHashtagIndex = True
 
     if not removeHashtagIndex:
         return
 
-    if not postJsonObject['object'].get('id') or \
-       not postJsonObject['object'].get('tag'):
+    if not post_json_object['object'].get('id') or \
+       not post_json_object['object'].get('tag'):
         return
 
     # get the id of the post
-    postId = removeIdEnding(postJsonObject['object']['id'])
-    for tag in postJsonObject['object']['tag']:
+    postId = removeIdEnding(post_json_object['object']['id'])
+    for tag in post_json_object['object']['tag']:
         if not tag.get('type'):
             continue
         if tag['type'] != 'Hashtag':
@@ -1664,19 +1664,19 @@ def _deleteHashtagsOnPost(base_dir: str, postJsonObject: {}) -> None:
 
 
 def _deleteConversationPost(base_dir: str, nickname: str, domain: str,
-                            postJsonObject: {}) -> None:
+                            post_json_object: {}) -> None:
     """Deletes a post from a conversation
     """
-    if not hasObjectDict(postJsonObject):
+    if not hasObjectDict(post_json_object):
         return False
-    if not postJsonObject['object'].get('conversation'):
+    if not post_json_object['object'].get('conversation'):
         return False
-    if not postJsonObject['object'].get('id'):
+    if not post_json_object['object'].get('id'):
         return False
     conversationDir = acctDir(base_dir, nickname, domain) + '/conversation'
-    conversationId = postJsonObject['object']['conversation']
+    conversationId = post_json_object['object']['conversation']
     conversationId = conversationId.replace('/', '#')
-    postId = postJsonObject['object']['id']
+    postId = post_json_object['object']['id']
     conversationFilename = conversationDir + '/' + conversationId
     if not os.path.isfile(conversationFilename):
         return False
@@ -1710,8 +1710,8 @@ def deletePost(base_dir: str, http_prefix: str,
                debug: bool, recentPostsCache: {}) -> None:
     """Recursively deletes a post and its replies and attachments
     """
-    postJsonObject = loadJson(postFilename, 1)
-    if not postJsonObject:
+    post_json_object = loadJson(postFilename, 1)
+    if not post_json_object:
         # remove any replies
         _deletePostRemoveReplies(base_dir, nickname, domain,
                                  http_prefix, postFilename,
@@ -1731,17 +1731,17 @@ def deletePost(base_dir: str, http_prefix: str,
 
     # don't remove replies to blog posts
     if _isReplyToBlogPost(base_dir, nickname, domain,
-                          postJsonObject):
+                          post_json_object):
         return
 
     # remove from recent posts cache in memory
-    removePostFromCache(postJsonObject, recentPostsCache)
+    removePostFromCache(post_json_object, recentPostsCache)
 
     # remove from conversation index
-    _deleteConversationPost(base_dir, nickname, domain, postJsonObject)
+    _deleteConversationPost(base_dir, nickname, domain, post_json_object)
 
     # remove any attachment
-    _removeAttachment(base_dir, http_prefix, domain, postJsonObject)
+    _removeAttachment(base_dir, http_prefix, domain, post_json_object)
 
     extensions = ('votes', 'arrived', 'muted', 'tts', 'reject')
     for ext in extensions:
@@ -1754,23 +1754,23 @@ def deletePost(base_dir: str, http_prefix: str,
                       str(extFilename))
 
     # remove cached html version of the post
-    _deleteCachedHtml(base_dir, nickname, domain, postJsonObject)
+    _deleteCachedHtml(base_dir, nickname, domain, post_json_object)
 
     hasObject = False
-    if postJsonObject.get('object'):
+    if post_json_object.get('object'):
         hasObject = True
 
     # remove from moderation index file
     if hasObject:
-        if hasObjectDict(postJsonObject):
-            if postJsonObject['object'].get('moderationStatus'):
-                if postJsonObject.get('id'):
-                    postId = removeIdEnding(postJsonObject['id'])
+        if hasObjectDict(post_json_object):
+            if post_json_object['object'].get('moderationStatus'):
+                if post_json_object.get('id'):
+                    postId = removeIdEnding(post_json_object['id'])
                     removeModerationPostFromIndex(base_dir, postId, debug)
 
     # remove any hashtags index entries
     if hasObject:
-        _deleteHashtagsOnPost(base_dir, postJsonObject)
+        _deleteHashtagsOnPost(base_dir, post_json_object)
 
     # remove any replies
     _deletePostRemoveReplies(base_dir, nickname, domain,
@@ -1943,24 +1943,24 @@ def isPublicPostFromUrl(base_dir: str, nickname: str, domain: str,
     postFilename = locatePost(base_dir, nickname, domain, postUrl)
     if not postFilename:
         return False
-    postJsonObject = loadJson(postFilename, 1)
-    if not postJsonObject:
+    post_json_object = loadJson(postFilename, 1)
+    if not post_json_object:
         return False
-    return isPublicPost(postJsonObject)
+    return isPublicPost(post_json_object)
 
 
-def isPublicPost(postJsonObject: {}) -> bool:
+def isPublicPost(post_json_object: {}) -> bool:
     """Returns true if the given post is public
     """
-    if not postJsonObject.get('type'):
+    if not post_json_object.get('type'):
         return False
-    if postJsonObject['type'] != 'Create':
+    if post_json_object['type'] != 'Create':
         return False
-    if not hasObjectDict(postJsonObject):
+    if not hasObjectDict(post_json_object):
         return False
-    if not postJsonObject['object'].get('to'):
+    if not post_json_object['object'].get('to'):
         return False
-    for recipient in postJsonObject['object']['to']:
+    for recipient in post_json_object['object']['to']:
         if recipient.endswith('#Public'):
             return True
     return False
@@ -1986,7 +1986,7 @@ def getCachedPostDirectory(base_dir: str, nickname: str, domain: str) -> str:
 
 
 def getCachedPostFilename(base_dir: str, nickname: str, domain: str,
-                          postJsonObject: {}) -> str:
+                          post_json_object: {}) -> str:
     """Returns the html cache filename for the given post
     """
     cachedPostDir = getCachedPostDirectory(base_dir, nickname, domain)
@@ -1996,18 +1996,18 @@ def getCachedPostFilename(base_dir: str, nickname: str, domain: str,
     if '@' not in cachedPostDir:
         # print('ERROR: invalid html cache directory ' + cachedPostDir)
         return None
-    cachedPostId = removeIdEnding(postJsonObject['id'])
+    cachedPostId = removeIdEnding(post_json_object['id'])
     cachedPostFilename = cachedPostDir + '/' + cachedPostId.replace('/', '#')
     return cachedPostFilename + '.html'
 
 
 def updateRecentPostsCache(recentPostsCache: {}, max_recent_posts: int,
-                           postJsonObject: {}, htmlStr: str) -> None:
+                           post_json_object: {}, htmlStr: str) -> None:
     """Store recent posts in memory so that they can be quickly recalled
     """
-    if not postJsonObject.get('id'):
+    if not post_json_object.get('id'):
         return
-    postId = postJsonObject['id']
+    postId = post_json_object['id']
     if '#' in postId:
         postId = postId.split('#', 1)[0]
     postId = removeIdEnding(postId).replace('/', '#')
@@ -2015,8 +2015,8 @@ def updateRecentPostsCache(recentPostsCache: {}, max_recent_posts: int,
         if postId in recentPostsCache['index']:
             return
         recentPostsCache['index'].append(postId)
-        postJsonObject['muted'] = False
-        recentPostsCache['json'][postId] = json.dumps(postJsonObject)
+        post_json_object['muted'] = False
+        recentPostsCache['json'][postId] = json.dumps(post_json_object)
         recentPostsCache['html'][postId] = htmlStr
 
         while len(recentPostsCache['html'].items()) > max_recent_posts:
@@ -2030,7 +2030,7 @@ def updateRecentPostsCache(recentPostsCache: {}, max_recent_posts: int,
         recentPostsCache['index'] = [postId]
         recentPostsCache['json'] = {}
         recentPostsCache['html'] = {}
-        recentPostsCache['json'][postId] = json.dumps(postJsonObject)
+        recentPostsCache['json'][postId] = json.dumps(post_json_object)
         recentPostsCache['html'][postId] = htmlStr
 
 
@@ -2071,26 +2071,26 @@ def getCSS(base_dir: str, cssFilename: str, cssCache: {}) -> str:
     return None
 
 
-def isBlogPost(postJsonObject: {}) -> bool:
+def isBlogPost(post_json_object: {}) -> bool:
     """Is the given post a blog post?
     """
-    if postJsonObject['type'] != 'Create':
+    if post_json_object['type'] != 'Create':
         return False
-    if not hasObjectDict(postJsonObject):
+    if not hasObjectDict(post_json_object):
         return False
-    if not hasObjectStringType(postJsonObject, False):
+    if not hasObjectStringType(post_json_object, False):
         return False
-    if not postJsonObject['object'].get('content'):
+    if not post_json_object['object'].get('content'):
         return False
-    if postJsonObject['object']['type'] != 'Article':
+    if post_json_object['object']['type'] != 'Article':
         return False
     return True
 
 
-def isNewsPost(postJsonObject: {}) -> bool:
+def isNewsPost(post_json_object: {}) -> bool:
     """Is the given post a blog post?
     """
-    return postJsonObject.get('news')
+    return post_json_object.get('news')
 
 
 def _searchVirtualBoxPosts(base_dir: str, nickname: str, domain: str,
@@ -2204,18 +2204,18 @@ def getFileCaseInsensitive(path: str) -> str:
 def undoLikesCollectionEntry(recentPostsCache: {},
                              base_dir: str, postFilename: str, objectUrl: str,
                              actor: str, domain: str, debug: bool,
-                             postJsonObject: {}) -> None:
+                             post_json_object: {}) -> None:
     """Undoes a like for a particular actor
     """
-    if not postJsonObject:
-        postJsonObject = loadJson(postFilename)
-    if not postJsonObject:
+    if not post_json_object:
+        post_json_object = loadJson(postFilename)
+    if not post_json_object:
         return
     # remove any cached version of this post so that the
     # like icon is changed
     nickname = getNicknameFromActor(actor)
     cachedPostFilename = getCachedPostFilename(base_dir, nickname,
-                                               domain, postJsonObject)
+                                               domain, post_json_object)
     if cachedPostFilename:
         if os.path.isfile(cachedPostFilename):
             try:
@@ -2224,15 +2224,15 @@ def undoLikesCollectionEntry(recentPostsCache: {},
                 print('EX: undoLikesCollectionEntry ' +
                       'unable to delete cached post ' +
                       str(cachedPostFilename))
-    removePostFromCache(postJsonObject, recentPostsCache)
+    removePostFromCache(post_json_object, recentPostsCache)
 
-    if not postJsonObject.get('type'):
+    if not post_json_object.get('type'):
         return
-    if postJsonObject['type'] != 'Create':
+    if post_json_object['type'] != 'Create':
         return
-    obj = postJsonObject
-    if hasObjectDict(postJsonObject):
-        obj = postJsonObject['object']
+    obj = post_json_object
+    if hasObjectDict(post_json_object):
+        obj = post_json_object['object']
     if not obj.get('likes'):
         return
     if not isinstance(obj['likes'], dict):
@@ -2261,25 +2261,26 @@ def undoLikesCollectionEntry(recentPostsCache: {},
         itlen = len(obj['likes']['items'])
         obj['likes']['totalItems'] = itlen
 
-    saveJson(postJsonObject, postFilename)
+    saveJson(post_json_object, postFilename)
 
 
 def undoReactionCollectionEntry(recentPostsCache: {},
                                 base_dir: str, postFilename: str,
                                 objectUrl: str,
                                 actor: str, domain: str, debug: bool,
-                                postJsonObject: {}, emojiContent: str) -> None:
+                                post_json_object: {},
+                                emojiContent: str) -> None:
     """Undoes an emoji reaction for a particular actor
     """
-    if not postJsonObject:
-        postJsonObject = loadJson(postFilename)
-    if not postJsonObject:
+    if not post_json_object:
+        post_json_object = loadJson(postFilename)
+    if not post_json_object:
         return
     # remove any cached version of this post so that the
     # like icon is changed
     nickname = getNicknameFromActor(actor)
     cachedPostFilename = getCachedPostFilename(base_dir, nickname,
-                                               domain, postJsonObject)
+                                               domain, post_json_object)
     if cachedPostFilename:
         if os.path.isfile(cachedPostFilename):
             try:
@@ -2288,15 +2289,15 @@ def undoReactionCollectionEntry(recentPostsCache: {},
                 print('EX: undoReactionCollectionEntry ' +
                       'unable to delete cached post ' +
                       str(cachedPostFilename))
-    removePostFromCache(postJsonObject, recentPostsCache)
+    removePostFromCache(post_json_object, recentPostsCache)
 
-    if not postJsonObject.get('type'):
+    if not post_json_object.get('type'):
         return
-    if postJsonObject['type'] != 'Create':
+    if post_json_object['type'] != 'Create':
         return
-    obj = postJsonObject
-    if hasObjectDict(postJsonObject):
-        obj = postJsonObject['object']
+    obj = post_json_object
+    if hasObjectDict(post_json_object):
+        obj = post_json_object['object']
     if not obj.get('reactions'):
         return
     if not isinstance(obj['reactions'], dict):
@@ -2326,7 +2327,7 @@ def undoReactionCollectionEntry(recentPostsCache: {},
         itlen = len(obj['reactions']['items'])
         obj['reactions']['totalItems'] = itlen
 
-    saveJson(postJsonObject, postFilename)
+    saveJson(post_json_object, postFilename)
 
 
 def undoAnnounceCollectionEntry(recentPostsCache: {},
@@ -2337,14 +2338,14 @@ def undoAnnounceCollectionEntry(recentPostsCache: {},
     collection has no relation to shared items in shares.py. It's
     shares of posts, not shares of physical objects.
     """
-    postJsonObject = loadJson(postFilename)
-    if not postJsonObject:
+    post_json_object = loadJson(postFilename)
+    if not post_json_object:
         return
     # remove any cached version of this announce so that the announce
     # icon is changed
     nickname = getNicknameFromActor(actor)
     cachedPostFilename = getCachedPostFilename(base_dir, nickname, domain,
-                                               postJsonObject)
+                                               post_json_object)
     if cachedPostFilename:
         if os.path.isfile(cachedPostFilename):
             try:
@@ -2354,32 +2355,32 @@ def undoAnnounceCollectionEntry(recentPostsCache: {},
                     print('EX: undoAnnounceCollectionEntry ' +
                           'unable to delete cached post ' +
                           str(cachedPostFilename))
-    removePostFromCache(postJsonObject, recentPostsCache)
+    removePostFromCache(post_json_object, recentPostsCache)
 
-    if not postJsonObject.get('type'):
+    if not post_json_object.get('type'):
         return
-    if postJsonObject['type'] != 'Create':
+    if post_json_object['type'] != 'Create':
         return
-    if not hasObjectDict(postJsonObject):
+    if not hasObjectDict(post_json_object):
         if debug:
-            pprint(postJsonObject)
+            pprint(post_json_object)
             print('DEBUG: post has no object')
         return
-    if not postJsonObject['object'].get('shares'):
+    if not post_json_object['object'].get('shares'):
         return
-    if not postJsonObject['object']['shares'].get('items'):
+    if not post_json_object['object']['shares'].get('items'):
         return
     totalItems = 0
-    if postJsonObject['object']['shares'].get('totalItems'):
-        totalItems = postJsonObject['object']['shares']['totalItems']
+    if post_json_object['object']['shares'].get('totalItems'):
+        totalItems = post_json_object['object']['shares']['totalItems']
     itemFound = False
-    for announceItem in postJsonObject['object']['shares']['items']:
+    for announceItem in post_json_object['object']['shares']['items']:
         if announceItem.get('actor'):
             if announceItem['actor'] == actor:
                 if debug:
                     print('DEBUG: Announce was removed for ' + actor)
                 anIt = announceItem
-                postJsonObject['object']['shares']['items'].remove(anIt)
+                post_json_object['object']['shares']['items'].remove(anIt)
                 itemFound = True
                 break
     if not itemFound:
@@ -2388,12 +2389,12 @@ def undoAnnounceCollectionEntry(recentPostsCache: {},
         if debug:
             print('DEBUG: shares (announcements) ' +
                   'was removed from post')
-        del postJsonObject['object']['shares']
+        del post_json_object['object']['shares']
     else:
-        itlen = len(postJsonObject['object']['shares']['items'])
-        postJsonObject['object']['shares']['totalItems'] = itlen
+        itlen = len(post_json_object['object']['shares']['items'])
+        post_json_object['object']['shares']['totalItems'] = itlen
 
-    saveJson(postJsonObject, postFilename)
+    saveJson(post_json_object, postFilename)
 
 
 def updateAnnounceCollection(recentPostsCache: {},
@@ -2405,13 +2406,13 @@ def updateAnnounceCollection(recentPostsCache: {},
     same as shared items within shares.py
     It's shares of posts, not shares of physical objects.
     """
-    postJsonObject = loadJson(postFilename)
-    if not postJsonObject:
+    post_json_object = loadJson(postFilename)
+    if not post_json_object:
         return
     # remove any cached version of this announce so that the announce
     # icon is changed
     cachedPostFilename = getCachedPostFilename(base_dir, nickname, domain,
-                                               postJsonObject)
+                                               post_json_object)
     if cachedPostFilename:
         if os.path.isfile(cachedPostFilename):
             try:
@@ -2421,15 +2422,15 @@ def updateAnnounceCollection(recentPostsCache: {},
                     print('EX: updateAnnounceCollection ' +
                           'unable to delete cached post ' +
                           str(cachedPostFilename))
-    removePostFromCache(postJsonObject, recentPostsCache)
+    removePostFromCache(post_json_object, recentPostsCache)
 
-    if not hasObjectDict(postJsonObject):
+    if not hasObjectDict(post_json_object):
         if debug:
-            pprint(postJsonObject)
+            pprint(post_json_object)
             print('DEBUG: post ' + postFilename + ' has no object')
         return
-    postUrl = removeIdEnding(postJsonObject['id']) + '/shares'
-    if not postJsonObject['object'].get('shares'):
+    postUrl = removeIdEnding(post_json_object['id']) + '/shares'
+    if not post_json_object['object'].get('shares'):
         if debug:
             print('DEBUG: Adding initial shares (announcements) to ' +
                   postUrl)
@@ -2443,10 +2444,10 @@ def updateAnnounceCollection(recentPostsCache: {},
                 'actor': actor
             }]
         }
-        postJsonObject['object']['shares'] = announcementsJson
+        post_json_object['object']['shares'] = announcementsJson
     else:
-        if postJsonObject['object']['shares'].get('items'):
-            sharesItems = postJsonObject['object']['shares']['items']
+        if post_json_object['object']['shares'].get('items'):
+            sharesItems = post_json_object['object']['shares']['items']
             for announceItem in sharesItems:
                 if announceItem.get('actor'):
                     if announceItem['actor'] == actor:
@@ -2455,9 +2456,9 @@ def updateAnnounceCollection(recentPostsCache: {},
                 'type': 'Announce',
                 'actor': actor
             }
-            postJsonObject['object']['shares']['items'].append(newAnnounce)
-            itlen = len(postJsonObject['object']['shares']['items'])
-            postJsonObject['object']['shares']['totalItems'] = itlen
+            post_json_object['object']['shares']['items'].append(newAnnounce)
+            itlen = len(post_json_object['object']['shares']['items'])
+            post_json_object['object']['shares']['totalItems'] = itlen
         else:
             if debug:
                 print('DEBUG: shares (announcements) section of post ' +
@@ -2465,8 +2466,8 @@ def updateAnnounceCollection(recentPostsCache: {},
 
     if debug:
         print('DEBUG: saving post with shares (announcements) added')
-        pprint(postJsonObject)
-    saveJson(postJsonObject, postFilename)
+        pprint(post_json_object)
+    saveJson(post_json_object, postFilename)
 
 
 def weekDayOfMonthStart(monthNumber: int, year: int) -> int:
@@ -2504,20 +2505,20 @@ def mediaFileMimeType(filename: str) -> str:
     return extensions[fileExt]
 
 
-def isRecentPost(postJsonObject: {}, maxDays: int) -> bool:
+def isRecentPost(post_json_object: {}, maxDays: int) -> bool:
     """ Is the given post recent?
     """
-    if not hasObjectDict(postJsonObject):
+    if not hasObjectDict(post_json_object):
         return False
-    if not postJsonObject['object'].get('published'):
+    if not post_json_object['object'].get('published'):
         return False
-    if not isinstance(postJsonObject['object']['published'], str):
+    if not isinstance(post_json_object['object']['published'], str):
         return False
     currTime = datetime.datetime.utcnow()
     daysSinceEpoch = (currTime - datetime.datetime(1970, 1, 1)).days
     recently = daysSinceEpoch - maxDays
 
-    publishedDateStr = postJsonObject['object']['published']
+    publishedDateStr = post_json_object['object']['published']
     try:
         publishedDate = \
             datetime.datetime.strptime(publishedDateStr,
@@ -2579,26 +2580,26 @@ def rejectPostId(base_dir: str, nickname: str, domain: str,
         rejectFile.write('\n')
 
 
-def isDM(postJsonObject: {}) -> bool:
+def isDM(post_json_object: {}) -> bool:
     """Returns true if the given post is a DM
     """
-    if postJsonObject['type'] != 'Create':
+    if post_json_object['type'] != 'Create':
         return False
-    if not hasObjectDict(postJsonObject):
+    if not hasObjectDict(post_json_object):
         return False
-    if postJsonObject['object']['type'] != 'Note' and \
-       postJsonObject['object']['type'] != 'Page' and \
-       postJsonObject['object']['type'] != 'Patch' and \
-       postJsonObject['object']['type'] != 'EncryptedMessage' and \
-       postJsonObject['object']['type'] != 'Article':
+    if post_json_object['object']['type'] != 'Note' and \
+       post_json_object['object']['type'] != 'Page' and \
+       post_json_object['object']['type'] != 'Patch' and \
+       post_json_object['object']['type'] != 'EncryptedMessage' and \
+       post_json_object['object']['type'] != 'Article':
         return False
-    if postJsonObject['object'].get('moderationStatus'):
+    if post_json_object['object'].get('moderationStatus'):
         return False
     fields = ('to', 'cc')
     for f in fields:
-        if not postJsonObject['object'].get(f):
+        if not post_json_object['object'].get(f):
             continue
-        for toAddress in postJsonObject['object'][f]:
+        for toAddress in post_json_object['object'][f]:
             if toAddress.endswith('#Public'):
                 return False
             if toAddress.endswith('followers'):
@@ -2606,29 +2607,29 @@ def isDM(postJsonObject: {}) -> bool:
     return True
 
 
-def isReply(postJsonObject: {}, actor: str) -> bool:
+def isReply(post_json_object: {}, actor: str) -> bool:
     """Returns true if the given post is a reply to the given actor
     """
-    if postJsonObject['type'] != 'Create':
+    if post_json_object['type'] != 'Create':
         return False
-    if not hasObjectDict(postJsonObject):
+    if not hasObjectDict(post_json_object):
         return False
-    if postJsonObject['object'].get('moderationStatus'):
+    if post_json_object['object'].get('moderationStatus'):
         return False
-    if postJsonObject['object']['type'] != 'Note' and \
-       postJsonObject['object']['type'] != 'Page' and \
-       postJsonObject['object']['type'] != 'EncryptedMessage' and \
-       postJsonObject['object']['type'] != 'Article':
+    if post_json_object['object']['type'] != 'Note' and \
+       post_json_object['object']['type'] != 'Page' and \
+       post_json_object['object']['type'] != 'EncryptedMessage' and \
+       post_json_object['object']['type'] != 'Article':
         return False
-    if postJsonObject['object'].get('inReplyTo'):
-        if isinstance(postJsonObject['object']['inReplyTo'], str):
-            if postJsonObject['object']['inReplyTo'].startswith(actor):
+    if post_json_object['object'].get('inReplyTo'):
+        if isinstance(post_json_object['object']['inReplyTo'], str):
+            if post_json_object['object']['inReplyTo'].startswith(actor):
                 return True
-    if not postJsonObject['object'].get('tag'):
+    if not post_json_object['object'].get('tag'):
         return False
-    if not isinstance(postJsonObject['object']['tag'], list):
+    if not isinstance(post_json_object['object']['tag'], list):
         return False
-    for tag in postJsonObject['object']['tag']:
+    for tag in post_json_object['object']['tag']:
         if not tag.get('type'):
             continue
         if tag['type'] == 'Mention':
@@ -2843,11 +2844,11 @@ def userAgentDomain(userAgent: str, debug: bool) -> str:
     return agentDomain
 
 
-def hasObjectDict(postJsonObject: {}) -> bool:
+def hasObjectDict(post_json_object: {}) -> bool:
     """Returns true if the given post has an object dict
     """
-    if postJsonObject.get('object'):
-        if isinstance(postJsonObject['object'], dict):
+    if post_json_object.get('object'):
+        if isinstance(post_json_object['object'], dict):
             return True
     return False
 
@@ -3152,72 +3153,72 @@ def replaceUsersWithAt(actor: str) -> str:
     return actor
 
 
-def hasActor(postJsonObject: {}, debug: bool) -> bool:
+def hasActor(post_json_object: {}, debug: bool) -> bool:
     """Does the given post have an actor?
     """
-    if postJsonObject.get('actor'):
-        if '#' in postJsonObject['actor']:
+    if post_json_object.get('actor'):
+        if '#' in post_json_object['actor']:
             return False
         return True
     if debug:
-        if postJsonObject.get('type'):
-            msg = postJsonObject['type'] + ' has missing actor'
-            if postJsonObject.get('id'):
-                msg += ' ' + postJsonObject['id']
+        if post_json_object.get('type'):
+            msg = post_json_object['type'] + ' has missing actor'
+            if post_json_object.get('id'):
+                msg += ' ' + post_json_object['id']
             print(msg)
     return False
 
 
-def hasObjectStringType(postJsonObject: {}, debug: bool) -> bool:
+def hasObjectStringType(post_json_object: {}, debug: bool) -> bool:
     """Does the given post have a type field within an object dict?
     """
-    if not hasObjectDict(postJsonObject):
+    if not hasObjectDict(post_json_object):
         if debug:
             print('hasObjectStringType no object found')
         return False
-    if postJsonObject['object'].get('type'):
-        if isinstance(postJsonObject['object']['type'], str):
+    if post_json_object['object'].get('type'):
+        if isinstance(post_json_object['object']['type'], str):
             return True
         elif debug:
-            if postJsonObject.get('type'):
-                print('DEBUG: ' + postJsonObject['type'] +
+            if post_json_object.get('type'):
+                print('DEBUG: ' + post_json_object['type'] +
                       ' type within object is not a string')
     if debug:
-        print('No type field within object ' + postJsonObject['id'])
+        print('No type field within object ' + post_json_object['id'])
     return False
 
 
-def hasObjectStringObject(postJsonObject: {}, debug: bool) -> bool:
+def hasObjectStringObject(post_json_object: {}, debug: bool) -> bool:
     """Does the given post have an object string field within an object dict?
     """
-    if not hasObjectDict(postJsonObject):
+    if not hasObjectDict(post_json_object):
         if debug:
             print('hasObjectStringType no object found')
         return False
-    if postJsonObject['object'].get('object'):
-        if isinstance(postJsonObject['object']['object'], str):
+    if post_json_object['object'].get('object'):
+        if isinstance(post_json_object['object']['object'], str):
             return True
         elif debug:
-            if postJsonObject.get('type'):
-                print('DEBUG: ' + postJsonObject['type'] +
+            if post_json_object.get('type'):
+                print('DEBUG: ' + post_json_object['type'] +
                       ' object within dict is not a string')
     if debug:
-        print('No object field within dict ' + postJsonObject['id'])
+        print('No object field within dict ' + post_json_object['id'])
     return False
 
 
-def hasObjectString(postJsonObject: {}, debug: bool) -> bool:
+def hasObjectString(post_json_object: {}, debug: bool) -> bool:
     """Does the given post have an object string field?
     """
-    if postJsonObject.get('object'):
-        if isinstance(postJsonObject['object'], str):
+    if post_json_object.get('object'):
+        if isinstance(post_json_object['object'], str):
             return True
         elif debug:
-            if postJsonObject.get('type'):
-                print('DEBUG: ' + postJsonObject['type'] +
+            if post_json_object.get('type'):
+                print('DEBUG: ' + post_json_object['type'] +
                       ' object is not a string')
     if debug:
-        print('No object field within post ' + postJsonObject['id'])
+        print('No object field within post ' + post_json_object['id'])
     return False
 
 

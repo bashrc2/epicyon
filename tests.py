@@ -2944,9 +2944,9 @@ def testClientToServer(base_dir: str):
             statusNumber = name.split('#statuses#')[1].replace('.json', '')
             statusNumber = int(statusNumber.replace('#activity', ''))
             outboxPostFilename = outboxPath + '/' + name
-            postJsonObject = loadJson(outboxPostFilename, 0)
-            if postJsonObject:
-                outboxPostId = removeIdEnding(postJsonObject['id'])
+            post_json_object = loadJson(outboxPostFilename, 0)
+            if post_json_object:
+                outboxPostId = removeIdEnding(post_json_object['id'])
     assert outboxPostId
     print('message id obtained: ' + outboxPostId)
     assert validInbox(bobDir, 'bob', bobDomain)
@@ -3535,11 +3535,11 @@ def _testRecentPostsCache():
     max_recent_posts = 3
     htmlStr = '<html></html>'
     for i in range(5):
-        postJsonObject = {
+        post_json_object = {
             "id": "https://somesite.whatever/users/someuser/statuses/" + str(i)
         }
         updateRecentPostsCache(recentPostsCache, max_recent_posts,
-                               postJsonObject, htmlStr)
+                               post_json_object, htmlStr)
     assert len(recentPostsCache['index']) == max_recent_posts
     assert len(recentPostsCache['json'].items()) == max_recent_posts
     assert len(recentPostsCache['html'].items()) == max_recent_posts
@@ -3793,44 +3793,44 @@ def _runHtmlReplaceQuoteMarks():
 
 def _testJsonPostAllowsComments():
     print('testJsonPostAllowsComments')
-    postJsonObject = {
+    post_json_object = {
         "id": "123"
     }
-    assert jsonPostAllowsComments(postJsonObject)
-    postJsonObject = {
+    assert jsonPostAllowsComments(post_json_object)
+    post_json_object = {
         "id": "123",
         "commentsEnabled": False
     }
-    assert not jsonPostAllowsComments(postJsonObject)
-    postJsonObject = {
+    assert not jsonPostAllowsComments(post_json_object)
+    post_json_object = {
         "id": "123",
         "rejectReplies": False
     }
-    assert jsonPostAllowsComments(postJsonObject)
-    postJsonObject = {
+    assert jsonPostAllowsComments(post_json_object)
+    post_json_object = {
         "id": "123",
         "rejectReplies": True
     }
-    assert not jsonPostAllowsComments(postJsonObject)
-    postJsonObject = {
+    assert not jsonPostAllowsComments(post_json_object)
+    post_json_object = {
         "id": "123",
         "commentsEnabled": True
     }
-    assert jsonPostAllowsComments(postJsonObject)
-    postJsonObject = {
+    assert jsonPostAllowsComments(post_json_object)
+    post_json_object = {
         "id": "123",
         "object": {
             "commentsEnabled": True
         }
     }
-    assert jsonPostAllowsComments(postJsonObject)
-    postJsonObject = {
+    assert jsonPostAllowsComments(post_json_object)
+    post_json_object = {
         "id": "123",
         "object": {
             "commentsEnabled": False
         }
     }
-    assert not jsonPostAllowsComments(postJsonObject)
+    assert not jsonPostAllowsComments(post_json_object)
 
 
 def _testRemoveIdEnding():
@@ -4799,7 +4799,7 @@ def _testLinksWithinPost(base_dir: str) -> None:
     low_bandwidth = True
     content_license_url = 'https://creativecommons.org/licenses/by/4.0'
 
-    postJsonObject = \
+    post_json_object = \
         createPublicPost(base_dir, nickname, domain, port, http_prefix,
                          content, followersOnly, saveToFile,
                          client_to_server, commentsEnabled,
@@ -4811,7 +4811,7 @@ def _testLinksWithinPost(base_dir: str) -> None:
                          testIsArticle, systemLanguage, conversationId,
                          low_bandwidth, content_license_url)
 
-    assert postJsonObject['object']['content'] == \
+    assert post_json_object['object']['content'] == \
         '<p>This is a test post with links.<br><br>' + \
         '<a href="ftp://ftp.ncdc.noaa.gov/pub/data/ghcn/v4/" ' + \
         'rel="nofollow noopener noreferrer" target="_blank">' + \
@@ -4822,8 +4822,8 @@ def _testLinksWithinPost(base_dir: str) -> None:
         'rel="nofollow noopener noreferrer" target="_blank">' + \
         '<span class="invisible">https://</span>' + \
         '<span class="ellipsis">libreserver.org</span></a></p>'
-    assert postJsonObject['object']['content'] == \
-        postJsonObject['object']['contentMap'][systemLanguage]
+    assert post_json_object['object']['content'] == \
+        post_json_object['object']['contentMap'][systemLanguage]
 
     content = "<p>Some text</p><p>Other text</p><p>More text</p>" + \
         "<pre><code>Errno::EOHNOES (No such file or rodent @ " + \
@@ -4835,7 +4835,7 @@ def _testLinksWithinPost(base_dir: str) -> None:
         "<p><a href=\"https://whocodedthis.huh/tags/" + \
         "taggedthing\" class=\"mention hashtag\" rel=\"tag\" " + \
         "target=\"_blank\">#<span>taggedthing</span></a></p>"
-    postJsonObject = \
+    post_json_object = \
         createPublicPost(base_dir, nickname, domain, port, http_prefix,
                          content,
                          False, False,
@@ -4847,8 +4847,8 @@ def _testLinksWithinPost(base_dir: str) -> None:
                          testEventDate, testEventTime, testLocation,
                          testIsArticle, systemLanguage, conversationId,
                          low_bandwidth, content_license_url)
-    assert postJsonObject['object']['content'] == content
-    assert postJsonObject['object']['contentMap'][systemLanguage] == content
+    assert post_json_object['object']['content'] == content
+    assert post_json_object['object']['contentMap'][systemLanguage] == content
 
 
 def _testMastoApi():
@@ -5179,7 +5179,7 @@ def testUpdateActor(base_dir: str):
 
 def _testRemovePostInteractions() -> None:
     print('testRemovePostInteractions')
-    postJsonObject = {
+    post_json_object = {
         "type": "Create",
         "object": {
             "to": ["#Public"],
@@ -5200,14 +5200,14 @@ def _testRemovePostInteractions() -> None:
             }
         }
     }
-    removePostInteractions(postJsonObject, True)
-    assert postJsonObject['object']['likes']['items'] == []
-    assert postJsonObject['object']['replies'] == {}
-    assert postJsonObject['object']['shares'] == {}
-    assert postJsonObject['object']['bookmarks'] == {}
-    assert postJsonObject['object']['ignores'] == {}
-    postJsonObject['object']['to'] = ["some private address"]
-    assert not removePostInteractions(postJsonObject, False)
+    removePostInteractions(post_json_object, True)
+    assert post_json_object['object']['likes']['items'] == []
+    assert post_json_object['object']['replies'] == {}
+    assert post_json_object['object']['shares'] == {}
+    assert post_json_object['object']['bookmarks'] == {}
+    assert post_json_object['object']['ignores'] == {}
+    post_json_object['object']['to'] = ["some private address"]
+    assert not removePostInteractions(post_json_object, False)
 
 
 def _testSpoofGeolocation() -> None:
@@ -5786,7 +5786,7 @@ def _testCanReplyTo(base_dir: str) -> None:
     low_bandwidth = True
     content_license_url = 'https://creativecommons.org/licenses/by/4.0'
 
-    postJsonObject = \
+    post_json_object = \
         createPublicPost(base_dir, nickname, domain, port, http_prefix,
                          content, followersOnly, saveToFile,
                          client_to_server, commentsEnabled,
@@ -5799,24 +5799,24 @@ def _testCanReplyTo(base_dir: str) -> None:
                          low_bandwidth, content_license_url)
     # set the date on the post
     currDateStr = "2021-09-08T20:45:00Z"
-    postJsonObject['published'] = currDateStr
-    postJsonObject['object']['published'] = currDateStr
+    post_json_object['published'] = currDateStr
+    post_json_object['object']['published'] = currDateStr
 
     # test a post within the reply interval
-    postUrl = postJsonObject['object']['id']
+    postUrl = post_json_object['object']['id']
     replyIntervalHours = 2
     currDateStr = "2021-09-08T21:32:10Z"
     assert canReplyTo(base_dir, nickname, domain,
                       postUrl, replyIntervalHours,
                       currDateStr,
-                      postJsonObject)
+                      post_json_object)
 
     # test a post outside of the reply interval
     currDateStr = "2021-09-09T09:24:47Z"
     assert not canReplyTo(base_dir, nickname, domain,
                           postUrl, replyIntervalHours,
                           currDateStr,
-                          postJsonObject)
+                          post_json_object)
 
 
 def _testSecondsBetweenPublished() -> None:
@@ -5862,38 +5862,39 @@ def _testAddCWfromLists(base_dir: str) -> None:
     CWlists = loadCWLists(base_dir, True)
     assert CWlists
 
-    postJsonObject = {
+    post_json_object = {
         "object": {
             "sensitive": False,
             "summary": None,
             "content": ""
         }
     }
-    addCWfromLists(postJsonObject, CWlists, translate, 'Murdoch press')
-    assert postJsonObject['object']['sensitive'] is False
-    assert postJsonObject['object']['summary'] is None
+    addCWfromLists(post_json_object, CWlists, translate, 'Murdoch press')
+    assert post_json_object['object']['sensitive'] is False
+    assert post_json_object['object']['summary'] is None
 
-    postJsonObject = {
+    post_json_object = {
         "object": {
             "sensitive": False,
             "summary": None,
             "content": "Blah blah news.co.uk blah blah"
         }
     }
-    addCWfromLists(postJsonObject, CWlists, translate, 'Murdoch press')
-    assert postJsonObject['object']['sensitive'] is True
-    assert postJsonObject['object']['summary'] == "Murdoch Press"
+    addCWfromLists(post_json_object, CWlists, translate, 'Murdoch press')
+    assert post_json_object['object']['sensitive'] is True
+    assert post_json_object['object']['summary'] == "Murdoch Press"
 
-    postJsonObject = {
+    post_json_object = {
         "object": {
             "sensitive": True,
             "summary": "Existing CW",
             "content": "Blah blah news.co.uk blah blah"
         }
     }
-    addCWfromLists(postJsonObject, CWlists, translate, 'Murdoch press')
-    assert postJsonObject['object']['sensitive'] is True
-    assert postJsonObject['object']['summary'] == "Murdoch Press / Existing CW"
+    addCWfromLists(post_json_object, CWlists, translate, 'Murdoch press')
+    assert post_json_object['object']['sensitive'] is True
+    assert post_json_object['object']['summary'] == \
+        "Murdoch Press / Existing CW"
 
 
 def _testValidEmojiContent() -> None:

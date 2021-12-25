@@ -200,7 +200,7 @@ def htmlNewPost(cssCache: {}, media_instance: bool, translate: {},
                 recentPostsCache: {}, max_recent_posts: int,
                 session, cachedWebfingers: {},
                 personCache: {}, port: int,
-                postJsonObject: {},
+                post_json_object: {},
                 project_version: str,
                 yt_replace_domain: str,
                 twitter_replacement_domain: str,
@@ -257,7 +257,7 @@ def htmlNewPost(cssCache: {}, media_instance: bool, translate: {},
                         '" rel="nofollow noopener noreferrer" ' + \
                         'target="_blank">' + \
                         translate['this post'] + '</a></p>\n'
-                    if postJsonObject:
+                    if post_json_object:
                         newPostText += \
                             individualPostAsHtml(signingPrivateKeyPem,
                                                  True, recentPostsCache,
@@ -267,7 +267,7 @@ def htmlNewPost(cssCache: {}, media_instance: bool, translate: {},
                                                  cachedWebfingers,
                                                  personCache,
                                                  nickname, domain, port,
-                                                 postJsonObject,
+                                                 post_json_object,
                                                  None, True, False,
                                                  http_prefix, project_version,
                                                  boxName,

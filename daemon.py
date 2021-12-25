@@ -528,12 +528,12 @@ class PubServer(BaseHTTPRequestHandler):
                     locatePost(self.server.base_dir, nickname,
                                self.server.domain, messageId)
                 if postFilename:
-                    postJsonObject = loadJson(postFilename)
-                    if postJsonObject:
+                    post_json_object = loadJson(postFilename)
+                    if post_json_object:
                         populateReplies(self.server.base_dir,
                                         self.server.http_prefix,
                                         self.server.domainFull,
-                                        postJsonObject,
+                                        post_json_object,
                                         self.server.max_replies,
                                         self.server.debug)
                         # record the vote
@@ -550,7 +550,7 @@ class PubServer(BaseHTTPRequestHandler):
                             getCachedPostFilename(self.server.base_dir,
                                                   nickname,
                                                   self.server.domain,
-                                                  postJsonObject)
+                                                  post_json_object)
                         if cachedPostFilename:
                             if os.path.isfile(cachedPostFilename):
                                 try:
@@ -560,7 +560,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           'unable to delete ' +
                                           cachedPostFilename)
                         # remove from memory cache
-                        removePostFromCache(postJsonObject,
+                        removePostFromCache(post_json_object,
                                             self.server.recentPostsCache)
             else:
                 print('ERROR: unable to post vote to outbox')
@@ -4626,16 +4626,16 @@ class PubServer(BaseHTTPRequestHandler):
                     locatePost(base_dir, nickname, domain,
                                newsPostUrl)
                 if postFilename:
-                    postJsonObject = loadJson(postFilename)
+                    post_json_object = loadJson(postFilename)
                     # update the content and title
-                    postJsonObject['object']['summary'] = \
+                    post_json_object['object']['summary'] = \
                         newsPostTitle
-                    postJsonObject['object']['content'] = \
+                    post_json_object['object']['content'] = \
                         newsPostContent
-                    contentMap = postJsonObject['object']['contentMap']
+                    contentMap = post_json_object['object']['contentMap']
                     contentMap[self.server.systemLanguage] = newsPostContent
                     # update newswire
-                    pubDate = postJsonObject['object']['published']
+                    pubDate = post_json_object['object']['published']
                     publishedDate = \
                         datetime.datetime.strptime(pubDate,
                                                    "%Y-%m-%dT%H:%M:%SZ")
@@ -4654,13 +4654,13 @@ class PubServer(BaseHTTPRequestHandler):
                             print('ERROR: saving newswire state, ' + str(ex))
 
                     # remove any previous cached news posts
-                    newsId = removeIdEnding(postJsonObject['object']['id'])
+                    newsId = removeIdEnding(post_json_object['object']['id'])
                     newsId = newsId.replace('/', '#')
                     clearFromPostCaches(base_dir, self.server.recentPostsCache,
                                         newsId)
 
                     # save the news post
-                    saveJson(postJsonObject, postFilename)
+                    saveJson(post_json_object, postFilename)
 
         # redirect back to the default timeline
         if self.server.news_instance:
@@ -8798,13 +8798,13 @@ class PubServer(BaseHTTPRequestHandler):
             self._redirect_headers(actorPathStr, cookie, callingDomain)
             return
 
-        postJsonObject = None
+        post_json_object = None
         reactionPostFilename = \
             locatePost(self.server.base_dir,
                        self.postToNickname, domain, reactionUrl)
         if reactionPostFilename:
-            postJsonObject = loadJson(reactionPostFilename)
-        if not reactionPostFilename or not postJsonObject:
+            post_json_object = loadJson(reactionPostFilename)
+        if not reactionPostFilename or not post_json_object:
             print('WARN: unable to locate reaction post ' + reactionUrl)
             actorAbsolute = self._getInstanceUrl(callingDomain) + actor
             actorPathStr = \
@@ -8823,7 +8823,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.cachedWebfingers,
                                     self.server.personCache,
                                     self.postToNickname,
-                                    domain, port, postJsonObject,
+                                    domain, port, post_json_object,
                                     self.server.http_prefix,
                                     self.server.project_version,
                                     self.server.yt_replace_domain,
@@ -9960,8 +9960,8 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.GETbusy = False
             return True
 
-        postJsonObject = loadJson(postFilename)
-        if not postJsonObject:
+        post_json_object = loadJson(postFilename)
+        if not post_json_object:
             self.send_response(429)
             self.end_headers()
             self.server.GETbusy = False
@@ -9970,7 +9970,7 @@ class PubServer(BaseHTTPRequestHandler):
         # Only authorized viewers get to see likes on posts
         # Otherwize marketers could gain more social graph info
         if not authorized:
-            pjo = postJsonObject
+            pjo = post_json_object
             if not isPublicPost(pjo):
                 self._404()
                 self.server.GETbusy = False
@@ -9988,7 +9988,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.personCache,
                                    nickname, domain, port,
                                    authorized,
-                                   postJsonObject,
+                                   post_json_object,
                                    http_prefix,
                                    self.server.project_version,
                                    likedBy, reactBy, reactEmoji,
@@ -10014,15 +10014,15 @@ class PubServer(BaseHTTPRequestHandler):
         else:
             if self._secure_mode():
                 if not includeCreateWrapper and \
-                   postJsonObject['type'] == 'Create' and \
-                   hasObjectDict(postJsonObject):
-                    unwrappedJson = postJsonObject['object']
+                   post_json_object['type'] == 'Create' and \
+                   hasObjectDict(post_json_object):
+                    unwrappedJson = post_json_object['object']
                     unwrappedJson['@context'] = \
                         getIndividualPostContext()
                     msg = json.dumps(unwrappedJson,
                                      ensure_ascii=False)
                 else:
-                    msg = json.dumps(postJsonObject,
+                    msg = json.dumps(post_json_object,
                                      ensure_ascii=False)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
@@ -12957,12 +12957,12 @@ class PubServer(BaseHTTPRequestHandler):
 
             customSubmitText = getConfigParam(base_dir, 'customSubmitText')
 
-            postJsonObject = None
+            post_json_object = None
             if inReplyToUrl:
                 replyPostFilename = \
                     locatePost(base_dir, nickname, domain, inReplyToUrl)
                 if replyPostFilename:
-                    postJsonObject = loadJson(replyPostFilename)
+                    post_json_object = loadJson(replyPostFilename)
 
             msg = htmlNewPost(self.server.cssCache,
                               media_instance,
@@ -12988,7 +12988,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.cachedWebfingers,
                               self.server.personCache,
                               self.server.port,
-                              postJsonObject,
+                              post_json_object,
                               self.server.project_version,
                               self.server.yt_replace_domain,
                               self.server.twitter_replacement_domain,
@@ -14154,8 +14154,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.domainFull,
                                      self.path)
             if blogFilename and nickname:
-                postJsonObject = loadJson(blogFilename)
-                if isBlogPost(postJsonObject):
+                post_json_object = loadJson(blogFilename)
+                if isBlogPost(post_json_object):
                     msg = htmlBlogPost(self.server.session,
                                        authorized,
                                        self.server.base_dir,
@@ -14163,7 +14163,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.translate,
                                        nickname, self.server.domain,
                                        self.server.domainFull,
-                                       postJsonObject,
+                                       post_json_object,
                                        self.server.peertubeInstances,
                                        self.server.systemLanguage,
                                        self.server.personCache,
@@ -16741,8 +16741,8 @@ class PubServer(BaseHTTPRequestHandler):
                                nickname, self.server.domain,
                                fields['postUrl'])
                 if os.path.isfile(postFilename):
-                    postJsonObject = loadJson(postFilename)
-                    if postJsonObject:
+                    post_json_object = loadJson(postFilename)
+                    if post_json_object:
                         cachedFilename = \
                             acctDir(self.server.base_dir,
                                     nickname, self.server.domain) + \
@@ -16756,10 +16756,11 @@ class PubServer(BaseHTTPRequestHandler):
                                 print('EX: _receiveNewPostProcess ' +
                                       'unable to delete ' + cachedFilename)
                         # remove from memory cache
-                        removePostFromCache(postJsonObject,
+                        removePostFromCache(post_json_object,
                                             self.server.recentPostsCache)
                         # change the blog post title
-                        postJsonObject['object']['summary'] = fields['subject']
+                        post_json_object['object']['summary'] = \
+                            fields['subject']
                         # format message
                         tags = []
                         hashtagsDict = {}
@@ -16783,8 +16784,9 @@ class PubServer(BaseHTTPRequestHandler):
                                                  tags, 'content',
                                                  self.server.debug)
 
-                        postJsonObject['object']['content'] = fields['message']
-                        contentMap = postJsonObject['object']['contentMap']
+                        post_json_object['object']['content'] = \
+                            fields['message']
+                        contentMap = post_json_object['object']['contentMap']
                         contentMap[self.server.systemLanguage] = \
                             fields['message']
 
@@ -16797,13 +16799,13 @@ class PubServer(BaseHTTPRequestHandler):
                                                   self.server.base_dir,
                                                   nickname,
                                                   self.server.domain)
-                            postJsonObject['object'] = \
+                            post_json_object['object'] = \
                                 attachMedia(self.server.base_dir,
                                             self.server.http_prefix,
                                             nickname,
                                             self.server.domain,
                                             self.server.port,
-                                            postJsonObject['object'],
+                                            post_json_object['object'],
                                             filename,
                                             attachmentMediaType,
                                             imgDescription,
@@ -16811,20 +16813,20 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.low_bandwidth,
                                             self.server.content_license_url)
 
-                        replaceYouTube(postJsonObject,
+                        replaceYouTube(post_json_object,
                                        self.server.yt_replace_domain,
                                        self.server.systemLanguage)
-                        replaceTwitter(postJsonObject,
+                        replaceTwitter(post_json_object,
                                        self.server.twitter_replacement_domain,
                                        self.server.systemLanguage)
-                        saveJson(postJsonObject, postFilename)
+                        saveJson(post_json_object, postFilename)
                         # also save to the news actor
                         if nickname != 'news':
                             postFilename = \
                                 postFilename.replace('#users#' +
                                                      nickname + '#',
                                                      '#users#news#')
-                            saveJson(postJsonObject, postFilename)
+                            saveJson(post_json_object, postFilename)
                         print('Edited blog post, resaved ' + postFilename)
                         return 1
                     else:

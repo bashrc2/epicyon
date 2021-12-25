@@ -112,45 +112,45 @@ def _getPatchDescription(patchStr: str) -> str:
 
 
 def convertPostToPatch(base_dir: str, nickname: str, domain: str,
-                       postJsonObject: {}) -> bool:
+                       post_json_object: {}) -> bool:
     """Detects whether the given post contains a patch
     and if so then converts it to a Patch ActivityPub type
     """
-    if not hasObjectStringType(postJsonObject, False):
+    if not hasObjectStringType(post_json_object, False):
         return False
-    if postJsonObject['object']['type'] == 'Patch':
+    if post_json_object['object']['type'] == 'Patch':
         return True
-    if not postJsonObject['object'].get('summary'):
+    if not post_json_object['object'].get('summary'):
         return False
-    if not postJsonObject['object'].get('content'):
+    if not post_json_object['object'].get('content'):
         return False
-    if not postJsonObject['object'].get('attributedTo'):
+    if not post_json_object['object'].get('attributedTo'):
         return False
-    if not isinstance(postJsonObject['object']['attributedTo'], str):
+    if not isinstance(post_json_object['object']['attributedTo'], str):
         return False
     if not isGitPatch(base_dir, nickname, domain,
-                      postJsonObject['object']['type'],
-                      postJsonObject['object']['summary'],
-                      postJsonObject['object']['content'],
+                      post_json_object['object']['type'],
+                      post_json_object['object']['summary'],
+                      post_json_object['object']['content'],
                       False):
         return False
-    patchStr = _gitFormatContent(postJsonObject['object']['content'])
+    patchStr = _gitFormatContent(post_json_object['object']['content'])
     commitHash = _getGitHash(patchStr)
     if not commitHash:
         return False
-    postJsonObject['object']['type'] = 'Patch'
+    post_json_object['object']['type'] = 'Patch'
     # add a commitedBy parameter
-    if not postJsonObject['object'].get('committedBy'):
-        postJsonObject['object']['committedBy'] = \
-            postJsonObject['object']['attributedTo']
-    postJsonObject['object']['hash'] = commitHash
-    postJsonObject['object']['description'] = {
+    if not post_json_object['object'].get('committedBy'):
+        post_json_object['object']['committedBy'] = \
+            post_json_object['object']['attributedTo']
+    post_json_object['object']['hash'] = commitHash
+    post_json_object['object']['description'] = {
         "mediaType": "text/plain",
         "content": _getPatchDescription(patchStr)
     }
     # remove content map
-    if postJsonObject['object'].get('contentMap'):
-        del postJsonObject['object']['contentMap']
+    if post_json_object['object'].get('contentMap'):
+        del post_json_object['object']['contentMap']
     print('Converted post to Patch ActivityPub type')
     return True
 

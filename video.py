@@ -17,7 +17,7 @@ from filters import isFiltered
 
 def convertVideoToNote(base_dir: str, nickname: str, domain: str,
                        systemLanguage: str,
-                       postJsonObject: {}, blockedCache: {}) -> {}:
+                       post_json_object: {}, blockedCache: {}) -> {}:
     """Converts a PeerTube Video ActivityPub(ish) object into
     a Note, so that it can then be displayed in a timeline
     """
@@ -28,18 +28,18 @@ def convertVideoToNote(base_dir: str, nickname: str, domain: str,
         'name', 'url'
     )
     for fieldName in requiredFields:
-        if not postJsonObject.get(fieldName):
+        if not post_json_object.get(fieldName):
             return None
 
-    if postJsonObject['type'] != 'Video':
+    if post_json_object['type'] != 'Video':
         return None
 
     # who is this attributed to ?
     attributedTo = None
-    if isinstance(postJsonObject['attributedTo'], str):
-        attributedTo = postJsonObject['attributedTo']
-    elif isinstance(postJsonObject['attributedTo'], list):
-        for entity in postJsonObject['attributedTo']:
+    if isinstance(post_json_object['attributedTo'], str):
+        attributedTo = post_json_object['attributedTo']
+    elif isinstance(post_json_object['attributedTo'], list):
+        for entity in post_json_object['attributedTo']:
             if not isinstance(entity, dict):
                 continue
             if not entity.get('type'):
@@ -55,10 +55,10 @@ def convertVideoToNote(base_dir: str, nickname: str, domain: str,
 
     # get the language of the video
     postLanguage = systemLanguage
-    if postJsonObject.get('language'):
-        if isinstance(postJsonObject['language'], dict):
-            if postJsonObject['language'].get('identifier'):
-                postLanguage = postJsonObject['language']['identifier']
+    if post_json_object.get('language'):
+        if isinstance(post_json_object['language'], dict):
+            if post_json_object['language'].get('identifier'):
+                postLanguage = post_json_object['language']['identifier']
 
     # check that the attributed actor is not blocked
     postNickname = getNicknameFromActor(attributedTo)
@@ -73,29 +73,29 @@ def convertVideoToNote(base_dir: str, nickname: str, domain: str,
         return None
 
     # check that the content is valid
-    if isFiltered(base_dir, nickname, domain, postJsonObject['name']):
+    if isFiltered(base_dir, nickname, domain, post_json_object['name']):
         return None
-    if isFiltered(base_dir, nickname, domain, postJsonObject['content']):
+    if isFiltered(base_dir, nickname, domain, post_json_object['content']):
         return None
 
     # get the content
-    content = '<p><b>' + postJsonObject['name'] + '</b></p>'
-    if postJsonObject.get('license'):
-        if isinstance(postJsonObject['license'], dict):
-            if postJsonObject['license'].get('name'):
+    content = '<p><b>' + post_json_object['name'] + '</b></p>'
+    if post_json_object.get('license'):
+        if isinstance(post_json_object['license'], dict):
+            if post_json_object['license'].get('name'):
                 if isFiltered(base_dir, nickname, domain,
-                              postJsonObject['license']['name']):
+                              post_json_object['license']['name']):
                     return None
-                content += '<p>' + postJsonObject['license']['name'] + '</p>'
-    content += postJsonObject['content']
+                content += '<p>' + post_json_object['license']['name'] + '</p>'
+    content += post_json_object['content']
 
-    conversationId = removeIdEnding(postJsonObject['id'])
+    conversationId = removeIdEnding(post_json_object['id'])
 
     mediaType = None
     mediaUrl = None
     mediaTorrent = None
     mediaMagnet = None
-    for mediaLink in postJsonObject['url']:
+    for mediaLink in post_json_object['url']:
         if not isinstance(mediaLink, dict):
             continue
         if not mediaLink.get('mediaType'):
@@ -118,7 +118,7 @@ def convertVideoToNote(base_dir: str, nickname: str, domain: str,
 
     attachment = [{
             'mediaType': mediaType,
-            'name': postJsonObject['content'],
+            'name': post_json_object['content'],
             'type': 'Document',
             'url': mediaUrl
     }]
@@ -131,31 +131,31 @@ def convertVideoToNote(base_dir: str, nickname: str, domain: str,
             content += '<a href="' + mediaMagnet + '">🧲</a>'
         content += '</p>'
 
-    newPostId = removeIdEnding(postJsonObject['id'])
+    newPostId = removeIdEnding(post_json_object['id'])
     newPost = {
-        '@context': postJsonObject['@context'],
+        '@context': post_json_object['@context'],
         'id': newPostId + '/activity',
         'type': 'Create',
         'actor': attributedTo,
-        'published': postJsonObject['published'],
-        'to': postJsonObject['to'],
-        'cc': postJsonObject['cc'],
+        'published': post_json_object['published'],
+        'to': post_json_object['to'],
+        'cc': post_json_object['cc'],
         'object': {
             'id': newPostId,
             'conversation': conversationId,
             'type': 'Note',
             'summary': None,
             'inReplyTo': None,
-            'published': postJsonObject['published'],
+            'published': post_json_object['published'],
             'url': newPostId,
             'attributedTo': attributedTo,
-            'to': postJsonObject['to'],
-            'cc': postJsonObject['cc'],
-            'sensitive': postJsonObject['sensitive'],
+            'to': post_json_object['to'],
+            'cc': post_json_object['cc'],
+            'sensitive': post_json_object['sensitive'],
             'atomUri': newPostId,
             'inReplyToAtomUri': None,
-            'commentsEnabled': postJsonObject['commentsEnabled'],
-            'rejectReplies': not postJsonObject['commentsEnabled'],
+            'commentsEnabled': post_json_object['commentsEnabled'],
+            'rejectReplies': not post_json_object['commentsEnabled'],
             'mediaType': 'text/html',
             'content': content,
             'contentMap': {

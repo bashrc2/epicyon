@@ -446,20 +446,20 @@ def sharesTimelineJson(actor: str, pageNumber: int, itemsPerPage: int,
     return resultJson, lastPage
 
 
-def postContainsPublic(postJsonObject: {}) -> bool:
+def postContainsPublic(post_json_object: {}) -> bool:
     """Does the given post contain #Public
     """
     containsPublic = False
-    if not postJsonObject['object'].get('to'):
+    if not post_json_object['object'].get('to'):
         return containsPublic
 
-    for toAddress in postJsonObject['object']['to']:
+    for toAddress in post_json_object['object']['to']:
         if toAddress.endswith('#Public'):
             containsPublic = True
             break
         if not containsPublic:
-            if postJsonObject['object'].get('cc'):
-                for toAddress in postJsonObject['object']['cc']:
+            if post_json_object['object'].get('cc'):
+                for toAddress in post_json_object['object']['cc']:
                     if toAddress.endswith('#Public'):
                         containsPublic = True
                         break
@@ -858,13 +858,13 @@ def htmlFooter() -> str:
 
 def loadIndividualPostAsHtmlFromCache(base_dir: str,
                                       nickname: str, domain: str,
-                                      postJsonObject: {}) -> str:
+                                      post_json_object: {}) -> str:
     """If a cached html version of the given post exists then load it and
     return the html text
     This is much quicker than generating the html from the json object
     """
     cachedPostFilename = \
-        getCachedPostFilename(base_dir, nickname, domain, postJsonObject)
+        getCachedPostFilename(base_dir, nickname, domain, post_json_object)
 
     postHtml = ''
     if not cachedPostFilename:
@@ -1004,7 +1004,7 @@ def _isAttachedVideo(attachmentFilename: str) -> bool:
     return False
 
 
-def getPostAttachmentsAsHtml(postJsonObject: {}, boxName: str, translate: {},
+def getPostAttachmentsAsHtml(post_json_object: {}, boxName: str, translate: {},
                              isMuted: bool, avatarLink: str,
                              replyStr: str, announceStr: str, likeStr: str,
                              bookmarkStr: str, deleteStr: str,
@@ -1013,16 +1013,16 @@ def getPostAttachmentsAsHtml(postJsonObject: {}, boxName: str, translate: {},
     """
     attachmentStr = ''
     galleryStr = ''
-    if not postJsonObject['object'].get('attachment'):
+    if not post_json_object['object'].get('attachment'):
         return attachmentStr, galleryStr
 
-    if not isinstance(postJsonObject['object']['attachment'], list):
+    if not isinstance(post_json_object['object']['attachment'], list):
         return attachmentStr, galleryStr
 
     attachmentCtr = 0
     attachmentStr = ''
     mediaStyleAdded = False
-    for attach in postJsonObject['object']['attachment']:
+    for attach in post_json_object['object']['attachment']:
         if not (attach.get('mediaType') and attach.get('url')):
             continue
 
@@ -1047,10 +1047,10 @@ def getPostAttachmentsAsHtml(postJsonObject: {}, boxName: str, translate: {},
                             '    <img loading="lazy" src="' + \
                             imageUrl + '" alt="" title="">\n'
                         galleryStr += '  </a>\n'
-                    if postJsonObject['object'].get('url'):
-                        imagePostUrl = postJsonObject['object']['url']
+                    if post_json_object['object'].get('url'):
+                        imagePostUrl = post_json_object['object']['url']
                     else:
-                        imagePostUrl = postJsonObject['object']['id']
+                        imagePostUrl = post_json_object['object']['id']
                     if imageDescription and not isMuted:
                         galleryStr += \
                             '  <a href="' + imagePostUrl + \
@@ -1101,10 +1101,10 @@ def getPostAttachmentsAsHtml(postJsonObject: {}, boxName: str, translate: {},
                         galleryStr += '    </video>\n'
                         galleryStr += '    </figure>\n'
                         galleryStr += '  </a>\n'
-                    if postJsonObject['object'].get('url'):
-                        videoPostUrl = postJsonObject['object']['url']
+                    if post_json_object['object'].get('url'):
+                        videoPostUrl = post_json_object['object']['url']
                     else:
-                        videoPostUrl = postJsonObject['object']['id']
+                        videoPostUrl = post_json_object['object']['id']
                     if imageDescription and not isMuted:
                         galleryStr += \
                             '  <a href="' + videoPostUrl + \
@@ -1160,10 +1160,10 @@ def getPostAttachmentsAsHtml(postJsonObject: {}, boxName: str, translate: {},
                         galleryStr += translate[idx]
                         galleryStr += '    </audio>\n'
                         galleryStr += '  </a>\n'
-                    if postJsonObject['object'].get('url'):
-                        audioPostUrl = postJsonObject['object']['url']
+                    if post_json_object['object'].get('url'):
+                        audioPostUrl = post_json_object['object']['url']
                     else:
-                        audioPostUrl = postJsonObject['object']['id']
+                        audioPostUrl = post_json_object['object']['id']
                     if imageDescription and not isMuted:
                         galleryStr += \
                             '  <a href="' + audioPostUrl + \

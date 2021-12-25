@@ -188,7 +188,7 @@ def _getBlogReplies(base_dir: str, http_prefix: str, translate: {},
 def _htmlBlogPostContent(debug: bool, session, authorized: bool,
                          base_dir: str, http_prefix: str, translate: {},
                          nickname: str, domain: str, domainFull: str,
-                         postJsonObject: {},
+                         post_json_object: {},
                          handle: str, restrictToDomain: bool,
                          peertubeInstances: [],
                          systemLanguage: str,
@@ -200,21 +200,22 @@ def _htmlBlogPostContent(debug: bool, session, authorized: bool,
     actor = ''
     blogStr = ''
     messageLink = ''
-    if postJsonObject['object'].get('id'):
-        messageLink = postJsonObject['object']['id'].replace('/statuses/', '/')
+    if post_json_object['object'].get('id'):
+        messageLink = \
+            post_json_object['object']['id'].replace('/statuses/', '/')
     titleStr = ''
     articleAdded = False
-    if postJsonObject['object'].get('summary'):
-        titleStr = postJsonObject['object']['summary']
+    if post_json_object['object'].get('summary'):
+        titleStr = post_json_object['object']['summary']
         blogStr += '<article><h1><a href="' + messageLink + '">' + \
             titleStr + '</a></h1>\n'
         articleAdded = True
 
     # get the handle of the author
-    if postJsonObject['object'].get('attributedTo'):
+    if post_json_object['object'].get('attributedTo'):
         authorNickname = None
-        if isinstance(postJsonObject['object']['attributedTo'], str):
-            actor = postJsonObject['object']['attributedTo']
+        if isinstance(post_json_object['object']['attributedTo'], str):
+            actor = post_json_object['object']['attributedTo']
             authorNickname = getNicknameFromActor(actor)
         if authorNickname:
             authorDomain, authorPort = getDomainFromActor(actor)
@@ -228,10 +229,10 @@ def _htmlBlogPostContent(debug: bool, session, authorized: bool,
         if restrictToDomain:
             return ''
 
-    if postJsonObject['object'].get('published'):
-        if 'T' in postJsonObject['object']['published']:
+    if post_json_object['object'].get('published'):
+        if 'T' in post_json_object['object']['published']:
             blogStr += '<h3>' + \
-                postJsonObject['object']['published'].split('T')[0]
+                post_json_object['object']['published'].split('T')[0]
             if handle:
                 if handle.startswith(nickname + '@' + domain):
                     blogStr += ' <a href="' + http_prefix + '://' + \
@@ -255,7 +256,7 @@ def _htmlBlogPostContent(debug: bool, session, authorized: bool,
     deleteStr = ''
     muteStr = ''
     isMuted = False
-    attachmentStr, galleryStr = getPostAttachmentsAsHtml(postJsonObject,
+    attachmentStr, galleryStr = getPostAttachmentsAsHtml(post_json_object,
                                                          'tlblogs', translate,
                                                          isMuted, avatarLink,
                                                          replyStr, announceStr,
@@ -270,14 +271,15 @@ def _htmlBlogPostContent(debug: bool, session, authorized: bool,
     languagesUnderstood = []
     if actorJson:
         languagesUnderstood = getActorLanguagesList(actorJson)
-    jsonContent = getContentFromPost(postJsonObject, systemLanguage,
+    jsonContent = getContentFromPost(post_json_object, systemLanguage,
                                      languagesUnderstood)
     if jsonContent:
         contentStr = addEmbeddedElements(translate, jsonContent,
                                          peertubeInstances)
-        if postJsonObject['object'].get('tag'):
+        if post_json_object['object'].get('tag'):
+            post_json_object_tags = post_json_object['object']['tag']
             contentStr = replaceEmojiFromTags(session, base_dir, contentStr,
-                                              postJsonObject['object']['tag'],
+                                              post_json_object_tags,
                                               'content', debug)
         if articleAdded:
             blogStr += '<br>' + contentStr + '</article>\n'
@@ -285,8 +287,8 @@ def _htmlBlogPostContent(debug: bool, session, authorized: bool,
             blogStr += '<br><article>' + contentStr + '</article>\n'
 
     citationsStr = ''
-    if postJsonObject['object'].get('tag'):
-        for tagJson in postJsonObject['object']['tag']:
+    if post_json_object['object'].get('tag'):
+        for tagJson in post_json_object['object']['tag']:
             if not isinstance(tagJson, dict):
                 continue
             if not tagJson.get('type'):
@@ -315,7 +317,7 @@ def _htmlBlogPostContent(debug: bool, session, authorized: bool,
 
     replies = _noOfBlogReplies(base_dir, http_prefix, translate,
                                nickname, domain, domainFull,
-                               postJsonObject['object']['id'])
+                               post_json_object['object']['id'])
 
     # separator between blogs should be centered
     if '<center>' not in blogSeparator:
@@ -334,11 +336,11 @@ def _htmlBlogPostContent(debug: bool, session, authorized: bool,
         if not titleStr:
             blogStr += _getBlogReplies(base_dir, http_prefix, translate,
                                        nickname, domain, domainFull,
-                                       postJsonObject['object']['id'])
+                                       post_json_object['object']['id'])
         else:
             blogRepliesStr = _getBlogReplies(base_dir, http_prefix, translate,
                                              nickname, domain, domainFull,
-                                             postJsonObject['object']['id'])
+                                             post_json_object['object']['id'])
             blogStr += blogRepliesStr.replace('>' + titleStr + '<', '')
 
     return blogStr
@@ -347,25 +349,26 @@ def _htmlBlogPostContent(debug: bool, session, authorized: bool,
 def _htmlBlogPostRSS2(authorized: bool,
                       base_dir: str, http_prefix: str, translate: {},
                       nickname: str, domain: str, domainFull: str,
-                      postJsonObject: {},
+                      post_json_object: {},
                       handle: str, restrictToDomain: bool,
                       systemLanguage: str) -> str:
     """Returns the RSS version 2 feed for a single blog post
     """
     rssStr = ''
     messageLink = ''
-    if postJsonObject['object'].get('id'):
-        messageLink = postJsonObject['object']['id'].replace('/statuses/', '/')
+    if post_json_object['object'].get('id'):
+        messageLink = \
+            post_json_object['object']['id'].replace('/statuses/', '/')
         if not restrictToDomain or \
            (restrictToDomain and '/' + domain in messageLink):
-            if postJsonObject['object'].get('summary') and \
-               postJsonObject['object'].get('published'):
-                published = postJsonObject['object']['published']
+            if post_json_object['object'].get('summary') and \
+               post_json_object['object'].get('published'):
+                published = post_json_object['object']['published']
                 pubDate = datetime.strptime(published, "%Y-%m-%dT%H:%M:%SZ")
-                titleStr = postJsonObject['object']['summary']
+                titleStr = post_json_object['object']['summary']
                 rssDateStr = pubDate.strftime("%a, %d %b %Y %H:%M:%S UT")
                 content = \
-                    getBaseContentFromPost(postJsonObject, systemLanguage)
+                    getBaseContentFromPost(post_json_object, systemLanguage)
                 description = firstParagraphFromString(content)
                 rssStr = '     <item>'
                 rssStr += '         <title>' + titleStr + '</title>'
@@ -380,25 +383,26 @@ def _htmlBlogPostRSS2(authorized: bool,
 def _htmlBlogPostRSS3(authorized: bool,
                       base_dir: str, http_prefix: str, translate: {},
                       nickname: str, domain: str, domainFull: str,
-                      postJsonObject: {},
+                      post_json_object: {},
                       handle: str, restrictToDomain: bool,
                       systemLanguage: str) -> str:
     """Returns the RSS version 3 feed for a single blog post
     """
     rssStr = ''
     messageLink = ''
-    if postJsonObject['object'].get('id'):
-        messageLink = postJsonObject['object']['id'].replace('/statuses/', '/')
+    if post_json_object['object'].get('id'):
+        messageLink = \
+            post_json_object['object']['id'].replace('/statuses/', '/')
         if not restrictToDomain or \
            (restrictToDomain and '/' + domain in messageLink):
-            if postJsonObject['object'].get('summary') and \
-               postJsonObject['object'].get('published'):
-                published = postJsonObject['object']['published']
+            if post_json_object['object'].get('summary') and \
+               post_json_object['object'].get('published'):
+                published = post_json_object['object']['published']
                 pubDate = datetime.strptime(published, "%Y-%m-%dT%H:%M:%SZ")
-                titleStr = postJsonObject['object']['summary']
+                titleStr = post_json_object['object']['summary']
                 rssDateStr = pubDate.strftime("%a, %d %b %Y %H:%M:%S UT")
                 content = \
-                    getBaseContentFromPost(postJsonObject, systemLanguage)
+                    getBaseContentFromPost(post_json_object, systemLanguage)
                 description = firstParagraphFromString(content)
                 rssStr = 'title: ' + titleStr + '\n'
                 rssStr += 'link: ' + messageLink + '\n'
@@ -419,10 +423,11 @@ def _htmlBlogRemoveCwButton(blogStr: str, translate: {}) -> str:
     return blogStr
 
 
-def _getSnippetFromBlogContent(postJsonObject: {}, systemLanguage: str) -> str:
+def _getSnippetFromBlogContent(post_json_object: {},
+                               systemLanguage: str) -> str:
     """Returns a snippet of text from the blog post as a preview
     """
-    content = getBaseContentFromPost(postJsonObject, systemLanguage)
+    content = getBaseContentFromPost(post_json_object, systemLanguage)
     if '<p>' in content:
         content = content.split('<p>', 1)[1]
         if '</p>' in content:
@@ -438,7 +443,7 @@ def _getSnippetFromBlogContent(postJsonObject: {}, systemLanguage: str) -> str:
 def htmlBlogPost(session, authorized: bool,
                  base_dir: str, http_prefix: str, translate: {},
                  nickname: str, domain: str, domainFull: str,
-                 postJsonObject: {},
+                 post_json_object: {},
                  peertubeInstances: [],
                  systemLanguage: str, personCache: {},
                  debug: bool, content_license_url: str) -> str:
@@ -451,15 +456,15 @@ def htmlBlogPost(session, authorized: bool,
         cssFilename = base_dir + '/blog.css'
     instanceTitle = \
         getConfigParam(base_dir, 'instanceTitle')
-    published = postJsonObject['object']['published']
+    published = post_json_object['object']['published']
     modified = published
-    if postJsonObject['object'].get('updated'):
-        modified = postJsonObject['object']['updated']
-    title = postJsonObject['object']['summary']
+    if post_json_object['object'].get('updated'):
+        modified = post_json_object['object']['updated']
+    title = post_json_object['object']['summary']
     url = ''
-    if postJsonObject['object'].get('url'):
-        url = postJsonObject['object']['url']
-    snippet = _getSnippetFromBlogContent(postJsonObject, systemLanguage)
+    if post_json_object['object'].get('url'):
+        url = post_json_object['object']['url']
+    snippet = _getSnippetFromBlogContent(post_json_object, systemLanguage)
     blogStr = htmlHeaderWithBlogMarkup(cssFilename, instanceTitle,
                                        http_prefix, domainFull, nickname,
                                        systemLanguage, published, modified,
@@ -470,7 +475,7 @@ def htmlBlogPost(session, authorized: bool,
     blogStr += _htmlBlogPostContent(debug, session, authorized, base_dir,
                                     http_prefix, translate,
                                     nickname, domain,
-                                    domainFull, postJsonObject,
+                                    domainFull, post_json_object,
                                     None, False,
                                     peertubeInstances, systemLanguage,
                                     personCache)
@@ -778,8 +783,8 @@ def htmlEditBlog(media_instance: bool, translate: {},
         print('Edit blog: Filename not found for ' + postUrl)
         return None
 
-    postJsonObject = loadJson(postFilename)
-    if not postJsonObject:
+    post_json_object = loadJson(postFilename)
+    if not post_json_object:
         print('Edit blog: json not loaded for ' + postFilename)
         return None
 
@@ -883,15 +888,15 @@ def htmlEditBlog(media_instance: bool, translate: {},
     editBlogForm += \
         '    <label class="labels">' + placeholderSubject + '</label><br>'
     titleStr = ''
-    if postJsonObject['object'].get('summary'):
-        titleStr = postJsonObject['object']['summary']
+    if post_json_object['object'].get('summary'):
+        titleStr = post_json_object['object']['summary']
     editBlogForm += \
         '    <input type="text" name="subject" value="' + titleStr + '">'
     editBlogForm += ''
     editBlogForm += '    <br>'
     messageBoxHeight = 800
 
-    contentStr = getBaseContentFromPost(postJsonObject, systemLanguage)
+    contentStr = getBaseContentFromPost(post_json_object, systemLanguage)
     contentStr = contentStr.replace('<p>', '').replace('</p>', '\n')
 
     editBlogForm += \

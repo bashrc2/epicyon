@@ -443,20 +443,20 @@ def updateReactionCollection(recentPostsCache: {},
                              base_dir: str, postFilename: str,
                              objectUrl: str, actor: str,
                              nickname: str, domain: str, debug: bool,
-                             postJsonObject: {},
+                             post_json_object: {},
                              emojiContent: str) -> None:
     """Updates the reactions collection within a post
     """
-    if not postJsonObject:
-        postJsonObject = loadJson(postFilename)
-    if not postJsonObject:
+    if not post_json_object:
+        post_json_object = loadJson(postFilename)
+    if not post_json_object:
         return
 
     # remove any cached version of this post so that the
     # reaction icon is changed
-    removePostFromCache(postJsonObject, recentPostsCache)
+    removePostFromCache(post_json_object, recentPostsCache)
     cachedPostFilename = getCachedPostFilename(base_dir, nickname,
-                                               domain, postJsonObject)
+                                               domain, post_json_object)
     if cachedPostFilename:
         if os.path.isfile(cachedPostFilename):
             try:
@@ -465,9 +465,9 @@ def updateReactionCollection(recentPostsCache: {},
                 print('EX: updateReactionCollection unable to delete ' +
                       cachedPostFilename)
 
-    obj = postJsonObject
-    if hasObjectDict(postJsonObject):
-        obj = postJsonObject['object']
+    obj = post_json_object
+    if hasObjectDict(post_json_object):
+        obj = post_json_object['object']
 
     if not objectUrl.endswith('/reactions'):
         objectUrl = objectUrl + '/reactions'
@@ -509,27 +509,27 @@ def updateReactionCollection(recentPostsCache: {},
 
     if debug:
         print('DEBUG: saving post with emoji reaction added')
-        pprint(postJsonObject)
-    saveJson(postJsonObject, postFilename)
+        pprint(post_json_object)
+    saveJson(post_json_object, postFilename)
 
 
-def htmlEmojiReactions(postJsonObject: {}, interactive: bool,
+def htmlEmojiReactions(post_json_object: {}, interactive: bool,
                        actor: str, maxReactionTypes: int,
                        boxName: str, pageNumber: int) -> str:
     """html containing row of emoji reactions
     displayed at the bottom of posts, above the icons
     """
-    if not hasObjectDict(postJsonObject):
+    if not hasObjectDict(post_json_object):
         return ''
-    if not postJsonObject.get('actor'):
+    if not post_json_object.get('actor'):
         return ''
-    if not postJsonObject['object'].get('reactions'):
+    if not post_json_object['object'].get('reactions'):
         return ''
-    if not postJsonObject['object']['reactions'].get('items'):
+    if not post_json_object['object']['reactions'].get('items'):
         return ''
     reactions = {}
     reactedToByThisActor = []
-    for item in postJsonObject['object']['reactions']['items']:
+    for item in post_json_object['object']['reactions']['items']:
         emojiContent = item['content']
         emojiActor = item['actor']
         emojiNickname = getNicknameFromActor(emojiActor)
@@ -550,7 +550,7 @@ def htmlEmojiReactions(postJsonObject: {}, interactive: bool,
                 reactions[emojiContent]['handles'].append(emojiHandle)
     if len(reactions.items()) == 0:
         return ''
-    reactBy = removeIdEnding(postJsonObject['object']['id'])
+    reactBy = removeIdEnding(post_json_object['object']['id'])
     htmlStr = '<div class="emojiReactionBar">\n'
     for emojiContent, item in reactions.items():
         count = item['count']
@@ -567,7 +567,7 @@ def htmlEmojiReactions(postJsonObject: {}, interactive: bool,
             baseUrl = actor + '?react=' + reactBy
         else:
             baseUrl = actor + '?unreact=' + reactBy
-        baseUrl += '?actor=' + postJsonObject['actor']
+        baseUrl += '?actor=' + post_json_object['actor']
         baseUrl += '?tl=' + boxName
         baseUrl += '?page=' + str(pageNumber)
         baseUrl += '?emojreact='

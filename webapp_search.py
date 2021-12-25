@@ -666,8 +666,8 @@ def htmlHistorySearch(cssCache: {}, translate: {}, base_dir: str,
         if not postFilename:
             index += 1
             continue
-        postJsonObject = loadJson(postFilename)
-        if not postJsonObject:
+        post_json_object = loadJson(postFilename)
+        if not post_json_object:
             index += 1
             continue
         showIndividualPostIcons = True
@@ -680,7 +680,7 @@ def htmlHistorySearch(cssCache: {}, translate: {}, base_dir: str,
                                  base_dir, session, cachedWebfingers,
                                  personCache,
                                  nickname, domain, port,
-                                 postJsonObject,
+                                 post_json_object,
                                  None, True, allow_deletion,
                                  http_prefix, project_version,
                                  'search',
@@ -835,11 +835,11 @@ def htmlHashtagSearch(cssCache: {},
         if not postFilename:
             index += 1
             continue
-        postJsonObject = loadJson(postFilename)
-        if not postJsonObject:
+        post_json_object = loadJson(postFilename)
+        if not post_json_object:
             index += 1
             continue
-        if not isPublicPost(postJsonObject):
+        if not isPublicPost(post_json_object):
             index += 1
             continue
         showIndividualPostIcons = False
@@ -862,7 +862,7 @@ def htmlHashtagSearch(cssCache: {},
                                  base_dir, session, cachedWebfingers,
                                  personCache,
                                  nickname, domain, port,
-                                 postJsonObject,
+                                 post_json_object,
                                  avatarUrl, showAvatarOptions,
                                  allow_deletion,
                                  http_prefix, project_version,
@@ -962,39 +962,39 @@ def rssHashtagSearch(nickname: str, domain: str, port: int,
             if index >= maxFeedLength:
                 break
             continue
-        postJsonObject = loadJson(postFilename)
-        if postJsonObject:
-            if not isPublicPost(postJsonObject):
+        post_json_object = loadJson(postFilename)
+        if post_json_object:
+            if not isPublicPost(post_json_object):
                 index += 1
                 if index >= maxFeedLength:
                     break
                 continue
             # add to feed
-            if postJsonObject['object'].get('content') and \
-               postJsonObject['object'].get('attributedTo') and \
-               postJsonObject['object'].get('published'):
-                published = postJsonObject['object']['published']
+            if post_json_object['object'].get('content') and \
+               post_json_object['object'].get('attributedTo') and \
+               post_json_object['object'].get('published'):
+                published = post_json_object['object']['published']
                 pubDate = datetime.strptime(published, "%Y-%m-%dT%H:%M:%SZ")
                 rssDateStr = pubDate.strftime("%a, %d %b %Y %H:%M:%S UT")
                 hashtagFeed += '     <item>'
                 hashtagFeed += \
                     '         <author>' + \
-                    postJsonObject['object']['attributedTo'] + \
+                    post_json_object['object']['attributedTo'] + \
                     '</author>'
-                if postJsonObject['object'].get('summary'):
+                if post_json_object['object'].get('summary'):
                     hashtagFeed += \
                         '         <title>' + \
-                        postJsonObject['object']['summary'] + \
+                        post_json_object['object']['summary'] + \
                         '</title>'
                 description = \
-                    getBaseContentFromPost(postJsonObject, systemLanguage)
+                    getBaseContentFromPost(post_json_object, systemLanguage)
                 description = firstParagraphFromString(description)
                 hashtagFeed += \
                     '         <description>' + description + '</description>'
                 hashtagFeed += \
                     '         <pubDate>' + rssDateStr + '</pubDate>'
-                if postJsonObject['object'].get('attachment'):
-                    for attach in postJsonObject['object']['attachment']:
+                if post_json_object['object'].get('attachment'):
+                    for attach in post_json_object['object']['attachment']:
                         if not attach.get('url'):
                             continue
                         hashtagFeed += \

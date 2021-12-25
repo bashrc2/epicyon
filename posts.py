@@ -906,7 +906,7 @@ def deleteAllPosts(base_dir: str,
 
 
 def savePostToBox(base_dir: str, http_prefix: str, postId: str,
-                  nickname: str, domain: str, postJsonObject: {},
+                  nickname: str, domain: str, post_json_object: {},
                   boxname: str) -> str:
     """Saves the give json to the give box
     Returns the filename
@@ -923,15 +923,15 @@ def savePostToBox(base_dir: str, http_prefix: str, postId: str,
         postId = \
             localActorUrl(http_prefix, nickname, originalDomain) + \
             '/statuses/' + statusNumber
-        postJsonObject['id'] = postId + '/activity'
-    if hasObjectDict(postJsonObject):
-        postJsonObject['object']['id'] = postId
-        postJsonObject['object']['atomUri'] = postId
+        post_json_object['id'] = postId + '/activity'
+    if hasObjectDict(post_json_object):
+        post_json_object['object']['id'] = postId
+        post_json_object['object']['atomUri'] = postId
 
     boxDir = createPersonDir(nickname, domain, base_dir, boxname)
     filename = boxDir + '/' + postId.replace('/', '#') + '.json'
 
-    saveJson(postJsonObject, filename)
+    saveJson(post_json_object, filename)
     return filename
 
 
@@ -1601,26 +1601,26 @@ def outboxMessageCreateWrap(http_prefix: str,
 def _postIsAddressedToFollowers(base_dir: str,
                                 nickname: str, domain: str, port: int,
                                 http_prefix: str,
-                                postJsonObject: {}) -> bool:
+                                post_json_object: {}) -> bool:
     """Returns true if the given post is addressed to followers of the nickname
     """
     domainFull = getFullDomain(domain, port)
 
-    if not postJsonObject.get('object'):
+    if not post_json_object.get('object'):
         return False
     toList = []
     ccList = []
-    if postJsonObject['type'] != 'Update' and \
-       hasObjectDict(postJsonObject):
-        if postJsonObject['object'].get('to'):
-            toList = postJsonObject['object']['to']
-        if postJsonObject['object'].get('cc'):
-            ccList = postJsonObject['object']['cc']
+    if post_json_object['type'] != 'Update' and \
+       hasObjectDict(post_json_object):
+        if post_json_object['object'].get('to'):
+            toList = post_json_object['object']['to']
+        if post_json_object['object'].get('cc'):
+            ccList = post_json_object['object']['cc']
     else:
-        if postJsonObject.get('to'):
-            toList = postJsonObject['to']
-        if postJsonObject.get('cc'):
-            ccList = postJsonObject['cc']
+        if post_json_object.get('to'):
+            toList = post_json_object['to']
+        if post_json_object.get('cc'):
+            ccList = post_json_object['cc']
 
     followersUrl = \
         localActorUrl(http_prefix, nickname, domainFull) + '/followers'
@@ -2163,13 +2163,13 @@ def createReportPost(base_dir: str,
         print(str(moderatorsList))
     postTo = moderatorsList
     postCc = None
-    postJsonObject = None
+    post_json_object = None
     for toUrl in postTo:
         # who is this report going to?
         toNickname = toUrl.split('/users/')[1]
         handle = toNickname + '@' + domain
 
-        postJsonObject = \
+        post_json_object = \
             _createPostBase(base_dir, nickname, domain, port,
                             toUrl, postCc,
                             http_prefix, content, followersOnly, saveToFile,
@@ -2181,7 +2181,7 @@ def createReportPost(base_dir: str,
                             None, None, None,
                             None, None, None, None, None, systemLanguage,
                             None, low_bandwidth, content_license_url)
-        if not postJsonObject:
+        if not post_json_object:
             continue
 
         # save a notification file so that the moderator
@@ -2195,7 +2195,7 @@ def createReportPost(base_dir: str,
         except OSError:
             print('EX: createReportPost unable to write ' + newReportFile)
 
-    return postJsonObject
+    return post_json_object
 
 
 def threadSendPost(session, postJsonStr: str, federationList: [],
@@ -2330,7 +2330,7 @@ def sendPost(signingPrivateKeyPem: str, project_version: str,
         return 5
     # sharedInbox is optional
 
-    postJsonObject = \
+    post_json_object = \
         _createPostBase(base_dir, nickname, domain, port,
                         toPersonId, cc, http_prefix, content,
                         followersOnly, saveToFile, client_to_server,
@@ -2354,18 +2354,18 @@ def sendPost(signingPrivateKeyPem: str, project_version: str,
         return 7
     postPath = inboxUrl.split(toDomain, 1)[1]
 
-    if not postJsonObject.get('signature'):
+    if not post_json_object.get('signature'):
         try:
-            signedPostJsonObject = postJsonObject.copy()
+            signedPostJsonObject = post_json_object.copy()
             generateJsonSignature(signedPostJsonObject, privateKeyPem)
-            postJsonObject = signedPostJsonObject
+            post_json_object = signedPostJsonObject
         except Exception as ex:
             print('WARN: failed to JSON-LD sign post, ' + str(ex))
             pass
 
     # convert json to string so that there are no
     # subsequent conversions after creating message body digest
-    postJsonStr = json.dumps(postJsonObject)
+    postJsonStr = json.dumps(post_json_object)
 
     # construct the http header, including the message body digest
     signatureHeaderJson = \
@@ -2498,7 +2498,7 @@ def sendPostViaServer(signingPrivateKeyPem: str, project_version: str,
             toDomainFull = getFullDomain(toDomain, toPort)
             toPersonId = localActorUrl(http_prefix, toNickname, toDomainFull)
 
-    postJsonObject = \
+    post_json_object = \
         _createPostBase(base_dir,
                         fromNickname, fromDomain, fromPort,
                         toPersonId, cc, http_prefix, content,
@@ -2534,7 +2534,7 @@ def sendPostViaServer(signingPrivateKeyPem: str, project_version: str,
         'Content-type': 'application/json',
         'Authorization': authHeader
     }
-    postDumps = json.dumps(postJsonObject)
+    postDumps = json.dumps(post_json_object)
     postResult, unauthorized, returnCode = \
         postJsonString(session, postDumps, [],
                        inboxUrl, headers, debug, 5, True)
@@ -2575,39 +2575,40 @@ def groupFollowersByDomain(base_dir: str, nickname: str, domain: str) -> {}:
     return grouped
 
 
-def _addFollowersToPublicPost(postJsonObject: {}) -> None:
+def _addFollowersToPublicPost(post_json_object: {}) -> None:
     """Adds followers entry to cc if it doesn't exist
     """
-    if not postJsonObject.get('actor'):
+    if not post_json_object.get('actor'):
         return
 
-    if isinstance(postJsonObject['object'], str):
-        if not postJsonObject.get('to'):
+    if isinstance(post_json_object['object'], str):
+        if not post_json_object.get('to'):
             return
-        if len(postJsonObject['to']) > 1:
+        if len(post_json_object['to']) > 1:
             return
-        if len(postJsonObject['to']) == 0:
+        if len(post_json_object['to']) == 0:
             return
-        if not postJsonObject['to'][0].endswith('#Public'):
+        if not post_json_object['to'][0].endswith('#Public'):
             return
-        if postJsonObject.get('cc'):
+        if post_json_object.get('cc'):
             return
-        postJsonObject['cc'] = postJsonObject['actor'] + '/followers'
-    elif hasObjectDict(postJsonObject):
-        if not postJsonObject['object'].get('to'):
+        post_json_object['cc'] = post_json_object['actor'] + '/followers'
+    elif hasObjectDict(post_json_object):
+        if not post_json_object['object'].get('to'):
             return
-        if len(postJsonObject['object']['to']) > 1:
+        if len(post_json_object['object']['to']) > 1:
             return
-        elif len(postJsonObject['object']['to']) == 0:
+        elif len(post_json_object['object']['to']) == 0:
             return
-        elif not postJsonObject['object']['to'][0].endswith('#Public'):
+        elif not post_json_object['object']['to'][0].endswith('#Public'):
             return
-        if postJsonObject['object'].get('cc'):
+        if post_json_object['object'].get('cc'):
             return
-        postJsonObject['object']['cc'] = postJsonObject['actor'] + '/followers'
+        post_json_object['object']['cc'] = \
+            post_json_object['actor'] + '/followers'
 
 
-def sendSignedJson(postJsonObject: {}, session, base_dir: str,
+def sendSignedJson(post_json_object: {}, session, base_dir: str,
                    nickname: str, domain: str, port: int,
                    toNickname: str, toDomain: str, toPort: int, cc: str,
                    http_prefix: str, saveToFile: bool, client_to_server: bool,
@@ -2724,20 +2725,20 @@ def sendSignedJson(postJsonObject: {}, session, base_dir: str,
         return 7
     postPath = inboxUrl.split(toDomain, 1)[1]
 
-    _addFollowersToPublicPost(postJsonObject)
+    _addFollowersToPublicPost(post_json_object)
 
-    if not postJsonObject.get('signature'):
+    if not post_json_object.get('signature'):
         try:
-            signedPostJsonObject = postJsonObject.copy()
+            signedPostJsonObject = post_json_object.copy()
             generateJsonSignature(signedPostJsonObject, privateKeyPem)
-            postJsonObject = signedPostJsonObject
+            post_json_object = signedPostJsonObject
         except Exception as ex:
             print('WARN: failed to JSON-LD sign post, ' + str(ex))
             pass
 
     # convert json to string so that there are no
     # subsequent conversions after creating message body digest
-    postJsonStr = json.dumps(postJsonObject)
+    postJsonStr = json.dumps(post_json_object)
 
     # construct the http header, including the message body digest
     signatureHeaderJson = \
@@ -2762,7 +2763,7 @@ def sendSignedJson(postJsonObject: {}, session, base_dir: str,
 
     if debug:
         print('DEBUG: starting thread to send post')
-        pprint(postJsonObject)
+        pprint(post_json_object)
     thr = \
         threadWithTrace(target=threadSendPost,
                         args=(session,
@@ -2777,81 +2778,81 @@ def sendSignedJson(postJsonObject: {}, session, base_dir: str,
     return 0
 
 
-def addToField(activityType: str, postJsonObject: {},
+def addToField(activityType: str, post_json_object: {},
                debug: bool) -> ({}, bool):
     """The Follow/Add/Remove activity doesn't have a 'to' field and so one
     needs to be added so that activity distribution happens in a consistent way
     Returns true if a 'to' field exists or was added
     """
-    if postJsonObject.get('to'):
-        return postJsonObject, True
+    if post_json_object.get('to'):
+        return post_json_object, True
 
     if debug:
-        pprint(postJsonObject)
+        pprint(post_json_object)
         print('DEBUG: no "to" field when sending to named addresses 2')
 
     isSameType = False
     toFieldAdded = False
-    if postJsonObject.get('object'):
-        if isinstance(postJsonObject['object'], str):
-            if postJsonObject.get('type'):
-                if postJsonObject['type'] == activityType:
+    if post_json_object.get('object'):
+        if isinstance(post_json_object['object'], str):
+            if post_json_object.get('type'):
+                if post_json_object['type'] == activityType:
                     isSameType = True
                     if debug:
                         print('DEBUG: "to" field assigned to ' + activityType)
-                    toAddress = postJsonObject['object']
+                    toAddress = post_json_object['object']
                     if '/statuses/' in toAddress:
                         toAddress = toAddress.split('/statuses/')[0]
-                    postJsonObject['to'] = [toAddress]
+                    post_json_object['to'] = [toAddress]
                     toFieldAdded = True
-        elif hasObjectDict(postJsonObject):
+        elif hasObjectDict(post_json_object):
             # add a to field to bookmark add or remove
-            if postJsonObject.get('type') and \
-               postJsonObject.get('actor') and \
-               postJsonObject['object'].get('type'):
-                if postJsonObject['type'] == 'Add' or \
-                   postJsonObject['type'] == 'Remove':
-                    if postJsonObject['object']['type'] == 'Document':
-                        postJsonObject['to'] = \
-                            [postJsonObject['actor']]
-                        postJsonObject['object']['to'] = \
-                            [postJsonObject['actor']]
+            if post_json_object.get('type') and \
+               post_json_object.get('actor') and \
+               post_json_object['object'].get('type'):
+                if post_json_object['type'] == 'Add' or \
+                   post_json_object['type'] == 'Remove':
+                    if post_json_object['object']['type'] == 'Document':
+                        post_json_object['to'] = \
+                            [post_json_object['actor']]
+                        post_json_object['object']['to'] = \
+                            [post_json_object['actor']]
                         toFieldAdded = True
 
             if not toFieldAdded and \
-               postJsonObject['object'].get('type'):
-                if postJsonObject['object']['type'] == activityType:
+               post_json_object['object'].get('type'):
+                if post_json_object['object']['type'] == activityType:
                     isSameType = True
-                    if isinstance(postJsonObject['object']['object'], str):
+                    if isinstance(post_json_object['object']['object'], str):
                         if debug:
                             print('DEBUG: "to" field assigned to ' +
                                   activityType)
-                        toAddress = postJsonObject['object']['object']
+                        toAddress = post_json_object['object']['object']
                         if '/statuses/' in toAddress:
                             toAddress = toAddress.split('/statuses/')[0]
-                        postJsonObject['object']['to'] = [toAddress]
-                        postJsonObject['to'] = \
-                            [postJsonObject['object']['object']]
+                        post_json_object['object']['to'] = [toAddress]
+                        post_json_object['to'] = \
+                            [post_json_object['object']['object']]
                         toFieldAdded = True
 
     if not isSameType:
-        return postJsonObject, True
+        return post_json_object, True
     if toFieldAdded:
-        return postJsonObject, True
-    return postJsonObject, False
+        return post_json_object, True
+    return post_json_object, False
 
 
-def _isProfileUpdate(postJsonObject: {}) -> bool:
+def _isProfileUpdate(post_json_object: {}) -> bool:
     """Is the given post a profile update?
     for actor updates there is no 'to' within the object
     """
-    if postJsonObject.get('type'):
-        if hasObjectStringType(postJsonObject, False):
-            if (postJsonObject['type'] == 'Update' and
-                (postJsonObject['object']['type'] == 'Person' or
-                 postJsonObject['object']['type'] == 'Application' or
-                 postJsonObject['object']['type'] == 'Group' or
-                 postJsonObject['object']['type'] == 'Service')):
+    if post_json_object.get('type'):
+        if hasObjectStringType(post_json_object, False):
+            if (post_json_object['type'] == 'Update' and
+                (post_json_object['object']['type'] == 'Person' or
+                 post_json_object['object']['type'] == 'Application' or
+                 post_json_object['object']['type'] == 'Group' or
+                 post_json_object['object']['type'] == 'Service')):
                 return True
     return False
 
@@ -2862,7 +2863,7 @@ def _sendToNamedAddresses(session, base_dir: str,
                           http_prefix: str, federationList: [],
                           send_threads: [], postLog: [],
                           cachedWebfingers: {}, personCache: {},
-                          postJsonObject: {}, debug: bool,
+                          post_json_object: {}, debug: bool,
                           project_version: str,
                           shared_items_federated_domains: [],
                           sharedItemFederationTokens: {},
@@ -2872,41 +2873,43 @@ def _sendToNamedAddresses(session, base_dir: str,
     if not session:
         print('WARN: No session for sendToNamedAddresses')
         return
-    if not postJsonObject.get('object'):
+    if not post_json_object.get('object'):
         return
     isProfileUpdate = False
-    if hasObjectDict(postJsonObject):
-        if _isProfileUpdate(postJsonObject):
+    if hasObjectDict(post_json_object):
+        if _isProfileUpdate(post_json_object):
             # use the original object, which has a 'to'
-            recipientsObject = postJsonObject
+            recipientsObject = post_json_object
             isProfileUpdate = True
 
         if not isProfileUpdate:
-            if not postJsonObject['object'].get('to'):
+            if not post_json_object['object'].get('to'):
                 if debug:
-                    pprint(postJsonObject)
+                    pprint(post_json_object)
                     print('DEBUG: ' +
                           'no "to" field when sending to named addresses')
-                if hasObjectStringType(postJsonObject, debug):
-                    if postJsonObject['object']['type'] == 'Follow' or \
-                       postJsonObject['object']['type'] == 'Join':
-                        if isinstance(postJsonObject['object']['object'], str):
+                if hasObjectStringType(post_json_object, debug):
+                    if post_json_object['object']['type'] == 'Follow' or \
+                       post_json_object['object']['type'] == 'Join':
+                        post_json_obj2 = post_json_object['object']['object']
+                        if isinstance(post_json_obj2, str):
                             if debug:
                                 print('DEBUG: "to" field assigned to Follow')
-                            postJsonObject['object']['to'] = \
-                                [postJsonObject['object']['object']]
-                if not postJsonObject['object'].get('to'):
+                            post_json_object['object']['to'] = \
+                                [post_json_object['object']['object']]
+                if not post_json_object['object'].get('to'):
                     return
-            recipientsObject = postJsonObject['object']
+            recipientsObject = post_json_object['object']
     else:
-        postJsonObject, fieldAdded = \
-            addToField('Follow', postJsonObject, debug)
+        post_json_object, fieldAdded = \
+            addToField('Follow', post_json_object, debug)
         if not fieldAdded:
             return
-        postJsonObject, fieldAdded = addToField('Like', postJsonObject, debug)
+        post_json_object, fieldAdded = \
+            addToField('Like', post_json_object, debug)
         if not fieldAdded:
             return
-        recipientsObject = postJsonObject
+        recipientsObject = post_json_object
 
     recipients = []
     recipientType = ('to', 'cc')
@@ -2996,7 +2999,7 @@ def _sendToNamedAddresses(session, base_dir: str,
 
         groupAccount = hasGroupType(base_dir, address, personCache)
 
-        sendSignedJson(postJsonObject, session, base_dir,
+        sendSignedJson(post_json_object, session, base_dir,
                        nickname, fromDomain, port,
                        toNickname, toDomain, toPort,
                        cc, fromHttpPrefix, True, client_to_server,
@@ -3013,7 +3016,7 @@ def sendToNamedAddressesThread(session, base_dir: str,
                                http_prefix: str, federationList: [],
                                send_threads: [], postLog: [],
                                cachedWebfingers: {}, personCache: {},
-                               postJsonObject: {}, debug: bool,
+                               post_json_object: {}, debug: bool,
                                project_version: str,
                                shared_items_federated_domains: [],
                                sharedItemFederationTokens: {},
@@ -3028,7 +3031,7 @@ def sendToNamedAddressesThread(session, base_dir: str,
                               http_prefix, federationList,
                               send_threads, postLog,
                               cachedWebfingers, personCache,
-                              postJsonObject, debug,
+                              post_json_object, debug,
                               project_version,
                               shared_items_federated_domains,
                               sharedItemFederationTokens,
@@ -3066,14 +3069,14 @@ def _hasSharedInbox(session, http_prefix: str, domain: str,
     return False
 
 
-def _sendingProfileUpdate(postJsonObject: {}) -> bool:
+def _sendingProfileUpdate(post_json_object: {}) -> bool:
     """Returns true if the given json is a profile update
     """
-    if postJsonObject['type'] != 'Update':
+    if post_json_object['type'] != 'Update':
         return False
-    if not hasObjectStringType(postJsonObject, False):
+    if not hasObjectStringType(post_json_object, False):
         return False
-    activityType = postJsonObject['object']['type']
+    activityType = post_json_object['object']['type']
     if activityType == 'Person' or \
        activityType == 'Application' or \
        activityType == 'Group' or \
@@ -3089,7 +3092,7 @@ def sendToFollowers(session, base_dir: str,
                     http_prefix: str, federationList: [],
                     send_threads: [], postLog: [],
                     cachedWebfingers: {}, personCache: {},
-                    postJsonObject: {}, debug: bool,
+                    post_json_object: {}, debug: bool,
                     project_version: str,
                     shared_items_federated_domains: [],
                     sharedItemFederationTokens: {},
@@ -3102,7 +3105,7 @@ def sendToFollowers(session, base_dir: str,
         return
     if not _postIsAddressedToFollowers(base_dir, nickname, domain,
                                        port, http_prefix,
-                                       postJsonObject):
+                                       post_json_object):
         if debug:
             print('Post is not addressed to followers')
         return
@@ -3196,8 +3199,8 @@ def sendToFollowers(session, base_dir: str,
             if len(followerHandles) > 1:
                 toNickname = 'inbox'
 
-            if toNickname != 'inbox' and postJsonObject.get('type'):
-                if _sendingProfileUpdate(postJsonObject):
+            if toNickname != 'inbox' and post_json_object.get('type'):
+                if _sendingProfileUpdate(post_json_object):
                     print('Sending post to followers ' +
                           'shared inbox of ' + toDomain)
                     toNickname = 'inbox'
@@ -3206,7 +3209,7 @@ def sendToFollowers(session, base_dir: str,
                   nickname + '@' + domain +
                   ' to ' + toNickname + '@' + toDomain)
 
-            sendSignedJson(postJsonObject, session, base_dir,
+            sendSignedJson(post_json_object, session, base_dir,
                            nickname, fromDomain, port,
                            toNickname, toDomain, toPort,
                            cc, fromHttpPrefix, True, client_to_server,
@@ -3226,7 +3229,7 @@ def sendToFollowers(session, base_dir: str,
                     groupAccount = True
                     toNickname = toNickname[1:]
 
-                if postJsonObject['type'] != 'Update':
+                if post_json_object['type'] != 'Update':
                     print('Sending post to followers from ' +
                           nickname + '@' + domain + ' to ' +
                           toNickname + '@' + toDomain)
@@ -3235,7 +3238,7 @@ def sendToFollowers(session, base_dir: str,
                           nickname + '@' + domain + ' to ' +
                           toNickname + '@' + toDomain)
 
-                sendSignedJson(postJsonObject, session, base_dir,
+                sendSignedJson(post_json_object, session, base_dir,
                                nickname, fromDomain, port,
                                toNickname, toDomain, toPort,
                                cc, fromHttpPrefix, True, client_to_server,
@@ -3262,7 +3265,7 @@ def sendToFollowersThread(session, base_dir: str,
                           http_prefix: str, federationList: [],
                           send_threads: [], postLog: [],
                           cachedWebfingers: {}, personCache: {},
-                          postJsonObject: {}, debug: bool,
+                          post_json_object: {}, debug: bool,
                           project_version: str,
                           shared_items_federated_domains: [],
                           sharedItemFederationTokens: {},
@@ -3277,7 +3280,7 @@ def sendToFollowersThread(session, base_dir: str,
                               http_prefix, federationList,
                               send_threads, postLog,
                               cachedWebfingers, personCache,
-                              postJsonObject.copy(), debug,
+                              post_json_object.copy(), debug,
                               project_version,
                               shared_items_federated_domains,
                               sharedItemFederationTokens,
@@ -3441,9 +3444,9 @@ def createModeration(base_dir: str, nickname: str, domain: str, port: int,
                 postFilename = \
                     boxDir + '/' + postUrl.replace('/', '#') + '.json'
                 if os.path.isfile(postFilename):
-                    postJsonObject = loadJson(postFilename)
-                    if postJsonObject:
-                        boxItems['orderedItems'].append(postJsonObject)
+                    post_json_object = loadJson(postFilename)
+                    if post_json_object:
+                        boxItems['orderedItems'].append(post_json_object)
 
     if headerOnly:
         return boxHeader
@@ -3452,7 +3455,7 @@ def createModeration(base_dir: str, nickname: str, domain: str, port: int,
 
 def isImageMedia(session, base_dir: str, http_prefix: str,
                  nickname: str, domain: str,
-                 postJsonObject: {}, translate: {},
+                 post_json_object: {}, translate: {},
                  yt_replace_domain: str,
                  twitter_replacement_domain: str,
                  allow_local_network_access: bool,
@@ -3462,11 +3465,11 @@ def isImageMedia(session, base_dir: str, http_prefix: str,
                  signingPrivateKeyPem: str) -> bool:
     """Returns true if the given post has attached image media
     """
-    if postJsonObject['type'] == 'Announce':
+    if post_json_object['type'] == 'Announce':
         blockedCache = {}
         postJsonAnnounce = \
             downloadAnnounce(session, base_dir, http_prefix,
-                             nickname, domain, postJsonObject,
+                             nickname, domain, post_json_object,
                              __version__, translate,
                              yt_replace_domain,
                              twitter_replacement_domain,
@@ -3477,23 +3480,23 @@ def isImageMedia(session, base_dir: str, http_prefix: str,
                              signingPrivateKeyPem,
                              blockedCache)
         if postJsonAnnounce:
-            postJsonObject = postJsonAnnounce
-    if postJsonObject['type'] != 'Create':
+            post_json_object = postJsonAnnounce
+    if post_json_object['type'] != 'Create':
         return False
-    if not hasObjectDict(postJsonObject):
+    if not hasObjectDict(post_json_object):
         return False
-    if postJsonObject['object'].get('moderationStatus'):
+    if post_json_object['object'].get('moderationStatus'):
         return False
-    if postJsonObject['object']['type'] != 'Note' and \
-       postJsonObject['object']['type'] != 'Page' and \
-       postJsonObject['object']['type'] != 'Event' and \
-       postJsonObject['object']['type'] != 'Article':
+    if post_json_object['object']['type'] != 'Note' and \
+       post_json_object['object']['type'] != 'Page' and \
+       post_json_object['object']['type'] != 'Event' and \
+       post_json_object['object']['type'] != 'Article':
         return False
-    if not postJsonObject['object'].get('attachment'):
+    if not post_json_object['object'].get('attachment'):
         return False
-    if not isinstance(postJsonObject['object']['attachment'], list):
+    if not isinstance(post_json_object['object']['attachment'], list):
         return False
-    for attach in postJsonObject['object']['attachment']:
+    for attach in post_json_object['object']['attachment']:
         if attach.get('mediaType') and attach.get('url'):
             if attach['mediaType'].startswith('image/') or \
                attach['mediaType'].startswith('audio/') or \
@@ -3559,24 +3562,24 @@ def _addPostToTimeline(filePath: str, boxname: str,
     return False
 
 
-def removePostInteractions(postJsonObject: {}, force: bool) -> bool:
+def removePostInteractions(post_json_object: {}, force: bool) -> bool:
     """ Don't show likes, replies, bookmarks, DMs or shares (announces) to
     unauthorized viewers. This makes the timeline less useful to
     marketers and other surveillance-oriented organizations.
     Returns False if this is a private post
     """
     hasObject = False
-    if hasObjectDict(postJsonObject):
+    if hasObjectDict(post_json_object):
         hasObject = True
     if hasObject:
-        postObj = postJsonObject['object']
+        postObj = post_json_object['object']
         if not force:
             # If not authorized and it's a private post
             # then just don't show it within timelines
-            if not isPublicPost(postJsonObject):
+            if not isPublicPost(post_json_object):
                 return False
     else:
-        postObj = postJsonObject
+        postObj = post_json_object
 
     # clear the likes
     if postObj.get('likes'):
@@ -4442,10 +4445,10 @@ def populateRepliesJson(base_dir: str, nickname: str, domain: str,
                 if os.path.isfile(searchFilename):
                     if authorized or \
                        pubStr in open(searchFilename).read():
-                        postJsonObject = loadJson(searchFilename)
-                        if postJsonObject:
-                            if postJsonObject['object'].get('cc'):
-                                pjo = postJsonObject
+                        post_json_object = loadJson(searchFilename)
+                        if post_json_object:
+                            if post_json_object['object'].get('cc'):
+                                pjo = post_json_object
                                 if (authorized or
                                     (pubStr in pjo['object']['to'] or
                                      pubStr in pjo['object']['cc'])):
@@ -4453,8 +4456,8 @@ def populateRepliesJson(base_dir: str, nickname: str, domain: str,
                                     replyFound = True
                             else:
                                 if authorized or \
-                                   pubStr in postJsonObject['object']['to']:
-                                    pjo = postJsonObject
+                                   pubStr in post_json_object['object']['to']:
+                                    pjo = post_json_object
                                     repliesJson['orderedItems'].append(pjo)
                                     replyFound = True
                     break
@@ -4471,19 +4474,19 @@ def populateRepliesJson(base_dir: str, nickname: str, domain: str,
                        pubStr in open(searchFilename).read():
                         # get the json of the reply and append it to
                         # the collection
-                        postJsonObject = loadJson(searchFilename)
-                        if postJsonObject:
-                            if postJsonObject['object'].get('cc'):
-                                pjo = postJsonObject
+                        post_json_object = loadJson(searchFilename)
+                        if post_json_object:
+                            if post_json_object['object'].get('cc'):
+                                pjo = post_json_object
                                 if (authorized or
                                     (pubStr in pjo['object']['to'] or
                                      pubStr in pjo['object']['cc'])):
-                                    pjo = postJsonObject
+                                    pjo = post_json_object
                                     repliesJson['orderedItems'].append(pjo)
                             else:
                                 if authorized or \
-                                   pubStr in postJsonObject['object']['to']:
-                                    pjo = postJsonObject
+                                   pubStr in post_json_object['object']['to']:
+                                    pjo = post_json_object
                                     repliesJson['orderedItems'].append(pjo)
 
 
@@ -4502,7 +4505,7 @@ def _rejectAnnounce(announceFilename: str,
 
 def downloadAnnounce(session, base_dir: str, http_prefix: str,
                      nickname: str, domain: str,
-                     postJsonObject: {}, project_version: str,
+                     post_json_object: {}, project_version: str,
                      translate: {},
                      yt_replace_domain: str,
                      twitter_replacement_domain: str,
@@ -4514,12 +4517,12 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
                      blockedCache: {}) -> {}:
     """Download the post referenced by an announce
     """
-    if not postJsonObject.get('object'):
+    if not post_json_object.get('object'):
         return None
-    if not isinstance(postJsonObject['object'], str):
+    if not isinstance(post_json_object['object'], str):
         return None
     # ignore self-boosts
-    if postJsonObject['actor'] in postJsonObject['object']:
+    if post_json_object['actor'] in post_json_object['object']:
         return None
 
     # get the announced post
@@ -4528,11 +4531,11 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
         os.mkdir(announceCacheDir)
 
     postId = None
-    if postJsonObject.get('id'):
-        postId = removeIdEnding(postJsonObject['id'])
+    if post_json_object.get('id'):
+        postId = removeIdEnding(post_json_object['id'])
     announceFilename = \
         announceCacheDir + '/' + \
-        postJsonObject['object'].replace('/', '#') + '.json'
+        post_json_object['object'].replace('/', '#') + '.json'
 
     if os.path.isfile(announceFilename + '.reject'):
         return None
@@ -4540,10 +4543,10 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
     if os.path.isfile(announceFilename):
         if debug:
             print('Reading cached Announce content for ' +
-                  postJsonObject['object'])
-        postJsonObject = loadJson(announceFilename)
-        if postJsonObject:
-            return postJsonObject
+                  post_json_object['object'])
+        post_json_object = loadJson(announceFilename)
+        if post_json_object:
+            return post_json_object
     else:
         profileStr = 'https://www.w3.org/ns/activitystreams'
         acceptStr = \
@@ -4552,31 +4555,32 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
         asHeader = {
             'Accept': acceptStr
         }
-        if '/channel/' in postJsonObject['actor'] or \
-           '/accounts/' in postJsonObject['actor']:
+        if '/channel/' in post_json_object['actor'] or \
+           '/accounts/' in post_json_object['actor']:
             acceptStr = \
                 'application/ld+json; ' + \
                 'profile="' + profileStr + '"'
             asHeader = {
                 'Accept': acceptStr
             }
-        actorNickname = getNicknameFromActor(postJsonObject['actor'])
-        actorDomain, actorPort = getDomainFromActor(postJsonObject['actor'])
+        actorNickname = getNicknameFromActor(post_json_object['actor'])
+        actorDomain, actorPort = getDomainFromActor(post_json_object['actor'])
         if not actorDomain:
             print('Announce actor does not contain a ' +
                   'valid domain or port number: ' +
-                  str(postJsonObject['actor']))
+                  str(post_json_object['actor']))
             return None
         if isBlocked(base_dir, nickname, domain, actorNickname, actorDomain):
             print('Announce download blocked actor: ' +
                   actorNickname + '@' + actorDomain)
             return None
-        objectNickname = getNicknameFromActor(postJsonObject['object'])
-        objectDomain, objectPort = getDomainFromActor(postJsonObject['object'])
+        objectNickname = getNicknameFromActor(post_json_object['object'])
+        objectDomain, objectPort = \
+            getDomainFromActor(post_json_object['object'])
         if not objectDomain:
             print('Announce object does not contain a ' +
                   'valid domain or port number: ' +
-                  str(postJsonObject['object']))
+                  str(post_json_object['object']))
             return None
         if isBlocked(base_dir, nickname, domain, objectNickname, objectDomain):
             if objectNickname and objectDomain:
@@ -4584,14 +4588,14 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
                       objectNickname + '@' + objectDomain)
             else:
                 print('Announce download blocked object: ' +
-                      str(postJsonObject['object']))
+                      str(post_json_object['object']))
             return None
         if debug:
             print('Downloading Announce content for ' +
-                  postJsonObject['object'])
+                  post_json_object['object'])
         announcedJson = \
             getJson(signingPrivateKeyPem, session,
-                    postJsonObject['object'],
+                    post_json_object['object'],
                     asHeader, None, debug, project_version,
                     http_prefix, domain)
 
@@ -4600,7 +4604,7 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
 
         if not isinstance(announcedJson, dict):
             print('WARN: announce json is not a dict - ' +
-                  postJsonObject['object'])
+                  post_json_object['object'])
             _rejectAnnounce(announceFilename,
                             base_dir, nickname, domain, postId,
                             recentPostsCache)
@@ -4706,10 +4710,10 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
                             recentPostsCache)
             return None
 
-        # labelAccusatoryPost(postJsonObject, translate)
+        # labelAccusatoryPost(post_json_object, translate)
         # set the id to the original status
-        announcedJson['id'] = postJsonObject['object']
-        announcedJson['object']['id'] = postJsonObject['object']
+        announcedJson['id'] = post_json_object['object']
+        announcedJson['object']['id'] = post_json_object['object']
         # check that the repeat isn't for a blocked account
         attributedNickname = \
             getNicknameFromActor(announcedJson['object']['id'])
@@ -4723,12 +4727,12 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
                                 base_dir, nickname, domain, postId,
                                 recentPostsCache)
                 return None
-        postJsonObject = announcedJson
-        replaceYouTube(postJsonObject, yt_replace_domain, systemLanguage)
-        replaceTwitter(postJsonObject, twitter_replacement_domain,
+        post_json_object = announcedJson
+        replaceYouTube(post_json_object, yt_replace_domain, systemLanguage)
+        replaceTwitter(post_json_object, twitter_replacement_domain,
                        systemLanguage)
-        if saveJson(postJsonObject, announceFilename):
-            return postJsonObject
+        if saveJson(post_json_object, announceFilename):
+            return post_json_object
     return None
 
 
@@ -5089,12 +5093,12 @@ def sendUndoBlockViaServer(base_dir: str, session,
 
 
 def postIsMuted(base_dir: str, nickname: str, domain: str,
-                postJsonObject: {}, messageId: str) -> bool:
+                post_json_object: {}, messageId: str) -> bool:
     """ Returns true if the given post is muted
     """
     isMuted = None
-    if 'muted' in postJsonObject:
-        isMuted = postJsonObject['muted']
+    if 'muted' in post_json_object:
+        isMuted = post_json_object['muted']
     if isMuted is True or isMuted is False:
         return isMuted
 
@@ -5175,33 +5179,33 @@ def secondsBetweenPublished(published1: str, published2: str) -> int:
 
 
 def editedPostFilename(base_dir: str, nickname: str, domain: str,
-                       postJsonObject: {}, debug: bool,
+                       post_json_object: {}, debug: bool,
                        maxTimeDiffSeconds: int) -> str:
     """Returns the filename of the edited post
     """
-    if not hasObjectDict(postJsonObject):
+    if not hasObjectDict(post_json_object):
         return ''
-    if not postJsonObject.get('type'):
+    if not post_json_object.get('type'):
         return ''
-    if not postJsonObject['object'].get('type'):
+    if not post_json_object['object'].get('type'):
         return ''
-    if not postJsonObject['object'].get('published'):
+    if not post_json_object['object'].get('published'):
         return ''
-    if not postJsonObject['object'].get('id'):
+    if not post_json_object['object'].get('id'):
         return ''
-    if not postJsonObject['object'].get('content'):
+    if not post_json_object['object'].get('content'):
         return ''
-    if not postJsonObject['object'].get('attributedTo'):
+    if not post_json_object['object'].get('attributedTo'):
         return ''
-    if not isinstance(postJsonObject['object']['attributedTo'], str):
+    if not isinstance(post_json_object['object']['attributedTo'], str):
         return ''
-    actor = postJsonObject['object']['attributedTo']
+    actor = post_json_object['object']['attributedTo']
     actorFilename = \
         acctDir(base_dir, nickname, domain) + '/lastpost/' + \
         actor.replace('/', '#')
     if not os.path.isfile(actorFilename):
         return ''
-    postId = removeIdEnding(postJsonObject['object']['id'])
+    postId = removeIdEnding(post_json_object['object']['id'])
     lastpostId = None
     try:
         with open(actorFilename, 'r') as fp:
@@ -5222,11 +5226,11 @@ def editedPostFilename(base_dir: str, nickname: str, domain: str,
         return ''
     if not lastpostJson.get('type'):
         return ''
-    if lastpostJson['type'] != postJsonObject['type']:
+    if lastpostJson['type'] != post_json_object['type']:
         return ''
     if not lastpostJson['object'].get('type'):
         return ''
-    if lastpostJson['object']['type'] != postJsonObject['object']['type']:
+    if lastpostJson['object']['type'] != post_json_object['object']['type']:
         return
     if not lastpostJson['object'].get('published'):
         return ''
@@ -5240,13 +5244,13 @@ def editedPostFilename(base_dir: str, nickname: str, domain: str,
         return ''
     timeDiffSeconds = \
         secondsBetweenPublished(lastpostJson['object']['published'],
-                                postJsonObject['object']['published'])
+                                post_json_object['object']['published'])
     if timeDiffSeconds > maxTimeDiffSeconds:
         return ''
     if debug:
         print(postId + ' might be an edit of ' + lastpostId)
     if wordsSimilarity(lastpostJson['object']['content'],
-                       postJsonObject['object']['content'], 10) < 70:
+                       post_json_object['object']['content'], 10) < 70:
         return ''
     print(postId + ' is an edit of ' + lastpostId)
     return lastpostFilename

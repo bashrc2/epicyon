@@ -404,7 +404,7 @@ def speakableText(base_dir: str, content: str, translate: {}) -> (str, []):
 
 def _postToSpeakerJson(base_dir: str, http_prefix: str,
                        nickname: str, domain: str, domainFull: str,
-                       postJsonObject: {}, personCache: {},
+                       post_json_object: {}, personCache: {},
                        translate: {}, announcingActor: str,
                        themeName: str) -> {}:
     """Converts an ActivityPub post into some Json containing
@@ -412,14 +412,14 @@ def _postToSpeakerJson(base_dir: str, http_prefix: str,
     NOTE: There currently appears to be no standardized json
     format for speech synthesis
     """
-    if not hasObjectDict(postJsonObject):
+    if not hasObjectDict(post_json_object):
         return
-    if not postJsonObject['object'].get('content'):
+    if not post_json_object['object'].get('content'):
         return
-    if not isinstance(postJsonObject['object']['content'], str):
+    if not isinstance(post_json_object['object']['content'], str):
         return
     detectedLinks = []
-    content = urllib.parse.unquote_plus(postJsonObject['object']['content'])
+    content = urllib.parse.unquote_plus(post_json_object['object']['content'])
     content = html.unescape(content)
     content = content.replace('<p>', '').replace('</p>', ' ')
     if not isPGPEncrypted(content):
@@ -442,8 +442,8 @@ def _postToSpeakerJson(base_dir: str, http_prefix: str,
         sayContent = content
 
     imageDescription = ''
-    if postJsonObject['object'].get('attachment'):
-        attachList = postJsonObject['object']['attachment']
+    if post_json_object['object'].get('attachment'):
+        attachList = post_json_object['object']['attachment']
         if isinstance(attachList, list):
             for img in attachList:
                 if not isinstance(img, dict):
@@ -453,29 +453,30 @@ def _postToSpeakerJson(base_dir: str, http_prefix: str,
                         imageDescription += \
                             img['name'] + '. '
 
-    isDirect = isDM(postJsonObject)
+    isDirect = isDM(post_json_object)
     actor = localActorUrl(http_prefix, nickname, domainFull)
-    replyToYou = isReply(postJsonObject, actor)
+    replyToYou = isReply(post_json_object, actor)
 
     published = ''
-    if postJsonObject['object'].get('published'):
-        published = postJsonObject['object']['published']
+    if post_json_object['object'].get('published'):
+        published = post_json_object['object']['published']
 
     summary = ''
-    if postJsonObject['object'].get('summary'):
-        if isinstance(postJsonObject['object']['summary'], str):
+    if post_json_object['object'].get('summary'):
+        if isinstance(post_json_object['object']['summary'], str):
+            post_json_object_summary = post_json_object['object']['summary']
             summary = \
-                urllib.parse.unquote_plus(postJsonObject['object']['summary'])
+                urllib.parse.unquote_plus(post_json_object_summary)
             summary = html.unescape(summary)
 
     speakerName = \
-        getDisplayName(base_dir, postJsonObject['actor'], personCache)
+        getDisplayName(base_dir, post_json_object['actor'], personCache)
     if not speakerName:
         return
     speakerName = _removeEmojiFromText(speakerName)
     speakerName = speakerName.replace('_', ' ')
     speakerName = camelCaseSplit(speakerName)
-    gender = getGenderFromBio(base_dir, postJsonObject['actor'],
+    gender = getGenderFromBio(base_dir, post_json_object['actor'],
                               personCache, translate)
     if announcingActor:
         announcedNickname = getNicknameFromActor(announcingActor)
@@ -489,8 +490,8 @@ def _postToSpeakerJson(base_dir: str, http_prefix: str,
                 translate['announces'] + ' ' + \
                 announcedHandle + '. ' + content
     postId = None
-    if postJsonObject['object'].get('id'):
-        postId = removeIdEnding(postJsonObject['object']['id'])
+    if post_json_object['object'].get('id'):
+        postId = removeIdEnding(post_json_object['object']['id'])
 
     followRequestsExist = False
     followRequestsList = []
@@ -535,7 +536,7 @@ def _postToSpeakerJson(base_dir: str, http_prefix: str,
 
 def updateSpeaker(base_dir: str, http_prefix: str,
                   nickname: str, domain: str, domainFull: str,
-                  postJsonObject: {}, personCache: {},
+                  post_json_object: {}, personCache: {},
                   translate: {}, announcingActor: str,
                   themeName: str) -> None:
     """ Generates a json file which can be used for TTS announcement
@@ -544,7 +545,7 @@ def updateSpeaker(base_dir: str, http_prefix: str,
     speakerJson = \
         _postToSpeakerJson(base_dir, http_prefix,
                            nickname, domain, domainFull,
-                           postJsonObject, personCache,
+                           post_json_object, personCache,
                            translate, announcingActor,
                            themeName)
     speakerFilename = acctDir(base_dir, nickname, domain) + '/speaker.json'

@@ -125,7 +125,7 @@ from person import validSendingActor
 
 
 def _storeLastPostId(base_dir: str, nickname: str, domain: str,
-                     postJsonObject: {}) -> None:
+                     post_json_object: {}) -> None:
     """Stores the id of the last post made by an actor
     When a new post arrives this allows it to be compared against the last
     to see if it is an edited post.
@@ -133,14 +133,14 @@ def _storeLastPostId(base_dir: str, nickname: str, domain: str,
     source but we don't live in that ideal world.
     """
     actor = postId = None
-    if hasObjectDict(postJsonObject):
-        if postJsonObject['object'].get('attributedTo'):
-            if isinstance(postJsonObject['object']['attributedTo'], str):
-                actor = postJsonObject['object']['attributedTo']
-                postId = removeIdEnding(postJsonObject['object']['id'])
+    if hasObjectDict(post_json_object):
+        if post_json_object['object'].get('attributedTo'):
+            if isinstance(post_json_object['object']['attributedTo'], str):
+                actor = post_json_object['object']['attributedTo']
+                postId = removeIdEnding(post_json_object['object']['id'])
     if not actor:
-        actor = postJsonObject['actor']
-        postId = removeIdEnding(postJsonObject['id'])
+        actor = post_json_object['actor']
+        postId = removeIdEnding(post_json_object['id'])
     if not actor:
         return
     lastpostDir = acctDir(base_dir, nickname, domain) + '/lastpost'
@@ -201,19 +201,19 @@ def _updateCachedHashtagSwarm(base_dir: str, nickname: str, domain: str,
 
 def storeHashTags(base_dir: str, nickname: str, domain: str,
                   http_prefix: str, domainFull: str,
-                  postJsonObject: {}, translate: {}) -> None:
+                  post_json_object: {}, translate: {}) -> None:
     """Extracts hashtags from an incoming post and updates the
     relevant tags files.
     """
-    if not isPublicPost(postJsonObject):
+    if not isPublicPost(post_json_object):
         return
-    if not hasObjectDict(postJsonObject):
+    if not hasObjectDict(post_json_object):
         return
-    if not postJsonObject['object'].get('tag'):
+    if not post_json_object['object'].get('tag'):
         return
-    if not postJsonObject.get('id'):
+    if not post_json_object.get('id'):
         return
-    if not isinstance(postJsonObject['object']['tag'], list):
+    if not isinstance(post_json_object['object']['tag'], list):
         return
     tagsDir = base_dir + '/tags'
 
@@ -225,7 +225,7 @@ def storeHashTags(base_dir: str, nickname: str, domain: str,
     hashtagCategories = getHashtagCategories(base_dir)
 
     hashtagsCtr = 0
-    for tag in postJsonObject['object']['tag']:
+    for tag in post_json_object['object']['tag']:
         if not tag.get('type'):
             continue
         if not isinstance(tag['type'], str):
@@ -238,7 +238,7 @@ def storeHashTags(base_dir: str, nickname: str, domain: str,
         if not validHashTag(tagName):
             continue
         tagsFilename = tagsDir + '/' + tagName + '.txt'
-        postUrl = removeIdEnding(postJsonObject['id'])
+        postUrl = removeIdEnding(post_json_object['id'])
         postUrl = postUrl.replace('/', '#')
         daysDiff = datetime.datetime.utcnow() - datetime.datetime(1970, 1, 1)
         daysSinceEpoch = daysDiff.days
@@ -283,7 +283,7 @@ def _inboxStorePostToHtmlCache(recentPostsCache: {}, max_recent_posts: int,
                                base_dir: str, http_prefix: str,
                                session, cachedWebfingers: {}, personCache: {},
                                nickname: str, domain: str, port: int,
-                               postJsonObject: {},
+                               post_json_object: {},
                                allow_deletion: bool, boxname: str,
                                show_published_date_only: bool,
                                peertubeInstances: [],
@@ -301,7 +301,7 @@ def _inboxStorePostToHtmlCache(recentPostsCache: {}, max_recent_posts: int,
     if boxname != 'outbox':
         boxname = 'inbox'
 
-    notDM = not isDM(postJsonObject)
+    notDM = not isDM(post_json_object)
     yt_replace_domain = getConfigParam(base_dir, 'youtubedomain')
     twitter_replacement_domain = getConfigParam(base_dir, 'twitterdomain')
     individualPostAsHtml(signingPrivateKeyPem,
@@ -309,7 +309,7 @@ def _inboxStorePostToHtmlCache(recentPostsCache: {}, max_recent_posts: int,
                          translate, pageNumber,
                          base_dir, session, cachedWebfingers,
                          personCache,
-                         nickname, domain, port, postJsonObject,
+                         nickname, domain, port, post_json_object,
                          avatarUrl, True, allow_deletion,
                          http_prefix, __version__, boxname,
                          yt_replace_domain, twitter_replacement_domain,
@@ -450,7 +450,7 @@ def inboxPermittedMessage(domain: str, messageJson: {},
 
 def savePostToInboxQueue(base_dir: str, http_prefix: str,
                          nickname: str, domain: str,
-                         postJsonObject: {},
+                         post_json_object: {},
                          originalPostJsonObject: {},
                          messageBytes: str,
                          httpHeaders: {},
@@ -471,18 +471,18 @@ def savePostToInboxQueue(base_dir: str, http_prefix: str,
     postNickname = None
     postDomain = None
     actor = None
-    if postJsonObject.get('actor'):
-        if not isinstance(postJsonObject['actor'], str):
+    if post_json_object.get('actor'):
+        if not isinstance(post_json_object['actor'], str):
             return None
-        actor = postJsonObject['actor']
-        postNickname = getNicknameFromActor(postJsonObject['actor'])
+        actor = post_json_object['actor']
+        postNickname = getNicknameFromActor(post_json_object['actor'])
         if not postNickname:
-            print('No post Nickname in actor ' + postJsonObject['actor'])
+            print('No post Nickname in actor ' + post_json_object['actor'])
             return None
-        postDomain, postPort = getDomainFromActor(postJsonObject['actor'])
+        postDomain, postPort = getDomainFromActor(post_json_object['actor'])
         if not postDomain:
             if debug:
-                pprint(postJsonObject)
+                pprint(post_json_object)
             print('No post Domain in actor')
             return None
         if isBlocked(base_dir, nickname, domain,
@@ -492,11 +492,11 @@ def savePostToInboxQueue(base_dir: str, http_prefix: str,
             return None
         postDomain = getFullDomain(postDomain, postPort)
 
-    if hasObjectDict(postJsonObject):
-        if postJsonObject['object'].get('inReplyTo'):
-            if isinstance(postJsonObject['object']['inReplyTo'], str):
+    if hasObjectDict(post_json_object):
+        if post_json_object['object'].get('inReplyTo'):
+            if isinstance(post_json_object['object']['inReplyTo'], str):
                 inReplyTo = \
-                    postJsonObject['object']['inReplyTo']
+                    post_json_object['object']['inReplyTo']
                 replyDomain, replyPort = \
                     getDomainFromActor(inReplyTo)
                 if isBlockedDomain(base_dir, replyDomain, blockedCache):
@@ -518,24 +518,25 @@ def savePostToInboxQueue(base_dir: str, http_prefix: str,
                                       ' to a blocked account: ' +
                                       replyNickname + '@' + replyDomain)
                             return None
-        if postJsonObject['object'].get('content'):
-            contentStr = getBaseContentFromPost(postJsonObject, systemLanguage)
+        if post_json_object['object'].get('content'):
+            contentStr = \
+                getBaseContentFromPost(post_json_object, systemLanguage)
             if contentStr:
                 if isFiltered(base_dir, nickname, domain, contentStr):
                     if debug:
                         print('WARN: post was filtered out due to content')
                     return None
     originalPostId = None
-    if postJsonObject.get('id'):
-        if not isinstance(postJsonObject['id'], str):
+    if post_json_object.get('id'):
+        if not isinstance(post_json_object['id'], str):
             return None
-        originalPostId = removeIdEnding(postJsonObject['id'])
+        originalPostId = removeIdEnding(post_json_object['id'])
 
     currTime = datetime.datetime.utcnow()
 
     postId = None
-    if postJsonObject.get('id'):
-        postId = removeIdEnding(postJsonObject['id'])
+    if post_json_object.get('id'):
+        postId = removeIdEnding(post_json_object['id'])
         published = currTime.strftime("%Y-%m-%dT%H:%M:%SZ")
     if not postId:
         statusNumber, published = getStatusNumber()
@@ -545,7 +546,7 @@ def savePostToInboxQueue(base_dir: str, http_prefix: str,
             postId = localActorUrl(http_prefix, nickname, originalDomain) + \
                 '/statuses/' + statusNumber
 
-    # NOTE: don't change postJsonObject['id'] before signature check
+    # NOTE: don't change post_json_object['id'] before signature check
 
     inboxQueueDir = createInboxQueueDir(nickname, domain, base_dir)
 
@@ -580,7 +581,7 @@ def savePostToInboxQueue(base_dir: str, http_prefix: str,
         'published': published,
         'httpHeaders': httpHeaders,
         'path': postPath,
-        'post': postJsonObject,
+        'post': post_json_object,
         'original': originalPostJsonObject,
         'digest': digest,
         'filename': filename,
@@ -627,7 +628,7 @@ def _inboxPostRecipientsAdd(base_dir: str, http_prefix: str, toList: [],
     return followerRecipients, recipientsDict
 
 
-def _inboxPostRecipients(base_dir: str, postJsonObject: {},
+def _inboxPostRecipients(base_dir: str, post_json_object: {},
                          http_prefix: str, domain: str, port: int,
                          debug: bool) -> ([], []):
     """Returns dictionaries containing the recipients of the given post
@@ -636,9 +637,9 @@ def _inboxPostRecipients(base_dir: str, postJsonObject: {},
     recipientsDict = {}
     recipientsDictFollowers = {}
 
-    if not postJsonObject.get('actor'):
+    if not post_json_object.get('actor'):
         if debug:
-            pprint(postJsonObject)
+            pprint(post_json_object)
             print('WARNING: inbox post has no actor')
         return recipientsDict, recipientsDictFollowers
 
@@ -647,16 +648,16 @@ def _inboxPostRecipients(base_dir: str, postJsonObject: {},
     domain = getFullDomain(domain, port)
     domainMatch = '/' + domain + '/users/'
 
-    actor = postJsonObject['actor']
+    actor = post_json_object['actor']
     # first get any specific people which the post is addressed to
 
     followerRecipients = False
-    if hasObjectDict(postJsonObject):
-        if postJsonObject['object'].get('to'):
-            if isinstance(postJsonObject['object']['to'], list):
-                recipientsList = postJsonObject['object']['to']
+    if hasObjectDict(post_json_object):
+        if post_json_object['object'].get('to'):
+            if isinstance(post_json_object['object']['to'], list):
+                recipientsList = post_json_object['object']['to']
             else:
-                recipientsList = [postJsonObject['object']['to']]
+                recipientsList = [post_json_object['object']['to']]
             if debug:
                 print('DEBUG: resolving "to"')
             includesFollowers, recipientsDict = \
@@ -671,11 +672,11 @@ def _inboxPostRecipients(base_dir: str, postJsonObject: {},
             if debug:
                 print('DEBUG: inbox post has no "to"')
 
-        if postJsonObject['object'].get('cc'):
-            if isinstance(postJsonObject['object']['cc'], list):
-                recipientsList = postJsonObject['object']['cc']
+        if post_json_object['object'].get('cc'):
+            if isinstance(post_json_object['object']['cc'], list):
+                recipientsList = post_json_object['object']['cc']
             else:
-                recipientsList = [postJsonObject['object']['cc']]
+                recipientsList = [post_json_object['object']['cc']]
             includesFollowers, recipientsDict = \
                 _inboxPostRecipientsAdd(base_dir, http_prefix,
                                         recipientsList,
@@ -688,19 +689,19 @@ def _inboxPostRecipients(base_dir: str, postJsonObject: {},
             if debug:
                 print('DEBUG: inbox post has no cc')
     else:
-        if debug and postJsonObject.get('object'):
-            if isinstance(postJsonObject['object'], str):
-                if '/statuses/' in postJsonObject['object']:
+        if debug and post_json_object.get('object'):
+            if isinstance(post_json_object['object'], str):
+                if '/statuses/' in post_json_object['object']:
                     print('DEBUG: inbox item is a link to a post')
                 else:
-                    if '/users/' in postJsonObject['object']:
+                    if '/users/' in post_json_object['object']:
                         print('DEBUG: inbox item is a link to an actor')
 
-    if postJsonObject.get('to'):
-        if isinstance(postJsonObject['to'], list):
-            recipientsList = postJsonObject['to']
+    if post_json_object.get('to'):
+        if isinstance(post_json_object['to'], list):
+            recipientsList = post_json_object['to']
         else:
-            recipientsList = [postJsonObject['to']]
+            recipientsList = [post_json_object['to']]
         includesFollowers, recipientsDict = \
             _inboxPostRecipientsAdd(base_dir, http_prefix,
                                     recipientsList,
@@ -710,11 +711,11 @@ def _inboxPostRecipients(base_dir: str, postJsonObject: {},
         if includesFollowers:
             followerRecipients = True
 
-    if postJsonObject.get('cc'):
-        if isinstance(postJsonObject['cc'], list):
-            recipientsList = postJsonObject['cc']
+    if post_json_object.get('cc'):
+        if isinstance(post_json_object['cc'], list):
+            recipientsList = post_json_object['cc']
         else:
-            recipientsList = [postJsonObject['cc']]
+            recipientsList = [post_json_object['cc']]
         includesFollowers, recipientsDict = \
             _inboxPostRecipientsAdd(base_dir, http_prefix,
                                     recipientsList,
@@ -913,13 +914,13 @@ def _receiveUpdateToQuestion(recentPostsCache: {}, messageJson: {},
     if not postFilename:
         return
     # load the json for the question
-    postJsonObject = loadJson(postFilename, 1)
-    if not postJsonObject:
+    post_json_object = loadJson(postFilename, 1)
+    if not post_json_object:
         return
-    if not postJsonObject.get('actor'):
+    if not post_json_object.get('actor'):
         return
     # does the actor match?
-    if postJsonObject['actor'] != messageJson['actor']:
+    if post_json_object['actor'] != messageJson['actor']:
         return
     saveJson(messageJson, postFilename)
     # ensure that the cached post is removed if it exists, so
@@ -1930,20 +1931,20 @@ def _receiveAnnounce(recentPostsCache: {},
         if debug:
             print('Generated announce html ' + announceHtml.replace('\n', ''))
 
-    postJsonObject = downloadAnnounce(session, base_dir,
-                                      http_prefix,
-                                      nickname, domain,
-                                      messageJson,
-                                      __version__, translate,
-                                      yt_replace_domain,
-                                      twitter_replacement_domain,
-                                      allow_local_network_access,
-                                      recentPostsCache, debug,
-                                      systemLanguage,
-                                      domainFull, personCache,
-                                      signingPrivateKeyPem,
-                                      blockedCache)
-    if not postJsonObject:
+    post_json_object = downloadAnnounce(session, base_dir,
+                                        http_prefix,
+                                        nickname, domain,
+                                        messageJson,
+                                        __version__, translate,
+                                        yt_replace_domain,
+                                        twitter_replacement_domain,
+                                        allow_local_network_access,
+                                        recentPostsCache, debug,
+                                        systemLanguage,
+                                        domainFull, personCache,
+                                        signingPrivateKeyPem,
+                                        blockedCache)
+    if not post_json_object:
         print('WARN: unable to download announce: ' + str(messageJson))
         notInOnion = True
         if onion_domain:
@@ -1963,17 +1964,17 @@ def _receiveAnnounce(recentPostsCache: {},
                   messageJson['actor'] + ' -> ' + messageJson['object'])
         storeHashTags(base_dir, nickname, domain,
                       http_prefix, domainFull,
-                      postJsonObject, translate)
+                      post_json_object, translate)
         # Try to obtain the actor for this person
         # so that their avatar can be shown
         lookupActor = None
-        if postJsonObject.get('attributedTo'):
-            if isinstance(postJsonObject['attributedTo'], str):
-                lookupActor = postJsonObject['attributedTo']
+        if post_json_object.get('attributedTo'):
+            if isinstance(post_json_object['attributedTo'], str):
+                lookupActor = post_json_object['attributedTo']
         else:
-            if hasObjectDict(postJsonObject):
-                if postJsonObject['object'].get('attributedTo'):
-                    attrib = postJsonObject['object']['attributedTo']
+            if hasObjectDict(post_json_object):
+                if post_json_object['object'].get('attributedTo'):
+                    attrib = post_json_object['object']['attributedTo']
                     if isinstance(attrib, str):
                         lookupActor = attrib
         if lookupActor:
@@ -1981,12 +1982,12 @@ def _receiveAnnounce(recentPostsCache: {},
                 if '/statuses/' in lookupActor:
                     lookupActor = lookupActor.split('/statuses/')[0]
 
-                if isRecentPost(postJsonObject, 3):
+                if isRecentPost(post_json_object, 3):
                     if not os.path.isfile(postFilename + '.tts'):
                         domainFull = getFullDomain(domain, port)
                         updateSpeaker(base_dir, http_prefix,
                                       nickname, domain, domainFull,
-                                      postJsonObject, personCache,
+                                      post_json_object, personCache,
                                       translate, lookupActor,
                                       themeName)
                         try:
@@ -2059,10 +2060,10 @@ def _receiveUndoAnnounce(recentPostsCache: {},
     if debug:
         print('DEBUG: announced/repeated post to be undone found in inbox')
 
-    postJsonObject = loadJson(postFilename)
-    if postJsonObject:
-        if not postJsonObject.get('type'):
-            if postJsonObject['type'] != 'Announce':
+    post_json_object = loadJson(postFilename)
+    if post_json_object:
+        if not post_json_object.get('type'):
+            if post_json_object['type'] != 'Announce':
                 if debug:
                     print("DEBUG: Attempt to undo something " +
                           "which isn't an announcement")
@@ -2078,30 +2079,30 @@ def _receiveUndoAnnounce(recentPostsCache: {},
     return True
 
 
-def jsonPostAllowsComments(postJsonObject: {}) -> bool:
+def jsonPostAllowsComments(post_json_object: {}) -> bool:
     """Returns true if the given post allows comments/replies
     """
-    if 'commentsEnabled' in postJsonObject:
-        return postJsonObject['commentsEnabled']
-    if 'rejectReplies' in postJsonObject:
-        return not postJsonObject['rejectReplies']
-    if postJsonObject.get('object'):
-        if not hasObjectDict(postJsonObject):
+    if 'commentsEnabled' in post_json_object:
+        return post_json_object['commentsEnabled']
+    if 'rejectReplies' in post_json_object:
+        return not post_json_object['rejectReplies']
+    if post_json_object.get('object'):
+        if not hasObjectDict(post_json_object):
             return False
-        elif 'commentsEnabled' in postJsonObject['object']:
-            return postJsonObject['object']['commentsEnabled']
-        elif 'rejectReplies' in postJsonObject['object']:
-            return not postJsonObject['object']['rejectReplies']
+        elif 'commentsEnabled' in post_json_object['object']:
+            return post_json_object['object']['commentsEnabled']
+        elif 'rejectReplies' in post_json_object['object']:
+            return not post_json_object['object']['rejectReplies']
     return True
 
 
 def _postAllowsComments(postFilename: str) -> bool:
     """Returns true if the given post allows comments/replies
     """
-    postJsonObject = loadJson(postFilename)
-    if not postJsonObject:
+    post_json_object = loadJson(postFilename)
+    if not post_json_object:
         return False
-    return jsonPostAllowsComments(postJsonObject)
+    return jsonPostAllowsComments(post_json_object)
 
 
 def populateReplies(base_dir: str, http_prefix: str, domain: str,
@@ -2291,18 +2292,18 @@ def _validPostContent(base_dir: str, nickname: str, domain: str,
 
 def _obtainAvatarForReplyPost(session, base_dir: str, http_prefix: str,
                               domain: str, onion_domain: str, personCache: {},
-                              postJsonObject: {}, debug: bool,
+                              post_json_object: {}, debug: bool,
                               signingPrivateKeyPem: str) -> None:
     """Tries to obtain the actor for the person being replied to
     so that their avatar can later be shown
     """
-    if not hasObjectDict(postJsonObject):
+    if not hasObjectDict(post_json_object):
         return
 
-    if not postJsonObject['object'].get('inReplyTo'):
+    if not post_json_object['object'].get('inReplyTo'):
         return
 
-    lookupActor = postJsonObject['object']['inReplyTo']
+    lookupActor = post_json_object['object']['inReplyTo']
     if not lookupActor:
         return
 
@@ -2358,16 +2359,16 @@ def _alreadyLiked(base_dir: str, nickname: str, domain: str,
         locatePost(base_dir, nickname, domain, postUrl)
     if not postFilename:
         return False
-    postJsonObject = loadJson(postFilename, 1)
-    if not postJsonObject:
+    post_json_object = loadJson(postFilename, 1)
+    if not post_json_object:
         return False
-    if not hasObjectDict(postJsonObject):
+    if not hasObjectDict(post_json_object):
         return False
-    if not postJsonObject['object'].get('likes'):
+    if not post_json_object['object'].get('likes'):
         return False
-    if not postJsonObject['object']['likes'].get('items'):
+    if not post_json_object['object']['likes'].get('items'):
         return False
-    for like in postJsonObject['object']['likes']['items']:
+    for like in post_json_object['object']['likes']['items']:
         if not like.get('type'):
             continue
         if not like.get('actor'):
@@ -2388,16 +2389,16 @@ def _alreadyReacted(base_dir: str, nickname: str, domain: str,
         locatePost(base_dir, nickname, domain, postUrl)
     if not postFilename:
         return False
-    postJsonObject = loadJson(postFilename, 1)
-    if not postJsonObject:
+    post_json_object = loadJson(postFilename, 1)
+    if not post_json_object:
         return False
-    if not hasObjectDict(postJsonObject):
+    if not hasObjectDict(post_json_object):
         return False
-    if not postJsonObject['object'].get('reactions'):
+    if not post_json_object['object'].get('reactions'):
         return False
-    if not postJsonObject['object']['reactions'].get('items'):
+    if not post_json_object['object']['reactions'].get('items'):
         return False
-    for react in postJsonObject['object']['reactions']['items']:
+    for react in post_json_object['object']['reactions']['items']:
         if not react.get('type'):
             continue
         if not react.get('content'):
@@ -2606,7 +2607,7 @@ def _groupHandle(base_dir: str, handle: str) -> bool:
 
 
 def _sendToGroupMembers(session, base_dir: str, handle: str, port: int,
-                        postJsonObject: {},
+                        post_json_object: {},
                         http_prefix: str, federationList: [],
                         send_threads: [], postLog: [], cachedWebfingers: {},
                         personCache: {}, debug: bool,
@@ -2633,17 +2634,17 @@ def _sendToGroupMembers(session, base_dir: str, handle: str, port: int,
     followersFile = base_dir + '/accounts/' + handle + '/followers.txt'
     if not os.path.isfile(followersFile):
         return
-    if not postJsonObject.get('to'):
+    if not post_json_object.get('to'):
         return
-    if not postJsonObject.get('object'):
+    if not post_json_object.get('object'):
         return
-    if not hasObjectDict(postJsonObject):
+    if not hasObjectDict(post_json_object):
         return
     nickname = handle.split('@')[0].replace('!', '')
     domain = handle.split('@')[1]
     domainFull = getFullDomain(domain, port)
     groupActor = localActorUrl(http_prefix, nickname, domainFull)
-    if groupActor not in postJsonObject['to']:
+    if groupActor not in post_json_object['to']:
         return
     cc = ''
     nickname = handle.split('@')[0].replace('!', '')
@@ -2651,9 +2652,9 @@ def _sendToGroupMembers(session, base_dir: str, handle: str, port: int,
     # save to the group outbox so that replies will be to the group
     # rather than the original sender
     savePostToBox(base_dir, http_prefix, None,
-                  nickname, domain, postJsonObject, 'outbox')
+                  nickname, domain, post_json_object, 'outbox')
 
-    postId = removeIdEnding(postJsonObject['object']['id'])
+    postId = removeIdEnding(post_json_object['object']['id'])
     if debug:
         print('Group announce: ' + postId)
     announceJson = \
@@ -2677,21 +2678,21 @@ def _sendToGroupMembers(session, base_dir: str, handle: str, port: int,
 
 
 def _inboxUpdateCalendar(base_dir: str, handle: str,
-                         postJsonObject: {}) -> None:
+                         post_json_object: {}) -> None:
     """Detects whether the tag list on a post contains calendar events
     and if so saves the post id to a file in the calendar directory
     for the account
     """
-    if not postJsonObject.get('actor'):
+    if not post_json_object.get('actor'):
         return
-    if not hasObjectDict(postJsonObject):
+    if not hasObjectDict(post_json_object):
         return
-    if not postJsonObject['object'].get('tag'):
+    if not post_json_object['object'].get('tag'):
         return
-    if not isinstance(postJsonObject['object']['tag'], list):
+    if not isinstance(post_json_object['object']['tag'], list):
         return
 
-    actor = postJsonObject['actor']
+    actor = post_json_object['actor']
     actorNickname = getNicknameFromActor(actor)
     actorDomain, actorPort = getDomainFromActor(actor)
     handleNickname = handle.split('@')[0]
@@ -2701,10 +2702,10 @@ def _inboxUpdateCalendar(base_dir: str, handle: str,
                                    actorNickname, actorDomain):
         return
 
-    postId = removeIdEnding(postJsonObject['id']).replace('/', '#')
+    postId = removeIdEnding(post_json_object['id']).replace('/', '#')
 
     # look for events within the tags list
-    for tagDict in postJsonObject['object']['tag']:
+    for tagDict in post_json_object['object']['tag']:
         if not tagDict.get('type'):
             continue
         if tagDict['type'] != 'Event':
@@ -2844,7 +2845,7 @@ def _bounceDM(senderPostId: str, session, http_prefix: str,
     location = None
     conversationId = None
     low_bandwidth = False
-    postJsonObject = \
+    post_json_object = \
         createDirectMessagePost(base_dir, nickname, domain, port,
                                 http_prefix, content, followersOnly,
                                 saveToFile, client_to_server,
@@ -2856,12 +2857,12 @@ def _bounceDM(senderPostId: str, session, http_prefix: str,
                                 eventDate, eventTime, location,
                                 systemLanguage, conversationId, low_bandwidth,
                                 content_license_url)
-    if not postJsonObject:
+    if not post_json_object:
         print('WARN: unable to create bounce message to ' + sendingHandle)
         return False
     # bounce DM goes back to the sender
     print('Sending bounce DM to ' + sendingHandle)
-    sendSignedJson(postJsonObject, session, base_dir,
+    sendSignedJson(post_json_object, session, base_dir,
                    nickname, domain, port,
                    senderNickname, senderDomain, senderPort, cc,
                    http_prefix, False, False, federationList,
@@ -2872,7 +2873,7 @@ def _bounceDM(senderPostId: str, session, http_prefix: str,
 
 
 def _isValidDM(base_dir: str, nickname: str, domain: str, port: int,
-               postJsonObject: {}, updateIndexList: [],
+               post_json_object: {}, updateIndexList: [],
                session, http_prefix: str,
                federationList: [],
                send_threads: [], postLog: [],
@@ -2902,9 +2903,9 @@ def _isValidDM(base_dir: str, nickname: str, domain: str, port: int,
     # get the file containing following handles
     followingFilename = acctDir(base_dir, nickname, domain) + '/following.txt'
     # who is sending a DM?
-    if not postJsonObject.get('actor'):
+    if not post_json_object.get('actor'):
         return False
-    sendingActor = postJsonObject['actor']
+    sendingActor = post_json_object['actor']
     sendingActorNickname = \
         getNicknameFromActor(sendingActor)
     if not sendingActorNickname:
@@ -2940,14 +2941,14 @@ def _isValidDM(base_dir: str, nickname: str, domain: str, port: int,
                                        nickname, domain,
                                        sendingActorDomain):
                 # send back a bounce DM
-                if postJsonObject.get('id') and \
-                   postJsonObject.get('object'):
+                if post_json_object.get('id') and \
+                   post_json_object.get('object'):
                     # don't send bounces back to
                     # replies to bounce messages
-                    obj = postJsonObject['object']
+                    obj = post_json_object['object']
                     if isinstance(obj, dict):
                         if not obj.get('inReplyTo'):
-                            bouncedId = removeIdEnding(postJsonObject['id'])
+                            bouncedId = removeIdEnding(post_json_object['id'])
                             _bounceDM(bouncedId,
                                       session, http_prefix,
                                       base_dir,
@@ -2973,7 +2974,7 @@ def _isValidDM(base_dir: str, nickname: str, domain: str, port: int,
 
 def _receiveQuestionVote(base_dir: str, nickname: str, domain: str,
                          http_prefix: str, handle: str, debug: bool,
-                         postJsonObject: {}, recentPostsCache: {},
+                         post_json_object: {}, recentPostsCache: {},
                          session, onion_domain: str,
                          i2p_domain: str, port: int,
                          federationList: [], send_threads: [], postLog: [],
@@ -2992,7 +2993,7 @@ def _receiveQuestionVote(base_dir: str, nickname: str, domain: str,
     """
     # if this is a reply to a question then update the votes
     questionJson, questionPostFilename = \
-        questionUpdateVotes(base_dir, nickname, domain, postJsonObject)
+        questionUpdateVotes(base_dir, nickname, domain, post_json_object)
     if not questionJson:
         return
     if not questionPostFilename:
@@ -3055,7 +3056,7 @@ def _receiveQuestionVote(base_dir: str, nickname: str, domain: str,
                           http_prefix, federationList,
                           send_threads, postLog,
                           cachedWebfingers, personCache,
-                          postJsonObject, debug, __version__,
+                          post_json_object, debug, __version__,
                           shared_items_federated_domains,
                           sharedItemFederationTokens,
                           signingPrivateKeyPem)
@@ -3063,7 +3064,7 @@ def _receiveQuestionVote(base_dir: str, nickname: str, domain: str,
 
 def _createReplyNotificationFile(base_dir: str, nickname: str, domain: str,
                                  handle: str, debug: bool, postIsDM: bool,
-                                 postJsonObject: {}, actor: str,
+                                 post_json_object: {}, actor: str,
                                  updateIndexList: [], http_prefix: str,
                                  default_reply_interval_hrs: int) -> bool:
     """Generates a file indicating that a new reply has arrived
@@ -3073,7 +3074,7 @@ def _createReplyNotificationFile(base_dir: str, nickname: str, domain: str,
     isReplyToMutedPost = False
     if postIsDM:
         return isReplyToMutedPost
-    if not isReply(postJsonObject, actor):
+    if not isReply(post_json_object, actor):
         return isReplyToMutedPost
     if nickname == 'inbox':
         return isReplyToMutedPost
@@ -3081,12 +3082,12 @@ def _createReplyNotificationFile(base_dir: str, nickname: str, domain: str,
     updateIndexList.append('tlreplies')
 
     conversationId = None
-    if postJsonObject['object'].get('conversation'):
-        conversationId = postJsonObject['object']['conversation']
+    if post_json_object['object'].get('conversation'):
+        conversationId = post_json_object['object']['conversation']
 
-    if not postJsonObject['object'].get('inReplyTo'):
+    if not post_json_object['object'].get('inReplyTo'):
         return isReplyToMutedPost
-    inReplyTo = postJsonObject['object']['inReplyTo']
+    inReplyTo = post_json_object['object']['inReplyTo']
     if not inReplyTo:
         return isReplyToMutedPost
     if not isinstance(inReplyTo, str):
@@ -3407,50 +3408,50 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
         return True
 
     if messageJson.get('postNickname'):
-        postJsonObject = messageJson['post']
+        post_json_object = messageJson['post']
     else:
-        postJsonObject = messageJson
+        post_json_object = messageJson
 
     nickname = handle.split('@')[0]
     jsonObj = None
     domainFull = getFullDomain(domain, port)
     if _validPostContent(base_dir, nickname, domain,
-                         postJsonObject, max_mentions, max_emoji,
+                         post_json_object, max_mentions, max_emoji,
                          allow_local_network_access, debug,
                          systemLanguage, http_prefix,
                          domainFull, personCache):
         # is the sending actor valid?
         if not validSendingActor(session, base_dir, nickname, domain,
-                                 personCache, postJsonObject,
+                                 personCache, post_json_object,
                                  signingPrivateKeyPem, debug, unit_test):
             return False
 
-        if postJsonObject.get('object'):
-            jsonObj = postJsonObject['object']
+        if post_json_object.get('object'):
+            jsonObj = post_json_object['object']
             if not isinstance(jsonObj, dict):
                 jsonObj = None
         else:
-            jsonObj = postJsonObject
+            jsonObj = post_json_object
 
         if _checkForGitPatches(base_dir, nickname, domain,
                                handle, jsonObj) == 2:
             return False
 
         # replace YouTube links, so they get less tracking data
-        replaceYouTube(postJsonObject, yt_replace_domain, systemLanguage)
+        replaceYouTube(post_json_object, yt_replace_domain, systemLanguage)
         # replace twitter link domains, so that you can view twitter posts
         # without having an account
-        replaceTwitter(postJsonObject, twitter_replacement_domain,
+        replaceTwitter(post_json_object, twitter_replacement_domain,
                        systemLanguage)
 
         # list of indexes to be updated
         updateIndexList = ['inbox']
-        populateReplies(base_dir, http_prefix, domain, postJsonObject,
+        populateReplies(base_dir, http_prefix, domain, post_json_object,
                         max_replies, debug)
 
         _receiveQuestionVote(base_dir, nickname, domain,
                              http_prefix, handle, debug,
-                             postJsonObject, recentPostsCache,
+                             post_json_object, recentPostsCache,
                              session, onion_domain, i2p_domain, port,
                              federationList, send_threads, postLog,
                              cachedWebfingers, personCache,
@@ -3469,10 +3470,10 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
 
         if not isGroup:
             # create a DM notification file if needed
-            postIsDM = isDM(postJsonObject)
+            postIsDM = isDM(post_json_object)
             if postIsDM:
                 if not _isValidDM(base_dir, nickname, domain, port,
-                                  postJsonObject, updateIndexList,
+                                  post_json_object, updateIndexList,
                                   session, http_prefix,
                                   federationList,
                                   send_threads, postLog,
@@ -3492,12 +3493,12 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
             isReplyToMutedPost = \
                 _createReplyNotificationFile(base_dir, nickname, domain,
                                              handle, debug, postIsDM,
-                                             postJsonObject, actor,
+                                             post_json_object, actor,
                                              updateIndexList, http_prefix,
                                              default_reply_interval_hrs)
 
             if isImageMedia(session, base_dir, http_prefix,
-                            nickname, domain, postJsonObject,
+                            nickname, domain, post_json_object,
                             translate,
                             yt_replace_domain,
                             twitter_replacement_domain,
@@ -3506,18 +3507,18 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                             domainFull, personCache, signingPrivateKeyPem):
                 # media index will be updated
                 updateIndexList.append('tlmedia')
-            if isBlogPost(postJsonObject):
+            if isBlogPost(post_json_object):
                 # blogs index will be updated
                 updateIndexList.append('tlblogs')
 
         # get the avatar for a reply/announce
         _obtainAvatarForReplyPost(session, base_dir,
                                   http_prefix, domain, onion_domain,
-                                  personCache, postJsonObject, debug,
+                                  personCache, post_json_object, debug,
                                   signingPrivateKeyPem)
 
         # save the post to file
-        if saveJson(postJsonObject, destinationFilename):
+        if saveJson(post_json_object, destinationFilename):
             _lowFrequencyPostNotification(base_dir, http_prefix,
                                           nickname, domain, port,
                                           handle, postIsDM, jsonObj)
@@ -3540,11 +3541,11 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                     print('ERROR: unable to update ' + boxname + ' index')
                 else:
                     if boxname == 'inbox':
-                        if isRecentPost(postJsonObject, 3):
+                        if isRecentPost(post_json_object, 3):
                             domainFull = getFullDomain(domain, port)
                             updateSpeaker(base_dir, http_prefix,
                                           nickname, domain, domainFull,
-                                          postJsonObject, personCache,
+                                          post_json_object, personCache,
                                           translate, None, themeName)
                     if not unit_test:
                         if debug:
@@ -3560,7 +3561,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                                                    personCache,
                                                    handleName,
                                                    domain, port,
-                                                   postJsonObject,
+                                                   post_json_object,
                                                    allow_deletion,
                                                    boxname,
                                                    show_published_date_only,
@@ -3585,9 +3586,9 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
             # NOTE: this must be done before updateConversation is called
             editedFilename = \
                 editedPostFilename(base_dir, handleName, domain,
-                                   postJsonObject, debug, 300)
+                                   post_json_object, debug, 300)
 
-            updateConversation(base_dir, handleName, domain, postJsonObject)
+            updateConversation(base_dir, handleName, domain, post_json_object)
 
             # If this was an edit then delete the previous version of the post
             if editedFilename:
@@ -3596,18 +3597,18 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                            debug, recentPostsCache)
 
             # store the id of the last post made by this actor
-            _storeLastPostId(base_dir, nickname, domain, postJsonObject)
+            _storeLastPostId(base_dir, nickname, domain, post_json_object)
 
-            _inboxUpdateCalendar(base_dir, handle, postJsonObject)
+            _inboxUpdateCalendar(base_dir, handle, post_json_object)
 
             storeHashTags(base_dir, handleName, domain,
                           http_prefix, domainFull,
-                          postJsonObject, translate)
+                          post_json_object, translate)
 
             # send the post out to group members
             if isGroup:
                 _sendToGroupMembers(session, base_dir, handle, port,
-                                    postJsonObject,
+                                    post_json_object,
                                     http_prefix, federationList, send_threads,
                                     postLog, cachedWebfingers, personCache,
                                     debug, systemLanguage,

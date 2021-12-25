@@ -291,7 +291,7 @@ def downloadHtml(signingPrivateKeyPem: str,
 
 
 def postJson(http_prefix: str, domainFull: str,
-             session, postJsonObject: {}, federationList: [],
+             session, post_json_object: {}, federationList: [],
              inboxUrl: str, headers: {}, timeoutSec: int = 60,
              quiet: bool = False) -> str:
     """Post a json message to the inbox of another person
@@ -310,18 +310,18 @@ def postJson(http_prefix: str, domainFull: str,
     try:
         postResult = \
             session.post(url=inboxUrl,
-                         data=json.dumps(postJsonObject),
+                         data=json.dumps(post_json_object),
                          headers=headers, timeout=timeoutSec)
     except requests.Timeout as ex:
         if not quiet:
             print('ERROR: postJson timeout ' + inboxUrl + ' ' +
-                  json.dumps(postJsonObject) + ' ' + str(headers))
+                  json.dumps(post_json_object) + ' ' + str(headers))
             print(ex)
         return ''
     except requests.exceptions.RequestException as ex:
         if not quiet:
             print('ERROR: postJson requests failed ' + inboxUrl + ' ' +
-                  json.dumps(postJsonObject) + ' ' + str(headers) +
+                  json.dumps(post_json_object) + ' ' + str(headers) +
                   ' ' + str(ex))
         return None
     except SocketError as ex:
@@ -331,7 +331,7 @@ def postJson(http_prefix: str, domainFull: str,
     except ValueError as ex:
         if not quiet:
             print('ERROR: postJson failed ' + inboxUrl + ' ' +
-                  json.dumps(postJsonObject) + ' ' + str(headers) +
+                  json.dumps(post_json_object) + ' ' + str(headers) +
                   ' ' + str(ex))
         return None
     if postResult:

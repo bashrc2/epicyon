@@ -35,12 +35,12 @@ from auth import createBasicAuthHeader
 from posts import getPersonBox
 
 
-def noOfLikes(postJsonObject: {}) -> int:
+def noOfLikes(post_json_object: {}) -> int:
     """Returns the number of likes ona  given post
     """
-    obj = postJsonObject
-    if hasObjectDict(postJsonObject):
-        obj = postJsonObject['object']
+    obj = post_json_object
+    if hasObjectDict(post_json_object):
+        obj = post_json_object['object']
     if not obj.get('likes'):
         return 0
     if not isinstance(obj['likes'], dict):
@@ -51,16 +51,16 @@ def noOfLikes(postJsonObject: {}) -> int:
     return len(obj['likes']['items'])
 
 
-def likedByPerson(postJsonObject: {}, nickname: str, domain: str) -> bool:
+def likedByPerson(post_json_object: {}, nickname: str, domain: str) -> bool:
     """Returns True if the given post is liked by the given person
     """
-    if noOfLikes(postJsonObject) == 0:
+    if noOfLikes(post_json_object) == 0:
         return False
     actorMatch = domain + '/users/' + nickname
 
-    obj = postJsonObject
-    if hasObjectDict(postJsonObject):
-        obj = postJsonObject['object']
+    obj = post_json_object
+    if hasObjectDict(post_json_object):
+        obj = post_json_object['object']
 
     for item in obj['likes']['items']:
         if item['actor'].endswith(actorMatch):
@@ -413,19 +413,19 @@ def updateLikesCollection(recentPostsCache: {},
                           base_dir: str, postFilename: str,
                           objectUrl: str, actor: str,
                           nickname: str, domain: str, debug: bool,
-                          postJsonObject: {}) -> None:
+                          post_json_object: {}) -> None:
     """Updates the likes collection within a post
     """
-    if not postJsonObject:
-        postJsonObject = loadJson(postFilename)
-    if not postJsonObject:
+    if not post_json_object:
+        post_json_object = loadJson(postFilename)
+    if not post_json_object:
         return
 
     # remove any cached version of this post so that the
     # like icon is changed
-    removePostFromCache(postJsonObject, recentPostsCache)
+    removePostFromCache(post_json_object, recentPostsCache)
     cachedPostFilename = getCachedPostFilename(base_dir, nickname,
-                                               domain, postJsonObject)
+                                               domain, post_json_object)
     if cachedPostFilename:
         if os.path.isfile(cachedPostFilename):
             try:
@@ -434,9 +434,9 @@ def updateLikesCollection(recentPostsCache: {},
                 print('EX: updateLikesCollection unable to delete ' +
                       cachedPostFilename)
 
-    obj = postJsonObject
-    if hasObjectDict(postJsonObject):
-        obj = postJsonObject['object']
+    obj = post_json_object
+    if hasObjectDict(post_json_object):
+        obj = post_json_object['object']
 
     if not objectUrl.endswith('/likes'):
         objectUrl = objectUrl + '/likes'
@@ -472,5 +472,5 @@ def updateLikesCollection(recentPostsCache: {},
 
     if debug:
         print('DEBUG: saving post with likes added')
-        pprint(postJsonObject)
-    saveJson(postJsonObject, postFilename)
+        pprint(post_json_object)
+    saveJson(post_json_object, postFilename)

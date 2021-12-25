@@ -273,13 +273,13 @@ def libretranslate(url: str, text: str,
     return translatedText
 
 
-def autoTranslatePost(base_dir: str, postJsonObject: {},
+def autoTranslatePost(base_dir: str, post_json_object: {},
                       systemLanguage: str, translate: {}) -> str:
     """Tries to automatically translate the given post
     """
-    if not hasObjectDict(postJsonObject):
+    if not hasObjectDict(post_json_object):
         return ''
-    msgObject = postJsonObject['object']
+    msgObject = post_json_object['object']
     if not msgObject.get('contentMap'):
         return ''
     if not isinstance(msgObject['contentMap'], dict):

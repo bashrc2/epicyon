@@ -47,8 +47,8 @@ def htmlCalendarDeleteConfirm(cssCache: {}, translate: {}, base_dir: str,
     if not postFilename:
         return None
 
-    postJsonObject = loadJson(postFilename)
-    if not postJsonObject:
+    post_json_object = loadJson(postFilename)
+    if not post_json_object:
         return None
 
     deletePostStr = None

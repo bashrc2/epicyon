@@ -286,7 +286,7 @@ def hashtagRuleTree(operators: [],
 
 
 def _hashtagAdd(base_dir: str, http_prefix: str, domainFull: str,
-                postJsonObject: {},
+                post_json_object: {},
                 actionStr: str, hashtags: [], systemLanguage: str,
                 translate: {}) -> None:
     """Adds a hashtag via a hashtag rule
@@ -309,7 +309,7 @@ def _hashtagAdd(base_dir: str, http_prefix: str, domainFull: str,
     }
     # does the tag already exist?
     addTagObject = None
-    for t in postJsonObject['object']['tag']:
+    for t in post_json_object['object']['tag']:
         if t.get('type') and t.get('name'):
             if t['type'] == 'Hashtag' and \
                t['name'] == addHashtag:
@@ -317,12 +317,12 @@ def _hashtagAdd(base_dir: str, http_prefix: str, domainFull: str,
                 break
     # append the tag if it wasn't found
     if not addTagObject:
-        postJsonObject['object']['tag'].append(newTag)
+        post_json_object['object']['tag'].append(newTag)
     # add corresponding html to the post content
     hashtagHtml = \
         " <a href=\"" + hashtagUrl + "\" class=\"addedHashtag\" " + \
         "rel=\"tag\">#<span>" + htId + "</span></a>"
-    content = getBaseContentFromPost(postJsonObject, systemLanguage)
+    content = getBaseContentFromPost(post_json_object, systemLanguage)
     if hashtagHtml in content:
         return
 
@@ -332,16 +332,16 @@ def _hashtagAdd(base_dir: str, http_prefix: str, domainFull: str,
             hashtagHtml + '</p>'
     else:
         content += hashtagHtml
-    postJsonObject['object']['content'] = content
+    post_json_object['object']['content'] = content
     domain = domainFull
     if ':' in domain:
         domain = domain.split(':')[0]
     storeHashTags(base_dir, 'news', domain,
                   http_prefix, domainFull,
-                  postJsonObject, translate)
+                  post_json_object, translate)
 
 
-def _hashtagRemove(http_prefix: str, domainFull: str, postJsonObject: {},
+def _hashtagRemove(http_prefix: str, domainFull: str, post_json_object: {},
                    actionStr: str, hashtags: [], systemLanguage: str) -> None:
     """Removes a hashtag via a hashtag rule
     """
@@ -357,23 +357,23 @@ def _hashtagRemove(http_prefix: str, domainFull: str, postJsonObject: {},
     hashtagHtml = \
         "<a href=\"" + hashtagUrl + "\" class=\"addedHashtag\" " + \
         "rel=\"tag\">#<span>" + htId + "</span></a>"
-    content = getBaseContentFromPost(postJsonObject, systemLanguage)
+    content = getBaseContentFromPost(post_json_object, systemLanguage)
     if hashtagHtml in content:
         content = content.replace(hashtagHtml, '').replace('  ', ' ')
-        postJsonObject['object']['content'] = content
-        postJsonObject['object']['contentMap'][systemLanguage] = content
+        post_json_object['object']['content'] = content
+        post_json_object['object']['contentMap'][systemLanguage] = content
     rmTagObject = None
-    for t in postJsonObject['object']['tag']:
+    for t in post_json_object['object']['tag']:
         if t.get('type') and t.get('name'):
             if t['type'] == 'Hashtag' and \
                t['name'] == rmHashtag:
                 rmTagObject = t
                 break
     if rmTagObject:
-        postJsonObject['object']['tag'].remove(rmTagObject)
+        post_json_object['object']['tag'].remove(rmTagObject)
 
 
-def _newswireHashtagProcessing(session, base_dir: str, postJsonObject: {},
+def _newswireHashtagProcessing(session, base_dir: str, post_json_object: {},
                                hashtags: [], http_prefix: str,
                                domain: str, port: int,
                                personCache: {},
@@ -398,10 +398,10 @@ def _newswireHashtagProcessing(session, base_dir: str, postJsonObject: {},
 
     # get the full text content of the post
     content = ''
-    if postJsonObject['object'].get('content'):
-        content += getBaseContentFromPost(postJsonObject, systemLanguage)
-    if postJsonObject['object'].get('summary'):
-        content += ' ' + postJsonObject['object']['summary']
+    if post_json_object['object'].get('content'):
+        content += getBaseContentFromPost(post_json_object, systemLanguage)
+    if post_json_object['object'].get('summary'):
+        content += ' ' + post_json_object['object']['summary']
     content = content.lower()
 
     # actionOccurred = False
@@ -426,11 +426,11 @@ def _newswireHashtagProcessing(session, base_dir: str, postJsonObject: {},
         if actionStr.startswith('add '):
             # add a hashtag
             _hashtagAdd(base_dir, http_prefix, domainFull,
-                        postJsonObject, actionStr, hashtags, systemLanguage,
+                        post_json_object, actionStr, hashtags, systemLanguage,
                         translate)
         elif actionStr.startswith('remove '):
             # remove a hashtag
-            _hashtagRemove(http_prefix, domainFull, postJsonObject,
+            _hashtagRemove(http_prefix, domainFull, post_json_object,
                            actionStr, hashtags, systemLanguage)
         elif actionStr.startswith('block') or actionStr.startswith('drop'):
             # Block this item

@@ -51,8 +51,8 @@ def htmlConfirmDelete(cssCache: {},
     if not postFilename:
         return None
 
-    postJsonObject = loadJson(postFilename)
-    if not postJsonObject:
+    post_json_object = loadJson(postFilename)
+    if not post_json_object:
         return None
 
     deletePostStr = None
@@ -69,7 +69,7 @@ def htmlConfirmDelete(cssCache: {},
                              True, recentPostsCache, max_recent_posts,
                              translate, pageNumber,
                              base_dir, session, cachedWebfingers, personCache,
-                             nickname, domain, port, postJsonObject,
+                             nickname, domain, port, post_json_object,
                              None, True, False,
                              http_prefix, project_version, 'outbox',
                              yt_replace_domain,

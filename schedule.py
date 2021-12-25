@@ -73,8 +73,8 @@ def _updatePostSchedule(base_dir: str, handle: str, httpd,
                 indexLines.remove(line)
                 continue
             # load post
-            postJsonObject = loadJson(postFilename)
-            if not postJsonObject:
+            post_json_object = loadJson(postFilename)
+            if not post_json_object:
                 print('WARN: schedule json not loaded')
                 indexLines.remove(line)
                 continue
@@ -83,11 +83,11 @@ def _updatePostSchedule(base_dir: str, handle: str, httpd,
             # If this is not recent then http checks on the receiving side
             # will reject it
             statusNumber, published = getStatusNumber()
-            if postJsonObject.get('published'):
-                postJsonObject['published'] = published
-            if hasObjectDict(postJsonObject):
-                if postJsonObject['object'].get('published'):
-                    postJsonObject['published'] = published
+            if post_json_object.get('published'):
+                post_json_object['published'] = published
+            if hasObjectDict(post_json_object):
+                if post_json_object['object'].get('published'):
+                    post_json_object['published'] = published
 
             print('Sending scheduled post ' + postId)
 
@@ -95,7 +95,7 @@ def _updatePostSchedule(base_dir: str, handle: str, httpd,
                 httpd.postToNickname = nickname
             if not postMessageToOutbox(httpd.session,
                                        httpd.translate,
-                                       postJsonObject, nickname,
+                                       post_json_object, nickname,
                                        httpd, base_dir,
                                        httpd.http_prefix,
                                        httpd.domain,

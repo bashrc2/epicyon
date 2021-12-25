@@ -14,32 +14,32 @@ from utils import removeIdEnding
 
 
 def _getConversationFilename(base_dir: str, nickname: str, domain: str,
-                             postJsonObject: {}) -> str:
+                             post_json_object: {}) -> str:
     """Returns the conversation filename
     """
-    if not hasObjectDict(postJsonObject):
+    if not hasObjectDict(post_json_object):
         return None
-    if not postJsonObject['object'].get('conversation'):
+    if not post_json_object['object'].get('conversation'):
         return None
-    if not postJsonObject['object'].get('id'):
+    if not post_json_object['object'].get('id'):
         return None
     conversationDir = acctDir(base_dir, nickname, domain) + '/conversation'
     if not os.path.isdir(conversationDir):
         os.mkdir(conversationDir)
-    conversationId = postJsonObject['object']['conversation']
+    conversationId = post_json_object['object']['conversation']
     conversationId = conversationId.replace('/', '#')
     return conversationDir + '/' + conversationId
 
 
 def updateConversation(base_dir: str, nickname: str, domain: str,
-                       postJsonObject: {}) -> bool:
+                       post_json_object: {}) -> bool:
     """Ads a post to a conversation index in the /conversation subdirectory
     """
     conversationFilename = \
-        _getConversationFilename(base_dir, nickname, domain, postJsonObject)
+        _getConversationFilename(base_dir, nickname, domain, post_json_object)
     if not conversationFilename:
         return False
-    postId = removeIdEnding(postJsonObject['object']['id'])
+    postId = removeIdEnding(post_json_object['object']['id'])
     if not os.path.isfile(conversationFilename):
         try:
             with open(conversationFilename, 'w+') as fp:

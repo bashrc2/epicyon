@@ -38,15 +38,15 @@ def undoBookmarksCollectionEntry(recentPostsCache: {},
                                  actor: str, domain: str, debug: bool) -> None:
     """Undoes a bookmark for a particular actor
     """
-    postJsonObject = loadJson(postFilename)
-    if not postJsonObject:
+    post_json_object = loadJson(postFilename)
+    if not post_json_object:
         return
 
     # remove any cached version of this post so that the
     # bookmark icon is changed
     nickname = getNicknameFromActor(actor)
     cachedPostFilename = getCachedPostFilename(base_dir, nickname,
-                                               domain, postJsonObject)
+                                               domain, post_json_object)
     if cachedPostFilename:
         if os.path.isfile(cachedPostFilename):
             try:
@@ -56,7 +56,7 @@ def undoBookmarksCollectionEntry(recentPostsCache: {},
                     print('EX: undoBookmarksCollectionEntry ' +
                           'unable to delete cached post file ' +
                           str(cachedPostFilename))
-    removePostFromCache(postJsonObject, recentPostsCache)
+    removePostFromCache(post_json_object, recentPostsCache)
 
     # remove from the index
     bookmarksIndexFilename = \
@@ -83,32 +83,32 @@ def undoBookmarksCollectionEntry(recentPostsCache: {},
         except OSError:
             print('EX: unable to write bookmarks index ' +
                   bookmarksIndexFilename)
-    if not postJsonObject.get('type'):
+    if not post_json_object.get('type'):
         return
-    if postJsonObject['type'] != 'Create':
+    if post_json_object['type'] != 'Create':
         return
-    if not hasObjectDict(postJsonObject):
+    if not hasObjectDict(post_json_object):
         if debug:
             print('DEBUG: bookmarked post has no object ' +
-                  str(postJsonObject))
+                  str(post_json_object))
         return
-    if not postJsonObject['object'].get('bookmarks'):
+    if not post_json_object['object'].get('bookmarks'):
         return
-    if not isinstance(postJsonObject['object']['bookmarks'], dict):
+    if not isinstance(post_json_object['object']['bookmarks'], dict):
         return
-    if not postJsonObject['object']['bookmarks'].get('items'):
+    if not post_json_object['object']['bookmarks'].get('items'):
         return
     totalItems = 0
-    if postJsonObject['object']['bookmarks'].get('totalItems'):
-        totalItems = postJsonObject['object']['bookmarks']['totalItems']
+    if post_json_object['object']['bookmarks'].get('totalItems'):
+        totalItems = post_json_object['object']['bookmarks']['totalItems']
         itemFound = False
-    for bookmarkItem in postJsonObject['object']['bookmarks']['items']:
+    for bookmarkItem in post_json_object['object']['bookmarks']['items']:
         if bookmarkItem.get('actor'):
             if bookmarkItem['actor'] == actor:
                 if debug:
                     print('DEBUG: bookmark was removed for ' + actor)
                 bmIt = bookmarkItem
-                postJsonObject['object']['bookmarks']['items'].remove(bmIt)
+                post_json_object['object']['bookmarks']['items'].remove(bmIt)
                 itemFound = True
                 break
 
@@ -118,38 +118,39 @@ def undoBookmarksCollectionEntry(recentPostsCache: {},
     if totalItems == 1:
         if debug:
             print('DEBUG: bookmarks was removed from post')
-        del postJsonObject['object']['bookmarks']
+        del post_json_object['object']['bookmarks']
     else:
-        bmItLen = len(postJsonObject['object']['bookmarks']['items'])
-        postJsonObject['object']['bookmarks']['totalItems'] = bmItLen
-    saveJson(postJsonObject, postFilename)
+        bmItLen = len(post_json_object['object']['bookmarks']['items'])
+        post_json_object['object']['bookmarks']['totalItems'] = bmItLen
+    saveJson(post_json_object, postFilename)
 
 
-def bookmarkedByPerson(postJsonObject: {}, nickname: str, domain: str) -> bool:
+def bookmarkedByPerson(post_json_object: {},
+                       nickname: str, domain: str) -> bool:
     """Returns True if the given post is bookmarked by the given person
     """
-    if _noOfBookmarks(postJsonObject) == 0:
+    if _noOfBookmarks(post_json_object) == 0:
         return False
     actorMatch = domain + '/users/' + nickname
-    for item in postJsonObject['object']['bookmarks']['items']:
+    for item in post_json_object['object']['bookmarks']['items']:
         if item['actor'].endswith(actorMatch):
             return True
     return False
 
 
-def _noOfBookmarks(postJsonObject: {}) -> int:
+def _noOfBookmarks(post_json_object: {}) -> int:
     """Returns the number of bookmarks ona  given post
     """
-    if not hasObjectDict(postJsonObject):
+    if not hasObjectDict(post_json_object):
         return 0
-    if not postJsonObject['object'].get('bookmarks'):
+    if not post_json_object['object'].get('bookmarks'):
         return 0
-    if not isinstance(postJsonObject['object']['bookmarks'], dict):
+    if not isinstance(post_json_object['object']['bookmarks'], dict):
         return 0
-    if not postJsonObject['object']['bookmarks'].get('items'):
-        postJsonObject['object']['bookmarks']['items'] = []
-        postJsonObject['object']['bookmarks']['totalItems'] = 0
-    return len(postJsonObject['object']['bookmarks']['items'])
+    if not post_json_object['object']['bookmarks'].get('items'):
+        post_json_object['object']['bookmarks']['items'] = []
+        post_json_object['object']['bookmarks']['totalItems'] = 0
+    return len(post_json_object['object']['bookmarks']['items'])
 
 
 def updateBookmarksCollection(recentPostsCache: {},
@@ -158,13 +159,13 @@ def updateBookmarksCollection(recentPostsCache: {},
                               actor: str, domain: str, debug: bool) -> None:
     """Updates the bookmarks collection within a post
     """
-    postJsonObject = loadJson(postFilename)
-    if postJsonObject:
+    post_json_object = loadJson(postFilename)
+    if post_json_object:
         # remove any cached version of this post so that the
         # bookmark icon is changed
         nickname = getNicknameFromActor(actor)
         cachedPostFilename = getCachedPostFilename(base_dir, nickname,
-                                                   domain, postJsonObject)
+                                                   domain, post_json_object)
         if cachedPostFilename:
             if os.path.isfile(cachedPostFilename):
                 try:
@@ -174,17 +175,17 @@ def updateBookmarksCollection(recentPostsCache: {},
                         print('EX: updateBookmarksCollection ' +
                               'unable to delete cached post ' +
                               str(cachedPostFilename))
-        removePostFromCache(postJsonObject, recentPostsCache)
+        removePostFromCache(post_json_object, recentPostsCache)
 
-        if not postJsonObject.get('object'):
+        if not post_json_object.get('object'):
             if debug:
                 print('DEBUG: no object in bookmarked post ' +
-                      str(postJsonObject))
+                      str(post_json_object))
             return
         if not objectUrl.endswith('/bookmarks'):
             objectUrl = objectUrl + '/bookmarks'
         # does this post have bookmarks on it from differenent actors?
-        if not postJsonObject['object'].get('bookmarks'):
+        if not post_json_object['object'].get('bookmarks'):
             if debug:
                 print('DEBUG: Adding initial bookmarks to ' + objectUrl)
             bookmarksJson = {
@@ -197,11 +198,12 @@ def updateBookmarksCollection(recentPostsCache: {},
                     'actor': actor
                 }]
             }
-            postJsonObject['object']['bookmarks'] = bookmarksJson
+            post_json_object['object']['bookmarks'] = bookmarksJson
         else:
-            if not postJsonObject['object']['bookmarks'].get('items'):
-                postJsonObject['object']['bookmarks']['items'] = []
-            for bookmarkItem in postJsonObject['object']['bookmarks']['items']:
+            if not post_json_object['object']['bookmarks'].get('items'):
+                post_json_object['object']['bookmarks']['items'] = []
+            bm_items = post_json_object['object']['bookmarks']['items']
+            for bookmarkItem in bm_items:
                 if bookmarkItem.get('actor'):
                     if bookmarkItem['actor'] == actor:
                         return
@@ -210,15 +212,15 @@ def updateBookmarksCollection(recentPostsCache: {},
                 'actor': actor
             }
             nb = newBookmark
-            bmIt = len(postJsonObject['object']['bookmarks']['items'])
-            postJsonObject['object']['bookmarks']['items'].append(nb)
-            postJsonObject['object']['bookmarks']['totalItems'] = bmIt
+            bmIt = len(post_json_object['object']['bookmarks']['items'])
+            post_json_object['object']['bookmarks']['items'].append(nb)
+            post_json_object['object']['bookmarks']['totalItems'] = bmIt
 
         if debug:
             print('DEBUG: saving post with bookmarks added')
-            pprint(postJsonObject)
+            pprint(post_json_object)
 
-        saveJson(postJsonObject, postFilename)
+        saveJson(post_json_object, postFilename)
 
         # prepend to the index
         bookmarksIndexFilename = \

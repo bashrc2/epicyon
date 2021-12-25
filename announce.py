@@ -33,22 +33,22 @@ from webfinger import webfingerHandle
 from auth import createBasicAuthHeader
 
 
-def isSelfAnnounce(postJsonObject: {}) -> bool:
+def isSelfAnnounce(post_json_object: {}) -> bool:
     """Is the given post a self announce?
     """
-    if not postJsonObject.get('actor'):
+    if not post_json_object.get('actor'):
         return False
-    if not postJsonObject.get('type'):
+    if not post_json_object.get('type'):
         return False
-    if postJsonObject['type'] != 'Announce':
+    if post_json_object['type'] != 'Announce':
         return False
-    if not postJsonObject.get('object'):
+    if not post_json_object.get('object'):
         return False
-    if not isinstance(postJsonObject['actor'], str):
+    if not isinstance(post_json_object['actor'], str):
         return False
-    if not isinstance(postJsonObject['object'], str):
+    if not isinstance(post_json_object['object'], str):
         return False
-    return postJsonObject['actor'] in postJsonObject['object']
+    return post_json_object['actor'] in post_json_object['object']
 
 
 def outboxAnnounce(recentPostsCache: {},

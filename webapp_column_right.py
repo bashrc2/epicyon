@@ -662,8 +662,8 @@ def htmlEditNewsPost(cssCache: {}, translate: {}, base_dir: str, path: str,
     postFilename = locatePost(base_dir, nickname, domain, postUrl)
     if not postFilename:
         return ''
-    postJsonObject = loadJson(postFilename)
-    if not postJsonObject:
+    post_json_object = loadJson(postFilename)
+    if not post_json_object:
         return ''
 
     cssFilename = base_dir + '/epicyon-links.css'
@@ -699,12 +699,12 @@ def htmlEditNewsPost(cssCache: {}, translate: {}, base_dir: str, path: str,
         '  <input type="hidden" name="newsPostUrl" value="' + \
         postUrl + '">\n'
 
-    newsPostTitle = postJsonObject['object']['summary']
+    newsPostTitle = post_json_object['object']['summary']
     editNewsPostForm += \
         '  <input type="text" name="newsPostTitle" value="' + \
         newsPostTitle + '"><br>\n'
 
-    newsPostContent = getBaseContentFromPost(postJsonObject, systemLanguage)
+    newsPostContent = getBaseContentFromPost(post_json_object, systemLanguage)
     editNewsPostForm += \
         '  <textarea id="message" name="editedNewsPost" ' + \
         'style="height:600px" spellcheck="true">' + \

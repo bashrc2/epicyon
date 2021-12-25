@@ -1657,14 +1657,14 @@ def addActorUpdateTimestamp(actorJson: {}) -> None:
 def validSendingActor(session, base_dir: str,
                       nickname: str, domain: str,
                       personCache: {},
-                      postJsonObject: {},
+                      post_json_object: {},
                       signingPrivateKeyPem: str,
                       debug: bool, unit_test: bool) -> bool:
     """When a post arrives in the inbox this is used to check that
     the sending actor is valid
     """
     # who sent this post?
-    sendingActor = postJsonObject['actor']
+    sendingActor = post_json_object['actor']
 
     # If you are following them then allow their posts
     if isFollowingActor(base_dir, nickname, domain, sendingActor):

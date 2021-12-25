@@ -76,49 +76,49 @@ from webapp_timeline import htmlIndividualShare
 from blocking import getCWlistVariable
 
 
-def _validProfilePreviewPost(postJsonObject: {},
+def _validProfilePreviewPost(post_json_object: {},
                              personUrl: str) -> (bool, {}):
     """Returns true if the given post should appear on a person/group profile
     after searching for a handle
     """
     isAnnouncedFeedItem = False
-    if isCreateInsideAnnounce(postJsonObject):
+    if isCreateInsideAnnounce(post_json_object):
         isAnnouncedFeedItem = True
-        postJsonObject = postJsonObject['object']
-    if not postJsonObject.get('type'):
+        post_json_object = post_json_object['object']
+    if not post_json_object.get('type'):
         return False, None
-    if postJsonObject['type'] == 'Create':
-        if not hasObjectDict(postJsonObject):
+    if post_json_object['type'] == 'Create':
+        if not hasObjectDict(post_json_object):
             return False, None
-    if postJsonObject['type'] != 'Create' and \
-       postJsonObject['type'] != 'Announce':
-        if postJsonObject['type'] != 'Note' and \
-           postJsonObject['type'] != 'Page':
+    if post_json_object['type'] != 'Create' and \
+       post_json_object['type'] != 'Announce':
+        if post_json_object['type'] != 'Note' and \
+           post_json_object['type'] != 'Page':
             return False, None
-        if not postJsonObject.get('to'):
+        if not post_json_object.get('to'):
             return False, None
-        if not postJsonObject.get('id'):
+        if not post_json_object.get('id'):
             return False, None
         # wrap in create
         cc = []
-        if postJsonObject.get('cc'):
-            cc = postJsonObject['cc']
+        if post_json_object.get('cc'):
+            cc = post_json_object['cc']
         newPostJsonObject = {
-            'object': postJsonObject,
-            'to': postJsonObject['to'],
+            'object': post_json_object,
+            'to': post_json_object['to'],
             'cc': cc,
-            'id': postJsonObject['id'],
+            'id': post_json_object['id'],
             'actor': personUrl,
             'type': 'Create'
         }
-        postJsonObject = newPostJsonObject
-    if not postJsonObject.get('actor'):
+        post_json_object = newPostJsonObject
+    if not post_json_object.get('actor'):
         return False, None
     if not isAnnouncedFeedItem:
-        if postJsonObject['actor'] != personUrl and \
-           postJsonObject['object']['type'] != 'Page':
+        if post_json_object['actor'] != personUrl and \
+           post_json_object['object']['type'] != 'Page':
             return False, None
-    return True, postJsonObject
+    return True, post_json_object
 
 
 def htmlProfileAfterSearch(cssCache: {},
@@ -327,7 +327,7 @@ def htmlProfileAfterSearch(cssCache: {},
     if userFeed:
         i = 0
         for item in userFeed:
-            showItem, postJsonObject = \
+            showItem, post_json_object = \
                 _validProfilePreviewPost(item, personUrl)
             if not showItem:
                 continue
@@ -338,7 +338,7 @@ def htmlProfileAfterSearch(cssCache: {},
                                      translate, None, base_dir,
                                      session, cachedWebfingers, personCache,
                                      nickname, domain, port,
-                                     postJsonObject, avatarUrl, False, False,
+                                     post_json_object, avatarUrl, False, False,
                                      http_prefix, project_version, 'inbox',
                                      yt_replace_domain,
                                      twitter_replacement_domain,

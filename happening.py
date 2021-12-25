@@ -161,14 +161,14 @@ def _isHappeningEvent(tag: {}) -> bool:
     return True
 
 
-def _isHappeningPost(postJsonObject: {}) -> bool:
+def _isHappeningPost(post_json_object: {}) -> bool:
     """Is this a post with tags?
     """
-    if not postJsonObject:
+    if not post_json_object:
         return False
-    if not hasObjectDict(postJsonObject):
+    if not hasObjectDict(post_json_object):
         return False
-    if not postJsonObject['object'].get('tag'):
+    if not post_json_object['object'].get('tag'):
         return False
     return True
 
@@ -210,15 +210,15 @@ def getTodaysEvents(base_dir: str, nickname: str, domain: str,
                 recreateEventsFile = True
                 continue
 
-            postJsonObject = loadJson(postFilename)
-            if not _isHappeningPost(postJsonObject):
+            post_json_object = loadJson(postFilename)
+            if not _isHappeningPost(post_json_object):
                 continue
 
-            publicEvent = isPublicPost(postJsonObject)
+            publicEvent = isPublicPost(post_json_object)
 
             postEvent = []
             dayOfMonth = None
-            for tag in postJsonObject['object']['tag']:
+            for tag in post_json_object['object']['tag']:
                 if not _isHappeningEvent(tag):
                     continue
                 # this tag is an event or a place
@@ -284,11 +284,11 @@ def dayEventsCheck(base_dir: str, nickname: str, domain: str,
             if not postFilename:
                 continue
 
-            postJsonObject = loadJson(postFilename)
-            if not _isHappeningPost(postJsonObject):
+            post_json_object = loadJson(postFilename)
+            if not _isHappeningPost(post_json_object):
                 continue
 
-            for tag in postJsonObject['object']['tag']:
+            for tag in post_json_object['object']['tag']:
                 if not _isHappeningEvent(tag):
                     continue
                 # this tag is an event or a place
@@ -341,13 +341,13 @@ def getThisWeeksEvents(base_dir: str, nickname: str, domain: str) -> {}:
                 recreateEventsFile = True
                 continue
 
-            postJsonObject = loadJson(postFilename)
-            if not _isHappeningPost(postJsonObject):
+            post_json_object = loadJson(postFilename)
+            if not _isHappeningPost(post_json_object):
                 continue
 
             postEvent = []
             weekDayIndex = None
-            for tag in postJsonObject['object']['tag']:
+            for tag in post_json_object['object']['tag']:
                 if not _isHappeningEvent(tag):
                     continue
                 # this tag is an event or a place
@@ -406,13 +406,13 @@ def getCalendarEvents(base_dir: str, nickname: str, domain: str,
                 recreateEventsFile = True
                 continue
 
-            postJsonObject = loadJson(postFilename)
-            if not _isHappeningPost(postJsonObject):
+            post_json_object = loadJson(postFilename)
+            if not _isHappeningPost(post_json_object):
                 continue
 
             postEvent = []
             dayOfMonth = None
-            for tag in postJsonObject['object']['tag']:
+            for tag in post_json_object['object']['tag']:
                 if not _isHappeningEvent(tag):
                     continue
                 # this tag is an event or a place

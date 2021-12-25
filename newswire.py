@@ -962,35 +962,35 @@ def getRSSfromDict(base_dir: str, newswire: {},
     return rssStr
 
 
-def _isNewswireBlogPost(postJsonObject: {}) -> bool:
+def _isNewswireBlogPost(post_json_object: {}) -> bool:
     """Is the given object a blog post?
     There isn't any difference between a blog post and a newswire blog post
     but we may here need to check for different properties than
     isBlogPost does
     """
-    if not postJsonObject:
+    if not post_json_object:
         return False
-    if not hasObjectDict(postJsonObject):
+    if not hasObjectDict(post_json_object):
         return False
-    if postJsonObject['object'].get('summary') and \
-       postJsonObject['object'].get('url') and \
-       postJsonObject['object'].get('content') and \
-       postJsonObject['object'].get('published'):
-        return isPublicPost(postJsonObject)
+    if post_json_object['object'].get('summary') and \
+       post_json_object['object'].get('url') and \
+       post_json_object['object'].get('content') and \
+       post_json_object['object'].get('published'):
+        return isPublicPost(post_json_object)
     return False
 
 
-def _getHashtagsFromPost(postJsonObject: {}) -> []:
+def _getHashtagsFromPost(post_json_object: {}) -> []:
     """Returns a list of any hashtags within a post
     """
-    if not hasObjectDict(postJsonObject):
+    if not hasObjectDict(post_json_object):
         return []
-    if not postJsonObject['object'].get('tag'):
+    if not post_json_object['object'].get('tag'):
         return []
-    if not isinstance(postJsonObject['object']['tag'], list):
+    if not isinstance(post_json_object['object']['tag'], list):
         return []
     tags = []
-    for tg in postJsonObject['object']['tag']:
+    for tg in post_json_object['object']['tag']:
         if not isinstance(tg, dict):
             continue
         if not tg.get('name'):
@@ -1051,25 +1051,27 @@ def _addAccountBlogsToNewswire(base_dir: str, nickname: str, domain: str,
                         break
                     continue
 
-                postJsonObject = None
+                post_json_object = None
                 if fullPostFilename:
-                    postJsonObject = loadJson(fullPostFilename)
-                if _isNewswireBlogPost(postJsonObject):
-                    published = postJsonObject['object']['published']
+                    post_json_object = loadJson(fullPostFilename)
+                if _isNewswireBlogPost(post_json_object):
+                    published = post_json_object['object']['published']
                     published = published.replace('T', ' ')
                     published = published.replace('Z', '+00:00')
                     votes = []
                     if os.path.isfile(fullPostFilename + '.votes'):
                         votes = loadJson(fullPostFilename + '.votes')
                     content = \
-                        getBaseContentFromPost(postJsonObject, systemLanguage)
+                        getBaseContentFromPost(post_json_object,
+                                               systemLanguage)
                     description = firstParagraphFromString(content)
                     description = removeHtml(description)
-                    tagsFromPost = _getHashtagsFromPost(postJsonObject)
+                    tagsFromPost = _getHashtagsFromPost(post_json_object)
+                    summary = post_json_object['object']['summary']
                     _addNewswireDictEntry(base_dir, domain,
                                           newswire, published,
-                                          postJsonObject['object']['summary'],
-                                          postJsonObject['object']['url'],
+                                          summary,
+                                          post_json_object['object']['url'],
                                           votes, fullPostFilename,
                                           description, moderated, False,
                                           tagsFromPost,

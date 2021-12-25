@@ -38,13 +38,13 @@ def getIndividualPostContext() -> []:
     ]
 
 
-def hasValidContext(postJsonObject: {}) -> bool:
+def hasValidContext(post_json_object: {}) -> bool:
     """Are the links within the @context of a post recognised?
     """
-    if not postJsonObject.get('@context'):
+    if not post_json_object.get('@context'):
         return False
-    if isinstance(postJsonObject['@context'], list):
-        for url in postJsonObject['@context']:
+    if isinstance(post_json_object['@context'], list):
+        for url in post_json_object['@context']:
             if not isinstance(url, str):
                 continue
             if url not in validContexts:
@@ -58,8 +58,8 @@ def hasValidContext(postJsonObject: {}) -> bool:
                 if not wildcardFound:
                     print('Unrecognized @context: ' + url)
                     return False
-    elif isinstance(postJsonObject['@context'], str):
-        url = postJsonObject['@context']
+    elif isinstance(post_json_object['@context'], str):
+        url = post_json_object['@context']
         if url not in validContexts:
             wildcardFound = False
             for c in validContexts:
