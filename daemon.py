@@ -2243,9 +2243,9 @@ class PubServer(BaseHTTPRequestHandler):
         if 'full-width-timeline-buttons' in themeDesignerParams:
             themeValue = themeDesignerParams['full-width-timeline-buttons']
             if themeValue.lower() == 'true':
-                self.server.fullWidthTimelineButtonHeader = True
+                self.server.full_width_tl_button_header = True
             else:
-                self.server.fullWidthTimelineButtonHeader = False
+                self.server.full_width_tl_button_header = False
 
         # redirect back from theme designer screen
         if callingDomain.endswith('.onion') and onionDomain:
@@ -5018,9 +5018,9 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.showPublishAsIcon = \
                                 getConfigParam(self.server.base_dir,
                                                'showPublishAsIcon')
-                            self.server.fullWidthTimelineButtonHeader = \
+                            self.server.full_width_tl_button_header = \
                                 getConfigParam(self.server.base_dir,
-                                               'fullWidthTimelineButtonHeader')
+                                               'full_width_tl_button_header')
                             self.server.icons_as_buttons = \
                                 getConfigParam(self.server.base_dir,
                                                'icons_as_buttons')
@@ -5958,7 +5958,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.showPublishAsIcon = \
                                     getConfigParam(base_dir,
                                                    'showPublishAsIcon')
-                                self.server.fullWidthTimelineButtonHeader = \
+                                self.server.full_width_tl_button_header = \
                                     getConfigParam(base_dir,
                                                    'fullWidthTimeline' +
                                                    'ButtonHeader')
@@ -10213,8 +10213,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                    self.server.fitness,
                                                    '_GET', '_showInbox2',
                                                    self.server.debug)
-                        fullWidthTimelineButtonHeader = \
-                            self.server.fullWidthTimelineButtonHeader
+                        full_width_tl_button_header = \
+                            self.server.full_width_tl_button_header
                         minimalNick = isMinimal(base_dir, domain, nickname)
 
                         accessKeys = self.server.accessKeys
@@ -10248,7 +10248,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.newswire,
                                         self.server.positiveVoting,
                                         self.server.showPublishAsIcon,
-                                        fullWidthTimelineButtonHeader,
+                                        full_width_tl_button_header,
                                         self.server.icons_as_buttons,
                                         self.server.rss_icon_at_top,
                                         self.server.publish_button_at_top,
@@ -10361,8 +10361,8 @@ class PubServer(BaseHTTPRequestHandler):
                                               0,
                                               self.server.positiveVoting,
                                               self.server.votingTimeMins)
-                        fullWidthTimelineButtonHeader = \
-                            self.server.fullWidthTimelineButtonHeader
+                        full_width_tl_button_header = \
+                            self.server.full_width_tl_button_header
                         minimalNick = isMinimal(base_dir, domain, nickname)
 
                         accessKeys = self.server.accessKeys
@@ -10399,7 +10399,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.newswire,
                                          self.server.positiveVoting,
                                          self.server.showPublishAsIcon,
-                                         fullWidthTimelineButtonHeader,
+                                         full_width_tl_button_header,
                                          self.server.icons_as_buttons,
                                          self.server.rss_icon_at_top,
                                          self.server.publish_button_at_top,
@@ -10504,8 +10504,8 @@ class PubServer(BaseHTTPRequestHandler):
                                           True,
                                           0, self.server.positiveVoting,
                                           self.server.votingTimeMins)
-                    fullWidthTimelineButtonHeader = \
-                        self.server.fullWidthTimelineButtonHeader
+                    full_width_tl_button_header = \
+                        self.server.full_width_tl_button_header
                     minimalNick = isMinimal(base_dir, domain, nickname)
 
                     accessKeys = self.server.accessKeys
@@ -10542,7 +10542,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.newswire,
                                          self.server.positiveVoting,
                                          self.server.showPublishAsIcon,
-                                         fullWidthTimelineButtonHeader,
+                                         full_width_tl_button_header,
                                          self.server.icons_as_buttons,
                                          self.server.rss_icon_at_top,
                                          self.server.publish_button_at_top,
@@ -10647,8 +10647,8 @@ class PubServer(BaseHTTPRequestHandler):
                                           True,
                                           0, self.server.positiveVoting,
                                           self.server.votingTimeMins)
-                    fullWidthTimelineButtonHeader = \
-                        self.server.fullWidthTimelineButtonHeader
+                    full_width_tl_button_header = \
+                        self.server.full_width_tl_button_header
                     minimalNick = isMinimal(base_dir, domain, nickname)
 
                     accessKeys = self.server.accessKeys
@@ -10683,7 +10683,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.newswire,
                                        self.server.positiveVoting,
                                        self.server.showPublishAsIcon,
-                                       fullWidthTimelineButtonHeader,
+                                       full_width_tl_button_header,
                                        self.server.icons_as_buttons,
                                        self.server.rss_icon_at_top,
                                        self.server.publish_button_at_top,
@@ -10789,8 +10789,8 @@ class PubServer(BaseHTTPRequestHandler):
                                           True,
                                           0, self.server.positiveVoting,
                                           self.server.votingTimeMins)
-                    fullWidthTimelineButtonHeader = \
-                        self.server.fullWidthTimelineButtonHeader
+                    full_width_tl_button_header = \
+                        self.server.full_width_tl_button_header
                     minimalNick = isMinimal(base_dir, domain, nickname)
 
                     accessKeys = self.server.accessKeys
@@ -10825,7 +10825,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.newswire,
                                        self.server.positiveVoting,
                                        self.server.showPublishAsIcon,
-                                       fullWidthTimelineButtonHeader,
+                                       full_width_tl_button_header,
                                        self.server.icons_as_buttons,
                                        self.server.rss_icon_at_top,
                                        self.server.publish_button_at_top,
@@ -10940,8 +10940,8 @@ class PubServer(BaseHTTPRequestHandler):
                     moderator = isModerator(base_dir, currNickname)
                     editor = isEditor(base_dir, currNickname)
                     artist = isArtist(base_dir, currNickname)
-                    fullWidthTimelineButtonHeader = \
-                        self.server.fullWidthTimelineButtonHeader
+                    full_width_tl_button_header = \
+                        self.server.full_width_tl_button_header
                     minimalNick = isMinimal(base_dir, domain, nickname)
 
                     accessKeys = self.server.accessKeys
@@ -10977,7 +10977,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       moderator, editor, artist,
                                       self.server.positiveVoting,
                                       self.server.showPublishAsIcon,
-                                      fullWidthTimelineButtonHeader,
+                                      full_width_tl_button_header,
                                       self.server.icons_as_buttons,
                                       self.server.rss_icon_at_top,
                                       self.server.publish_button_at_top,
@@ -11088,8 +11088,8 @@ class PubServer(BaseHTTPRequestHandler):
                     currNickname = path.split('/users/')[1]
                     if '/' in currNickname:
                         currNickname = currNickname.split('/')[0]
-                    fullWidthTimelineButtonHeader = \
-                        self.server.fullWidthTimelineButtonHeader
+                    full_width_tl_button_header = \
+                        self.server.full_width_tl_button_header
                     minimalNick = isMinimal(base_dir, domain, nickname)
 
                     accessKeys = self.server.accessKeys
@@ -11126,7 +11126,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.newswire,
                                           self.server.positiveVoting,
                                           self.server.showPublishAsIcon,
-                                          fullWidthTimelineButtonHeader,
+                                          full_width_tl_button_header,
                                           self.server.icons_as_buttons,
                                           self.server.rss_icon_at_top,
                                           self.server.publish_button_at_top,
@@ -11209,6 +11209,8 @@ class PubServer(BaseHTTPRequestHandler):
                     if self.server.keyShortcuts.get(nickname):
                         accessKeys = \
                             self.server.keyShortcuts[nickname]
+                    full_width_tl_button_header = \
+                        self.server.full_width_tl_button_header
 
                     msg = \
                         htmlShares(self.server.cssCache,
@@ -11233,7 +11235,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.newswire,
                                    self.server.positiveVoting,
                                    self.server.showPublishAsIcon,
-                                   self.server.fullWidthTimelineButtonHeader,
+                                   full_width_tl_button_header,
                                    self.server.icons_as_buttons,
                                    self.server.rss_icon_at_top,
                                    self.server.publish_button_at_top,
@@ -11293,7 +11295,8 @@ class PubServer(BaseHTTPRequestHandler):
                     if self.server.keyShortcuts.get(nickname):
                         accessKeys = \
                             self.server.keyShortcuts[nickname]
-
+                    full_width_tl_button_header = \
+                        self.server.full_width_tl_button_header
                     msg = \
                         htmlWanted(self.server.cssCache,
                                    self.server.defaultTimeline,
@@ -11317,7 +11320,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.newswire,
                                    self.server.positiveVoting,
                                    self.server.showPublishAsIcon,
-                                   self.server.fullWidthTimelineButtonHeader,
+                                   full_width_tl_button_header,
                                    self.server.icons_as_buttons,
                                    self.server.rss_icon_at_top,
                                    self.server.publish_button_at_top,
@@ -11401,8 +11404,8 @@ class PubServer(BaseHTTPRequestHandler):
                                               authorized,
                                               0, self.server.positiveVoting,
                                               self.server.votingTimeMins)
-                        fullWidthTimelineButtonHeader = \
-                            self.server.fullWidthTimelineButtonHeader
+                        full_width_tl_button_header = \
+                            self.server.full_width_tl_button_header
                         minimalNick = isMinimal(base_dir, domain, nickname)
 
                         accessKeys = self.server.accessKeys
@@ -11439,7 +11442,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.newswire,
                                           self.server.positiveVoting,
                                           self.server.showPublishAsIcon,
-                                          fullWidthTimelineButtonHeader,
+                                          full_width_tl_button_header,
                                           self.server.icons_as_buttons,
                                           self.server.rss_icon_at_top,
                                           self.server.publish_button_at_top,
@@ -11545,8 +11548,8 @@ class PubServer(BaseHTTPRequestHandler):
                 pageNumber = 1
 
             if self._requestHTTP():
-                fullWidthTimelineButtonHeader = \
-                    self.server.fullWidthTimelineButtonHeader
+                full_width_tl_button_header = \
+                    self.server.full_width_tl_button_header
                 minimalNick = isMinimal(base_dir, domain, nickname)
 
                 accessKeys = self.server.accessKeys
@@ -11577,7 +11580,7 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.newswire,
                                self.server.positiveVoting,
                                self.server.showPublishAsIcon,
-                               fullWidthTimelineButtonHeader,
+                               full_width_tl_button_header,
                                self.server.icons_as_buttons,
                                self.server.rss_icon_at_top,
                                self.server.publish_button_at_top,
@@ -11670,8 +11673,8 @@ class PubServer(BaseHTTPRequestHandler):
                                               True,
                                               0, self.server.positiveVoting,
                                               self.server.votingTimeMins)
-                        fullWidthTimelineButtonHeader = \
-                            self.server.fullWidthTimelineButtonHeader
+                        full_width_tl_button_header = \
+                            self.server.full_width_tl_button_header
                         moderationActionStr = ''
 
                         accessKeys = self.server.accessKeys
@@ -11709,7 +11712,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.newswire,
                                            self.server.positiveVoting,
                                            self.server.showPublishAsIcon,
-                                           fullWidthTimelineButtonHeader,
+                                           full_width_tl_button_header,
                                            self.server.icons_as_buttons,
                                            self.server.rss_icon_at_top,
                                            self.server.publish_button_at_top,
@@ -18432,7 +18435,7 @@ def runDaemon(content_license_url: str,
               publish_button_at_top: bool,
               rss_icon_at_top: bool,
               icons_as_buttons: bool,
-              fullWidthTimelineButtonHeader: bool,
+              full_width_tl_button_header: bool,
               showPublishAsIcon: bool,
               maxFollowers: int,
               maxNewsPosts: int,
@@ -18662,7 +18665,7 @@ def runDaemon(content_license_url: str,
 
     # Whether to show the timeline header containing inbox, outbox
     # calendar, etc as the full width of the screen or not
-    httpd.fullWidthTimelineButtonHeader = fullWidthTimelineButtonHeader
+    httpd.full_width_tl_button_header = full_width_tl_button_header
 
     # whether to show icons in the header (eg calendar) as buttons
     httpd.icons_as_buttons = icons_as_buttons

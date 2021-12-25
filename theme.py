@@ -238,7 +238,7 @@ def _setFullWidthTimelineButtonHeader(base_dir: str, fullWidth: bool) -> bool:
     configJson = loadJson(configFilename, 0)
     if not configJson:
         return False
-    configJson['fullWidthTimelineButtonHeader'] = fullWidth
+    configJson['full_width_tl_button_header'] = fullWidth
     return saveJson(configJson, configFilename)
 
 

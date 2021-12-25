@@ -330,8 +330,8 @@ parser.add_argument("--showPublishAsIcon",
                     const=True, default=True,
                     help="Whether to show newswire publish " +
                     "as an icon or a button")
-parser.add_argument("--fullWidthTimelineButtonHeader",
-                    dest='fullWidthTimelineButtonHeader',
+parser.add_argument("--full_width_tl_button_header",
+                    dest='full_width_tl_button_header',
                     type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Whether to show the timeline " +
@@ -3098,10 +3098,10 @@ publish_button_at_top = \
 if publish_button_at_top is not None:
     args.publish_button_at_top = bool(publish_button_at_top)
 
-fullWidthTimelineButtonHeader = \
-    getConfigParam(base_dir, 'fullWidthTimelineButtonHeader')
-if fullWidthTimelineButtonHeader is not None:
-    args.fullWidthTimelineButtonHeader = bool(fullWidthTimelineButtonHeader)
+full_width_tl_button_header = \
+    getConfigParam(base_dir, 'full_width_tl_button_header')
+if full_width_tl_button_header is not None:
+    args.full_width_tl_button_header = bool(full_width_tl_button_header)
 
 allow_local_network_access = \
     getConfigParam(base_dir, 'allow_local_network_access')
@@ -3230,7 +3230,7 @@ if __name__ == "__main__":
               args.publish_button_at_top,
               args.rss_icon_at_top,
               args.icons_as_buttons,
-              args.fullWidthTimelineButtonHeader,
+              args.full_width_tl_button_header,
               args.showPublishAsIcon,
               args.maxFollowers,
               args.maxNewsPosts,
