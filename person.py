@@ -350,7 +350,7 @@ def getDefaultPersonContext() -> str:
 
 def _createPersonBase(base_dir: str, nickname: str, domain: str, port: int,
                       http_prefix: str, saveToFile: bool,
-                      manualFollowerApproval: bool,
+                      manual_follower_approval: bool,
                       groupAccount: bool,
                       password: str) -> (str, str, {}, {}):
     """Returns the private key, public key, actor and webfinger endpoint
@@ -372,7 +372,7 @@ def _createPersonBase(base_dir: str, nickname: str, domain: str, port: int,
     if groupAccount:
         personType = 'Group'
     # Enable follower approval by default
-    approveFollowers = manualFollowerApproval
+    approveFollowers = manual_follower_approval
     personName = nickname
     personId = localActorUrl(http_prefix, nickname, domain)
     inboxStr = personId + '/inbox'
@@ -541,7 +541,7 @@ def _createPersonBase(base_dir: str, nickname: str, domain: str, port: int,
 
 def registerAccount(base_dir: str, http_prefix: str, domain: str, port: int,
                     nickname: str, password: str,
-                    manualFollowerApproval: bool) -> bool:
+                    manual_follower_approval: bool) -> bool:
     """Registers a new account from the web interface
     """
     if _accountExists(base_dir, nickname, domain):
@@ -556,7 +556,7 @@ def registerAccount(base_dir: str, http_prefix: str, domain: str, port: int,
      newPerson, webfingerEndpoint) = createPerson(base_dir, nickname,
                                                   domain, port,
                                                   http_prefix, True,
-                                                  manualFollowerApproval,
+                                                  manual_follower_approval,
                                                   password)
     if privateKeyPem:
         return True
@@ -593,7 +593,7 @@ def savePersonQrcode(base_dir: str,
 
 def createPerson(base_dir: str, nickname: str, domain: str, port: int,
                  http_prefix: str, saveToFile: bool,
-                 manualFollowerApproval: bool,
+                 manual_follower_approval: bool,
                  password: str,
                  groupAccount: bool = False) -> (str, str, {}, {}):
     """Returns the private key, public key, actor and webfinger endpoint
@@ -615,12 +615,14 @@ def createPerson(base_dir: str, nickname: str, domain: str, port: int,
             # news account already exists
             return None, None, None, None
 
+    manual_follower = manual_follower_approval
+
     (privateKeyPem, publicKeyPem,
      newPerson, webfingerEndpoint) = _createPersonBase(base_dir, nickname,
                                                        domain, port,
                                                        http_prefix,
                                                        saveToFile,
-                                                       manualFollowerApproval,
+                                                       manual_follower,
                                                        groupAccount,
                                                        password)
     if not getConfigParam(base_dir, 'admin'):
@@ -637,7 +639,7 @@ def createPerson(base_dir: str, nickname: str, domain: str, port: int,
     if not os.path.isdir(accountDir):
         os.mkdir(accountDir)
 
-    if manualFollowerApproval:
+    if manual_follower_approval:
         followDMsFilename = acctDir(base_dir, nickname, domain) + '/.followDMs'
         try:
             with open(followDMsFilename, 'w+') as fFile:

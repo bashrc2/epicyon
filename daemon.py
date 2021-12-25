@@ -1705,7 +1705,7 @@ class PubServer(BaseHTTPRequestHandler):
 
                 if not registerAccount(base_dir, http_prefix, domain, port,
                                        loginNickname, loginPassword,
-                                       self.server.manualFollowerApproval):
+                                       self.server.manual_follower_approval):
                     self.server.POSTbusy = False
                     if callingDomain.endswith('.onion') and onion_domain:
                         self._redirect_headers('http://' + onion_domain +
@@ -18483,7 +18483,7 @@ def runDaemon(content_license_url: str,
               debug: bool = False, unit_test: bool = False,
               instance_only_skills_search: bool = False,
               send_threads: [] = [],
-              manualFollowerApproval: bool = True) -> None:
+              manual_follower_approval: bool = True) -> None:
     if len(domain) == 0:
         domain = 'localhost'
     if '.' not in domain:
@@ -18615,7 +18615,7 @@ def runDaemon(content_license_url: str,
     httpd.blocklistUpdateInterval = 100
     httpd.domainBlocklist = getDomainBlocklist(base_dir)
 
-    httpd.manualFollowerApproval = manualFollowerApproval
+    httpd.manual_follower_approval = manual_follower_approval
     httpd.onion_domain = onion_domain
     httpd.i2p_domain = i2p_domain
     httpd.media_instance = media_instance
