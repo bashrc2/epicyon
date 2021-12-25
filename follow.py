@@ -1375,47 +1375,47 @@ def getFollowersOfActor(base_dir: str, actor: str, debug: bool) -> {}:
     return recipientsDict
 
 
-def outboxUndoFollow(base_dir: str, messageJson: {}, debug: bool) -> None:
+def outboxUndoFollow(base_dir: str, message_json: {}, debug: bool) -> None:
     """When an unfollow request is received by the outbox from c2s
     This removes the followed handle from the following.txt file
     of the relevant account
     """
-    if not messageJson.get('type'):
+    if not message_json.get('type'):
         return
-    if not messageJson['type'] == 'Undo':
+    if not message_json['type'] == 'Undo':
         return
-    if not hasObjectStringType(messageJson, debug):
+    if not hasObjectStringType(message_json, debug):
         return
-    if not messageJson['object']['type'] == 'Follow':
-        if not messageJson['object']['type'] == 'Join':
+    if not message_json['object']['type'] == 'Follow':
+        if not message_json['object']['type'] == 'Join':
             return
-    if not hasObjectStringObject(messageJson, debug):
+    if not hasObjectStringObject(message_json, debug):
         return
-    if not messageJson['object'].get('actor'):
+    if not message_json['object'].get('actor'):
         return
     if debug:
         print('DEBUG: undo follow arrived in outbox')
 
-    nicknameFollower = getNicknameFromActor(messageJson['object']['actor'])
+    nicknameFollower = getNicknameFromActor(message_json['object']['actor'])
     if not nicknameFollower:
         print('WARN: unable to find nickname in ' +
-              messageJson['object']['actor'])
+              message_json['object']['actor'])
         return
     domainFollower, portFollower = \
-        getDomainFromActor(messageJson['object']['actor'])
+        getDomainFromActor(message_json['object']['actor'])
     domainFollowerFull = getFullDomain(domainFollower, portFollower)
 
-    nicknameFollowing = getNicknameFromActor(messageJson['object']['object'])
+    nicknameFollowing = getNicknameFromActor(message_json['object']['object'])
     if not nicknameFollowing:
         print('WARN: unable to find nickname in ' +
-              messageJson['object']['object'])
+              message_json['object']['object'])
         return
     domainFollowing, portFollowing = \
-        getDomainFromActor(messageJson['object']['object'])
+        getDomainFromActor(message_json['object']['object'])
     domainFollowingFull = getFullDomain(domainFollowing, portFollowing)
 
     groupAccount = \
-        hasGroupType(base_dir, messageJson['object']['object'], None)
+        hasGroupType(base_dir, message_json['object']['object'], None)
     if unfollowAccount(base_dir, nicknameFollower, domainFollowerFull,
                        nicknameFollowing, domainFollowingFull,
                        debug, groupAccount):

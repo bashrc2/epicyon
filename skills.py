@@ -144,26 +144,26 @@ def getSkills(base_dir: str, nickname: str, domain: str) -> []:
     return None
 
 
-def outboxSkills(base_dir: str, nickname: str, messageJson: {},
+def outboxSkills(base_dir: str, nickname: str, message_json: {},
                  debug: bool) -> bool:
     """Handles receiving a skills update
     """
-    if not messageJson.get('type'):
+    if not message_json.get('type'):
         return False
-    if not messageJson['type'] == 'Skill':
+    if not message_json['type'] == 'Skill':
         return False
-    if not hasActor(messageJson, debug):
+    if not hasActor(message_json, debug):
         return False
-    if not hasObjectString(messageJson, debug):
+    if not hasObjectString(message_json, debug):
         return False
 
-    actorNickname = getNicknameFromActor(messageJson['actor'])
+    actorNickname = getNicknameFromActor(message_json['actor'])
     if actorNickname != nickname:
         return False
-    domain, port = getDomainFromActor(messageJson['actor'])
-    skill = messageJson['object'].replace('"', '').split(';')[0].strip()
+    domain, port = getDomainFromActor(message_json['actor'])
+    skill = message_json['object'].replace('"', '').split(';')[0].strip()
     skillLevelPercentStr = \
-        messageJson['object'].replace('"', '').split(';')[1].strip()
+        message_json['object'].replace('"', '').split(';')[1].strip()
     skillLevelPercent = 50
     if skillLevelPercentStr.isdigit():
         skillLevelPercent = int(skillLevelPercentStr)

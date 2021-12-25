@@ -41,7 +41,7 @@ def _create_accept_reject(base_dir: str, federation_list: [],
 
     domain = getFullDomain(domain, port)
 
-    newAccept = {
+    new_accept = {
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': acceptType,
         'actor': localActorUrl(http_prefix, nickname, domain),
@@ -51,8 +51,8 @@ def _create_accept_reject(base_dir: str, federation_list: [],
     }
     if ccUrl:
         if len(ccUrl) > 0:
-            newAccept['cc'] = [ccUrl]
-    return newAccept
+            new_accept['cc'] = [ccUrl]
+    return new_accept
 
 
 def createAccept(base_dir: str, federation_list: [],
@@ -75,30 +75,30 @@ def createReject(base_dir: str, federation_list: [],
                                  http_prefix, objectJson, 'Reject')
 
 
-def _acceptFollow(base_dir: str, domain: str, messageJson: {},
+def _acceptFollow(base_dir: str, domain: str, message_json: {},
                   federation_list: [], debug: bool) -> None:
     """Receiving a follow Accept activity
     """
-    if not hasObjectStringType(messageJson, debug):
+    if not hasObjectStringType(message_json, debug):
         return
-    if not messageJson['object']['type'] == 'Follow':
-        if not messageJson['object']['type'] == 'Join':
+    if not message_json['object']['type'] == 'Follow':
+        if not message_json['object']['type'] == 'Join':
             return
     if debug:
         print('DEBUG: receiving Follow activity')
-    if not messageJson['object'].get('actor'):
+    if not message_json['object'].get('actor'):
         print('DEBUG: no actor in Follow activity')
         return
     # no, this isn't a mistake
-    if not hasObjectStringObject(messageJson, debug):
+    if not hasObjectStringObject(message_json, debug):
         return
-    if not messageJson.get('to'):
+    if not message_json.get('to'):
         if debug:
             print('DEBUG: No "to" parameter in follow Accept')
         return
     if debug:
         print('DEBUG: follow Accept received')
-    thisActor = messageJson['object']['actor']
+    thisActor = message_json['object']['actor']
     nickname = getNicknameFromActor(thisActor)
     if not nickname:
         print('WARN: no nickname found in ' + thisActor)
@@ -129,7 +129,7 @@ def _acceptFollow(base_dir: str, domain: str, messageJson: {},
                 print('Actual:   ' + thisActor)
                 print('DEBUG: unrecognized actor ' + thisActor)
             return
-    followedActor = messageJson['object']['object']
+    followedActor = message_json['object']['object']
     followedDomain, port = getDomainFromActor(followedActor)
     if not followedDomain:
         print('DEBUG: no domain found within Follow activity object ' +
@@ -183,35 +183,37 @@ def _acceptFollow(base_dir: str, domain: str, messageJson: {},
 
 def receiveAcceptReject(session, base_dir: str,
                         http_prefix: str, domain: str, port: int,
-                        send_threads: [], postLog: [], cached_webfingers: {},
-                        person_cache: {}, messageJson: {}, federation_list: [],
+                        send_threads: [], postLog: [],
+                        cached_webfingers: {},
+                        person_cache: {}, message_json: {},
+                        federation_list: [],
                         debug: bool) -> bool:
     """Receives an Accept or Reject within the POST section of HTTPServer
     """
-    if messageJson['type'] != 'Accept' and messageJson['type'] != 'Reject':
+    if message_json['type'] != 'Accept' and message_json['type'] != 'Reject':
         return False
-    if not hasActor(messageJson, debug):
+    if not hasActor(message_json, debug):
         return False
-    if not hasUsersPath(messageJson['actor']):
+    if not hasUsersPath(message_json['actor']):
         if debug:
             print('DEBUG: "users" or "profile" missing from actor in ' +
-                  messageJson['type'] + '. Assuming single user instance.')
-    domain, tempPort = getDomainFromActor(messageJson['actor'])
+                  message_json['type'] + '. Assuming single user instance.')
+    domain, tempPort = getDomainFromActor(message_json['actor'])
     if not domainPermitted(domain, federation_list):
         if debug:
-            print('DEBUG: ' + messageJson['type'] +
+            print('DEBUG: ' + message_json['type'] +
                   ' from domain not permitted - ' + domain)
         return False
-    nickname = getNicknameFromActor(messageJson['actor'])
+    nickname = getNicknameFromActor(message_json['actor'])
     if not nickname:
         # single user instance
         nickname = 'dev'
         if debug:
-            print('DEBUG: ' + messageJson['type'] +
+            print('DEBUG: ' + message_json['type'] +
                   ' does not contain a nickname. ' +
                   'Assuming single user instance.')
     # receive follow accept
-    _acceptFollow(base_dir, domain, messageJson, federation_list, debug)
+    _acceptFollow(base_dir, domain, message_json, federation_list, debug)
     if debug:
-        print('DEBUG: Uh, ' + messageJson['type'] + ', I guess')
+        print('DEBUG: Uh, ' + message_json['type'] + ', I guess')
     return True

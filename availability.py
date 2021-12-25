@@ -54,24 +54,24 @@ def getAvailability(base_dir: str, nickname: str, domain: str) -> str:
     return None
 
 
-def outboxAvailability(base_dir: str, nickname: str, messageJson: {},
+def outboxAvailability(base_dir: str, nickname: str, message_json: {},
                        debug: bool) -> bool:
     """Handles receiving an availability update
     """
-    if not messageJson.get('type'):
+    if not message_json.get('type'):
         return False
-    if not messageJson['type'] == 'Availability':
+    if not message_json['type'] == 'Availability':
         return False
-    if not hasActor(messageJson, debug):
+    if not hasActor(message_json, debug):
         return False
-    if not hasObjectString(messageJson, debug):
+    if not hasObjectString(message_json, debug):
         return False
 
-    actorNickname = getNicknameFromActor(messageJson['actor'])
+    actorNickname = getNicknameFromActor(message_json['actor'])
     if actorNickname != nickname:
         return False
-    domain, port = getDomainFromActor(messageJson['actor'])
-    status = messageJson['object'].replace('"', '')
+    domain, port = getDomainFromActor(message_json['actor'])
+    status = message_json['object'].replace('"', '')
 
     return setAvailability(base_dir, nickname, domain, status)
 

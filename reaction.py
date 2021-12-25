@@ -357,33 +357,33 @@ def sendUndoReactionViaServer(base_dir: str, session,
 def outboxReaction(recentPostsCache: {},
                    base_dir: str, http_prefix: str,
                    nickname: str, domain: str, port: int,
-                   messageJson: {}, debug: bool) -> None:
+                   message_json: {}, debug: bool) -> None:
     """ When a reaction request is received by the outbox from c2s
     """
-    if not messageJson.get('type'):
+    if not message_json.get('type'):
         if debug:
             print('DEBUG: reaction - no type')
         return
-    if not messageJson['type'] == 'EmojiReact':
+    if not message_json['type'] == 'EmojiReact':
         if debug:
             print('DEBUG: not a reaction')
         return
-    if not hasObjectString(messageJson, debug):
+    if not hasObjectString(message_json, debug):
         return
-    if not messageJson.get('content'):
+    if not message_json.get('content'):
         return
-    if not isinstance(messageJson['content'], str):
+    if not isinstance(message_json['content'], str):
         return
-    if not validEmojiContent(messageJson['content']):
+    if not validEmojiContent(message_json['content']):
         print('outboxReaction: Invalid emoji reaction: "' +
-              messageJson['content'] + '"')
+              message_json['content'] + '"')
         return
     if debug:
         print('DEBUG: c2s reaction request arrived in outbox')
 
-    messageId = removeIdEnding(messageJson['object'])
+    messageId = removeIdEnding(message_json['object'])
     domain = removeDomainPort(domain)
-    emojiContent = messageJson['content']
+    emojiContent = message_json['content']
     postFilename = locatePost(base_dir, nickname, domain, messageId)
     if not postFilename:
         if debug:
@@ -392,7 +392,7 @@ def outboxReaction(recentPostsCache: {},
         return True
     updateReactionCollection(recentPostsCache,
                              base_dir, postFilename, messageId,
-                             messageJson['actor'],
+                             message_json['actor'],
                              nickname, domain, debug, None, emojiContent)
     if debug:
         print('DEBUG: post reaction via c2s - ' + postFilename)
@@ -401,30 +401,30 @@ def outboxReaction(recentPostsCache: {},
 def outboxUndoReaction(recentPostsCache: {},
                        base_dir: str, http_prefix: str,
                        nickname: str, domain: str, port: int,
-                       messageJson: {}, debug: bool) -> None:
+                       message_json: {}, debug: bool) -> None:
     """ When an undo reaction request is received by the outbox from c2s
     """
-    if not messageJson.get('type'):
+    if not message_json.get('type'):
         return
-    if not messageJson['type'] == 'Undo':
+    if not message_json['type'] == 'Undo':
         return
-    if not hasObjectStringType(messageJson, debug):
+    if not hasObjectStringType(message_json, debug):
         return
-    if not messageJson['object']['type'] == 'EmojiReact':
+    if not message_json['object']['type'] == 'EmojiReact':
         if debug:
             print('DEBUG: not a undo reaction')
         return
-    if not messageJson['object'].get('content'):
+    if not message_json['object'].get('content'):
         return
-    if not isinstance(messageJson['object']['content'], str):
+    if not isinstance(message_json['object']['content'], str):
         return
-    if not hasObjectStringObject(messageJson, debug):
+    if not hasObjectStringObject(message_json, debug):
         return
     if debug:
         print('DEBUG: c2s undo reaction request arrived in outbox')
 
-    messageId = removeIdEnding(messageJson['object']['object'])
-    emojiContent = messageJson['object']['content']
+    messageId = removeIdEnding(message_json['object']['object'])
+    emojiContent = message_json['object']['content']
     domain = removeDomainPort(domain)
     postFilename = locatePost(base_dir, nickname, domain, messageId)
     if not postFilename:
@@ -433,7 +433,7 @@ def outboxUndoReaction(recentPostsCache: {},
             print(messageId)
         return True
     undoReactionCollectionEntry(recentPostsCache, base_dir, postFilename,
-                                messageId, messageJson['actor'],
+                                messageId, message_json['actor'],
                                 domain, debug, None, emojiContent)
     if debug:
         print('DEBUG: post undo reaction via c2s - ' + postFilename)

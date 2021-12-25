@@ -1564,30 +1564,30 @@ def _createPostBase(base_dir: str,
 
 def outboxMessageCreateWrap(http_prefix: str,
                             nickname: str, domain: str, port: int,
-                            messageJson: {}) -> {}:
+                            message_json: {}) -> {}:
     """Wraps a received message in a Create
     https://www.w3.org/TR/activitypub/#object-without-create
     """
 
     domain = getFullDomain(domain, port)
     statusNumber, published = getStatusNumber()
-    if messageJson.get('published'):
-        published = messageJson['published']
+    if message_json.get('published'):
+        published = message_json['published']
     newPostId = \
         localActorUrl(http_prefix, nickname, domain) + \
         '/statuses/' + statusNumber
     cc = []
-    if messageJson.get('cc'):
-        cc = messageJson['cc']
+    if message_json.get('cc'):
+        cc = message_json['cc']
     newPost = {
         "@context": "https://www.w3.org/ns/activitystreams",
         'id': newPostId + '/activity',
         'type': 'Create',
         'actor': localActorUrl(http_prefix, nickname, domain),
         'published': published,
-        'to': messageJson['to'],
+        'to': message_json['to'],
         'cc': cc,
-        'object': messageJson
+        'object': message_json
     }
     newPost['object']['id'] = newPost['id']
     newPost['object']['url'] = \
@@ -1909,7 +1909,7 @@ def createQuestionPost(base_dir: str,
     """
     domainFull = getFullDomain(domain, port)
     localActor = localActorUrl(http_prefix, nickname, domainFull)
-    messageJson = \
+    message_json = \
         _createPostBase(base_dir, nickname, domain, port,
                         'https://www.w3.org/ns/activitystreams#Public',
                         localActor + '/followers',
@@ -1922,17 +1922,17 @@ def createQuestionPost(base_dir: str,
                         None, None, None,
                         None, None, None, None, None, system_language,
                         None, low_bandwidth, content_license_url)
-    messageJson['object']['type'] = 'Question'
-    messageJson['object']['oneOf'] = []
-    messageJson['object']['votersCount'] = 0
+    message_json['object']['type'] = 'Question'
+    message_json['object']['oneOf'] = []
+    message_json['object']['votersCount'] = 0
     currTime = datetime.datetime.utcnow()
     daysSinceEpoch = \
         int((currTime - datetime.datetime(1970, 1, 1)).days + durationDays)
     endTime = datetime.datetime(1970, 1, 1) + \
         datetime.timedelta(daysSinceEpoch)
-    messageJson['object']['endTime'] = endTime.strftime("%Y-%m-%dT%H:%M:%SZ")
+    message_json['object']['endTime'] = endTime.strftime("%Y-%m-%dT%H:%M:%SZ")
     for questionOption in qOptions:
-        messageJson['object']['oneOf'].append({
+        message_json['object']['oneOf'].append({
             "type": "Note",
             "name": questionOption,
             "replies": {
@@ -1940,7 +1940,7 @@ def createQuestionPost(base_dir: str,
                 "totalItems": 0
             }
         })
-    return messageJson
+    return message_json
 
 
 def createUnlistedPost(base_dir: str,
@@ -2072,7 +2072,7 @@ def createDirectMessagePost(base_dir: str,
         return None
     postTo = None
     postCc = None
-    messageJson = \
+    message_json = \
         _createPostBase(base_dir, nickname, domain, port,
                         postTo, postCc,
                         http_prefix, content, followersOnly, saveToFile,
@@ -2087,15 +2087,15 @@ def createDirectMessagePost(base_dir: str,
                         conversationId, low_bandwidth,
                         content_license_url)
     # mentioned recipients go into To rather than Cc
-    messageJson['to'] = messageJson['object']['cc']
-    messageJson['object']['to'] = messageJson['to']
-    messageJson['cc'] = []
-    messageJson['object']['cc'] = []
+    message_json['to'] = message_json['object']['cc']
+    message_json['object']['to'] = message_json['to']
+    message_json['cc'] = []
+    message_json['object']['cc'] = []
     if schedulePost:
-        postId = removeIdEnding(messageJson['object']['id'])
+        postId = removeIdEnding(message_json['object']['id'])
         savePostToBox(base_dir, http_prefix, postId,
-                      nickname, domain, messageJson, 'scheduled')
-    return messageJson
+                      nickname, domain, message_json, 'scheduled')
+    return message_json
 
 
 def createReportPost(base_dir: str,

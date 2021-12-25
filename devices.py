@@ -169,7 +169,7 @@ def E2EEdevicesCollection(base_dir: str, nickname: str, domain: str,
     return devicesDict
 
 
-def E2EEdecryptMessageFromDevice(messageJson: {}) -> str:
+def E2EEdecryptMessageFromDevice(message_json: {}) -> str:
     """Locally decrypts a message on the device.
     This should probably be a link to a local script
     or native app, such that what the user sees isn't

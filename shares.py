@@ -1029,70 +1029,70 @@ def getSharedItemsCatalogViaServer(base_dir, session,
 
 def outboxShareUpload(base_dir: str, http_prefix: str,
                       nickname: str, domain: str, port: int,
-                      messageJson: {}, debug: bool, city: str,
+                      message_json: {}, debug: bool, city: str,
                       system_language: str, translate: {},
                       low_bandwidth: bool,
                       content_license_url: str) -> None:
     """ When a shared item is received by the outbox from c2s
     """
-    if not messageJson.get('type'):
+    if not message_json.get('type'):
         return
-    if not messageJson['type'] == 'Add':
+    if not message_json['type'] == 'Add':
         return
-    if not hasObjectStringType(messageJson, debug):
+    if not hasObjectStringType(message_json, debug):
         return
-    if not messageJson['object']['type'] == 'Offer':
+    if not message_json['object']['type'] == 'Offer':
         if debug:
             print('DEBUG: not an Offer activity')
         return
-    if not messageJson['object'].get('displayName'):
+    if not message_json['object'].get('displayName'):
         if debug:
             print('DEBUG: displayName missing from Offer')
         return
-    if not messageJson['object'].get('summary'):
+    if not message_json['object'].get('summary'):
         if debug:
             print('DEBUG: summary missing from Offer')
         return
-    if not messageJson['object'].get('itemQty'):
+    if not message_json['object'].get('itemQty'):
         if debug:
             print('DEBUG: itemQty missing from Offer')
         return
-    if not messageJson['object'].get('itemType'):
+    if not message_json['object'].get('itemType'):
         if debug:
             print('DEBUG: itemType missing from Offer')
         return
-    if not messageJson['object'].get('category'):
+    if not message_json['object'].get('category'):
         if debug:
             print('DEBUG: category missing from Offer')
         return
-    if not messageJson['object'].get('duration'):
+    if not message_json['object'].get('duration'):
         if debug:
             print('DEBUG: duration missing from Offer')
         return
-    itemQty = float(messageJson['object']['itemQty'])
+    itemQty = float(message_json['object']['itemQty'])
     location = ''
-    if messageJson['object'].get('location'):
-        location = messageJson['object']['location']
+    if message_json['object'].get('location'):
+        location = message_json['object']['location']
     imageFilename = None
-    if messageJson['object'].get('imageFilename'):
-        imageFilename = messageJson['object']['imageFilename']
+    if message_json['object'].get('imageFilename'):
+        imageFilename = message_json['object']['imageFilename']
     if debug:
         print('Adding shared item')
-        pprint(messageJson)
+        pprint(message_json)
 
     addShare(base_dir,
              http_prefix, nickname, domain, port,
-             messageJson['object']['displayName'],
-             messageJson['object']['summary'],
+             message_json['object']['displayName'],
+             message_json['object']['summary'],
              imageFilename,
              itemQty,
-             messageJson['object']['itemType'],
-             messageJson['object']['category'],
+             message_json['object']['itemType'],
+             message_json['object']['category'],
              location,
-             messageJson['object']['duration'],
+             message_json['object']['duration'],
              debug, city,
-             messageJson['object']['itemPrice'],
-             messageJson['object']['itemCurrency'],
+             message_json['object']['itemPrice'],
+             message_json['object']['itemCurrency'],
              system_language, translate, 'shares',
              low_bandwidth, content_license_url)
     if debug:
@@ -1101,26 +1101,26 @@ def outboxShareUpload(base_dir: str, http_prefix: str,
 
 def outboxUndoShareUpload(base_dir: str, http_prefix: str,
                           nickname: str, domain: str, port: int,
-                          messageJson: {}, debug: bool) -> None:
+                          message_json: {}, debug: bool) -> None:
     """ When a shared item is removed via c2s
     """
-    if not messageJson.get('type'):
+    if not message_json.get('type'):
         return
-    if not messageJson['type'] == 'Remove':
+    if not message_json['type'] == 'Remove':
         return
-    if not hasObjectStringType(messageJson, debug):
+    if not hasObjectStringType(message_json, debug):
         return
-    if not messageJson['object']['type'] == 'Offer':
+    if not message_json['object']['type'] == 'Offer':
         if debug:
             print('DEBUG: not an Offer activity')
         return
-    if not messageJson['object'].get('displayName'):
+    if not message_json['object'].get('displayName'):
         if debug:
             print('DEBUG: displayName missing from Offer')
         return
     domainFull = getFullDomain(domain, port)
     removeSharedItem(base_dir, nickname, domain,
-                     messageJson['object']['displayName'],
+                     message_json['object']['displayName'],
                      http_prefix, domainFull, 'shares')
     if debug:
         print('DEBUG: shared item removed via c2s')

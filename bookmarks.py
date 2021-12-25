@@ -553,45 +553,45 @@ def sendUndoBookmarkViaServer(base_dir: str, session,
 def outboxBookmark(recentPostsCache: {},
                    base_dir: str, http_prefix: str,
                    nickname: str, domain: str, port: int,
-                   messageJson: {}, debug: bool) -> None:
+                   message_json: {}, debug: bool) -> None:
     """ When a bookmark request is received by the outbox from c2s
     """
-    if not messageJson.get('type'):
+    if not message_json.get('type'):
         return
-    if messageJson['type'] != 'Add':
+    if message_json['type'] != 'Add':
         return
-    if not hasActor(messageJson, debug):
+    if not hasActor(message_json, debug):
         return
-    if not messageJson.get('target'):
+    if not message_json.get('target'):
         if debug:
             print('DEBUG: no target in bookmark Add')
         return
-    if not hasObjectStringType(messageJson, debug):
+    if not hasObjectStringType(message_json, debug):
         return
-    if not isinstance(messageJson['target'], str):
+    if not isinstance(message_json['target'], str):
         if debug:
             print('DEBUG: bookmark Add target is not string')
         return
     domainFull = getFullDomain(domain, port)
-    if not messageJson['target'].endswith('://' + domainFull +
-                                          '/users/' + nickname +
-                                          '/tlbookmarks'):
+    if not message_json['target'].endswith('://' + domainFull +
+                                           '/users/' + nickname +
+                                           '/tlbookmarks'):
         if debug:
             print('DEBUG: bookmark Add target invalid ' +
-                  messageJson['target'])
+                  message_json['target'])
         return
-    if messageJson['object']['type'] != 'Document':
+    if message_json['object']['type'] != 'Document':
         if debug:
             print('DEBUG: bookmark Add type is not Document')
         return
-    if not messageJson['object'].get('url'):
+    if not message_json['object'].get('url'):
         if debug:
             print('DEBUG: bookmark Add missing url')
         return
     if debug:
         print('DEBUG: c2s bookmark Add request arrived in outbox')
 
-    messageUrl = removeIdEnding(messageJson['object']['url'])
+    messageUrl = removeIdEnding(message_json['object']['url'])
     domain = removeDomainPort(domain)
     postFilename = locatePost(base_dir, nickname, domain, messageUrl)
     if not postFilename:
@@ -601,7 +601,7 @@ def outboxBookmark(recentPostsCache: {},
         return True
     updateBookmarksCollection(recentPostsCache,
                               base_dir, postFilename, messageUrl,
-                              messageJson['actor'], domain, debug)
+                              message_json['actor'], domain, debug)
     if debug:
         print('DEBUG: post bookmarked via c2s - ' + postFilename)
 
@@ -609,45 +609,45 @@ def outboxBookmark(recentPostsCache: {},
 def outboxUndoBookmark(recentPostsCache: {},
                        base_dir: str, http_prefix: str,
                        nickname: str, domain: str, port: int,
-                       messageJson: {}, debug: bool) -> None:
+                       message_json: {}, debug: bool) -> None:
     """ When an undo bookmark request is received by the outbox from c2s
     """
-    if not messageJson.get('type'):
+    if not message_json.get('type'):
         return
-    if messageJson['type'] != 'Remove':
+    if message_json['type'] != 'Remove':
         return
-    if not hasActor(messageJson, debug):
+    if not hasActor(message_json, debug):
         return
-    if not messageJson.get('target'):
+    if not message_json.get('target'):
         if debug:
             print('DEBUG: no target in unbookmark Remove')
         return
-    if not hasObjectStringType(messageJson, debug):
+    if not hasObjectStringType(message_json, debug):
         return
-    if not isinstance(messageJson['target'], str):
+    if not isinstance(message_json['target'], str):
         if debug:
             print('DEBUG: unbookmark Remove target is not string')
         return
     domainFull = getFullDomain(domain, port)
-    if not messageJson['target'].endswith('://' + domainFull +
-                                          '/users/' + nickname +
-                                          '/tlbookmarks'):
+    if not message_json['target'].endswith('://' + domainFull +
+                                           '/users/' + nickname +
+                                           '/tlbookmarks'):
         if debug:
             print('DEBUG: unbookmark Remove target invalid ' +
-                  messageJson['target'])
+                  message_json['target'])
         return
-    if messageJson['object']['type'] != 'Document':
+    if message_json['object']['type'] != 'Document':
         if debug:
             print('DEBUG: unbookmark Remove type is not Document')
         return
-    if not messageJson['object'].get('url'):
+    if not message_json['object'].get('url'):
         if debug:
             print('DEBUG: unbookmark Remove missing url')
         return
     if debug:
         print('DEBUG: c2s unbookmark Remove request arrived in outbox')
 
-    messageUrl = removeIdEnding(messageJson['object']['url'])
+    messageUrl = removeIdEnding(message_json['object']['url'])
     domain = removeDomainPort(domain)
     postFilename = locatePost(base_dir, nickname, domain, messageUrl)
     if not postFilename:
@@ -657,6 +657,6 @@ def outboxUndoBookmark(recentPostsCache: {},
         return True
     updateBookmarksCollection(recentPostsCache,
                               base_dir, postFilename, messageUrl,
-                              messageJson['actor'], domain, debug)
+                              message_json['actor'], domain, debug)
     if debug:
         print('DEBUG: post unbookmarked via c2s - ' + postFilename)

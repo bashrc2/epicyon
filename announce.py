@@ -52,52 +52,52 @@ def isSelfAnnounce(post_json_object: {}) -> bool:
 
 
 def outboxAnnounce(recentPostsCache: {},
-                   base_dir: str, messageJson: {}, debug: bool) -> bool:
+                   base_dir: str, message_json: {}, debug: bool) -> bool:
     """ Adds or removes announce entries from the shares collection
     within a given post
     """
-    if not hasActor(messageJson, debug):
+    if not hasActor(message_json, debug):
         return False
-    if not isinstance(messageJson['actor'], str):
+    if not isinstance(message_json['actor'], str):
         return False
-    if not messageJson.get('type'):
+    if not message_json.get('type'):
         return False
-    if not messageJson.get('object'):
+    if not message_json.get('object'):
         return False
-    if messageJson['type'] == 'Announce':
-        if not isinstance(messageJson['object'], str):
+    if message_json['type'] == 'Announce':
+        if not isinstance(message_json['object'], str):
             return False
-        if isSelfAnnounce(messageJson):
+        if isSelfAnnounce(message_json):
             return False
-        nickname = getNicknameFromActor(messageJson['actor'])
+        nickname = getNicknameFromActor(message_json['actor'])
         if not nickname:
-            print('WARN: no nickname found in ' + messageJson['actor'])
+            print('WARN: no nickname found in ' + message_json['actor'])
             return False
-        domain, port = getDomainFromActor(messageJson['actor'])
+        domain, port = getDomainFromActor(message_json['actor'])
         postFilename = locatePost(base_dir, nickname, domain,
-                                  messageJson['object'])
+                                  message_json['object'])
         if postFilename:
             updateAnnounceCollection(recentPostsCache, base_dir, postFilename,
-                                     messageJson['actor'],
+                                     message_json['actor'],
                                      nickname, domain, debug)
             return True
-    elif messageJson['type'] == 'Undo':
-        if not hasObjectStringType(messageJson, debug):
+    elif message_json['type'] == 'Undo':
+        if not hasObjectStringType(message_json, debug):
             return False
-        if messageJson['object']['type'] == 'Announce':
-            if not isinstance(messageJson['object']['object'], str):
+        if message_json['object']['type'] == 'Announce':
+            if not isinstance(message_json['object']['object'], str):
                 return False
-            nickname = getNicknameFromActor(messageJson['actor'])
+            nickname = getNicknameFromActor(message_json['actor'])
             if not nickname:
-                print('WARN: no nickname found in ' + messageJson['actor'])
+                print('WARN: no nickname found in ' + message_json['actor'])
                 return False
-            domain, port = getDomainFromActor(messageJson['actor'])
+            domain, port = getDomainFromActor(message_json['actor'])
             postFilename = locatePost(base_dir, nickname, domain,
-                                      messageJson['object']['object'])
+                                      message_json['object']['object'])
             if postFilename:
                 undoAnnounceCollectionEntry(recentPostsCache,
                                             base_dir, postFilename,
-                                            messageJson['actor'],
+                                            message_json['actor'],
                                             domain, debug)
                 return True
     return False
@@ -389,25 +389,25 @@ def sendUndoAnnounceViaServer(base_dir: str, session,
 def outboxUndoAnnounce(recentPostsCache: {},
                        base_dir: str, http_prefix: str,
                        nickname: str, domain: str, port: int,
-                       messageJson: {}, debug: bool) -> None:
+                       message_json: {}, debug: bool) -> None:
     """ When an undo announce is received by the outbox from c2s
     """
-    if not messageJson.get('type'):
+    if not message_json.get('type'):
         return
-    if not messageJson['type'] == 'Undo':
+    if not message_json['type'] == 'Undo':
         return
-    if not hasObjectStringType(messageJson, debug):
+    if not hasObjectStringType(message_json, debug):
         return
-    if not messageJson['object']['type'] == 'Announce':
+    if not message_json['object']['type'] == 'Announce':
         if debug:
             print('DEBUG: not a undo announce')
         return
-    if not hasObjectStringObject(messageJson, debug):
+    if not hasObjectStringObject(message_json, debug):
         return
     if debug:
         print('DEBUG: c2s undo announce request arrived in outbox')
 
-    messageId = removeIdEnding(messageJson['object']['object'])
+    messageId = removeIdEnding(message_json['object']['object'])
     domain = removeDomainPort(domain)
     postFilename = locatePost(base_dir, nickname, domain, messageId)
     if not postFilename:
@@ -416,6 +416,6 @@ def outboxUndoAnnounce(recentPostsCache: {},
             print(messageId)
         return True
     undoAnnounceCollectionEntry(recentPostsCache, base_dir, postFilename,
-                                messageJson['actor'], domain, debug)
+                                message_json['actor'], domain, debug)
     if debug:
         print('DEBUG: post undo announce via c2s - ' + postFilename)

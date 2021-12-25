@@ -377,55 +377,55 @@ def validInboxFilenames(base_dir: str, nickname: str, domain: str,
     return True
 
 
-def inboxMessageHasParams(messageJson: {}) -> bool:
+def inboxMessageHasParams(message_json: {}) -> bool:
     """Checks whether an incoming message contains expected parameters
     """
     expectedParams = ['actor', 'type', 'object']
     for param in expectedParams:
-        if not messageJson.get(param):
+        if not message_json.get(param):
             # print('inboxMessageHasParams: ' +
-            #       param + ' ' + str(messageJson))
+            #       param + ' ' + str(message_json))
             return False
 
     # actor should be a string
-    if not isinstance(messageJson['actor'], str):
+    if not isinstance(message_json['actor'], str):
         print('WARN: actor should be a string, but is actually: ' +
-              str(messageJson['actor']))
-        pprint(messageJson)
+              str(message_json['actor']))
+        pprint(message_json)
         return False
 
     # type should be a string
-    if not isinstance(messageJson['type'], str):
-        print('WARN: type from ' + str(messageJson['actor']) +
+    if not isinstance(message_json['type'], str):
+        print('WARN: type from ' + str(message_json['actor']) +
               ' should be a string, but is actually: ' +
-              str(messageJson['type']))
+              str(message_json['type']))
         return False
 
     # object should be a dict or a string
-    if not hasObjectDict(messageJson):
-        if not isinstance(messageJson['object'], str):
-            print('WARN: object from ' + str(messageJson['actor']) +
+    if not hasObjectDict(message_json):
+        if not isinstance(message_json['object'], str):
+            print('WARN: object from ' + str(message_json['actor']) +
                   ' should be a dict or string, but is actually: ' +
-                  str(messageJson['object']))
+                  str(message_json['object']))
             return False
 
-    if not messageJson.get('to'):
+    if not message_json.get('to'):
         allowedWithoutToParam = ['Like', 'EmojiReact',
                                  'Follow', 'Join', 'Request',
                                  'Accept', 'Capability', 'Undo']
-        if messageJson['type'] not in allowedWithoutToParam:
+        if message_json['type'] not in allowedWithoutToParam:
             return False
     return True
 
 
-def inboxPermittedMessage(domain: str, messageJson: {},
+def inboxPermittedMessage(domain: str, message_json: {},
                           federation_list: []) -> bool:
     """ check that we are receiving from a permitted domain
     """
-    if not hasActor(messageJson, False):
+    if not hasActor(message_json, False):
         return False
 
-    actor = messageJson['actor']
+    actor = message_json['actor']
     # always allow the local domain
     if domain in actor:
         return True
@@ -436,11 +436,11 @@ def inboxPermittedMessage(domain: str, messageJson: {},
     alwaysAllowedTypes = (
         'Follow', 'Join', 'Like', 'EmojiReact', 'Delete', 'Announce'
     )
-    if messageJson['type'] not in alwaysAllowedTypes:
-        if not hasObjectDict(messageJson):
+    if message_json['type'] not in alwaysAllowedTypes:
+        if not hasObjectDict(message_json):
             return True
-        if messageJson['object'].get('inReplyTo'):
-            inReplyTo = messageJson['object']['inReplyTo']
+        if message_json['object'].get('inReplyTo'):
+            inReplyTo = message_json['object']['inReplyTo']
             if not isinstance(inReplyTo, str):
                 return False
             if not urlPermitted(inReplyTo, federation_list):
@@ -739,44 +739,45 @@ def _inboxPostRecipients(base_dir: str, post_json_object: {},
 
 
 def _receiveUndoFollow(session, base_dir: str, http_prefix: str,
-                       port: int, messageJson: {},
+                       port: int, message_json: {},
                        federation_list: [],
                        debug: bool) -> bool:
-    if not messageJson['object'].get('actor'):
+    if not message_json['object'].get('actor'):
         if debug:
             print('DEBUG: follow request has no actor within object')
         return False
-    if not hasUsersPath(messageJson['object']['actor']):
+    if not hasUsersPath(message_json['object']['actor']):
         if debug:
             print('DEBUG: "users" or "profile" missing ' +
                   'from actor within object')
         return False
-    if messageJson['object']['actor'] != messageJson['actor']:
+    if message_json['object']['actor'] != message_json['actor']:
         if debug:
             print('DEBUG: actors do not match')
         return False
 
     nicknameFollower = \
-        getNicknameFromActor(messageJson['object']['actor'])
+        getNicknameFromActor(message_json['object']['actor'])
     if not nicknameFollower:
         print('WARN: unable to find nickname in ' +
-              messageJson['object']['actor'])
+              message_json['object']['actor'])
         return False
     domainFollower, portFollower = \
-        getDomainFromActor(messageJson['object']['actor'])
+        getDomainFromActor(message_json['object']['actor'])
     domainFollowerFull = getFullDomain(domainFollower, portFollower)
 
     nicknameFollowing = \
-        getNicknameFromActor(messageJson['object']['object'])
+        getNicknameFromActor(message_json['object']['object'])
     if not nicknameFollowing:
         print('WARN: unable to find nickname in ' +
-              messageJson['object']['object'])
+              message_json['object']['object'])
         return False
     domainFollowing, portFollowing = \
-        getDomainFromActor(messageJson['object']['object'])
+        getDomainFromActor(message_json['object']['object'])
     domainFollowingFull = getFullDomain(domainFollowing, portFollowing)
 
-    groupAccount = hasGroupType(base_dir, messageJson['object']['actor'], None)
+    groupAccount = \
+        hasGroupType(base_dir, message_json['object']['actor'], None)
     if unfollowerOfAccount(base_dir,
                            nicknameFollowing, domainFollowingFull,
                            nicknameFollower, domainFollowerFull,
@@ -796,28 +797,28 @@ def _receiveUndoFollow(session, base_dir: str, http_prefix: str,
 def _receiveUndo(session, base_dir: str, http_prefix: str,
                  port: int, send_threads: [], postLog: [],
                  cached_webfingers: {}, person_cache: {},
-                 messageJson: {}, federation_list: [],
+                 message_json: {}, federation_list: [],
                  debug: bool) -> bool:
     """Receives an undo request within the POST section of HTTPServer
     """
-    if not messageJson['type'].startswith('Undo'):
+    if not message_json['type'].startswith('Undo'):
         return False
     if debug:
         print('DEBUG: Undo activity received')
-    if not hasActor(messageJson, debug):
+    if not hasActor(message_json, debug):
         return False
-    if not hasUsersPath(messageJson['actor']):
+    if not hasUsersPath(message_json['actor']):
         if debug:
             print('DEBUG: "users" or "profile" missing from actor')
         return False
-    if not hasObjectStringType(messageJson, debug):
+    if not hasObjectStringType(message_json, debug):
         return False
-    if not hasObjectStringObject(messageJson, debug):
+    if not hasObjectStringObject(message_json, debug):
         return False
-    if messageJson['object']['type'] == 'Follow' or \
-       messageJson['object']['type'] == 'Join':
+    if message_json['object']['type'] == 'Follow' or \
+       message_json['object']['type'] == 'Join':
         return _receiveUndoFollow(session, base_dir, http_prefix,
-                                  port, messageJson,
+                                  port, message_json,
                                   federation_list, debug)
     return False
 
@@ -897,17 +898,17 @@ def _personReceiveUpdate(base_dir: str,
     return True
 
 
-def _receiveUpdateToQuestion(recentPostsCache: {}, messageJson: {},
+def _receiveUpdateToQuestion(recentPostsCache: {}, message_json: {},
                              base_dir: str,
                              nickname: str, domain: str) -> None:
     """Updating a question as new votes arrive
     """
     # message url of the question
-    if not messageJson.get('id'):
+    if not message_json.get('id'):
         return
-    if not hasActor(messageJson, False):
+    if not hasActor(message_json, False):
         return
-    messageId = removeIdEnding(messageJson['id'])
+    messageId = removeIdEnding(message_json['id'])
     if '#' in messageId:
         messageId = messageId.split('#', 1)[0]
     # find the question post
@@ -921,13 +922,13 @@ def _receiveUpdateToQuestion(recentPostsCache: {}, messageJson: {},
     if not post_json_object.get('actor'):
         return
     # does the actor match?
-    if post_json_object['actor'] != messageJson['actor']:
+    if post_json_object['actor'] != message_json['actor']:
         return
-    saveJson(messageJson, postFilename)
+    saveJson(message_json, postFilename)
     # ensure that the cached post is removed if it exists, so
     # that it then will be recreated
     cachedPostFilename = \
-        getCachedPostFilename(base_dir, nickname, domain, messageJson)
+        getCachedPostFilename(base_dir, nickname, domain, message_json)
     if cachedPostFilename:
         if os.path.isfile(cachedPostFilename):
             try:
@@ -936,57 +937,57 @@ def _receiveUpdateToQuestion(recentPostsCache: {}, messageJson: {},
                 print('EX: _receiveUpdateToQuestion unable to delete ' +
                       cachedPostFilename)
     # remove from memory cache
-    removePostFromCache(messageJson, recentPostsCache)
+    removePostFromCache(message_json, recentPostsCache)
 
 
 def _receiveUpdate(recentPostsCache: {}, session, base_dir: str,
                    http_prefix: str, domain: str, port: int,
                    send_threads: [], postLog: [], cached_webfingers: {},
-                   person_cache: {}, messageJson: {}, federation_list: [],
+                   person_cache: {}, message_json: {}, federation_list: [],
                    nickname: str, debug: bool) -> bool:
     """Receives an Update activity within the POST section of HTTPServer
     """
-    if messageJson['type'] != 'Update':
+    if message_json['type'] != 'Update':
         return False
-    if not hasActor(messageJson, debug):
+    if not hasActor(message_json, debug):
         return False
-    if not hasObjectStringType(messageJson, debug):
+    if not hasObjectStringType(message_json, debug):
         return False
-    if not hasUsersPath(messageJson['actor']):
+    if not hasUsersPath(message_json['actor']):
         if debug:
             print('DEBUG: "users" or "profile" missing from actor in ' +
-                  messageJson['type'])
+                  message_json['type'])
         return False
 
-    if messageJson['object']['type'] == 'Question':
-        _receiveUpdateToQuestion(recentPostsCache, messageJson,
+    if message_json['object']['type'] == 'Question':
+        _receiveUpdateToQuestion(recentPostsCache, message_json,
                                  base_dir, nickname, domain)
         if debug:
             print('DEBUG: Question update was received')
         return True
 
-    if messageJson['object']['type'] == 'Person' or \
-       messageJson['object']['type'] == 'Application' or \
-       messageJson['object']['type'] == 'Group' or \
-       messageJson['object']['type'] == 'Service':
-        if messageJson['object'].get('url') and \
-           messageJson['object'].get('id'):
+    if message_json['object']['type'] == 'Person' or \
+       message_json['object']['type'] == 'Application' or \
+       message_json['object']['type'] == 'Group' or \
+       message_json['object']['type'] == 'Service':
+        if message_json['object'].get('url') and \
+           message_json['object'].get('id'):
             if debug:
-                print('Request to update actor: ' + str(messageJson))
-            updateNickname = getNicknameFromActor(messageJson['actor'])
+                print('Request to update actor: ' + str(message_json))
+            updateNickname = getNicknameFromActor(message_json['actor'])
             if updateNickname:
                 updateDomain, updatePort = \
-                    getDomainFromActor(messageJson['actor'])
+                    getDomainFromActor(message_json['actor'])
                 if _personReceiveUpdate(base_dir,
                                         domain, port,
                                         updateNickname, updateDomain,
                                         updatePort,
-                                        messageJson['object'],
+                                        message_json['object'],
                                         person_cache, debug):
-                    print('Person Update: ' + str(messageJson))
+                    print('Person Update: ' + str(message_json))
                     if debug:
                         print('DEBUG: Profile update was received for ' +
-                              messageJson['object']['url'])
+                              message_json['object']['url'])
                         return True
     return False
 
@@ -996,7 +997,7 @@ def _receiveLike(recentPostsCache: {},
                  http_prefix: str, domain: str, port: int,
                  onion_domain: str,
                  send_threads: [], postLog: [], cached_webfingers: {},
-                 person_cache: {}, messageJson: {}, federation_list: [],
+                 person_cache: {}, message_json: {}, federation_list: [],
                  debug: bool,
                  signing_priv_key_pem: str,
                  max_recent_posts: int, translate: {},
@@ -1010,32 +1011,32 @@ def _receiveLike(recentPostsCache: {},
                  lists_enabled: str) -> bool:
     """Receives a Like activity within the POST section of HTTPServer
     """
-    if messageJson['type'] != 'Like':
+    if message_json['type'] != 'Like':
         return False
-    if not hasActor(messageJson, debug):
+    if not hasActor(message_json, debug):
         return False
-    if not hasObjectString(messageJson, debug):
+    if not hasObjectString(message_json, debug):
         return False
-    if not messageJson.get('to'):
+    if not message_json.get('to'):
         if debug:
-            print('DEBUG: ' + messageJson['type'] + ' has no "to" list')
+            print('DEBUG: ' + message_json['type'] + ' has no "to" list')
         return False
-    if not hasUsersPath(messageJson['actor']):
+    if not hasUsersPath(message_json['actor']):
         if debug:
             print('DEBUG: "users" or "profile" missing from actor in ' +
-                  messageJson['type'])
+                  message_json['type'])
         return False
-    if '/statuses/' not in messageJson['object']:
+    if '/statuses/' not in message_json['object']:
         if debug:
             print('DEBUG: "statuses" missing from object in ' +
-                  messageJson['type'])
+                  message_json['type'])
         return False
     if not os.path.isdir(base_dir + '/accounts/' + handle):
         print('DEBUG: unknown recipient of like - ' + handle)
     # if this post in the outbox of the person?
     handleName = handle.split('@')[0]
     handleDom = handle.split('@')[1]
-    postLikedId = messageJson['object']
+    postLikedId = message_json['object']
     postFilename = locatePost(base_dir, handleName, handleDom, postLikedId)
     if not postFilename:
         if debug:
@@ -1045,7 +1046,7 @@ def _receiveLike(recentPostsCache: {},
     if debug:
         print('DEBUG: liked post found in inbox')
 
-    likeActor = messageJson['actor']
+    likeActor = message_json['actor']
     handleName = handle.split('@')[0]
     handleDom = handle.split('@')[1]
     if not _alreadyLiked(base_dir,
@@ -1118,7 +1119,7 @@ def _receiveUndoLike(recentPostsCache: {},
                      session, handle: str, isGroup: bool, base_dir: str,
                      http_prefix: str, domain: str, port: int,
                      send_threads: [], postLog: [], cached_webfingers: {},
-                     person_cache: {}, messageJson: {}, federation_list: [],
+                     person_cache: {}, message_json: {}, federation_list: [],
                      debug: bool,
                      signing_priv_key_pem: str,
                      max_recent_posts: int, translate: {},
@@ -1132,25 +1133,25 @@ def _receiveUndoLike(recentPostsCache: {},
                      lists_enabled: str) -> bool:
     """Receives an undo like activity within the POST section of HTTPServer
     """
-    if messageJson['type'] != 'Undo':
+    if message_json['type'] != 'Undo':
         return False
-    if not hasActor(messageJson, debug):
+    if not hasActor(message_json, debug):
         return False
-    if not hasObjectStringType(messageJson, debug):
+    if not hasObjectStringType(message_json, debug):
         return False
-    if messageJson['object']['type'] != 'Like':
+    if message_json['object']['type'] != 'Like':
         return False
-    if not hasObjectStringObject(messageJson, debug):
+    if not hasObjectStringObject(message_json, debug):
         return False
-    if not hasUsersPath(messageJson['actor']):
+    if not hasUsersPath(message_json['actor']):
         if debug:
             print('DEBUG: "users" or "profile" missing from actor in ' +
-                  messageJson['type'] + ' like')
+                  message_json['type'] + ' like')
         return False
-    if '/statuses/' not in messageJson['object']['object']:
+    if '/statuses/' not in message_json['object']['object']:
         if debug:
             print('DEBUG: "statuses" missing from like object in ' +
-                  messageJson['type'])
+                  message_json['type'])
         return False
     if not os.path.isdir(base_dir + '/accounts/' + handle):
         print('DEBUG: unknown recipient of undo like - ' + handle)
@@ -1159,16 +1160,16 @@ def _receiveUndoLike(recentPostsCache: {},
     handleDom = handle.split('@')[1]
     postFilename = \
         locatePost(base_dir, handleName, handleDom,
-                   messageJson['object']['object'])
+                   message_json['object']['object'])
     if not postFilename:
         if debug:
             print('DEBUG: unliked post not found in inbox or outbox')
-            print(messageJson['object']['object'])
+            print(message_json['object']['object'])
         return True
     if debug:
         print('DEBUG: liked post found in inbox. Now undoing.')
-    likeActor = messageJson['actor']
-    postLikedId = messageJson['object']
+    likeActor = message_json['actor']
+    postLikedId = message_json['object']
     undoLikesCollectionEntry(recentPostsCache, base_dir, postFilename,
                              postLikedId, likeActor, domain, debug, None)
     # regenerate the html
@@ -1230,7 +1231,7 @@ def _receiveReaction(recentPostsCache: {},
                      http_prefix: str, domain: str, port: int,
                      onion_domain: str,
                      send_threads: [], postLog: [], cached_webfingers: {},
-                     person_cache: {}, messageJson: {}, federation_list: [],
+                     person_cache: {}, message_json: {}, federation_list: [],
                      debug: bool,
                      signing_priv_key_pem: str,
                      max_recent_posts: int, translate: {},
@@ -1244,37 +1245,37 @@ def _receiveReaction(recentPostsCache: {},
                      lists_enabled: str) -> bool:
     """Receives an emoji reaction within the POST section of HTTPServer
     """
-    if messageJson['type'] != 'EmojiReact':
+    if message_json['type'] != 'EmojiReact':
         return False
-    if not hasActor(messageJson, debug):
+    if not hasActor(message_json, debug):
         return False
-    if not hasObjectString(messageJson, debug):
+    if not hasObjectString(message_json, debug):
         return False
-    if not messageJson.get('to'):
+    if not message_json.get('to'):
         if debug:
-            print('DEBUG: ' + messageJson['type'] + ' has no "to" list')
+            print('DEBUG: ' + message_json['type'] + ' has no "to" list')
         return False
-    if not messageJson.get('content'):
+    if not message_json.get('content'):
         if debug:
-            print('DEBUG: ' + messageJson['type'] + ' has no "content"')
+            print('DEBUG: ' + message_json['type'] + ' has no "content"')
         return False
-    if not isinstance(messageJson['content'], str):
+    if not isinstance(message_json['content'], str):
         if debug:
-            print('DEBUG: ' + messageJson['type'] + ' content is not string')
+            print('DEBUG: ' + message_json['type'] + ' content is not string')
         return False
-    if not validEmojiContent(messageJson['content']):
+    if not validEmojiContent(message_json['content']):
         print('_receiveReaction: Invalid emoji reaction: "' +
-              messageJson['content'] + '" from ' + messageJson['actor'])
+              message_json['content'] + '" from ' + message_json['actor'])
         return False
-    if not hasUsersPath(messageJson['actor']):
+    if not hasUsersPath(message_json['actor']):
         if debug:
             print('DEBUG: "users" or "profile" missing from actor in ' +
-                  messageJson['type'])
+                  message_json['type'])
         return False
-    if '/statuses/' not in messageJson['object']:
+    if '/statuses/' not in message_json['object']:
         if debug:
             print('DEBUG: "statuses" missing from object in ' +
-                  messageJson['type'])
+                  message_json['type'])
         return False
     if not os.path.isdir(base_dir + '/accounts/' + handle):
         print('DEBUG: unknown recipient of emoji reaction - ' + handle)
@@ -1287,8 +1288,8 @@ def _receiveReaction(recentPostsCache: {},
     handleName = handle.split('@')[0]
     handleDom = handle.split('@')[1]
 
-    postReactionId = messageJson['object']
-    emojiContent = removeHtml(messageJson['content'])
+    postReactionId = message_json['object']
+    emojiContent = removeHtml(message_json['content'])
     if not emojiContent:
         if debug:
             print('DEBUG: emoji reaction has no content')
@@ -1302,7 +1303,7 @@ def _receiveReaction(recentPostsCache: {},
     if debug:
         print('DEBUG: emoji reaction post found in inbox')
 
-    reactionActor = messageJson['actor']
+    reactionActor = message_json['actor']
     handleName = handle.split('@')[0]
     handleDom = handle.split('@')[1]
     if not _alreadyReacted(base_dir,
@@ -1378,7 +1379,7 @@ def _receiveUndoReaction(recentPostsCache: {},
                          http_prefix: str, domain: str, port: int,
                          send_threads: [], postLog: [],
                          cached_webfingers: {},
-                         person_cache: {}, messageJson: {},
+                         person_cache: {}, message_json: {},
                          federation_list: [],
                          debug: bool,
                          signing_priv_key_pem: str,
@@ -1393,33 +1394,33 @@ def _receiveUndoReaction(recentPostsCache: {},
                          lists_enabled: str) -> bool:
     """Receives an undo emoji reaction within the POST section of HTTPServer
     """
-    if messageJson['type'] != 'Undo':
+    if message_json['type'] != 'Undo':
         return False
-    if not hasActor(messageJson, debug):
+    if not hasActor(message_json, debug):
         return False
-    if not hasObjectStringType(messageJson, debug):
+    if not hasObjectStringType(message_json, debug):
         return False
-    if messageJson['object']['type'] != 'EmojiReact':
+    if message_json['object']['type'] != 'EmojiReact':
         return False
-    if not hasObjectStringObject(messageJson, debug):
+    if not hasObjectStringObject(message_json, debug):
         return False
-    if not messageJson['object'].get('content'):
+    if not message_json['object'].get('content'):
         if debug:
-            print('DEBUG: ' + messageJson['type'] + ' has no "content"')
+            print('DEBUG: ' + message_json['type'] + ' has no "content"')
         return False
-    if not isinstance(messageJson['object']['content'], str):
+    if not isinstance(message_json['object']['content'], str):
         if debug:
-            print('DEBUG: ' + messageJson['type'] + ' content is not string')
+            print('DEBUG: ' + message_json['type'] + ' content is not string')
         return False
-    if not hasUsersPath(messageJson['actor']):
+    if not hasUsersPath(message_json['actor']):
         if debug:
             print('DEBUG: "users" or "profile" missing from actor in ' +
-                  messageJson['type'] + ' reaction')
+                  message_json['type'] + ' reaction')
         return False
-    if '/statuses/' not in messageJson['object']['object']:
+    if '/statuses/' not in message_json['object']['object']:
         if debug:
             print('DEBUG: "statuses" missing from reaction object in ' +
-                  messageJson['type'])
+                  message_json['type'])
         return False
     if not os.path.isdir(base_dir + '/accounts/' + handle):
         print('DEBUG: unknown recipient of undo reaction - ' + handle)
@@ -1428,17 +1429,17 @@ def _receiveUndoReaction(recentPostsCache: {},
     handleDom = handle.split('@')[1]
     postFilename = \
         locatePost(base_dir, handleName, handleDom,
-                   messageJson['object']['object'])
+                   message_json['object']['object'])
     if not postFilename:
         if debug:
             print('DEBUG: unreaction post not found in inbox or outbox')
-            print(messageJson['object']['object'])
+            print(message_json['object']['object'])
         return True
     if debug:
         print('DEBUG: reaction post found in inbox. Now undoing.')
-    reactionActor = messageJson['actor']
-    postReactionId = messageJson['object']
-    emojiContent = removeHtml(messageJson['object']['content'])
+    reactionActor = message_json['actor']
+    postReactionId = message_json['object']
+    emojiContent = removeHtml(message_json['object']['content'])
     if not emojiContent:
         if debug:
             print('DEBUG: unreaction has no content')
@@ -1506,7 +1507,7 @@ def _receiveBookmark(recentPostsCache: {},
                      session, handle: str, isGroup: bool, base_dir: str,
                      http_prefix: str, domain: str, port: int,
                      send_threads: [], postLog: [], cached_webfingers: {},
-                     person_cache: {}, messageJson: {}, federation_list: [],
+                     person_cache: {}, message_json: {}, federation_list: [],
                      debug: bool, signing_priv_key_pem: str,
                      max_recent_posts: int, translate: {},
                      allow_deletion: bool,
@@ -1519,50 +1520,50 @@ def _receiveBookmark(recentPostsCache: {},
                      lists_enabled: {}) -> bool:
     """Receives a bookmark activity within the POST section of HTTPServer
     """
-    if not messageJson.get('type'):
+    if not message_json.get('type'):
         return False
-    if messageJson['type'] != 'Add':
+    if message_json['type'] != 'Add':
         return False
-    if not hasActor(messageJson, debug):
+    if not hasActor(message_json, debug):
         return False
-    if not messageJson.get('target'):
+    if not message_json.get('target'):
         if debug:
             print('DEBUG: no target in inbox bookmark Add')
         return False
-    if not hasObjectStringType(messageJson, debug):
+    if not hasObjectStringType(message_json, debug):
         return False
-    if not isinstance(messageJson['target'], str):
+    if not isinstance(message_json['target'], str):
         if debug:
             print('DEBUG: inbox bookmark Add target is not string')
         return False
     domainFull = getFullDomain(domain, port)
     nickname = handle.split('@')[0]
-    if not messageJson['actor'].endswith(domainFull + '/users/' + nickname):
+    if not message_json['actor'].endswith(domainFull + '/users/' + nickname):
         if debug:
             print('DEBUG: inbox bookmark Add unexpected actor')
         return False
-    if not messageJson['target'].endswith(messageJson['actor'] +
-                                          '/tlbookmarks'):
+    if not message_json['target'].endswith(message_json['actor'] +
+                                           '/tlbookmarks'):
         if debug:
             print('DEBUG: inbox bookmark Add target invalid ' +
-                  messageJson['target'])
+                  message_json['target'])
         return False
-    if messageJson['object']['type'] != 'Document':
+    if message_json['object']['type'] != 'Document':
         if debug:
             print('DEBUG: inbox bookmark Add type is not Document')
         return False
-    if not messageJson['object'].get('url'):
+    if not message_json['object'].get('url'):
         if debug:
             print('DEBUG: inbox bookmark Add missing url')
         return False
-    if '/statuses/' not in messageJson['object']['url']:
+    if '/statuses/' not in message_json['object']['url']:
         if debug:
             print('DEBUG: inbox bookmark Add missing statuses un url')
         return False
     if debug:
         print('DEBUG: c2s inbox bookmark Add request arrived in outbox')
 
-    messageUrl = removeIdEnding(messageJson['object']['url'])
+    messageUrl = removeIdEnding(message_json['object']['url'])
     domain = removeDomainPort(domain)
     postFilename = locatePost(base_dir, nickname, domain, messageUrl)
     if not postFilename:
@@ -1572,8 +1573,8 @@ def _receiveBookmark(recentPostsCache: {},
         return True
 
     updateBookmarksCollection(recentPostsCache, base_dir, postFilename,
-                              messageJson['object']['url'],
-                              messageJson['actor'], domain, debug)
+                              message_json['object']['url'],
+                              message_json['actor'], domain, debug)
     # regenerate the html
     bookmarkedPostJson = loadJson(postFilename, 0, 1)
     if bookmarkedPostJson:
@@ -1617,7 +1618,7 @@ def _receiveUndoBookmark(recentPostsCache: {},
                          http_prefix: str, domain: str, port: int,
                          send_threads: [], postLog: [],
                          cached_webfingers: {},
-                         person_cache: {}, messageJson: {},
+                         person_cache: {}, message_json: {},
                          federation_list: [],
                          debug: bool, signing_priv_key_pem: str,
                          max_recent_posts: int, translate: {},
@@ -1631,43 +1632,43 @@ def _receiveUndoBookmark(recentPostsCache: {},
                          lists_enabled: str) -> bool:
     """Receives an undo bookmark activity within the POST section of HTTPServer
     """
-    if not messageJson.get('type'):
+    if not message_json.get('type'):
         return False
-    if messageJson['type'] != 'Remove':
+    if message_json['type'] != 'Remove':
         return False
-    if not hasActor(messageJson, debug):
+    if not hasActor(message_json, debug):
         return False
-    if not messageJson.get('target'):
+    if not message_json.get('target'):
         if debug:
             print('DEBUG: no target in inbox undo bookmark Remove')
         return False
-    if not hasObjectStringType(messageJson, debug):
+    if not hasObjectStringType(message_json, debug):
         return False
-    if not isinstance(messageJson['target'], str):
+    if not isinstance(message_json['target'], str):
         if debug:
             print('DEBUG: inbox Remove bookmark target is not string')
         return False
     domainFull = getFullDomain(domain, port)
     nickname = handle.split('@')[0]
-    if not messageJson['actor'].endswith(domainFull + '/users/' + nickname):
+    if not message_json['actor'].endswith(domainFull + '/users/' + nickname):
         if debug:
             print('DEBUG: inbox undo bookmark Remove unexpected actor')
         return False
-    if not messageJson['target'].endswith(messageJson['actor'] +
-                                          '/tlbookmarks'):
+    if not message_json['target'].endswith(message_json['actor'] +
+                                           '/tlbookmarks'):
         if debug:
             print('DEBUG: inbox undo bookmark Remove target invalid ' +
-                  messageJson['target'])
+                  message_json['target'])
         return False
-    if messageJson['object']['type'] != 'Document':
+    if message_json['object']['type'] != 'Document':
         if debug:
             print('DEBUG: inbox undo bookmark Remove type is not Document')
         return False
-    if not messageJson['object'].get('url'):
+    if not message_json['object'].get('url'):
         if debug:
             print('DEBUG: inbox undo bookmark Remove missing url')
         return False
-    if '/statuses/' not in messageJson['object']['url']:
+    if '/statuses/' not in message_json['object']['url']:
         if debug:
             print('DEBUG: inbox undo bookmark Remove missing statuses un url')
         return False
@@ -1675,7 +1676,7 @@ def _receiveUndoBookmark(recentPostsCache: {},
         print('DEBUG: c2s inbox Remove bookmark ' +
               'request arrived in outbox')
 
-    messageUrl = removeIdEnding(messageJson['object']['url'])
+    messageUrl = removeIdEnding(message_json['object']['url'])
     domain = removeDomainPort(domain)
     postFilename = locatePost(base_dir, nickname, domain, messageUrl)
     if not postFilename:
@@ -1685,8 +1686,8 @@ def _receiveUndoBookmark(recentPostsCache: {},
         return True
 
     undoBookmarksCollectionEntry(recentPostsCache, base_dir, postFilename,
-                                 messageJson['object']['url'],
-                                 messageJson['actor'], domain, debug)
+                                 message_json['object']['url'],
+                                 message_json['actor'], domain, debug)
     # regenerate the html
     bookmarkedPostJson = loadJson(postFilename, 0, 1)
     if bookmarkedPostJson:
@@ -1727,49 +1728,49 @@ def _receiveUndoBookmark(recentPostsCache: {},
 def _receiveDelete(session, handle: str, isGroup: bool, base_dir: str,
                    http_prefix: str, domain: str, port: int,
                    send_threads: [], postLog: [], cached_webfingers: {},
-                   person_cache: {}, messageJson: {}, federation_list: [],
+                   person_cache: {}, message_json: {}, federation_list: [],
                    debug: bool, allow_deletion: bool,
                    recentPostsCache: {}) -> bool:
     """Receives a Delete activity within the POST section of HTTPServer
     """
-    if messageJson['type'] != 'Delete':
+    if message_json['type'] != 'Delete':
         return False
-    if not hasActor(messageJson, debug):
+    if not hasActor(message_json, debug):
         return False
     if debug:
         print('DEBUG: Delete activity arrived')
-    if not hasObjectString(messageJson, debug):
+    if not hasObjectString(message_json, debug):
         return False
     domainFull = getFullDomain(domain, port)
     deletePrefix = http_prefix + '://' + domainFull + '/'
     if (not allow_deletion and
-        (not messageJson['object'].startswith(deletePrefix) or
-         not messageJson['actor'].startswith(deletePrefix))):
+        (not message_json['object'].startswith(deletePrefix) or
+         not message_json['actor'].startswith(deletePrefix))):
         if debug:
             print('DEBUG: delete not permitted from other instances')
         return False
-    if not messageJson.get('to'):
+    if not message_json.get('to'):
         if debug:
-            print('DEBUG: ' + messageJson['type'] + ' has no "to" list')
+            print('DEBUG: ' + message_json['type'] + ' has no "to" list')
         return False
-    if not hasUsersPath(messageJson['actor']):
+    if not hasUsersPath(message_json['actor']):
         if debug:
             print('DEBUG: ' +
                   '"users" or "profile" missing from actor in ' +
-                  messageJson['type'])
+                  message_json['type'])
         return False
-    if '/statuses/' not in messageJson['object']:
+    if '/statuses/' not in message_json['object']:
         if debug:
             print('DEBUG: "statuses" missing from object in ' +
-                  messageJson['type'])
+                  message_json['type'])
         return False
-    if messageJson['actor'] not in messageJson['object']:
+    if message_json['actor'] not in message_json['object']:
         if debug:
             print('DEBUG: actor is not the owner of the post to be deleted')
     if not os.path.isdir(base_dir + '/accounts/' + handle):
         print('DEBUG: unknown recipient of like - ' + handle)
     # if this post in the outbox of the person?
-    messageId = removeIdEnding(messageJson['object'])
+    messageId = removeIdEnding(message_json['object'])
     removeModerationPostFromIndex(base_dir, messageId, debug)
     handleNickname = handle.split('@')[0]
     handleDomain = handle.split('@')[1]
@@ -1804,7 +1805,7 @@ def _receiveAnnounce(recentPostsCache: {},
                      http_prefix: str,
                      domain: str, onion_domain: str, port: int,
                      send_threads: [], postLog: [], cached_webfingers: {},
-                     person_cache: {}, messageJson: {}, federation_list: [],
+                     person_cache: {}, message_json: {}, federation_list: [],
                      debug: bool, translate: {},
                      yt_replace_domain: str,
                      twitter_replacement_domain: str,
@@ -1818,43 +1819,43 @@ def _receiveAnnounce(recentPostsCache: {},
                      lists_enabled: str) -> bool:
     """Receives an announce activity within the POST section of HTTPServer
     """
-    if messageJson['type'] != 'Announce':
+    if message_json['type'] != 'Announce':
         return False
     if '@' not in handle:
         if debug:
             print('DEBUG: bad handle ' + handle)
         return False
-    if not hasActor(messageJson, debug):
+    if not hasActor(message_json, debug):
         return False
     if debug:
         print('DEBUG: receiving announce on ' + handle)
-    if not hasObjectString(messageJson, debug):
+    if not hasObjectString(message_json, debug):
         return False
-    if not messageJson.get('to'):
+    if not message_json.get('to'):
         if debug:
-            print('DEBUG: ' + messageJson['type'] + ' has no "to" list')
+            print('DEBUG: ' + message_json['type'] + ' has no "to" list')
         return False
-    if not hasUsersPath(messageJson['actor']):
+    if not hasUsersPath(message_json['actor']):
         if debug:
             print('DEBUG: ' +
                   '"users" or "profile" missing from actor in ' +
-                  messageJson['type'])
+                  message_json['type'])
         return False
-    if isSelfAnnounce(messageJson):
+    if isSelfAnnounce(message_json):
         if debug:
             print('DEBUG: self-boost rejected')
         return False
-    if not hasUsersPath(messageJson['object']):
+    if not hasUsersPath(message_json['object']):
         if debug:
             print('DEBUG: ' +
                   '"users", "channel" or "profile" missing in ' +
-                  messageJson['type'])
+                  message_json['type'])
         return False
 
     blockedCache = {}
     prefixes = getProtocolPrefixes()
     # is the domain of the announce actor blocked?
-    objectDomain = messageJson['object']
+    objectDomain = message_json['object']
     for prefix in prefixes:
         objectDomain = objectDomain.replace(prefix, '')
     if '/' in objectDomain:
@@ -1868,17 +1869,17 @@ def _receiveAnnounce(recentPostsCache: {},
 
     # is the announce actor blocked?
     nickname = handle.split('@')[0]
-    actorNickname = getNicknameFromActor(messageJson['actor'])
-    actorDomain, actorPort = getDomainFromActor(messageJson['actor'])
+    actorNickname = getNicknameFromActor(message_json['actor'])
+    actorDomain, actorPort = getDomainFromActor(message_json['actor'])
     if isBlocked(base_dir, nickname, domain, actorNickname, actorDomain):
         print('Receive announce blocked for actor: ' +
               actorNickname + '@' + actorDomain)
         return False
 
     # also check the actor for the url being announced
-    announcedActorNickname = getNicknameFromActor(messageJson['object'])
+    announcedActorNickname = getNicknameFromActor(message_json['object'])
     announcedActorDomain, announcedActorPort = \
-        getDomainFromActor(messageJson['object'])
+        getDomainFromActor(message_json['object'])
     if isBlocked(base_dir, nickname, domain,
                  announcedActorNickname, announcedActorDomain):
         print('Receive announce object blocked for actor: ' +
@@ -1887,17 +1888,17 @@ def _receiveAnnounce(recentPostsCache: {},
 
     # is this post in the outbox of the person?
     postFilename = locatePost(base_dir, nickname, domain,
-                              messageJson['object'])
+                              message_json['object'])
     if not postFilename:
         if debug:
             print('DEBUG: announce post not found in inbox or outbox')
-            print(messageJson['object'])
+            print(message_json['object'])
         return True
     updateAnnounceCollection(recentPostsCache, base_dir, postFilename,
-                             messageJson['actor'], nickname, domain, debug)
+                             message_json['actor'], nickname, domain, debug)
     if debug:
-        print('DEBUG: Downloading announce post ' + messageJson['actor'] +
-              ' -> ' + messageJson['object'])
+        print('DEBUG: Downloading announce post ' + message_json['actor'] +
+              ' -> ' + message_json['object'])
     domainFull = getFullDomain(domain, port)
 
     # Generate html. This also downloads the announced post.
@@ -1908,13 +1909,13 @@ def _receiveAnnounce(recentPostsCache: {},
         followerApprovalActive(base_dir, nickname, domain)
     notDM = True
     if debug:
-        print('Generating html for announce ' + messageJson['id'])
+        print('Generating html for announce ' + message_json['id'])
     announceHtml = \
         individualPostAsHtml(signing_priv_key_pem, True,
                              recentPostsCache, max_recent_posts,
                              translate, pageNumber, base_dir,
                              session, cached_webfingers, person_cache,
-                             nickname, domain, port, messageJson,
+                             nickname, domain, port, message_json,
                              None, True, allow_deletion,
                              http_prefix, __version__,
                              'inbox',
@@ -1931,7 +1932,7 @@ def _receiveAnnounce(recentPostsCache: {},
                              lists_enabled)
     if not announceHtml:
         print('WARN: Unable to generate html for announce ' +
-              str(messageJson))
+              str(message_json))
     else:
         if debug:
             print('Generated announce html ' + announceHtml.replace('\n', ''))
@@ -1939,7 +1940,7 @@ def _receiveAnnounce(recentPostsCache: {},
     post_json_object = downloadAnnounce(session, base_dir,
                                         http_prefix,
                                         nickname, domain,
-                                        messageJson,
+                                        message_json,
                                         __version__, translate,
                                         yt_replace_domain,
                                         twitter_replacement_domain,
@@ -1950,12 +1951,12 @@ def _receiveAnnounce(recentPostsCache: {},
                                         signing_priv_key_pem,
                                         blockedCache)
     if not post_json_object:
-        print('WARN: unable to download announce: ' + str(messageJson))
+        print('WARN: unable to download announce: ' + str(message_json))
         notInOnion = True
         if onion_domain:
-            if onion_domain in messageJson['object']:
+            if onion_domain in message_json['object']:
                 notInOnion = False
-        if domain not in messageJson['object'] and notInOnion:
+        if domain not in message_json['object'] and notInOnion:
             if os.path.isfile(postFilename):
                 # if the announce can't be downloaded then remove it
                 try:
@@ -1966,7 +1967,7 @@ def _receiveAnnounce(recentPostsCache: {},
     else:
         if debug:
             print('DEBUG: Announce post downloaded for ' +
-                  messageJson['actor'] + ' -> ' + messageJson['object'])
+                  message_json['actor'] + ' -> ' + message_json['object'])
         storeHashTags(base_dir, nickname, domain,
                       http_prefix, domainFull,
                       post_json_object, translate)
@@ -2032,25 +2033,25 @@ def _receiveUndoAnnounce(recentPostsCache: {},
                          http_prefix: str, domain: str, port: int,
                          send_threads: [], postLog: [],
                          cached_webfingers: {},
-                         person_cache: {}, messageJson: {},
+                         person_cache: {}, message_json: {},
                          federation_list: [],
                          debug: bool) -> bool:
     """Receives an undo announce activity within the POST section of HTTPServer
     """
-    if messageJson['type'] != 'Undo':
+    if message_json['type'] != 'Undo':
         return False
-    if not hasActor(messageJson, debug):
+    if not hasActor(message_json, debug):
         return False
-    if not hasObjectDict(messageJson):
+    if not hasObjectDict(message_json):
         return False
-    if not hasObjectStringObject(messageJson, debug):
+    if not hasObjectStringObject(message_json, debug):
         return False
-    if messageJson['object']['type'] != 'Announce':
+    if message_json['object']['type'] != 'Announce':
         return False
-    if not hasUsersPath(messageJson['actor']):
+    if not hasUsersPath(message_json['actor']):
         if debug:
             print('DEBUG: "users" or "profile" missing from actor in ' +
-                  messageJson['type'] + ' announce')
+                  message_json['type'] + ' announce')
         return False
     if not os.path.isdir(base_dir + '/accounts/' + handle):
         print('DEBUG: unknown recipient of undo announce - ' + handle)
@@ -2058,11 +2059,11 @@ def _receiveUndoAnnounce(recentPostsCache: {},
     handleName = handle.split('@')[0]
     handleDom = handle.split('@')[1]
     postFilename = locatePost(base_dir, handleName, handleDom,
-                              messageJson['object']['object'])
+                              message_json['object']['object'])
     if not postFilename:
         if debug:
             print('DEBUG: undo announce post not found in inbox or outbox')
-            print(messageJson['object']['object'])
+            print(message_json['object']['object'])
         return True
     if debug:
         print('DEBUG: announced/repeated post to be undone found in inbox')
@@ -2076,7 +2077,7 @@ def _receiveUndoAnnounce(recentPostsCache: {},
                           "which isn't an announcement")
                 return False
     undoAnnounceCollectionEntry(recentPostsCache, base_dir, postFilename,
-                                messageJson['actor'], domain, debug)
+                                message_json['actor'], domain, debug)
     if os.path.isfile(postFilename):
         try:
             os.remove(postFilename)
@@ -2113,19 +2114,19 @@ def _postAllowsComments(postFilename: str) -> bool:
 
 
 def populateReplies(base_dir: str, http_prefix: str, domain: str,
-                    messageJson: {}, max_replies: int, debug: bool) -> bool:
+                    message_json: {}, max_replies: int, debug: bool) -> bool:
     """Updates the list of replies for a post on this domain if
     a reply to it arrives
     """
-    if not messageJson.get('id'):
+    if not message_json.get('id'):
         return False
-    if not hasObjectDict(messageJson):
+    if not hasObjectDict(message_json):
         return False
-    if not messageJson['object'].get('inReplyTo'):
+    if not message_json['object'].get('inReplyTo'):
         return False
-    if not messageJson['object'].get('to'):
+    if not message_json['object'].get('to'):
         return False
-    replyTo = messageJson['object']['inReplyTo']
+    replyTo = message_json['object']['inReplyTo']
     if not isinstance(replyTo, str):
         return False
     if debug:
@@ -2160,7 +2161,7 @@ def populateReplies(base_dir: str, http_prefix: str, domain: str,
         return False
     # populate a text file containing the ids of replies
     postRepliesFilename = postFilename.replace('.json', '.replies')
-    messageId = removeIdEnding(messageJson['id'])
+    messageId = removeIdEnding(message_json['id'])
     if os.path.isfile(postRepliesFilename):
         numLines = sum(1 for line in open(postRepliesFilename))
         if numLines > max_replies:
@@ -2193,7 +2194,7 @@ def _estimateNumberOfEmoji(content: str) -> int:
 
 
 def _validPostContent(base_dir: str, nickname: str, domain: str,
-                      messageJson: {}, max_mentions: int, max_emoji: int,
+                      message_json: {}, max_mentions: int, max_emoji: int,
                       allow_local_network_access: bool, debug: bool,
                       system_language: str,
                       http_prefix: str, domainFull: str,
@@ -2205,23 +2206,23 @@ def _validPostContent(base_dir: str, nickname: str, domain: str,
     Check if it's a git patch
     Check number of tags and mentions is reasonable
     """
-    if not hasObjectDict(messageJson):
+    if not hasObjectDict(message_json):
         return True
-    if not messageJson['object'].get('content'):
+    if not message_json['object'].get('content'):
         return True
 
-    if not messageJson['object'].get('published'):
+    if not message_json['object'].get('published'):
         return False
-    if 'T' not in messageJson['object']['published']:
+    if 'T' not in message_json['object']['published']:
         return False
-    if 'Z' not in messageJson['object']['published']:
+    if 'Z' not in message_json['object']['published']:
         return False
-    if not validPostDate(messageJson['object']['published'], 90, debug):
+    if not validPostDate(message_json['object']['published'], 90, debug):
         return False
 
     summary = None
-    if messageJson['object'].get('summary'):
-        summary = messageJson['object']['summary']
+    if message_json['object'].get('summary'):
+        summary = message_json['object']['summary']
         if not isinstance(summary, str):
             print('WARN: content warning is not a string')
             return False
@@ -2231,15 +2232,15 @@ def _validPostContent(base_dir: str, nickname: str, domain: str,
 
     # check for patches before dangeousMarkup, which excludes code
     if isGitPatch(base_dir, nickname, domain,
-                  messageJson['object']['type'],
+                  message_json['object']['type'],
                   summary,
-                  messageJson['object']['content']):
+                  message_json['object']['content']):
         return True
 
-    contentStr = getBaseContentFromPost(messageJson, system_language)
+    contentStr = getBaseContentFromPost(message_json, system_language)
     if dangerousMarkup(contentStr, allow_local_network_access):
-        if messageJson['object'].get('id'):
-            print('REJECT ARBITRARY HTML: ' + messageJson['object']['id'])
+        if message_json['object'].get('id'):
+            print('REJECT ARBITRARY HTML: ' + message_json['object']['id'])
         print('REJECT ARBITRARY HTML: bad string in post - ' +
               contentStr)
         return False
@@ -2247,31 +2248,31 @@ def _validPostContent(base_dir: str, nickname: str, domain: str,
     # check (rough) number of mentions
     mentionsEst = _estimateNumberOfMentions(contentStr)
     if mentionsEst > max_mentions:
-        if messageJson['object'].get('id'):
-            print('REJECT HELLTHREAD: ' + messageJson['object']['id'])
+        if message_json['object'].get('id'):
+            print('REJECT HELLTHREAD: ' + message_json['object']['id'])
         print('REJECT HELLTHREAD: Too many mentions in post - ' +
               contentStr)
         return False
     if _estimateNumberOfEmoji(contentStr) > max_emoji:
-        if messageJson['object'].get('id'):
-            print('REJECT EMOJI OVERLOAD: ' + messageJson['object']['id'])
+        if message_json['object'].get('id'):
+            print('REJECT EMOJI OVERLOAD: ' + message_json['object']['id'])
         print('REJECT EMOJI OVERLOAD: Too many emoji in post - ' +
               contentStr)
         return False
     # check number of tags
-    if messageJson['object'].get('tag'):
-        if not isinstance(messageJson['object']['tag'], list):
-            messageJson['object']['tag'] = []
+    if message_json['object'].get('tag'):
+        if not isinstance(message_json['object']['tag'], list):
+            message_json['object']['tag'] = []
         else:
-            if len(messageJson['object']['tag']) > int(max_mentions * 2):
-                if messageJson['object'].get('id'):
-                    print('REJECT: ' + messageJson['object']['id'])
+            if len(message_json['object']['tag']) > int(max_mentions * 2):
+                if message_json['object'].get('id'):
+                    print('REJECT: ' + message_json['object']['id'])
                 print('REJECT: Too many tags in post - ' +
-                      messageJson['object']['tag'])
+                      message_json['object']['tag'])
                 return False
     # check that the post is in a language suitable for this account
     if not understoodPostLanguage(base_dir, nickname, domain,
-                                  messageJson, system_language,
+                                  message_json, system_language,
                                   http_prefix, domainFull,
                                   person_cache):
         return False
@@ -2279,9 +2280,9 @@ def _validPostContent(base_dir: str, nickname: str, domain: str,
     if isFiltered(base_dir, nickname, domain, contentStr):
         print('REJECT: content filtered')
         return False
-    if messageJson['object'].get('inReplyTo'):
-        if isinstance(messageJson['object']['inReplyTo'], str):
-            originalPostId = messageJson['object']['inReplyTo']
+    if message_json['object'].get('inReplyTo'):
+        if isinstance(message_json['object']['inReplyTo'], str):
+            originalPostId = message_json['object']['inReplyTo']
             postPostFilename = locatePost(base_dir, nickname, domain,
                                           originalPostId)
             if postPostFilename:
@@ -2289,7 +2290,7 @@ def _validPostContent(base_dir: str, nickname: str, domain: str,
                     print('REJECT: reply to post which does not ' +
                           'allow comments: ' + originalPostId)
                     return False
-    if invalidCiphertext(messageJson['object']['content']):
+    if invalidCiphertext(message_json['object']['content']):
         print('REJECT: malformed ciphertext in content')
         return False
     if debug:
@@ -3185,7 +3186,7 @@ def _checkForGitPatches(base_dir: str, nickname: str, domain: str,
 
 
 def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
-                       session, keyId: str, handle: str, messageJson: {},
+                       session, keyId: str, handle: str, message_json: {},
                        base_dir: str, http_prefix: str, send_threads: [],
                        postLog: [], cached_webfingers: {}, person_cache: {},
                        queue: [], domain: str,
@@ -3227,7 +3228,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                     send_threads, postLog,
                     cached_webfingers,
                     person_cache,
-                    messageJson,
+                    message_json,
                     federation_list,
                     debug, signing_priv_key_pem,
                     max_recent_posts, translate,
@@ -3249,7 +3250,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                         send_threads, postLog,
                         cached_webfingers,
                         person_cache,
-                        messageJson,
+                        message_json,
                         federation_list,
                         debug, signing_priv_key_pem,
                         max_recent_posts, translate,
@@ -3272,7 +3273,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                         send_threads, postLog,
                         cached_webfingers,
                         person_cache,
-                        messageJson,
+                        message_json,
                         federation_list,
                         debug, signing_priv_key_pem,
                         max_recent_posts, translate,
@@ -3294,7 +3295,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                             send_threads, postLog,
                             cached_webfingers,
                             person_cache,
-                            messageJson,
+                            message_json,
                             federation_list,
                             debug, signing_priv_key_pem,
                             max_recent_posts, translate,
@@ -3316,7 +3317,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                         send_threads, postLog,
                         cached_webfingers,
                         person_cache,
-                        messageJson,
+                        message_json,
                         federation_list,
                         debug, signing_priv_key_pem,
                         max_recent_posts, translate,
@@ -3338,7 +3339,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                             send_threads, postLog,
                             cached_webfingers,
                             person_cache,
-                            messageJson,
+                            message_json,
                             federation_list,
                             debug, signing_priv_key_pem,
                             max_recent_posts, translate,
@@ -3353,8 +3354,8 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
             print('DEBUG: Undo bookmark accepted from ' + actor)
         return False
 
-    if isCreateInsideAnnounce(messageJson):
-        messageJson = messageJson['object']
+    if isCreateInsideAnnounce(message_json):
+        message_json = message_json['object']
 
     if _receiveAnnounce(recentPostsCache,
                         session, handle, isGroup,
@@ -3363,7 +3364,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                         send_threads, postLog,
                         cached_webfingers,
                         person_cache,
-                        messageJson,
+                        message_json,
                         federation_list,
                         debug, translate,
                         yt_replace_domain,
@@ -3385,7 +3386,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                             send_threads, postLog,
                             cached_webfingers,
                             person_cache,
-                            messageJson,
+                            message_json,
                             federation_list,
                             debug):
         if debug:
@@ -3398,7 +3399,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                       send_threads, postLog,
                       cached_webfingers,
                       person_cache,
-                      messageJson,
+                      message_json,
                       federation_list,
                       debug, allow_deletion,
                       recentPostsCache):
@@ -3414,10 +3415,10 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
     if os.path.isfile(destinationFilename):
         return True
 
-    if messageJson.get('postNickname'):
-        post_json_object = messageJson['post']
+    if message_json.get('postNickname'):
+        post_json_object = message_json['post']
     else:
-        post_json_object = messageJson
+        post_json_object = message_json
 
     nickname = handle.split('@')[0]
     jsonObj = None
@@ -3855,23 +3856,23 @@ def _checkJsonSignature(base_dir: str, queueJson: {}) -> (bool, bool):
 def _receiveFollowRequest(session, base_dir: str, http_prefix: str,
                           port: int, send_threads: [], postLog: [],
                           cached_webfingers: {}, person_cache: {},
-                          messageJson: {}, federation_list: [],
+                          message_json: {}, federation_list: [],
                           debug: bool, project_version: str,
                           max_followers: int, onion_domain: str,
                           signing_priv_key_pem: str, unit_test: bool) -> bool:
     """Receives a follow request within the POST section of HTTPServer
     """
-    if not messageJson['type'].startswith('Follow'):
-        if not messageJson['type'].startswith('Join'):
+    if not message_json['type'].startswith('Follow'):
+        if not message_json['type'].startswith('Join'):
             return False
     print('Receiving follow request')
-    if not hasActor(messageJson, debug):
+    if not hasActor(message_json, debug):
         return False
-    if not hasUsersPath(messageJson['actor']):
+    if not hasUsersPath(message_json['actor']):
         if debug:
             print('DEBUG: users/profile/accounts/channel missing from actor')
         return False
-    domain, tempPort = getDomainFromActor(messageJson['actor'])
+    domain, tempPort = getDomainFromActor(message_json['actor'])
     fromPort = port
     domainFull = getFullDomain(domain, tempPort)
     if tempPort:
@@ -3880,27 +3881,27 @@ def _receiveFollowRequest(session, base_dir: str, http_prefix: str,
         if debug:
             print('DEBUG: follower from domain not permitted - ' + domain)
         return False
-    nickname = getNicknameFromActor(messageJson['actor'])
+    nickname = getNicknameFromActor(message_json['actor'])
     if not nickname:
         # single user instance
         nickname = 'dev'
         if debug:
             print('DEBUG: follow request does not contain a ' +
                   'nickname. Assuming single user instance.')
-    if not messageJson.get('to'):
-        messageJson['to'] = messageJson['object']
-    if not hasUsersPath(messageJson['object']):
+    if not message_json.get('to'):
+        message_json['to'] = message_json['object']
+    if not hasUsersPath(message_json['object']):
         if debug:
             print('DEBUG: users/profile/channel/accounts ' +
                   'not found within object')
         return False
-    domainToFollow, tempPort = getDomainFromActor(messageJson['object'])
+    domainToFollow, tempPort = getDomainFromActor(message_json['object'])
     if not domainPermitted(domainToFollow, federation_list):
         if debug:
             print('DEBUG: follow domain not permitted ' + domainToFollow)
         return True
     domainToFollowFull = getFullDomain(domainToFollow, tempPort)
-    nicknameToFollow = getNicknameFromActor(messageJson['object'])
+    nicknameToFollow = getNicknameFromActor(message_json['object'])
     if not nicknameToFollow:
         if debug:
             print('DEBUG: follow request does not contain a ' +
@@ -3940,7 +3941,7 @@ def _receiveFollowRequest(session, base_dir: str, http_prefix: str,
     # is the actor sending the request valid?
     if not validSendingActor(session, base_dir,
                              nicknameToFollow, domainToFollow,
-                             person_cache, messageJson,
+                             person_cache, message_json,
                              signing_priv_key_pem, debug, unit_test):
         print('REJECT spam follow request ' + approveHandle)
         return False
@@ -3974,17 +3975,17 @@ def _receiveFollowRequest(session, base_dir: str, http_prefix: str,
         # Get the actor for the follower and add it to the cache.
         # Getting their public key has the same result
         if debug:
-            print('Obtaining the following actor: ' + messageJson['actor'])
-        if not getPersonPubKey(base_dir, session, messageJson['actor'],
+            print('Obtaining the following actor: ' + message_json['actor'])
+        if not getPersonPubKey(base_dir, session, message_json['actor'],
                                person_cache, debug, project_version,
                                http_prefix, domainToFollow, onion_domain,
                                signing_priv_key_pem):
             if debug:
                 print('Unable to obtain following actor: ' +
-                      messageJson['actor'])
+                      message_json['actor'])
 
         groupAccount = \
-            hasGroupType(base_dir, messageJson['actor'], person_cache)
+            hasGroupType(base_dir, message_json['actor'], person_cache)
         if groupAccount and isGroupAccount(base_dir, nickname, domain):
             print('Group cannot follow a group')
             return False
@@ -3993,7 +3994,7 @@ def _receiveFollowRequest(session, base_dir: str, http_prefix: str,
         return storeFollowRequest(base_dir,
                                   nicknameToFollow, domainToFollow, port,
                                   nickname, domain, fromPort,
-                                  messageJson, debug, messageJson['actor'],
+                                  message_json, debug, message_json['actor'],
                                   groupAccount)
     else:
         print('Follow request does not require approval ' + approveHandle)
@@ -4005,20 +4006,21 @@ def _receiveFollowRequest(session, base_dir: str, http_prefix: str,
 
             # for actors which don't follow the mastodon
             # /users/ path convention store the full actor
-            if '/users/' not in messageJson['actor']:
-                approveHandle = messageJson['actor']
+            if '/users/' not in message_json['actor']:
+                approveHandle = message_json['actor']
 
             # Get the actor for the follower and add it to the cache.
             # Getting their public key has the same result
             if debug:
-                print('Obtaining the following actor: ' + messageJson['actor'])
-            if not getPersonPubKey(base_dir, session, messageJson['actor'],
+                print('Obtaining the following actor: ' +
+                      message_json['actor'])
+            if not getPersonPubKey(base_dir, session, message_json['actor'],
                                    person_cache, debug, project_version,
                                    http_prefix, domainToFollow, onion_domain,
                                    signing_priv_key_pem):
                 if debug:
                     print('Unable to obtain following actor: ' +
-                          messageJson['actor'])
+                          message_json['actor'])
 
             print('Updating followers file: ' +
                   followersFilename + ' adding ' + approveHandle)
@@ -4026,9 +4028,9 @@ def _receiveFollowRequest(session, base_dir: str, http_prefix: str,
                 if approveHandle not in open(followersFilename).read():
                     groupAccount = \
                         hasGroupType(base_dir,
-                                     messageJson['actor'], person_cache)
+                                     message_json['actor'], person_cache)
                     if debug:
-                        print(approveHandle + ' / ' + messageJson['actor'] +
+                        print(approveHandle + ' / ' + message_json['actor'] +
                               ' is Group: ' + str(groupAccount))
                     if groupAccount and \
                        isGroupAccount(base_dir, nickname, domain):
@@ -4060,8 +4062,8 @@ def _receiveFollowRequest(session, base_dir: str, http_prefix: str,
     return followedAccountAccepts(session, base_dir, http_prefix,
                                   nicknameToFollow, domainToFollow, port,
                                   nickname, domain, fromPort,
-                                  messageJson['actor'], federation_list,
-                                  messageJson, send_threads, postLog,
+                                  message_json['actor'], federation_list,
+                                  message_json, send_threads, postLog,
                                   cached_webfingers, person_cache,
                                   debug, project_version, True,
                                   signing_priv_key_pem)

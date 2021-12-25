@@ -341,23 +341,23 @@ def sendUndoLikeViaServer(base_dir: str, session,
 def outboxLike(recentPostsCache: {},
                base_dir: str, http_prefix: str,
                nickname: str, domain: str, port: int,
-               messageJson: {}, debug: bool) -> None:
+               message_json: {}, debug: bool) -> None:
     """ When a like request is received by the outbox from c2s
     """
-    if not messageJson.get('type'):
+    if not message_json.get('type'):
         if debug:
             print('DEBUG: like - no type')
         return
-    if not messageJson['type'] == 'Like':
+    if not message_json['type'] == 'Like':
         if debug:
             print('DEBUG: not a like')
         return
-    if not hasObjectString(messageJson, debug):
+    if not hasObjectString(message_json, debug):
         return
     if debug:
         print('DEBUG: c2s like request arrived in outbox')
 
-    messageId = removeIdEnding(messageJson['object'])
+    messageId = removeIdEnding(message_json['object'])
     domain = removeDomainPort(domain)
     postFilename = locatePost(base_dir, nickname, domain, messageId)
     if not postFilename:
@@ -367,7 +367,7 @@ def outboxLike(recentPostsCache: {},
         return True
     updateLikesCollection(recentPostsCache,
                           base_dir, postFilename, messageId,
-                          messageJson['actor'],
+                          message_json['actor'],
                           nickname, domain, debug, None)
     if debug:
         print('DEBUG: post liked via c2s - ' + postFilename)
@@ -376,25 +376,25 @@ def outboxLike(recentPostsCache: {},
 def outboxUndoLike(recentPostsCache: {},
                    base_dir: str, http_prefix: str,
                    nickname: str, domain: str, port: int,
-                   messageJson: {}, debug: bool) -> None:
+                   message_json: {}, debug: bool) -> None:
     """ When an undo like request is received by the outbox from c2s
     """
-    if not messageJson.get('type'):
+    if not message_json.get('type'):
         return
-    if not messageJson['type'] == 'Undo':
+    if not message_json['type'] == 'Undo':
         return
-    if not hasObjectStringType(messageJson, debug):
+    if not hasObjectStringType(message_json, debug):
         return
-    if not messageJson['object']['type'] == 'Like':
+    if not message_json['object']['type'] == 'Like':
         if debug:
             print('DEBUG: not a undo like')
         return
-    if not hasObjectStringObject(messageJson, debug):
+    if not hasObjectStringObject(message_json, debug):
         return
     if debug:
         print('DEBUG: c2s undo like request arrived in outbox')
 
-    messageId = removeIdEnding(messageJson['object']['object'])
+    messageId = removeIdEnding(message_json['object']['object'])
     domain = removeDomainPort(domain)
     postFilename = locatePost(base_dir, nickname, domain, messageId)
     if not postFilename:
@@ -403,7 +403,7 @@ def outboxUndoLike(recentPostsCache: {},
             print(messageId)
         return True
     undoLikesCollectionEntry(recentPostsCache, base_dir, postFilename,
-                             messageId, messageJson['actor'],
+                             messageId, message_json['actor'],
                              domain, debug, None)
     if debug:
         print('DEBUG: post undo liked via c2s - ' + postFilename)

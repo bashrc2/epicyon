@@ -499,7 +499,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.base_dir,
                               nickname, self.server.domain)
 
-        messageJson = \
+        message_json = \
             createPublicPost(self.server.base_dir,
                              nickname,
                              self.server.domain, self.server.port,
@@ -519,10 +519,10 @@ class PubServer(BaseHTTPRequestHandler):
                              conversationId,
                              self.server.low_bandwidth,
                              self.server.content_license_url)
-        if messageJson:
+        if message_json:
             # name field contains the answer
-            messageJson['object']['name'] = answer
-            if self._postToOutbox(messageJson,
+            message_json['object']['name'] = answer
+            if self._postToOutbox(message_json,
                                   self.server.project_version, nickname):
                 postFilename = \
                     locatePost(self.server.base_dir, nickname,
@@ -1258,7 +1258,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._404()
         return True
 
-    def _postToOutbox(self, messageJson: {}, version: str,
+    def _postToOutbox(self, message_json: {}, version: str,
                       postToNickname: str) -> bool:
         """post is received by the outbox
         Client to server message post
@@ -1275,7 +1275,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         return postMessageToOutbox(self.server.session,
                                    self.server.translate,
-                                   messageJson, self.postToNickname,
+                                   message_json, self.postToNickname,
                                    self.server, self.server.base_dir,
                                    self.server.http_prefix,
                                    self.server.domain,
@@ -1341,7 +1341,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.outboxThread[acct][index].kill()
         return index
 
-    def _postToOutboxThread(self, messageJson: {}) -> bool:
+    def _postToOutboxThread(self, message_json: {}) -> bool:
         """Creates a thread to send a post
         """
         accountOutboxThreadName = self.postToNickname
@@ -1355,14 +1355,14 @@ class PubServer(BaseHTTPRequestHandler):
               str(self.server.outbox_thread_index[accountOutboxThreadName]))
         self.server.outboxThread[accountOutboxThreadName][index] = \
             threadWithTrace(target=self._postToOutbox,
-                            args=(messageJson.copy(),
+                            args=(message_json.copy(),
                                   self.server.project_version, None),
                             daemon=True)
         print('Starting outbox thread')
         self.server.outboxThread[accountOutboxThreadName][index].start()
         return True
 
-    def _updateInboxQueue(self, nickname: str, messageJson: {},
+    def _updateInboxQueue(self, nickname: str, message_json: {},
                           messageBytes: str) -> int:
         """Update the inbox queue
         """
@@ -1374,7 +1374,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # check that the incoming message has a fully recognized
         # linked data context
-        if not hasValidContext(messageJson):
+        if not hasValidContext(message_json):
             print('Message arriving at inbox queue has no valid context')
             self._400()
             self.server.POSTbusy = False
@@ -1382,14 +1382,14 @@ class PubServer(BaseHTTPRequestHandler):
 
         # check for blocked domains so that they can be rejected early
         messageDomain = None
-        if not hasActor(messageJson, self.server.debug):
+        if not hasActor(message_json, self.server.debug):
             print('Message arriving at inbox queue has no actor')
             self._400()
             self.server.POSTbusy = False
             return 3
 
         # actor should be a string
-        if not isinstance(messageJson['actor'], str):
+        if not isinstance(message_json['actor'], str):
             self._400()
             self.server.POSTbusy = False
             return 3
@@ -1397,9 +1397,9 @@ class PubServer(BaseHTTPRequestHandler):
         # check that some additional fields are strings
         stringFields = ('id', 'type', 'published')
         for checkField in stringFields:
-            if not messageJson.get(checkField):
+            if not message_json.get(checkField):
                 continue
-            if not isinstance(messageJson[checkField], str):
+            if not isinstance(message_json[checkField], str):
                 self._400()
                 self.server.POSTbusy = False
                 return 3
@@ -1407,40 +1407,40 @@ class PubServer(BaseHTTPRequestHandler):
         # check that to/cc fields are lists
         listFields = ('to', 'cc')
         for checkField in listFields:
-            if not messageJson.get(checkField):
+            if not message_json.get(checkField):
                 continue
-            if not isinstance(messageJson[checkField], list):
+            if not isinstance(message_json[checkField], list):
                 self._400()
                 self.server.POSTbusy = False
                 return 3
 
-        if hasObjectDict(messageJson):
+        if hasObjectDict(message_json):
             stringFields = (
                 'id', 'actor', 'type', 'content', 'published',
                 'summary', 'url', 'attributedTo'
             )
             for checkField in stringFields:
-                if not messageJson['object'].get(checkField):
+                if not message_json['object'].get(checkField):
                     continue
-                if not isinstance(messageJson['object'][checkField], str):
+                if not isinstance(message_json['object'][checkField], str):
                     self._400()
                     self.server.POSTbusy = False
                     return 3
             # check that some fields are lists
             listFields = ('to', 'cc', 'attachment')
             for checkField in listFields:
-                if not messageJson['object'].get(checkField):
+                if not message_json['object'].get(checkField):
                     continue
-                if not isinstance(messageJson['object'][checkField], list):
+                if not isinstance(message_json['object'][checkField], list):
                     self._400()
                     self.server.POSTbusy = False
                     return 3
 
         # actor should look like a url
-        if '://' not in messageJson['actor'] or \
-           '.' not in messageJson['actor']:
+        if '://' not in message_json['actor'] or \
+           '.' not in message_json['actor']:
             print('POST actor does not look like a url ' +
-                  messageJson['actor'])
+                  message_json['actor'])
             self._400()
             self.server.POSTbusy = False
             return 3
@@ -1449,15 +1449,15 @@ class PubServer(BaseHTTPRequestHandler):
         if not self.server.allow_local_network_access:
             localNetworkPatternList = getLocalNetworkAddresses()
             for localNetworkPattern in localNetworkPatternList:
-                if localNetworkPattern in messageJson['actor']:
+                if localNetworkPattern in message_json['actor']:
                     print('POST actor contains local network address ' +
-                          messageJson['actor'])
+                          message_json['actor'])
                     self._400()
                     self.server.POSTbusy = False
                     return 3
 
         messageDomain, messagePort = \
-            getDomainFromActor(messageJson['actor'])
+            getDomainFromActor(message_json['actor'])
 
         self.server.blockedCacheLastUpdated = \
             updateBlockedCache(self.server.base_dir,
@@ -1476,7 +1476,7 @@ class PubServer(BaseHTTPRequestHandler):
         if len(self.server.inbox_queue) >= self.server.max_queue_length:
             if messageDomain:
                 print('Queue: Inbox queue is full. Incoming post from ' +
-                      messageJson['actor'])
+                      message_json['actor'])
             else:
                 print('Queue: Inbox queue is full')
             self._503()
@@ -1506,15 +1506,15 @@ class PubServer(BaseHTTPRequestHandler):
         elif self.headers.get('content-length'):
             headersDict['content-length'] = self.headers['content-length']
 
-        originalMessageJson = messageJson.copy()
+        originalMessageJson = message_json.copy()
 
         # whether to add a 'to' field to the message
         addToFieldTypes = (
             'Follow', 'Like', 'EmojiReact', 'Add', 'Remove', 'Ignore'
         )
         for addToType in addToFieldTypes:
-            messageJson, toFieldExists = \
-                addToField(addToType, messageJson, self.server.debug)
+            message_json, toFieldExists = \
+                addToField(addToType, message_json, self.server.debug)
 
         beginSaveTime = time.time()
         # save the json for later queue processing
@@ -1536,7 +1536,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.http_prefix,
                                  nickname,
                                  self.server.domainFull,
-                                 messageJson, originalMessageJson,
+                                 message_json, originalMessageJson,
                                  messageBytesDecoded,
                                  headersDict,
                                  self.path,
@@ -13957,20 +13957,20 @@ class PubServer(BaseHTTPRequestHandler):
                                     nickname, self.server.domain,
                                     self.server.domainFull,
                                     self.server.system_language)
-            messageJson = {}
+            message_json = {}
             if pinnedPostJson:
                 postId = removeIdEnding(pinnedPostJson['id'])
-                messageJson = \
+                message_json = \
                     outboxMessageCreateWrap(self.server.http_prefix,
                                             nickname,
                                             self.server.domain,
                                             self.server.port,
                                             pinnedPostJson)
-                messageJson['id'] = postId + '/activity'
-                messageJson['object']['id'] = postId
-                messageJson['object']['url'] = replaceUsersWithAt(postId)
-                messageJson['object']['atomUri'] = postId
-            msg = json.dumps(messageJson,
+                message_json['id'] = postId + '/activity'
+                message_json['object']['id'] = postId
+                message_json['object']['url'] = replaceUsersWithAt(postId)
+                message_json['object']['atomUri'] = postId
+            msg = json.dumps(message_json,
                              ensure_ascii=False).encode('utf-8')
             msglen = len(msg)
             self._set_headers('application/json',
@@ -16614,7 +16614,7 @@ class PubServer(BaseHTTPRequestHandler):
                 conversationId = None
                 if fields.get('conversationId'):
                     conversationId = fields['conversationId']
-                messageJson = \
+                message_json = \
                     createPublicPost(self.server.base_dir,
                                      nickname,
                                      self.server.domain,
@@ -16633,25 +16633,25 @@ class PubServer(BaseHTTPRequestHandler):
                                      conversationId,
                                      self.server.low_bandwidth,
                                      self.server.content_license_url)
-                if messageJson:
+                if message_json:
                     if fields['schedulePost']:
                         return 1
                     if pinToProfile:
                         contentStr = \
-                            getBaseContentFromPost(messageJson,
+                            getBaseContentFromPost(message_json,
                                                    self.server.system_language)
                         followersOnly = False
                         pinPost(self.server.base_dir,
                                 nickname, self.server.domain, contentStr,
                                 followersOnly)
                         return 1
-                    if self._postToOutbox(messageJson,
+                    if self._postToOutbox(message_json,
                                           self.server.project_version,
                                           nickname):
                         populateReplies(self.server.base_dir,
                                         self.server.http_prefix,
                                         self.server.domainFull,
-                                        messageJson,
+                                        message_json,
                                         self.server.max_replies,
                                         self.server.debug)
                         return 1
@@ -16660,7 +16660,7 @@ class PubServer(BaseHTTPRequestHandler):
             elif postType == 'newblog':
                 # citations button on newblog screen
                 if citationsButtonPress:
-                    messageJson = \
+                    message_json = \
                         htmlCitations(self.server.base_dir,
                                       nickname,
                                       self.server.domain,
@@ -16674,13 +16674,13 @@ class PubServer(BaseHTTPRequestHandler):
                                       filename, attachmentMediaType,
                                       fields['imageDescription'],
                                       self.server.theme_name)
-                    if messageJson:
-                        messageJson = messageJson.encode('utf-8')
-                        messageJsonLen = len(messageJson)
+                    if message_json:
+                        message_json = message_json.encode('utf-8')
+                        message_jsonLen = len(message_json)
                         self._set_headers('text/html',
-                                          messageJsonLen,
+                                          message_jsonLen,
                                           cookie, callingDomain, False)
-                        self._write(messageJson)
+                        self._write(message_json)
                         return 1
                     else:
                         return -1
@@ -16698,7 +16698,7 @@ class PubServer(BaseHTTPRequestHandler):
                 conversationId = None
                 if fields.get('conversationId'):
                     conversationId = fields['conversationId']
-                messageJson = \
+                message_json = \
                     createBlogPost(self.server.base_dir, nickname,
                                    self.server.domain, self.server.port,
                                    self.server.http_prefix,
@@ -16718,17 +16718,17 @@ class PubServer(BaseHTTPRequestHandler):
                                    conversationId,
                                    self.server.low_bandwidth,
                                    self.server.content_license_url)
-                if messageJson:
+                if message_json:
                     if fields['schedulePost']:
                         return 1
-                    if self._postToOutbox(messageJson,
+                    if self._postToOutbox(message_json,
                                           self.server.project_version,
                                           nickname):
                         refreshNewswire(self.server.base_dir)
                         populateReplies(self.server.base_dir,
                                         self.server.http_prefix,
                                         self.server.domainFull,
-                                        messageJson,
+                                        message_json,
                                         self.server.max_replies,
                                         self.server.debug)
                         return 1
@@ -16849,7 +16849,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if fields.get('conversationId'):
                     conversationId = fields['conversationId']
 
-                messageJson = \
+                message_json = \
                     createUnlistedPost(self.server.base_dir,
                                        nickname,
                                        self.server.domain, self.server.port,
@@ -16871,16 +16871,16 @@ class PubServer(BaseHTTPRequestHandler):
                                        conversationId,
                                        self.server.low_bandwidth,
                                        self.server.content_license_url)
-                if messageJson:
+                if message_json:
                     if fields['schedulePost']:
                         return 1
-                    if self._postToOutbox(messageJson,
+                    if self._postToOutbox(message_json,
                                           self.server.project_version,
                                           nickname):
                         populateReplies(self.server.base_dir,
                                         self.server.http_prefix,
                                         self.server.domain,
-                                        messageJson,
+                                        message_json,
                                         self.server.max_replies,
                                         self.server.debug)
                         return 1
@@ -16899,7 +16899,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if fields.get('conversationId'):
                     conversationId = fields['conversationId']
 
-                messageJson = \
+                message_json = \
                     createFollowersOnlyPost(self.server.base_dir,
                                             nickname,
                                             self.server.domain,
@@ -16923,23 +16923,23 @@ class PubServer(BaseHTTPRequestHandler):
                                             conversationId,
                                             self.server.low_bandwidth,
                                             self.server.content_license_url)
-                if messageJson:
+                if message_json:
                     if fields['schedulePost']:
                         return 1
-                    if self._postToOutbox(messageJson,
+                    if self._postToOutbox(message_json,
                                           self.server.project_version,
                                           nickname):
                         populateReplies(self.server.base_dir,
                                         self.server.http_prefix,
                                         self.server.domain,
-                                        messageJson,
+                                        message_json,
                                         self.server.max_replies,
                                         self.server.debug)
                         return 1
                     else:
                         return -1
             elif postType == 'newdm':
-                messageJson = None
+                message_json = None
                 print('A DM was posted')
                 if '@' in mentionsStr:
                     city = getSpoofedCity(self.server.city,
@@ -16955,7 +16955,7 @@ class PubServer(BaseHTTPRequestHandler):
                         conversationId = fields['conversationId']
                     content_license_url = self.server.content_license_url
 
-                    messageJson = \
+                    message_json = \
                         createDirectMessagePost(self.server.base_dir,
                                                 nickname,
                                                 self.server.domain,
@@ -16980,25 +16980,25 @@ class PubServer(BaseHTTPRequestHandler):
                                                 conversationId,
                                                 self.server.low_bandwidth,
                                                 content_license_url)
-                if messageJson:
+                if message_json:
                     if fields['schedulePost']:
                         return 1
                     print('Sending new DM to ' +
-                          str(messageJson['object']['to']))
-                    if self._postToOutbox(messageJson,
+                          str(message_json['object']['to']))
+                    if self._postToOutbox(message_json,
                                           self.server.project_version,
                                           nickname):
                         populateReplies(self.server.base_dir,
                                         self.server.http_prefix,
                                         self.server.domain,
-                                        messageJson,
+                                        message_json,
                                         self.server.max_replies,
                                         self.server.debug)
                         return 1
                     else:
                         return -1
             elif postType == 'newreminder':
-                messageJson = None
+                message_json = None
                 handle = nickname + '@' + self.server.domainFull
                 print('A reminder was posted for ' + handle)
                 if '@' + handle not in mentionsStr:
@@ -17012,7 +17012,7 @@ class PubServer(BaseHTTPRequestHandler):
                 client_to_server = False
                 commentsEnabled = False
                 conversationId = None
-                messageJson = \
+                message_json = \
                     createDirectMessagePost(self.server.base_dir,
                                             nickname,
                                             self.server.domain,
@@ -17034,12 +17034,12 @@ class PubServer(BaseHTTPRequestHandler):
                                             conversationId,
                                             self.server.low_bandwidth,
                                             self.server.content_license_url)
-                if messageJson:
+                if message_json:
                     if fields['schedulePost']:
                         return 1
                     print('DEBUG: new reminder to ' +
-                          str(messageJson['object']['to']))
-                    if self._postToOutbox(messageJson,
+                          str(message_json['object']['to']))
+                    if self._postToOutbox(message_json,
                                           self.server.project_version,
                                           nickname):
                         return 1
@@ -17057,7 +17057,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.base_dir,
                                       nickname,
                                       self.server.domain)
-                messageJson = \
+                message_json = \
                     createReportPost(self.server.base_dir,
                                      nickname,
                                      self.server.domain, self.server.port,
@@ -17071,8 +17071,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.system_language,
                                      self.server.low_bandwidth,
                                      self.server.content_license_url)
-                if messageJson:
-                    if self._postToOutbox(messageJson,
+                if message_json:
+                    if self._postToOutbox(message_json,
                                           self.server.project_version,
                                           nickname):
                         return 1
@@ -17096,7 +17096,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       nickname,
                                       self.server.domain)
                 intDuration = int(fields['duration'])
-                messageJson = \
+                message_json = \
                     createQuestionPost(self.server.base_dir,
                                        nickname,
                                        self.server.domain,
@@ -17113,10 +17113,10 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.system_language,
                                        self.server.low_bandwidth,
                                        self.server.content_license_url)
-                if messageJson:
+                if message_json:
                     if self.server.debug:
                         print('DEBUG: new Question')
-                    if self._postToOutbox(messageJson,
+                    if self._postToOutbox(message_json,
                                           self.server.project_version,
                                           nickname):
                         return 1
@@ -18215,7 +18215,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         # convert the raw bytes to json
-        messageJson = json.loads(messageBytes)
+        message_json = json.loads(messageBytes)
 
         fitnessPerformance(POSTstartTime, self.server.fitness,
                            '_POST', 'load json',
@@ -18223,10 +18223,10 @@ class PubServer(BaseHTTPRequestHandler):
 
         # https://www.w3.org/TR/activitypub/#object-without-create
         if self.outboxAuthenticated:
-            if self._postToOutbox(messageJson,
+            if self._postToOutbox(message_json,
                                   self.server.project_version, None):
-                if messageJson.get('id'):
-                    locnStr = removeIdEnding(messageJson['id'])
+                if message_json.get('id'):
+                    locnStr = removeIdEnding(message_json['id'])
                     self.headers['Location'] = locnStr
                 self.send_response(201)
                 self.end_headers()
@@ -18248,7 +18248,7 @@ class PubServer(BaseHTTPRequestHandler):
         if self.server.debug:
             print('DEBUG: Check message has params')
 
-        if not messageJson:
+        if not message_json:
             self.send_response(403)
             self.end_headers()
             self.server.POSTbusy = False
@@ -18256,7 +18256,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         if self.path.endswith('/inbox') or \
            self.path == '/sharedInbox':
-            if not inboxMessageHasParams(messageJson):
+            if not inboxMessageHasParams(message_json):
                 if self.server.debug:
                     print("DEBUG: inbox message doesn't have the " +
                           "required parameters")
@@ -18287,7 +18287,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         if not self.server.unit_test:
             if not inboxPermittedMessage(self.server.domain,
-                                         messageJson,
+                                         message_json,
                                          self.server.federation_list):
                 if self.server.debug:
                     # https://www.youtube.com/watch?v=K3PrSj9XEu4
@@ -18313,7 +18313,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.postToNickname:
                     queueStatus = \
                         self._updateInboxQueue(self.postToNickname,
-                                               messageJson, messageBytes)
+                                               message_json, messageBytes)
                     if queueStatus >= 0 and queueStatus <= 3:
                         self.server.POSTbusy = False
                         return
@@ -18332,7 +18332,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.server.debug:
                     print('DEBUG: POST to shared inbox')
                 queueStatus = \
-                    self._updateInboxQueue('inbox', messageJson, messageBytes)
+                    self._updateInboxQueue('inbox', message_json, messageBytes)
                 if queueStatus >= 0 and queueStatus <= 3:
                     self.server.POSTbusy = False
                     return

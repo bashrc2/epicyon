@@ -416,23 +416,23 @@ def isBlocked(base_dir: str, nickname: str, domain: str,
 
 def outboxBlock(base_dir: str, http_prefix: str,
                 nickname: str, domain: str, port: int,
-                messageJson: {}, debug: bool) -> bool:
+                message_json: {}, debug: bool) -> bool:
     """ When a block request is received by the outbox from c2s
     """
-    if not messageJson.get('type'):
+    if not message_json.get('type'):
         if debug:
             print('DEBUG: block - no type')
         return False
-    if not messageJson['type'] == 'Block':
+    if not message_json['type'] == 'Block':
         if debug:
             print('DEBUG: not a block')
         return False
-    if not hasObjectString(messageJson, debug):
+    if not hasObjectString(message_json, debug):
         return False
     if debug:
         print('DEBUG: c2s block request arrived in outbox')
 
-    messageId = removeIdEnding(messageJson['object'])
+    messageId = removeIdEnding(message_json['object'])
     if '/statuses/' not in messageId:
         if debug:
             print('DEBUG: c2s block object is not a status')
@@ -448,11 +448,11 @@ def outboxBlock(base_dir: str, http_prefix: str,
             print('DEBUG: c2s block post not found in inbox or outbox')
             print(messageId)
         return False
-    nicknameBlocked = getNicknameFromActor(messageJson['object'])
+    nicknameBlocked = getNicknameFromActor(message_json['object'])
     if not nicknameBlocked:
-        print('WARN: unable to find nickname in ' + messageJson['object'])
+        print('WARN: unable to find nickname in ' + message_json['object'])
         return False
-    domainBlocked, portBlocked = getDomainFromActor(messageJson['object'])
+    domainBlocked, portBlocked = getDomainFromActor(message_json['object'])
     domainBlockedFull = getFullDomain(domainBlocked, portBlocked)
 
     addBlock(base_dir, nickname, domain,
@@ -465,30 +465,30 @@ def outboxBlock(base_dir: str, http_prefix: str,
 
 def outboxUndoBlock(base_dir: str, http_prefix: str,
                     nickname: str, domain: str, port: int,
-                    messageJson: {}, debug: bool) -> None:
+                    message_json: {}, debug: bool) -> None:
     """ When an undo block request is received by the outbox from c2s
     """
-    if not messageJson.get('type'):
+    if not message_json.get('type'):
         if debug:
             print('DEBUG: undo block - no type')
         return
-    if not messageJson['type'] == 'Undo':
+    if not message_json['type'] == 'Undo':
         if debug:
             print('DEBUG: not an undo block')
         return
 
-    if not hasObjectStringType(messageJson, debug):
+    if not hasObjectStringType(message_json, debug):
         return
-    if not messageJson['object']['type'] == 'Block':
+    if not message_json['object']['type'] == 'Block':
         if debug:
             print('DEBUG: not an undo block')
         return
-    if not hasObjectStringObject(messageJson, debug):
+    if not hasObjectStringObject(message_json, debug):
         return
     if debug:
         print('DEBUG: c2s undo block request arrived in outbox')
 
-    messageId = removeIdEnding(messageJson['object']['object'])
+    messageId = removeIdEnding(message_json['object']['object'])
     if '/statuses/' not in messageId:
         if debug:
             print('DEBUG: c2s undo block object is not a status')
@@ -504,12 +504,12 @@ def outboxUndoBlock(base_dir: str, http_prefix: str,
             print('DEBUG: c2s undo block post not found in inbox or outbox')
             print(messageId)
         return
-    nicknameBlocked = getNicknameFromActor(messageJson['object']['object'])
+    nicknameBlocked = getNicknameFromActor(message_json['object']['object'])
     if not nicknameBlocked:
         print('WARN: unable to find nickname in ' +
-              messageJson['object']['object'])
+              message_json['object']['object'])
         return
-    domainObject = messageJson['object']['object']
+    domainObject = message_json['object']['object']
     domainBlocked, portBlocked = getDomainFromActor(domainObject)
     domainBlockedFull = getFullDomain(domainBlocked, portBlocked)
 
@@ -770,25 +770,25 @@ def unmutePost(base_dir: str, nickname: str, domain: str, port: int,
 
 def outboxMute(base_dir: str, http_prefix: str,
                nickname: str, domain: str, port: int,
-               messageJson: {}, debug: bool,
+               message_json: {}, debug: bool,
                recentPostsCache: {}) -> None:
     """When a mute is received by the outbox from c2s
     """
-    if not messageJson.get('type'):
+    if not message_json.get('type'):
         return
-    if not hasActor(messageJson, debug):
+    if not hasActor(message_json, debug):
         return
     domainFull = getFullDomain(domain, port)
-    if not messageJson['actor'].endswith(domainFull + '/users/' + nickname):
+    if not message_json['actor'].endswith(domainFull + '/users/' + nickname):
         return
-    if not messageJson['type'] == 'Ignore':
+    if not message_json['type'] == 'Ignore':
         return
-    if not hasObjectString(messageJson, debug):
+    if not hasObjectString(message_json, debug):
         return
     if debug:
         print('DEBUG: c2s mute request arrived in outbox')
 
-    messageId = removeIdEnding(messageJson['object'])
+    messageId = removeIdEnding(message_json['object'])
     if '/statuses/' not in messageId:
         if debug:
             print('DEBUG: c2s mute object is not a status')
@@ -804,13 +804,13 @@ def outboxMute(base_dir: str, http_prefix: str,
             print('DEBUG: c2s mute post not found in inbox or outbox')
             print(messageId)
         return
-    nicknameMuted = getNicknameFromActor(messageJson['object'])
+    nicknameMuted = getNicknameFromActor(message_json['object'])
     if not nicknameMuted:
-        print('WARN: unable to find nickname in ' + messageJson['object'])
+        print('WARN: unable to find nickname in ' + message_json['object'])
         return
 
     mutePost(base_dir, nickname, domain, port,
-             http_prefix, messageJson['object'], recentPostsCache,
+             http_prefix, message_json['object'], recentPostsCache,
              debug)
 
     if debug:
@@ -819,31 +819,31 @@ def outboxMute(base_dir: str, http_prefix: str,
 
 def outboxUndoMute(base_dir: str, http_prefix: str,
                    nickname: str, domain: str, port: int,
-                   messageJson: {}, debug: bool,
+                   message_json: {}, debug: bool,
                    recentPostsCache: {}) -> None:
     """When an undo mute is received by the outbox from c2s
     """
-    if not messageJson.get('type'):
+    if not message_json.get('type'):
         return
-    if not hasActor(messageJson, debug):
+    if not hasActor(message_json, debug):
         return
     domainFull = getFullDomain(domain, port)
-    if not messageJson['actor'].endswith(domainFull + '/users/' + nickname):
+    if not message_json['actor'].endswith(domainFull + '/users/' + nickname):
         return
-    if not messageJson['type'] == 'Undo':
+    if not message_json['type'] == 'Undo':
         return
-    if not hasObjectStringType(messageJson, debug):
+    if not hasObjectStringType(message_json, debug):
         return
-    if messageJson['object']['type'] != 'Ignore':
+    if message_json['object']['type'] != 'Ignore':
         return
-    if not isinstance(messageJson['object']['object'], str):
+    if not isinstance(message_json['object']['object'], str):
         if debug:
             print('DEBUG: undo mute object is not a string')
         return
     if debug:
         print('DEBUG: c2s undo mute request arrived in outbox')
 
-    messageId = removeIdEnding(messageJson['object']['object'])
+    messageId = removeIdEnding(message_json['object']['object'])
     if '/statuses/' not in messageId:
         if debug:
             print('DEBUG: c2s undo mute object is not a status')
@@ -859,14 +859,14 @@ def outboxUndoMute(base_dir: str, http_prefix: str,
             print('DEBUG: c2s undo mute post not found in inbox or outbox')
             print(messageId)
         return
-    nicknameMuted = getNicknameFromActor(messageJson['object']['object'])
+    nicknameMuted = getNicknameFromActor(message_json['object']['object'])
     if not nicknameMuted:
         print('WARN: unable to find nickname in ' +
-              messageJson['object']['object'])
+              message_json['object']['object'])
         return
 
     unmutePost(base_dir, nickname, domain, port,
-               http_prefix, messageJson['object']['object'],
+               http_prefix, message_json['object']['object'],
                recentPostsCache, debug)
 
     if debug:

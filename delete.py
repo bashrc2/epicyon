@@ -114,31 +114,31 @@ def sendDeleteViaServer(base_dir: str, session,
 
 def outboxDelete(base_dir: str, http_prefix: str,
                  nickname: str, domain: str,
-                 messageJson: {}, debug: bool,
+                 message_json: {}, debug: bool,
                  allow_deletion: bool,
                  recentPostsCache: {}) -> None:
     """ When a delete request is received by the outbox from c2s
     """
-    if not messageJson.get('type'):
+    if not message_json.get('type'):
         if debug:
             print('DEBUG: delete - no type')
         return
-    if not messageJson['type'] == 'Delete':
+    if not message_json['type'] == 'Delete':
         if debug:
             print('DEBUG: not a delete')
         return
-    if not hasObjectString(messageJson, debug):
+    if not hasObjectString(message_json, debug):
         return
     if debug:
         print('DEBUG: c2s delete request arrived in outbox')
     deletePrefix = http_prefix + '://' + domain
     if (not allow_deletion and
-        (not messageJson['object'].startswith(deletePrefix) or
-         not messageJson['actor'].startswith(deletePrefix))):
+        (not message_json['object'].startswith(deletePrefix) or
+         not message_json['actor'].startswith(deletePrefix))):
         if debug:
             print('DEBUG: delete not permitted from other instances')
         return
-    messageId = removeIdEnding(messageJson['object'])
+    messageId = removeIdEnding(message_json['object'])
     if '/statuses/' not in messageId:
         if debug:
             print('DEBUG: c2s delete object is not a status')

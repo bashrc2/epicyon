@@ -90,15 +90,15 @@ def setActorLanguages(base_dir: str, actorJson: {}, languagesStr: str) -> None:
 
 
 def understoodPostLanguage(base_dir: str, nickname: str, domain: str,
-                           messageJson: {}, system_language: str,
+                           message_json: {}, system_language: str,
                            http_prefix: str, domainFull: str,
                            person_cache: {}) -> bool:
     """Returns true if the post is written in a language
     understood by this account
     """
-    msgObject = messageJson
-    if hasObjectDict(messageJson):
-        msgObject = messageJson['object']
+    msgObject = message_json
+    if hasObjectDict(message_json):
+        msgObject = message_json['object']
     if not msgObject.get('contentMap'):
         return True
     if not isinstance(msgObject['contentMap'], dict):
