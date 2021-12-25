@@ -1641,7 +1641,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         # ensure that there is a minimum delay between failed login
         # attempts, to mitigate brute force
-        if int(time.time()) - self.server.lastLoginFailure < 5:
+        if int(time.time()) - self.server.last_login_failure < 5:
             self._503()
             self.server.POSTbusy = False
             return
@@ -1676,7 +1676,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         loginNickname, loginPassword, register = \
             htmlGetLoginCredentials(loginParams,
-                                    self.server.lastLoginTime,
+                                    self.server.last_login_time,
                                     self.server.domain)
         if loginNickname:
             if isSystemAccount(loginNickname):
@@ -1685,7 +1685,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._clearLoginDetails(loginNickname, callingDomain)
                 self.server.POSTbusy = False
                 return
-            self.server.lastLoginTime = int(time.time())
+            self.server.last_login_time = int(time.time())
             if register:
                 if not validPassword(loginPassword):
                     self.server.POSTbusy = False
@@ -1737,7 +1737,7 @@ class PubServer(BaseHTTPRequestHandler):
                 print('Login failed: ' + loginNickname)
                 self._clearLoginDetails(loginNickname, callingDomain)
                 failTime = int(time.time())
-                self.server.lastLoginFailure = failTime
+                self.server.last_login_failure = failTime
                 if not domain.endswith('.onion'):
                     if not isLocalNetworkAddress(ipAddress):
                         recordLoginFailure(base_dir, ipAddress,
@@ -18755,8 +18755,8 @@ def runDaemon(content_license_url: str,
     httpd.postLog = []
     httpd.maxQueueLength = 64
     httpd.allow_deletion = allow_deletion
-    httpd.lastLoginTime = 0
-    httpd.lastLoginFailure = 0
+    httpd.last_login_time = 0
+    httpd.last_login_failure = 0
     httpd.loginFailureCount = {}
     httpd.log_login_failures = log_login_failures
     httpd.max_replies = max_replies

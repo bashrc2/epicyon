@@ -21,7 +21,7 @@ from theme import getTextModeLogo
 
 
 def htmlGetLoginCredentials(loginParams: str,
-                            lastLoginTime: int,
+                            last_login_time: int,
                             domain: str) -> (str, str, bool):
     """Receives login credentials via HTTPServer POST
     """
@@ -29,7 +29,7 @@ def htmlGetLoginCredentials(loginParams: str,
         return None, None, None
     # minimum time between login attempts
     currTime = int(time.time())
-    if currTime < lastLoginTime+10:
+    if currTime < last_login_time+10:
         return None, None, None
     if '&' not in loginParams:
         return None, None, None
