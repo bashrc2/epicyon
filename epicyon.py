@@ -998,9 +998,9 @@ if not themeName:
     themeName = 'default'
 
 if not args.mediainstance:
-    mediaInstance = getConfigParam(base_dir, 'mediaInstance')
-    if mediaInstance is not None:
-        args.mediainstance = mediaInstance
+    media_instance = getConfigParam(base_dir, 'media_instance')
+    if media_instance is not None:
+        args.mediainstance = media_instance
         if args.mediainstance:
             args.blogsinstance = False
             args.newsinstance = False

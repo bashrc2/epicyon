@@ -5039,17 +5039,17 @@ class PubServer(BaseHTTPRequestHandler):
 
                     if nickname == adminNickname:
                         # change media instance status
-                        if fields.get('mediaInstance'):
-                            self.server.mediaInstance = False
+                        if fields.get('media_instance'):
+                            self.server.media_instance = False
                             self.server.defaultTimeline = 'inbox'
-                            if fields['mediaInstance'] == 'on':
-                                self.server.mediaInstance = True
+                            if fields['media_instance'] == 'on':
+                                self.server.media_instance = True
                                 self.server.blogs_instance = False
                                 self.server.news_instance = False
                                 self.server.defaultTimeline = 'tlmedia'
                             setConfigParam(base_dir,
-                                           "mediaInstance",
-                                           self.server.mediaInstance)
+                                           "media_instance",
+                                           self.server.media_instance)
                             setConfigParam(base_dir,
                                            "blogs_instance",
                                            self.server.blogs_instance)
@@ -5057,12 +5057,12 @@ class PubServer(BaseHTTPRequestHandler):
                                            "news_instance",
                                            self.server.news_instance)
                         else:
-                            if self.server.mediaInstance:
-                                self.server.mediaInstance = False
+                            if self.server.media_instance:
+                                self.server.media_instance = False
                                 self.server.defaultTimeline = 'inbox'
                                 setConfigParam(base_dir,
-                                               "mediaInstance",
-                                               self.server.mediaInstance)
+                                               "media_instance",
+                                               self.server.media_instance)
 
                         # is this a news theme?
                         if isNewsThemeName(self.server.base_dir,
@@ -5076,11 +5076,11 @@ class PubServer(BaseHTTPRequestHandler):
                             if fields['news_instance'] == 'on':
                                 self.server.news_instance = True
                                 self.server.blogs_instance = False
-                                self.server.mediaInstance = False
+                                self.server.media_instance = False
                                 self.server.defaultTimeline = 'tlfeatures'
                             setConfigParam(base_dir,
-                                           "mediaInstance",
-                                           self.server.mediaInstance)
+                                           "media_instance",
+                                           self.server.media_instance)
                             setConfigParam(base_dir,
                                            "blogs_instance",
                                            self.server.blogs_instance)
@@ -5093,7 +5093,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.defaultTimeline = 'inbox'
                                 setConfigParam(base_dir,
                                                "news_instance",
-                                               self.server.mediaInstance)
+                                               self.server.media_instance)
 
                         # change blog instance status
                         if fields.get('blogs_instance'):
@@ -5101,15 +5101,15 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.defaultTimeline = 'inbox'
                             if fields['blogs_instance'] == 'on':
                                 self.server.blogs_instance = True
-                                self.server.mediaInstance = False
+                                self.server.media_instance = False
                                 self.server.news_instance = False
                                 self.server.defaultTimeline = 'tlblogs'
                             setConfigParam(base_dir,
                                            "blogs_instance",
                                            self.server.blogs_instance)
                             setConfigParam(base_dir,
-                                           "mediaInstance",
-                                           self.server.mediaInstance)
+                                           "media_instance",
+                                           self.server.media_instance)
                             setConfigParam(base_dir,
                                            "news_instance",
                                            self.server.news_instance)
@@ -12907,7 +12907,7 @@ class PubServer(BaseHTTPRequestHandler):
         return True
 
     def _showNewPost(self, callingDomain: str, path: str,
-                     mediaInstance: bool, translate: {},
+                     media_instance: bool, translate: {},
                      base_dir: str, http_prefix: str,
                      inReplyToUrl: str, replyToList: [],
                      shareDescription: str, replyPageNumber: int,
@@ -12954,7 +12954,7 @@ class PubServer(BaseHTTPRequestHandler):
                     postJsonObject = loadJson(replyPostFilename)
 
             msg = htmlNewPost(self.server.cssCache,
-                              mediaInstance,
+                              media_instance,
                               translate,
                               base_dir,
                               http_prefix,
@@ -15078,13 +15078,13 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.domain, nickname)
                 setMinimal(self.server.base_dir,
                            self.server.domain, nickname, notMin)
-                if not (self.server.mediaInstance or
+                if not (self.server.media_instance or
                         self.server.blogs_instance):
                     self.path = '/users/' + nickname + '/inbox'
                 else:
                     if self.server.blogs_instance:
                         self.path = '/users/' + nickname + '/tlblogs'
-                    elif self.server.mediaInstance:
+                    elif self.server.media_instance:
                         self.path = '/users/' + nickname + '/tlmedia'
                     else:
                         self.path = '/users/' + nickname + '/tlfeatures'
@@ -15676,7 +15676,7 @@ class PubServer(BaseHTTPRequestHandler):
                         localActorUrl(self.server.http_prefix, nickname,
                                       self.server.domainFull) + \
                         '/statuses/' + messageId
-                    msg = htmlEditBlog(self.server.mediaInstance,
+                    msg = htmlEditBlog(self.server.media_instance,
                                        self.server.translate,
                                        self.server.base_dir,
                                        self.server.http_prefix,
@@ -15747,7 +15747,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return
 
             if self._showNewPost(callingDomain, self.path,
-                                 self.server.mediaInstance,
+                                 self.server.media_instance,
                                  self.server.translate,
                                  self.server.base_dir,
                                  self.server.http_prefix,
@@ -18451,7 +18451,7 @@ def runDaemon(content_license_url: str,
               newswire_votes_threshold: int,
               news_instance: bool,
               blogs_instance: bool,
-              mediaInstance: bool,
+              media_instance: bool,
               maxRecentPosts: int,
               enableSharedInbox: bool, registration: bool,
               language: str, projectVersion: str,
@@ -18607,7 +18607,7 @@ def runDaemon(content_license_url: str,
     httpd.manualFollowerApproval = manualFollowerApproval
     httpd.onionDomain = onionDomain
     httpd.i2pDomain = i2pDomain
-    httpd.mediaInstance = mediaInstance
+    httpd.media_instance = media_instance
     httpd.blogs_instance = blogs_instance
 
     # load translations dictionary
@@ -18807,7 +18807,7 @@ def runDaemon(content_license_url: str,
 
     httpd.news_instance = news_instance
     httpd.defaultTimeline = 'inbox'
-    if mediaInstance:
+    if media_instance:
         httpd.defaultTimeline = 'tlmedia'
     if blogs_instance:
         httpd.defaultTimeline = 'tlblogs'

@@ -184,7 +184,7 @@ def _htmlNewPostDropDown(scopeIcon: str, scopeDescription: str,
     return dropDownContent
 
 
-def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
+def htmlNewPost(cssCache: {}, media_instance: bool, translate: {},
                 base_dir: str, http_prefix: str,
                 path: str, inReplyTo: str,
                 mentions: [],
@@ -779,7 +779,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
     newPostForm += '    </center></div>\n'
 
     newPostForm += replyStr
-    if mediaInstance and not replyStr:
+    if media_instance and not replyStr:
         newPostForm += newPostImageSection
 
     if not shareDescription:
@@ -818,7 +818,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
 
     newPostForm += \
         '    <br><label class="labels">' + placeholderMessage + '</label>'
-    if mediaInstance:
+    if media_instance:
         messageBoxHeight = 200
 
     if endpoint == 'newquestion':
@@ -832,7 +832,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         ' spellcheck="true" autocomplete="on">' + \
         '</textarea>\n'
     newPostForm += extraFields + citationsStr + dateAndLocation
-    if not mediaInstance or replyStr:
+    if not media_instance or replyStr:
         newPostForm += newPostImageSection
 
     newPostForm += \

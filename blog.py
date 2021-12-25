@@ -765,7 +765,7 @@ def htmlBlogView(authorized: bool,
     return blogStr + htmlFooter()
 
 
-def htmlEditBlog(mediaInstance: bool, translate: {},
+def htmlEditBlog(media_instance: bool, translate: {},
                  base_dir: str, http_prefix: str,
                  path: str,
                  pageNumber: int,
@@ -878,7 +878,7 @@ def htmlEditBlog(mediaInstance: bool, translate: {},
     editBlogForm += '      <input type="submit" name="submitPost" value="' + \
         translate['Submit'] + '">'
     editBlogForm += '    </center></div>'
-    if mediaInstance:
+    if media_instance:
         editBlogForm += editBlogImageSection
     editBlogForm += \
         '    <label class="labels">' + placeholderSubject + '</label><br>'
@@ -898,7 +898,7 @@ def htmlEditBlog(mediaInstance: bool, translate: {},
         editTextArea(placeholderMessage, 'message', contentStr,
                      messageBoxHeight, '', True)
     editBlogForm += dateAndLocation
-    if not mediaInstance:
+    if not media_instance:
         editBlogForm += editBlogImageSection
     editBlogForm += '  </div>'
     editBlogForm += '</form>'

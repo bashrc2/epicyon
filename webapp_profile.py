@@ -1296,7 +1296,7 @@ def _htmlEditProfileTwitter(base_dir: str, translate: {},
 
 def _htmlEditProfileInstance(base_dir: str, translate: {},
                              peertubeInstances: [],
-                             mediaInstanceStr: str,
+                             media_instanceStr: str,
                              blogs_instanceStr: str,
                              news_instanceStr: str) -> (str, str, str, str):
     """Edit profile instance settings
@@ -1387,7 +1387,7 @@ def _htmlEditProfileInstance(base_dir: str, translate: {},
         translate['Type of instance'] + '</label><br>\n'
     instanceStr += \
         editCheckBox(translate['This is a media instance'],
-                     'mediaInstance', mediaInstanceStr)
+                     'media_instance', media_instanceStr)
     instanceStr += \
         editCheckBox(translate['This is a blogging instance'],
                      'blogs_instance', blogs_instanceStr)
@@ -2112,7 +2112,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, base_dir: str, path: str,
     displayNickname = nickname
     isBot = isGroup = followDMs = removeTwitter = ''
     notifyLikes = notifyReactions = ''
-    hideLikeButton = hideReactionButton = mediaInstanceStr = ''
+    hideLikeButton = hideReactionButton = media_instanceStr = ''
     blogs_instanceStr = news_instanceStr = movedTo = twitterStr = ''
     bioStr = donateUrl = websiteUrl = emailAddress = ''
     PGPpubKey = EnigmaPubKey = ''
@@ -2172,23 +2172,23 @@ def htmlEditProfile(cssCache: {}, translate: {}, base_dir: str, path: str,
     if os.path.isfile(accountDir + '/.hideReactionButton'):
         hideReactionButton = 'checked'
 
-    mediaInstance = getConfigParam(base_dir, "mediaInstance")
-    if mediaInstance:
-        if mediaInstance is True:
-            mediaInstanceStr = 'checked'
+    media_instance = getConfigParam(base_dir, "media_instance")
+    if media_instance:
+        if media_instance is True:
+            media_instanceStr = 'checked'
             blogs_instanceStr = news_instanceStr = ''
 
     news_instance = getConfigParam(base_dir, "news_instance")
     if news_instance:
         if news_instance is True:
             news_instanceStr = 'checked'
-            blogs_instanceStr = mediaInstanceStr = ''
+            blogs_instanceStr = media_instanceStr = ''
 
     blogs_instance = getConfigParam(base_dir, "blogs_instance")
     if blogs_instance:
         if blogs_instance is True:
             blogs_instanceStr = 'checked'
-            mediaInstanceStr = news_instanceStr = ''
+            media_instanceStr = news_instanceStr = ''
 
     cssFilename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
@@ -2221,7 +2221,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, base_dir: str, path: str,
             instanceStr, roleAssignStr, peertubeStr, libretranslateStr = \
                 _htmlEditProfileInstance(base_dir, translate,
                                          peertubeInstances,
-                                         mediaInstanceStr,
+                                         media_instanceStr,
                                          blogs_instanceStr,
                                          news_instanceStr)
             systemMonitorStr = _htmlSystemMonitor(nickname, translate)
