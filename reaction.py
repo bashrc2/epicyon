@@ -69,7 +69,7 @@ def _reaction(recentPostsCache: {},
               clientToServer: bool,
               sendThreads: [], postLog: [],
               personCache: {}, cachedWebfingers: {},
-              debug: bool, projectVersion: str,
+              debug: bool, project_version: str,
               signingPrivateKeyPem: str) -> {}:
     """Creates an emoji reaction
     actor is the person doing the reacting
@@ -139,7 +139,7 @@ def _reaction(recentPostsCache: {},
                        'https://www.w3.org/ns/activitystreams#Public',
                        http_prefix, True, clientToServer, federationList,
                        sendThreads, postLog, cachedWebfingers, personCache,
-                       debug, projectVersion, None, groupAccount,
+                       debug, project_version, None, groupAccount,
                        signingPrivateKeyPem, 7165392)
 
     return newReactionJson
@@ -154,7 +154,7 @@ def reactionPost(recentPostsCache: {},
                  clientToServer: bool,
                  sendThreads: [], postLog: [],
                  personCache: {}, cachedWebfingers: {},
-                 debug: bool, projectVersion: str,
+                 debug: bool, project_version: str,
                  signingPrivateKeyPem: str) -> {}:
     """Adds a reaction to a given status post. This is only used by unit tests
     """
@@ -170,7 +170,7 @@ def reactionPost(recentPostsCache: {},
                      ccList, http_prefix, objectUrl, emojiContent,
                      actorReaction, clientToServer,
                      sendThreads, postLog, personCache, cachedWebfingers,
-                     debug, projectVersion, signingPrivateKeyPem)
+                     debug, project_version, signingPrivateKeyPem)
 
 
 def sendReactionViaServer(base_dir: str, session,
@@ -179,7 +179,7 @@ def sendReactionViaServer(base_dir: str, session,
                           http_prefix: str, reactionUrl: str,
                           emojiContent: str,
                           cachedWebfingers: {}, personCache: {},
-                          debug: bool, projectVersion: str,
+                          debug: bool, project_version: str,
                           signingPrivateKeyPem: str) -> {}:
     """Creates a reaction via c2s
     """
@@ -208,7 +208,7 @@ def sendReactionViaServer(base_dir: str, session,
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, http_prefix,
                                 cachedWebfingers,
-                                fromDomain, projectVersion, debug, False,
+                                fromDomain, project_version, debug, False,
                                 signingPrivateKeyPem)
     if not wfRequest:
         if debug:
@@ -228,7 +228,7 @@ def sendReactionViaServer(base_dir: str, session,
                                     originDomain,
                                     base_dir, session, wfRequest,
                                     personCache,
-                                    projectVersion, http_prefix,
+                                    project_version, http_prefix,
                                     fromNickname, fromDomain,
                                     postToBox, 72873)
 
@@ -269,7 +269,7 @@ def sendUndoReactionViaServer(base_dir: str, session,
                               http_prefix: str, reactionUrl: str,
                               emojiContent: str,
                               cachedWebfingers: {}, personCache: {},
-                              debug: bool, projectVersion: str,
+                              debug: bool, project_version: str,
                               signingPrivateKeyPem: str) -> {}:
     """Undo a reaction via c2s
     """
@@ -298,7 +298,7 @@ def sendUndoReactionViaServer(base_dir: str, session,
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, http_prefix,
                                 cachedWebfingers,
-                                fromDomain, projectVersion, debug, False,
+                                fromDomain, project_version, debug, False,
                                 signingPrivateKeyPem)
     if not wfRequest:
         if debug:
@@ -318,7 +318,7 @@ def sendUndoReactionViaServer(base_dir: str, session,
      displayName, _) = getPersonBox(signingPrivateKeyPem,
                                     originDomain,
                                     base_dir, session, wfRequest,
-                                    personCache, projectVersion,
+                                    personCache, project_version,
                                     http_prefix, fromNickname,
                                     fromDomain, postToBox,
                                     72625)

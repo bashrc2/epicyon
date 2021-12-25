@@ -720,7 +720,7 @@ def followedAccountAccepts(session, base_dir: str, http_prefix: str,
                            personUrl: str, federationList: [],
                            followJson: {}, sendThreads: [], postLog: [],
                            cachedWebfingers: {}, personCache: {},
-                           debug: bool, projectVersion: str,
+                           debug: bool, project_version: str,
                            removeFollowActivity: bool,
                            signingPrivateKeyPem: str):
     """The person receiving a follow request accepts the new follower
@@ -771,7 +771,7 @@ def followedAccountAccepts(session, base_dir: str, http_prefix: str,
                           http_prefix, True, clientToServer,
                           federationList,
                           sendThreads, postLog, cachedWebfingers,
-                          personCache, debug, projectVersion, None,
+                          personCache, debug, project_version, None,
                           groupAccount, signingPrivateKeyPem,
                           7856837)
 
@@ -783,7 +783,7 @@ def followedAccountRejects(session, base_dir: str, http_prefix: str,
                            federationList: [],
                            sendThreads: [], postLog: [],
                            cachedWebfingers: {}, personCache: {},
-                           debug: bool, projectVersion: str,
+                           debug: bool, project_version: str,
                            signingPrivateKeyPem: str):
     """The person receiving a follow request rejects the new follower
     and sends back a Reject activity
@@ -839,7 +839,7 @@ def followedAccountRejects(session, base_dir: str, http_prefix: str,
                           http_prefix, True, clientToServer,
                           federationList,
                           sendThreads, postLog, cachedWebfingers,
-                          personCache, debug, projectVersion, None,
+                          personCache, debug, project_version, None,
                           groupAccount, signingPrivateKeyPem,
                           6393063)
 
@@ -852,7 +852,7 @@ def sendFollowRequest(session, base_dir: str,
                       clientToServer: bool, federationList: [],
                       sendThreads: [], postLog: [], cachedWebfingers: {},
                       personCache: {}, debug: bool,
-                      projectVersion: str, signingPrivateKeyPem: str) -> {}:
+                      project_version: str, signingPrivateKeyPem: str) -> {}:
     """Gets the json object for sending a follow request
     """
     if not signingPrivateKeyPem:
@@ -931,7 +931,7 @@ def sendFollowRequest(session, base_dir: str,
                    http_prefix, True, clientToServer,
                    federationList,
                    sendThreads, postLog, cachedWebfingers, personCache,
-                   debug, projectVersion, None, groupAccount,
+                   debug, project_version, None, groupAccount,
                    signingPrivateKeyPem, 8234389)
 
     return newFollowJson
@@ -944,7 +944,7 @@ def sendFollowRequestViaServer(base_dir: str, session,
                                followPort: int,
                                http_prefix: str,
                                cachedWebfingers: {}, personCache: {},
-                               debug: bool, projectVersion: str,
+                               debug: bool, project_version: str,
                                signingPrivateKeyPem: str) -> {}:
     """Creates a follow request via c2s
     """
@@ -974,7 +974,7 @@ def sendFollowRequestViaServer(base_dir: str, session,
     # lookup the inbox for the To handle
     wfRequest = \
         webfingerHandle(session, handle, http_prefix, cachedWebfingers,
-                        fromDomain, projectVersion, debug, False,
+                        fromDomain, project_version, debug, False,
                         signingPrivateKeyPem)
     if not wfRequest:
         if debug:
@@ -993,7 +993,7 @@ def sendFollowRequestViaServer(base_dir: str, session,
      fromPersonId, sharedInbox, avatarUrl,
      displayName, _) = getPersonBox(signingPrivateKeyPem, originDomain,
                                     base_dir, session, wfRequest, personCache,
-                                    projectVersion, http_prefix, fromNickname,
+                                    project_version, http_prefix, fromNickname,
                                     fromDomain, postToBox, 52025)
 
     if not inboxUrl:
@@ -1034,7 +1034,7 @@ def sendUnfollowRequestViaServer(base_dir: str, session,
                                  followPort: int,
                                  http_prefix: str,
                                  cachedWebfingers: {}, personCache: {},
-                                 debug: bool, projectVersion: str,
+                                 debug: bool, project_version: str,
                                  signingPrivateKeyPem: str) -> {}:
     """Creates a unfollow request via c2s
     """
@@ -1068,7 +1068,7 @@ def sendUnfollowRequestViaServer(base_dir: str, session,
     # lookup the inbox for the To handle
     wfRequest = \
         webfingerHandle(session, handle, http_prefix, cachedWebfingers,
-                        fromDomain, projectVersion, debug, False,
+                        fromDomain, project_version, debug, False,
                         signingPrivateKeyPem)
     if not wfRequest:
         if debug:
@@ -1088,7 +1088,7 @@ def sendUnfollowRequestViaServer(base_dir: str, session,
                                     originDomain,
                                     base_dir, session,
                                     wfRequest, personCache,
-                                    projectVersion, http_prefix,
+                                    project_version, http_prefix,
                                     fromNickname,
                                     fromDomain, postToBox,
                                     76536)
@@ -1129,7 +1129,7 @@ def getFollowingViaServer(base_dir: str, session,
                           domain: str, port: int,
                           http_prefix: str, pageNumber: int,
                           cachedWebfingers: {}, personCache: {},
-                          debug: bool, projectVersion: str,
+                          debug: bool, project_version: str,
                           signingPrivateKeyPem: str) -> {}:
     """Gets a page from the following collection as json
     """
@@ -1170,7 +1170,7 @@ def getFollowersViaServer(base_dir: str, session,
                           domain: str, port: int,
                           http_prefix: str, pageNumber: int,
                           cachedWebfingers: {}, personCache: {},
-                          debug: bool, projectVersion: str,
+                          debug: bool, project_version: str,
                           signingPrivateKeyPem: str) -> {}:
     """Gets a page from the followers collection as json
     """
@@ -1211,7 +1211,7 @@ def getFollowRequestsViaServer(base_dir: str, session,
                                domain: str, port: int,
                                http_prefix: str, pageNumber: int,
                                cachedWebfingers: {}, personCache: {},
-                               debug: bool, projectVersion: str,
+                               debug: bool, project_version: str,
                                signingPrivateKeyPem: str) -> {}:
     """Gets a page from the follow requests collection as json
     """
@@ -1252,7 +1252,7 @@ def approveFollowRequestViaServer(base_dir: str, session,
                                   domain: str, port: int,
                                   http_prefix: str, approveHandle: int,
                                   cachedWebfingers: {}, personCache: {},
-                                  debug: bool, projectVersion: str,
+                                  debug: bool, project_version: str,
                                   signingPrivateKeyPem: str) -> str:
     """Approves a follow request
     This is not exactly via c2s though. It simulates pressing the Approve
@@ -1293,7 +1293,7 @@ def denyFollowRequestViaServer(base_dir: str, session,
                                domain: str, port: int,
                                http_prefix: str, denyHandle: int,
                                cachedWebfingers: {}, personCache: {},
-                               debug: bool, projectVersion: str,
+                               debug: bool, project_version: str,
                                signingPrivateKeyPem: str) -> str:
     """Denies a follow request
     This is not exactly via c2s though. It simulates pressing the Deny

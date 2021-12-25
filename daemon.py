@@ -523,7 +523,7 @@ class PubServer(BaseHTTPRequestHandler):
             # name field contains the answer
             messageJson['object']['name'] = answer
             if self._postToOutbox(messageJson,
-                                  self.server.projectVersion, nickname):
+                                  self.server.project_version, nickname):
                 postFilename = \
                     locatePost(self.server.base_dir, nickname,
                                self.server.domain, messageId)
@@ -735,7 +735,7 @@ class PubServer(BaseHTTPRequestHandler):
             getPersonPubKey(self.server.base_dir,
                             self.server.session, keyId,
                             self.server.personCache, self.server.debug,
-                            self.server.projectVersion,
+                            self.server.project_version,
                             self.server.http_prefix,
                             self.server.domain, self.server.onionDomain,
                             self.server.signingPrivateKeyPem)
@@ -1047,7 +1047,7 @@ class PubServer(BaseHTTPRequestHandler):
                     translate: {},
                     registration: bool,
                     systemLanguage: str,
-                    projectVersion: str,
+                    project_version: str,
                     customEmoji: [],
                     show_node_info_accounts: bool) -> bool:
         """This is a vestigil mastodon API for the purpose
@@ -1075,7 +1075,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                    translate,
                                                    registration,
                                                    systemLanguage,
-                                                   projectVersion,
+                                                   project_version,
                                                    customEmoji,
                                                    show_node_info_accounts,
                                                    broch_mode)
@@ -1111,14 +1111,14 @@ class PubServer(BaseHTTPRequestHandler):
                   translate: {},
                   registration: bool,
                   systemLanguage: str,
-                  projectVersion: str,
+                  project_version: str,
                   customEmoji: [],
                   show_node_info_accounts: bool) -> bool:
         return self._mastoApiV1(path, callingDomain, uaStr, authorized,
                                 http_prefix, base_dir, nickname, domain,
                                 domainFull, onionDomain, i2pDomain,
                                 translate, registration, systemLanguage,
-                                projectVersion, customEmoji,
+                                project_version, customEmoji,
                                 show_node_info_accounts)
 
     def _nodeinfo(self, uaStr: str, callingDomain: str) -> bool:
@@ -1135,7 +1135,7 @@ class PubServer(BaseHTTPRequestHandler):
         # migrate, and that information may be useful to an adversary
         broch_mode = broch_modeIsActive(self.server.base_dir)
 
-        nodeInfoVersion = self.server.projectVersion
+        nodeInfoVersion = self.server.project_version
         if not self.server.show_node_info_version or broch_mode:
             nodeInfoVersion = '0.0.0'
 
@@ -1356,7 +1356,7 @@ class PubServer(BaseHTTPRequestHandler):
         self.server.outboxThread[accountOutboxThreadName][index] = \
             threadWithTrace(target=self._postToOutbox,
                             args=(messageJson.copy(),
-                                  self.server.projectVersion, None),
+                                  self.server.project_version, None),
                             daemon=True)
         print('Starting outbox thread')
         self.server.outboxThread[accountOutboxThreadName][index].start()
@@ -2719,7 +2719,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.personCache,
                               self.server.port,
                               None,
-                              self.server.projectVersion,
+                              self.server.project_version,
                               self.server.yt_replace_domain,
                               self.server.twitterReplacementDomain,
                               self.server.show_published_date_only,
@@ -2853,7 +2853,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.personCache,
                               self.server.port,
                               None,
-                              self.server.projectVersion,
+                              self.server.project_version,
                               self.server.yt_replace_domain,
                               self.server.twitterReplacementDomain,
                               self.server.show_published_date_only,
@@ -3049,7 +3049,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.postLog,
                                   self.server.cachedWebfingers,
                                   self.server.personCache, debug,
-                                  self.server.projectVersion,
+                                  self.server.project_version,
                                   self.server.signingPrivateKeyPem)
         if callingDomain.endswith('.onion') and onionDomain:
             originPathStr = 'http://' + onionDomain + usersPath
@@ -3302,7 +3302,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.cachedWebfingers,
                                       self.server.personCache,
                                       http_prefix,
-                                      self.server.projectVersion,
+                                      self.server.project_version,
                                       self.server.yt_replace_domain,
                                       self.server.twitterReplacementDomain,
                                       self.server.show_published_date_only,
@@ -3391,7 +3391,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       searchStr,
                                       maxPostsInFeed,
                                       pageNumber,
-                                      self.server.projectVersion,
+                                      self.server.project_version,
                                       self.server.recentPostsCache,
                                       self.server.max_recent_posts,
                                       self.server.session,
@@ -3459,7 +3459,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       searchStr,
                                       maxPostsInFeed,
                                       pageNumber,
-                                      self.server.projectVersion,
+                                      self.server.project_version,
                                       self.server.recentPostsCache,
                                       self.server.max_recent_posts,
                                       self.server.session,
@@ -3563,7 +3563,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                self.server.cachedWebfingers,
                                                self.server.personCache,
                                                self.server.debug,
-                                               self.server.projectVersion,
+                                               self.server.project_version,
                                                self.server.yt_replace_domain,
                                                twitterReplacementDomain,
                                                show_published_date_only,
@@ -6514,7 +6514,7 @@ class PubServer(BaseHTTPRequestHandler):
                         updateActorJson = getActorUpdateJson(actorJson)
                         print('Sending actor update: ' + str(updateActorJson))
                         self._postToOutbox(updateActorJson,
-                                           self.server.projectVersion,
+                                           self.server.project_version,
                                            nickname)
 
                     # deactivate the account
@@ -7542,7 +7542,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.cachedWebfingers,
                               self.server.personCache,
                               http_prefix,
-                              self.server.projectVersion,
+                              self.server.project_version,
                               self.server.yt_replace_domain,
                               self.server.twitterReplacementDomain,
                               self.server.show_published_date_only,
@@ -7605,7 +7605,7 @@ class PubServer(BaseHTTPRequestHandler):
                              self.server.cachedWebfingers,
                              self.server.personCache,
                              http_prefix,
-                             self.server.projectVersion,
+                             self.server.project_version,
                              self.server.yt_replace_domain,
                              self.server.twitterReplacementDomain,
                              self.server.systemLanguage)
@@ -7699,7 +7699,7 @@ class PubServer(BaseHTTPRequestHandler):
                            self.server.personCache,
                            self.server.cachedWebfingers,
                            debug,
-                           self.server.projectVersion,
+                           self.server.project_version,
                            self.server.signingPrivateKeyPem)
         announceFilename = None
         if announceJson:
@@ -7718,7 +7718,8 @@ class PubServer(BaseHTTPRequestHandler):
 
             # send out the announce within a separate thread
             self._postToOutbox(announceJson,
-                               self.server.projectVersion, self.postToNickname)
+                               self.server.project_version,
+                               self.postToNickname)
 
             fitnessPerformance(GETstartTime, self.server.fitness,
                                '_GET', '_announceButton postToOutboxThread',
@@ -7753,7 +7754,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.port, announceJson,
                                  None, True,
                                  self.server.allowDeletion,
-                                 http_prefix, self.server.projectVersion,
+                                 http_prefix, self.server.project_version,
                                  timelineStr,
                                  self.server.yt_replace_domain,
                                  self.server.twitterReplacementDomain,
@@ -7869,7 +7870,7 @@ class PubServer(BaseHTTPRequestHandler):
                            debug, recentPostsCache)
 
         self._postToOutbox(newUndoAnnounce,
-                           self.server.projectVersion, self.postToNickname)
+                           self.server.project_version, self.postToNickname)
 
         actorAbsolute = self._getInstanceUrl(callingDomain) + actor
         actorPathStr = \
@@ -7912,7 +7913,7 @@ class PubServer(BaseHTTPRequestHandler):
                                              self.server.cachedWebfingers,
                                              self.server.personCache,
                                              debug,
-                                             self.server.projectVersion,
+                                             self.server.project_version,
                                              self.server.signingPrivateKeyPem)
         originPathStrAbsolute = \
             http_prefix + '://' + domainFull + originPathStr
@@ -8067,7 +8068,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.cachedWebfingers,
                                           self.server.personCache,
                                           debug,
-                                          self.server.projectVersion,
+                                          self.server.project_version,
                                           self.server.signingPrivateKeyPem)
         originPathStrAbsolute = \
             http_prefix + '://' + domainFull + originPathStr
@@ -8156,7 +8157,7 @@ class PubServer(BaseHTTPRequestHandler):
         }
 
         # send out the like to followers
-        self._postToOutbox(likeJson, self.server.projectVersion, None)
+        self._postToOutbox(likeJson, self.server.project_version, None)
 
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_likeButton postToOutbox',
@@ -8213,7 +8214,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      None, True,
                                      self.server.allowDeletion,
                                      http_prefix,
-                                     self.server.projectVersion,
+                                     self.server.project_version,
                                      timelineStr,
                                      self.server.yt_replace_domain,
                                      self.server.twitterReplacementDomain,
@@ -8325,7 +8326,7 @@ class PubServer(BaseHTTPRequestHandler):
         }
 
         # send out the undo like to followers
-        self._postToOutbox(undoLikeJson, self.server.projectVersion, None)
+        self._postToOutbox(undoLikeJson, self.server.project_version, None)
 
         # directly undo the like within the post file
         if not likedPostFilename:
@@ -8368,7 +8369,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      None, True,
                                      self.server.allowDeletion,
                                      http_prefix,
-                                     self.server.projectVersion, timelineStr,
+                                     self.server.project_version, timelineStr,
                                      self.server.yt_replace_domain,
                                      self.server.twitterReplacementDomain,
                                      self.server.show_published_date_only,
@@ -8489,7 +8490,7 @@ class PubServer(BaseHTTPRequestHandler):
         }
 
         # send out the emoji reaction to followers
-        self._postToOutbox(reactionJson, self.server.projectVersion, None)
+        self._postToOutbox(reactionJson, self.server.project_version, None)
 
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_reactionButton postToOutbox',
@@ -8551,7 +8552,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      None, True,
                                      self.server.allowDeletion,
                                      http_prefix,
-                                     self.server.projectVersion,
+                                     self.server.project_version,
                                      timelineStr,
                                      self.server.yt_replace_domain,
                                      self.server.twitterReplacementDomain,
@@ -8677,7 +8678,7 @@ class PubServer(BaseHTTPRequestHandler):
         }
 
         # send out the undo emoji reaction to followers
-        self._postToOutbox(undoReactionJson, self.server.projectVersion, None)
+        self._postToOutbox(undoReactionJson, self.server.project_version, None)
 
         # directly undo the emoji reaction within the post file
         if not reactionPostFilename:
@@ -8724,7 +8725,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      None, True,
                                      self.server.allowDeletion,
                                      http_prefix,
-                                     self.server.projectVersion, timelineStr,
+                                     self.server.project_version, timelineStr,
                                      self.server.yt_replace_domain,
                                      self.server.twitterReplacementDomain,
                                      self.server.show_published_date_only,
@@ -8822,7 +8823,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.postToNickname,
                                     domain, port, postJsonObject,
                                     self.server.http_prefix,
-                                    self.server.projectVersion,
+                                    self.server.project_version,
                                     self.server.yt_replace_domain,
                                     self.server.twitterReplacementDomain,
                                     self.server.show_published_date_only,
@@ -8909,7 +8910,7 @@ class PubServer(BaseHTTPRequestHandler):
                  self.server.personCache,
                  self.server.cachedWebfingers,
                  self.server.debug,
-                 self.server.projectVersion)
+                 self.server.project_version)
         # clear the icon from the cache so that it gets updated
         if self.server.iconsCache.get('bookmark.png'):
             del self.server.iconsCache['bookmark.png']
@@ -8943,7 +8944,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.port, bookmarkPostJson,
                                      None, True,
                                      self.server.allowDeletion,
-                                     http_prefix, self.server.projectVersion,
+                                     http_prefix, self.server.project_version,
                                      timelineStr,
                                      self.server.yt_replace_domain,
                                      self.server.twitterReplacementDomain,
@@ -8961,7 +8962,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.lists_enabled)
             else:
                 print('WARN: Bookmarked post not found: ' + bookmarkFilename)
-        # self._postToOutbox(bookmarkJson, self.server.projectVersion, None)
+        # self._postToOutbox(bookmarkJson, self.server.project_version, None)
         actorAbsolute = self._getInstanceUrl(callingDomain) + actor
         actorPathStr = \
             actorAbsolute + '/' + timelineStr + \
@@ -9035,12 +9036,12 @@ class PubServer(BaseHTTPRequestHandler):
                      self.server.personCache,
                      self.server.cachedWebfingers,
                      debug,
-                     self.server.projectVersion)
+                     self.server.project_version)
         # clear the icon from the cache so that it gets updated
         if self.server.iconsCache.get('bookmark_inactive.png'):
             del self.server.iconsCache['bookmark_inactive.png']
         # self._postToOutbox(undoBookmarkJson,
-        #                    self.server.projectVersion, None)
+        #                    self.server.project_version, None)
         bookmarkFilename = \
             locatePost(base_dir, self.postToNickname, domain, bookmarkUrl)
         if bookmarkFilename:
@@ -9072,7 +9073,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      None, True,
                                      self.server.allowDeletion,
                                      http_prefix,
-                                     self.server.projectVersion, timelineStr,
+                                     self.server.project_version, timelineStr,
                                      self.server.yt_replace_domain,
                                      self.server.twitterReplacementDomain,
                                      self.server.show_published_date_only,
@@ -9167,7 +9168,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.translate, pageNumber,
                                   self.server.session, base_dir,
                                   deleteUrl, http_prefix,
-                                  self.server.projectVersion,
+                                  self.server.project_version,
                                   self.server.cachedWebfingers,
                                   self.server.personCache, callingDomain,
                                   self.server.yt_replace_domain,
@@ -9274,7 +9275,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      avatarUrl, showAvatarOptions,
                                      self.server.allowDeletion,
                                      http_prefix,
-                                     self.server.projectVersion, timelineStr,
+                                     self.server.project_version, timelineStr,
                                      self.server.yt_replace_domain,
                                      self.server.twitterReplacementDomain,
                                      self.server.show_published_date_only,
@@ -9384,7 +9385,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      avatarUrl, showAvatarOptions,
                                      self.server.allowDeletion,
                                      http_prefix,
-                                     self.server.projectVersion, timelineStr,
+                                     self.server.project_version, timelineStr,
                                      self.server.yt_replace_domain,
                                      self.server.twitterReplacementDomain,
                                      self.server.show_published_date_only,
@@ -9487,7 +9488,7 @@ class PubServer(BaseHTTPRequestHandler):
                 session = self.server.session
                 cachedWebfingers = self.server.cachedWebfingers
                 personCache = self.server.personCache
-                projectVersion = self.server.projectVersion
+                project_version = self.server.project_version
                 ytDomain = self.server.yt_replace_domain
                 twitterReplacementDomain = \
                     self.server.twitterReplacementDomain
@@ -9506,7 +9507,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     port,
                                     repliesJson,
                                     http_prefix,
-                                    projectVersion,
+                                    project_version,
                                     ytDomain,
                                     twitterReplacementDomain,
                                     self.server.show_published_date_only,
@@ -9579,7 +9580,7 @@ class PubServer(BaseHTTPRequestHandler):
                 session = self.server.session
                 cachedWebfingers = self.server.cachedWebfingers
                 personCache = self.server.personCache
-                projectVersion = self.server.projectVersion
+                project_version = self.server.project_version
                 ytDomain = self.server.yt_replace_domain
                 twitterReplacementDomain = \
                     self.server.twitterReplacementDomain
@@ -9598,7 +9599,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     port,
                                     repliesJson,
                                     http_prefix,
-                                    projectVersion,
+                                    project_version,
                                     ytDomain,
                                     twitterReplacementDomain,
                                     self.server.show_published_date_only,
@@ -9696,7 +9697,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     recentPostsCache,
                                     self.server.max_recent_posts,
                                     self.server.translate,
-                                    self.server.projectVersion,
+                                    self.server.project_version,
                                     base_dir, http_prefix, True,
                                     getPerson, 'roles',
                                     self.server.session,
@@ -9812,7 +9813,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                 recentPostsCache,
                                                 self.server.max_recent_posts,
                                                 self.server.translate,
-                                                self.server.projectVersion,
+                                                self.server.project_version,
                                                 base_dir, http_prefix, True,
                                                 getPerson, 'skills',
                                                 self.server.session,
@@ -9987,7 +9988,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    authorized,
                                    postJsonObject,
                                    http_prefix,
-                                   self.server.projectVersion,
+                                   self.server.project_version,
                                    likedBy, reactBy, reactEmoji,
                                    self.server.yt_replace_domain,
                                    self.server.twitterReplacementDomain,
@@ -10157,7 +10158,7 @@ class PubServer(BaseHTTPRequestHandler):
                    cachedWebfingers: {},
                    personCache: {},
                    allowDeletion: bool,
-                   projectVersion: str,
+                   project_version: str,
                    yt_replace_domain: str,
                    twitterReplacementDomain: str) -> bool:
         """Shows the inbox timeline
@@ -10241,7 +10242,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         inboxFeed,
                                         allowDeletion,
                                         http_prefix,
-                                        projectVersion,
+                                        project_version,
                                         minimalNick,
                                         yt_replace_domain,
                                         twitterReplacementDomain,
@@ -10392,7 +10393,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          inboxDMFeed,
                                          self.server.allowDeletion,
                                          http_prefix,
-                                         self.server.projectVersion,
+                                         self.server.project_version,
                                          minimalNick,
                                          self.server.yt_replace_domain,
                                          self.server.twitterReplacementDomain,
@@ -10535,7 +10536,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          inboxRepliesFeed,
                                          self.server.allowDeletion,
                                          http_prefix,
-                                         self.server.projectVersion,
+                                         self.server.project_version,
                                          minimalNick,
                                          self.server.yt_replace_domain,
                                          self.server.twitterReplacementDomain,
@@ -10676,7 +10677,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        inboxMediaFeed,
                                        self.server.allowDeletion,
                                        http_prefix,
-                                       self.server.projectVersion,
+                                       self.server.project_version,
                                        minimalNick,
                                        self.server.yt_replace_domain,
                                        self.server.twitterReplacementDomain,
@@ -10818,7 +10819,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        inboxBlogsFeed,
                                        self.server.allowDeletion,
                                        http_prefix,
-                                       self.server.projectVersion,
+                                       self.server.project_version,
                                        minimalNick,
                                        self.server.yt_replace_domain,
                                        self.server.twitterReplacementDomain,
@@ -10969,7 +10970,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       inboxNewsFeed,
                                       self.server.allowDeletion,
                                       http_prefix,
-                                      self.server.projectVersion,
+                                      self.server.project_version,
                                       minimalNick,
                                       self.server.yt_replace_domain,
                                       self.server.twitterReplacementDomain,
@@ -11119,7 +11120,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           inboxFeaturesFeed,
                                           self.server.allowDeletion,
                                           http_prefix,
-                                          self.server.projectVersion,
+                                          self.server.project_version,
                                           minimalNick,
                                           self.server.yt_replace_domain,
                                           self.server.twitterReplacementDomain,
@@ -11229,7 +11230,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    port,
                                    self.server.allowDeletion,
                                    http_prefix,
-                                   self.server.projectVersion,
+                                   self.server.project_version,
                                    self.server.yt_replace_domain,
                                    self.server.twitterReplacementDomain,
                                    self.server.show_published_date_only,
@@ -11314,7 +11315,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    port,
                                    self.server.allowDeletion,
                                    http_prefix,
-                                   self.server.projectVersion,
+                                   self.server.project_version,
                                    self.server.yt_replace_domain,
                                    self.server.twitterReplacementDomain,
                                    self.server.show_published_date_only,
@@ -11435,7 +11436,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           bookmarksFeed,
                                           self.server.allowDeletion,
                                           http_prefix,
-                                          self.server.projectVersion,
+                                          self.server.project_version,
                                           minimalNick,
                                           self.server.yt_replace_domain,
                                           self.server.twitterReplacementDomain,
@@ -11573,7 +11574,7 @@ class PubServer(BaseHTTPRequestHandler):
                                outboxFeed,
                                self.server.allowDeletion,
                                http_prefix,
-                               self.server.projectVersion,
+                               self.server.project_version,
                                minimalNick,
                                self.server.yt_replace_domain,
                                self.server.twitterReplacementDomain,
@@ -11708,7 +11709,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            moderationFeed,
                                            True,
                                            http_prefix,
-                                           self.server.projectVersion,
+                                           self.server.project_version,
                                            self.server.yt_replace_domain,
                                            twitterReplacementDomain,
                                            show_published_date_only,
@@ -11828,7 +11829,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.recentPostsCache,
                                     self.server.max_recent_posts,
                                     self.server.translate,
-                                    self.server.projectVersion,
+                                    self.server.project_version,
                                     base_dir, http_prefix,
                                     authorized,
                                     getPerson, sharesFileType,
@@ -11949,7 +11950,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.recentPostsCache,
                                     self.server.max_recent_posts,
                                     self.server.translate,
-                                    self.server.projectVersion,
+                                    self.server.project_version,
                                     base_dir, http_prefix,
                                     authorized,
                                     getPerson, 'following',
@@ -12068,7 +12069,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.recentPostsCache,
                                     self.server.max_recent_posts,
                                     self.server.translate,
-                                    self.server.projectVersion,
+                                    self.server.project_version,
                                     base_dir,
                                     http_prefix,
                                     authorized,
@@ -12204,7 +12205,7 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.recentPostsCache,
                             self.server.max_recent_posts,
                             self.server.translate,
-                            self.server.projectVersion,
+                            self.server.project_version,
                             base_dir,
                             http_prefix,
                             authorized,
@@ -12978,7 +12979,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.personCache,
                               self.server.port,
                               postJsonObject,
-                              self.server.projectVersion,
+                              self.server.project_version,
                               self.server.yt_replace_domain,
                               self.server.twitterReplacementDomain,
                               self.server.show_published_date_only,
@@ -13231,7 +13232,7 @@ class PubServer(BaseHTTPRequestHandler):
             'to': [toUrl],
             'cc': [ccUrl]
         }
-        self._postToOutbox(blockJson, self.server.projectVersion,
+        self._postToOutbox(blockJson, self.server.project_version,
                            blockerNickname)
         return True
 
@@ -13687,7 +13688,7 @@ class PubServer(BaseHTTPRequestHandler):
                           self.server.translate,
                           self.server.registration,
                           self.server.systemLanguage,
-                          self.server.projectVersion,
+                          self.server.project_version,
                           self.server.customEmoji,
                           self.server.show_node_info_accounts):
             return
@@ -15908,7 +15909,7 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.cachedWebfingers,
                                self.server.personCache,
                                self.server.allowDeletion,
-                               self.server.projectVersion,
+                               self.server.project_version,
                                self.server.yt_replace_domain,
                                self.server.twitterReplacementDomain):
                 self.server.GETbusy = False
@@ -16635,7 +16636,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 followersOnly)
                         return 1
                     if self._postToOutbox(messageJson,
-                                          self.server.projectVersion,
+                                          self.server.project_version,
                                           nickname):
                         populateReplies(self.server.base_dir,
                                         self.server.http_prefix,
@@ -16711,7 +16712,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if fields['schedulePost']:
                         return 1
                     if self._postToOutbox(messageJson,
-                                          self.server.projectVersion,
+                                          self.server.project_version,
                                           nickname):
                         refreshNewswire(self.server.base_dir)
                         populateReplies(self.server.base_dir,
@@ -16862,7 +16863,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if fields['schedulePost']:
                         return 1
                     if self._postToOutbox(messageJson,
-                                          self.server.projectVersion,
+                                          self.server.project_version,
                                           nickname):
                         populateReplies(self.server.base_dir,
                                         self.server.http_prefix,
@@ -16914,7 +16915,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if fields['schedulePost']:
                         return 1
                     if self._postToOutbox(messageJson,
-                                          self.server.projectVersion,
+                                          self.server.project_version,
                                           nickname):
                         populateReplies(self.server.base_dir,
                                         self.server.http_prefix,
@@ -16973,7 +16974,7 @@ class PubServer(BaseHTTPRequestHandler):
                     print('Sending new DM to ' +
                           str(messageJson['object']['to']))
                     if self._postToOutbox(messageJson,
-                                          self.server.projectVersion,
+                                          self.server.project_version,
                                           nickname):
                         populateReplies(self.server.base_dir,
                                         self.server.http_prefix,
@@ -17027,7 +17028,7 @@ class PubServer(BaseHTTPRequestHandler):
                     print('DEBUG: new reminder to ' +
                           str(messageJson['object']['to']))
                     if self._postToOutbox(messageJson,
-                                          self.server.projectVersion,
+                                          self.server.project_version,
                                           nickname):
                         return 1
                     else:
@@ -17060,7 +17061,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.content_license_url)
                 if messageJson:
                     if self._postToOutbox(messageJson,
-                                          self.server.projectVersion,
+                                          self.server.project_version,
                                           nickname):
                         return 1
                     else:
@@ -17104,7 +17105,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if self.server.debug:
                         print('DEBUG: new Question')
                     if self._postToOutbox(messageJson,
-                                          self.server.projectVersion,
+                                          self.server.project_version,
                                           nickname):
                         return 1
                 return -1
@@ -18211,7 +18212,7 @@ class PubServer(BaseHTTPRequestHandler):
         # https://www.w3.org/TR/activitypub/#object-without-create
         if self.outboxAuthenticated:
             if self._postToOutbox(messageJson,
-                                  self.server.projectVersion, None):
+                                  self.server.project_version, None):
                 if messageJson.get('id'):
                     locnStr = removeIdEnding(messageJson['id'])
                     self.headers['Location'] = locnStr
@@ -18363,7 +18364,7 @@ def runSharesExpire(versionNumber: str, base_dir: str) -> None:
         expireShares(base_dir)
 
 
-def runPostsWatchdog(projectVersion: str, httpd) -> None:
+def runPostsWatchdog(project_version: str, httpd) -> None:
     """This tries to keep the posts thread running even if it dies
     """
     print('Starting posts queue watchdog')
@@ -18379,7 +18380,7 @@ def runPostsWatchdog(projectVersion: str, httpd) -> None:
         print('Restarting posts queue...')
 
 
-def runSharesExpireWatchdog(projectVersion: str, httpd) -> None:
+def runSharesExpireWatchdog(project_version: str, httpd) -> None:
     """This tries to keep the shares expiry thread running even if it dies
     """
     print('Starting shares expiry watchdog')
@@ -18454,7 +18455,7 @@ def runDaemon(content_license_url: str,
               media_instance: bool,
               max_recent_posts: int,
               enable_shared_inbox: bool, registration: bool,
-              language: str, projectVersion: str,
+              language: str, project_version: str,
               instanceId: str, clientToServer: bool,
               base_dir: str, domain: str,
               onionDomain: str, i2pDomain: str,
@@ -18706,7 +18707,7 @@ def runDaemon(content_license_url: str,
     httpd.outboxThread = {}
     httpd.outboxThreadIndex = {}
     httpd.newPostThread = {}
-    httpd.projectVersion = projectVersion
+    httpd.project_version = project_version
     httpd.secureMode = secureMode
     # max POST size of 30M
     httpd.maxPostLength = 1024 * 1024 * 30
@@ -18867,7 +18868,7 @@ def runDaemon(content_license_url: str,
     if not unitTest:
         httpd.thrPostsWatchdog = \
             threadWithTrace(target=runPostsWatchdog,
-                            args=(projectVersion, httpd), daemon=True)
+                            args=(project_version, httpd), daemon=True)
         httpd.thrPostsWatchdog.start()
     else:
         httpd.thrPostsQueue.start()
@@ -18875,11 +18876,11 @@ def runDaemon(content_license_url: str,
     print('Creating expire thread for shared items')
     httpd.thrSharesExpire = \
         threadWithTrace(target=runSharesExpire,
-                        args=(projectVersion, base_dir), daemon=True)
+                        args=(project_version, base_dir), daemon=True)
     if not unitTest:
         httpd.thrSharesExpireWatchdog = \
             threadWithTrace(target=runSharesExpireWatchdog,
-                            args=(projectVersion, httpd), daemon=True)
+                            args=(project_version, httpd), daemon=True)
         httpd.thrSharesExpireWatchdog.start()
     else:
         httpd.thrSharesExpire.start()
@@ -18908,7 +18909,7 @@ def runDaemon(content_license_url: str,
     httpd.thrInboxQueue = \
         threadWithTrace(target=runInboxQueue,
                         args=(httpd.recentPostsCache, httpd.max_recent_posts,
-                              projectVersion,
+                              project_version,
                               base_dir, http_prefix, httpd.sendThreads,
                               httpd.postLog, httpd.cachedWebfingers,
                               httpd.personCache, httpd.inboxQueue,
@@ -18969,25 +18970,25 @@ def runDaemon(content_license_url: str,
         print('Creating inbox queue watchdog')
         httpd.thrWatchdog = \
             threadWithTrace(target=runInboxQueueWatchdog,
-                            args=(projectVersion, httpd), daemon=True)
+                            args=(project_version, httpd), daemon=True)
         httpd.thrWatchdog.start()
 
         print('Creating scheduled post watchdog')
         httpd.thrWatchdogSchedule = \
             threadWithTrace(target=runPostScheduleWatchdog,
-                            args=(projectVersion, httpd), daemon=True)
+                            args=(project_version, httpd), daemon=True)
         httpd.thrWatchdogSchedule.start()
 
         print('Creating newswire watchdog')
         httpd.thrNewswireWatchdog = \
             threadWithTrace(target=runNewswireWatchdog,
-                            args=(projectVersion, httpd), daemon=True)
+                            args=(project_version, httpd), daemon=True)
         httpd.thrNewswireWatchdog.start()
 
         print('Creating federated shares watchdog')
         httpd.thrFederatedSharesWatchdog = \
             threadWithTrace(target=runFederatedSharesWatchdog,
-                            args=(projectVersion, httpd), daemon=True)
+                            args=(project_version, httpd), daemon=True)
         httpd.thrFederatedSharesWatchdog.start()
     else:
         print('Starting inbox queue')

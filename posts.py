@@ -228,7 +228,7 @@ def getUserUrl(wfRequest: {}, sourceId: int, debug: bool) -> str:
 
 def parseUserFeed(signingPrivateKeyPem: str,
                   session, feedUrl: str, asHeader: {},
-                  projectVersion: str, http_prefix: str,
+                  project_version: str, http_prefix: str,
                   originDomain: str, debug: bool, depth: int = 0) -> []:
     if depth > 10:
         if debug:
@@ -242,7 +242,7 @@ def parseUserFeed(signingPrivateKeyPem: str,
         print('originDomain ' + str(originDomain))
 
     feedJson = getJson(signingPrivateKeyPem, session, feedUrl, asHeader, None,
-                       debug, projectVersion, http_prefix, originDomain)
+                       debug, project_version, http_prefix, originDomain)
     if not feedJson:
         profileStr = 'https://www.w3.org/ns/activitystreams'
         acceptStr = 'application/ld+json; profile="' + profileStr + '"'
@@ -251,7 +251,7 @@ def parseUserFeed(signingPrivateKeyPem: str,
                 'Accept': acceptStr
             }
             feedJson = getJson(signingPrivateKeyPem, session, feedUrl,
-                               asHeader, None, debug, projectVersion,
+                               asHeader, None, debug, project_version,
                                http_prefix, originDomain)
     if not feedJson:
         if debug:
@@ -282,7 +282,7 @@ def parseUserFeed(signingPrivateKeyPem: str,
                 userFeed = \
                     parseUserFeed(signingPrivateKeyPem,
                                   session, nextUrl, asHeader,
-                                  projectVersion, http_prefix,
+                                  project_version, http_prefix,
                                   originDomain, debug, depth + 1)
                 if userFeed:
                     return userFeed
@@ -297,7 +297,7 @@ def parseUserFeed(signingPrivateKeyPem: str,
 
 def _getPersonBoxActor(session, base_dir: str, actor: str,
                        profileStr: str, asHeader: {},
-                       debug: bool, projectVersion: str,
+                       debug: bool, project_version: str,
                        http_prefix: str, originDomain: str,
                        personCache: {},
                        signingPrivateKeyPem: str,
@@ -314,14 +314,14 @@ def _getPersonBoxActor(session, base_dir: str, actor: str,
             'Accept': 'application/ld+json; profile="' + profileStr + '"'
         }
     personJson = getJson(signingPrivateKeyPem, session, actor, asHeader, None,
-                         debug, projectVersion, http_prefix, originDomain)
+                         debug, project_version, http_prefix, originDomain)
     if personJson:
         return personJson
     asHeader = {
         'Accept': 'application/ld+json; profile="' + profileStr + '"'
     }
     personJson = getJson(signingPrivateKeyPem, session, actor, asHeader, None,
-                         debug, projectVersion, http_prefix, originDomain)
+                         debug, project_version, http_prefix, originDomain)
     if personJson:
         return personJson
     print('Unable to get actor for ' + actor + ' ' + str(sourceId))
@@ -332,7 +332,7 @@ def _getPersonBoxActor(session, base_dir: str, actor: str,
 
 def getPersonBox(signingPrivateKeyPem: str, originDomain: str,
                  base_dir: str, session, wfRequest: {}, personCache: {},
-                 projectVersion: str, http_prefix: str,
+                 project_version: str, http_prefix: str,
                  nickname: str, domain: str,
                  boxName: str = 'inbox',
                  sourceId=0) -> (str, str, str, str, str, str, str, bool):
@@ -367,7 +367,7 @@ def getPersonBox(signingPrivateKeyPem: str, originDomain: str,
     personJson = \
         _getPersonBoxActor(session, base_dir, personUrl,
                            profileStr, asHeader,
-                           debug, projectVersion,
+                           debug, project_version,
                            http_prefix, originDomain,
                            personCache, signingPrivateKeyPem,
                            sourceId)
@@ -529,7 +529,7 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
               federationList: [],
               personCache: {}, raw: bool,
               simple: bool, debug: bool,
-              projectVersion: str, http_prefix: str,
+              project_version: str, http_prefix: str,
               originDomain: str, systemLanguage: str,
               signingPrivateKeyPem: str) -> {}:
     """Gets public posts from an outbox
@@ -560,7 +560,7 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
         i = 0
         userFeed = parseUserFeed(signingPrivateKeyPem,
                                  session, outboxUrl, asHeader,
-                                 projectVersion, http_prefix,
+                                 project_version, http_prefix,
                                  originDomain, debug)
         for item in userFeed:
             result.append(item)
@@ -574,7 +574,7 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
         print('Returning a human readable version of the feed')
     userFeed = parseUserFeed(signingPrivateKeyPem,
                              session, outboxUrl, asHeader,
-                             projectVersion, http_prefix,
+                             project_version, http_prefix,
                              originDomain, debug)
     if not userFeed:
         return personPosts
@@ -748,7 +748,7 @@ def getPostDomains(session, outboxUrl: str, maxPosts: int,
                    federationList: [],
                    personCache: {},
                    debug: bool,
-                   projectVersion: str, http_prefix: str,
+                   project_version: str, http_prefix: str,
                    domain: str,
                    wordFrequency: {},
                    domainList: [], systemLanguage: str,
@@ -777,7 +777,7 @@ def getPostDomains(session, outboxUrl: str, maxPosts: int,
     i = 0
     userFeed = parseUserFeed(signingPrivateKeyPem,
                              session, outboxUrl, asHeader,
-                             projectVersion, http_prefix, domain, debug)
+                             project_version, http_prefix, domain, debug)
     for item in userFeed:
         i += 1
         if i > maxPosts:
@@ -815,7 +815,7 @@ def _getPostsForBlockedDomains(base_dir: str,
                                federationList: [],
                                personCache: {},
                                debug: bool,
-                               projectVersion: str, http_prefix: str,
+                               project_version: str, http_prefix: str,
                                domain: str,
                                signingPrivateKeyPem: str) -> {}:
     """Returns a dictionary of posts for blocked domains
@@ -842,7 +842,7 @@ def _getPostsForBlockedDomains(base_dir: str,
     i = 0
     userFeed = parseUserFeed(signingPrivateKeyPem,
                              session, outboxUrl, asHeader,
-                             projectVersion, http_prefix, domain, debug)
+                             project_version, http_prefix, domain, debug)
     for item in userFeed:
         i += 1
         if i > maxPosts:
@@ -2263,7 +2263,7 @@ def threadSendPost(session, postJsonStr: str, federationList: [],
         tries += 1
 
 
-def sendPost(signingPrivateKeyPem: str, projectVersion: str,
+def sendPost(signingPrivateKeyPem: str, project_version: str,
              session, base_dir: str, nickname: str, domain: str, port: int,
              toNickname: str, toDomain: str, toPort: int, cc: str,
              http_prefix: str, content: str, followersOnly: bool,
@@ -2295,7 +2295,7 @@ def sendPost(signingPrivateKeyPem: str, projectVersion: str,
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, http_prefix,
                                 cachedWebfingers,
-                                domain, projectVersion, debug, False,
+                                domain, project_version, debug, False,
                                 signingPrivateKeyPem)
     if not wfRequest:
         return 1
@@ -2318,7 +2318,7 @@ def sendPost(signingPrivateKeyPem: str, projectVersion: str,
                                     originDomain,
                                     base_dir, session, wfRequest,
                                     personCache,
-                                    projectVersion, http_prefix,
+                                    project_version, http_prefix,
                                     nickname, domain, postToBox,
                                     72533)
 
@@ -2414,7 +2414,7 @@ def sendPost(signingPrivateKeyPem: str, projectVersion: str,
     return 0
 
 
-def sendPostViaServer(signingPrivateKeyPem: str, projectVersion: str,
+def sendPostViaServer(signingPrivateKeyPem: str, project_version: str,
                       base_dir: str, session, fromNickname: str, password: str,
                       fromDomain: str, fromPort: int,
                       toNickname: str, toDomain: str, toPort: int, cc: str,
@@ -2444,7 +2444,7 @@ def sendPostViaServer(signingPrivateKeyPem: str, projectVersion: str,
     # lookup the inbox for the To handle
     wfRequest = \
         webfingerHandle(session, handle, http_prefix, cachedWebfingers,
-                        fromDomainFull, projectVersion, debug, False,
+                        fromDomainFull, project_version, debug, False,
                         signingPrivateKeyPem)
     if not wfRequest:
         if debug:
@@ -2466,7 +2466,7 @@ def sendPostViaServer(signingPrivateKeyPem: str, projectVersion: str,
                                     originDomain,
                                     base_dir, session, wfRequest,
                                     personCache,
-                                    projectVersion, http_prefix,
+                                    project_version, http_prefix,
                                     fromNickname,
                                     fromDomainFull, postToBox,
                                     82796)
@@ -2613,7 +2613,7 @@ def sendSignedJson(postJsonObject: {}, session, base_dir: str,
                    http_prefix: str, saveToFile: bool, clientToServer: bool,
                    federationList: [],
                    sendThreads: [], postLog: [], cachedWebfingers: {},
-                   personCache: {}, debug: bool, projectVersion: str,
+                   personCache: {}, debug: bool, project_version: str,
                    sharedItemsToken: str, groupAccount: bool,
                    signingPrivateKeyPem: str,
                    sourceId: int) -> int:
@@ -2652,7 +2652,7 @@ def sendSignedJson(postJsonObject: {}, session, base_dir: str,
 
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, http_prefix, cachedWebfingers,
-                                domain, projectVersion, debug, groupAccount,
+                                domain, project_version, debug, groupAccount,
                                 signingPrivateKeyPem)
     if not wfRequest:
         if debug:
@@ -2680,7 +2680,7 @@ def sendSignedJson(postJsonObject: {}, session, base_dir: str,
                                     originDomain,
                                     base_dir, session, wfRequest,
                                     personCache,
-                                    projectVersion, http_prefix,
+                                    project_version, http_prefix,
                                     nickname, domain, postToBox,
                                     sourceId)
 
@@ -2863,7 +2863,7 @@ def _sendToNamedAddresses(session, base_dir: str,
                           sendThreads: [], postLog: [],
                           cachedWebfingers: {}, personCache: {},
                           postJsonObject: {}, debug: bool,
-                          projectVersion: str,
+                          project_version: str,
                           shared_items_federated_domains: [],
                           sharedItemFederationTokens: {},
                           signingPrivateKeyPem: str) -> None:
@@ -3002,7 +3002,7 @@ def _sendToNamedAddresses(session, base_dir: str,
                        cc, fromHttpPrefix, True, clientToServer,
                        federationList,
                        sendThreads, postLog, cachedWebfingers,
-                       personCache, debug, projectVersion,
+                       personCache, debug, project_version,
                        sharedItemsToken, groupAccount,
                        signingPrivateKeyPem, 34436782)
 
@@ -3014,7 +3014,7 @@ def sendToNamedAddressesThread(session, base_dir: str,
                                sendThreads: [], postLog: [],
                                cachedWebfingers: {}, personCache: {},
                                postJsonObject: {}, debug: bool,
-                               projectVersion: str,
+                               project_version: str,
                                shared_items_federated_domains: [],
                                sharedItemFederationTokens: {},
                                signingPrivateKeyPem: str):
@@ -3029,7 +3029,7 @@ def sendToNamedAddressesThread(session, base_dir: str,
                               sendThreads, postLog,
                               cachedWebfingers, personCache,
                               postJsonObject, debug,
-                              projectVersion,
+                              project_version,
                               shared_items_federated_domains,
                               sharedItemFederationTokens,
                               signingPrivateKeyPem), daemon=True)
@@ -3090,7 +3090,7 @@ def sendToFollowers(session, base_dir: str,
                     sendThreads: [], postLog: [],
                     cachedWebfingers: {}, personCache: {},
                     postJsonObject: {}, debug: bool,
-                    projectVersion: str,
+                    project_version: str,
                     shared_items_federated_domains: [],
                     sharedItemFederationTokens: {},
                     signingPrivateKeyPem: str) -> None:
@@ -3212,7 +3212,7 @@ def sendToFollowers(session, base_dir: str,
                            cc, fromHttpPrefix, True, clientToServer,
                            federationList,
                            sendThreads, postLog, cachedWebfingers,
-                           personCache, debug, projectVersion,
+                           personCache, debug, project_version,
                            sharedItemsToken, groupAccount,
                            signingPrivateKeyPem, 639342)
         else:
@@ -3241,7 +3241,7 @@ def sendToFollowers(session, base_dir: str,
                                cc, fromHttpPrefix, True, clientToServer,
                                federationList,
                                sendThreads, postLog, cachedWebfingers,
-                               personCache, debug, projectVersion,
+                               personCache, debug, project_version,
                                sharedItemsToken, groupAccount,
                                signingPrivateKeyPem, 634219)
 
@@ -3263,7 +3263,7 @@ def sendToFollowersThread(session, base_dir: str,
                           sendThreads: [], postLog: [],
                           cachedWebfingers: {}, personCache: {},
                           postJsonObject: {}, debug: bool,
-                          projectVersion: str,
+                          project_version: str,
                           shared_items_federated_domains: [],
                           sharedItemFederationTokens: {},
                           signingPrivateKeyPem: str):
@@ -3278,7 +3278,7 @@ def sendToFollowersThread(session, base_dir: str,
                               sendThreads, postLog,
                               cachedWebfingers, personCache,
                               postJsonObject.copy(), debug,
-                              projectVersion,
+                              project_version,
                               shared_items_federated_domains,
                               sharedItemFederationTokens,
                               signingPrivateKeyPem), daemon=True)
@@ -4057,7 +4057,7 @@ def archivePostsForPerson(http_prefix: str, nickname: str, domain: str,
 def getPublicPostsOfPerson(base_dir: str, nickname: str, domain: str,
                            raw: bool, simple: bool, proxyType: str,
                            port: int, http_prefix: str,
-                           debug: bool, projectVersion: str,
+                           debug: bool, project_version: str,
                            systemLanguage: str,
                            signingPrivateKeyPem: str,
                            originDomain: str) -> None:
@@ -4087,7 +4087,7 @@ def getPublicPostsOfPerson(base_dir: str, nickname: str, domain: str,
 
     wfRequest = \
         webfingerHandle(session, handle, http_prefix, cachedWebfingers,
-                        originDomain, projectVersion, debug, groupAccount,
+                        originDomain, project_version, debug, groupAccount,
                         signingPrivateKeyPem)
     if not wfRequest:
         if debug:
@@ -4105,7 +4105,7 @@ def getPublicPostsOfPerson(base_dir: str, nickname: str, domain: str,
                                     originDomain,
                                     base_dir, session, wfRequest,
                                     personCache,
-                                    projectVersion, http_prefix,
+                                    project_version, http_prefix,
                                     nickname, domain, 'outbox',
                                     62524)
     if debug:
@@ -4119,14 +4119,14 @@ def getPublicPostsOfPerson(base_dir: str, nickname: str, domain: str,
     _getPosts(session, personUrl, 30, maxMentions, maxEmoji,
               maxAttachments, federationList,
               personCache, raw, simple, debug,
-              projectVersion, http_prefix, originDomain, systemLanguage,
+              project_version, http_prefix, originDomain, systemLanguage,
               signingPrivateKeyPem)
 
 
 def getPublicPostDomains(session, base_dir: str, nickname: str, domain: str,
                          originDomain: str,
                          proxyType: str, port: int, http_prefix: str,
-                         debug: bool, projectVersion: str,
+                         debug: bool, project_version: str,
                          wordFrequency: {}, domainList: [],
                          systemLanguage: str,
                          signingPrivateKeyPem: str) -> []:
@@ -4144,7 +4144,7 @@ def getPublicPostDomains(session, base_dir: str, nickname: str, domain: str,
     handle = http_prefix + "://" + domainFull + "/@" + nickname
     wfRequest = \
         webfingerHandle(session, handle, http_prefix, cachedWebfingers,
-                        domain, projectVersion, debug, False,
+                        domain, project_version, debug, False,
                         signingPrivateKeyPem)
     if not wfRequest:
         return domainList
@@ -4158,7 +4158,7 @@ def getPublicPostDomains(session, base_dir: str, nickname: str, domain: str,
                                     originDomain,
                                     base_dir, session, wfRequest,
                                     personCache,
-                                    projectVersion, http_prefix,
+                                    project_version, http_prefix,
                                     nickname, domain, 'outbox',
                                     92522)
     maxMentions = 99
@@ -4168,7 +4168,7 @@ def getPublicPostDomains(session, base_dir: str, nickname: str, domain: str,
         getPostDomains(session, personUrl, 64, maxMentions, maxEmoji,
                        maxAttachments, federationList,
                        personCache, debug,
-                       projectVersion, http_prefix, domain,
+                       project_version, http_prefix, domain,
                        wordFrequency, domainList, systemLanguage,
                        signingPrivateKeyPem)
     postDomains.sort()
@@ -4223,7 +4223,7 @@ def downloadFollowCollection(signingPrivateKeyPem: str,
 def getPublicPostInfo(session, base_dir: str, nickname: str, domain: str,
                       originDomain: str,
                       proxyType: str, port: int, http_prefix: str,
-                      debug: bool, projectVersion: str,
+                      debug: bool, project_version: str,
                       wordFrequency: {}, systemLanguage: str,
                       signingPrivateKeyPem: str) -> []:
     """ Returns a dict of domains referenced within public posts
@@ -4240,7 +4240,7 @@ def getPublicPostInfo(session, base_dir: str, nickname: str, domain: str,
     handle = http_prefix + "://" + domainFull + "/@" + nickname
     wfRequest = \
         webfingerHandle(session, handle, http_prefix, cachedWebfingers,
-                        domain, projectVersion, debug, False,
+                        domain, project_version, debug, False,
                         signingPrivateKeyPem)
     if not wfRequest:
         return {}
@@ -4254,7 +4254,7 @@ def getPublicPostInfo(session, base_dir: str, nickname: str, domain: str,
                                     originDomain,
                                     base_dir, session, wfRequest,
                                     personCache,
-                                    projectVersion, http_prefix,
+                                    project_version, http_prefix,
                                     nickname, domain, 'outbox',
                                     13863)
     maxMentions = 99
@@ -4265,7 +4265,7 @@ def getPublicPostInfo(session, base_dir: str, nickname: str, domain: str,
         getPostDomains(session, personUrl, maxPosts, maxMentions, maxEmoji,
                        maxAttachments, federationList,
                        personCache, debug,
-                       projectVersion, http_prefix, domain,
+                       project_version, http_prefix, domain,
                        wordFrequency, [], systemLanguage, signingPrivateKeyPem)
     postDomains.sort()
     domainsInfo = {}
@@ -4280,7 +4280,7 @@ def getPublicPostInfo(session, base_dir: str, nickname: str, domain: str,
                                    federationList,
                                    personCache,
                                    debug,
-                                   projectVersion, http_prefix,
+                                   project_version, http_prefix,
                                    domain, signingPrivateKeyPem)
     for blockedDomain, postUrlList in blockedPosts.items():
         domainsInfo[blockedDomain] += postUrlList
@@ -4291,7 +4291,7 @@ def getPublicPostInfo(session, base_dir: str, nickname: str, domain: str,
 def getPublicPostDomainsBlocked(session, base_dir: str,
                                 nickname: str, domain: str,
                                 proxyType: str, port: int, http_prefix: str,
-                                debug: bool, projectVersion: str,
+                                debug: bool, project_version: str,
                                 wordFrequency: {}, domainList: [],
                                 systemLanguage: str,
                                 signingPrivateKeyPem: str) -> []:
@@ -4303,7 +4303,7 @@ def getPublicPostDomainsBlocked(session, base_dir: str,
         getPublicPostDomains(session, base_dir, nickname, domain,
                              originDomain,
                              proxyType, port, http_prefix,
-                             debug, projectVersion,
+                             debug, project_version,
                              wordFrequency, domainList, systemLanguage,
                              signingPrivateKeyPem)
     if not postDomains:
@@ -4352,7 +4352,7 @@ def _getNonMutualsOfPerson(base_dir: str,
 def checkDomains(session, base_dir: str,
                  nickname: str, domain: str,
                  proxyType: str, port: int, http_prefix: str,
-                 debug: bool, projectVersion: str,
+                 debug: bool, project_version: str,
                  maxBlockedDomains: int, singleCheck: bool,
                  systemLanguage: str,
                  signingPrivateKeyPem: str) -> None:
@@ -4382,7 +4382,7 @@ def checkDomains(session, base_dir: str,
                                             nonMutualNickname,
                                             nonMutualDomain,
                                             proxyType, port, http_prefix,
-                                            debug, projectVersion,
+                                            debug, project_version,
                                             wordFrequency, [],
                                             systemLanguage,
                                             signingPrivateKeyPem)
@@ -4404,7 +4404,7 @@ def checkDomains(session, base_dir: str,
                                             nonMutualNickname,
                                             nonMutualDomain,
                                             proxyType, port, http_prefix,
-                                            debug, projectVersion,
+                                            debug, project_version,
                                             wordFrequency, [],
                                             systemLanguage,
                                             signingPrivateKeyPem)
@@ -4502,7 +4502,7 @@ def _rejectAnnounce(announceFilename: str,
 
 def downloadAnnounce(session, base_dir: str, http_prefix: str,
                      nickname: str, domain: str,
-                     postJsonObject: {}, projectVersion: str,
+                     postJsonObject: {}, project_version: str,
                      translate: {},
                      yt_replace_domain: str,
                      twitterReplacementDomain: str,
@@ -4590,8 +4590,10 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
             print('Downloading Announce content for ' +
                   postJsonObject['object'])
         announcedJson = \
-            getJson(signingPrivateKeyPem, session, postJsonObject['object'],
-                    asHeader, None, debug, projectVersion, http_prefix, domain)
+            getJson(signingPrivateKeyPem, session,
+                    postJsonObject['object'],
+                    asHeader, None, debug, project_version,
+                    http_prefix, domain)
 
         if not announcedJson:
             return None
@@ -4753,7 +4755,7 @@ def sendBlockViaServer(base_dir: str, session,
                        fromDomain: str, fromPort: int,
                        http_prefix: str, blockedUrl: str,
                        cachedWebfingers: {}, personCache: {},
-                       debug: bool, projectVersion: str,
+                       debug: bool, project_version: str,
                        signingPrivateKeyPem: str) -> {}:
     """Creates a block via c2s
     """
@@ -4781,7 +4783,7 @@ def sendBlockViaServer(base_dir: str, session,
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, http_prefix,
                                 cachedWebfingers,
-                                fromDomain, projectVersion, debug, False,
+                                fromDomain, project_version, debug, False,
                                 signingPrivateKeyPem)
     if not wfRequest:
         if debug:
@@ -4801,7 +4803,7 @@ def sendBlockViaServer(base_dir: str, session,
                                     originDomain,
                                     base_dir, session, wfRequest,
                                     personCache,
-                                    projectVersion, http_prefix, fromNickname,
+                                    project_version, http_prefix, fromNickname,
                                     fromDomain, postToBox, 72652)
 
     if not inboxUrl:
@@ -4837,7 +4839,7 @@ def sendMuteViaServer(base_dir: str, session,
                       fromDomain: str, fromPort: int,
                       http_prefix: str, mutedUrl: str,
                       cachedWebfingers: {}, personCache: {},
-                      debug: bool, projectVersion: str,
+                      debug: bool, project_version: str,
                       signingPrivateKeyPem: str) -> {}:
     """Creates a mute via c2s
     """
@@ -4861,7 +4863,7 @@ def sendMuteViaServer(base_dir: str, session,
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, http_prefix,
                                 cachedWebfingers,
-                                fromDomain, projectVersion, debug, False,
+                                fromDomain, project_version, debug, False,
                                 signingPrivateKeyPem)
     if not wfRequest:
         if debug:
@@ -4881,7 +4883,7 @@ def sendMuteViaServer(base_dir: str, session,
                                     originDomain,
                                     base_dir, session, wfRequest,
                                     personCache,
-                                    projectVersion, http_prefix, fromNickname,
+                                    project_version, http_prefix, fromNickname,
                                     fromDomain, postToBox, 72652)
 
     if not inboxUrl:
@@ -4917,7 +4919,7 @@ def sendUndoMuteViaServer(base_dir: str, session,
                           fromDomain: str, fromPort: int,
                           http_prefix: str, mutedUrl: str,
                           cachedWebfingers: {}, personCache: {},
-                          debug: bool, projectVersion: str,
+                          debug: bool, project_version: str,
                           signingPrivateKeyPem: str) -> {}:
     """Undoes a mute via c2s
     """
@@ -4946,7 +4948,7 @@ def sendUndoMuteViaServer(base_dir: str, session,
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, http_prefix,
                                 cachedWebfingers,
-                                fromDomain, projectVersion, debug, False,
+                                fromDomain, project_version, debug, False,
                                 signingPrivateKeyPem)
     if not wfRequest:
         if debug:
@@ -4966,7 +4968,7 @@ def sendUndoMuteViaServer(base_dir: str, session,
                                     originDomain,
                                     base_dir, session, wfRequest,
                                     personCache,
-                                    projectVersion, http_prefix, fromNickname,
+                                    project_version, http_prefix, fromNickname,
                                     fromDomain, postToBox, 72652)
 
     if not inboxUrl:
@@ -5003,7 +5005,7 @@ def sendUndoBlockViaServer(base_dir: str, session,
                            fromDomain: str, fromPort: int,
                            http_prefix: str, blockedUrl: str,
                            cachedWebfingers: {}, personCache: {},
-                           debug: bool, projectVersion: str,
+                           debug: bool, project_version: str,
                            signingPrivateKeyPem: str) -> {}:
     """Creates a block via c2s
     """
@@ -5035,7 +5037,7 @@ def sendUndoBlockViaServer(base_dir: str, session,
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, http_prefix,
                                 cachedWebfingers,
-                                fromDomain, projectVersion, debug, False,
+                                fromDomain, project_version, debug, False,
                                 signingPrivateKeyPem)
     if not wfRequest:
         if debug:
@@ -5054,7 +5056,7 @@ def sendUndoBlockViaServer(base_dir: str, session,
      displayName, _) = getPersonBox(signingPrivateKeyPem,
                                     originDomain,
                                     base_dir, session, wfRequest, personCache,
-                                    projectVersion, http_prefix, fromNickname,
+                                    project_version, http_prefix, fromNickname,
                                     fromDomain, postToBox, 53892)
 
     if not inboxUrl:

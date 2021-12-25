@@ -62,7 +62,7 @@ def _parseHandle(handle: str) -> (str, str, bool):
 
 def webfingerHandle(session, handle: str, http_prefix: str,
                     cachedWebfingers: {},
-                    fromDomain: str, projectVersion: str,
+                    fromDomain: str, project_version: str,
                     debug: bool, groupAccount: bool,
                     signingPrivateKeyPem: str) -> {}:
     """Gets webfinger result for the given ActivityPub handle
@@ -93,7 +93,7 @@ def webfingerHandle(session, handle: str, http_prefix: str,
     try:
         result = \
             getJson(signingPrivateKeyPem, session, url, hdr, par,
-                    debug, projectVersion, http_prefix, fromDomain)
+                    debug, project_version, http_prefix, fromDomain)
     except Exception as ex:
         print('ERROR: webfingerHandle ' + str(ex))
         return None

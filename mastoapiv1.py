@@ -91,7 +91,7 @@ def mastoApiV1Response(path: str, callingDomain: str,
                        translate: {},
                        registration: bool,
                        systemLanguage: str,
-                       projectVersion: str,
+                       project_version: str,
                        customEmoji: [],
                        show_node_info_accounts: bool,
                        broch_mode: bool) -> ({}, str):
@@ -230,7 +230,7 @@ def mastoApiV1Response(path: str, callingDomain: str,
                              domainFull,
                              registration,
                              systemLanguage,
-                             projectVersion)
+                             project_version)
         sendJsonStr = 'masto API instance metadata sent ' + uaStr
     elif path.startswith('/api/v1/instance/peers'):
         # This is just a dummy result.

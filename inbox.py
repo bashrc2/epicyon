@@ -3661,7 +3661,7 @@ def _restoreQueueItems(base_dir: str, queue: []) -> None:
         print('Restored ' + str(len(queue)) + ' inbox queue items')
 
 
-def runInboxQueueWatchdog(projectVersion: str, httpd) -> None:
+def runInboxQueueWatchdog(project_version: str, httpd) -> None:
     """This tries to keep the inbox thread running even if it dies
     """
     print('Starting inbox queue watchdog')
@@ -3847,7 +3847,7 @@ def _receiveFollowRequest(session, base_dir: str, http_prefix: str,
                           port: int, sendThreads: [], postLog: [],
                           cachedWebfingers: {}, personCache: {},
                           messageJson: {}, federationList: [],
-                          debug: bool, projectVersion: str,
+                          debug: bool, project_version: str,
                           max_followers: int, onionDomain: str,
                           signingPrivateKeyPem: str, unitTest: bool) -> bool:
     """Receives a follow request within the POST section of HTTPServer
@@ -3967,7 +3967,7 @@ def _receiveFollowRequest(session, base_dir: str, http_prefix: str,
         if debug:
             print('Obtaining the following actor: ' + messageJson['actor'])
         if not getPersonPubKey(base_dir, session, messageJson['actor'],
-                               personCache, debug, projectVersion,
+                               personCache, debug, project_version,
                                http_prefix, domainToFollow, onionDomain,
                                signingPrivateKeyPem):
             if debug:
@@ -4004,7 +4004,7 @@ def _receiveFollowRequest(session, base_dir: str, http_prefix: str,
             if debug:
                 print('Obtaining the following actor: ' + messageJson['actor'])
             if not getPersonPubKey(base_dir, session, messageJson['actor'],
-                                   personCache, debug, projectVersion,
+                                   personCache, debug, project_version,
                                    http_prefix, domainToFollow, onionDomain,
                                    signingPrivateKeyPem):
                 if debug:
@@ -4054,12 +4054,12 @@ def _receiveFollowRequest(session, base_dir: str, http_prefix: str,
                                   messageJson['actor'], federationList,
                                   messageJson, sendThreads, postLog,
                                   cachedWebfingers, personCache,
-                                  debug, projectVersion, True,
+                                  debug, project_version, True,
                                   signingPrivateKeyPem)
 
 
 def runInboxQueue(recentPostsCache: {}, max_recent_posts: int,
-                  projectVersion: str,
+                  project_version: str,
                   base_dir: str, http_prefix: str,
                   sendThreads: [], postLog: [],
                   cachedWebfingers: {}, personCache: {}, queue: [],
@@ -4232,7 +4232,7 @@ def runInboxQueue(recentPostsCache: {}, max_recent_posts: int,
             pubKey = \
                 getPersonPubKey(base_dir, session, keyId,
                                 personCache, debug,
-                                projectVersion, http_prefix,
+                                project_version, http_prefix,
                                 domain, onionDomain, signingPrivateKeyPem)
             if pubKey:
                 if debug:
@@ -4370,7 +4370,7 @@ def runInboxQueue(recentPostsCache: {}, max_recent_posts: int,
                                  personCache,
                                  queueJson['post'],
                                  federationList,
-                                 debug, projectVersion,
+                                 debug, project_version,
                                  max_followers, onionDomain,
                                  signingPrivateKeyPem, unitTest):
             if os.path.isfile(queueFilename):

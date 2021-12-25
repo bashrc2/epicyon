@@ -865,7 +865,7 @@ def runNewswireDaemon(base_dir: str, httpd,
                 break
 
 
-def runNewswireWatchdog(projectVersion: str, httpd) -> None:
+def runNewswireWatchdog(project_version: str, httpd) -> None:
     """This tries to keep the newswire update thread running even if it dies
     """
     print('Starting newswire watchdog')

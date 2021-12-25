@@ -112,7 +112,7 @@ def _updatePostSchedule(base_dir: str, handle: str, httpd,
                                        httpd.personCache,
                                        httpd.allowDeletion,
                                        httpd.proxyType,
-                                       httpd.projectVersion,
+                                       httpd.project_version,
                                        httpd.debug,
                                        httpd.yt_replace_domain,
                                        httpd.twitterReplacementDomain,
@@ -179,7 +179,7 @@ def runPostSchedule(base_dir: str, httpd, maxScheduledPosts: int):
             break
 
 
-def runPostScheduleWatchdog(projectVersion: str, httpd) -> None:
+def runPostScheduleWatchdog(project_version: str, httpd) -> None:
     """This tries to keep the scheduled post thread running even if it dies
     """
     print('Starting scheduled post watchdog')

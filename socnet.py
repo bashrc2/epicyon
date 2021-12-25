@@ -17,7 +17,7 @@ from utils import getFullDomain
 def instancesGraph(base_dir: str, handles: str,
                    proxyType: str,
                    port: int, http_prefix: str,
-                   debug: bool, projectVersion: str,
+                   debug: bool, project_version: str,
                    systemLanguage: str, signingPrivateKeyPem: str) -> str:
     """ Returns a dot graph of federating instances
     based upon a few sample handles.
@@ -54,7 +54,7 @@ def instancesGraph(base_dir: str, handles: str,
         wfRequest = \
             webfingerHandle(session, handle, http_prefix,
                             cachedWebfingers,
-                            domain, projectVersion, debug, False,
+                            domain, project_version, debug, False,
                             signingPrivateKeyPem)
         if not wfRequest:
             return dotGraphStr + '}\n'
@@ -69,7 +69,7 @@ def instancesGraph(base_dir: str, handles: str,
                                         originDomain,
                                         base_dir, session, wfRequest,
                                         personCache,
-                                        projectVersion, http_prefix,
+                                        project_version, http_prefix,
                                         nickname, domain, 'outbox',
                                         27261)
         wordFrequency = {}
@@ -77,7 +77,7 @@ def instancesGraph(base_dir: str, handles: str,
             getPostDomains(session, personUrl, 64, maxMentions, maxEmoji,
                            maxAttachments, federationList,
                            personCache, debug,
-                           projectVersion, http_prefix, domain,
+                           project_version, http_prefix, domain,
                            wordFrequency, [], systemLanguage,
                            signingPrivateKeyPem)
         postDomains.sort()

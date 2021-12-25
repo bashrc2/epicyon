@@ -122,7 +122,7 @@ def createAnnounce(session, base_dir: str, federationList: [],
                    clientToServer: bool,
                    sendThreads: [], postLog: [],
                    personCache: {}, cachedWebfingers: {},
-                   debug: bool, projectVersion: str,
+                   debug: bool, project_version: str,
                    signingPrivateKeyPem: str) -> {}:
     """Creates an announce message
     Typically toUrl will be https://www.w3.org/ns/activitystreams#Public
@@ -180,7 +180,7 @@ def createAnnounce(session, base_dir: str, federationList: [],
                        announceNickname, announceDomain, announcePort, None,
                        http_prefix, True, clientToServer, federationList,
                        sendThreads, postLog, cachedWebfingers, personCache,
-                       debug, projectVersion, None, groupAccount,
+                       debug, project_version, None, groupAccount,
                        signingPrivateKeyPem, 639633)
 
     return newAnnounce
@@ -191,7 +191,7 @@ def announcePublic(session, base_dir: str, federationList: [],
                    objectUrl: str, clientToServer: bool,
                    sendThreads: [], postLog: [],
                    personCache: {}, cachedWebfingers: {},
-                   debug: bool, projectVersion: str,
+                   debug: bool, project_version: str,
                    signingPrivateKeyPem: str) -> {}:
     """Makes a public announcement
     """
@@ -205,7 +205,7 @@ def announcePublic(session, base_dir: str, federationList: [],
                           objectUrl, True, clientToServer,
                           sendThreads, postLog,
                           personCache, cachedWebfingers,
-                          debug, projectVersion,
+                          debug, project_version,
                           signingPrivateKeyPem)
 
 
@@ -214,7 +214,7 @@ def sendAnnounceViaServer(base_dir: str, session,
                           fromDomain: str, fromPort: int,
                           http_prefix: str, repeatObjectUrl: str,
                           cachedWebfingers: {}, personCache: {},
-                          debug: bool, projectVersion: str,
+                          debug: bool, project_version: str,
                           signingPrivateKeyPem: str) -> {}:
     """Creates an announce message via c2s
     """
@@ -247,7 +247,7 @@ def sendAnnounceViaServer(base_dir: str, session,
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, http_prefix,
                                 cachedWebfingers,
-                                fromDomain, projectVersion, debug, False,
+                                fromDomain, project_version, debug, False,
                                 signingPrivateKeyPem)
     if not wfRequest:
         if debug:
@@ -268,7 +268,7 @@ def sendAnnounceViaServer(base_dir: str, session,
                                     originDomain,
                                     base_dir, session, wfRequest,
                                     personCache,
-                                    projectVersion, http_prefix,
+                                    project_version, http_prefix,
                                     fromNickname, fromDomain,
                                     postToBox, 73528)
 
@@ -307,7 +307,7 @@ def sendUndoAnnounceViaServer(base_dir: str, session,
                               domain: str, port: int,
                               http_prefix: str, repeatObjectUrl: str,
                               cachedWebfingers: {}, personCache: {},
-                              debug: bool, projectVersion: str,
+                              debug: bool, project_version: str,
                               signingPrivateKeyPem: str) -> {}:
     """Undo an announce message via c2s
     """
@@ -332,7 +332,7 @@ def sendUndoAnnounceViaServer(base_dir: str, session,
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, http_prefix,
                                 cachedWebfingers,
-                                domain, projectVersion, debug, False,
+                                domain, project_version, debug, False,
                                 signingPrivateKeyPem)
     if not wfRequest:
         if debug:
@@ -353,7 +353,7 @@ def sendUndoAnnounceViaServer(base_dir: str, session,
                                     originDomain,
                                     base_dir, session, wfRequest,
                                     personCache,
-                                    projectVersion, http_prefix,
+                                    project_version, http_prefix,
                                     nickname, domain,
                                     postToBox, 73528)
 

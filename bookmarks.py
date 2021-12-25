@@ -254,7 +254,7 @@ def bookmark(recentPostsCache: {},
              clientToServer: bool,
              sendThreads: [], postLog: [],
              personCache: {}, cachedWebfingers: {},
-             debug: bool, projectVersion: str) -> {}:
+             debug: bool, project_version: str) -> {}:
     """Creates a bookmark
     actor is the person doing the bookmarking
     'to' might be a specific person (actor) whose post was bookmarked
@@ -313,7 +313,7 @@ def undoBookmark(recentPostsCache: {},
                  clientToServer: bool,
                  sendThreads: [], postLog: [],
                  personCache: {}, cachedWebfingers: {},
-                 debug: bool, projectVersion: str) -> {}:
+                 debug: bool, project_version: str) -> {}:
     """Removes a bookmark
     actor is the person doing the bookmarking
     'to' might be a specific person (actor) whose post was bookmarked
@@ -373,7 +373,7 @@ def sendBookmarkViaServer(base_dir: str, session,
                           domain: str, fromPort: int,
                           http_prefix: str, bookmarkUrl: str,
                           cachedWebfingers: {}, personCache: {},
-                          debug: bool, projectVersion: str,
+                          debug: bool, project_version: str,
                           signingPrivateKeyPem: str) -> {}:
     """Creates a bookmark via c2s
     """
@@ -403,7 +403,7 @@ def sendBookmarkViaServer(base_dir: str, session,
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, http_prefix,
                                 cachedWebfingers,
-                                domain, projectVersion, debug, False,
+                                domain, project_version, debug, False,
                                 signingPrivateKeyPem)
     if not wfRequest:
         if debug:
@@ -423,7 +423,7 @@ def sendBookmarkViaServer(base_dir: str, session,
                                     originDomain,
                                     base_dir, session, wfRequest,
                                     personCache,
-                                    projectVersion, http_prefix,
+                                    project_version, http_prefix,
                                     nickname, domain,
                                     postToBox, 58391)
 
@@ -463,7 +463,7 @@ def sendUndoBookmarkViaServer(base_dir: str, session,
                               domain: str, fromPort: int,
                               http_prefix: str, bookmarkUrl: str,
                               cachedWebfingers: {}, personCache: {},
-                              debug: bool, projectVersion: str,
+                              debug: bool, project_version: str,
                               signingPrivateKeyPem: str) -> {}:
     """Removes a bookmark via c2s
     """
@@ -493,7 +493,7 @@ def sendUndoBookmarkViaServer(base_dir: str, session,
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, http_prefix,
                                 cachedWebfingers,
-                                domain, projectVersion, debug, False,
+                                domain, project_version, debug, False,
                                 signingPrivateKeyPem)
     if not wfRequest:
         if debug:
@@ -513,7 +513,7 @@ def sendUndoBookmarkViaServer(base_dir: str, session,
                                     originDomain,
                                     base_dir, session, wfRequest,
                                     personCache,
-                                    projectVersion, http_prefix,
+                                    project_version, http_prefix,
                                     nickname, domain,
                                     postToBox, 52594)
 

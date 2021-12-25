@@ -559,7 +559,7 @@ def sendShareViaServer(base_dir, session,
                        itemQty: float, itemType: str, itemCategory: str,
                        location: str, duration: str,
                        cachedWebfingers: {}, personCache: {},
-                       debug: bool, projectVersion: str,
+                       debug: bool, project_version: str,
                        itemPrice: str, itemCurrency: str,
                        signingPrivateKeyPem: str) -> {}:
     """Creates an item share via c2s
@@ -611,7 +611,7 @@ def sendShareViaServer(base_dir, session,
     wfRequest = \
         webfingerHandle(session, handle, http_prefix,
                         cachedWebfingers,
-                        fromDomain, projectVersion, debug, False,
+                        fromDomain, project_version, debug, False,
                         signingPrivateKeyPem)
     if not wfRequest:
         if debug:
@@ -630,7 +630,7 @@ def sendShareViaServer(base_dir, session,
      displayName, _) = getPersonBox(signingPrivateKeyPem,
                                     originDomain,
                                     base_dir, session, wfRequest,
-                                    personCache, projectVersion,
+                                    personCache, project_version,
                                     http_prefix, fromNickname,
                                     fromDomain, postToBox,
                                     83653)
@@ -681,7 +681,7 @@ def sendUndoShareViaServer(base_dir: str, session,
                            fromDomain: str, fromPort: int,
                            http_prefix: str, displayName: str,
                            cachedWebfingers: {}, personCache: {},
-                           debug: bool, projectVersion: str,
+                           debug: bool, project_version: str,
                            signingPrivateKeyPem: str) -> {}:
     """Undoes a share via c2s
     """
@@ -715,7 +715,7 @@ def sendUndoShareViaServer(base_dir: str, session,
     # lookup the inbox for the To handle
     wfRequest = \
         webfingerHandle(session, handle, http_prefix, cachedWebfingers,
-                        fromDomain, projectVersion, debug, False,
+                        fromDomain, project_version, debug, False,
                         signingPrivateKeyPem)
     if not wfRequest:
         if debug:
@@ -734,7 +734,7 @@ def sendUndoShareViaServer(base_dir: str, session,
      displayName, _) = getPersonBox(signingPrivateKeyPem,
                                     originDomain,
                                     base_dir, session, wfRequest,
-                                    personCache, projectVersion,
+                                    personCache, project_version,
                                     http_prefix, fromNickname,
                                     fromDomain, postToBox,
                                     12663)
@@ -779,7 +779,7 @@ def sendWantedViaServer(base_dir, session,
                         itemQty: float, itemType: str, itemCategory: str,
                         location: str, duration: str,
                         cachedWebfingers: {}, personCache: {},
-                        debug: bool, projectVersion: str,
+                        debug: bool, project_version: str,
                         itemMaxPrice: str, itemCurrency: str,
                         signingPrivateKeyPem: str) -> {}:
     """Creates a wanted item via c2s
@@ -831,7 +831,7 @@ def sendWantedViaServer(base_dir, session,
     wfRequest = \
         webfingerHandle(session, handle, http_prefix,
                         cachedWebfingers,
-                        fromDomain, projectVersion, debug, False,
+                        fromDomain, project_version, debug, False,
                         signingPrivateKeyPem)
     if not wfRequest:
         if debug:
@@ -850,7 +850,7 @@ def sendWantedViaServer(base_dir, session,
      displayName, _) = getPersonBox(signingPrivateKeyPem,
                                     originDomain,
                                     base_dir, session, wfRequest,
-                                    personCache, projectVersion,
+                                    personCache, project_version,
                                     http_prefix, fromNickname,
                                     fromDomain, postToBox,
                                     23653)
@@ -901,7 +901,7 @@ def sendUndoWantedViaServer(base_dir: str, session,
                             fromDomain: str, fromPort: int,
                             http_prefix: str, displayName: str,
                             cachedWebfingers: {}, personCache: {},
-                            debug: bool, projectVersion: str,
+                            debug: bool, project_version: str,
                             signingPrivateKeyPem: str) -> {}:
     """Undoes a wanted item via c2s
     """
@@ -935,7 +935,7 @@ def sendUndoWantedViaServer(base_dir: str, session,
     # lookup the inbox for the To handle
     wfRequest = \
         webfingerHandle(session, handle, http_prefix, cachedWebfingers,
-                        fromDomain, projectVersion, debug, False,
+                        fromDomain, project_version, debug, False,
                         signingPrivateKeyPem)
     if not wfRequest:
         if debug:
@@ -954,7 +954,7 @@ def sendUndoWantedViaServer(base_dir: str, session,
      displayName, _) = getPersonBox(signingPrivateKeyPem,
                                     originDomain,
                                     base_dir, session, wfRequest,
-                                    personCache, projectVersion,
+                                    personCache, project_version,
                                     http_prefix, fromNickname,
                                     fromDomain, postToBox,
                                     12693)
@@ -1602,7 +1602,7 @@ def _updateFederatedSharesCache(session, shared_items_federated_domains: [],
             time.sleep(2)
 
 
-def runFederatedSharesWatchdog(projectVersion: str, httpd) -> None:
+def runFederatedSharesWatchdog(project_version: str, httpd) -> None:
     """This tries to keep the federated shares update thread
     running even if it dies
     """

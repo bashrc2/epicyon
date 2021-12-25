@@ -138,7 +138,7 @@ def getWebfingerFromCache(handle: str, cachedWebfingers: {}) -> {}:
 
 def getPersonPubKey(base_dir: str, session, personUrl: str,
                     personCache: {}, debug: bool,
-                    projectVersion: str, http_prefix: str,
+                    project_version: str, http_prefix: str,
                     domain: str, onionDomain: str,
                     signingPrivateKeyPem: str) -> str:
     if not personUrl:
@@ -168,7 +168,7 @@ def getPersonPubKey(base_dir: str, session, personUrl: str,
         personJson = \
             getJson(signingPrivateKeyPem,
                     session, personUrl, asHeader, None, debug,
-                    projectVersion, http_prefix, personDomain)
+                    project_version, http_prefix, personDomain)
         if not personJson:
             return None
     pubKey = None
