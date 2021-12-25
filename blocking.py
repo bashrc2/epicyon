@@ -1007,11 +1007,11 @@ def loadCWLists(base_dir: str, verbose: bool) -> {}:
 
 
 def addCWfromLists(postJsonObject: {}, CWlists: {}, translate: {},
-                   listsEnabled: str) -> None:
+                   lists_enabled: str) -> None:
     """Adds content warnings by matching the post content
     against domains or keywords
     """
-    if not listsEnabled:
+    if not lists_enabled:
         return
     if not postJsonObject['object'].get('content'):
         return
@@ -1021,7 +1021,7 @@ def addCWfromLists(postJsonObject: {}, CWlists: {}, translate: {},
 
     content = postJsonObject['object']['content']
     for name, item in CWlists.items():
-        if name not in listsEnabled:
+        if name not in lists_enabled:
             continue
         if not item.get('warning'):
             continue

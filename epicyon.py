@@ -119,7 +119,7 @@ parser = argparse.ArgumentParser(description='ActivityPub Server')
 parser.add_argument('--content_license_url', type=str,
                     default='https://creativecommons.org/licenses/by/4.0',
                     help='Url of the license used for the instance content')
-parser.add_argument('--listsEnabled', type=str,
+parser.add_argument('--lists_enabled', type=str,
                     default=None,
                     help='Names of content warning lists enabled. ' +
                     'See the cwlists directory')
@@ -3150,12 +3150,12 @@ if userAgentsBlockedStr:
     for agentBlockStr in agentBlocksList:
         userAgentsBlocked.append(agentBlockStr.strip())
 
-listsEnabled = ''
-if args.listsEnabled:
-    listsEnabled = args.listsEnabled
-    setConfigParam(base_dir, 'listsEnabled', listsEnabled)
+lists_enabled = ''
+if args.lists_enabled:
+    lists_enabled = args.lists_enabled
+    setConfigParam(base_dir, 'lists_enabled', lists_enabled)
 else:
-    listsEnabled = getConfigParam(base_dir, 'listsEnabled')
+    lists_enabled = getConfigParam(base_dir, 'lists_enabled')
 
 city = \
     getConfigParam(base_dir, 'city')
@@ -3211,7 +3211,7 @@ if args.defaultCurrency:
 
 if __name__ == "__main__":
     runDaemon(content_license_url,
-              listsEnabled,
+              lists_enabled,
               args.default_reply_interval_hrs,
               args.lowBandwidth, args.maxLikeCount,
               shared_items_federated_domains,

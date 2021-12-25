@@ -54,7 +54,7 @@ def htmlModeration(cssCache: {}, defaultTimeline: str,
                    maxLikeCount: int,
                    shared_items_federated_domains: [],
                    signingPrivateKeyPem: str,
-                   CWlists: {}, listsEnabled: str) -> str:
+                   CWlists: {}, lists_enabled: str) -> str:
     """Show the moderation feed as html
     This is what you see when selecting the "mod" timeline
     """
@@ -77,7 +77,7 @@ def htmlModeration(cssCache: {}, defaultTimeline: str,
                         peertubeInstances, allowLocalNetworkAccess,
                         textModeBanner, accessKeys, systemLanguage,
                         maxLikeCount, shared_items_federated_domains,
-                        signingPrivateKeyPem, CWlists, listsEnabled)
+                        signingPrivateKeyPem, CWlists, lists_enabled)
 
 
 def htmlAccountInfo(cssCache: {}, translate: {},

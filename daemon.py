@@ -1307,7 +1307,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.maxLikeCount,
                                    self.server.maxRecentPosts,
                                    self.server.CWlists,
-                                   self.server.listsEnabled,
+                                   self.server.lists_enabled,
                                    self.server.content_license_url)
 
     def _getOutboxThreadIndex(self, nickname: str,
@@ -2729,7 +2729,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.maxLikeCount,
                               self.server.signingPrivateKeyPem,
                               self.server.CWlists,
-                              self.server.listsEnabled,
+                              self.server.lists_enabled,
                               self.server.defaultTimeline).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
@@ -2863,7 +2863,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.maxLikeCount,
                               self.server.signingPrivateKeyPem,
                               self.server.CWlists,
-                              self.server.listsEnabled,
+                              self.server.lists_enabled,
                               self.server.defaultTimeline).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
@@ -3313,7 +3313,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.maxLikeCount,
                                       self.server.signingPrivateKeyPem,
                                       self.server.CWlists,
-                                      self.server.listsEnabled)
+                                      self.server.lists_enabled)
                 if hashtagStr:
                     msg = hashtagStr.encode('utf-8')
                     msglen = len(msg)
@@ -3408,7 +3408,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.maxLikeCount,
                                       self.server.signingPrivateKeyPem,
                                       self.server.CWlists,
-                                      self.server.listsEnabled)
+                                      self.server.lists_enabled)
                 if historyStr:
                     msg = historyStr.encode('utf-8')
                     msglen = len(msg)
@@ -3476,7 +3476,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.maxLikeCount,
                                       self.server.signingPrivateKeyPem,
                                       self.server.CWlists,
-                                      self.server.listsEnabled)
+                                      self.server.lists_enabled)
                 if bookmarksStr:
                     msg = bookmarksStr.encode('utf-8')
                     msglen = len(msg)
@@ -3575,7 +3575,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                self.server.maxLikeCount,
                                                signingPrivateKeyPem,
                                                self.server.CWlists,
-                                               self.server.listsEnabled)
+                                               self.server.lists_enabled)
                 if profileStr:
                     msg = profileStr.encode('utf-8')
                     msglen = len(msg)
@@ -6388,10 +6388,10 @@ class PubServer(BaseHTTPRequestHandler):
                                         newListsEnabled += ', ' + name
                                     else:
                                         newListsEnabled += name
-                        if newListsEnabled != self.server.listsEnabled:
-                            self.server.listsEnabled = newListsEnabled
+                        if newListsEnabled != self.server.lists_enabled:
+                            self.server.lists_enabled = newListsEnabled
                             setConfigParam(self.server.base_dir,
-                                           "listsEnabled",
+                                           "lists_enabled",
                                            newListsEnabled)
 
                         # save blocked user agents
@@ -7550,7 +7550,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.maxLikeCount,
                               self.server.signingPrivateKeyPem,
                               self.server.CWlists,
-                              self.server.listsEnabled)
+                              self.server.lists_enabled)
         if hashtagStr:
             msg = hashtagStr.encode('utf-8')
             msglen = len(msg)
@@ -7765,7 +7765,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  manuallyApproveFollowers,
                                  False, True, False,
                                  self.server.CWlists,
-                                 self.server.listsEnabled)
+                                 self.server.lists_enabled)
 
         actorAbsolute = self._getInstanceUrl(callingDomain) + actor
         actorPathStr = \
@@ -8225,7 +8225,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      manuallyApproveFollowers,
                                      False, True, False,
                                      self.server.CWlists,
-                                     self.server.listsEnabled)
+                                     self.server.lists_enabled)
             else:
                 print('WARN: Liked post not found: ' + likedPostFilename)
             # clear the icon from the cache so that it gets updated
@@ -8379,7 +8379,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      manuallyApproveFollowers,
                                      False, True, False,
                                      self.server.CWlists,
-                                     self.server.listsEnabled)
+                                     self.server.lists_enabled)
             else:
                 print('WARN: Unliked post not found: ' + likedPostFilename)
             # clear the icon from the cache so that it gets updated
@@ -8563,7 +8563,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      manuallyApproveFollowers,
                                      False, True, False,
                                      self.server.CWlists,
-                                     self.server.listsEnabled)
+                                     self.server.lists_enabled)
             else:
                 print('WARN: Emoji reaction post not found: ' +
                       reactionPostFilename)
@@ -8735,7 +8735,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      manuallyApproveFollowers,
                                      False, True, False,
                                      self.server.CWlists,
-                                     self.server.listsEnabled)
+                                     self.server.lists_enabled)
             else:
                 print('WARN: Unreaction post not found: ' +
                       reactionPostFilename)
@@ -8830,7 +8830,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.maxLikeCount,
                                     self.server.signingPrivateKeyPem,
                                     self.server.CWlists,
-                                    self.server.listsEnabled,
+                                    self.server.lists_enabled,
                                     timelineStr, pageNumber)
         msg = msg.encode('utf-8')
         msglen = len(msg)
@@ -8955,7 +8955,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      manuallyApproveFollowers,
                                      False, True, False,
                                      self.server.CWlists,
-                                     self.server.listsEnabled)
+                                     self.server.lists_enabled)
             else:
                 print('WARN: Bookmarked post not found: ' + bookmarkFilename)
         # self._postToOutbox(bookmarkJson, self.server.projectVersion, None)
@@ -9083,7 +9083,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      manuallyApproveFollowers,
                                      False, True, False,
                                      self.server.CWlists,
-                                     self.server.listsEnabled)
+                                     self.server.lists_enabled)
             else:
                 print('WARN: Unbookmarked post not found: ' + bookmarkFilename)
         actorAbsolute = self._getInstanceUrl(callingDomain) + actor
@@ -9177,7 +9177,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.maxLikeCount,
                                   self.server.signingPrivateKeyPem,
                                   self.server.CWlists,
-                                  self.server.listsEnabled)
+                                  self.server.lists_enabled)
             if deleteStr:
                 deleteStrLen = len(deleteStr)
                 self._set_headers('text/html', deleteStrLen,
@@ -9286,7 +9286,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      showPublicOnly, storeToCache,
                                      useCacheOnly,
                                      self.server.CWlists,
-                                     self.server.listsEnabled)
+                                     self.server.lists_enabled)
             else:
                 print('WARN: Muted post not found: ' + muteFilename)
 
@@ -9396,7 +9396,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      showPublicOnly, storeToCache,
                                      useCacheOnly,
                                      self.server.CWlists,
-                                     self.server.listsEnabled)
+                                     self.server.lists_enabled)
             else:
                 print('WARN: Unmuted post not found: ' + muteFilename)
         if callingDomain.endswith('.onion') and onionDomain:
@@ -9514,7 +9514,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.maxLikeCount,
                                     self.server.signingPrivateKeyPem,
                                     self.server.CWlists,
-                                    self.server.listsEnabled)
+                                    self.server.lists_enabled)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
@@ -9606,7 +9606,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.maxLikeCount,
                                     self.server.signingPrivateKeyPem,
                                     self.server.CWlists,
-                                    self.server.listsEnabled)
+                                    self.server.lists_enabled)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
@@ -9715,7 +9715,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.shared_items_federated_domains,
                                     rolesList,
                                     None, None, self.server.CWlists,
-                                    self.server.listsEnabled,
+                                    self.server.lists_enabled,
                                     self.server.content_license_url)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
@@ -9832,7 +9832,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                 skills,
                                                 None, None,
                                                 self.server.CWlists,
-                                                self.server.listsEnabled,
+                                                self.server.lists_enabled,
                                                 content_license_url)
                                 msg = msg.encode('utf-8')
                                 msglen = len(msg)
@@ -9996,7 +9996,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.maxLikeCount,
                                    self.server.signingPrivateKeyPem,
                                    self.server.CWlists,
-                                   self.server.listsEnabled)
+                                   self.server.lists_enabled)
             msg = msg.encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
@@ -10261,7 +10261,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         shared_items_federated_domains,
                                         self.server.signingPrivateKeyPem,
                                         self.server.CWlists,
-                                        self.server.listsEnabled)
+                                        self.server.lists_enabled)
                         if GETstartTime:
                             fitnessPerformance(GETstartTime,
                                                self.server.fitness,
@@ -10409,7 +10409,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          shared_items_federated_domains,
                                          self.server.signingPrivateKeyPem,
                                          self.server.CWlists,
-                                         self.server.listsEnabled)
+                                         self.server.lists_enabled)
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('text/html', msglen,
@@ -10550,7 +10550,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          shared_items_federated_domains,
                                          self.server.signingPrivateKeyPem,
                                          self.server.CWlists,
-                                         self.server.listsEnabled)
+                                         self.server.lists_enabled)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -10692,7 +10692,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        fed_domains,
                                        self.server.signingPrivateKeyPem,
                                        self.server.CWlists,
-                                       self.server.listsEnabled)
+                                       self.server.lists_enabled)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -10834,7 +10834,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        fed_domains,
                                        self.server.signingPrivateKeyPem,
                                        self.server.CWlists,
-                                       self.server.listsEnabled)
+                                       self.server.lists_enabled)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -10986,7 +10986,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       fed_domains,
                                       self.server.signingPrivateKeyPem,
                                       self.server.CWlists,
-                                      self.server.listsEnabled)
+                                      self.server.lists_enabled)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -11133,7 +11133,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           shared_items_federated_domains,
                                           self.server.signingPrivateKeyPem,
                                           self.server.CWlists,
-                                          self.server.listsEnabled)
+                                          self.server.lists_enabled)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -11239,7 +11239,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.shared_items_federated_domains,
                                    self.server.signingPrivateKeyPem,
                                    self.server.CWlists,
-                                   self.server.listsEnabled)
+                                   self.server.lists_enabled)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -11323,7 +11323,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.shared_items_federated_domains,
                                    self.server.signingPrivateKeyPem,
                                    self.server.CWlists,
-                                   self.server.listsEnabled)
+                                   self.server.lists_enabled)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -11444,7 +11444,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           shared_items_federated_domains,
                                           self.server.signingPrivateKeyPem,
                                           self.server.CWlists,
-                                          self.server.listsEnabled)
+                                          self.server.lists_enabled)
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('text/html', msglen,
@@ -11582,7 +11582,7 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.shared_items_federated_domains,
                                self.server.signingPrivateKeyPem,
                                self.server.CWlists,
-                               self.server.listsEnabled)
+                               self.server.lists_enabled)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
@@ -11712,7 +11712,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            shared_items_federated_domains,
                                            self.server.signingPrivateKeyPem,
                                            self.server.CWlists,
-                                           self.server.listsEnabled)
+                                           self.server.lists_enabled)
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('text/html', msglen,
@@ -11834,7 +11834,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     shares,
                                     pageNumber, sharesPerPage,
                                     self.server.CWlists,
-                                    self.server.listsEnabled,
+                                    self.server.lists_enabled,
                                     self.server.content_license_url)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
@@ -11956,7 +11956,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     pageNumber,
                                     followsPerPage,
                                     self.server.CWlists,
-                                    self.server.listsEnabled,
+                                    self.server.lists_enabled,
                                     content_license_url).encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html',
@@ -12076,7 +12076,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     pageNumber,
                                     followsPerPage,
                                     self.server.CWlists,
-                                    self.server.listsEnabled,
+                                    self.server.lists_enabled,
                                     content_license_url).encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -12210,7 +12210,7 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.shared_items_federated_domains,
                             None, None, None,
                             self.server.CWlists,
-                            self.server.listsEnabled,
+                            self.server.lists_enabled,
                             self.server.content_license_url).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
@@ -12970,7 +12970,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.maxLikeCount,
                               self.server.signingPrivateKeyPem,
                               self.server.CWlists,
-                              self.server.listsEnabled,
+                              self.server.lists_enabled,
                               self.server.defaultTimeline).encode('utf-8')
             if not msg:
                 print('Error replying to ' + inReplyToUrl)
@@ -13054,7 +13054,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   accessKeys,
                                   default_reply_interval_hrs,
                                   self.server.CWlists,
-                                  self.server.listsEnabled).encode('utf-8')
+                                  self.server.lists_enabled).encode('utf-8')
             if msg:
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
@@ -18400,7 +18400,7 @@ def loadTokens(base_dir: str, tokensDict: {}, tokensLookup: {}) -> None:
 
 
 def runDaemon(content_license_url: str,
-              listsEnabled: str,
+              lists_enabled: str,
               default_reply_interval_hrs: int,
               lowBandwidth: bool,
               maxLikeCount: int,
@@ -18763,7 +18763,7 @@ def runDaemon(content_license_url: str,
     if not os.path.isdir(base_dir + '/accounts/news@' + domain):
         print('Creating news inbox: news@' + domain)
         createNewsInbox(base_dir, domain, port, http_prefix)
-        setConfigParam(base_dir, "listsEnabled", "Murdoch press")
+        setConfigParam(base_dir, "lists_enabled", "Murdoch press")
 
     # dict of known web crawlers accessing nodeinfo or the masto API
     # and how many times they have been seen
@@ -18774,10 +18774,10 @@ def runDaemon(content_license_url: str,
     # when was the last crawler seen?
     httpd.lastKnownCrawler = 0
 
-    if listsEnabled:
-        httpd.listsEnabled = listsEnabled
+    if lists_enabled:
+        httpd.lists_enabled = lists_enabled
     else:
-        httpd.listsEnabled = getConfigParam(base_dir, "listsEnabled")
+        httpd.lists_enabled = getConfigParam(base_dir, "lists_enabled")
     httpd.CWlists = loadCWLists(base_dir, True)
 
     # set the avatar for the news account
