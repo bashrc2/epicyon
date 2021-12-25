@@ -2185,7 +2185,7 @@ def _estimateNumberOfEmoji(content: str) -> int:
 
 
 def _validPostContent(base_dir: str, nickname: str, domain: str,
-                      messageJson: {}, maxMentions: int, maxEmoji: int,
+                      messageJson: {}, max_mentions: int, maxEmoji: int,
                       allow_local_network_access: bool, debug: bool,
                       systemLanguage: str,
                       http_prefix: str, domainFull: str,
@@ -2238,7 +2238,7 @@ def _validPostContent(base_dir: str, nickname: str, domain: str,
 
     # check (rough) number of mentions
     mentionsEst = _estimateNumberOfMentions(contentStr)
-    if mentionsEst > maxMentions:
+    if mentionsEst > max_mentions:
         if messageJson['object'].get('id'):
             print('REJECT HELLTHREAD: ' + messageJson['object']['id'])
         print('REJECT HELLTHREAD: Too many mentions in post - ' +
@@ -2255,7 +2255,7 @@ def _validPostContent(base_dir: str, nickname: str, domain: str,
         if not isinstance(messageJson['object']['tag'], list):
             messageJson['object']['tag'] = []
         else:
-            if len(messageJson['object']['tag']) > int(maxMentions * 2):
+            if len(messageJson['object']['tag']) > int(max_mentions * 2):
                 if messageJson['object'].get('id'):
                     print('REJECT: ' + messageJson['object']['id'])
                 print('REJECT: Too many tags in post - ' +
@@ -3186,7 +3186,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                        federationList: [], debug: bool,
                        queueFilename: str, destinationFilename: str,
                        maxReplies: int, allowDeletion: bool,
-                       maxMentions: int, maxEmoji: int, translate: {},
+                       max_mentions: int, maxEmoji: int, translate: {},
                        unitTest: bool,
                        yt_replace_domain: str,
                        twitter_replacement_domain: str,
@@ -3415,7 +3415,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
     jsonObj = None
     domainFull = getFullDomain(domain, port)
     if _validPostContent(base_dir, nickname, domain,
-                         postJsonObject, maxMentions, maxEmoji,
+                         postJsonObject, max_mentions, maxEmoji,
                          allow_local_network_access, debug,
                          systemLanguage, http_prefix,
                          domainFull, personCache):
@@ -4070,7 +4070,7 @@ def runInboxQueue(recentPostsCache: {}, max_recent_posts: int,
                   federationList: [], maxReplies: int,
                   domainMaxPostsPerDay: int,
                   accountMaxPostsPerDay: int,
-                  allowDeletion: bool, debug: bool, maxMentions: int,
+                  allowDeletion: bool, debug: bool, max_mentions: int,
                   maxEmoji: int, translate: {}, unitTest: bool,
                   yt_replace_domain: str,
                   twitter_replacement_domain: str,
@@ -4501,7 +4501,7 @@ def runInboxQueue(recentPostsCache: {}, max_recent_posts: int,
                                debug,
                                queueFilename, destination,
                                maxReplies, allowDeletion,
-                               maxMentions, maxEmoji,
+                               max_mentions, maxEmoji,
                                translate, unitTest,
                                yt_replace_domain,
                                twitter_replacement_domain,

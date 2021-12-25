@@ -558,7 +558,7 @@ parser.add_argument("-c", "--client", type=str2bool, nargs='?',
                     help="Use as an ActivityPub client")
 parser.add_argument('--maxreplies', dest='maxReplies', type=int, default=64,
                     help='Maximum number of replies to a post')
-parser.add_argument('--maxMentions', '--hellthread', dest='maxMentions',
+parser.add_argument('--max_mentions', '--hellthread', dest='max_mentions',
                     type=int, default=10,
                     help='Maximum number of mentions within a post')
 parser.add_argument('--maxEmoji', '--maxemoji', dest='maxEmoji',
@@ -2998,8 +2998,8 @@ if args.testdata:
 
 # set a lower bound to the maximum mentions
 # so that it can't be accidentally set to zero and disable replies
-if args.maxMentions < 4:
-    args.maxMentions = 4
+if args.max_mentions < 4:
+    args.max_mentions = 4
 
 registration = getConfigParam(base_dir, 'registration')
 if not registration:
@@ -3251,7 +3251,7 @@ if __name__ == "__main__":
               args.yt_replace_domain,
               args.twitter_replacement_domain,
               port, proxy_port, http_prefix,
-              federationList, args.maxMentions,
+              federationList, args.max_mentions,
               args.maxEmoji, args.secureMode,
               proxyType, args.maxReplies,
               args.domainMaxPostsPerDay,

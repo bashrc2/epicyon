@@ -775,7 +775,7 @@ def createServerAlice(path: str, domain: str, port: int,
         regenerateIndexForBox(path, nickname, domain, 'outbox')
     global testServerAliceRunning
     testServerAliceRunning = True
-    maxMentions = 10
+    max_mentions = 10
     maxEmoji = 10
     onion_domain = None
     i2p_domain = None
@@ -815,7 +815,7 @@ def createServerAlice(path: str, domain: str, port: int,
               5, True, True, 'en', __version__,
               "instance_id", False, path, domain,
               onion_domain, i2p_domain, None, None, port, port,
-              http_prefix, federationList, maxMentions, maxEmoji, False,
+              http_prefix, federationList, max_mentions, maxEmoji, False,
               proxyType, maxReplies,
               domainMaxPostsPerDay, accountMaxPostsPerDay,
               allowDeletion, True, True, False, sendThreads,
@@ -917,7 +917,7 @@ def createServerBob(path: str, domain: str, port: int,
         regenerateIndexForBox(path, nickname, domain, 'outbox')
     global testServerBobRunning
     testServerBobRunning = True
-    maxMentions = 10
+    max_mentions = 10
     maxEmoji = 10
     onion_domain = None
     i2p_domain = None
@@ -957,7 +957,7 @@ def createServerBob(path: str, domain: str, port: int,
               5, True, True, 'en', __version__,
               "instance_id", False, path, domain,
               onion_domain, i2p_domain, None, None, port, port,
-              http_prefix, federationList, maxMentions, maxEmoji, False,
+              http_prefix, federationList, max_mentions, maxEmoji, False,
               proxyType, maxReplies,
               domainMaxPostsPerDay, accountMaxPostsPerDay,
               allowDeletion, True, True, False, sendThreads,
@@ -986,7 +986,7 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
     deleteAllPosts(path, nickname, domain, 'outbox')
     global testServerEveRunning
     testServerEveRunning = True
-    maxMentions = 10
+    max_mentions = 10
     maxEmoji = 10
     onion_domain = None
     i2p_domain = None
@@ -1027,7 +1027,7 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
               5, True, True, 'en', __version__,
               "instance_id", False, path, domain,
               onion_domain, i2p_domain, None, None, port, port,
-              http_prefix, federationList, maxMentions, maxEmoji, False,
+              http_prefix, federationList, max_mentions, maxEmoji, False,
               proxyType, maxReplies, allowDeletion, True, True, False,
               sendThreads, False)
 
@@ -1058,7 +1058,7 @@ def createServerGroup(path: str, domain: str, port: int,
     deleteAllPosts(path, nickname, domain, 'outbox')
     global testServerGroupRunning
     testServerGroupRunning = True
-    maxMentions = 10
+    max_mentions = 10
     maxEmoji = 10
     onion_domain = None
     i2p_domain = None
@@ -1099,7 +1099,7 @@ def createServerGroup(path: str, domain: str, port: int,
               5, True, True, 'en', __version__,
               "instance_id", False, path, domain,
               onion_domain, i2p_domain, None, None, port, port,
-              http_prefix, federationList, maxMentions, maxEmoji, False,
+              http_prefix, federationList, max_mentions, maxEmoji, False,
               proxyType, maxReplies,
               domainMaxPostsPerDay, accountMaxPostsPerDay,
               allowDeletion, True, True, False, sendThreads,
