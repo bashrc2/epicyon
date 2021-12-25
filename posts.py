@@ -3876,7 +3876,7 @@ def _createBoxIndexed(recentPostsCache: {},
 
 
 def expireCache(base_dir: str, person_cache: {},
-                http_prefix: str, archiveDir: str,
+                http_prefix: str, archive_dir: str,
                 recentPostsCache: {},
                 maxPostsInBox=32000):
     """Thread used to expire actors from the cache and archive old posts
@@ -3885,11 +3885,11 @@ def expireCache(base_dir: str, person_cache: {},
         # once per day
         time.sleep(60 * 60 * 24)
         expirePersonCache(person_cache)
-        archivePosts(base_dir, http_prefix, archiveDir, recentPostsCache,
+        archivePosts(base_dir, http_prefix, archive_dir, recentPostsCache,
                      maxPostsInBox)
 
 
-def archivePosts(base_dir: str, http_prefix: str, archiveDir: str,
+def archivePosts(base_dir: str, http_prefix: str, archive_dir: str,
                  recentPostsCache: {},
                  maxPostsInBox=32000) -> None:
     """Archives posts for all accounts
@@ -3897,13 +3897,13 @@ def archivePosts(base_dir: str, http_prefix: str, archiveDir: str,
     if maxPostsInBox == 0:
         return
 
-    if archiveDir:
-        if not os.path.isdir(archiveDir):
-            os.mkdir(archiveDir)
+    if archive_dir:
+        if not os.path.isdir(archive_dir):
+            os.mkdir(archive_dir)
 
-    if archiveDir:
-        if not os.path.isdir(archiveDir + '/accounts'):
-            os.mkdir(archiveDir + '/accounts')
+    if archive_dir:
+        if not os.path.isdir(archive_dir + '/accounts'):
+            os.mkdir(archive_dir + '/accounts')
 
     for subdir, dirs, files in os.walk(base_dir + '/accounts'):
         for handle in dirs:
@@ -3911,24 +3911,24 @@ def archivePosts(base_dir: str, http_prefix: str, archiveDir: str,
                 nickname = handle.split('@')[0]
                 domain = handle.split('@')[1]
                 archiveSubdir = None
-                if archiveDir:
-                    if not os.path.isdir(archiveDir + '/accounts/' + handle):
-                        os.mkdir(archiveDir + '/accounts/' + handle)
-                    if not os.path.isdir(archiveDir + '/accounts/' +
+                if archive_dir:
+                    if not os.path.isdir(archive_dir + '/accounts/' + handle):
+                        os.mkdir(archive_dir + '/accounts/' + handle)
+                    if not os.path.isdir(archive_dir + '/accounts/' +
                                          handle + '/inbox'):
-                        os.mkdir(archiveDir + '/accounts/' +
+                        os.mkdir(archive_dir + '/accounts/' +
                                  handle + '/inbox')
-                    if not os.path.isdir(archiveDir + '/accounts/' +
+                    if not os.path.isdir(archive_dir + '/accounts/' +
                                          handle + '/outbox'):
-                        os.mkdir(archiveDir + '/accounts/' +
+                        os.mkdir(archive_dir + '/accounts/' +
                                  handle + '/outbox')
-                    archiveSubdir = archiveDir + '/accounts/' + \
+                    archiveSubdir = archive_dir + '/accounts/' + \
                         handle + '/inbox'
                 archivePostsForPerson(http_prefix, nickname, domain, base_dir,
                                       'inbox', archiveSubdir,
                                       recentPostsCache, maxPostsInBox)
-                if archiveDir:
-                    archiveSubdir = archiveDir + '/accounts/' + \
+                if archive_dir:
+                    archiveSubdir = archive_dir + '/accounts/' + \
                         handle + '/outbox'
                 archivePostsForPerson(http_prefix, nickname, domain, base_dir,
                                       'outbox', archiveSubdir,
@@ -3938,7 +3938,7 @@ def archivePosts(base_dir: str, http_prefix: str, archiveDir: str,
 
 def archivePostsForPerson(http_prefix: str, nickname: str, domain: str,
                           base_dir: str,
-                          boxname: str, archiveDir: str,
+                          boxname: str, archive_dir: str,
                           recentPostsCache: {},
                           maxPostsInBox=32000) -> None:
     """Retain a maximum number of posts within the given box
@@ -3946,9 +3946,9 @@ def archivePostsForPerson(http_prefix: str, nickname: str, domain: str,
     """
     if boxname != 'inbox' and boxname != 'outbox':
         return
-    if archiveDir:
-        if not os.path.isdir(archiveDir):
-            os.mkdir(archiveDir)
+    if archive_dir:
+        if not os.path.isdir(archive_dir):
+            os.mkdir(archive_dir)
     boxDir = createPersonDir(nickname, domain, base_dir, boxname)
     postsInBox = os.scandir(boxDir)
     noOfPosts = 0
@@ -4014,8 +4014,8 @@ def archivePostsForPerson(http_prefix: str, nickname: str, domain: str,
         filePath = os.path.join(boxDir, postFilename)
         if not os.path.isfile(filePath):
             continue
-        if archiveDir:
-            archivePath = os.path.join(archiveDir, postFilename)
+        if archive_dir:
+            archivePath = os.path.join(archive_dir, postFilename)
             os.rename(filePath, archivePath)
 
             extensions = ('replies', 'votes', 'arrived', 'muted')
@@ -4048,7 +4048,7 @@ def archivePostsForPerson(http_prefix: str, nickname: str, domain: str,
         removeCtr += 1
         if noOfPosts <= maxPostsInBox:
             break
-    if archiveDir:
+    if archive_dir:
         print('Archived ' + str(removeCtr) + ' ' + boxname +
               ' posts for ' + nickname + '@' + domain)
     else:

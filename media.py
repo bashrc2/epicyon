@@ -365,7 +365,7 @@ def attachMedia(base_dir: str, http_prefix: str,
     return postJson
 
 
-def archiveMedia(base_dir: str, archiveDirectory: str, maxWeeks: int) -> None:
+def archiveMedia(base_dir: str, archive_directory: str, maxWeeks: int) -> None:
     """Any media older than the given number of weeks gets archived
     """
     if maxWeeks == 0:
@@ -375,18 +375,18 @@ def archiveMedia(base_dir: str, archiveDirectory: str, maxWeeks: int) -> None:
     weeksSinceEpoch = int((currTime - datetime.datetime(1970, 1, 1)).days/7)
     minWeek = weeksSinceEpoch - maxWeeks
 
-    if archiveDirectory:
-        if not os.path.isdir(archiveDirectory):
-            os.mkdir(archiveDirectory)
-        if not os.path.isdir(archiveDirectory + '/media'):
-            os.mkdir(archiveDirectory + '/media')
+    if archive_directory:
+        if not os.path.isdir(archive_directory):
+            os.mkdir(archive_directory)
+        if not os.path.isdir(archive_directory + '/media'):
+            os.mkdir(archive_directory + '/media')
 
     for subdir, dirs, files in os.walk(base_dir + '/media'):
         for weekDir in dirs:
             if int(weekDir) < minWeek:
-                if archiveDirectory:
+                if archive_directory:
                     move(os.path.join(base_dir + '/media', weekDir),
-                         archiveDirectory + '/media')
+                         archive_directory + '/media')
                 else:
                     # archive to /dev/null
                     rmtree(os.path.join(base_dir + '/media', weekDir),

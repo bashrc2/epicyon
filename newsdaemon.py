@@ -841,9 +841,9 @@ def runNewswireDaemon(base_dir: str, httpd,
         print('Newswire feed converted to ActivityPub')
 
         if httpd.max_news_posts > 0:
-            archiveDir = base_dir + '/archive'
+            archive_dir = base_dir + '/archive'
             archiveSubdir = \
-                archiveDir + '/accounts/news@' + domain + '/outbox'
+                archive_dir + '/accounts/news@' + domain + '/outbox'
             print('Archiving news posts')
             archivePostsForPerson(http_prefix, 'news',
                                   domain, base_dir, 'outbox',

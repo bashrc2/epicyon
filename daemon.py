@@ -18845,10 +18845,10 @@ def runDaemon(content_license_url: str,
         print('Creating avatars cache')
         os.mkdir(base_dir + '/cache/avatars')
 
-    archiveDir = base_dir + '/archive'
-    if not os.path.isdir(archiveDir):
+    archive_dir = base_dir + '/archive'
+    if not os.path.isdir(archive_dir):
         print('Creating archive')
-        os.mkdir(archiveDir)
+        os.mkdir(archive_dir)
 
     if not os.path.isdir(base_dir + '/sharefiles'):
         print('Creating shared item files directory')
@@ -18865,7 +18865,7 @@ def runDaemon(content_license_url: str,
         threadWithTrace(target=expireCache,
                         args=(base_dir, httpd.person_cache,
                               httpd.http_prefix,
-                              archiveDir,
+                              archive_dir,
                               httpd.maxPostsInBox), daemon=True)
     httpd.thrCache.start()
 
