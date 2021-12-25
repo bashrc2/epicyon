@@ -1014,9 +1014,9 @@ if not args.newsinstance:
             args.mediainstance = False
 
 if not args.blogsinstance:
-    blogsInstance = getConfigParam(base_dir, 'blogsInstance')
-    if blogsInstance is not None:
-        args.blogsinstance = blogsInstance
+    blogs_instance = getConfigParam(base_dir, 'blogs_instance')
+    if blogs_instance is not None:
+        args.blogsinstance = blogs_instance
         if args.blogsinstance:
             args.mediainstance = False
             args.newsinstance = False
