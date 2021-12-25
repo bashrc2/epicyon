@@ -525,7 +525,7 @@ def isCreateInsideAnnounce(item: {}) -> bool:
 
 def _getPosts(session, outboxUrl: str, maxPosts: int,
               max_mentions: int,
-              maxEmoji: int, maxAttachments: int,
+              max_emoji: int, maxAttachments: int,
               federationList: [],
               personCache: {}, raw: bool,
               simple: bool, debug: bool,
@@ -627,7 +627,7 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
                 if debug:
                     print('max mentions reached')
                 continue
-            if len(emoji) > maxEmoji:
+            if len(emoji) > max_emoji:
                 if debug:
                     print('max emojis reached')
                 continue
@@ -744,7 +744,7 @@ def _updateWordFrequency(content: str, wordFrequency: {}) -> None:
 
 def getPostDomains(session, outboxUrl: str, maxPosts: int,
                    max_mentions: int,
-                   maxEmoji: int, maxAttachments: int,
+                   max_emoji: int, maxAttachments: int,
                    federationList: [],
                    personCache: {},
                    debug: bool,
@@ -811,7 +811,7 @@ def getPostDomains(session, outboxUrl: str, maxPosts: int,
 def _getPostsForBlockedDomains(base_dir: str,
                                session, outboxUrl: str, maxPosts: int,
                                max_mentions: int,
-                               maxEmoji: int, maxAttachments: int,
+                               max_emoji: int, maxAttachments: int,
                                federationList: [],
                                personCache: {},
                                debug: bool,
@@ -4114,9 +4114,9 @@ def getPublicPostsOfPerson(base_dir: str, nickname: str, domain: str,
         return
 
     max_mentions = 10
-    maxEmoji = 10
+    max_emoji = 10
     maxAttachments = 5
-    _getPosts(session, personUrl, 30, max_mentions, maxEmoji,
+    _getPosts(session, personUrl, 30, max_mentions, max_emoji,
               maxAttachments, federationList,
               personCache, raw, simple, debug,
               project_version, http_prefix, originDomain, systemLanguage,
@@ -4162,10 +4162,10 @@ def getPublicPostDomains(session, base_dir: str, nickname: str, domain: str,
                                     nickname, domain, 'outbox',
                                     92522)
     max_mentions = 99
-    maxEmoji = 99
+    max_emoji = 99
     maxAttachments = 5
     postDomains = \
-        getPostDomains(session, personUrl, 64, max_mentions, maxEmoji,
+        getPostDomains(session, personUrl, 64, max_mentions, max_emoji,
                        maxAttachments, federationList,
                        personCache, debug,
                        project_version, http_prefix, domain,
@@ -4258,11 +4258,11 @@ def getPublicPostInfo(session, base_dir: str, nickname: str, domain: str,
                                     nickname, domain, 'outbox',
                                     13863)
     max_mentions = 99
-    maxEmoji = 99
+    max_emoji = 99
     maxAttachments = 5
     maxPosts = 64
     postDomains = \
-        getPostDomains(session, personUrl, maxPosts, max_mentions, maxEmoji,
+        getPostDomains(session, personUrl, maxPosts, max_mentions, max_emoji,
                        maxAttachments, federationList,
                        personCache, debug,
                        project_version, http_prefix, domain,
@@ -4276,7 +4276,7 @@ def getPublicPostInfo(session, base_dir: str, nickname: str, domain: str,
     blockedPosts = \
         _getPostsForBlockedDomains(base_dir, session, personUrl, maxPosts,
                                    max_mentions,
-                                   maxEmoji, maxAttachments,
+                                   max_emoji, maxAttachments,
                                    federationList,
                                    personCache,
                                    debug,

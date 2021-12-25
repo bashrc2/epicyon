@@ -2185,7 +2185,7 @@ def _estimateNumberOfEmoji(content: str) -> int:
 
 
 def _validPostContent(base_dir: str, nickname: str, domain: str,
-                      messageJson: {}, max_mentions: int, maxEmoji: int,
+                      messageJson: {}, max_mentions: int, max_emoji: int,
                       allow_local_network_access: bool, debug: bool,
                       systemLanguage: str,
                       http_prefix: str, domainFull: str,
@@ -2244,7 +2244,7 @@ def _validPostContent(base_dir: str, nickname: str, domain: str,
         print('REJECT HELLTHREAD: Too many mentions in post - ' +
               contentStr)
         return False
-    if _estimateNumberOfEmoji(contentStr) > maxEmoji:
+    if _estimateNumberOfEmoji(contentStr) > max_emoji:
         if messageJson['object'].get('id'):
             print('REJECT EMOJI OVERLOAD: ' + messageJson['object']['id'])
         print('REJECT EMOJI OVERLOAD: Too many emoji in post - ' +
@@ -3186,7 +3186,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                        federationList: [], debug: bool,
                        queueFilename: str, destinationFilename: str,
                        maxReplies: int, allowDeletion: bool,
-                       max_mentions: int, maxEmoji: int, translate: {},
+                       max_mentions: int, max_emoji: int, translate: {},
                        unitTest: bool,
                        yt_replace_domain: str,
                        twitter_replacement_domain: str,
@@ -3415,7 +3415,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
     jsonObj = None
     domainFull = getFullDomain(domain, port)
     if _validPostContent(base_dir, nickname, domain,
-                         postJsonObject, max_mentions, maxEmoji,
+                         postJsonObject, max_mentions, max_emoji,
                          allow_local_network_access, debug,
                          systemLanguage, http_prefix,
                          domainFull, personCache):
@@ -4071,7 +4071,7 @@ def runInboxQueue(recentPostsCache: {}, max_recent_posts: int,
                   domainMaxPostsPerDay: int,
                   accountMaxPostsPerDay: int,
                   allowDeletion: bool, debug: bool, max_mentions: int,
-                  maxEmoji: int, translate: {}, unitTest: bool,
+                  max_emoji: int, translate: {}, unitTest: bool,
                   yt_replace_domain: str,
                   twitter_replacement_domain: str,
                   show_published_date_only: bool,
@@ -4501,7 +4501,7 @@ def runInboxQueue(recentPostsCache: {}, max_recent_posts: int,
                                debug,
                                queueFilename, destination,
                                maxReplies, allowDeletion,
-                               max_mentions, maxEmoji,
+                               max_mentions, max_emoji,
                                translate, unitTest,
                                yt_replace_domain,
                                twitter_replacement_domain,

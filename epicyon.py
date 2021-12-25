@@ -561,7 +561,7 @@ parser.add_argument('--maxreplies', dest='maxReplies', type=int, default=64,
 parser.add_argument('--max_mentions', '--hellthread', dest='max_mentions',
                     type=int, default=10,
                     help='Maximum number of mentions within a post')
-parser.add_argument('--maxEmoji', '--maxemoji', dest='maxEmoji',
+parser.add_argument('--max_emoji', '--maxemoji', dest='max_emoji',
                     type=int, default=10,
                     help='Maximum number of emoji within a post')
 parser.add_argument('--role', dest='role', type=str, default=None,
@@ -3252,7 +3252,7 @@ if __name__ == "__main__":
               args.twitter_replacement_domain,
               port, proxy_port, http_prefix,
               federationList, args.max_mentions,
-              args.maxEmoji, args.secureMode,
+              args.max_emoji, args.secureMode,
               proxyType, args.maxReplies,
               args.domainMaxPostsPerDay,
               args.accountMaxPostsPerDay,
