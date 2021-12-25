@@ -781,7 +781,7 @@ def createServerAlice(path: str, domain: str, port: int,
     i2pDomain = None
     allowLocalNetworkAccess = True
     maxNewswirePosts = 20
-    dormantMonths = 3
+    dormant_months = 3
     send_threads_timeout_mins = 30
     maxFollowers = 10
     verify_all_signatures = True
@@ -807,7 +807,7 @@ def createServerAlice(path: str, domain: str, port: int,
               broch_mode,
               verify_all_signatures,
               send_threads_timeout_mins,
-              dormantMonths, maxNewswirePosts,
+              dormant_months, maxNewswirePosts,
               allowLocalNetworkAccess,
               2048, False, True, False, False, True, maxFollowers,
               0, 100, 1024, 5, False,
@@ -923,7 +923,7 @@ def createServerBob(path: str, domain: str, port: int,
     i2pDomain = None
     allowLocalNetworkAccess = True
     maxNewswirePosts = 20
-    dormantMonths = 3
+    dormant_months = 3
     send_threads_timeout_mins = 30
     maxFollowers = 10
     verify_all_signatures = True
@@ -949,7 +949,7 @@ def createServerBob(path: str, domain: str, port: int,
               broch_mode,
               verify_all_signatures,
               send_threads_timeout_mins,
-              dormantMonths, maxNewswirePosts,
+              dormant_months, maxNewswirePosts,
               allowLocalNetworkAccess,
               2048, False, True, False, False, True, maxFollowers,
               0, 100, 1024, 5, False, 0,
@@ -992,7 +992,7 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
     i2pDomain = None
     allowLocalNetworkAccess = True
     maxNewswirePosts = 20
-    dormantMonths = 3
+    dormant_months = 3
     send_threads_timeout_mins = 30
     maxFollowers = 10
     verify_all_signatures = True
@@ -1019,7 +1019,7 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
               broch_mode,
               verify_all_signatures,
               send_threads_timeout_mins,
-              dormantMonths, maxNewswirePosts,
+              dormant_months, maxNewswirePosts,
               allowLocalNetworkAccess,
               2048, False, True, False, False, True, maxFollowers,
               0, 100, 1024, 5, False, 0,
@@ -1064,7 +1064,7 @@ def createServerGroup(path: str, domain: str, port: int,
     i2pDomain = None
     allowLocalNetworkAccess = True
     maxNewswirePosts = 20
-    dormantMonths = 3
+    dormant_months = 3
     send_threads_timeout_mins = 30
     maxFollowers = 10
     verify_all_signatures = True
@@ -1091,7 +1091,7 @@ def createServerGroup(path: str, domain: str, port: int,
               broch_mode,
               verify_all_signatures,
               send_threads_timeout_mins,
-              dormantMonths, maxNewswirePosts,
+              dormant_months, maxNewswirePosts,
               allowLocalNetworkAccess,
               2048, False, True, False, False, True, maxFollowers,
               0, 100, 1024, 5, False,

@@ -550,7 +550,7 @@ def htmlProfile(signingPrivateKeyPem: str,
                 yt_replace_domain: str,
                 twitterReplacementDomain: str,
                 showPublishedDateOnly: bool,
-                newswire: {}, theme: str, dormantMonths: int,
+                newswire: {}, theme: str, dormant_months: int,
                 peertubeInstances: [],
                 allowLocalNetworkAccess: bool,
                 textModeBanner: str,
@@ -976,7 +976,7 @@ def htmlProfile(signingPrivateKeyPem: str,
                                       cachedWebfingers, personCache, extraJson,
                                       projectVersion, ["unfollow"], selected,
                                       usersPath, pageNumber, maxItemsPerPage,
-                                      dormantMonths, debug,
+                                      dormant_months, debug,
                                       signingPrivateKeyPem)
     if selected == 'followers':
         profileStr += \
@@ -986,7 +986,7 @@ def htmlProfile(signingPrivateKeyPem: str,
                                   cachedWebfingers, personCache, extraJson,
                                   projectVersion, ["block"],
                                   selected, usersPath, pageNumber,
-                                  maxItemsPerPage, dormantMonths, debug,
+                                  maxItemsPerPage, dormant_months, debug,
                                   signingPrivateKeyPem)
     if not isGroup:
         if selected == 'roles':
@@ -1099,7 +1099,7 @@ def _htmlProfileFollowing(translate: {}, base_dir: str, http_prefix: str,
                           feedName: str, actor: str,
                           pageNumber: int,
                           maxItemsPerPage: int,
-                          dormantMonths: int, debug: bool,
+                          dormant_months: int, debug: bool,
                           signingPrivateKeyPem: str) -> str:
     """Shows following on the profile screen
     """
@@ -1124,7 +1124,7 @@ def _htmlProfileFollowing(translate: {}, base_dir: str, http_prefix: str,
         if authorized and feedName == 'following':
             dormant = \
                 isDormant(base_dir, nickname, domain, followingActor,
-                          dormantMonths)
+                          dormant_months)
 
         profileStr += \
             _individualFollowAsHtml(signingPrivateKeyPem,

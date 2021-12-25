@@ -253,7 +253,7 @@ def getFullDomain(domain: str, port: int) -> str:
 
 
 def isDormant(base_dir: str, nickname: str, domain: str, actor: str,
-              dormantMonths: int) -> bool:
+              dormant_months: int) -> bool:
     """Is the given followed actor dormant, from the standpoint
     of the given account
     """
@@ -277,7 +277,7 @@ def isDormant(base_dir: str, nickname: str, domain: str, actor: str,
         currDaysSinceEpoch = (currTime - datetime.datetime(1970, 1, 1)).days
         timeDiffMonths = \
             int((currDaysSinceEpoch - daysSinceEpoch) / 30)
-        if timeDiffMonths >= dormantMonths:
+        if timeDiffMonths >= dormant_months:
             return True
     return False
 

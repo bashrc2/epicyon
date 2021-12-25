@@ -53,7 +53,7 @@ def htmlPersonOptions(defaultTimeline: str,
                       PGPpubKey: str,
                       PGPfingerprint: str,
                       emailAddress: str,
-                      dormantMonths: int,
+                      dormant_months: int,
                       backToPath: str,
                       lockedAccount: bool,
                       movedTo: str,
@@ -94,7 +94,7 @@ def htmlPersonOptions(defaultTimeline: str,
                 followStr = 'Leave'
             dormant = \
                 isDormant(base_dir, nickname, domain, optionsActor,
-                          dormantMonths)
+                          dormant_months)
 
         optionsNickname = getNicknameFromActor(optionsActor)
         optionsDomainFull = getFullDomain(optionsDomain, optionsPort)

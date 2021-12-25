@@ -176,8 +176,8 @@ parser.add_argument('--postsPerSource',
                     dest='maxNewswirePostsPerSource', type=int,
                     default=4,
                     help='Maximum newswire posts per feed or account')
-parser.add_argument('--dormantMonths',
-                    dest='dormantMonths', type=int,
+parser.add_argument('--dormant_months',
+                    dest='dormant_months', type=int,
                     default=3,
                     help='How many months does a followed account need to ' +
                     'be unseen for before being considered dormant')
@@ -3063,10 +3063,10 @@ maxFeedItemSizeKb = \
 if maxFeedItemSizeKb is not None:
     args.maxFeedItemSizeKb = int(maxFeedItemSizeKb)
 
-dormantMonths = \
-    getConfigParam(base_dir, 'dormantMonths')
-if dormantMonths is not None:
-    args.dormantMonths = int(dormantMonths)
+dormant_months = \
+    getConfigParam(base_dir, 'dormant_months')
+if dormant_months is not None:
+    args.dormant_months = int(dormant_months)
 
 send_threads_timeout_mins = \
     getConfigParam(base_dir, 'send_threads_timeout_mins')
@@ -3223,7 +3223,7 @@ if __name__ == "__main__":
               args.broch_mode,
               args.verify_all_signatures,
               args.send_threads_timeout_mins,
-              args.dormantMonths,
+              args.dormant_months,
               args.maxNewswirePosts,
               args.allowLocalNetworkAccess,
               args.maxFeedItemSizeKb,
