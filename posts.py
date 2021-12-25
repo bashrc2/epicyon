@@ -3365,13 +3365,13 @@ def createMediaTimeline(session, base_dir: str, nickname: str, domain: str,
 def createNewsTimeline(session, base_dir: str, nickname: str, domain: str,
                        port: int, http_prefix: str, itemsPerPage: int,
                        headerOnly: bool, newswireVotesThreshold: int,
-                       positiveVoting: bool, votingTimeMins: int,
+                       positiveVoting: bool, voting_time_mins: int,
                        pageNumber: int) -> {}:
     return _createBoxIndexed({}, session, base_dir, 'outbox', 'news',
                              domain, port, http_prefix,
                              itemsPerPage, headerOnly, True,
                              newswireVotesThreshold, positiveVoting,
-                             votingTimeMins, pageNumber)
+                             voting_time_mins, pageNumber)
 
 
 def createOutbox(session, base_dir: str, nickname: str, domain: str,
@@ -3602,7 +3602,7 @@ def _passedNewswireVoting(newswireVotesThreshold: int,
                           base_dir: str, domain: str,
                           postFilename: str,
                           positiveVoting: bool,
-                          votingTimeMins: int) -> bool:
+                          voting_time_mins: int) -> bool:
     """Returns true if the post has passed through newswire voting
     """
     # apply votes within this timeline
@@ -3619,7 +3619,7 @@ def _passedNewswireVoting(newswireVotesThreshold: int,
     timeDiffMins = \
         int((currDate - arrivalDate).total_seconds() / 60)
     # has the voting time elapsed?
-    if timeDiffMins < votingTimeMins:
+    if timeDiffMins < voting_time_mins:
         # voting is still happening, so don't add this
         # post to the timeline
         return False
@@ -3654,7 +3654,7 @@ def _createBoxIndexed(recentPostsCache: {},
                       nickname: str, domain: str, port: int, http_prefix: str,
                       itemsPerPage: int, headerOnly: bool, authorized: bool,
                       newswireVotesThreshold: int, positiveVoting: bool,
-                      votingTimeMins: int, pageNumber: int) -> {}:
+                      voting_time_mins: int, pageNumber: int) -> {}:
     """Constructs the box feed for a person with the given nickname
     """
     if not authorized or not pageNumber:
@@ -3736,7 +3736,7 @@ def _createBoxIndexed(recentPostsCache: {},
                                              base_dir, domain,
                                              postFilename,
                                              positiveVoting,
-                                             votingTimeMins):
+                                             voting_time_mins):
                     continue
 
                 # Skip through any posts previous to the current page

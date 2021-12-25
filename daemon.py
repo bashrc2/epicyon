@@ -10176,7 +10176,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   authorized,
                                   0,
                                   self.server.positiveVoting,
-                                  self.server.votingTimeMins)
+                                  self.server.voting_time_mins)
                 if inboxFeed:
                     if GETstartTime:
                         fitnessPerformance(GETstartTime,
@@ -10208,7 +10208,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               authorized,
                                               0,
                                               self.server.positiveVoting,
-                                              self.server.votingTimeMins)
+                                              self.server.voting_time_mins)
                             if GETstartTime:
                                 fitnessPerformance(GETstartTime,
                                                    self.server.fitness,
@@ -10334,7 +10334,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   maxPostsInFeed, 'dm',
                                   authorized,
                                   0, self.server.positiveVoting,
-                                  self.server.votingTimeMins)
+                                  self.server.voting_time_mins)
                 if inboxDMFeed:
                     if self._requestHTTP():
                         nickname = path.replace('/users/', '')
@@ -10361,7 +10361,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               authorized,
                                               0,
                                               self.server.positiveVoting,
-                                              self.server.votingTimeMins)
+                                              self.server.voting_time_mins)
                         full_width_tl_button_header = \
                             self.server.full_width_tl_button_header
                         minimalNick = isMinimal(base_dir, domain, nickname)
@@ -10477,7 +10477,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   maxPostsInFeed, 'tlreplies',
                                   True,
                                   0, self.server.positiveVoting,
-                                  self.server.votingTimeMins)
+                                  self.server.voting_time_mins)
                 if not inboxRepliesFeed:
                     inboxRepliesFeed = []
                 if self._requestHTTP():
@@ -10504,7 +10504,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           maxPostsInFeed, 'tlreplies',
                                           True,
                                           0, self.server.positiveVoting,
-                                          self.server.votingTimeMins)
+                                          self.server.voting_time_mins)
                     full_width_tl_button_header = \
                         self.server.full_width_tl_button_header
                     minimalNick = isMinimal(base_dir, domain, nickname)
@@ -10620,7 +10620,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   maxPostsInMediaFeed, 'tlmedia',
                                   True,
                                   0, self.server.positiveVoting,
-                                  self.server.votingTimeMins)
+                                  self.server.voting_time_mins)
                 if not inboxMediaFeed:
                     inboxMediaFeed = []
                 if self._requestHTTP():
@@ -10647,7 +10647,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           maxPostsInMediaFeed, 'tlmedia',
                                           True,
                                           0, self.server.positiveVoting,
-                                          self.server.votingTimeMins)
+                                          self.server.voting_time_mins)
                     full_width_tl_button_header = \
                         self.server.full_width_tl_button_header
                     minimalNick = isMinimal(base_dir, domain, nickname)
@@ -10762,7 +10762,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   maxPostsInBlogsFeed, 'tlblogs',
                                   True,
                                   0, self.server.positiveVoting,
-                                  self.server.votingTimeMins)
+                                  self.server.voting_time_mins)
                 if not inboxBlogsFeed:
                     inboxBlogsFeed = []
                 if self._requestHTTP():
@@ -10789,7 +10789,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           maxPostsInBlogsFeed, 'tlblogs',
                                           True,
                                           0, self.server.positiveVoting,
-                                          self.server.votingTimeMins)
+                                          self.server.voting_time_mins)
                     full_width_tl_button_header = \
                         self.server.full_width_tl_button_header
                     minimalNick = isMinimal(base_dir, domain, nickname)
@@ -10906,7 +10906,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   True,
                                   self.server.newswireVotesThreshold,
                                   self.server.positiveVoting,
-                                  self.server.votingTimeMins)
+                                  self.server.voting_time_mins)
                 if not inboxNewsFeed:
                     inboxNewsFeed = []
                 if self._requestHTTP():
@@ -10934,7 +10934,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           True,
                                           self.server.newswireVotesThreshold,
                                           self.server.positiveVoting,
-                                          self.server.votingTimeMins)
+                                          self.server.voting_time_mins)
                     currNickname = path.split('/users/')[1]
                     if '/' in currNickname:
                         currNickname = currNickname.split('/')[0]
@@ -11057,7 +11057,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   True,
                                   self.server.newswireVotesThreshold,
                                   self.server.positiveVoting,
-                                  self.server.votingTimeMins)
+                                  self.server.voting_time_mins)
                 if not inboxFeaturesFeed:
                     inboxFeaturesFeed = []
                 if self._requestHTTP():
@@ -11085,7 +11085,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           True,
                                           self.server.newswireVotesThreshold,
                                           self.server.positiveVoting,
-                                          self.server.votingTimeMins)
+                                          self.server.voting_time_mins)
                     currNickname = path.split('/users/')[1]
                     if '/' in currNickname:
                         currNickname = currNickname.split('/')[0]
@@ -11376,7 +11376,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   maxPostsInFeed, 'tlbookmarks',
                                   authorized,
                                   0, self.server.positiveVoting,
-                                  self.server.votingTimeMins)
+                                  self.server.voting_time_mins)
                 if bookmarksFeed:
                     if self._requestHTTP():
                         nickname = path.replace('/users/', '')
@@ -11404,7 +11404,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               'tlbookmarks',
                                               authorized,
                                               0, self.server.positiveVoting,
-                                              self.server.votingTimeMins)
+                                              self.server.voting_time_mins)
                         full_width_tl_button_header = \
                             self.server.full_width_tl_button_header
                         minimalNick = isMinimal(base_dir, domain, nickname)
@@ -11516,7 +11516,7 @@ class PubServer(BaseHTTPRequestHandler):
                           authorized,
                           self.server.newswireVotesThreshold,
                           self.server.positiveVoting,
-                          self.server.votingTimeMins)
+                          self.server.voting_time_mins)
         if outboxFeed:
             nickname = \
                 path.replace('/users/', '').replace('/outbox', '')
@@ -11544,7 +11544,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   authorized,
                                   self.server.newswireVotesThreshold,
                                   self.server.positiveVoting,
-                                  self.server.votingTimeMins)
+                                  self.server.voting_time_mins)
             else:
                 pageNumber = 1
 
@@ -11647,7 +11647,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   maxPostsInFeed, 'moderation',
                                   True,
                                   0, self.server.positiveVoting,
-                                  self.server.votingTimeMins)
+                                  self.server.voting_time_mins)
                 if moderationFeed:
                     if self._requestHTTP():
                         nickname = path.replace('/users/', '')
@@ -11673,7 +11673,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               maxPostsInFeed, 'moderation',
                                               True,
                                               0, self.server.positiveVoting,
-                                              self.server.votingTimeMins)
+                                              self.server.voting_time_mins)
                         full_width_tl_button_header = \
                             self.server.full_width_tl_button_header
                         moderationActionStr = ''
@@ -18446,7 +18446,7 @@ def runDaemon(content_license_url: str,
               max_newswire_feed_size_kb: int,
               max_newswire_postsPerSource: int,
               show_published_date_only: bool,
-              votingTimeMins: int,
+              voting_time_mins: int,
               positiveVoting: bool,
               newswireVotesThreshold: int,
               newsInstance: bool,
@@ -18629,7 +18629,7 @@ def runDaemon(content_license_url: str,
 
     # For moderated newswire feeds this is the amount of time allowed
     # for voting after the post arrives
-    httpd.votingTimeMins = votingTimeMins
+    httpd.voting_time_mins = voting_time_mins
     # on the newswire, whether moderators vote positively for items
     # or against them (veto)
     httpd.positiveVoting = positiveVoting

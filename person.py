@@ -900,7 +900,7 @@ def personBoxJson(recentPostsCache: {},
                   http_prefix: str, noOfItems: int, boxname: str,
                   authorized: bool,
                   newswireVotesThreshold: int, positiveVoting: bool,
-                  votingTimeMins: int) -> {}:
+                  voting_time_mins: int) -> {}:
     """Obtain the inbox/outbox/moderation feed for the given person
     """
     if boxname != 'inbox' and boxname != 'dm' and \
@@ -974,7 +974,7 @@ def personBoxJson(recentPostsCache: {},
         return createNewsTimeline(session, base_dir, nickname, domain, port,
                                   http_prefix, noOfItems, headerOnly,
                                   newswireVotesThreshold, positiveVoting,
-                                  votingTimeMins, pageNumber)
+                                  voting_time_mins, pageNumber)
     elif boxname == 'tlfeatures':
         return createFeaturesTimeline(session, base_dir,
                                       nickname, domain, port,
