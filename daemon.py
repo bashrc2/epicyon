@@ -1741,14 +1741,14 @@ class PubServer(BaseHTTPRequestHandler):
                 if not domain.endswith('.onion'):
                     if not isLocalNetworkAddress(ipAddress):
                         recordLoginFailure(base_dir, ipAddress,
-                                           self.server.loginFailureCount,
+                                           self.server.login_failure_count,
                                            failTime,
                                            self.server.log_login_failures)
                 self.server.POSTbusy = False
                 return
             else:
-                if self.server.loginFailureCount.get(ipAddress):
-                    del self.server.loginFailureCount[ipAddress]
+                if self.server.login_failure_count.get(ipAddress):
+                    del self.server.login_failure_count[ipAddress]
                 if isSuspended(base_dir, loginNickname):
                     msg = \
                         htmlSuspended(self.server.cssCache,
@@ -18757,7 +18757,7 @@ def runDaemon(content_license_url: str,
     httpd.allow_deletion = allow_deletion
     httpd.last_login_time = 0
     httpd.last_login_failure = 0
-    httpd.loginFailureCount = {}
+    httpd.login_failure_count = {}
     httpd.log_login_failures = log_login_failures
     httpd.max_replies = max_replies
     httpd.tokens = {}
