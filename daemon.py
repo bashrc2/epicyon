@@ -587,7 +587,7 @@ class PubServer(BaseHTTPRequestHandler):
         if agentStr:
             # is this a web crawler? If so the block it
             if 'bot/' in agentStrLower or 'bot-' in agentStrLower:
-                if self.server.newsInstance:
+                if self.server.news_instance:
                     return False
                 print('Blocked Crawler: ' + agentStr)
                 return True
@@ -4561,7 +4561,7 @@ class PubServer(BaseHTTPRequestHandler):
                     print('WARN: nickname not found in ' + actorStr)
                 else:
                     print('WARN: nickname is not an editor' + actorStr)
-                if self.server.newsInstance:
+                if self.server.news_instance:
                     self._redirect_headers(actorStr + '/tlfeatures',
                                            cookie, callingDomain)
                 else:
@@ -4575,7 +4575,7 @@ class PubServer(BaseHTTPRequestHandler):
             # check that the POST isn't too large
             if length > self.server.maxPostLength:
                 print('Maximum news data length exceeded ' + str(length))
-                if self.server.newsInstance:
+                if self.server.news_instance:
                     self._redirect_headers(actorStr + '/tlfeatures',
                                            cookie, callingDomain)
                 else:
@@ -4661,7 +4661,7 @@ class PubServer(BaseHTTPRequestHandler):
                     saveJson(postJsonObject, postFilename)
 
         # redirect back to the default timeline
-        if self.server.newsInstance:
+        if self.server.news_instance:
             self._redirect_headers(actorStr + '/tlfeatures',
                                    cookie, callingDomain)
         else:
@@ -5045,7 +5045,7 @@ class PubServer(BaseHTTPRequestHandler):
                             if fields['mediaInstance'] == 'on':
                                 self.server.mediaInstance = True
                                 self.server.blogsInstance = False
-                                self.server.newsInstance = False
+                                self.server.news_instance = False
                                 self.server.defaultTimeline = 'tlmedia'
                             setConfigParam(base_dir,
                                            "mediaInstance",
@@ -5054,8 +5054,8 @@ class PubServer(BaseHTTPRequestHandler):
                                            "blogsInstance",
                                            self.server.blogsInstance)
                             setConfigParam(base_dir,
-                                           "newsInstance",
-                                           self.server.newsInstance)
+                                           "news_instance",
+                                           self.server.news_instance)
                         else:
                             if self.server.mediaInstance:
                                 self.server.mediaInstance = False
@@ -5067,14 +5067,14 @@ class PubServer(BaseHTTPRequestHandler):
                         # is this a news theme?
                         if isNewsThemeName(self.server.base_dir,
                                            self.server.themeName):
-                            fields['newsInstance'] = 'on'
+                            fields['news_instance'] = 'on'
 
                         # change news instance status
-                        if fields.get('newsInstance'):
-                            self.server.newsInstance = False
+                        if fields.get('news_instance'):
+                            self.server.news_instance = False
                             self.server.defaultTimeline = 'inbox'
-                            if fields['newsInstance'] == 'on':
-                                self.server.newsInstance = True
+                            if fields['news_instance'] == 'on':
+                                self.server.news_instance = True
                                 self.server.blogsInstance = False
                                 self.server.mediaInstance = False
                                 self.server.defaultTimeline = 'tlfeatures'
@@ -5085,14 +5085,14 @@ class PubServer(BaseHTTPRequestHandler):
                                            "blogsInstance",
                                            self.server.blogsInstance)
                             setConfigParam(base_dir,
-                                           "newsInstance",
-                                           self.server.newsInstance)
+                                           "news_instance",
+                                           self.server.news_instance)
                         else:
-                            if self.server.newsInstance:
-                                self.server.newsInstance = False
+                            if self.server.news_instance:
+                                self.server.news_instance = False
                                 self.server.defaultTimeline = 'inbox'
                                 setConfigParam(base_dir,
-                                               "newsInstance",
+                                               "news_instance",
                                                self.server.mediaInstance)
 
                         # change blog instance status
@@ -5102,7 +5102,7 @@ class PubServer(BaseHTTPRequestHandler):
                             if fields['blogsInstance'] == 'on':
                                 self.server.blogsInstance = True
                                 self.server.mediaInstance = False
-                                self.server.newsInstance = False
+                                self.server.news_instance = False
                                 self.server.defaultTimeline = 'tlblogs'
                             setConfigParam(base_dir,
                                            "blogsInstance",
@@ -5111,8 +5111,8 @@ class PubServer(BaseHTTPRequestHandler):
                                            "mediaInstance",
                                            self.server.mediaInstance)
                             setConfigParam(base_dir,
-                                           "newsInstance",
-                                           self.server.newsInstance)
+                                           "news_instance",
+                                           self.server.news_instance)
                         else:
                             if self.server.blogsInstance:
                                 self.server.blogsInstance = False
@@ -7166,7 +7166,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     lockedAccount,
                                     movedTo, alsoKnownAs,
                                     self.server.textModeBanner,
-                                    self.server.newsInstance,
+                                    self.server.news_instance,
                                     authorized,
                                     accessKeys, isGroup).encode('utf-8')
             msglen = len(msg)
@@ -12432,7 +12432,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         if divertToLoginScreen and not authorized:
             divertPath = '/login'
-            if self.server.newsInstance:
+            if self.server.news_instance:
                 # for news instances if not logged in then show the
                 # front page
                 divertPath = '/users/news'
@@ -13344,7 +13344,7 @@ class PubServer(BaseHTTPRequestHandler):
                            self.server.debug)
 
         if self.path == '/logout':
-            if not self.server.newsInstance:
+            if not self.server.news_instance:
                 msg = \
                     htmlLogin(self.server.cssCache,
                               self.server.translate,
@@ -14899,7 +14899,7 @@ class PubServer(BaseHTTPRequestHandler):
         if (self.path.startswith('/login') or
             (self.path == '/' and
              not authorized and
-             not self.server.newsInstance)):
+             not self.server.news_instance)):
             # request basic auth
             msg = htmlLogin(self.server.cssCache,
                             self.server.translate,
@@ -14920,7 +14920,7 @@ class PubServer(BaseHTTPRequestHandler):
         # show the news front page
         if self.path == '/' and \
            not authorized and \
-           self.server.newsInstance:
+           self.server.news_instance:
             if callingDomain.endswith('.onion') and \
                self.server.onionDomain:
                 self._logout_redirect('http://' +
@@ -14955,7 +14955,7 @@ class PubServer(BaseHTTPRequestHandler):
             if (authorized or
                 (not authorized and
                  self.path.startswith('/users/news/') and
-                 self.server.newsInstance)):
+                 self.server.news_instance)):
                 nickname = getNicknameFromActor(self.path)
                 if not nickname:
                     self._404()
@@ -14999,7 +14999,7 @@ class PubServer(BaseHTTPRequestHandler):
             if (authorized or
                 (not authorized and
                  self.path.startswith('/users/news/') and
-                 self.server.newsInstance)):
+                 self.server.news_instance)):
                 nickname = getNicknameFromActor(self.path)
                 if not nickname:
                     self._404()
@@ -18449,7 +18449,7 @@ def runDaemon(content_license_url: str,
               voting_time_mins: int,
               positive_voting: bool,
               newswire_votes_threshold: int,
-              newsInstance: bool,
+              news_instance: bool,
               blogsInstance: bool,
               mediaInstance: bool,
               maxRecentPosts: int,
@@ -18803,15 +18803,15 @@ def runDaemon(content_license_url: str,
     if not httpd.themeName:
         httpd.themeName = 'default'
     if isNewsThemeName(base_dir, httpd.themeName):
-        newsInstance = True
+        news_instance = True
 
-    httpd.newsInstance = newsInstance
+    httpd.news_instance = news_instance
     httpd.defaultTimeline = 'inbox'
     if mediaInstance:
         httpd.defaultTimeline = 'tlmedia'
     if blogsInstance:
         httpd.defaultTimeline = 'tlblogs'
-    if newsInstance:
+    if news_instance:
         httpd.defaultTimeline = 'tlfeatures'
 
     setNewsAvatar(base_dir,

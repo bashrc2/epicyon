@@ -59,7 +59,7 @@ def htmlPersonOptions(defaultTimeline: str,
                       movedTo: str,
                       alsoKnownAs: [],
                       textModeBanner: str,
-                      newsInstance: bool,
+                      news_instance: bool,
                       authorized: bool,
                       accessKeys: {},
                       isGroup: bool) -> str:
@@ -329,7 +329,7 @@ def htmlPersonOptions(defaultTimeline: str,
                 optionsStr += checkboxStr
 
             # checkbox for permission to post to featured articles
-            if newsInstance and optionsDomainFull == domainFull:
+            if news_instance and optionsDomainFull == domainFull:
                 adminNickname = getConfigParam(base_dir, 'admin')
                 if (nickname == adminNickname or
                     (isModerator(base_dir, nickname) and

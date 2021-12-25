@@ -1298,7 +1298,7 @@ def _htmlEditProfileInstance(base_dir: str, translate: {},
                              peertubeInstances: [],
                              mediaInstanceStr: str,
                              blogsInstanceStr: str,
-                             newsInstanceStr: str) -> (str, str, str, str):
+                             news_instanceStr: str) -> (str, str, str, str):
     """Edit profile instance settings
     """
     imageFormats = getImageFormats()
@@ -1393,7 +1393,7 @@ def _htmlEditProfileInstance(base_dir: str, translate: {},
                      'blogsInstance', blogsInstanceStr)
     instanceStr += \
         editCheckBox(translate['This is a news instance'],
-                     'newsInstance', newsInstanceStr)
+                     'news_instance', news_instanceStr)
 
     instanceStr += endEditSection()
 
@@ -1822,7 +1822,7 @@ def _htmlEditProfileLibreTranslate(translate: {},
     return editProfileForm
 
 
-def _htmlEditProfileBackground(newsInstance: bool, translate: {}) -> str:
+def _htmlEditProfileBackground(news_instance: bool, translate: {}) -> str:
     """Background images section of edit profile screen
     """
     idx = 'The files attached below should be no larger than ' + \
@@ -1831,7 +1831,7 @@ def _htmlEditProfileBackground(newsInstance: bool, translate: {}) -> str:
         beginEditSection(translate['Background Images']) + \
         '      <label class="labels">' + translate[idx] + '</label><br><br>\n'
 
-    if not newsInstance:
+    if not news_instance:
         imageFormats = getImageFormats()
         editProfileForm += \
             '      <label class="labels">' + \
@@ -2113,7 +2113,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, base_dir: str, path: str,
     isBot = isGroup = followDMs = removeTwitter = ''
     notifyLikes = notifyReactions = ''
     hideLikeButton = hideReactionButton = mediaInstanceStr = ''
-    blogsInstanceStr = newsInstanceStr = movedTo = twitterStr = ''
+    blogsInstanceStr = news_instanceStr = movedTo = twitterStr = ''
     bioStr = donateUrl = websiteUrl = emailAddress = ''
     PGPpubKey = EnigmaPubKey = ''
     PGPfingerprint = xmppAddress = matrixAddress = ''
@@ -2176,19 +2176,19 @@ def htmlEditProfile(cssCache: {}, translate: {}, base_dir: str, path: str,
     if mediaInstance:
         if mediaInstance is True:
             mediaInstanceStr = 'checked'
-            blogsInstanceStr = newsInstanceStr = ''
+            blogsInstanceStr = news_instanceStr = ''
 
-    newsInstance = getConfigParam(base_dir, "newsInstance")
-    if newsInstance:
-        if newsInstance is True:
-            newsInstanceStr = 'checked'
+    news_instance = getConfigParam(base_dir, "news_instance")
+    if news_instance:
+        if news_instance is True:
+            news_instanceStr = 'checked'
             blogsInstanceStr = mediaInstanceStr = ''
 
     blogsInstance = getConfigParam(base_dir, "blogsInstance")
     if blogsInstance:
         if blogsInstance is True:
             blogsInstanceStr = 'checked'
-            mediaInstanceStr = newsInstanceStr = ''
+            mediaInstanceStr = news_instanceStr = ''
 
     cssFilename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
@@ -2223,7 +2223,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, base_dir: str, path: str,
                                          peertubeInstances,
                                          mediaInstanceStr,
                                          blogsInstanceStr,
-                                         newsInstanceStr)
+                                         news_instanceStr)
             systemMonitorStr = _htmlSystemMonitor(nickname, translate)
 
     instanceTitle = getConfigParam(base_dir, 'instanceTitle')
@@ -2284,7 +2284,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, base_dir: str, path: str,
                                        PGPpubKey, EnigmaPubKey, translate)
 
     # Customize images and banners
-    editProfileForm += _htmlEditProfileBackground(newsInstance, translate)
+    editProfileForm += _htmlEditProfileBackground(news_instance, translate)
 
     # Change password
     editProfileForm += _htmlEditProfileChangePassword(translate)
