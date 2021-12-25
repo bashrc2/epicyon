@@ -18523,10 +18523,10 @@ def runDaemon(content_license_url: str,
     httpd.content_license_url = content_license_url
 
     # fitness metrics
-    fitnessFilename = base_dir + '/accounts/fitness.json'
+    fitness_filename = base_dir + '/accounts/fitness.json'
     httpd.fitness = {}
-    if os.path.isfile(fitnessFilename):
-        httpd.fitness = loadJson(fitnessFilename)
+    if os.path.isfile(fitness_filename):
+        httpd.fitness = loadJson(fitness_filename)
 
     # initialize authorized fetch key
     httpd.signingPrivateKeyPem = None

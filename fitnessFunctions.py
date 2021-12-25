@@ -120,8 +120,8 @@ def htmlWatchPointsGraph(base_dir: str, fitness: {}, fitnessId: str,
 def fitnessThread(base_dir: str, fitness: {}):
     """Thread used to save fitness function scores
     """
-    fitnessFilename = base_dir + '/accounts/fitness.json'
+    fitness_filename = base_dir + '/accounts/fitness.json'
     while True:
         # every 10 mins
         time.sleep(60 * 10)
-        saveJson(fitness, fitnessFilename)
+        saveJson(fitness, fitness_filename)
