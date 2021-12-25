@@ -797,7 +797,7 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_header('Set-Cookie', 'epicyon=; SameSite=Strict')
         self.send_header('Location', self._quoted_redirect(redirect))
         self.send_header('Host', callingDomain)
-        self.send_header('X-AP-Instance-ID', self.server.instanceId)
+        self.send_header('X-AP-Instance-ID', self.server.instance_id)
         self.send_header('Content-Length', '0')
         self.end_headers()
 
@@ -820,7 +820,7 @@ class PubServer(BaseHTTPRequestHandler):
         if permissive:
             self.send_header('Access-Control-Allow-Origin', '*')
             return
-        self.send_header('X-AP-Instance-ID', self.server.instanceId)
+        self.send_header('X-AP-Instance-ID', self.server.instance_id)
         self.send_header('X-Clacks-Overhead', 'GNU Natalie Nguyen')
         if cookie:
             cookieStr = cookie
@@ -917,7 +917,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.send_header('Set-Cookie', cookieStr)
         self.send_header('Location', self._quoted_redirect(redirect))
         self.send_header('Host', callingDomain)
-        self.send_header('X-AP-Instance-ID', self.server.instanceId)
+        self.send_header('X-AP-Instance-ID', self.server.instance_id)
         self.send_header('Content-Length', '0')
         self.end_headers()
 
@@ -18456,7 +18456,7 @@ def runDaemon(content_license_url: str,
               max_recent_posts: int,
               enable_shared_inbox: bool, registration: bool,
               language: str, project_version: str,
-              instanceId: str, clientToServer: bool,
+              instance_id: str, clientToServer: bool,
               base_dir: str, domain: str,
               onionDomain: str, i2pDomain: str,
               yt_replace_domain: str,
@@ -18726,7 +18726,7 @@ def runDaemon(content_license_url: str,
     httpd.shared_items_federated_domains = \
         shared_items_federated_domains.copy()
     httpd.base_dir = base_dir
-    httpd.instanceId = instanceId
+    httpd.instance_id = instance_id
     httpd.personCache = {}
     httpd.cachedWebfingers = {}
     httpd.faviconsCache = {}

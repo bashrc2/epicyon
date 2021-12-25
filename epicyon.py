@@ -1100,11 +1100,11 @@ if args.resetregistrations:
     print('Number of new registrations reset to ' + str(maxRegistrations))
 
 # unique ID for the instance
-instanceId = getConfigParam(base_dir, 'instanceId')
-if not instanceId:
-    instanceId = createPassword(32)
-    setConfigParam(base_dir, 'instanceId', instanceId)
-    print('Instance ID: ' + instanceId)
+instance_id = getConfigParam(base_dir, 'instance_id')
+if not instance_id:
+    instance_id = createPassword(32)
+    setConfigParam(base_dir, 'instance_id', instance_id)
+    print('Instance ID: ' + instance_id)
 
 # get domain name from configuration
 configDomain = getConfigParam(base_dir, 'domain')
@@ -3246,7 +3246,7 @@ if __name__ == "__main__":
               args.max_recent_posts,
               not args.nosharedinbox,
               registration, args.language, __version__,
-              instanceId, args.client, base_dir,
+              instance_id, args.client, base_dir,
               domain, onionDomain, i2pDomain,
               args.yt_replace_domain,
               args.twitterReplacementDomain,
