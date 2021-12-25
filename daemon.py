@@ -5014,7 +5014,7 @@ class PubServer(BaseHTTPRequestHandler):
                             setTheme(base_dir, self.server.themeName, domain,
                                      allow_local_network_access,
                                      system_language)
-                            self.server.textModeBanner = \
+                            self.server.text_mode_banner = \
                                 getTextModeBanner(self.server.base_dir)
                             self.server.iconsCache = {}
                             self.server.fontsCache = {}
@@ -5954,7 +5954,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 setTheme(base_dir, currTheme, domain,
                                          allow_local_network_access,
                                          system_language)
-                                self.server.textModeBanner = \
+                                self.server.text_mode_banner = \
                                     getTextModeBanner(base_dir)
                                 self.server.iconsCache = {}
                                 self.server.fontsCache = {}
@@ -7167,7 +7167,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     backToPath,
                                     lockedAccount,
                                     movedTo, alsoKnownAs,
-                                    self.server.textModeBanner,
+                                    self.server.text_mode_banner,
                                     self.server.news_instance,
                                     authorized,
                                     accessKeys, isGroup).encode('utf-8')
@@ -9713,7 +9713,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.dormant_months,
                                     self.server.peertubeInstances,
                                     self.server.allow_local_network_access,
-                                    self.server.textModeBanner,
+                                    self.server.text_mode_banner,
                                     self.server.debug,
                                     accessKeys, city,
                                     self.server.system_language,
@@ -9829,7 +9829,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                 self.server.dormant_months,
                                                 self.server.peertubeInstances,
                                                 allow_local_network_access,
-                                                self.server.textModeBanner,
+                                                self.server.text_mode_banner,
                                                 self.server.debug,
                                                 accessKeys, city,
                                                 self.server.system_language,
@@ -10260,7 +10260,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.themeName,
                                         self.server.peertubeInstances,
                                         self.server.allow_local_network_access,
-                                        self.server.textModeBanner,
+                                        self.server.text_mode_banner,
                                         accessKeys,
                                         self.server.system_language,
                                         self.server.max_like_count,
@@ -10412,7 +10412,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          authorized, self.server.themeName,
                                          self.server.peertubeInstances,
                                          allow_local_network_access,
-                                         self.server.textModeBanner,
+                                         self.server.text_mode_banner,
                                          accessKeys,
                                          self.server.system_language,
                                          self.server.max_like_count,
@@ -10557,7 +10557,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          authorized, self.server.themeName,
                                          self.server.peertubeInstances,
                                          allow_local_network_access,
-                                         self.server.textModeBanner,
+                                         self.server.text_mode_banner,
                                          accessKeys,
                                          self.server.system_language,
                                          self.server.max_like_count,
@@ -10699,7 +10699,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.themeName,
                                        self.server.peertubeInstances,
                                        self.server.allow_local_network_access,
-                                       self.server.textModeBanner,
+                                       self.server.text_mode_banner,
                                        accessKeys,
                                        self.server.system_language,
                                        self.server.max_like_count,
@@ -10841,7 +10841,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.themeName,
                                        self.server.peertubeInstances,
                                        self.server.allow_local_network_access,
-                                       self.server.textModeBanner,
+                                       self.server.text_mode_banner,
                                        accessKeys,
                                        self.server.system_language,
                                        self.server.max_like_count,
@@ -10993,7 +10993,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.themeName,
                                       self.server.peertubeInstances,
                                       self.server.allow_local_network_access,
-                                      self.server.textModeBanner,
+                                      self.server.text_mode_banner,
                                       accessKeys,
                                       self.server.system_language,
                                       self.server.max_like_count,
@@ -11144,7 +11144,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.themeName,
                                           self.server.peertubeInstances,
                                           allow_local_network_access,
-                                          self.server.textModeBanner,
+                                          self.server.text_mode_banner,
                                           accessKeys,
                                           self.server.system_language,
                                           self.server.max_like_count,
@@ -11252,7 +11252,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    authorized, self.server.themeName,
                                    self.server.peertubeInstances,
                                    self.server.allow_local_network_access,
-                                   self.server.textModeBanner,
+                                   self.server.text_mode_banner,
                                    accessKeys,
                                    self.server.system_language,
                                    self.server.max_like_count,
@@ -11337,7 +11337,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    authorized, self.server.themeName,
                                    self.server.peertubeInstances,
                                    self.server.allow_local_network_access,
-                                   self.server.textModeBanner,
+                                   self.server.text_mode_banner,
                                    accessKeys,
                                    self.server.system_language,
                                    self.server.max_like_count,
@@ -11462,7 +11462,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.themeName,
                                           self.server.peertubeInstances,
                                           allow_local_network_access,
-                                          self.server.textModeBanner,
+                                          self.server.text_mode_banner,
                                           accessKeys,
                                           self.server.system_language,
                                           self.server.max_like_count,
@@ -11600,7 +11600,7 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.themeName,
                                self.server.peertubeInstances,
                                self.server.allow_local_network_access,
-                               self.server.textModeBanner,
+                               self.server.text_mode_banner,
                                accessKeys,
                                self.server.system_language,
                                self.server.max_like_count,
@@ -11734,7 +11734,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.themeName,
                                            self.server.peertubeInstances,
                                            allow_local_network_access,
-                                           self.server.textModeBanner,
+                                           self.server.text_mode_banner,
                                            accessKeys,
                                            self.server.system_language,
                                            self.server.max_like_count,
@@ -11854,7 +11854,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.dormant_months,
                                     self.server.peertubeInstances,
                                     self.server.allow_local_network_access,
-                                    self.server.textModeBanner,
+                                    self.server.text_mode_banner,
                                     self.server.debug,
                                     accessKeys, city,
                                     self.server.system_language,
@@ -11975,7 +11975,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.dormant_months,
                                     self.server.peertubeInstances,
                                     self.server.allow_local_network_access,
-                                    self.server.textModeBanner,
+                                    self.server.text_mode_banner,
                                     self.server.debug,
                                     accessKeys, city,
                                     self.server.system_language,
@@ -12095,7 +12095,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.dormant_months,
                                     self.server.peertubeInstances,
                                     self.server.allow_local_network_access,
-                                    self.server.textModeBanner,
+                                    self.server.text_mode_banner,
                                     self.server.debug,
                                     accessKeys, city,
                                     self.server.system_language,
@@ -12231,7 +12231,7 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.dormant_months,
                             self.server.peertubeInstances,
                             self.server.allow_local_network_access,
-                            self.server.textModeBanner,
+                            self.server.text_mode_banner,
                             self.server.debug,
                             accessKeys, city,
                             self.server.system_language,
@@ -13077,7 +13077,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.defaultTimeline,
                                   self.server.themeName,
                                   peertubeInstances,
-                                  self.server.textModeBanner,
+                                  self.server.text_mode_banner,
                                   city,
                                   self.server.user_agents_blocked,
                                   accessKeys,
@@ -15123,7 +15123,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.domain,
                                  self.server.defaultTimeline,
                                  self.server.themeName,
-                                 self.server.textModeBanner,
+                                 self.server.text_mode_banner,
                                  accessKeys).encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen, cookie, callingDomain,
@@ -15176,7 +15176,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.base_dir, self.path,
                                    self.server.http_prefix,
                                    self.server.domainFull,
-                                   self.server.textModeBanner,
+                                   self.server.text_mode_banner,
                                    accessKeys).encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen, cookie, callingDomain,
@@ -18537,7 +18537,7 @@ def runDaemon(content_license_url: str,
     httpd.show_node_info_version = show_node_info_version
 
     # ASCII/ANSI text banner used in shell browsers, such as Lynx
-    httpd.textModeBanner = getTextModeBanner(base_dir)
+    httpd.text_mode_banner = getTextModeBanner(base_dir)
 
     # key shortcuts SHIFT + ALT + [key]
     httpd.accessKeys = {

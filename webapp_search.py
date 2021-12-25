@@ -373,7 +373,7 @@ def htmlSearchEmojiTextEntry(cssCache: {}, translate: {},
 def htmlSearch(cssCache: {}, translate: {},
                base_dir: str, path: str, domain: str,
                defaultTimeline: str, theme: str,
-               textModeBanner: str, accessKeys: {}) -> str:
+               text_mode_banner: str, accessKeys: {}) -> str:
     """Search called from the timeline icon
     """
     actor = path.replace('/search', '')
@@ -392,15 +392,15 @@ def htmlSearch(cssCache: {}, translate: {},
     searchBannerFile, searchBannerFilename = \
         getSearchBannerFile(base_dir, searchNickname, domain, theme)
 
-    textModeBannerStr = htmlKeyboardNavigation(textModeBanner, {}, {})
-    if textModeBannerStr is None:
-        textModeBannerStr = ''
+    text_mode_bannerStr = htmlKeyboardNavigation(text_mode_banner, {}, {})
+    if text_mode_bannerStr is None:
+        text_mode_bannerStr = ''
 
     if os.path.isfile(searchBannerFilename):
         timelineKey = accessKeys['menuTimeline']
         usersPath = '/users/' + searchNickname
         followStr += \
-            '<header>\n' + textModeBannerStr + \
+            '<header>\n' + text_mode_bannerStr + \
             '<a href="' + usersPath + '/' + defaultTimeline + '" title="' + \
             translate['Switch to timeline view'] + '" alt="' + \
             translate['Switch to timeline view'] + '" ' + \

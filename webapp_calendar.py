@@ -246,7 +246,7 @@ def _htmlCalendarDay(person_cache: {}, cssCache: {}, translate: {},
 def htmlCalendar(person_cache: {}, cssCache: {}, translate: {},
                  base_dir: str, path: str,
                  http_prefix: str, domainFull: str,
-                 textModeBanner: str, accessKeys: {}) -> str:
+                 text_mode_banner: str, accessKeys: {}) -> str:
     """Show the calendar for a person
     """
     domain = removeDomainPort(domainFull)
@@ -451,7 +451,7 @@ def htmlCalendar(person_cache: {}, cssCache: {}, translate: {},
     navAccessKeys = {
     }
     screenReaderCal = \
-        htmlKeyboardNavigation(textModeBanner, navLinks, navAccessKeys,
+        htmlKeyboardNavigation(text_mode_banner, navLinks, navAccessKeys,
                                monthName)
 
     newEventStr = \

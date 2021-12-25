@@ -593,9 +593,9 @@ def _setThemeFonts(base_dir: str, themeName: str) -> None:
 def getTextModeBanner(base_dir: str) -> str:
     """Returns the banner used for shell browsers, like Lynx
     """
-    textModeBannerFilename = base_dir + '/accounts/banner.txt'
-    if os.path.isfile(textModeBannerFilename):
-        with open(textModeBannerFilename, 'r') as fp:
+    text_mode_bannerFilename = base_dir + '/accounts/banner.txt'
+    if os.path.isfile(text_mode_bannerFilename):
+        with open(text_mode_bannerFilename, 'r') as fp:
             bannerStr = fp.read()
             if bannerStr:
                 return bannerStr.replace('\n', '<br>')
@@ -639,7 +639,7 @@ def _setTextModeTheme(base_dir: str, name: str) -> None:
                   base_dir + '/accounts/logo.txt')
 
     # set the text mode banner which appears in browsers such as Lynx
-    textModeBannerFilename = \
+    text_mode_bannerFilename = \
         base_dir + '/theme/' + name + '/banner.txt'
     if os.path.isfile(base_dir + '/accounts/banner.txt'):
         try:
@@ -647,13 +647,13 @@ def _setTextModeTheme(base_dir: str, name: str) -> None:
         except OSError:
             print('EX: _setTextModeTheme unable to delete ' +
                   base_dir + '/accounts/banner.txt')
-    if os.path.isfile(textModeBannerFilename):
+    if os.path.isfile(text_mode_bannerFilename):
         try:
-            copyfile(textModeBannerFilename,
+            copyfile(text_mode_bannerFilename,
                      base_dir + '/accounts/banner.txt')
         except OSError:
             print('EX: _setTextModeTheme unable to copy ' +
-                  textModeBannerFilename + ' ' +
+                  text_mode_bannerFilename + ' ' +
                   base_dir + '/accounts/banner.txt')
 
 

@@ -556,7 +556,7 @@ def htmlProfile(signing_priv_key_pem: str,
                 newswire: {}, theme: str, dormant_months: int,
                 peertubeInstances: [],
                 allow_local_network_access: bool,
-                textModeBanner: str,
+                text_mode_banner: str,
                 debug: bool, accessKeys: {}, city: str,
                 system_language: str, max_like_count: int,
                 shared_items_federated_domains: [],
@@ -897,7 +897,7 @@ def htmlProfile(signing_priv_key_pem: str,
             continue
         navAccessKeys[locals()[variableName]] = key
 
-    profileStr = htmlKeyboardNavigation(textModeBanner,
+    profileStr = htmlKeyboardNavigation(text_mode_banner,
                                         navLinks, navAccessKeys)
 
     profileStr += profileHeaderStr + donateSection
@@ -2092,7 +2092,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, base_dir: str, path: str,
                     domain: str, port: int, http_prefix: str,
                     defaultTimeline: str, theme: str,
                     peertubeInstances: [],
-                    textModeBanner: str, city: str,
+                    text_mode_banner: str, city: str,
                     user_agents_blocked: str,
                     accessKeys: {},
                     default_reply_interval_hrs: int,
@@ -2252,7 +2252,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, base_dir: str, path: str,
         menuProfile: 'p',
         menuTimeline: 't'
     }
-    editProfileForm += htmlKeyboardNavigation(textModeBanner,
+    editProfileForm += htmlKeyboardNavigation(text_mode_banner,
                                               navLinks, navAccessKeys)
 
     # top banner

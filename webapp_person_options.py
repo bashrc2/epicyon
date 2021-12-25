@@ -58,7 +58,7 @@ def htmlPersonOptions(defaultTimeline: str,
                       lockedAccount: bool,
                       movedTo: str,
                       alsoKnownAs: [],
-                      textModeBanner: str,
+                      text_mode_banner: str,
                       news_instance: bool,
                       authorized: bool,
                       accessKeys: {},
@@ -131,7 +131,7 @@ def htmlPersonOptions(defaultTimeline: str,
     instanceTitle = \
         getConfigParam(base_dir, 'instanceTitle')
     optionsStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
-    optionsStr += htmlKeyboardNavigation(textModeBanner, {}, {})
+    optionsStr += htmlKeyboardNavigation(text_mode_banner, {}, {})
     optionsStr += '<br><br>\n'
     optionsStr += '<div class="options">\n'
     optionsStr += '  <div class="optionsAvatar">\n'
