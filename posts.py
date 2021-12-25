@@ -2274,7 +2274,7 @@ def sendPost(signingPrivateKeyPem: str, projectVersion: str,
              federationList: [], sendThreads: [], postLog: [],
              cachedWebfingers: {}, personCache: {},
              isArticle: bool, systemLanguage: str,
-             sharedItemsFederatedDomains: [],
+             shared_items_federated_domains: [],
              sharedItemFederationTokens: {},
              lowBandwidth: bool, content_license_url: str,
              debug: bool = False, inReplyTo: str = None,
@@ -2377,7 +2377,7 @@ def sendPost(signingPrivateKeyPem: str, projectVersion: str,
     # if the "to" domain is within the shared items
     # federation list then send the token for this domain
     # so that it can request a catalog
-    if toDomain in sharedItemsFederatedDomains:
+    if toDomain in shared_items_federated_domains:
         domainFull = getFullDomain(domain, port)
         if sharedItemFederationTokens.get(domainFull):
             signatureHeaderJson['Origin'] = domainFull
@@ -2388,8 +2388,8 @@ def sendPost(signingPrivateKeyPem: str, projectVersion: str,
         elif debug:
             print(domainFull + ' not in sharedItemFederationTokens')
     elif debug:
-        print(toDomain + ' not in sharedItemsFederatedDomains ' +
-              str(sharedItemsFederatedDomains))
+        print(toDomain + ' not in shared_items_federated_domains ' +
+              str(shared_items_federated_domains))
 
     if debug:
         print('signatureHeaderJson: ' + str(signatureHeaderJson))
@@ -2864,7 +2864,7 @@ def _sendToNamedAddresses(session, base_dir: str,
                           cachedWebfingers: {}, personCache: {},
                           postJsonObject: {}, debug: bool,
                           projectVersion: str,
-                          sharedItemsFederatedDomains: [],
+                          shared_items_federated_domains: [],
                           sharedItemFederationTokens: {},
                           signingPrivateKeyPem: str) -> None:
     """sends a post to the specific named addresses in to/cc
@@ -2990,7 +2990,7 @@ def _sendToNamedAddresses(session, base_dir: str,
         # federation list then send the token for this domain
         # so that it can request a catalog
         sharedItemsToken = None
-        if toDomain in sharedItemsFederatedDomains:
+        if toDomain in shared_items_federated_domains:
             if sharedItemFederationTokens.get(fromDomainFull):
                 sharedItemsToken = sharedItemFederationTokens[fromDomainFull]
 
@@ -3015,7 +3015,7 @@ def sendToNamedAddressesThread(session, base_dir: str,
                                cachedWebfingers: {}, personCache: {},
                                postJsonObject: {}, debug: bool,
                                projectVersion: str,
-                               sharedItemsFederatedDomains: [],
+                               shared_items_federated_domains: [],
                                sharedItemFederationTokens: {},
                                signingPrivateKeyPem: str):
     """Returns a thread used to send a post to named addresses
@@ -3030,7 +3030,7 @@ def sendToNamedAddressesThread(session, base_dir: str,
                               cachedWebfingers, personCache,
                               postJsonObject, debug,
                               projectVersion,
-                              sharedItemsFederatedDomains,
+                              shared_items_federated_domains,
                               sharedItemFederationTokens,
                               signingPrivateKeyPem), daemon=True)
     try:
@@ -3091,7 +3091,7 @@ def sendToFollowers(session, base_dir: str,
                     cachedWebfingers: {}, personCache: {},
                     postJsonObject: {}, debug: bool,
                     projectVersion: str,
-                    sharedItemsFederatedDomains: [],
+                    shared_items_federated_domains: [],
                     sharedItemFederationTokens: {},
                     signingPrivateKeyPem: str) -> None:
     """sends a post to the followers of the given nickname
@@ -3137,7 +3137,7 @@ def sendToFollowers(session, base_dir: str,
         # federation list then send the token for this domain
         # so that it can request a catalog
         sharedItemsToken = None
-        if followerDomain in sharedItemsFederatedDomains:
+        if followerDomain in shared_items_federated_domains:
             domainFull = getFullDomain(domain, port)
             if sharedItemFederationTokens.get(domainFull):
                 sharedItemsToken = sharedItemFederationTokens[domainFull]
@@ -3264,7 +3264,7 @@ def sendToFollowersThread(session, base_dir: str,
                           cachedWebfingers: {}, personCache: {},
                           postJsonObject: {}, debug: bool,
                           projectVersion: str,
-                          sharedItemsFederatedDomains: [],
+                          shared_items_federated_domains: [],
                           sharedItemFederationTokens: {},
                           signingPrivateKeyPem: str):
     """Returns a thread used to send a post to followers
@@ -3279,7 +3279,7 @@ def sendToFollowersThread(session, base_dir: str,
                               cachedWebfingers, personCache,
                               postJsonObject.copy(), debug,
                               projectVersion,
-                              sharedItemsFederatedDomains,
+                              shared_items_federated_domains,
                               sharedItemFederationTokens,
                               signingPrivateKeyPem), daemon=True)
     try:

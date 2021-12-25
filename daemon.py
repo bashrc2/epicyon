@@ -1298,7 +1298,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.showPublishedDateOnly,
                                    self.server.allowLocalNetworkAccess,
                                    city, self.server.systemLanguage,
-                                   self.server.sharedItemsFederatedDomains,
+                                   self.server.shared_items_federated_domains,
                                    self.server.sharedItemFederationTokens,
                                    self.server.lowBandwidth,
                                    self.server.signingPrivateKeyPem,
@@ -3613,8 +3613,8 @@ class PubServer(BaseHTTPRequestHandler):
                     return
             elif searchStr.startswith('.'):
                 # wanted items search
-                sharedItemsFederatedDomains = \
-                    self.server.sharedItemsFederatedDomains
+                shared_items_federated_domains = \
+                    self.server.shared_items_federated_domains
                 wantedItemsStr = \
                     htmlSearchSharedItems(self.server.cssCache,
                                           self.server.translate,
@@ -3624,7 +3624,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           http_prefix,
                                           domainFull,
                                           actorStr, callingDomain,
-                                          sharedItemsFederatedDomains,
+                                          shared_items_federated_domains,
                                           'wanted')
                 if wantedItemsStr:
                     msg = wantedItemsStr.encode('utf-8')
@@ -3636,8 +3636,8 @@ class PubServer(BaseHTTPRequestHandler):
                     return
             else:
                 # shared items search
-                sharedItemsFederatedDomains = \
-                    self.server.sharedItemsFederatedDomains
+                shared_items_federated_domains = \
+                    self.server.shared_items_federated_domains
                 sharedItemsStr = \
                     htmlSearchSharedItems(self.server.cssCache,
                                           self.server.translate,
@@ -3647,7 +3647,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           http_prefix,
                                           domainFull,
                                           actorStr, callingDomain,
-                                          sharedItemsFederatedDomains,
+                                          shared_items_federated_domains,
                                           'shares')
                 if sharedItemsStr:
                     msg = sharedItemsStr.encode('utf-8')
@@ -5586,15 +5586,17 @@ class PubServer(BaseHTTPRequestHandler):
 
                             # shared item federation domains
                             siDomainUpdated = False
-                            sharedItemsFederatedDomainsStr = \
+                            fed_domains_variable = \
+                                "shared_items_federated_domains"
+                            fed_domains_str = \
                                 getConfigParam(base_dir,
-                                               "sharedItemsFederatedDomains")
-                            if not sharedItemsFederatedDomainsStr:
-                                sharedItemsFederatedDomainsStr = ''
+                                               fed_domains_variable)
+                            if not fed_domains_str:
+                                fed_domains_str = ''
                             sharedItemsFormStr = ''
                             if fields.get('shareDomainList'):
                                 sharedItemsList = \
-                                    sharedItemsFederatedDomainsStr.split(',')
+                                    fed_domains_str.split(',')
                                 for sharedFederatedDomain in sharedItemsList:
                                     sharedItemsFormStr += \
                                         sharedFederatedDomain.strip() + '\n'
@@ -5605,14 +5607,14 @@ class PubServer(BaseHTTPRequestHandler):
                                     sharedItemsFormStr2 = \
                                         shareDomainList.replace('\n', ',')
                                     sharedItemsField = \
-                                        "sharedItemsFederatedDomains"
+                                        "shared_items_federated_domains"
                                     setConfigParam(base_dir, sharedItemsField,
                                                    sharedItemsFormStr2)
                                     siDomainUpdated = True
                             else:
-                                if sharedItemsFederatedDomainsStr:
+                                if fed_domains_str:
                                     sharedItemsField = \
-                                        "sharedItemsFederatedDomains"
+                                        "shared_items_federated_domains"
                                     setConfigParam(base_dir, sharedItemsField,
                                                    '')
                                     siDomainUpdated = True
@@ -5620,7 +5622,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 siDomains = sharedItemsFormStr.split('\n')
                                 siTokens = \
                                     self.server.sharedItemFederationTokens
-                                self.server.sharedItemsFederatedDomains = \
+                                self.server.shared_items_federated_domains = \
                                     siDomains
                                 domainFull = self.server.domainFull
                                 self.server.sharedItemFederationTokens = \
@@ -9710,7 +9712,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     accessKeys, city,
                                     self.server.systemLanguage,
                                     self.server.maxLikeCount,
-                                    self.server.sharedItemsFederatedDomains,
+                                    self.server.shared_items_federated_domains,
                                     rolesList,
                                     None, None, self.server.CWlists,
                                     self.server.listsEnabled,
@@ -9792,8 +9794,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 city = getSpoofedCity(self.server.city,
                                                       base_dir,
                                                       nickname, domain)
-                                sharedItemsFederatedDomains = \
-                                    self.server.sharedItemsFederatedDomains
+                                shared_items_federated_domains = \
+                                    self.server.shared_items_federated_domains
                                 signingPrivateKeyPem = \
                                     self.server.signingPrivateKeyPem
                                 content_license_url = \
@@ -9826,7 +9828,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                 accessKeys, city,
                                                 self.server.systemLanguage,
                                                 self.server.maxLikeCount,
-                                                sharedItemsFederatedDomains,
+                                                shared_items_federated_domains,
                                                 skills,
                                                 None, None,
                                                 self.server.CWlists,
@@ -10218,8 +10220,8 @@ class PubServer(BaseHTTPRequestHandler):
                             accessKeys = \
                                 self.server.keyShortcuts[nickname]
 
-                        sharedItemsFederatedDomains = \
-                            self.server.sharedItemsFederatedDomains
+                        shared_items_federated_domains = \
+                            self.server.shared_items_federated_domains
                         msg = htmlInbox(self.server.cssCache,
                                         defaultTimeline,
                                         recentPostsCache,
@@ -10256,7 +10258,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         accessKeys,
                                         self.server.systemLanguage,
                                         self.server.maxLikeCount,
-                                        sharedItemsFederatedDomains,
+                                        shared_items_federated_domains,
                                         self.server.signingPrivateKeyPem,
                                         self.server.CWlists,
                                         self.server.listsEnabled)
@@ -10366,8 +10368,8 @@ class PubServer(BaseHTTPRequestHandler):
                             accessKeys = \
                                 self.server.keyShortcuts[nickname]
 
-                        sharedItemsFederatedDomains = \
-                            self.server.sharedItemsFederatedDomains
+                        shared_items_federated_domains = \
+                            self.server.shared_items_federated_domains
                         msg = \
                             htmlInboxDMs(self.server.cssCache,
                                          self.server.defaultTimeline,
@@ -10404,7 +10406,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          accessKeys,
                                          self.server.systemLanguage,
                                          self.server.maxLikeCount,
-                                         sharedItemsFederatedDomains,
+                                         shared_items_federated_domains,
                                          self.server.signingPrivateKeyPem,
                                          self.server.CWlists,
                                          self.server.listsEnabled)
@@ -10507,8 +10509,8 @@ class PubServer(BaseHTTPRequestHandler):
                         accessKeys = \
                             self.server.keyShortcuts[nickname]
 
-                    sharedItemsFederatedDomains = \
-                        self.server.sharedItemsFederatedDomains
+                    shared_items_federated_domains = \
+                        self.server.shared_items_federated_domains
                     msg = \
                         htmlInboxReplies(self.server.cssCache,
                                          self.server.defaultTimeline,
@@ -10545,7 +10547,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          accessKeys,
                                          self.server.systemLanguage,
                                          self.server.maxLikeCount,
-                                         sharedItemsFederatedDomains,
+                                         shared_items_federated_domains,
                                          self.server.signingPrivateKeyPem,
                                          self.server.CWlists,
                                          self.server.listsEnabled)
@@ -10647,6 +10649,8 @@ class PubServer(BaseHTTPRequestHandler):
                     if self.server.keyShortcuts.get(nickname):
                         accessKeys = \
                             self.server.keyShortcuts[nickname]
+                    fed_domains = \
+                        self.server.shared_items_federated_domains
 
                     msg = \
                         htmlInboxMedia(self.server.cssCache,
@@ -10685,7 +10689,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        accessKeys,
                                        self.server.systemLanguage,
                                        self.server.maxLikeCount,
-                                       self.server.sharedItemsFederatedDomains,
+                                       fed_domains,
                                        self.server.signingPrivateKeyPem,
                                        self.server.CWlists,
                                        self.server.listsEnabled)
@@ -10787,6 +10791,8 @@ class PubServer(BaseHTTPRequestHandler):
                     if self.server.keyShortcuts.get(nickname):
                         accessKeys = \
                             self.server.keyShortcuts[nickname]
+                    fed_domains = \
+                        self.server.shared_items_federated_domains
 
                     msg = \
                         htmlInboxBlogs(self.server.cssCache,
@@ -10825,7 +10831,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        accessKeys,
                                        self.server.systemLanguage,
                                        self.server.maxLikeCount,
-                                       self.server.sharedItemsFederatedDomains,
+                                       fed_domains,
                                        self.server.signingPrivateKeyPem,
                                        self.server.CWlists,
                                        self.server.listsEnabled)
@@ -10936,6 +10942,8 @@ class PubServer(BaseHTTPRequestHandler):
                     if self.server.keyShortcuts.get(nickname):
                         accessKeys = \
                             self.server.keyShortcuts[nickname]
+                    fed_domains = \
+                        self.server.shared_items_federated_domains
 
                     msg = \
                         htmlInboxNews(self.server.cssCache,
@@ -10975,7 +10983,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       accessKeys,
                                       self.server.systemLanguage,
                                       self.server.maxLikeCount,
-                                      self.server.sharedItemsFederatedDomains,
+                                      fed_domains,
                                       self.server.signingPrivateKeyPem,
                                       self.server.CWlists,
                                       self.server.listsEnabled)
@@ -11083,8 +11091,8 @@ class PubServer(BaseHTTPRequestHandler):
                         accessKeys = \
                             self.server.keyShortcuts[nickname]
 
-                    sharedItemsFederatedDomains = \
-                        self.server.sharedItemsFederatedDomains
+                    shared_items_federated_domains = \
+                        self.server.shared_items_federated_domains
                     msg = \
                         htmlInboxFeatures(self.server.cssCache,
                                           self.server.defaultTimeline,
@@ -11122,7 +11130,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           accessKeys,
                                           self.server.systemLanguage,
                                           self.server.maxLikeCount,
-                                          sharedItemsFederatedDomains,
+                                          shared_items_federated_domains,
                                           self.server.signingPrivateKeyPem,
                                           self.server.CWlists,
                                           self.server.listsEnabled)
@@ -11228,7 +11236,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    accessKeys,
                                    self.server.systemLanguage,
                                    self.server.maxLikeCount,
-                                   self.server.sharedItemsFederatedDomains,
+                                   self.server.shared_items_federated_domains,
                                    self.server.signingPrivateKeyPem,
                                    self.server.CWlists,
                                    self.server.listsEnabled)
@@ -11312,7 +11320,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    accessKeys,
                                    self.server.systemLanguage,
                                    self.server.maxLikeCount,
-                                   self.server.sharedItemsFederatedDomains,
+                                   self.server.shared_items_federated_domains,
                                    self.server.signingPrivateKeyPem,
                                    self.server.CWlists,
                                    self.server.listsEnabled)
@@ -11394,8 +11402,8 @@ class PubServer(BaseHTTPRequestHandler):
                             accessKeys = \
                                 self.server.keyShortcuts[nickname]
 
-                        sharedItemsFederatedDomains = \
-                            self.server.sharedItemsFederatedDomains
+                        shared_items_federated_domains = \
+                            self.server.shared_items_federated_domains
                         msg = \
                             htmlBookmarks(self.server.cssCache,
                                           self.server.defaultTimeline,
@@ -11433,7 +11441,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           accessKeys,
                                           self.server.systemLanguage,
                                           self.server.maxLikeCount,
-                                          sharedItemsFederatedDomains,
+                                          shared_items_federated_domains,
                                           self.server.signingPrivateKeyPem,
                                           self.server.CWlists,
                                           self.server.listsEnabled)
@@ -11571,7 +11579,7 @@ class PubServer(BaseHTTPRequestHandler):
                                accessKeys,
                                self.server.systemLanguage,
                                self.server.maxLikeCount,
-                               self.server.sharedItemsFederatedDomains,
+                               self.server.shared_items_federated_domains,
                                self.server.signingPrivateKeyPem,
                                self.server.CWlists,
                                self.server.listsEnabled)
@@ -11661,8 +11669,8 @@ class PubServer(BaseHTTPRequestHandler):
                             accessKeys = \
                                 self.server.keyShortcuts[nickname]
 
-                        sharedItemsFederatedDomains = \
-                            self.server.sharedItemsFederatedDomains
+                        shared_items_federated_domains = \
+                            self.server.shared_items_federated_domains
                         twitterReplacementDomain = \
                             self.server.twitterReplacementDomain
                         msg = \
@@ -11701,7 +11709,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            accessKeys,
                                            self.server.systemLanguage,
                                            self.server.maxLikeCount,
-                                           sharedItemsFederatedDomains,
+                                           shared_items_federated_domains,
                                            self.server.signingPrivateKeyPem,
                                            self.server.CWlists,
                                            self.server.listsEnabled)
@@ -11822,7 +11830,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     accessKeys, city,
                                     self.server.systemLanguage,
                                     self.server.maxLikeCount,
-                                    self.server.sharedItemsFederatedDomains,
+                                    self.server.shared_items_federated_domains,
                                     shares,
                                     pageNumber, sharesPerPage,
                                     self.server.CWlists,
@@ -11943,7 +11951,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     accessKeys, city,
                                     self.server.systemLanguage,
                                     self.server.maxLikeCount,
-                                    self.server.sharedItemsFederatedDomains,
+                                    self.server.shared_items_federated_domains,
                                     following,
                                     pageNumber,
                                     followsPerPage,
@@ -12063,7 +12071,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     accessKeys, city,
                                     self.server.systemLanguage,
                                     self.server.maxLikeCount,
-                                    self.server.sharedItemsFederatedDomains,
+                                    self.server.shared_items_federated_domains,
                                     followers,
                                     pageNumber,
                                     followsPerPage,
@@ -12199,7 +12207,7 @@ class PubServer(BaseHTTPRequestHandler):
                             accessKeys, city,
                             self.server.systemLanguage,
                             self.server.maxLikeCount,
-                            self.server.sharedItemsFederatedDomains,
+                            self.server.shared_items_federated_domains,
                             None, None, None,
                             self.server.CWlists,
                             self.server.listsEnabled,
@@ -13477,7 +13485,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.headers.get('Origin') and \
                    self.headers.get('Authorization'):
                     permittedDomains = \
-                        self.server.sharedItemsFederatedDomains
+                        self.server.shared_items_federated_domains
                     sharedItemTokens = self.server.sharedItemFederationTokens
                     if authorizeSharedItems(permittedDomains,
                                             self.server.base_dir,
@@ -13569,7 +13577,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.headers.get('Origin') and \
                    self.headers.get('Authorization'):
                     permittedDomains = \
-                        self.server.sharedItemsFederatedDomains
+                        self.server.shared_items_federated_domains
                     sharedItemTokens = self.server.sharedItemFederationTokens
                     if authorizeSharedItems(permittedDomains,
                                             self.server.base_dir,
@@ -14167,7 +14175,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.domain, nickname,
                               self.server.http_prefix, self.server.domainFull,
                               itemID, self.server.translate,
-                              self.server.sharedItemsFederatedDomains,
+                              self.server.shared_items_federated_domains,
                               self.server.defaultTimeline,
                               self.server.themeName, 'shares', category)
             if not msg:
@@ -14206,7 +14214,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.domain, nickname,
                               self.server.http_prefix, self.server.domainFull,
                               itemID, self.server.translate,
-                              self.server.sharedItemsFederatedDomains,
+                              self.server.shared_items_federated_domains,
                               self.server.defaultTimeline,
                               self.server.themeName, 'wanted', category)
             if not msg:
@@ -14987,7 +14995,7 @@ class PubServer(BaseHTTPRequestHandler):
                 iconsAsButtons = self.server.iconsAsButtons
                 defaultTimeline = self.server.defaultTimeline
                 sharedItemsDomains = \
-                    self.server.sharedItemsFederatedDomains
+                    self.server.shared_items_federated_domains
                 msg = htmlLinksMobile(self.server.cssCache,
                                       self.server.base_dir, nickname,
                                       self.server.domainFull,
@@ -17915,21 +17923,21 @@ class PubServer(BaseHTTPRequestHandler):
            self.headers.get('SharesCatalog'):
             if self.server.debug:
                 print('SharesCatalog header: ' + self.headers['SharesCatalog'])
-            if not self.server.sharedItemsFederatedDomains:
+            if not self.server.shared_items_federated_domains:
                 siDomainsStr = getConfigParam(self.server.base_dir,
-                                              'sharedItemsFederatedDomains')
+                                              'shared_items_federated_domains')
                 if siDomainsStr:
                     if self.server.debug:
                         print('Loading shared items federated domains list')
                     siDomainsList = siDomainsStr.split(',')
-                    domainsList = self.server.sharedItemsFederatedDomains
+                    domainsList = self.server.shared_items_federated_domains
                     for siDomain in siDomainsList:
                         domainsList.append(siDomain.strip())
             originDomain = self.headers.get('Origin')
             if originDomain != self.server.domainFull and \
                originDomain != self.server.onionDomain and \
                originDomain != self.server.i2pDomain and \
-               originDomain in self.server.sharedItemsFederatedDomains:
+               originDomain in self.server.shared_items_federated_domains:
                 if self.server.debug:
                     print('DEBUG: ' +
                           'POST updating shared item federation ' +
@@ -17944,13 +17952,14 @@ class PubServer(BaseHTTPRequestHandler):
                                                     self.server.debug,
                                                     sharedItemTokens)
             elif self.server.debug:
-                if originDomain not in self.server.sharedItemsFederatedDomains:
+                fed_domains = self.server.shared_items_federated_domains
+                if originDomain not in fed_domains:
                     print('originDomain is not in federated domains list ' +
                           originDomain)
                 else:
                     print('originDomain is not a different instance. ' +
                           originDomain + ' ' + self.server.domainFull + ' ' +
-                          str(self.server.sharedItemsFederatedDomains))
+                          str(fed_domains))
 
         fitnessPerformance(POSTstartTime, self.server.fitness,
                            '_POST', 'SharesCatalog',
@@ -18395,7 +18404,7 @@ def runDaemon(content_license_url: str,
               default_reply_interval_hrs: int,
               lowBandwidth: bool,
               maxLikeCount: int,
-              sharedItemsFederatedDomains: [],
+              shared_items_federated_domains: [],
               userAgentsBlocked: [],
               logLoginFailures: bool,
               city: str,
@@ -18695,7 +18704,8 @@ def runDaemon(content_license_url: str,
     httpd.http_prefix = http_prefix
     httpd.debug = debug
     httpd.federationList = fedList.copy()
-    httpd.sharedItemsFederatedDomains = sharedItemsFederatedDomains.copy()
+    httpd.shared_items_federated_domains = \
+        shared_items_federated_domains.copy()
     httpd.base_dir = base_dir
     httpd.instanceId = instanceId
     httpd.personCache = {}
@@ -18862,8 +18872,9 @@ def runDaemon(content_license_url: str,
     httpd.fontsCache = {}
 
     # create tokens used for shared item federation
+    fed_domains = httpd.shared_items_federated_domains
     httpd.sharedItemFederationTokens = \
-        generateSharedItemFederationTokens(httpd.sharedItemsFederatedDomains,
+        generateSharedItemFederationTokens(fed_domains,
                                            base_dir)
     httpd.sharedItemFederationTokens = \
         createSharedItemFederationToken(base_dir, httpd.domainFull, False,

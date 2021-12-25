@@ -347,7 +347,7 @@ def scheduledPostsExist(base_dir: str, nickname: str, domain: str) -> bool:
 def sharesTimelineJson(actor: str, pageNumber: int, itemsPerPage: int,
                        base_dir: str, domain: str, nickname: str,
                        maxSharesPerAccount: int,
-                       sharedItemsFederatedDomains: [],
+                       shared_items_federated_domains: [],
                        sharesFileType: str) -> ({}, bool):
     """Get a page on the shared items timeline as json
     maxSharesPerAccount helps to avoid one person dominating the timeline
@@ -383,7 +383,7 @@ def sharesTimelineJson(actor: str, pageNumber: int, itemsPerPage: int,
                 if ctr >= maxSharesPerAccount:
                     break
         break
-    if sharedItemsFederatedDomains:
+    if shared_items_federated_domains:
         if sharesFileType == 'shares':
             catalogsDir = base_dir + '/cache/catalogs'
         else:
@@ -396,7 +396,7 @@ def sharesTimelineJson(actor: str, pageNumber: int, itemsPerPage: int,
                     if not f.endswith('.' + sharesFileType + '.json'):
                         continue
                     federatedDomain = f.split('.')[0]
-                    if federatedDomain not in sharedItemsFederatedDomains:
+                    if federatedDomain not in shared_items_federated_domains:
                         continue
                     sharesFilename = catalogsDir + '/' + f
                     sharesJson = loadJson(sharesFilename)
@@ -1495,7 +1495,7 @@ def htmlSearchResultShare(base_dir: str, sharedItem: {}, translate: {},
 def htmlShowShare(base_dir: str, domain: str, nickname: str,
                   http_prefix: str, domainFull: str,
                   itemID: str, translate: {},
-                  sharedItemsFederatedDomains: [],
+                  shared_items_federated_domains: [],
                   defaultTimeline: str, theme: str,
                   sharesFileType: str, category: str) -> str:
     """Shows an individual shared item after selecting it from the left column
@@ -1530,7 +1530,7 @@ def htmlShowShare(base_dir: str, domain: str, nickname: str,
                 if not f.endswith('.' + sharesFileType + '.json'):
                     continue
                 federatedDomain = f.split('.')[0]
-                if federatedDomain not in sharedItemsFederatedDomains:
+                if federatedDomain not in shared_items_federated_domains:
                     continue
                 sharesFilename = catalogsDir + '/' + f
                 sharesJson = loadJson(sharesFilename)

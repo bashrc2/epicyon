@@ -556,7 +556,7 @@ def htmlProfile(signingPrivateKeyPem: str,
                 textModeBanner: str,
                 debug: bool, accessKeys: {}, city: str,
                 systemLanguage: str, maxLikeCount: int,
-                sharedItemsFederatedDomains: [],
+                shared_items_federated_domains: [],
                 extraJson: {}, pageNumber: int,
                 maxItemsPerPage: int,
                 CWlists: {}, listsEnabled: str,
@@ -582,7 +582,7 @@ def htmlProfile(signingPrivateKeyPem: str,
                                newswire, theme, extraJson,
                                allowLocalNetworkAccess, accessKeys,
                                systemLanguage, maxLikeCount,
-                               sharedItemsFederatedDomains, None,
+                               shared_items_federated_domains, None,
                                pageNumber, maxItemsPerPage, CWlists,
                                listsEnabled)
 
@@ -1574,12 +1574,12 @@ def _htmlEditProfileSharedItems(base_dir: str, nickname: str, domain: str,
     """shared items section of edit profile screen
     """
     sharedItemsStr = ''
-    sharedItemsFederatedDomainsStr = \
-        getConfigParam(base_dir, 'sharedItemsFederatedDomains')
-    if sharedItemsFederatedDomainsStr:
-        sharedItemsFederatedDomainsList = \
-            sharedItemsFederatedDomainsStr.split(',')
-        for sharedFederatedDomain in sharedItemsFederatedDomainsList:
+    shared_items_federated_domainsStr = \
+        getConfigParam(base_dir, 'shared_items_federated_domains')
+    if shared_items_federated_domainsStr:
+        shared_items_federated_domainsList = \
+            shared_items_federated_domainsStr.split(',')
+        for sharedFederatedDomain in shared_items_federated_domainsList:
             sharedItemsStr += sharedFederatedDomain.strip() + '\n'
 
     editProfileForm = beginEditSection(translate['Shares'])

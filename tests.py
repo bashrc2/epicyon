@@ -687,7 +687,7 @@ def createServerAlice(path: str, domain: str, port: int,
         shutil.rmtree(path, ignore_errors=False, onerror=None)
     os.mkdir(path)
     os.chdir(path)
-    sharedItemsFederatedDomains = []
+    shared_items_federated_domains = []
     systemLanguage = 'en'
     nickname = 'alice'
     http_prefix = 'http'
@@ -799,7 +799,7 @@ def createServerAlice(path: str, domain: str, port: int,
     runDaemon(content_license_url,
               listsEnabled, default_reply_interval_hrs,
               lowBandwidth, maxLikeCount,
-              sharedItemsFederatedDomains,
+              shared_items_federated_domains,
               userAgentsBlocked,
               logLoginFailures, city,
               showNodeInfoAccounts,
@@ -831,7 +831,7 @@ def createServerBob(path: str, domain: str, port: int,
         shutil.rmtree(path, ignore_errors=False, onerror=None)
     os.mkdir(path)
     os.chdir(path)
-    sharedItemsFederatedDomains = []
+    shared_items_federated_domains = []
     systemLanguage = 'en'
     nickname = 'bob'
     http_prefix = 'http'
@@ -941,7 +941,7 @@ def createServerBob(path: str, domain: str, port: int,
     runDaemon(content_license_url,
               listsEnabled, default_reply_interval_hrs,
               lowBandwidth, maxLikeCount,
-              sharedItemsFederatedDomains,
+              shared_items_federated_domains,
               userAgentsBlocked,
               logLoginFailures, city,
               showNodeInfoAccounts,
@@ -972,7 +972,7 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
         shutil.rmtree(path, ignore_errors=False, onerror=None)
     os.mkdir(path)
     os.chdir(path)
-    sharedItemsFederatedDomains = []
+    shared_items_federated_domains = []
     nickname = 'eve'
     http_prefix = 'http'
     proxyType = None
@@ -1011,7 +1011,7 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
     runDaemon(content_license_url,
               listsEnabled, default_reply_interval_hrs,
               lowBandwidth, maxLikeCount,
-              sharedItemsFederatedDomains,
+              shared_items_federated_domains,
               userAgentsBlocked,
               logLoginFailures, city,
               showNodeInfoAccounts,
@@ -1041,7 +1041,7 @@ def createServerGroup(path: str, domain: str, port: int,
         shutil.rmtree(path, ignore_errors=False, onerror=None)
     os.mkdir(path)
     os.chdir(path)
-    sharedItemsFederatedDomains = []
+    shared_items_federated_domains = []
     # systemLanguage = 'en'
     nickname = 'testgroup'
     http_prefix = 'http'
@@ -1083,7 +1083,7 @@ def createServerGroup(path: str, domain: str, port: int,
     runDaemon(content_license_url,
               listsEnabled, default_reply_interval_hrs,
               lowBandwidth, maxLikeCount,
-              sharedItemsFederatedDomains,
+              shared_items_federated_domains,
               userAgentsBlocked,
               logLoginFailures, city,
               showNodeInfoAccounts,
@@ -1723,8 +1723,8 @@ def testSharedItemsFederation(base_dir: str) -> None:
     print("Alice and Bob agree to share items catalogs")
     assert os.path.isdir(aliceDir)
     assert os.path.isdir(bobDir)
-    setConfigParam(aliceDir, 'sharedItemsFederatedDomains', bobAddress)
-    setConfigParam(bobDir, 'sharedItemsFederatedDomains', aliceAddress)
+    setConfigParam(aliceDir, 'shared_items_federated_domains', bobAddress)
+    setConfigParam(bobDir, 'shared_items_federated_domains', aliceAddress)
 
     print('*********************************************************')
     print('Alice sends a follow request to Bob')
@@ -5629,10 +5629,10 @@ def _testGetLinksFromContent():
 
 def _testAuthorizeSharedItems():
     print('testAuthorizeSharedItems')
-    sharedItemsFederatedDomains = \
+    shared_items_fed_domains = \
         ['dog.domain', 'cat.domain', 'birb.domain']
     tokensJson = \
-        generateSharedItemFederationTokens(sharedItemsFederatedDomains, None)
+        generateSharedItemFederationTokens(shared_items_fed_domains, None)
     tokensJson = \
         createSharedItemFederationToken(None, 'cat.domain', False, tokensJson)
     assert tokensJson
@@ -5642,11 +5642,11 @@ def _testAuthorizeSharedItems():
     assert len(tokensJson['dog.domain']) == 0
     assert len(tokensJson['cat.domain']) >= 64
     assert len(tokensJson['birb.domain']) == 0
-    assert not authorizeSharedItems(sharedItemsFederatedDomains, None,
+    assert not authorizeSharedItems(shared_items_fed_domains, None,
                                     'birb.domain',
                                     'cat.domain', 'M' * 86,
                                     False, tokensJson)
-    assert authorizeSharedItems(sharedItemsFederatedDomains, None,
+    assert authorizeSharedItems(shared_items_fed_domains, None,
                                 'birb.domain',
                                 'cat.domain', tokensJson['cat.domain'],
                                 False, tokensJson)
@@ -5657,10 +5657,10 @@ def _testAuthorizeSharedItems():
     assert tokensJson['dog.domain'] == 'testToken'
 
     # the shared item federation list changes
-    sharedItemsFederatedDomains = \
+    shared_items_federated_domains = \
         ['possum.domain', 'cat.domain', 'birb.domain']
     tokensJson = mergeSharedItemTokens(None, '',
-                                       sharedItemsFederatedDomains,
+                                       shared_items_federated_domains,
                                        tokensJson)
     assert 'dog.domain' not in tokensJson
     assert 'cat.domain' in tokensJson

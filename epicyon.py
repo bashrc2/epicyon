@@ -298,7 +298,7 @@ parser.add_argument('--rss', dest='rss', type=str, default=None,
 parser.add_argument('-f', '--federate', nargs='+', dest='federationList',
                     help='Specify federation list separated by spaces')
 parser.add_argument('--federateshares', nargs='+',
-                    dest='sharedItemsFederatedDomains',
+                    dest='shared_items_federated_domains',
                     help='Specify federation list for shared items, ' +
                     'separated by spaces')
 parser.add_argument("--following", "--followingList",
@@ -2603,22 +2603,22 @@ if args.desktop:
 
 if federationList:
     print('Federating with: ' + str(federationList))
-if args.sharedItemsFederatedDomains:
+if args.shared_items_federated_domains:
     print('Federating shared items with: ' +
-          args.sharedItemsFederatedDomains)
+          args.shared_items_federated_domains)
 
-sharedItemsFederatedDomains = []
-if args.sharedItemsFederatedDomains:
-    sharedItemsFederatedDomainsStr = args.sharedItemsFederatedDomains
-    setConfigParam(base_dir, 'sharedItemsFederatedDomains',
-                   sharedItemsFederatedDomainsStr)
+shared_items_federated_domains = []
+if args.shared_items_federated_domains:
+    fed_domains_str = args.shared_items_federated_domains
+    setConfigParam(base_dir, 'shared_items_federated_domains',
+                   fed_domains_str)
 else:
-    sharedItemsFederatedDomainsStr = \
-        getConfigParam(base_dir, 'sharedItemsFederatedDomains')
-if sharedItemsFederatedDomainsStr:
-    sharedItemsFederatedDomainsList = sharedItemsFederatedDomainsStr.split(',')
-    for sharedFederatedDomain in sharedItemsFederatedDomainsList:
-        sharedItemsFederatedDomains.append(sharedFederatedDomain.strip())
+    fed_domains_str = \
+        getConfigParam(base_dir, 'shared_items_federated_domains')
+if fed_domains_str:
+    fed_domains_list = fed_domains_str.split(',')
+    for sharedFederatedDomain in fed_domains_list:
+        shared_items_federated_domains.append(sharedFederatedDomain.strip())
 
 if args.block:
     if not nickname:
@@ -3214,7 +3214,7 @@ if __name__ == "__main__":
               listsEnabled,
               args.default_reply_interval_hrs,
               args.lowBandwidth, args.maxLikeCount,
-              sharedItemsFederatedDomains,
+              shared_items_federated_domains,
               userAgentsBlocked,
               args.logLoginFailures,
               args.city,

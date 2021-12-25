@@ -1369,11 +1369,11 @@ def sharesCatalogCSVEndpoint(base_dir: str, http_prefix: str,
     return csvStr
 
 
-def generateSharedItemFederationTokens(sharedItemsFederatedDomains: [],
+def generateSharedItemFederationTokens(shared_items_federated_domains: [],
                                        base_dir: str) -> {}:
     """Generates tokens for shared item federated domains
     """
-    if not sharedItemsFederatedDomains:
+    if not shared_items_federated_domains:
         return {}
 
     tokensJson = {}
@@ -1386,7 +1386,7 @@ def generateSharedItemFederationTokens(sharedItemsFederatedDomains: [],
                 tokensJson = {}
 
     tokensAdded = False
-    for domainFull in sharedItemsFederatedDomains:
+    for domainFull in shared_items_federated_domains:
         if not tokensJson.get(domainFull):
             tokensJson[domainFull] = ''
             tokensAdded = True
@@ -1482,7 +1482,7 @@ def createSharedItemFederationToken(base_dir: str,
     return tokensJson
 
 
-def authorizeSharedItems(sharedItemsFederatedDomains: [],
+def authorizeSharedItems(shared_items_federated_domains: [],
                          base_dir: str,
                          originDomainFull: str,
                          callingDomainFull: str,
@@ -1491,14 +1491,14 @@ def authorizeSharedItems(sharedItemsFederatedDomains: [],
                          tokensJson: {} = None) -> bool:
     """HTTP simple token check for shared item federation
     """
-    if not sharedItemsFederatedDomains:
+    if not shared_items_federated_domains:
         # no shared item federation
         return False
-    if originDomainFull not in sharedItemsFederatedDomains:
+    if originDomainFull not in shared_items_federated_domains:
         if debug:
             print(originDomainFull +
                   ' is not in the shared items federation list ' +
-                  str(sharedItemsFederatedDomains))
+                  str(shared_items_federated_domains))
         return False
     if 'Basic ' in authHeader:
         if debug:
@@ -1539,7 +1539,7 @@ def authorizeSharedItems(sharedItemsFederatedDomains: [],
     return True
 
 
-def _updateFederatedSharesCache(session, sharedItemsFederatedDomains: [],
+def _updateFederatedSharesCache(session, shared_items_federated_domains: [],
                                 base_dir: str, domainFull: str,
                                 http_prefix: str,
                                 tokensJson: {}, debug: bool,
@@ -1564,7 +1564,7 @@ def _updateFederatedSharesCache(session, sharedItemsFederatedDomains: [],
         "Accept": "application/ld+json",
         "Origin": domainFull
     }
-    for federatedDomainFull in sharedItemsFederatedDomains:
+    for federatedDomainFull in shared_items_federated_domains:
         # NOTE: federatedDomain does not have a port extension,
         # so may not work in some situations
         if federatedDomainFull.startswith(domainFull):
@@ -1691,8 +1691,9 @@ def _regenerateSharesToken(base_dir: str, domainFull: str,
     createSharedItemFederationToken(base_dir, domainFull, True, None)
     _generateNextSharesTokenUpdate(base_dir, minDays, maxDays)
     # update the tokens used within the daemon
+    shared_fed_domains = httpd.shared_items_federated_domains
     httpd.sharedItemFederationTokens = \
-        generateSharedItemFederationTokens(httpd.sharedItemsFederatedDomains,
+        generateSharedItemFederationTokens(shared_fed_domains,
                                            base_dir)
 
 
@@ -1709,9 +1710,9 @@ def runFederatedSharesDaemon(base_dir: str, httpd, http_prefix: str,
     maxDays = 14
     _generateNextSharesTokenUpdate(base_dir, minDays, maxDays)
     while True:
-        sharedItemsFederatedDomainsStr = \
-            getConfigParam(base_dir, 'sharedItemsFederatedDomains')
-        if not sharedItemsFederatedDomainsStr:
+        shared_items_federated_domainsStr = \
+            getConfigParam(base_dir, 'shared_items_federated_domains')
+        if not shared_items_federated_domainsStr:
             time.sleep(fileCheckIntervalSec)
             continue
 
@@ -1720,12 +1721,12 @@ def runFederatedSharesDaemon(base_dir: str, httpd, http_prefix: str,
         _regenerateSharesToken(base_dir, domainFull, minDays, maxDays, httpd)
 
         # get a list of the domains within the shared items federation
-        sharedItemsFederatedDomains = []
-        sharedItemsFederatedDomainsList = \
-            sharedItemsFederatedDomainsStr.split(',')
-        for sharedFederatedDomain in sharedItemsFederatedDomainsList:
-            sharedItemsFederatedDomains.append(sharedFederatedDomain.strip())
-        if not sharedItemsFederatedDomains:
+        shared_items_federated_domains = []
+        fed_domains_list = \
+            shared_items_federated_domainsStr.split(',')
+        for shared_fed_domain in fed_domains_list:
+            shared_items_federated_domains.append(shared_fed_domain.strip())
+        if not shared_items_federated_domains:
             time.sleep(fileCheckIntervalSec)
             continue
 
@@ -1742,7 +1743,8 @@ def runFederatedSharesDaemon(base_dir: str, httpd, http_prefix: str,
 
         session = createSession(proxyType)
         for sharesFileType in getSharesFilesList():
-            _updateFederatedSharesCache(session, sharedItemsFederatedDomains,
+            _updateFederatedSharesCache(session,
+                                        shared_items_federated_domains,
                                         base_dir, domainFull, http_prefix,
                                         tokensJson, debug, systemLanguage,
                                         sharesFileType)

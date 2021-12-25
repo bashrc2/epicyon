@@ -224,7 +224,7 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
                           http_prefix: str,
                           domainFull: str, actor: str,
                           callingDomain: str,
-                          sharedItemsFederatedDomains: [],
+                          shared_items_federated_domains: [],
                           sharesFileType: str) -> str:
     """Search results for shared items
     """
@@ -294,7 +294,7 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
                 if not f.endswith('.' + sharesFileType + '.json'):
                     continue
                 federatedDomain = f.split('.')[0]
-                if federatedDomain not in sharedItemsFederatedDomains:
+                if federatedDomain not in shared_items_federated_domains:
                     continue
                 sharesFilename = catalogsDir + '/' + f
                 sharesJson = loadJson(sharesFilename)

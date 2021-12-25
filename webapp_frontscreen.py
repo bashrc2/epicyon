@@ -110,7 +110,7 @@ def htmlFrontScreen(signingPrivateKeyPem: str,
                     allowLocalNetworkAccess: bool,
                     accessKeys: {},
                     systemLanguage: str, maxLikeCount: int,
-                    sharedItemsFederatedDomains: [],
+                    shared_items_federated_domains: [],
                     extraJson: {},
                     pageNumber: int,
                     maxItemsPerPage: int,
@@ -158,7 +158,7 @@ def htmlFrontScreen(signingPrivateKeyPem: str,
                              False, False,
                              False, None, rssIconAtTop, True,
                              True, theme, accessKeys,
-                             sharedItemsFederatedDomains)
+                             shared_items_federated_domains)
     profileHeaderStr += \
         '      </td>\n' + \
         '      <td valign="top" class="col-center">\n'

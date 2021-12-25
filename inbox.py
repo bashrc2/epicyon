@@ -2620,15 +2620,15 @@ def _sendToGroupMembers(session, base_dir: str, handle: str, port: int,
         print(handle + ' sending to group members')
 
     sharedItemFederationTokens = {}
-    sharedItemsFederatedDomains = []
-    sharedItemsFederatedDomainsStr = \
-        getConfigParam(base_dir, 'sharedItemsFederatedDomains')
-    if sharedItemsFederatedDomainsStr:
+    shared_items_federated_domains = []
+    shared_items_federated_domainsStr = \
+        getConfigParam(base_dir, 'shared_items_federated_domains')
+    if shared_items_federated_domainsStr:
         siFederatedDomainsList = \
-            sharedItemsFederatedDomainsStr.split(',')
+            shared_items_federated_domainsStr.split(',')
         for sharedFederatedDomain in siFederatedDomainsList:
             domainStr = sharedFederatedDomain.strip()
-            sharedItemsFederatedDomains.append(domainStr)
+            shared_items_federated_domains.append(domainStr)
 
     followersFile = base_dir + '/accounts/' + handle + '/followers.txt'
     if not os.path.isfile(followersFile):
@@ -2671,7 +2671,7 @@ def _sendToGroupMembers(session, base_dir: str, handle: str, port: int,
                           sendThreads, postLog,
                           cachedWebfingers, personCache,
                           announceJson, debug, __version__,
-                          sharedItemsFederatedDomains,
+                          shared_items_federated_domains,
                           sharedItemFederationTokens,
                           signingPrivateKeyPem)
 
@@ -3047,7 +3047,7 @@ def _receiveQuestionVote(base_dir: str, nickname: str, domain: str,
     # if the votes on a question have changed then
     # send out an update
     questionJson['type'] = 'Update'
-    sharedItemsFederatedDomains = []
+    shared_items_federated_domains = []
     sharedItemFederationTokens = {}
     sendToFollowersThread(session, base_dir, nickname, domain,
                           onionDomain, i2pDomain, port,
@@ -3055,7 +3055,7 @@ def _receiveQuestionVote(base_dir: str, nickname: str, domain: str,
                           sendThreads, postLog,
                           cachedWebfingers, personCache,
                           postJsonObject, debug, __version__,
-                          sharedItemsFederatedDomains,
+                          shared_items_federated_domains,
                           sharedItemFederationTokens,
                           signingPrivateKeyPem)
 

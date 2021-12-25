@@ -52,7 +52,7 @@ def htmlModeration(cssCache: {}, defaultTimeline: str,
                    textModeBanner: str,
                    accessKeys: {}, systemLanguage: str,
                    maxLikeCount: int,
-                   sharedItemsFederatedDomains: [],
+                   shared_items_federated_domains: [],
                    signingPrivateKeyPem: str,
                    CWlists: {}, listsEnabled: str) -> str:
     """Show the moderation feed as html
@@ -76,7 +76,7 @@ def htmlModeration(cssCache: {}, defaultTimeline: str,
                         authorized, moderationActionStr, theme,
                         peertubeInstances, allowLocalNetworkAccess,
                         textModeBanner, accessKeys, systemLanguage,
-                        maxLikeCount, sharedItemsFederatedDomains,
+                        maxLikeCount, shared_items_federated_domains,
                         signingPrivateKeyPem, CWlists, listsEnabled)
 
 
