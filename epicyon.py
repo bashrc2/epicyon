@@ -173,7 +173,7 @@ parser.add_argument('-p', '--port', dest='port', type=int,
                     default=None,
                     help='Port number to run on')
 parser.add_argument('--postsPerSource',
-                    dest='maxNewswirePostsPerSource', type=int,
+                    dest='max_newswire_postsPerSource', type=int,
                     default=4,
                     help='Maximum newswire posts per feed or account')
 parser.add_argument('--dormant_months',
@@ -191,8 +191,8 @@ parser.add_argument('--send_threads_timeout_mins',
                     default=30,
                     help='How many minutes before a thread to send out ' +
                     'posts expires')
-parser.add_argument('--maxNewswirePosts',
-                    dest='maxNewswirePosts', type=int,
+parser.add_argument('--max_newswire_posts',
+                    dest='max_newswire_posts', type=int,
                     default=20,
                     help='Maximum newswire posts in the right column')
 parser.add_argument('--maxFeedSize',
@@ -3026,16 +3026,16 @@ if dateonly:
     args.dateonly = dateonly
 
 # set the maximum number of newswire posts per account or rss feed
-maxNewswirePostsPerSource = \
-    getConfigParam(base_dir, 'maxNewswirePostsPerSource')
-if maxNewswirePostsPerSource:
-    args.maxNewswirePostsPerSource = int(maxNewswirePostsPerSource)
+max_newswire_postsPerSource = \
+    getConfigParam(base_dir, 'max_newswire_postsPerSource')
+if max_newswire_postsPerSource:
+    args.max_newswire_postsPerSource = int(max_newswire_postsPerSource)
 
 # set the maximum number of newswire posts appearing in the right column
-maxNewswirePosts = \
-    getConfigParam(base_dir, 'maxNewswirePosts')
-if maxNewswirePosts:
-    args.maxNewswirePosts = int(maxNewswirePosts)
+max_newswire_posts = \
+    getConfigParam(base_dir, 'max_newswire_posts')
+if max_newswire_posts:
+    args.max_newswire_posts = int(max_newswire_posts)
 
 # set the maximum size of a newswire rss/atom feed in Kilobytes
 maxNewswireFeedSizeKb = \
@@ -3224,7 +3224,7 @@ if __name__ == "__main__":
               args.verify_all_signatures,
               args.send_threads_timeout_mins,
               args.dormant_months,
-              args.maxNewswirePosts,
+              args.max_newswire_posts,
               args.allowLocalNetworkAccess,
               args.maxFeedItemSizeKb,
               args.publishButtonAtTop,
@@ -3236,7 +3236,7 @@ if __name__ == "__main__":
               args.maxNewsPosts,
               args.maxMirroredArticles,
               args.maxNewswireFeedSizeKb,
-              args.maxNewswirePostsPerSource,
+              args.max_newswire_postsPerSource,
               args.dateonly,
               args.votingtime,
               args.positivevoting,

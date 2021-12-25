@@ -1136,7 +1136,7 @@ def _addBlogsToNewswire(base_dir: str, domain: str, newswire: {},
 def getDictFromNewswire(session, base_dir: str, domain: str,
                         maxPostsPerSource: int, maxFeedSizeKb: int,
                         maxTags: int, maxFeedItemSizeKb: int,
-                        maxNewswirePosts: int,
+                        max_newswire_posts: int,
                         maxCategoriesFeedItemSizeKb: int,
                         systemLanguage: str, debug: bool) -> {}:
     """Gets rss feeds as a dictionary from newswire file
@@ -1194,12 +1194,12 @@ def getDictFromNewswire(session, base_dir: str, domain: str,
 
     # are there too many posts? If so then remove the oldest ones
     noOfPosts = len(sortedResult.items())
-    if noOfPosts > maxNewswirePosts:
+    if noOfPosts > max_newswire_posts:
         ctr = 0
         removals = []
         for dateStr, item in sortedResult.items():
             ctr += 1
-            if ctr > maxNewswirePosts:
+            if ctr > max_newswire_posts:
                 removals.append(dateStr)
         for r in removals:
             sortedResult.pop(r)

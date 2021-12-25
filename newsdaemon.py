@@ -796,11 +796,11 @@ def runNewswireDaemon(base_dir: str, httpd,
         print('Updating newswire feeds')
         newNewswire = \
             getDictFromNewswire(httpd.session, base_dir, domain,
-                                httpd.maxNewswirePostsPerSource,
+                                httpd.max_newswire_postsPerSource,
                                 httpd.maxNewswireFeedSizeKb,
                                 httpd.maxTags,
                                 httpd.maxFeedItemSizeKb,
-                                httpd.maxNewswirePosts,
+                                httpd.max_newswire_posts,
                                 httpd.maxCategoriesFeedItemSizeKb,
                                 httpd.systemLanguage,
                                 httpd.debug)

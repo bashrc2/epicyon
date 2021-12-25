@@ -18415,7 +18415,7 @@ def runDaemon(content_license_url: str,
               verify_all_signatures: bool,
               send_threads_timeout_mins: int,
               dormant_months: int,
-              maxNewswirePosts: int,
+              max_newswire_posts: int,
               allowLocalNetworkAccess: bool,
               maxFeedItemSizeKb: int,
               publishButtonAtTop: bool,
@@ -18427,7 +18427,7 @@ def runDaemon(content_license_url: str,
               maxNewsPosts: int,
               maxMirroredArticles: int,
               maxNewswireFeedSizeKb: int,
-              maxNewswirePostsPerSource: int,
+              max_newswire_postsPerSource: int,
               showPublishedDateOnly: bool,
               votingTimeMins: int,
               positiveVoting: bool,
@@ -18576,7 +18576,7 @@ def runDaemon(content_license_url: str,
     httpd.newswire = {}
 
     # maximum number of posts to appear in the newswire on the right column
-    httpd.maxNewswirePosts = maxNewswirePosts
+    httpd.max_newswire_posts = max_newswire_posts
 
     # whether to require that all incoming posts have valid jsonld signatures
     httpd.verify_all_signatures = verify_all_signatures
@@ -18627,7 +18627,7 @@ def runDaemon(content_license_url: str,
     # this is the maximum number of posts to show for each.
     # This avoids one or two sources from dominating the news,
     # and also prevents big feeds from slowing down page load times
-    httpd.maxNewswirePostsPerSource = maxNewswirePostsPerSource
+    httpd.max_newswire_postsPerSource = max_newswire_postsPerSource
 
     # Show only the date at the bottom of posts, and not the time
     httpd.showPublishedDateOnly = showPublishedDateOnly
