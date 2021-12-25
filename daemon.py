@@ -10904,7 +10904,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   http_prefix,
                                   maxPostsInNewsFeed, 'tlnews',
                                   True,
-                                  self.server.newswireVotesThreshold,
+                                  self.server.newswire_votes_threshold,
                                   self.server.positive_voting,
                                   self.server.voting_time_mins)
                 if not inboxNewsFeed:
@@ -10932,7 +10932,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           http_prefix,
                                           maxPostsInBlogsFeed, 'tlnews',
                                           True,
-                                          self.server.newswireVotesThreshold,
+                                          self.server.newswire_votes_threshold,
                                           self.server.positive_voting,
                                           self.server.voting_time_mins)
                     currNickname = path.split('/users/')[1]
@@ -11055,7 +11055,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   http_prefix,
                                   maxPostsInNewsFeed, 'tlfeatures',
                                   True,
-                                  self.server.newswireVotesThreshold,
+                                  self.server.newswire_votes_threshold,
                                   self.server.positive_voting,
                                   self.server.voting_time_mins)
                 if not inboxFeaturesFeed:
@@ -11083,7 +11083,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           http_prefix,
                                           maxPostsInBlogsFeed, 'tlfeatures',
                                           True,
-                                          self.server.newswireVotesThreshold,
+                                          self.server.newswire_votes_threshold,
                                           self.server.positive_voting,
                                           self.server.voting_time_mins)
                     currNickname = path.split('/users/')[1]
@@ -11514,7 +11514,7 @@ class PubServer(BaseHTTPRequestHandler):
                           base_dir, domain, port, path,
                           http_prefix, maxPostsInFeed, 'outbox',
                           authorized,
-                          self.server.newswireVotesThreshold,
+                          self.server.newswire_votes_threshold,
                           self.server.positive_voting,
                           self.server.voting_time_mins)
         if outboxFeed:
@@ -11542,7 +11542,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   http_prefix,
                                   maxPostsInFeed, 'outbox',
                                   authorized,
-                                  self.server.newswireVotesThreshold,
+                                  self.server.newswire_votes_threshold,
                                   self.server.positive_voting,
                                   self.server.voting_time_mins)
             else:
@@ -18448,7 +18448,7 @@ def runDaemon(content_license_url: str,
               show_published_date_only: bool,
               voting_time_mins: int,
               positive_voting: bool,
-              newswireVotesThreshold: int,
+              newswire_votes_threshold: int,
               newsInstance: bool,
               blogsInstance: bool,
               mediaInstance: bool,
@@ -18635,7 +18635,7 @@ def runDaemon(content_license_url: str,
     httpd.positive_voting = positive_voting
     # number of votes needed to remove a newswire item from the news timeline
     # or if positive voting is anabled to add the item to the news timeline
-    httpd.newswireVotesThreshold = newswireVotesThreshold
+    httpd.newswire_votes_threshold = newswire_votes_threshold
     # maximum overall size of an rss/atom feed read by the newswire daemon
     # If the feed is too large then this is probably a DoS attempt
     httpd.max_newswire_feed_size_kb = max_newswire_feed_size_kb
