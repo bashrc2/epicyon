@@ -1284,7 +1284,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.i2p_domain,
                                    self.server.port,
                                    self.server.recentPostsCache,
-                                   self.server.followersThreads,
+                                   self.server.followers_threads,
                                    self.server.federationList,
                                    self.server.send_threads,
                                    self.server.postLog,
@@ -18765,7 +18765,7 @@ def runDaemon(content_license_url: str,
     loadTokens(base_dir, httpd.tokens, httpd.tokens_lookup)
     httpd.instance_only_skills_search = instance_only_skills_search
     # contains threads used to send posts to followers
-    httpd.followersThreads = []
+    httpd.followers_threads = []
 
     # create a cache of blocked domains in memory.
     # This limits the amount of slow disk reads which need to be done

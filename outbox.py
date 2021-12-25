@@ -182,7 +182,7 @@ def postMessageToOutbox(session, translate: {},
                         server, base_dir: str, http_prefix: str,
                         domain: str, domainFull: str,
                         onion_domain: str, i2p_domain: str, port: int,
-                        recentPostsCache: {}, followersThreads: [],
+                        recentPostsCache: {}, followers_threads: [],
                         federationList: [], send_threads: [],
                         postLog: [], cached_webfingers: {},
                         person_cache: {}, allow_deletion: bool,
@@ -492,21 +492,21 @@ def postMessageToOutbox(session, translate: {},
         print('DEBUG: sending c2s post to followers')
     # remove inactive threads
     inactiveFollowerThreads = []
-    for th in followersThreads:
+    for th in followers_threads:
         if not th.is_alive():
             inactiveFollowerThreads.append(th)
     for th in inactiveFollowerThreads:
-        followersThreads.remove(th)
+        followers_threads.remove(th)
     if debug:
-        print('DEBUG: ' + str(len(followersThreads)) +
+        print('DEBUG: ' + str(len(followers_threads)) +
               ' followers threads active')
     # retain up to 200 threads
-    if len(followersThreads) > 200:
+    if len(followers_threads) > 200:
         # kill the thread if it is still alive
-        if followersThreads[0].is_alive():
-            followersThreads[0].kill()
+        if followers_threads[0].is_alive():
+            followers_threads[0].kill()
         # remove it from the list
-        followersThreads.pop(0)
+        followers_threads.pop(0)
     # create a thread to send the post to followers
     followersThread = \
         sendToFollowersThread(server.session,
@@ -524,7 +524,7 @@ def postMessageToOutbox(session, translate: {},
                               shared_items_federated_domains,
                               sharedItemFederationTokens,
                               signingPrivateKeyPem)
-    followersThreads.append(followersThread)
+    followers_threads.append(followersThread)
 
     if debug:
         print('DEBUG: handle any unfollow requests')
@@ -665,5 +665,5 @@ def postMessageToOutbox(session, translate: {},
                                    shared_items_federated_domains,
                                    sharedItemFederationTokens,
                                    signingPrivateKeyPem)
-    followersThreads.append(namedAddressesThread)
+    followers_threads.append(namedAddressesThread)
     return True
