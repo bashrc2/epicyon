@@ -695,7 +695,7 @@ def createServerAlice(path: str, domain: str, port: int,
     password = 'alicepass'
     max_replies = 64
     domain_max_posts_per_day = 1000
-    accountMaxPostsPerDay = 1000
+    account_max_posts_per_day = 1000
     allowDeletion = True
     low_bandwidth = True
     privateKeyPem, publicKeyPem, person, wfEndpoint = \
@@ -817,7 +817,7 @@ def createServerAlice(path: str, domain: str, port: int,
               onion_domain, i2p_domain, None, None, port, port,
               http_prefix, federationList, max_mentions, max_emoji, False,
               proxy_type, max_replies,
-              domain_max_posts_per_day, accountMaxPostsPerDay,
+              domain_max_posts_per_day, account_max_posts_per_day,
               allowDeletion, True, True, False, sendThreads,
               False)
 
@@ -840,7 +840,7 @@ def createServerBob(path: str, domain: str, port: int,
     password = 'bobpass'
     max_replies = 64
     domain_max_posts_per_day = 1000
-    accountMaxPostsPerDay = 1000
+    account_max_posts_per_day = 1000
     allowDeletion = True
     low_bandwidth = True
     privateKeyPem, publicKeyPem, person, wfEndpoint = \
@@ -959,7 +959,7 @@ def createServerBob(path: str, domain: str, port: int,
               onion_domain, i2p_domain, None, None, port, port,
               http_prefix, federationList, max_mentions, max_emoji, False,
               proxy_type, max_replies,
-              domain_max_posts_per_day, accountMaxPostsPerDay,
+              domain_max_posts_per_day, account_max_posts_per_day,
               allowDeletion, True, True, False, sendThreads,
               False)
 
@@ -1049,7 +1049,7 @@ def createServerGroup(path: str, domain: str, port: int,
     password = 'testgrouppass'
     max_replies = 64
     domain_max_posts_per_day = 1000
-    accountMaxPostsPerDay = 1000
+    account_max_posts_per_day = 1000
     allowDeletion = True
     privateKeyPem, publicKeyPem, person, wfEndpoint = \
         createGroup(path, nickname, domain, port, http_prefix, True,
@@ -1101,7 +1101,7 @@ def createServerGroup(path: str, domain: str, port: int,
               onion_domain, i2p_domain, None, None, port, port,
               http_prefix, federationList, max_mentions, max_emoji, False,
               proxy_type, max_replies,
-              domain_max_posts_per_day, accountMaxPostsPerDay,
+              domain_max_posts_per_day, account_max_posts_per_day,
               allowDeletion, True, True, False, sendThreads,
               False)
 

@@ -595,7 +595,7 @@ parser.add_argument('--domainmax', dest='domain_max_posts_per_day', type=int,
                     default=8640,
                     help='Maximum number of received posts ' +
                     'from a domain per day')
-parser.add_argument('--accountmax', dest='accountMaxPostsPerDay', type=int,
+parser.add_argument('--accountmax', dest='account_max_posts_per_day', type=int,
                     default=8640,
                     help='Maximum number of received posts ' +
                     'from an account per day')
@@ -3255,7 +3255,7 @@ if __name__ == "__main__":
               args.max_emoji, args.secure_mode,
               proxy_type, args.max_replies,
               args.domain_max_posts_per_day,
-              args.accountMaxPostsPerDay,
+              args.account_max_posts_per_day,
               args.allowdeletion, debug, False,
               args.instanceOnlySkillsSearch, [],
               not args.noapproval)

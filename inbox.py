@@ -3684,7 +3684,7 @@ def runInboxQueueWatchdog(project_version: str, httpd) -> None:
 def _inboxQuotaExceeded(queue: {}, queueFilename: str,
                         queueJson: {}, quotasDaily: {}, quotasPerMin: {},
                         domain_max_posts_per_day: int,
-                        accountMaxPostsPerDay: int,
+                        account_max_posts_per_day: int,
                         debug: bool) -> bool:
     """limit the number of posts which can arrive per domain per day
     """
@@ -3733,15 +3733,15 @@ def _inboxQuotaExceeded(queue: {}, queueFilename: str,
         else:
             quotasPerMin['domains'][postDomain] = 1
 
-    if accountMaxPostsPerDay > 0:
+    if account_max_posts_per_day > 0:
         postHandle = queueJson['postNickname'] + '@' + postDomain
         if quotasDaily['accounts'].get(postHandle):
             if quotasDaily['accounts'][postHandle] > \
-               accountMaxPostsPerDay:
+               account_max_posts_per_day:
                 print('Queue: Quota account posts per day -' +
                       ' Maximum posts for ' +
                       postHandle + ' reached (' +
-                      str(accountMaxPostsPerDay) + ')')
+                      str(account_max_posts_per_day) + ')')
                 if len(queue) > 0:
                     try:
                         os.remove(queueFilename)
@@ -3756,7 +3756,7 @@ def _inboxQuotaExceeded(queue: {}, queueFilename: str,
 
         if quotasPerMin['accounts'].get(postHandle):
             accountMaxPostsPerMin = \
-                int(accountMaxPostsPerDay / (24 * 60))
+                int(account_max_posts_per_day / (24 * 60))
             if accountMaxPostsPerMin < 5:
                 accountMaxPostsPerMin = 5
             if quotasPerMin['accounts'][postHandle] > \
@@ -3778,7 +3778,7 @@ def _inboxQuotaExceeded(queue: {}, queueFilename: str,
             quotasPerMin['accounts'][postHandle] = 1
 
     if debug:
-        if accountMaxPostsPerDay > 0 or domain_max_posts_per_day > 0:
+        if account_max_posts_per_day > 0 or domain_max_posts_per_day > 0:
             pprint(quotasDaily)
     return False
 
@@ -4069,7 +4069,7 @@ def runInboxQueue(recentPostsCache: {}, max_recent_posts: int,
                   port: int, proxy_type: str,
                   federationList: [], max_replies: int,
                   domain_max_posts_per_day: int,
-                  accountMaxPostsPerDay: int,
+                  account_max_posts_per_day: int,
                   allowDeletion: bool, debug: bool, max_mentions: int,
                   max_emoji: int, translate: {}, unitTest: bool,
                   yt_replace_domain: str,
@@ -4206,7 +4206,7 @@ def runInboxQueue(recentPostsCache: {}, max_recent_posts: int,
         if _inboxQuotaExceeded(queue, queueFilename,
                                queueJson, quotasDaily, quotasPerMin,
                                domain_max_posts_per_day,
-                               accountMaxPostsPerDay, debug):
+                               account_max_posts_per_day, debug):
             continue
 
         if debug and queueJson.get('actor'):
