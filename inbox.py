@@ -285,7 +285,7 @@ def _inboxStorePostToHtmlCache(recentPostsCache: {}, maxRecentPosts: int,
                                nickname: str, domain: str, port: int,
                                postJsonObject: {},
                                allowDeletion: bool, boxname: str,
-                               showPublishedDateOnly: bool,
+                               show_published_date_only: bool,
                                peertubeInstances: [],
                                allow_local_network_access: bool,
                                themeName: str, systemLanguage: str,
@@ -313,7 +313,7 @@ def _inboxStorePostToHtmlCache(recentPostsCache: {}, maxRecentPosts: int,
                          avatarUrl, True, allowDeletion,
                          http_prefix, __version__, boxname,
                          yt_replace_domain, twitterReplacementDomain,
-                         showPublishedDateOnly,
+                         show_published_date_only,
                          peertubeInstances, allow_local_network_access,
                          themeName, systemLanguage, max_like_count,
                          notDM, True, True, False, True, False,
@@ -1085,7 +1085,7 @@ def _receiveLike(recentPostsCache: {},
                 print('Liked post nickname: ' + handleName + ' ' + domain)
                 print('Liked post cache: ' + str(cachedPostFilename))
             pageNumber = 1
-            showPublishedDateOnly = False
+            show_published_date_only = False
             showIndividualPostIcons = True
             manuallyApproveFollowers = \
                 followerApprovalActive(base_dir, handleName, domain)
@@ -1100,7 +1100,7 @@ def _receiveLike(recentPostsCache: {},
                                  'inbox',
                                  yt_replace_domain,
                                  twitterReplacementDomain,
-                                 showPublishedDateOnly,
+                                 show_published_date_only,
                                  peertubeInstances,
                                  allow_local_network_access,
                                  themeName, systemLanguage,
@@ -1196,7 +1196,7 @@ def _receiveUndoLike(recentPostsCache: {},
                 print('Unliked post nickname: ' + handleName + ' ' + domain)
                 print('Unliked post cache: ' + str(cachedPostFilename))
             pageNumber = 1
-            showPublishedDateOnly = False
+            show_published_date_only = False
             showIndividualPostIcons = True
             manuallyApproveFollowers = \
                 followerApprovalActive(base_dir, handleName, domain)
@@ -1211,7 +1211,7 @@ def _receiveUndoLike(recentPostsCache: {},
                                  'inbox',
                                  yt_replace_domain,
                                  twitterReplacementDomain,
-                                 showPublishedDateOnly,
+                                 show_published_date_only,
                                  peertubeInstances,
                                  allow_local_network_access,
                                  themeName, systemLanguage,
@@ -1344,7 +1344,7 @@ def _receiveReaction(recentPostsCache: {},
                 print('Reaction post nickname: ' + handleName + ' ' + domain)
                 print('Reaction post cache: ' + str(cachedPostFilename))
             pageNumber = 1
-            showPublishedDateOnly = False
+            show_published_date_only = False
             showIndividualPostIcons = True
             manuallyApproveFollowers = \
                 followerApprovalActive(base_dir, handleName, domain)
@@ -1359,7 +1359,7 @@ def _receiveReaction(recentPostsCache: {},
                                  'inbox',
                                  yt_replace_domain,
                                  twitterReplacementDomain,
-                                 showPublishedDateOnly,
+                                 show_published_date_only,
                                  peertubeInstances,
                                  allow_local_network_access,
                                  themeName, systemLanguage,
@@ -1471,7 +1471,7 @@ def _receiveUndoReaction(recentPostsCache: {},
                 print('Unreaction post nickname: ' + handleName + ' ' + domain)
                 print('Unreaction post cache: ' + str(cachedPostFilename))
             pageNumber = 1
-            showPublishedDateOnly = False
+            show_published_date_only = False
             showIndividualPostIcons = True
             manuallyApproveFollowers = \
                 followerApprovalActive(base_dir, handleName, domain)
@@ -1486,7 +1486,7 @@ def _receiveUndoReaction(recentPostsCache: {},
                                  'inbox',
                                  yt_replace_domain,
                                  twitterReplacementDomain,
-                                 showPublishedDateOnly,
+                                 show_published_date_only,
                                  peertubeInstances,
                                  allow_local_network_access,
                                  themeName, systemLanguage,
@@ -1581,7 +1581,7 @@ def _receiveBookmark(recentPostsCache: {},
             print('Bookmarked post nickname: ' + nickname + ' ' + domain)
             print('Bookmarked post cache: ' + str(cachedPostFilename))
         pageNumber = 1
-        showPublishedDateOnly = False
+        show_published_date_only = False
         showIndividualPostIcons = True
         manuallyApproveFollowers = \
             followerApprovalActive(base_dir, nickname, domain)
@@ -1596,7 +1596,7 @@ def _receiveBookmark(recentPostsCache: {},
                              'inbox',
                              yt_replace_domain,
                              twitterReplacementDomain,
-                             showPublishedDateOnly,
+                             show_published_date_only,
                              peertubeInstances,
                              allow_local_network_access,
                              themeName, systemLanguage,
@@ -1692,7 +1692,7 @@ def _receiveUndoBookmark(recentPostsCache: {},
             print('Unbookmarked post nickname: ' + nickname + ' ' + domain)
             print('Unbookmarked post cache: ' + str(cachedPostFilename))
         pageNumber = 1
-        showPublishedDateOnly = False
+        show_published_date_only = False
         showIndividualPostIcons = True
         manuallyApproveFollowers = \
             followerApprovalActive(base_dir, nickname, domain)
@@ -1707,7 +1707,7 @@ def _receiveUndoBookmark(recentPostsCache: {},
                              'inbox',
                              yt_replace_domain,
                              twitterReplacementDomain,
-                             showPublishedDateOnly,
+                             show_published_date_only,
                              peertubeInstances,
                              allow_local_network_access,
                              themeName, systemLanguage,
@@ -1896,7 +1896,7 @@ def _receiveAnnounce(recentPostsCache: {},
 
     # Generate html. This also downloads the announced post.
     pageNumber = 1
-    showPublishedDateOnly = False
+    show_published_date_only = False
     showIndividualPostIcons = True
     manuallyApproveFollowers = \
         followerApprovalActive(base_dir, nickname, domain)
@@ -1914,7 +1914,7 @@ def _receiveAnnounce(recentPostsCache: {},
                              'inbox',
                              yt_replace_domain,
                              twitterReplacementDomain,
-                             showPublishedDateOnly,
+                             show_published_date_only,
                              peertubeInstances,
                              allow_local_network_access,
                              themeName, systemLanguage,
@@ -3011,7 +3011,7 @@ def _receiveQuestionVote(base_dir: str, nickname: str, domain: str,
                       cachedPostFilename)
 
     pageNumber = 1
-    showPublishedDateOnly = False
+    show_published_date_only = False
     showIndividualPostIcons = True
     manuallyApproveFollowers = \
         followerApprovalActive(base_dir, nickname, domain)
@@ -3026,7 +3026,7 @@ def _receiveQuestionVote(base_dir: str, nickname: str, domain: str,
                          'inbox',
                          yt_replace_domain,
                          twitterReplacementDomain,
-                         showPublishedDateOnly,
+                         show_published_date_only,
                          peertubeInstances,
                          allow_local_network_access,
                          themeName, systemLanguage,
@@ -3189,7 +3189,7 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                        unitTest: bool,
                        yt_replace_domain: str,
                        twitterReplacementDomain: str,
-                       showPublishedDateOnly: bool,
+                       show_published_date_only: bool,
                        allow_local_network_access: bool,
                        peertubeInstances: [],
                        lastBounceMessage: [],
@@ -3562,7 +3562,7 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                                                    postJsonObject,
                                                    allowDeletion,
                                                    boxname,
-                                                   showPublishedDateOnly,
+                                                   show_published_date_only,
                                                    peertubeInstances,
                                                    allow_local_network_access,
                                                    themeName, systemLanguage,
@@ -4073,7 +4073,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                   maxEmoji: int, translate: {}, unitTest: bool,
                   yt_replace_domain: str,
                   twitterReplacementDomain: str,
-                  showPublishedDateOnly: bool,
+                  show_published_date_only: bool,
                   max_followers: int,
                   allow_local_network_access: bool,
                   peertubeInstances: [],
@@ -4504,7 +4504,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                                translate, unitTest,
                                yt_replace_domain,
                                twitterReplacementDomain,
-                               showPublishedDateOnly,
+                               show_published_date_only,
                                allow_local_network_access,
                                peertubeInstances,
                                lastBounceMessage,

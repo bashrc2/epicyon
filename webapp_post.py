@@ -825,7 +825,7 @@ def _getDeleteIconHtml(nickname: str, domainFull: str,
 
 
 def _getPublishedDateStr(postJsonObject: {},
-                         showPublishedDateOnly: bool) -> str:
+                         show_published_date_only: bool) -> str:
     """Return the html for the published date on a post
     """
     publishedStr = ''
@@ -846,7 +846,7 @@ def _getPublishedDateStr(postJsonObject: {},
         publishedStr = \
             publishedStr.replace('T', ' ').split('.')[0]
         datetimeObject = parse(publishedStr)
-    if not showPublishedDateOnly:
+    if not show_published_date_only:
         publishedStr = datetimeObject.strftime("%a %b %d, %H:%M")
     else:
         publishedStr = datetimeObject.strftime("%a %b %d")
@@ -1333,7 +1333,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
                          boxName: str,
                          yt_replace_domain: str,
                          twitterReplacementDomain: str,
-                         showPublishedDateOnly: bool,
+                         show_published_date_only: bool,
                          peertubeInstances: [],
                          allow_local_network_access: bool,
                          themeName: str, systemLanguage: str,
@@ -1780,7 +1780,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
                                  bookmarkStr, deleteStr, muteStr)
 
     publishedStr = \
-        _getPublishedDateStr(postJsonObject, showPublishedDateOnly)
+        _getPublishedDateStr(postJsonObject, show_published_date_only)
 
     _logPostTiming(enableTimingLog, postStartTime, '15')
 
@@ -2001,7 +2001,7 @@ def htmlIndividualPost(cssCache: {},
                        reactBy: str, reactEmoji: str,
                        yt_replace_domain: str,
                        twitterReplacementDomain: str,
-                       showPublishedDateOnly: bool,
+                       show_published_date_only: bool,
                        peertubeInstances: [],
                        allow_local_network_access: bool,
                        themeName: str, systemLanguage: str,
@@ -2066,7 +2066,7 @@ def htmlIndividualPost(cssCache: {},
                              http_prefix, projectVersion, 'inbox',
                              yt_replace_domain,
                              twitterReplacementDomain,
-                             showPublishedDateOnly,
+                             show_published_date_only,
                              peertubeInstances,
                              allow_local_network_access, themeName,
                              systemLanguage, max_like_count,
@@ -2097,7 +2097,7 @@ def htmlIndividualPost(cssCache: {},
                                          http_prefix, projectVersion, 'inbox',
                                          yt_replace_domain,
                                          twitterReplacementDomain,
-                                         showPublishedDateOnly,
+                                         show_published_date_only,
                                          peertubeInstances,
                                          allow_local_network_access,
                                          themeName, systemLanguage,
@@ -2132,7 +2132,7 @@ def htmlIndividualPost(cssCache: {},
                                          http_prefix, projectVersion, 'inbox',
                                          yt_replace_domain,
                                          twitterReplacementDomain,
-                                         showPublishedDateOnly,
+                                         show_published_date_only,
                                          peertubeInstances,
                                          allow_local_network_access,
                                          themeName, systemLanguage,
@@ -2160,7 +2160,7 @@ def htmlPostReplies(cssCache: {},
                     http_prefix: str, projectVersion: str,
                     yt_replace_domain: str,
                     twitterReplacementDomain: str,
-                    showPublishedDateOnly: bool,
+                    show_published_date_only: bool,
                     peertubeInstances: [],
                     allow_local_network_access: bool,
                     themeName: str, systemLanguage: str,
@@ -2184,7 +2184,7 @@ def htmlPostReplies(cssCache: {},
                                      http_prefix, projectVersion, 'inbox',
                                      yt_replace_domain,
                                      twitterReplacementDomain,
-                                     showPublishedDateOnly,
+                                     show_published_date_only,
                                      peertubeInstances,
                                      allow_local_network_access,
                                      themeName, systemLanguage,
@@ -2213,7 +2213,7 @@ def htmlEmojiReactionPicker(cssCache: {},
                             projectVersion: str,
                             yt_replace_domain: str,
                             twitterReplacementDomain: str,
-                            showPublishedDateOnly: bool,
+                            show_published_date_only: bool,
                             peertubeInstances: [],
                             allow_local_network_access: bool,
                             themeName: str, systemLanguage: str,
@@ -2236,7 +2236,7 @@ def htmlEmojiReactionPicker(cssCache: {},
                              http_prefix, projectVersion, 'inbox',
                              yt_replace_domain,
                              twitterReplacementDomain,
-                             showPublishedDateOnly,
+                             show_published_date_only,
                              peertubeInstances,
                              allow_local_network_access,
                              themeName, systemLanguage,
