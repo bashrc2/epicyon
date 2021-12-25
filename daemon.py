@@ -18744,7 +18744,7 @@ def runDaemon(content_license_url: str,
     httpd.favicons_cache = {}
     httpd.proxy_type = proxy_type
     httpd.session = None
-    httpd.sessionLastUpdate = 0
+    httpd.session_last_update = 0
     httpd.lastGET = 0
     httpd.lastPOST = 0
     httpd.GETbusy = False
