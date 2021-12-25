@@ -140,7 +140,7 @@ def htmlProfileAfterSearch(cssCache: {},
                            system_language: str,
                            max_like_count: int,
                            signing_priv_key_pem: str,
-                           CWlists: {}, lists_enabled: str) -> str:
+                           cw_lists: {}, lists_enabled: str) -> str:
     """Show a profile page after a search for a fediverse address
     """
     http = False
@@ -350,7 +350,7 @@ def htmlProfileAfterSearch(cssCache: {},
                                      themeName, system_language,
                                      max_like_count,
                                      False, False, False, False, False, False,
-                                     CWlists, lists_enabled)
+                                     cw_lists, lists_enabled)
             i += 1
             if i >= 8:
                 break
@@ -562,7 +562,7 @@ def htmlProfile(signing_priv_key_pem: str,
                 shared_items_federated_domains: [],
                 extraJson: {}, pageNumber: int,
                 maxItemsPerPage: int,
-                CWlists: {}, lists_enabled: str,
+                cw_lists: {}, lists_enabled: str,
                 content_license_url: str) -> str:
     """Show the profile page as html
     """
@@ -586,7 +586,7 @@ def htmlProfile(signing_priv_key_pem: str,
                                allow_local_network_access, accessKeys,
                                system_language, max_like_count,
                                shared_items_federated_domains, None,
-                               pageNumber, maxItemsPerPage, CWlists,
+                               pageNumber, maxItemsPerPage, cw_lists,
                                lists_enabled)
 
     domain, port = getDomainFromActor(profileJson['id'])
@@ -969,7 +969,7 @@ def htmlProfile(signing_priv_key_pem: str,
                               theme, system_language,
                               max_like_count,
                               signing_priv_key_pem,
-                              CWlists, lists_enabled) + licenseStr
+                              cw_lists, lists_enabled) + licenseStr
     if not isGroup:
         if selected == 'following':
             profileStr += \
@@ -1039,7 +1039,7 @@ def _htmlProfilePosts(recentPostsCache: {}, max_recent_posts: int,
                       themeName: str, system_language: str,
                       max_like_count: int,
                       signing_priv_key_pem: str,
-                      CWlists: {}, lists_enabled: str) -> str:
+                      cw_lists: {}, lists_enabled: str) -> str:
     """Shows posts on the profile screen
     These should only be public posts
     """
@@ -1085,7 +1085,7 @@ def _htmlProfilePosts(recentPostsCache: {}, max_recent_posts: int,
                                          max_like_count,
                                          False, False, False,
                                          True, False, False,
-                                         CWlists, lists_enabled)
+                                         cw_lists, lists_enabled)
                 if postStr:
                     profileStr += postStr + separatorStr
                     ctr += 1
@@ -1599,7 +1599,7 @@ def _htmlEditProfileSharedItems(base_dir: str, nickname: str, domain: str,
 def _htmlEditProfileFiltering(base_dir: str, nickname: str, domain: str,
                               user_agents_blocked: str,
                               translate: {}, replyIntervalHours: int,
-                              CWlists: {}, lists_enabled: str) -> str:
+                              cw_lists: {}, lists_enabled: str) -> str:
     """Filtering and blocking section of edit profile screen
     """
     filterStr = ''
@@ -1774,8 +1774,8 @@ def _htmlEditProfileFiltering(base_dir: str, nickname: str, domain: str,
                          'user_agents_blockedStr', user_agents_blockedStr,
                          200, '', False)
 
-        CWlistsStr = ''
-        for name, item in CWlists.items():
+        cw_listsStr = ''
+        for name, item in cw_lists.items():
             variableName = getCWlistVariable(name)
             listIsEnabled = False
             if lists_enabled:
@@ -1783,12 +1783,12 @@ def _htmlEditProfileFiltering(base_dir: str, nickname: str, domain: str,
                     listIsEnabled = True
             if translate.get(name):
                 name = translate[name]
-            CWlistsStr += editCheckBox(name, variableName, listIsEnabled)
-        if CWlistsStr:
+            cw_listsStr += editCheckBox(name, variableName, listIsEnabled)
+        if cw_listsStr:
             idx = 'Add content warnings for the following sites'
             editProfileForm += \
                 '<label class="labels">' + translate[idx] + ':</label>\n' + \
-                '<br>' + CWlistsStr
+                '<br>' + cw_listsStr
 
     editProfileForm += endEditSection()
     return editProfileForm
@@ -2096,7 +2096,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, base_dir: str, path: str,
                     user_agents_blocked: str,
                     accessKeys: {},
                     default_reply_interval_hrs: int,
-                    CWlists: {}, lists_enabled: str) -> str:
+                    cw_lists: {}, lists_enabled: str) -> str:
     """Shows the edit profile screen
     """
     path = path.replace('/inbox', '').replace('/outbox', '')
@@ -2307,7 +2307,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, base_dir: str, path: str,
         _htmlEditProfileFiltering(base_dir, nickname, domain,
                                   user_agents_blocked, translate,
                                   replyIntervalHours,
-                                  CWlists, lists_enabled)
+                                  cw_lists, lists_enabled)
 
     # git projects section
     editProfileForm += \

@@ -127,7 +127,7 @@ def _updatePostSchedule(base_dir: str, handle: str, httpd,
                                        httpd.themeName,
                                        httpd.max_like_count,
                                        httpd.max_recent_posts,
-                                       httpd.CWlists,
+                                       httpd.cw_lists,
                                        httpd.lists_enabled,
                                        httpd.content_license_url):
                 indexLines.remove(line)

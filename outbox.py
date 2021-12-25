@@ -198,7 +198,7 @@ def postMessageToOutbox(session, translate: {},
                         signing_priv_key_pem: str,
                         peertubeInstances: str, theme: str,
                         max_like_count: int,
-                        max_recent_posts: int, CWlists: {},
+                        max_recent_posts: int, cw_lists: {},
                         lists_enabled: str,
                         content_license_url: str) -> bool:
     """post is received by the outbox
@@ -476,7 +476,7 @@ def postMessageToOutbox(session, translate: {},
                                          showIndividualPostIcons,
                                          manuallyApproveFollowers,
                                          False, True, useCacheOnly,
-                                         CWlists, lists_enabled)
+                                         cw_lists, lists_enabled)
 
     if outboxAnnounce(recentPostsCache,
                       base_dir, messageJson, debug):

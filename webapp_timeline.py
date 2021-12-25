@@ -450,7 +450,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                  max_like_count: int,
                  shared_items_federated_domains: [],
                  signing_priv_key_pem: str,
-                 CWlists: {}, lists_enabled: str) -> str:
+                 cw_lists: {}, lists_enabled: str) -> str:
     """Show the timeline as html
     """
     enableTimingLog = False
@@ -918,7 +918,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                              showIndividualPostIcons,
                                              manuallyApproveFollowers,
                                              False, True, useCacheOnly,
-                                             CWlists, lists_enabled)
+                                             cw_lists, lists_enabled)
                     _logTimelineTiming(enableTimingLog,
                                        timelineStartTime, boxName, '12')
 
@@ -1144,7 +1144,7 @@ def htmlShares(cssCache: {}, defaultTimeline: str,
                max_like_count: int,
                shared_items_federated_domains: [],
                signing_priv_key_pem: str,
-               CWlists: {}, lists_enabled: str) -> str:
+               cw_lists: {}, lists_enabled: str) -> str:
     """Show the shares timeline as html
     """
     manuallyApproveFollowers = \
@@ -1174,7 +1174,7 @@ def htmlShares(cssCache: {}, defaultTimeline: str,
                         accessKeys, system_language, max_like_count,
                         shared_items_federated_domains,
                         signing_priv_key_pem,
-                        CWlists, lists_enabled)
+                        cw_lists, lists_enabled)
 
 
 def htmlWanted(cssCache: {}, defaultTimeline: str,
@@ -1202,7 +1202,7 @@ def htmlWanted(cssCache: {}, defaultTimeline: str,
                max_like_count: int,
                shared_items_federated_domains: [],
                signing_priv_key_pem: str,
-               CWlists: {}, lists_enabled: str) -> str:
+               cw_lists: {}, lists_enabled: str) -> str:
     """Show the wanted timeline as html
     """
     manuallyApproveFollowers = \
@@ -1232,7 +1232,7 @@ def htmlWanted(cssCache: {}, defaultTimeline: str,
                         accessKeys, system_language, max_like_count,
                         shared_items_federated_domains,
                         signing_priv_key_pem,
-                        CWlists, lists_enabled)
+                        cw_lists, lists_enabled)
 
 
 def htmlInbox(cssCache: {}, defaultTimeline: str,
@@ -1261,7 +1261,7 @@ def htmlInbox(cssCache: {}, defaultTimeline: str,
               max_like_count: int,
               shared_items_federated_domains: [],
               signing_priv_key_pem: str,
-              CWlists: {}, lists_enabled: str) -> str:
+              cw_lists: {}, lists_enabled: str) -> str:
     """Show the inbox as html
     """
     manuallyApproveFollowers = \
@@ -1291,7 +1291,7 @@ def htmlInbox(cssCache: {}, defaultTimeline: str,
                         accessKeys, system_language, max_like_count,
                         shared_items_federated_domains,
                         signing_priv_key_pem,
-                        CWlists, lists_enabled)
+                        cw_lists, lists_enabled)
 
 
 def htmlBookmarks(cssCache: {}, defaultTimeline: str,
@@ -1320,7 +1320,7 @@ def htmlBookmarks(cssCache: {}, defaultTimeline: str,
                   max_like_count: int,
                   shared_items_federated_domains: [],
                   signing_priv_key_pem: str,
-                  CWlists: {}, lists_enabled: str) -> str:
+                  cw_lists: {}, lists_enabled: str) -> str:
     """Show the bookmarks as html
     """
     manuallyApproveFollowers = \
@@ -1349,7 +1349,7 @@ def htmlBookmarks(cssCache: {}, defaultTimeline: str,
                         allow_local_network_access, text_mode_banner,
                         accessKeys, system_language, max_like_count,
                         shared_items_federated_domains, signing_priv_key_pem,
-                        CWlists, lists_enabled)
+                        cw_lists, lists_enabled)
 
 
 def htmlInboxDMs(cssCache: {}, defaultTimeline: str,
@@ -1378,7 +1378,7 @@ def htmlInboxDMs(cssCache: {}, defaultTimeline: str,
                  max_like_count: int,
                  shared_items_federated_domains: [],
                  signing_priv_key_pem: str,
-                 CWlists: {}, lists_enabled: str) -> str:
+                 cw_lists: {}, lists_enabled: str) -> str:
     """Show the DM timeline as html
     """
     artist = isArtist(base_dir, nickname)
@@ -1403,7 +1403,7 @@ def htmlInboxDMs(cssCache: {}, defaultTimeline: str,
                         accessKeys, system_language, max_like_count,
                         shared_items_federated_domains,
                         signing_priv_key_pem,
-                        CWlists, lists_enabled)
+                        cw_lists, lists_enabled)
 
 
 def htmlInboxReplies(cssCache: {}, defaultTimeline: str,
@@ -1432,7 +1432,7 @@ def htmlInboxReplies(cssCache: {}, defaultTimeline: str,
                      max_like_count: int,
                      shared_items_federated_domains: [],
                      signing_priv_key_pem: str,
-                     CWlists: {}, lists_enabled: str) -> str:
+                     cw_lists: {}, lists_enabled: str) -> str:
     """Show the replies timeline as html
     """
     artist = isArtist(base_dir, nickname)
@@ -1456,7 +1456,7 @@ def htmlInboxReplies(cssCache: {}, defaultTimeline: str,
                         allow_local_network_access, text_mode_banner,
                         accessKeys, system_language, max_like_count,
                         shared_items_federated_domains, signing_priv_key_pem,
-                        CWlists, lists_enabled)
+                        cw_lists, lists_enabled)
 
 
 def htmlInboxMedia(cssCache: {}, defaultTimeline: str,
@@ -1485,7 +1485,7 @@ def htmlInboxMedia(cssCache: {}, defaultTimeline: str,
                    max_like_count: int,
                    shared_items_federated_domains: [],
                    signing_priv_key_pem: str,
-                   CWlists: {}, lists_enabled: str) -> str:
+                   cw_lists: {}, lists_enabled: str) -> str:
     """Show the media timeline as html
     """
     artist = isArtist(base_dir, nickname)
@@ -1509,7 +1509,7 @@ def htmlInboxMedia(cssCache: {}, defaultTimeline: str,
                         allow_local_network_access, text_mode_banner,
                         accessKeys, system_language, max_like_count,
                         shared_items_federated_domains, signing_priv_key_pem,
-                        CWlists, lists_enabled)
+                        cw_lists, lists_enabled)
 
 
 def htmlInboxBlogs(cssCache: {}, defaultTimeline: str,
@@ -1538,7 +1538,7 @@ def htmlInboxBlogs(cssCache: {}, defaultTimeline: str,
                    max_like_count: int,
                    shared_items_federated_domains: [],
                    signing_priv_key_pem: str,
-                   CWlists: {}, lists_enabled: str) -> str:
+                   cw_lists: {}, lists_enabled: str) -> str:
     """Show the blogs timeline as html
     """
     artist = isArtist(base_dir, nickname)
@@ -1562,7 +1562,7 @@ def htmlInboxBlogs(cssCache: {}, defaultTimeline: str,
                         allow_local_network_access, text_mode_banner,
                         accessKeys, system_language, max_like_count,
                         shared_items_federated_domains, signing_priv_key_pem,
-                        CWlists, lists_enabled)
+                        cw_lists, lists_enabled)
 
 
 def htmlInboxFeatures(cssCache: {}, defaultTimeline: str,
@@ -1592,7 +1592,7 @@ def htmlInboxFeatures(cssCache: {}, defaultTimeline: str,
                       max_like_count: int,
                       shared_items_federated_domains: [],
                       signing_priv_key_pem: str,
-                      CWlists: {}, lists_enabled: str) -> str:
+                      cw_lists: {}, lists_enabled: str) -> str:
     """Show the features timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
@@ -1615,7 +1615,7 @@ def htmlInboxFeatures(cssCache: {}, defaultTimeline: str,
                         allow_local_network_access, text_mode_banner,
                         accessKeys, system_language, max_like_count,
                         shared_items_federated_domains, signing_priv_key_pem,
-                        CWlists, lists_enabled)
+                        cw_lists, lists_enabled)
 
 
 def htmlInboxNews(cssCache: {}, defaultTimeline: str,
@@ -1644,7 +1644,7 @@ def htmlInboxNews(cssCache: {}, defaultTimeline: str,
                   max_like_count: int,
                   shared_items_federated_domains: [],
                   signing_priv_key_pem: str,
-                  CWlists: {}, lists_enabled: str) -> str:
+                  cw_lists: {}, lists_enabled: str) -> str:
     """Show the news timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
@@ -1667,7 +1667,7 @@ def htmlInboxNews(cssCache: {}, defaultTimeline: str,
                         allow_local_network_access, text_mode_banner,
                         accessKeys, system_language, max_like_count,
                         shared_items_federated_domains, signing_priv_key_pem,
-                        CWlists, lists_enabled)
+                        cw_lists, lists_enabled)
 
 
 def htmlOutbox(cssCache: {}, defaultTimeline: str,
@@ -1696,7 +1696,7 @@ def htmlOutbox(cssCache: {}, defaultTimeline: str,
                max_like_count: int,
                shared_items_federated_domains: [],
                signing_priv_key_pem: str,
-               CWlists: {}, lists_enabled: str) -> str:
+               cw_lists: {}, lists_enabled: str) -> str:
     """Show the Outbox as html
     """
     manuallyApproveFollowers = \
@@ -1722,4 +1722,4 @@ def htmlOutbox(cssCache: {}, defaultTimeline: str,
                         allow_local_network_access, text_mode_banner,
                         accessKeys, system_language, max_like_count,
                         shared_items_federated_domains, signing_priv_key_pem,
-                        CWlists, lists_enabled)
+                        cw_lists, lists_enabled)

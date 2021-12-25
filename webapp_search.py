@@ -606,7 +606,7 @@ def htmlHistorySearch(cssCache: {}, translate: {}, base_dir: str,
                       system_language: str,
                       max_like_count: int,
                       signing_priv_key_pem: str,
-                      CWlists: {},
+                      cw_lists: {},
                       lists_enabled: str) -> str:
     """Show a page containing search results for your post history
     """
@@ -693,7 +693,7 @@ def htmlHistorySearch(cssCache: {}, translate: {}, base_dir: str,
                                  showIndividualPostIcons,
                                  showIndividualPostIcons,
                                  False, False, False, False,
-                                 CWlists, lists_enabled)
+                                 cw_lists, lists_enabled)
         if postStr:
             historySearchForm += separatorStr + postStr
         index += 1
@@ -718,7 +718,7 @@ def htmlHashtagSearch(cssCache: {},
                       themeName: str, system_language: str,
                       max_like_count: int,
                       signing_priv_key_pem: str,
-                      CWlists: {}, lists_enabled: str) -> str:
+                      cw_lists: {}, lists_enabled: str) -> str:
     """Show a page containing search results for a hashtag
     or after selecting a hashtag from the swarm
     """
@@ -876,7 +876,7 @@ def htmlHashtagSearch(cssCache: {},
                                  showRepeats, showIcons,
                                  manuallyApprovesFollowers,
                                  showPublicOnly,
-                                 storeToCache, False, CWlists,
+                                 storeToCache, False, cw_lists,
                                  lists_enabled)
         if postStr:
             hashtagSearchForm += separatorStr + postStr

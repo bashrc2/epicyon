@@ -35,7 +35,7 @@ def _htmlFrontScreenPosts(recentPostsCache: {}, max_recent_posts: int,
                           allow_local_network_access: bool,
                           themeName: str, system_language: str,
                           max_like_count: int,
-                          signing_priv_key_pem: str, CWlists: {},
+                          signing_priv_key_pem: str, cw_lists: {},
                           lists_enabled: str) -> str:
     """Shows posts on the front screen of a news instance
     These should only be public blog posts from the features timeline
@@ -83,7 +83,7 @@ def _htmlFrontScreenPosts(recentPostsCache: {}, max_recent_posts: int,
                                          max_like_count,
                                          False, False, False,
                                          True, False, False,
-                                         CWlists, lists_enabled)
+                                         cw_lists, lists_enabled)
                 if postStr:
                     profileStr += postStr + separatorStr
                     ctr += 1
@@ -114,7 +114,7 @@ def htmlFrontScreen(signing_priv_key_pem: str,
                     extraJson: {},
                     pageNumber: int,
                     maxItemsPerPage: int,
-                    CWlists: {}, lists_enabled: str) -> str:
+                    cw_lists: {}, lists_enabled: str) -> str:
     """Show the news instance front screen
     """
     nickname = profileJson['preferredUsername']
@@ -187,7 +187,7 @@ def htmlFrontScreen(signing_priv_key_pem: str,
                               theme, system_language,
                               max_like_count,
                               signing_priv_key_pem,
-                              CWlists, lists_enabled) + licenseStr
+                              cw_lists, lists_enabled) + licenseStr
 
     # Footer which is only used for system accounts
     profileFooterStr = '      </td>\n'

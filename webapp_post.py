@@ -1344,7 +1344,7 @@ def individualPostAsHtml(signing_priv_key_pem: str,
                          showPublicOnly: bool,
                          storeToCache: bool,
                          useCacheOnly: bool,
-                         CWlists: {},
+                         cw_lists: {},
                          lists_enabled: str) -> str:
     """ Shows a single post as html
     """
@@ -1820,7 +1820,7 @@ def individualPostAsHtml(signing_priv_key_pem: str,
         footerStr = newFooterStr
 
     # add any content warning from the cwlists directory
-    addCWfromLists(post_json_object, CWlists, translate, lists_enabled)
+    addCWfromLists(post_json_object, cw_lists, translate, lists_enabled)
 
     postIsSensitive = False
     if post_json_object['object'].get('sensitive'):
@@ -2006,7 +2006,7 @@ def htmlIndividualPost(cssCache: {},
                        allow_local_network_access: bool,
                        themeName: str, system_language: str,
                        max_like_count: int, signing_priv_key_pem: str,
-                       CWlists: {}, lists_enabled: str) -> str:
+                       cw_lists: {}, lists_enabled: str) -> str:
     """Show an individual post as html
     """
     originalPostJson = post_json_object
@@ -2072,7 +2072,7 @@ def htmlIndividualPost(cssCache: {},
                              allow_local_network_access, themeName,
                              system_language, max_like_count,
                              False, authorized, False, False, False, False,
-                             CWlists, lists_enabled)
+                             cw_lists, lists_enabled)
     messageId = removeIdEnding(post_json_object['id'])
 
     # show the previous posts
@@ -2105,7 +2105,7 @@ def htmlIndividualPost(cssCache: {},
                                          max_like_count,
                                          False, authorized,
                                          False, False, False, False,
-                                         CWlists, lists_enabled) + postStr
+                                         cw_lists, lists_enabled) + postStr
 
     # show the following posts
     postFilename = locatePost(base_dir, nickname, domain, messageId)
@@ -2140,7 +2140,7 @@ def htmlIndividualPost(cssCache: {},
                                          max_like_count,
                                          False, authorized,
                                          False, False, False, False,
-                                         CWlists, lists_enabled)
+                                         cw_lists, lists_enabled)
     cssFilename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
         cssFilename = base_dir + '/epicyon.css'
@@ -2166,7 +2166,7 @@ def htmlPostReplies(cssCache: {},
                     allow_local_network_access: bool,
                     themeName: str, system_language: str,
                     max_like_count: int,
-                    signing_priv_key_pem: str, CWlists: {},
+                    signing_priv_key_pem: str, cw_lists: {},
                     lists_enabled: str) -> str:
     """Show the replies to an individual post as html
     """
@@ -2191,7 +2191,7 @@ def htmlPostReplies(cssCache: {},
                                      themeName, system_language,
                                      max_like_count,
                                      False, False, False, False, False, False,
-                                     CWlists, lists_enabled)
+                                     cw_lists, lists_enabled)
 
     cssFilename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
@@ -2219,7 +2219,7 @@ def htmlEmojiReactionPicker(cssCache: {},
                             allow_local_network_access: bool,
                             themeName: str, system_language: str,
                             max_like_count: int, signing_priv_key_pem: str,
-                            CWlists: {}, lists_enabled: str,
+                            cw_lists: {}, lists_enabled: str,
                             boxName: str, pageNumber: int) -> str:
     """Returns the emoji picker screen
     """
@@ -2243,7 +2243,7 @@ def htmlEmojiReactionPicker(cssCache: {},
                              themeName, system_language,
                              max_like_count,
                              False, False, False, False, False, False,
-                             CWlists, lists_enabled)
+                             cw_lists, lists_enabled)
 
     reactionsFilename = base_dir + '/emoji/reactions.json'
     if not os.path.isfile(reactionsFilename):

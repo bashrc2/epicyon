@@ -209,7 +209,7 @@ def htmlNewPost(cssCache: {}, media_instance: bool, translate: {},
                 allow_local_network_access: bool,
                 system_language: str,
                 max_like_count: int, signing_priv_key_pem: str,
-                CWlists: {}, lists_enabled: str,
+                cw_lists: {}, lists_enabled: str,
                 boxName: str) -> str:
     """New post screen
     """
@@ -280,7 +280,7 @@ def htmlNewPost(cssCache: {}, media_instance: bool, translate: {},
                                                  max_like_count,
                                                  False, False, False,
                                                  False, False, False,
-                                                 CWlists, lists_enabled)
+                                                 cw_lists, lists_enabled)
 
                 replyStr = '<input type="hidden" ' + \
                     'name="replyTo" value="' + inReplyTo + '">\n'
