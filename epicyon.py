@@ -377,8 +377,8 @@ parser.add_argument("--verifyAllSignatures",
                     const=True, default=False,
                     help="Whether to require that all incoming " +
                     "posts have valid jsonld signatures")
-parser.add_argument("--brochMode",
-                    dest='brochMode',
+parser.add_argument("--broch_mode",
+                    dest='broch_mode',
                     type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Enable broch mode")
@@ -3113,10 +3113,10 @@ verifyAllSignatures = \
 if verifyAllSignatures is not None:
     args.verifyAllSignatures = bool(verifyAllSignatures)
 
-brochMode = \
-    getConfigParam(base_dir, 'brochMode')
-if brochMode is not None:
-    args.brochMode = bool(brochMode)
+broch_mode = \
+    getConfigParam(base_dir, 'broch_mode')
+if broch_mode is not None:
+    args.broch_mode = bool(broch_mode)
 
 log_login_failures = \
     getConfigParam(base_dir, 'log_login_failures')
@@ -3220,7 +3220,7 @@ if __name__ == "__main__":
               args.city,
               args.show_node_info_accounts,
               args.show_node_info_version,
-              args.brochMode,
+              args.broch_mode,
               args.verifyAllSignatures,
               args.sendThreadsTimeoutMins,
               args.dormantMonths,

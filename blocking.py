@@ -320,7 +320,7 @@ def isBlockedDomain(base_dir: str, domain: str,
 
     shortDomain = _getShortDomain(domain)
 
-    if not brochModeIsActive(base_dir):
+    if not broch_modeIsActive(base_dir):
         if blockedCache:
             for blockedStr in blockedCache:
                 if '*@' + domain in blockedStr:
@@ -368,7 +368,7 @@ def isBlocked(base_dir: str, nickname: str, domain: str,
     if blockNickname and blockDomain:
         blockHandle = blockNickname + '@' + blockDomain
 
-    if not brochModeIsActive(base_dir):
+    if not broch_modeIsActive(base_dir):
         # instance level block list
         if blockedCache:
             for blockedStr in blockedCache:
@@ -873,7 +873,7 @@ def outboxUndoMute(base_dir: str, http_prefix: str,
         print('DEBUG: post undo mute via c2s - ' + postFilename)
 
 
-def brochModeIsActive(base_dir: str) -> bool:
+def broch_modeIsActive(base_dir: str) -> bool:
     """Returns true if broch mode is active
     """
     allowFilename = base_dir + '/accounts/allowedinstances.txt'
@@ -943,10 +943,10 @@ def setBrochMode(base_dir: str, domainFull: str, enabled: bool) -> None:
             print('EX: Broch mode not enabled due to file write ' + str(ex))
             return
 
-    setConfigParam(base_dir, "brochMode", enabled)
+    setConfigParam(base_dir, "broch_mode", enabled)
 
 
-def brochModeLapses(base_dir: str, lapseDays: int) -> bool:
+def broch_modeLapses(base_dir: str, lapseDays: int) -> bool:
     """After broch mode is enabled it automatically
     elapses after a period of time
     """
@@ -959,7 +959,7 @@ def brochModeLapses(base_dir: str, lapseDays: int) -> bool:
         modifiedDate = \
             datetime.strptime(lastModified, "%Y-%m-%dT%H:%M:%SZ")
     except BaseException:
-        print('EX: brochModeLapses date not parsed ' + str(lastModified))
+        print('EX: broch_modeLapses date not parsed ' + str(lastModified))
         return False
     if not modifiedDate:
         return False
@@ -971,10 +971,10 @@ def brochModeLapses(base_dir: str, lapseDays: int) -> bool:
             os.remove(allowFilename)
             removed = True
         except OSError:
-            print('EX: brochModeLapses allow file not deleted ' +
+            print('EX: broch_modeLapses allow file not deleted ' +
                   str(allowFilename))
         if removed:
-            setConfigParam(base_dir, "brochMode", False)
+            setConfigParam(base_dir, "broch_mode", False)
             print('Broch mode has elapsed')
             return True
     return False

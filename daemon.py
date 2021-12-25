@@ -134,7 +134,7 @@ from blocking import updateBlockedCache
 from blocking import mutePost
 from blocking import unmutePost
 from blocking import setBrochMode
-from blocking import brochModeIsActive
+from blocking import broch_modeIsActive
 from blocking import addBlock
 from blocking import removeBlock
 from blocking import addGlobalBlock
@@ -1061,7 +1061,7 @@ class PubServer(BaseHTTPRequestHandler):
         print('mastodon api v1: nickname ' + str(nickname))
         self._updateKnownCrawlers(uaStr)
 
-        brochMode = brochModeIsActive(base_dir)
+        broch_mode = broch_modeIsActive(base_dir)
         sendJson, sendJsonStr = mastoApiV1Response(path,
                                                    callingDomain,
                                                    uaStr,
@@ -1078,7 +1078,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                    projectVersion,
                                                    customEmoji,
                                                    show_node_info_accounts,
-                                                   brochMode)
+                                                   broch_mode)
 
         if sendJson is not None:
             msg = json.dumps(sendJson).encode('utf-8')
@@ -1133,14 +1133,14 @@ class PubServer(BaseHTTPRequestHandler):
         # For example, if this or allied instances are being attacked
         # then numbers of accounts may be changing as people
         # migrate, and that information may be useful to an adversary
-        brochMode = brochModeIsActive(self.server.base_dir)
+        broch_mode = broch_modeIsActive(self.server.base_dir)
 
         nodeInfoVersion = self.server.projectVersion
-        if not self.server.show_node_info_version or brochMode:
+        if not self.server.show_node_info_version or broch_mode:
             nodeInfoVersion = '0.0.0'
 
         show_node_info_accounts = self.server.show_node_info_accounts
-        if brochMode:
+        if broch_mode:
             show_node_info_accounts = False
 
         instanceUrl = self._getInstanceUrl(callingDomain)
@@ -5571,18 +5571,18 @@ class PubServer(BaseHTTPRequestHandler):
                             setConfigParam(base_dir, "verifyAllSignatures",
                                            verifyAllSignatures)
 
-                            brochMode = False
-                            if fields.get('brochMode'):
-                                if fields['brochMode'] == 'on':
-                                    brochMode = True
+                            broch_mode = False
+                            if fields.get('broch_mode'):
+                                if fields['broch_mode'] == 'on':
+                                    broch_mode = True
                             currBrochMode = \
-                                getConfigParam(base_dir, "brochMode")
-                            if brochMode != currBrochMode:
+                                getConfigParam(base_dir, "broch_mode")
+                            if broch_mode != currBrochMode:
                                 setBrochMode(self.server.base_dir,
                                              self.server.domainFull,
-                                             brochMode)
-                                setConfigParam(base_dir, "brochMode",
-                                               brochMode)
+                                             broch_mode)
+                                setConfigParam(base_dir, "broch_mode",
+                                               broch_mode)
 
                             # shared item federation domains
                             siDomainUpdated = False
@@ -18411,7 +18411,7 @@ def runDaemon(content_license_url: str,
               city: str,
               show_node_info_accounts: bool,
               show_node_info_version: bool,
-              brochMode: bool,
+              broch_mode: bool,
               verifyAllSignatures: bool,
               sendThreadsTimeoutMins: int,
               dormantMonths: int,
@@ -18755,7 +18755,7 @@ def runDaemon(content_license_url: str,
         metadataCustomEmoji(base_dir, http_prefix, httpd.domainFull)
 
     # whether to enable broch mode, which locks down the instance
-    setBrochMode(base_dir, httpd.domainFull, brochMode)
+    setBrochMode(base_dir, httpd.domainFull, broch_mode)
 
     if not os.path.isdir(base_dir + '/accounts/inbox@' + domain):
         print('Creating shared inbox: inbox@' + domain)

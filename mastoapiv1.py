@@ -94,7 +94,7 @@ def mastoApiV1Response(path: str, callingDomain: str,
                        projectVersion: str,
                        customEmoji: [],
                        show_node_info_accounts: bool,
-                       brochMode: bool) -> ({}, str):
+                       broch_mode: bool) -> ({}, str):
     """This is a vestigil mastodon API for the purpose
        of returning an empty result to sites like
        https://mastopeek.app-dist.eu
@@ -215,7 +215,7 @@ def mastoApiV1Response(path: str, callingDomain: str,
             domainFull = i2pDomain
             http_prefix = 'http'
 
-        if brochMode:
+        if broch_mode:
             show_node_info_accounts = False
 
         sendJson = \

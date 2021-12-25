@@ -785,7 +785,7 @@ def createServerAlice(path: str, domain: str, port: int,
     sendThreadsTimeoutMins = 30
     maxFollowers = 10
     verifyAllSignatures = True
-    brochMode = False
+    broch_mode = False
     show_node_info_accounts = True
     show_node_info_version = True
     city = 'London, England'
@@ -804,7 +804,7 @@ def createServerAlice(path: str, domain: str, port: int,
               log_login_failures, city,
               show_node_info_accounts,
               show_node_info_version,
-              brochMode,
+              broch_mode,
               verifyAllSignatures,
               sendThreadsTimeoutMins,
               dormantMonths, maxNewswirePosts,
@@ -927,7 +927,7 @@ def createServerBob(path: str, domain: str, port: int,
     sendThreadsTimeoutMins = 30
     maxFollowers = 10
     verifyAllSignatures = True
-    brochMode = False
+    broch_mode = False
     show_node_info_accounts = True
     show_node_info_version = True
     city = 'London, England'
@@ -946,7 +946,7 @@ def createServerBob(path: str, domain: str, port: int,
               log_login_failures, city,
               show_node_info_accounts,
               show_node_info_version,
-              brochMode,
+              broch_mode,
               verifyAllSignatures,
               sendThreadsTimeoutMins,
               dormantMonths, maxNewswirePosts,
@@ -996,7 +996,7 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
     sendThreadsTimeoutMins = 30
     maxFollowers = 10
     verifyAllSignatures = True
-    brochMode = False
+    broch_mode = False
     show_node_info_accounts = True
     show_node_info_version = True
     city = 'London, England'
@@ -1016,7 +1016,7 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
               log_login_failures, city,
               show_node_info_accounts,
               show_node_info_version,
-              brochMode,
+              broch_mode,
               verifyAllSignatures,
               sendThreadsTimeoutMins,
               dormantMonths, maxNewswirePosts,
@@ -1068,7 +1068,7 @@ def createServerGroup(path: str, domain: str, port: int,
     sendThreadsTimeoutMins = 30
     maxFollowers = 10
     verifyAllSignatures = True
-    brochMode = False
+    broch_mode = False
     show_node_info_accounts = True
     show_node_info_version = True
     city = 'London, England'
@@ -1088,7 +1088,7 @@ def createServerGroup(path: str, domain: str, port: int,
               log_login_failures, city,
               show_node_info_accounts,
               show_node_info_version,
-              brochMode,
+              broch_mode,
               verifyAllSignatures,
               sendThreadsTimeoutMins,
               dormantMonths, maxNewswirePosts,

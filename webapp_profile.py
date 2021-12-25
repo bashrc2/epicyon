@@ -1375,12 +1375,12 @@ def _htmlEditProfileInstance(base_dir: str, translate: {},
                          'verifyallsignatures', False)
 
     instanceStr += translate['Enabling broch mode'] + '<br>\n'
-    if getConfigParam(base_dir, "brochMode"):
+    if getConfigParam(base_dir, "broch_mode"):
         instanceStr += \
-            editCheckBox(translate['Broch mode'], 'brochMode', True)
+            editCheckBox(translate['Broch mode'], 'broch_mode', True)
     else:
         instanceStr += \
-            editCheckBox(translate['Broch mode'], 'brochMode', False)
+            editCheckBox(translate['Broch mode'], 'broch_mode', False)
     # Instance type
     instanceStr += \
         '  <br><label class="labels">' + \
