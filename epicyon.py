@@ -591,7 +591,7 @@ parser.add_argument('--filter', dest='filterStr', type=str, default=None,
                     'cause a message to be ignored')
 parser.add_argument('--unfilter', dest='unfilterStr', type=str, default=None,
                     help='Remove a filter on a particular word or phrase')
-parser.add_argument('--domainmax', dest='domainMaxPostsPerDay', type=int,
+parser.add_argument('--domainmax', dest='domain_max_posts_per_day', type=int,
                     default=8640,
                     help='Maximum number of received posts ' +
                     'from a domain per day')
@@ -3254,7 +3254,7 @@ if __name__ == "__main__":
               federationList, args.max_mentions,
               args.max_emoji, args.secure_mode,
               proxy_type, args.max_replies,
-              args.domainMaxPostsPerDay,
+              args.domain_max_posts_per_day,
               args.accountMaxPostsPerDay,
               args.allowdeletion, debug, False,
               args.instanceOnlySkillsSearch, [],

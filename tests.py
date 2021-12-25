@@ -694,7 +694,7 @@ def createServerAlice(path: str, domain: str, port: int,
     proxy_type = None
     password = 'alicepass'
     max_replies = 64
-    domainMaxPostsPerDay = 1000
+    domain_max_posts_per_day = 1000
     accountMaxPostsPerDay = 1000
     allowDeletion = True
     low_bandwidth = True
@@ -817,7 +817,7 @@ def createServerAlice(path: str, domain: str, port: int,
               onion_domain, i2p_domain, None, None, port, port,
               http_prefix, federationList, max_mentions, max_emoji, False,
               proxy_type, max_replies,
-              domainMaxPostsPerDay, accountMaxPostsPerDay,
+              domain_max_posts_per_day, accountMaxPostsPerDay,
               allowDeletion, True, True, False, sendThreads,
               False)
 
@@ -839,7 +839,7 @@ def createServerBob(path: str, domain: str, port: int,
     client_to_server = False
     password = 'bobpass'
     max_replies = 64
-    domainMaxPostsPerDay = 1000
+    domain_max_posts_per_day = 1000
     accountMaxPostsPerDay = 1000
     allowDeletion = True
     low_bandwidth = True
@@ -959,7 +959,7 @@ def createServerBob(path: str, domain: str, port: int,
               onion_domain, i2p_domain, None, None, port, port,
               http_prefix, federationList, max_mentions, max_emoji, False,
               proxy_type, max_replies,
-              domainMaxPostsPerDay, accountMaxPostsPerDay,
+              domain_max_posts_per_day, accountMaxPostsPerDay,
               allowDeletion, True, True, False, sendThreads,
               False)
 
@@ -1048,7 +1048,7 @@ def createServerGroup(path: str, domain: str, port: int,
     proxy_type = None
     password = 'testgrouppass'
     max_replies = 64
-    domainMaxPostsPerDay = 1000
+    domain_max_posts_per_day = 1000
     accountMaxPostsPerDay = 1000
     allowDeletion = True
     privateKeyPem, publicKeyPem, person, wfEndpoint = \
@@ -1101,7 +1101,7 @@ def createServerGroup(path: str, domain: str, port: int,
               onion_domain, i2p_domain, None, None, port, port,
               http_prefix, federationList, max_mentions, max_emoji, False,
               proxy_type, max_replies,
-              domainMaxPostsPerDay, accountMaxPostsPerDay,
+              domain_max_posts_per_day, accountMaxPostsPerDay,
               allowDeletion, True, True, False, sendThreads,
               False)
 
