@@ -209,8 +209,8 @@ parser.add_argument('--maxMirroredArticles',
                     default=100,
                     help='Maximum number of news articles to mirror.' +
                     ' Set to zero for indefinite mirroring.')
-parser.add_argument('--maxNewsPosts',
-                    dest='maxNewsPosts', type=int,
+parser.add_argument('--max_news_posts',
+                    dest='max_news_posts', type=int,
                     default=0,
                     help='Maximum number of news timeline posts to keep. ' +
                     'Zero for no expiry.')
@@ -3048,10 +3048,10 @@ maxMirroredArticles = \
 if maxMirroredArticles is not None:
     args.maxMirroredArticles = int(maxMirroredArticles)
 
-maxNewsPosts = \
-    getConfigParam(base_dir, 'maxNewsPosts')
-if maxNewsPosts is not None:
-    args.maxNewsPosts = int(maxNewsPosts)
+max_news_posts = \
+    getConfigParam(base_dir, 'max_news_posts')
+if max_news_posts is not None:
+    args.max_news_posts = int(max_news_posts)
 
 max_followers = \
     getConfigParam(base_dir, 'max_followers')
@@ -3233,7 +3233,7 @@ if __name__ == "__main__":
               args.full_width_tl_button_header,
               args.show_publish_as_icon,
               args.max_followers,
-              args.maxNewsPosts,
+              args.max_news_posts,
               args.maxMirroredArticles,
               args.maxNewswireFeedSizeKb,
               args.max_newswire_postsPerSource,

@@ -18438,7 +18438,7 @@ def runDaemon(content_license_url: str,
               full_width_tl_button_header: bool,
               show_publish_as_icon: bool,
               max_followers: int,
-              maxNewsPosts: int,
+              max_news_posts: int,
               maxMirroredArticles: int,
               maxNewswireFeedSizeKb: int,
               max_newswire_postsPerSource: int,
@@ -18650,7 +18650,7 @@ def runDaemon(content_license_url: str,
     httpd.maxMirroredArticles = maxMirroredArticles
 
     # maximum number of posts in the news timeline/outbox
-    httpd.maxNewsPosts = maxNewsPosts
+    httpd.max_news_posts = max_news_posts
 
     # The maximum number of tags per post which can be
     # attached to RSS feeds pulled in via the newswire

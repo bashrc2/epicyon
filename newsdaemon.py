@@ -840,7 +840,7 @@ def runNewswireDaemon(base_dir: str, httpd,
                                  httpd.content_license_url)
         print('Newswire feed converted to ActivityPub')
 
-        if httpd.maxNewsPosts > 0:
+        if httpd.max_news_posts > 0:
             archiveDir = base_dir + '/archive'
             archiveSubdir = \
                 archiveDir + '/accounts/news@' + domain + '/outbox'
@@ -849,7 +849,7 @@ def runNewswireDaemon(base_dir: str, httpd,
                                   domain, base_dir, 'outbox',
                                   archiveSubdir,
                                   httpd.recentPostsCache,
-                                  httpd.maxNewsPosts)
+                                  httpd.max_news_posts)
 
         # wait a while before the next feeds update
         for tick in range(120):
