@@ -1743,7 +1743,7 @@ class PubServer(BaseHTTPRequestHandler):
                         recordLoginFailure(base_dir, ipAddress,
                                            self.server.loginFailureCount,
                                            failTime,
-                                           self.server.logLoginFailures)
+                                           self.server.log_login_failures)
                 self.server.POSTbusy = False
                 return
             else:
@@ -18407,7 +18407,7 @@ def runDaemon(content_license_url: str,
               max_like_count: int,
               shared_items_federated_domains: [],
               user_agents_blocked: [],
-              logLoginFailures: bool,
+              log_login_failures: bool,
               city: str,
               showNodeInfoAccounts: bool,
               showNodeInfoVersion: bool,
@@ -18728,7 +18728,7 @@ def runDaemon(content_license_url: str,
     httpd.lastLoginTime = 0
     httpd.lastLoginFailure = 0
     httpd.loginFailureCount = {}
-    httpd.logLoginFailures = logLoginFailures
+    httpd.log_login_failures = log_login_failures
     httpd.maxReplies = maxReplies
     httpd.tokens = {}
     httpd.tokensLookup = {}

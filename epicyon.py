@@ -342,8 +342,8 @@ parser.add_argument("--iconsAsButtons",
                     type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Show header icons as buttons")
-parser.add_argument("--logLoginFailures",
-                    dest='logLoginFailures',
+parser.add_argument("--log_login_failures",
+                    dest='log_login_failures',
                     type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Whether to log longin failures")
@@ -3118,10 +3118,10 @@ brochMode = \
 if brochMode is not None:
     args.brochMode = bool(brochMode)
 
-logLoginFailures = \
-    getConfigParam(base_dir, 'logLoginFailures')
-if logLoginFailures is not None:
-    args.logLoginFailures = bool(logLoginFailures)
+log_login_failures = \
+    getConfigParam(base_dir, 'log_login_failures')
+if log_login_failures is not None:
+    args.log_login_failures = bool(log_login_failures)
 
 showNodeInfoAccounts = \
     getConfigParam(base_dir, 'showNodeInfoAccounts')
@@ -3216,7 +3216,7 @@ if __name__ == "__main__":
               args.low_bandwidth, args.max_like_count,
               shared_items_federated_domains,
               user_agents_blocked,
-              args.logLoginFailures,
+              args.log_login_failures,
               args.city,
               args.showNodeInfoAccounts,
               args.showNodeInfoVersion,

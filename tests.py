@@ -789,7 +789,7 @@ def createServerAlice(path: str, domain: str, port: int,
     showNodeInfoAccounts = True
     showNodeInfoVersion = True
     city = 'London, England'
-    logLoginFailures = False
+    log_login_failures = False
     user_agents_blocked = []
     max_like_count = 10
     default_reply_interval_hrs = 9999999999
@@ -801,7 +801,7 @@ def createServerAlice(path: str, domain: str, port: int,
               low_bandwidth, max_like_count,
               shared_items_federated_domains,
               user_agents_blocked,
-              logLoginFailures, city,
+              log_login_failures, city,
               showNodeInfoAccounts,
               showNodeInfoVersion,
               brochMode,
@@ -931,7 +931,7 @@ def createServerBob(path: str, domain: str, port: int,
     showNodeInfoAccounts = True
     showNodeInfoVersion = True
     city = 'London, England'
-    logLoginFailures = False
+    log_login_failures = False
     user_agents_blocked = []
     max_like_count = 10
     default_reply_interval_hrs = 9999999999
@@ -943,7 +943,7 @@ def createServerBob(path: str, domain: str, port: int,
               low_bandwidth, max_like_count,
               shared_items_federated_domains,
               user_agents_blocked,
-              logLoginFailures, city,
+              log_login_failures, city,
               showNodeInfoAccounts,
               showNodeInfoVersion,
               brochMode,
@@ -1000,7 +1000,7 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
     showNodeInfoAccounts = True
     showNodeInfoVersion = True
     city = 'London, England'
-    logLoginFailures = False
+    log_login_failures = False
     user_agents_blocked = []
     max_like_count = 10
     low_bandwidth = True
@@ -1013,7 +1013,7 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
               low_bandwidth, max_like_count,
               shared_items_federated_domains,
               user_agents_blocked,
-              logLoginFailures, city,
+              log_login_failures, city,
               showNodeInfoAccounts,
               showNodeInfoVersion,
               brochMode,
@@ -1072,7 +1072,7 @@ def createServerGroup(path: str, domain: str, port: int,
     showNodeInfoAccounts = True
     showNodeInfoVersion = True
     city = 'London, England'
-    logLoginFailures = False
+    log_login_failures = False
     user_agents_blocked = []
     max_like_count = 10
     low_bandwidth = True
@@ -1085,7 +1085,7 @@ def createServerGroup(path: str, domain: str, port: int,
               low_bandwidth, max_like_count,
               shared_items_federated_domains,
               user_agents_blocked,
-              logLoginFailures, city,
+              log_login_failures, city,
               showNodeInfoAccounts,
               showNodeInfoVersion,
               brochMode,
