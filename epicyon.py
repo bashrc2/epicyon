@@ -324,8 +324,8 @@ parser.add_argument("--repliesEnabled", "--commentsEnabled",
                     type=str2bool, nargs='?',
                     const=True, default=True,
                     help="Enable replies to a post")
-parser.add_argument("--showPublishAsIcon",
-                    dest='showPublishAsIcon',
+parser.add_argument("--show_publish_as_icon",
+                    dest='show_publish_as_icon',
                     type=str2bool, nargs='?',
                     const=True, default=True,
                     help="Whether to show newswire publish " +
@@ -3078,10 +3078,10 @@ max_like_count = \
 if max_like_count is not None:
     args.max_like_count = int(max_like_count)
 
-showPublishAsIcon = \
-    getConfigParam(base_dir, 'showPublishAsIcon')
-if showPublishAsIcon is not None:
-    args.showPublishAsIcon = bool(showPublishAsIcon)
+show_publish_as_icon = \
+    getConfigParam(base_dir, 'show_publish_as_icon')
+if show_publish_as_icon is not None:
+    args.show_publish_as_icon = bool(show_publish_as_icon)
 
 icons_as_buttons = \
     getConfigParam(base_dir, 'icons_as_buttons')
@@ -3231,7 +3231,7 @@ if __name__ == "__main__":
               args.rss_icon_at_top,
               args.icons_as_buttons,
               args.full_width_tl_button_header,
-              args.showPublishAsIcon,
+              args.show_publish_as_icon,
               args.maxFollowers,
               args.maxNewsPosts,
               args.maxMirroredArticles,

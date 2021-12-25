@@ -183,7 +183,7 @@ def _setNewswirePublishAsIcon(base_dir: str, useIcon: bool) -> bool:
     configJson = loadJson(configFilename, 0)
     if not configJson:
         return False
-    configJson['showPublishAsIcon'] = useIcon
+    configJson['show_publish_as_icon'] = useIcon
     return saveJson(configJson, configFilename)
 
 

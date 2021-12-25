@@ -53,7 +53,7 @@ def getRightColumnContent(base_dir: str, nickname: str, domainFull: str,
                           newswire: {}, positiveVoting: bool,
                           showBackButton: bool, timelinePath: str,
                           showPublishButton: bool,
-                          showPublishAsIcon: bool,
+                          show_publish_as_icon: bool,
                           rss_icon_at_top: bool,
                           publish_button_at_top: bool,
                           authorized: bool,
@@ -124,7 +124,7 @@ def getRightColumnContent(base_dir: str, nickname: str, domainFull: str,
             translate['Go Back'] + '</button></a>\n'
 
     if showPublishButton and not publish_button_at_top:
-        if not showPublishAsIcon:
+        if not show_publish_as_icon:
             htmlStr += publishButtonStr
 
     # show the edit icon
@@ -172,7 +172,7 @@ def getRightColumnContent(base_dir: str, nickname: str, domainFull: str,
 
     # show publish icon at top
     if showPublishButton:
-        if showPublishAsIcon:
+        if show_publish_as_icon:
             titleStr = translate['Publish a blog article']
             if defaultTimeline == 'tlfeatures':
                 titleStr = translate['Publish a news article']
@@ -450,7 +450,7 @@ def htmlNewswireMobile(cssCache: {}, base_dir: str, nickname: str,
                        newswire: {},
                        positiveVoting: bool,
                        timelinePath: str,
-                       showPublishAsIcon: bool,
+                       show_publish_as_icon: bool,
                        authorized: bool,
                        rss_icon_at_top: bool,
                        icons_as_buttons: bool,
@@ -503,7 +503,7 @@ def htmlNewswireMobile(cssCache: {}, base_dir: str, nickname: str,
                               moderator, editor,
                               newswire, positiveVoting,
                               False, timelinePath, showPublishButton,
-                              showPublishAsIcon, rss_icon_at_top, False,
+                              show_publish_as_icon, rss_icon_at_top, False,
                               authorized, False, theme,
                               defaultTimeline, accessKeys)
     if editor and not newswire:

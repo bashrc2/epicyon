@@ -2232,9 +2232,9 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.publish_button_at_top = False
         if 'newswire-publish-icon' in themeDesignerParams:
             if themeDesignerParams['newswire-publish-icon'].lower() == 'true':
-                self.server.showPublishAsIcon = True
+                self.server.show_publish_as_icon = True
             else:
-                self.server.showPublishAsIcon = False
+                self.server.show_publish_as_icon = False
         if 'icons-as-buttons' in themeDesignerParams:
             if themeDesignerParams['icons-as-buttons'].lower() == 'true':
                 self.server.icons_as_buttons = True
@@ -5015,9 +5015,9 @@ class PubServer(BaseHTTPRequestHandler):
                                 getTextModeBanner(self.server.base_dir)
                             self.server.iconsCache = {}
                             self.server.fontsCache = {}
-                            self.server.showPublishAsIcon = \
+                            self.server.show_publish_as_icon = \
                                 getConfigParam(self.server.base_dir,
-                                               'showPublishAsIcon')
+                                               'show_publish_as_icon')
                             self.server.full_width_tl_button_header = \
                                 getConfigParam(self.server.base_dir,
                                                'full_width_tl_button_header')
@@ -5955,9 +5955,9 @@ class PubServer(BaseHTTPRequestHandler):
                                     getTextModeBanner(base_dir)
                                 self.server.iconsCache = {}
                                 self.server.fontsCache = {}
-                                self.server.showPublishAsIcon = \
+                                self.server.show_publish_as_icon = \
                                     getConfigParam(base_dir,
-                                                   'showPublishAsIcon')
+                                                   'show_publish_as_icon')
                                 self.server.full_width_tl_button_header = \
                                     getConfigParam(base_dir,
                                                    'fullWidthTimeline' +
@@ -10247,7 +10247,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.showPublishedDateOnly,
                                         self.server.newswire,
                                         self.server.positiveVoting,
-                                        self.server.showPublishAsIcon,
+                                        self.server.show_publish_as_icon,
                                         full_width_tl_button_header,
                                         self.server.icons_as_buttons,
                                         self.server.rss_icon_at_top,
@@ -10398,7 +10398,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.showPublishedDateOnly,
                                          self.server.newswire,
                                          self.server.positiveVoting,
-                                         self.server.showPublishAsIcon,
+                                         self.server.show_publish_as_icon,
                                          full_width_tl_button_header,
                                          self.server.icons_as_buttons,
                                          self.server.rss_icon_at_top,
@@ -10541,7 +10541,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.showPublishedDateOnly,
                                          self.server.newswire,
                                          self.server.positiveVoting,
-                                         self.server.showPublishAsIcon,
+                                         self.server.show_publish_as_icon,
                                          full_width_tl_button_header,
                                          self.server.icons_as_buttons,
                                          self.server.rss_icon_at_top,
@@ -10682,7 +10682,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.showPublishedDateOnly,
                                        self.server.newswire,
                                        self.server.positiveVoting,
-                                       self.server.showPublishAsIcon,
+                                       self.server.show_publish_as_icon,
                                        full_width_tl_button_header,
                                        self.server.icons_as_buttons,
                                        self.server.rss_icon_at_top,
@@ -10824,7 +10824,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.showPublishedDateOnly,
                                        self.server.newswire,
                                        self.server.positiveVoting,
-                                       self.server.showPublishAsIcon,
+                                       self.server.show_publish_as_icon,
                                        full_width_tl_button_header,
                                        self.server.icons_as_buttons,
                                        self.server.rss_icon_at_top,
@@ -10976,7 +10976,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.newswire,
                                       moderator, editor, artist,
                                       self.server.positiveVoting,
-                                      self.server.showPublishAsIcon,
+                                      self.server.show_publish_as_icon,
                                       full_width_tl_button_header,
                                       self.server.icons_as_buttons,
                                       self.server.rss_icon_at_top,
@@ -11125,7 +11125,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.showPublishedDateOnly,
                                           self.server.newswire,
                                           self.server.positiveVoting,
-                                          self.server.showPublishAsIcon,
+                                          self.server.show_publish_as_icon,
                                           full_width_tl_button_header,
                                           self.server.icons_as_buttons,
                                           self.server.rss_icon_at_top,
@@ -11234,7 +11234,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.showPublishedDateOnly,
                                    self.server.newswire,
                                    self.server.positiveVoting,
-                                   self.server.showPublishAsIcon,
+                                   self.server.show_publish_as_icon,
                                    full_width_tl_button_header,
                                    self.server.icons_as_buttons,
                                    self.server.rss_icon_at_top,
@@ -11319,7 +11319,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.showPublishedDateOnly,
                                    self.server.newswire,
                                    self.server.positiveVoting,
-                                   self.server.showPublishAsIcon,
+                                   self.server.show_publish_as_icon,
                                    full_width_tl_button_header,
                                    self.server.icons_as_buttons,
                                    self.server.rss_icon_at_top,
@@ -11441,7 +11441,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.showPublishedDateOnly,
                                           self.server.newswire,
                                           self.server.positiveVoting,
-                                          self.server.showPublishAsIcon,
+                                          self.server.show_publish_as_icon,
                                           full_width_tl_button_header,
                                           self.server.icons_as_buttons,
                                           self.server.rss_icon_at_top,
@@ -11579,7 +11579,7 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.showPublishedDateOnly,
                                self.server.newswire,
                                self.server.positiveVoting,
-                               self.server.showPublishAsIcon,
+                               self.server.show_publish_as_icon,
                                full_width_tl_button_header,
                                self.server.icons_as_buttons,
                                self.server.rss_icon_at_top,
@@ -11711,7 +11711,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.showPublishedDateOnly,
                                            self.server.newswire,
                                            self.server.positiveVoting,
-                                           self.server.showPublishAsIcon,
+                                           self.server.show_publish_as_icon,
                                            full_width_tl_button_header,
                                            self.server.icons_as_buttons,
                                            self.server.rss_icon_at_top,
@@ -14960,7 +14960,7 @@ class PubServer(BaseHTTPRequestHandler):
                     return
                 timelinePath = \
                     '/users/' + nickname + '/' + self.server.defaultTimeline
-                showPublishAsIcon = self.server.showPublishAsIcon
+                show_publish_as_icon = self.server.show_publish_as_icon
                 rss_icon_at_top = self.server.rss_icon_at_top
                 icons_as_buttons = self.server.icons_as_buttons
                 defaultTimeline = self.server.defaultTimeline
@@ -14977,7 +14977,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.newswire,
                                          self.server.positiveVoting,
                                          timelinePath,
-                                         showPublishAsIcon,
+                                         show_publish_as_icon,
                                          authorized,
                                          rss_icon_at_top,
                                          icons_as_buttons,
@@ -18436,7 +18436,7 @@ def runDaemon(content_license_url: str,
               rss_icon_at_top: bool,
               icons_as_buttons: bool,
               full_width_tl_button_header: bool,
-              showPublishAsIcon: bool,
+              show_publish_as_icon: bool,
               maxFollowers: int,
               maxNewsPosts: int,
               maxMirroredArticles: int,
@@ -18661,7 +18661,7 @@ def runDaemon(content_license_url: str,
 
     # whether to show an icon for publish on the
     # newswire, or a 'Publish' button
-    httpd.showPublishAsIcon = showPublishAsIcon
+    httpd.show_publish_as_icon = show_publish_as_icon
 
     # Whether to show the timeline header containing inbox, outbox
     # calendar, etc as the full width of the screen or not
