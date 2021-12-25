@@ -2105,7 +2105,7 @@ def _postAllowsComments(postFilename: str) -> bool:
 
 
 def populateReplies(base_dir: str, http_prefix: str, domain: str,
-                    messageJson: {}, maxReplies: int, debug: bool) -> bool:
+                    messageJson: {}, max_replies: int, debug: bool) -> bool:
     """Updates the list of replies for a post on this domain if
     a reply to it arrives
     """
@@ -2155,7 +2155,7 @@ def populateReplies(base_dir: str, http_prefix: str, domain: str,
     messageId = removeIdEnding(messageJson['id'])
     if os.path.isfile(postRepliesFilename):
         numLines = sum(1 for line in open(postRepliesFilename))
-        if numLines > maxReplies:
+        if numLines > max_replies:
             return False
         if messageId not in open(postRepliesFilename).read():
             try:
@@ -3185,7 +3185,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                        port: int, proxy_type: str,
                        federationList: [], debug: bool,
                        queueFilename: str, destinationFilename: str,
-                       maxReplies: int, allowDeletion: bool,
+                       max_replies: int, allowDeletion: bool,
                        max_mentions: int, max_emoji: int, translate: {},
                        unitTest: bool,
                        yt_replace_domain: str,
@@ -3446,7 +3446,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
         # list of indexes to be updated
         updateIndexList = ['inbox']
         populateReplies(base_dir, http_prefix, domain, postJsonObject,
-                        maxReplies, debug)
+                        max_replies, debug)
 
         _receiveQuestionVote(base_dir, nickname, domain,
                              http_prefix, handle, debug,
@@ -4067,7 +4067,7 @@ def runInboxQueue(recentPostsCache: {}, max_recent_posts: int,
                   domain: str,
                   onion_domain: str, i2p_domain: str,
                   port: int, proxy_type: str,
-                  federationList: [], maxReplies: int,
+                  federationList: [], max_replies: int,
                   domainMaxPostsPerDay: int,
                   accountMaxPostsPerDay: int,
                   allowDeletion: bool, debug: bool, max_mentions: int,
@@ -4500,7 +4500,7 @@ def runInboxQueue(recentPostsCache: {}, max_recent_posts: int,
                                federationList,
                                debug,
                                queueFilename, destination,
-                               maxReplies, allowDeletion,
+                               max_replies, allowDeletion,
                                max_mentions, max_emoji,
                                translate, unitTest,
                                yt_replace_domain,

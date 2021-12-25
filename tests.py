@@ -693,7 +693,7 @@ def createServerAlice(path: str, domain: str, port: int,
     http_prefix = 'http'
     proxy_type = None
     password = 'alicepass'
-    maxReplies = 64
+    max_replies = 64
     domainMaxPostsPerDay = 1000
     accountMaxPostsPerDay = 1000
     allowDeletion = True
@@ -816,7 +816,7 @@ def createServerAlice(path: str, domain: str, port: int,
               "instance_id", False, path, domain,
               onion_domain, i2p_domain, None, None, port, port,
               http_prefix, federationList, max_mentions, max_emoji, False,
-              proxy_type, maxReplies,
+              proxy_type, max_replies,
               domainMaxPostsPerDay, accountMaxPostsPerDay,
               allowDeletion, True, True, False, sendThreads,
               False)
@@ -838,7 +838,7 @@ def createServerBob(path: str, domain: str, port: int,
     proxy_type = None
     client_to_server = False
     password = 'bobpass'
-    maxReplies = 64
+    max_replies = 64
     domainMaxPostsPerDay = 1000
     accountMaxPostsPerDay = 1000
     allowDeletion = True
@@ -958,7 +958,7 @@ def createServerBob(path: str, domain: str, port: int,
               "instance_id", False, path, domain,
               onion_domain, i2p_domain, None, None, port, port,
               http_prefix, federationList, max_mentions, max_emoji, False,
-              proxy_type, maxReplies,
+              proxy_type, max_replies,
               domainMaxPostsPerDay, accountMaxPostsPerDay,
               allowDeletion, True, True, False, sendThreads,
               False)
@@ -977,7 +977,7 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
     http_prefix = 'http'
     proxy_type = None
     password = 'evepass'
-    maxReplies = 64
+    max_replies = 64
     allowDeletion = True
     privateKeyPem, publicKeyPem, person, wfEndpoint = \
         createPerson(path, nickname, domain, port, http_prefix, True,
@@ -1028,7 +1028,7 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
               "instance_id", False, path, domain,
               onion_domain, i2p_domain, None, None, port, port,
               http_prefix, federationList, max_mentions, max_emoji, False,
-              proxy_type, maxReplies, allowDeletion, True, True, False,
+              proxy_type, max_replies, allowDeletion, True, True, False,
               sendThreads, False)
 
 
@@ -1047,7 +1047,7 @@ def createServerGroup(path: str, domain: str, port: int,
     http_prefix = 'http'
     proxy_type = None
     password = 'testgrouppass'
-    maxReplies = 64
+    max_replies = 64
     domainMaxPostsPerDay = 1000
     accountMaxPostsPerDay = 1000
     allowDeletion = True
@@ -1100,7 +1100,7 @@ def createServerGroup(path: str, domain: str, port: int,
               "instance_id", False, path, domain,
               onion_domain, i2p_domain, None, None, port, port,
               http_prefix, federationList, max_mentions, max_emoji, False,
-              proxy_type, maxReplies,
+              proxy_type, max_replies,
               domainMaxPostsPerDay, accountMaxPostsPerDay,
               allowDeletion, True, True, False, sendThreads,
               False)

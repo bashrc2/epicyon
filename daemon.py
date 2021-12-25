@@ -534,7 +534,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.http_prefix,
                                         self.server.domainFull,
                                         postJsonObject,
-                                        self.server.maxReplies,
+                                        self.server.max_replies,
                                         self.server.debug)
                         # record the vote
                         try:
@@ -16652,7 +16652,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.http_prefix,
                                         self.server.domainFull,
                                         messageJson,
-                                        self.server.maxReplies,
+                                        self.server.max_replies,
                                         self.server.debug)
                         return 1
                     else:
@@ -16729,7 +16729,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.http_prefix,
                                         self.server.domainFull,
                                         messageJson,
-                                        self.server.maxReplies,
+                                        self.server.max_replies,
                                         self.server.debug)
                         return 1
                     else:
@@ -16879,7 +16879,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.http_prefix,
                                         self.server.domain,
                                         messageJson,
-                                        self.server.maxReplies,
+                                        self.server.max_replies,
                                         self.server.debug)
                         return 1
                     else:
@@ -16931,7 +16931,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.http_prefix,
                                         self.server.domain,
                                         messageJson,
-                                        self.server.maxReplies,
+                                        self.server.max_replies,
                                         self.server.debug)
                         return 1
                     else:
@@ -16990,7 +16990,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.http_prefix,
                                         self.server.domain,
                                         messageJson,
-                                        self.server.maxReplies,
+                                        self.server.max_replies,
                                         self.server.debug)
                         return 1
                     else:
@@ -18476,7 +18476,7 @@ def runDaemon(content_license_url: str,
               fed_list: [] = [],
               max_mentions: int = 10, max_emoji: int = 10,
               secure_mode: bool = False,
-              proxy_type: str = None, maxReplies: int = 64,
+              proxy_type: str = None, max_replies: int = 64,
               domainMaxPostsPerDay: int = 8640,
               accountMaxPostsPerDay: int = 864,
               allowDeletion: bool = False,
@@ -18757,7 +18757,7 @@ def runDaemon(content_license_url: str,
     httpd.lastLoginFailure = 0
     httpd.loginFailureCount = {}
     httpd.log_login_failures = log_login_failures
-    httpd.maxReplies = maxReplies
+    httpd.max_replies = max_replies
     httpd.tokens = {}
     httpd.tokensLookup = {}
     loadTokens(base_dir, httpd.tokens, httpd.tokensLookup)
@@ -18927,7 +18927,7 @@ def runDaemon(content_license_url: str,
                               domain, onion_domain, i2p_domain,
                               port, proxy_type,
                               httpd.federationList,
-                              maxReplies,
+                              max_replies,
                               domainMaxPostsPerDay,
                               accountMaxPostsPerDay,
                               allowDeletion, debug,

@@ -640,7 +640,7 @@ def _showLikesOnPost(postJsonObject: {}, maxLikes: int) -> None:
             break
 
 
-def _showRepliesOnPost(postJsonObject: {}, maxReplies: int) -> None:
+def _showRepliesOnPost(postJsonObject: {}, max_replies: int) -> None:
     """Shows the replies on a post
     """
     if not hasObjectDict(postJsonObject):
@@ -659,7 +659,7 @@ def _showRepliesOnPost(postJsonObject: {}, maxReplies: int) -> None:
     for item in objectReplies['items']:
         print('  ↰ ' + str(item['url']))
         ctr += 1
-        if ctr >= maxReplies:
+        if ctr >= max_replies:
             break
 
 

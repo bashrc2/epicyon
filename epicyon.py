@@ -556,7 +556,7 @@ parser.add_argument('--deny', dest='deny', type=str, default=None,
 parser.add_argument("-c", "--client", type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Use as an ActivityPub client")
-parser.add_argument('--maxreplies', dest='maxReplies', type=int, default=64,
+parser.add_argument('--maxreplies', dest='max_replies', type=int, default=64,
                     help='Maximum number of replies to a post')
 parser.add_argument('--max_mentions', '--hellthread', dest='max_mentions',
                     type=int, default=10,
@@ -3253,7 +3253,7 @@ if __name__ == "__main__":
               port, proxy_port, http_prefix,
               federationList, args.max_mentions,
               args.max_emoji, args.secure_mode,
-              proxy_type, args.maxReplies,
+              proxy_type, args.max_replies,
               args.domainMaxPostsPerDay,
               args.accountMaxPostsPerDay,
               args.allowdeletion, debug, False,
