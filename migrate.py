@@ -22,7 +22,7 @@ from person import getActorJson
 
 def _moveFollowingHandlesForAccount(base_dir: str, nickname: str, domain: str,
                                     session,
-                                    http_prefix: str, cachedWebfingers: {},
+                                    http_prefix: str, cached_webfingers: {},
                                     debug: bool,
                                     signingPrivateKeyPem: str) -> int:
     """Goes through all follows for an account and updates any that have moved
@@ -38,14 +38,14 @@ def _moveFollowingHandlesForAccount(base_dir: str, nickname: str, domain: str,
             ctr += \
                 _updateMovedHandle(base_dir, nickname, domain,
                                    followHandle, session,
-                                   http_prefix, cachedWebfingers,
+                                   http_prefix, cached_webfingers,
                                    debug, signingPrivateKeyPem)
     return ctr
 
 
 def _updateMovedHandle(base_dir: str, nickname: str, domain: str,
                        handle: str, session,
-                       http_prefix: str, cachedWebfingers: {},
+                       http_prefix: str, cached_webfingers: {},
                        debug: bool, signingPrivateKeyPem: str) -> int:
     """Check if an account has moved, and if so then alter following.txt
     for each account.
@@ -59,7 +59,7 @@ def _updateMovedHandle(base_dir: str, nickname: str, domain: str,
     if handle.startswith('@'):
         handle = handle[1:]
     wfRequest = webfingerHandle(session, handle,
-                                http_prefix, cachedWebfingers,
+                                http_prefix, cached_webfingers,
                                 domain, __version__, debug, False,
                                 signingPrivateKeyPem)
     if not wfRequest:
@@ -174,7 +174,7 @@ def _updateMovedHandle(base_dir: str, nickname: str, domain: str,
 
 
 def migrateAccounts(base_dir: str, session,
-                    http_prefix: str, cachedWebfingers: {},
+                    http_prefix: str, cached_webfingers: {},
                     debug: bool, signingPrivateKeyPem: str) -> int:
     """If followed accounts change then this modifies the
     following lists for each account accordingly.
@@ -191,7 +191,7 @@ def migrateAccounts(base_dir: str, session,
             ctr += \
                 _moveFollowingHandlesForAccount(base_dir, nickname, domain,
                                                 session, http_prefix,
-                                                cachedWebfingers, debug,
+                                                cached_webfingers, debug,
                                                 signingPrivateKeyPem)
         break
     return ctr

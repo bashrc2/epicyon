@@ -32,7 +32,7 @@ def instancesGraph(base_dir: str, handles: str,
         return dotGraphStr + '}\n'
 
     person_cache = {}
-    cachedWebfingers = {}
+    cached_webfingers = {}
     federationList = []
     max_mentions = 99
     max_emoji = 99
@@ -53,7 +53,7 @@ def instancesGraph(base_dir: str, handles: str,
         handle = http_prefix + "://" + domainFull + "/@" + nickname
         wfRequest = \
             webfingerHandle(session, handle, http_prefix,
-                            cachedWebfingers,
+                            cached_webfingers,
                             domain, project_version, debug, False,
                             signingPrivateKeyPem)
         if not wfRequest:

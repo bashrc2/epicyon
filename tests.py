@@ -2863,7 +2863,7 @@ def testClientToServer(base_dir: str):
     attachedImageDescription = 'Logo'
     city = 'London, England'
     isArticle = False
-    cachedWebfingers = {}
+    cached_webfingers = {}
     person_cache = {}
     password = 'alicepass'
     conversationId = None
@@ -2896,7 +2896,7 @@ def testClientToServer(base_dir: str):
                           followersOnly, True,
                           attachedImageFilename, mediaType,
                           attachedImageDescription, city,
-                          cachedWebfingers, person_cache, isArticle,
+                          cached_webfingers, person_cache, isArticle,
                           systemLanguage, low_bandwidth,
                           content_license_url,
                           True, None, None,
@@ -2960,7 +2960,7 @@ def testClientToServer(base_dir: str):
                                aliceDomain, alicePort,
                                'bob', bobDomain, bobPort,
                                http_prefix,
-                               cachedWebfingers, person_cache,
+                               cached_webfingers, person_cache,
                                True, __version__, signingPrivateKeyPem)
     alicePetnamesFilename = aliceDir + '/accounts/' + \
         'alice@' + aliceDomain + '/petnames.txt'
@@ -3002,7 +3002,7 @@ def testClientToServer(base_dir: str):
                                bobDomain, bobPort,
                                'alice', aliceDomain, alicePort,
                                http_prefix,
-                               cachedWebfingers, person_cache,
+                               cached_webfingers, person_cache,
                                True, __version__, signingPrivateKeyPem)
     for t in range(10):
         if os.path.isfile(aliceDir + '/accounts/alice@' + aliceDomain +
@@ -3057,7 +3057,7 @@ def testClientToServer(base_dir: str):
                       'bob', 'bobpass',
                       bobDomain, bobPort,
                       http_prefix, outboxPostId,
-                      cachedWebfingers, person_cache,
+                      cached_webfingers, person_cache,
                       True, __version__, signingPrivateKeyPem)
     for i in range(20):
         if os.path.isdir(outboxPath) and os.path.isdir(inboxPath):
@@ -3087,7 +3087,7 @@ def testClientToServer(base_dir: str):
                           'bob', 'bobpass',
                           bobDomain, bobPort,
                           http_prefix, outboxPostId, '😃',
-                          cachedWebfingers, person_cache,
+                          cached_webfingers, person_cache,
                           True, __version__, signingPrivateKeyPem)
     for i in range(20):
         if os.path.isdir(outboxPath) and os.path.isdir(inboxPath):
@@ -3133,7 +3133,7 @@ def testClientToServer(base_dir: str):
     sendAnnounceViaServer(bobDir, sessionBob, 'bob', password,
                           bobDomain, bobPort,
                           http_prefix, outboxPostId,
-                          cachedWebfingers,
+                          cached_webfingers,
                           person_cache, True, __version__,
                           signingPrivateKeyPem)
     for i in range(20):
@@ -3171,7 +3171,7 @@ def testClientToServer(base_dir: str):
     sendDeleteViaServer(aliceDir, sessionAlice, 'alice', password,
                         aliceDomain, alicePort,
                         http_prefix, outboxPostId,
-                        cachedWebfingers, person_cache,
+                        cached_webfingers, person_cache,
                         True, __version__, signingPrivateKeyPem)
     for i in range(30):
         if os.path.isdir(inboxPath):
@@ -3196,7 +3196,7 @@ def testClientToServer(base_dir: str):
                                  aliceDomain, alicePort,
                                  'bob', bobDomain, bobPort,
                                  http_prefix,
-                                 cachedWebfingers, person_cache,
+                                 cached_webfingers, person_cache,
                                  True, __version__, signingPrivateKeyPem)
     for t in range(10):
         if 'alice@' + aliceDomain + ':' + str(alicePort) not in \
@@ -5112,7 +5112,7 @@ def testUpdateActor(base_dir: str):
     print('Alice updates her PGP key')
 
     sessionAlice = createSession(proxy_type)
-    cachedWebfingers = {}
+    cached_webfingers = {}
     person_cache = {}
     password = 'alicepass'
     outboxPath = aliceDir + '/accounts/alice@' + aliceDomain + '/outbox'
@@ -5147,7 +5147,7 @@ def testUpdateActor(base_dir: str):
                            'alice', password,
                            aliceDomain, alicePort,
                            http_prefix,
-                           cachedWebfingers, person_cache,
+                           cached_webfingers, person_cache,
                            True, pubKey, signingPrivateKeyPem)
     print('actor update result: ' + str(actorUpdate))
     assert actorUpdate

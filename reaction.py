@@ -68,7 +68,7 @@ def _reaction(recentPostsCache: {},
               actorReaction: str,
               client_to_server: bool,
               send_threads: [], postLog: [],
-              person_cache: {}, cachedWebfingers: {},
+              person_cache: {}, cached_webfingers: {},
               debug: bool, project_version: str,
               signingPrivateKeyPem: str) -> {}:
     """Creates an emoji reaction
@@ -138,7 +138,7 @@ def _reaction(recentPostsCache: {},
                        reactionPostDomain, reactionPostPort,
                        'https://www.w3.org/ns/activitystreams#Public',
                        http_prefix, True, client_to_server, federationList,
-                       send_threads, postLog, cachedWebfingers, person_cache,
+                       send_threads, postLog, cached_webfingers, person_cache,
                        debug, project_version, None, groupAccount,
                        signingPrivateKeyPem, 7165392)
 
@@ -153,7 +153,7 @@ def reactionPost(recentPostsCache: {},
                  reactionStatusNumber: int, emojiContent: str,
                  client_to_server: bool,
                  send_threads: [], postLog: [],
-                 person_cache: {}, cachedWebfingers: {},
+                 person_cache: {}, cached_webfingers: {},
                  debug: bool, project_version: str,
                  signingPrivateKeyPem: str) -> {}:
     """Adds a reaction to a given status post. This is only used by unit tests
@@ -169,7 +169,7 @@ def reactionPost(recentPostsCache: {},
                      nickname, domain, port,
                      ccList, http_prefix, objectUrl, emojiContent,
                      actorReaction, client_to_server,
-                     send_threads, postLog, person_cache, cachedWebfingers,
+                     send_threads, postLog, person_cache, cached_webfingers,
                      debug, project_version, signingPrivateKeyPem)
 
 
@@ -178,7 +178,7 @@ def sendReactionViaServer(base_dir: str, session,
                           fromDomain: str, fromPort: int,
                           http_prefix: str, reactionUrl: str,
                           emojiContent: str,
-                          cachedWebfingers: {}, person_cache: {},
+                          cached_webfingers: {}, person_cache: {},
                           debug: bool, project_version: str,
                           signingPrivateKeyPem: str) -> {}:
     """Creates a reaction via c2s
@@ -207,7 +207,7 @@ def sendReactionViaServer(base_dir: str, session,
 
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, http_prefix,
-                                cachedWebfingers,
+                                cached_webfingers,
                                 fromDomain, project_version, debug, False,
                                 signingPrivateKeyPem)
     if not wfRequest:
@@ -268,7 +268,7 @@ def sendUndoReactionViaServer(base_dir: str, session,
                               fromDomain: str, fromPort: int,
                               http_prefix: str, reactionUrl: str,
                               emojiContent: str,
-                              cachedWebfingers: {}, person_cache: {},
+                              cached_webfingers: {}, person_cache: {},
                               debug: bool, project_version: str,
                               signingPrivateKeyPem: str) -> {}:
     """Undo a reaction via c2s
@@ -297,7 +297,7 @@ def sendUndoReactionViaServer(base_dir: str, session,
 
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, http_prefix,
-                                cachedWebfingers,
+                                cached_webfingers,
                                 fromDomain, project_version, debug, False,
                                 signingPrivateKeyPem)
     if not wfRequest:

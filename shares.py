@@ -558,7 +558,7 @@ def sendShareViaServer(base_dir, session,
                        summary: str, imageFilename: str,
                        itemQty: float, itemType: str, itemCategory: str,
                        location: str, duration: str,
-                       cachedWebfingers: {}, person_cache: {},
+                       cached_webfingers: {}, person_cache: {},
                        debug: bool, project_version: str,
                        itemPrice: str, itemCurrency: str,
                        signingPrivateKeyPem: str) -> {}:
@@ -610,7 +610,7 @@ def sendShareViaServer(base_dir, session,
     # lookup the inbox for the To handle
     wfRequest = \
         webfingerHandle(session, handle, http_prefix,
-                        cachedWebfingers,
+                        cached_webfingers,
                         fromDomain, project_version, debug, False,
                         signingPrivateKeyPem)
     if not wfRequest:
@@ -680,7 +680,7 @@ def sendUndoShareViaServer(base_dir: str, session,
                            fromNickname: str, password: str,
                            fromDomain: str, fromPort: int,
                            http_prefix: str, displayName: str,
-                           cachedWebfingers: {}, person_cache: {},
+                           cached_webfingers: {}, person_cache: {},
                            debug: bool, project_version: str,
                            signingPrivateKeyPem: str) -> {}:
     """Undoes a share via c2s
@@ -714,7 +714,7 @@ def sendUndoShareViaServer(base_dir: str, session,
 
     # lookup the inbox for the To handle
     wfRequest = \
-        webfingerHandle(session, handle, http_prefix, cachedWebfingers,
+        webfingerHandle(session, handle, http_prefix, cached_webfingers,
                         fromDomain, project_version, debug, False,
                         signingPrivateKeyPem)
     if not wfRequest:
@@ -778,7 +778,7 @@ def sendWantedViaServer(base_dir, session,
                         summary: str, imageFilename: str,
                         itemQty: float, itemType: str, itemCategory: str,
                         location: str, duration: str,
-                        cachedWebfingers: {}, person_cache: {},
+                        cached_webfingers: {}, person_cache: {},
                         debug: bool, project_version: str,
                         itemMaxPrice: str, itemCurrency: str,
                         signingPrivateKeyPem: str) -> {}:
@@ -830,7 +830,7 @@ def sendWantedViaServer(base_dir, session,
     # lookup the inbox for the To handle
     wfRequest = \
         webfingerHandle(session, handle, http_prefix,
-                        cachedWebfingers,
+                        cached_webfingers,
                         fromDomain, project_version, debug, False,
                         signingPrivateKeyPem)
     if not wfRequest:
@@ -900,7 +900,7 @@ def sendUndoWantedViaServer(base_dir: str, session,
                             fromNickname: str, password: str,
                             fromDomain: str, fromPort: int,
                             http_prefix: str, displayName: str,
-                            cachedWebfingers: {}, person_cache: {},
+                            cached_webfingers: {}, person_cache: {},
                             debug: bool, project_version: str,
                             signingPrivateKeyPem: str) -> {}:
     """Undoes a wanted item via c2s
@@ -934,7 +934,7 @@ def sendUndoWantedViaServer(base_dir: str, session,
 
     # lookup the inbox for the To handle
     wfRequest = \
-        webfingerHandle(session, handle, http_prefix, cachedWebfingers,
+        webfingerHandle(session, handle, http_prefix, cached_webfingers,
                         fromDomain, project_version, debug, False,
                         signingPrivateKeyPem)
     if not wfRequest:

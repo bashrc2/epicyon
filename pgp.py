@@ -456,7 +456,7 @@ def pgpPublicKeyUpload(base_dir: str, session,
                        nickname: str, password: str,
                        domain: str, port: int,
                        http_prefix: str,
-                       cachedWebfingers: {}, person_cache: {},
+                       cached_webfingers: {}, person_cache: {},
                        debug: bool, test: str,
                        signingPrivateKeyPem: str) -> {}:
     if debug:
@@ -557,7 +557,7 @@ def pgpPublicKeyUpload(base_dir: str, session,
 
     # lookup the inbox for the To handle
     wfRequest = \
-        webfingerHandle(session, handle, http_prefix, cachedWebfingers,
+        webfingerHandle(session, handle, http_prefix, cached_webfingers,
                         domain, __version__, debug, False,
                         signingPrivateKeyPem)
     if not wfRequest:

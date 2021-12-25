@@ -1497,7 +1497,7 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
         domain = handle.split('@')[1]
         domain = domain.replace('\n', '').replace('\r', '')
 
-    cachedWebfingers = {}
+    cached_webfingers = {}
     proxy_type = None
     if http or domain.endswith('.onion'):
         http_prefix = 'http'
@@ -1535,7 +1535,7 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
     else:
         handle = nickname + '@' + domain
         wfRequest = webfingerHandle(session, handle,
-                                    http_prefix, cachedWebfingers,
+                                    http_prefix, cached_webfingers,
                                     hostDomain, __version__, debug,
                                     groupAccount, signingPrivateKeyPem)
         if not wfRequest:

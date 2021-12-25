@@ -122,17 +122,17 @@ def expirePersonCache(person_cache: {}):
         print(str(len(removals)) + ' actors were expired from the cache')
 
 
-def storeWebfingerInCache(handle: str, wf, cachedWebfingers: {}) -> None:
+def storeWebfingerInCache(handle: str, wf, cached_webfingers: {}) -> None:
     """Store a webfinger endpoint in the cache
     """
-    cachedWebfingers[handle] = wf
+    cached_webfingers[handle] = wf
 
 
-def getWebfingerFromCache(handle: str, cachedWebfingers: {}) -> {}:
+def getWebfingerFromCache(handle: str, cached_webfingers: {}) -> {}:
     """Get webfinger endpoint from the cache
     """
-    if cachedWebfingers.get(handle):
-        return cachedWebfingers[handle]
+    if cached_webfingers.get(handle):
+        return cached_webfingers[handle]
     return None
 
 

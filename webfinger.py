@@ -61,7 +61,7 @@ def _parseHandle(handle: str) -> (str, str, bool):
 
 
 def webfingerHandle(session, handle: str, http_prefix: str,
-                    cachedWebfingers: {},
+                    cached_webfingers: {},
                     fromDomain: str, project_version: str,
                     debug: bool, groupAccount: bool,
                     signingPrivateKeyPem: str) -> {}:
@@ -78,7 +78,7 @@ def webfingerHandle(session, handle: str, http_prefix: str,
     wfDomain = removeDomainPort(domain)
 
     wfHandle = nickname + '@' + wfDomain
-    wf = getWebfingerFromCache(wfHandle, cachedWebfingers)
+    wf = getWebfingerFromCache(wfHandle, cached_webfingers)
     if wf:
         if debug:
             print('Webfinger from cache: ' + str(wf))
@@ -99,7 +99,7 @@ def webfingerHandle(session, handle: str, http_prefix: str,
         return None
 
     if result:
-        storeWebfingerInCache(wfHandle, result, cachedWebfingers)
+        storeWebfingerInCache(wfHandle, result, cached_webfingers)
     else:
         if debug:
             print("WARN: Unable to webfinger " + url + ' ' +
@@ -422,7 +422,7 @@ def _webfingerUpdateFromProfile(wfJson: {}, actorJson: {}) -> bool:
 
 def webfingerUpdate(base_dir: str, nickname: str, domain: str,
                     onion_domain: str,
-                    cachedWebfingers: {}) -> None:
+                    cached_webfingers: {}) -> None:
     handle = nickname + '@' + domain
     wfSubdir = '/wfendpoints'
     if not os.path.isdir(base_dir + wfSubdir):
@@ -448,4 +448,4 @@ def webfingerUpdate(base_dir: str, nickname: str, domain: str,
 
     if _webfingerUpdateFromProfile(wfJson, actorJson):
         if saveJson(wfJson, filename):
-            storeWebfingerInCache(handle, wfJson, cachedWebfingers)
+            storeWebfingerInCache(handle, wfJson, cached_webfingers)

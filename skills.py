@@ -176,7 +176,7 @@ def sendSkillViaServer(base_dir: str, session, nickname: str, password: str,
                        domain: str, port: int,
                        http_prefix: str,
                        skill: str, skillLevelPercent: int,
-                       cachedWebfingers: {}, person_cache: {},
+                       cached_webfingers: {}, person_cache: {},
                        debug: bool, project_version: str,
                        signingPrivateKeyPem: str) -> {}:
     """Sets a skill for a person via c2s
@@ -209,7 +209,7 @@ def sendSkillViaServer(base_dir: str, session, nickname: str, password: str,
     # lookup the inbox for the To handle
     wfRequest = \
         webfingerHandle(session, handle, http_prefix,
-                        cachedWebfingers,
+                        cached_webfingers,
                         domain, project_version, debug, False,
                         signingPrivateKeyPem)
     if not wfRequest:
