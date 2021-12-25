@@ -1303,7 +1303,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.low_bandwidth,
                                    self.server.signing_priv_key_pem,
                                    self.server.peertubeInstances,
-                                   self.server.themeName,
+                                   self.server.theme_name,
                                    self.server.max_like_count,
                                    self.server.max_recent_posts,
                                    self.server.cw_lists,
@@ -2131,7 +2131,7 @@ class PubServer(BaseHTTPRequestHandler):
                        domain: str, domainFull: str, port: int,
                        onion_domain: str, i2p_domain: str,
                        debug: bool, accessKeys: {},
-                       defaultTimeline: str, themeName: str,
+                       defaultTimeline: str, theme_name: str,
                        allow_local_network_access: bool,
                        system_language: str) -> None:
         """Receive POST from webapp_themeDesigner
@@ -2168,10 +2168,10 @@ class PubServer(BaseHTTPRequestHandler):
         if 'submitThemeDesignerReset=' in themeParams or \
            'submitThemeDesigner=' not in themeParams:
             if 'submitThemeDesignerReset=' in themeParams:
-                resetThemeDesignerSettings(base_dir, themeName, domain,
+                resetThemeDesignerSettings(base_dir, theme_name, domain,
                                            allow_local_network_access,
                                            system_language)
-                setTheme(base_dir, themeName, domain,
+                setTheme(base_dir, theme_name, domain,
                          allow_local_network_access, system_language)
 
             if callingDomain.endswith('.onion') and onion_domain:
@@ -2200,7 +2200,7 @@ class PubServer(BaseHTTPRequestHandler):
         # Check for boolean values which are False.
         # These don't come through via themeParams,
         # so need to be checked separately
-        themeFilename = base_dir + '/theme/' + themeName + '/theme.json'
+        themeFilename = base_dir + '/theme/' + theme_name + '/theme.json'
         themeJson = loadJson(themeFilename)
         if themeJson:
             for variableName, value in themeJson.items():
@@ -2216,7 +2216,7 @@ class PubServer(BaseHTTPRequestHandler):
                 variableName = variableName.replace('themeSetting_', '')
                 themeDesignerParams[variableName] = key
 
-        setThemeFromDesigner(base_dir, themeName, domain,
+        setThemeFromDesigner(base_dir, theme_name, domain,
                              themeDesignerParams,
                              allow_local_network_access,
                              system_language)
@@ -2710,7 +2710,7 @@ class PubServer(BaseHTTPRequestHandler):
                               domainFull,
                               self.server.defaultTimeline,
                               self.server.newswire,
-                              self.server.themeName,
+                              self.server.theme_name,
                               True, accessKeys,
                               customSubmitText,
                               conversationId,
@@ -2844,7 +2844,7 @@ class PubServer(BaseHTTPRequestHandler):
                               domainFull,
                               self.server.defaultTimeline,
                               self.server.newswire,
-                              self.server.themeName,
+                              self.server.theme_name,
                               True, accessKeys,
                               customSubmitText,
                               conversationId,
@@ -3310,7 +3310,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.show_published_date_only,
                                       self.server.peertubeInstances,
                                       self.server.allow_local_network_access,
-                                      self.server.themeName,
+                                      self.server.theme_name,
                                       self.server.system_language,
                                       self.server.max_like_count,
                                       self.server.signing_priv_key_pem,
@@ -3405,7 +3405,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.show_published_date_only,
                                       self.server.peertubeInstances,
                                       self.server.allow_local_network_access,
-                                      self.server.themeName, 'outbox',
+                                      self.server.theme_name, 'outbox',
                                       self.server.system_language,
                                       self.server.max_like_count,
                                       self.server.signing_priv_key_pem,
@@ -3473,7 +3473,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.show_published_date_only,
                                       self.server.peertubeInstances,
                                       self.server.allow_local_network_access,
-                                      self.server.themeName, 'bookmarks',
+                                      self.server.theme_name, 'bookmarks',
                                       self.server.system_language,
                                       self.server.max_like_count,
                                       self.server.signing_priv_key_pem,
@@ -3572,7 +3572,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                self.server.defaultTimeline,
                                                self.server.peertubeInstances,
                                                allow_local_network_access,
-                                               self.server.themeName,
+                                               self.server.theme_name,
                                                accessKeys,
                                                self.server.system_language,
                                                self.server.max_like_count,
@@ -4859,9 +4859,9 @@ class PubServer(BaseHTTPRequestHandler):
                 print('submitExportTheme')
                 themeDownloadPath = actorStr
                 if exportTheme(self.server.base_dir,
-                               self.server.themeName):
+                               self.server.theme_name):
                     themeDownloadPath += \
-                        '/exports/' + self.server.themeName + '.zip'
+                        '/exports/' + self.server.theme_name + '.zip'
                 print('submitExportTheme path=' + themeDownloadPath)
                 self._redirect_headers(themeDownloadPath,
                                        cookie, callingDomain)
@@ -5010,8 +5010,8 @@ class PubServer(BaseHTTPRequestHandler):
                        isArtist(base_dir, nickname):
                         # change theme
                         if fields.get('themeDropdown'):
-                            self.server.themeName = fields['themeDropdown']
-                            setTheme(base_dir, self.server.themeName, domain,
+                            self.server.theme_name = fields['themeDropdown']
+                            setTheme(base_dir, self.server.theme_name, domain,
                                      allow_local_network_access,
                                      system_language)
                             self.server.text_mode_banner = \
@@ -5068,7 +5068,7 @@ class PubServer(BaseHTTPRequestHandler):
 
                         # is this a news theme?
                         if isNewsThemeName(self.server.base_dir,
-                                           self.server.themeName):
+                                           self.server.theme_name):
                             fields['news_instance'] = 'on'
 
                         # change news instance status
@@ -5948,7 +5948,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               ext + '.etag')
                             currTheme = getTheme(base_dir)
                             if currTheme:
-                                self.server.themeName = currTheme
+                                self.server.theme_name = currTheme
                                 allow_local_network_access = \
                                     self.server.allow_local_network_access
                                 setTheme(base_dir, currTheme, domain,
@@ -6676,13 +6676,13 @@ class PubServer(BaseHTTPRequestHandler):
             if 'image/avif' in self.headers['Accept']:
                 favType = 'image/avif'
                 favFilename = favFilename.split('.')[0] + '.avif'
-        if not self.server.themeName:
-            self.themeName = getConfigParam(base_dir, 'theme')
-        if not self.server.themeName:
-            self.server.themeName = 'default'
+        if not self.server.theme_name:
+            self.theme_name = getConfigParam(base_dir, 'theme')
+        if not self.server.theme_name:
+            self.server.theme_name = 'default'
         # custom favicon
         faviconFilename = \
-            base_dir + '/theme/' + self.server.themeName + \
+            base_dir + '/theme/' + self.server.theme_name + \
             '/icons/' + favFilename
         if not favFilename.endswith('.ico'):
             if not os.path.isfile(faviconFilename):
@@ -7326,10 +7326,10 @@ class PubServer(BaseHTTPRequestHandler):
             return
         mediaStr = path.split('/icons/')[1]
         if '/' not in mediaStr:
-            if not self.server.themeName:
+            if not self.server.theme_name:
                 theme = 'default'
             else:
-                theme = self.server.themeName
+                theme = self.server.theme_name
             iconFilename = mediaStr
         else:
             theme = mediaStr.split('/')[0]
@@ -7382,10 +7382,10 @@ class PubServer(BaseHTTPRequestHandler):
             return
         mediaStr = path.split('/helpimages/')[1]
         if '/' not in mediaStr:
-            if not self.server.themeName:
+            if not self.server.theme_name:
                 theme = 'default'
             else:
-                theme = self.server.themeName
+                theme = self.server.theme_name
             iconFilename = mediaStr
         else:
             theme = mediaStr.split('/')[0]
@@ -7550,7 +7550,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.show_published_date_only,
                               self.server.peertubeInstances,
                               self.server.allow_local_network_access,
-                              self.server.themeName,
+                              self.server.theme_name,
                               self.server.system_language,
                               self.server.max_like_count,
                               self.server.signing_priv_key_pem,
@@ -7763,7 +7763,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.show_published_date_only,
                                  self.server.peertubeInstances,
                                  self.server.allow_local_network_access,
-                                 self.server.themeName,
+                                 self.server.theme_name,
                                  self.server.system_language,
                                  self.server.max_like_count,
                                  showRepeats,
@@ -8223,7 +8223,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.show_published_date_only,
                                      self.server.peertubeInstances,
                                      self.server.allow_local_network_access,
-                                     self.server.themeName,
+                                     self.server.theme_name,
                                      self.server.system_language,
                                      self.server.max_like_count,
                                      showRepeats,
@@ -8377,7 +8377,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.show_published_date_only,
                                      self.server.peertubeInstances,
                                      self.server.allow_local_network_access,
-                                     self.server.themeName,
+                                     self.server.theme_name,
                                      self.server.system_language,
                                      self.server.max_like_count,
                                      showRepeats,
@@ -8561,7 +8561,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.show_published_date_only,
                                      self.server.peertubeInstances,
                                      self.server.allow_local_network_access,
-                                     self.server.themeName,
+                                     self.server.theme_name,
                                      self.server.system_language,
                                      self.server.max_like_count,
                                      showRepeats,
@@ -8733,7 +8733,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.show_published_date_only,
                                      self.server.peertubeInstances,
                                      self.server.allow_local_network_access,
-                                     self.server.themeName,
+                                     self.server.theme_name,
                                      self.server.system_language,
                                      self.server.max_like_count,
                                      showRepeats,
@@ -8831,7 +8831,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.show_published_date_only,
                                     self.server.peertubeInstances,
                                     self.server.allow_local_network_access,
-                                    self.server.themeName,
+                                    self.server.theme_name,
                                     self.server.system_language,
                                     self.server.max_like_count,
                                     self.server.signing_priv_key_pem,
@@ -8953,7 +8953,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.show_published_date_only,
                                      self.server.peertubeInstances,
                                      self.server.allow_local_network_access,
-                                     self.server.themeName,
+                                     self.server.theme_name,
                                      self.server.system_language,
                                      self.server.max_like_count,
                                      showRepeats,
@@ -9081,7 +9081,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.show_published_date_only,
                                      self.server.peertubeInstances,
                                      self.server.allow_local_network_access,
-                                     self.server.themeName,
+                                     self.server.theme_name,
                                      self.server.system_language,
                                      self.server.max_like_count,
                                      showRepeats,
@@ -9178,7 +9178,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.show_published_date_only,
                                   self.server.peertubeInstances,
                                   self.server.allow_local_network_access,
-                                  self.server.themeName,
+                                  self.server.theme_name,
                                   self.server.system_language,
                                   self.server.max_like_count,
                                   self.server.signing_priv_key_pem,
@@ -9283,7 +9283,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.show_published_date_only,
                                      self.server.peertubeInstances,
                                      self.server.allow_local_network_access,
-                                     self.server.themeName,
+                                     self.server.theme_name,
                                      self.server.system_language,
                                      self.server.max_like_count,
                                      showRepeats,
@@ -9393,7 +9393,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.show_published_date_only,
                                      self.server.peertubeInstances,
                                      self.server.allow_local_network_access,
-                                     self.server.themeName,
+                                     self.server.theme_name,
                                      self.server.system_language,
                                      self.server.max_like_count,
                                      showRepeats,
@@ -9515,7 +9515,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.show_published_date_only,
                                     peertubeInstances,
                                     self.server.allow_local_network_access,
-                                    self.server.themeName,
+                                    self.server.theme_name,
                                     self.server.system_language,
                                     self.server.max_like_count,
                                     self.server.signing_priv_key_pem,
@@ -9607,7 +9607,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.show_published_date_only,
                                     peertubeInstances,
                                     self.server.allow_local_network_access,
-                                    self.server.themeName,
+                                    self.server.theme_name,
                                     self.server.system_language,
                                     self.server.max_like_count,
                                     self.server.signing_priv_key_pem,
@@ -9709,7 +9709,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     twitter_replacement_domain,
                                     self.server.show_published_date_only,
                                     self.server.newswire,
-                                    self.server.themeName,
+                                    self.server.theme_name,
                                     self.server.dormant_months,
                                     self.server.peertubeInstances,
                                     self.server.allow_local_network_access,
@@ -9825,7 +9825,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                 twitter_replacement_domain,
                                                 show_published_date_only,
                                                 self.server.newswire,
-                                                self.server.themeName,
+                                                self.server.theme_name,
                                                 self.server.dormant_months,
                                                 self.server.peertubeInstances,
                                                 allow_local_network_access,
@@ -9997,7 +9997,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.show_published_date_only,
                                    self.server.peertubeInstances,
                                    self.server.allow_local_network_access,
-                                   self.server.themeName,
+                                   self.server.theme_name,
                                    self.server.system_language,
                                    self.server.max_like_count,
                                    self.server.signing_priv_key_pem,
@@ -10257,7 +10257,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.rss_icon_at_top,
                                         self.server.publish_button_at_top,
                                         authorized,
-                                        self.server.themeName,
+                                        self.server.theme_name,
                                         self.server.peertubeInstances,
                                         self.server.allow_local_network_access,
                                         self.server.text_mode_banner,
@@ -10409,7 +10409,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.icons_as_buttons,
                                          self.server.rss_icon_at_top,
                                          self.server.publish_button_at_top,
-                                         authorized, self.server.themeName,
+                                         authorized, self.server.theme_name,
                                          self.server.peertubeInstances,
                                          allow_local_network_access,
                                          self.server.text_mode_banner,
@@ -10554,7 +10554,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.icons_as_buttons,
                                          self.server.rss_icon_at_top,
                                          self.server.publish_button_at_top,
-                                         authorized, self.server.themeName,
+                                         authorized, self.server.theme_name,
                                          self.server.peertubeInstances,
                                          allow_local_network_access,
                                          self.server.text_mode_banner,
@@ -10696,7 +10696,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.rss_icon_at_top,
                                        self.server.publish_button_at_top,
                                        authorized,
-                                       self.server.themeName,
+                                       self.server.theme_name,
                                        self.server.peertubeInstances,
                                        self.server.allow_local_network_access,
                                        self.server.text_mode_banner,
@@ -10838,7 +10838,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.rss_icon_at_top,
                                        self.server.publish_button_at_top,
                                        authorized,
-                                       self.server.themeName,
+                                       self.server.theme_name,
                                        self.server.peertubeInstances,
                                        self.server.allow_local_network_access,
                                        self.server.text_mode_banner,
@@ -10990,7 +10990,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.rss_icon_at_top,
                                       self.server.publish_button_at_top,
                                       authorized,
-                                      self.server.themeName,
+                                      self.server.theme_name,
                                       self.server.peertubeInstances,
                                       self.server.allow_local_network_access,
                                       self.server.text_mode_banner,
@@ -11141,7 +11141,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.rss_icon_at_top,
                                           self.server.publish_button_at_top,
                                           authorized,
-                                          self.server.themeName,
+                                          self.server.theme_name,
                                           self.server.peertubeInstances,
                                           allow_local_network_access,
                                           self.server.text_mode_banner,
@@ -11249,7 +11249,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.icons_as_buttons,
                                    self.server.rss_icon_at_top,
                                    self.server.publish_button_at_top,
-                                   authorized, self.server.themeName,
+                                   authorized, self.server.theme_name,
                                    self.server.peertubeInstances,
                                    self.server.allow_local_network_access,
                                    self.server.text_mode_banner,
@@ -11334,7 +11334,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.icons_as_buttons,
                                    self.server.rss_icon_at_top,
                                    self.server.publish_button_at_top,
-                                   authorized, self.server.themeName,
+                                   authorized, self.server.theme_name,
                                    self.server.peertubeInstances,
                                    self.server.allow_local_network_access,
                                    self.server.text_mode_banner,
@@ -11459,7 +11459,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.rss_icon_at_top,
                                           self.server.publish_button_at_top,
                                           authorized,
-                                          self.server.themeName,
+                                          self.server.theme_name,
                                           self.server.peertubeInstances,
                                           allow_local_network_access,
                                           self.server.text_mode_banner,
@@ -11597,7 +11597,7 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.rss_icon_at_top,
                                self.server.publish_button_at_top,
                                authorized,
-                               self.server.themeName,
+                               self.server.theme_name,
                                self.server.peertubeInstances,
                                self.server.allow_local_network_access,
                                self.server.text_mode_banner,
@@ -11731,7 +11731,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.rss_icon_at_top,
                                            self.server.publish_button_at_top,
                                            authorized, moderationActionStr,
-                                           self.server.themeName,
+                                           self.server.theme_name,
                                            self.server.peertubeInstances,
                                            allow_local_network_access,
                                            self.server.text_mode_banner,
@@ -11850,7 +11850,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.twitter_replacement_domain,
                                     self.server.show_published_date_only,
                                     self.server.newswire,
-                                    self.server.themeName,
+                                    self.server.theme_name,
                                     self.server.dormant_months,
                                     self.server.peertubeInstances,
                                     self.server.allow_local_network_access,
@@ -11971,7 +11971,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.twitter_replacement_domain,
                                     self.server.show_published_date_only,
                                     self.server.newswire,
-                                    self.server.themeName,
+                                    self.server.theme_name,
                                     self.server.dormant_months,
                                     self.server.peertubeInstances,
                                     self.server.allow_local_network_access,
@@ -12091,7 +12091,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.twitter_replacement_domain,
                                     self.server.show_published_date_only,
                                     self.server.newswire,
-                                    self.server.themeName,
+                                    self.server.theme_name,
                                     self.server.dormant_months,
                                     self.server.peertubeInstances,
                                     self.server.allow_local_network_access,
@@ -12227,7 +12227,7 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.twitter_replacement_domain,
                             self.server.show_published_date_only,
                             self.server.newswire,
-                            self.server.themeName,
+                            self.server.theme_name,
                             self.server.dormant_months,
                             self.server.peertubeInstances,
                             self.server.allow_local_network_access,
@@ -12682,7 +12682,7 @@ class PubServer(BaseHTTPRequestHandler):
         return True
 
     def _showDefaultProfileBackground(self, callingDomain: str, path: str,
-                                      base_dir: str, themeName: str,
+                                      base_dir: str, theme_name: str,
                                       GETstartTime) -> bool:
         """If a background image is missing after searching for a handle
         then substitute this image
@@ -12690,7 +12690,7 @@ class PubServer(BaseHTTPRequestHandler):
         imageExtensions = getImageExtensions()
         for ext in imageExtensions:
             bgFilename = \
-                base_dir + '/theme/' + themeName + '/image.' + ext
+                base_dir + '/theme/' + theme_name + '/image.' + ext
             if os.path.isfile(bgFilename):
                 if self._etag_exists(bgFilename):
                     # The file has not changed
@@ -12978,7 +12978,7 @@ class PubServer(BaseHTTPRequestHandler):
                               domainFull,
                               self.server.defaultTimeline,
                               self.server.newswire,
-                              self.server.themeName,
+                              self.server.theme_name,
                               noDropDown, accessKeys,
                               customSubmitText,
                               conversationId,
@@ -13075,7 +13075,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   port,
                                   http_prefix,
                                   self.server.defaultTimeline,
-                                  self.server.themeName,
+                                  self.server.theme_name,
                                   peertubeInstances,
                                   self.server.text_mode_banner,
                                   city,
@@ -13149,7 +13149,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    port,
                                    http_prefix,
                                    self.server.defaultTimeline,
-                                   self.server.themeName,
+                                   self.server.theme_name,
                                    accessKeys).encode('utf-8')
             if msg:
                 msglen = len(msg)
@@ -14206,7 +14206,7 @@ class PubServer(BaseHTTPRequestHandler):
                               itemID, self.server.translate,
                               self.server.shared_items_federated_domains,
                               self.server.defaultTimeline,
-                              self.server.themeName, 'shares', category)
+                              self.server.theme_name, 'shares', category)
             if not msg:
                 if callingDomain.endswith('.onion') and \
                    self.server.onion_domain:
@@ -14245,7 +14245,7 @@ class PubServer(BaseHTTPRequestHandler):
                               itemID, self.server.translate,
                               self.server.shared_items_federated_domains,
                               self.server.defaultTimeline,
-                              self.server.themeName, 'wanted', category)
+                              self.server.theme_name, 'wanted', category)
             if not msg:
                 if callingDomain.endswith('.onion') and \
                    self.server.onion_domain:
@@ -14466,7 +14466,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   nickname, self.server.domain,
                                   self.server.translate,
                                   self.server.defaultTimeline,
-                                  self.server.themeName,
+                                  self.server.theme_name,
                                   self.server.accessKeys)
             msg = msg.encode('utf-8')
             msglen = len(msg)
@@ -14494,7 +14494,7 @@ class PubServer(BaseHTTPRequestHandler):
                     htmlWelcomeScreen(self.server.base_dir, nickname,
                                       self.server.system_language,
                                       self.server.translate,
-                                      self.server.themeName)
+                                      self.server.theme_name)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 self._login_headers('text/html', msglen, callingDomain)
@@ -14522,7 +14522,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.domainFull,
                                        self.server.system_language,
                                        self.server.translate,
-                                       self.server.themeName)
+                                       self.server.theme_name)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 self._login_headers('text/html', msglen, callingDomain)
@@ -14550,7 +14550,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.domainFull,
                                      self.server.system_language,
                                      self.server.translate,
-                                     self.server.themeName)
+                                     self.server.theme_name)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 self._login_headers('text/html', msglen, callingDomain)
@@ -14763,7 +14763,7 @@ class PubServer(BaseHTTPRequestHandler):
         if self.path.startswith('/defaultprofilebackground'):
             self._showDefaultProfileBackground(callingDomain, self.path,
                                                self.server.base_dir,
-                                               self.server.themeName,
+                                               self.server.theme_name,
                                                GETstartTime)
             return
 
@@ -14996,7 +14996,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          rss_icon_at_top,
                                          icons_as_buttons,
                                          defaultTimeline,
-                                         self.server.themeName,
+                                         self.server.theme_name,
                                          accessKeys).encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
@@ -15035,7 +15035,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.rss_icon_at_top,
                                       icons_as_buttons,
                                       defaultTimeline,
-                                      self.server.themeName,
+                                      self.server.theme_name,
                                       accessKeys,
                                       sharedItemsDomains).encode('utf-8')
                 msglen = len(msg)
@@ -15122,7 +15122,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.base_dir, self.path,
                                  self.server.domain,
                                  self.server.defaultTimeline,
-                                 self.server.themeName,
+                                 self.server.theme_name,
                                  self.server.text_mode_banner,
                                  accessKeys).encode('utf-8')
                 msglen = len(msg)
@@ -15141,7 +15141,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.translate,
                                             self.server.base_dir, self.path,
                                             self.server.domain,
-                                            self.server.themeName)
+                                            self.server.theme_name)
             if msg:
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
@@ -15730,7 +15730,7 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.domain,
                                self.server.port,
                                cookie,
-                               self.server.themeName):
+                               self.server.theme_name):
                 self.server.GETbusy = False
                 return
 
@@ -16673,7 +16673,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       fields['message'],
                                       filename, attachmentMediaType,
                                       fields['imageDescription'],
-                                      self.server.themeName)
+                                      self.server.theme_name)
                     if messageJson:
                         messageJson = messageJson.encode('utf-8')
                         messageJsonLen = len(messageJson)
@@ -17942,7 +17942,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.debug,
                                     accessKeys,
                                     self.server.defaultTimeline,
-                                    self.server.themeName,
+                                    self.server.theme_name,
                                     self.server.allow_local_network_access,
                                     self.server.system_language)
                 self.server.POSTbusy = False
@@ -18812,10 +18812,10 @@ def runDaemon(content_license_url: str,
     httpd.cw_lists = loadCWLists(base_dir, True)
 
     # set the avatar for the news account
-    httpd.themeName = getConfigParam(base_dir, 'theme')
-    if not httpd.themeName:
-        httpd.themeName = 'default'
-    if isNewsThemeName(base_dir, httpd.themeName):
+    httpd.theme_name = getConfigParam(base_dir, 'theme')
+    if not httpd.theme_name:
+        httpd.theme_name = 'default'
+    if isNewsThemeName(base_dir, httpd.theme_name):
         news_instance = True
 
     httpd.news_instance = news_instance
@@ -18828,7 +18828,7 @@ def runDaemon(content_license_url: str,
         httpd.defaultTimeline = 'tlfeatures'
 
     setNewsAvatar(base_dir,
-                  httpd.themeName,
+                  httpd.theme_name,
                   http_prefix,
                   domain,
                   httpd.domainFull)
@@ -18942,7 +18942,7 @@ def runDaemon(content_license_url: str,
                               httpd.allow_local_network_access,
                               httpd.peertubeInstances,
                               verify_all_signatures,
-                              httpd.themeName,
+                              httpd.theme_name,
                               httpd.system_language,
                               httpd.max_like_count,
                               httpd.signing_priv_key_pem,

@@ -25,7 +25,7 @@ from markdown import markdownToHtml
 def htmlWelcomeProfile(base_dir: str, nickname: str, domain: str,
                        http_prefix: str, domainFull: str,
                        language: str, translate: {},
-                       themeName: str) -> str:
+                       theme_name: str) -> str:
     """Returns the welcome profile screen to set avatar and bio
     """
     # set a custom background for the welcome screen
@@ -38,9 +38,9 @@ def htmlWelcomeProfile(base_dir: str, nickname: str, domain: str,
     profileFilename = base_dir + '/accounts/welcome_profile.md'
     if not os.path.isfile(profileFilename):
         defaultFilename = None
-        if themeName:
+        if theme_name:
             defaultFilename = \
-                base_dir + '/theme/' + themeName + '/welcome/' + \
+                base_dir + '/theme/' + theme_name + '/welcome/' + \
                 'profile_' + language + '.md'
             if not os.path.isfile(defaultFilename):
                 defaultFilename = None

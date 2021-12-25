@@ -1336,7 +1336,7 @@ def individualPostAsHtml(signing_priv_key_pem: str,
                          show_published_date_only: bool,
                          peertubeInstances: [],
                          allow_local_network_access: bool,
-                         themeName: str, system_language: str,
+                         theme_name: str, system_language: str,
                          max_like_count: int,
                          showRepeats: bool,
                          showIcons: bool,
@@ -1551,7 +1551,7 @@ def individualPostAsHtml(signing_priv_key_pem: str,
                                       nickname, domain, domainFull,
                                       post_json_object, person_cache,
                                       translate, post_json_object['actor'],
-                                      themeName)
+                                      theme_name)
                         with open(announceFilename + '.tts', 'w+') as ttsFile:
                             ttsFile.write('\n')
 
@@ -2004,7 +2004,7 @@ def htmlIndividualPost(cssCache: {},
                        show_published_date_only: bool,
                        peertubeInstances: [],
                        allow_local_network_access: bool,
-                       themeName: str, system_language: str,
+                       theme_name: str, system_language: str,
                        max_like_count: int, signing_priv_key_pem: str,
                        cw_lists: {}, lists_enabled: str) -> str:
     """Show an individual post as html
@@ -2069,7 +2069,7 @@ def htmlIndividualPost(cssCache: {},
                              twitter_replacement_domain,
                              show_published_date_only,
                              peertubeInstances,
-                             allow_local_network_access, themeName,
+                             allow_local_network_access, theme_name,
                              system_language, max_like_count,
                              False, authorized, False, False, False, False,
                              cw_lists, lists_enabled)
@@ -2101,7 +2101,7 @@ def htmlIndividualPost(cssCache: {},
                                          show_published_date_only,
                                          peertubeInstances,
                                          allow_local_network_access,
-                                         themeName, system_language,
+                                         theme_name, system_language,
                                          max_like_count,
                                          False, authorized,
                                          False, False, False, False,
@@ -2136,7 +2136,7 @@ def htmlIndividualPost(cssCache: {},
                                          show_published_date_only,
                                          peertubeInstances,
                                          allow_local_network_access,
-                                         themeName, system_language,
+                                         theme_name, system_language,
                                          max_like_count,
                                          False, authorized,
                                          False, False, False, False,
@@ -2164,7 +2164,7 @@ def htmlPostReplies(cssCache: {},
                     show_published_date_only: bool,
                     peertubeInstances: [],
                     allow_local_network_access: bool,
-                    themeName: str, system_language: str,
+                    theme_name: str, system_language: str,
                     max_like_count: int,
                     signing_priv_key_pem: str, cw_lists: {},
                     lists_enabled: str) -> str:
@@ -2188,7 +2188,7 @@ def htmlPostReplies(cssCache: {},
                                      show_published_date_only,
                                      peertubeInstances,
                                      allow_local_network_access,
-                                     themeName, system_language,
+                                     theme_name, system_language,
                                      max_like_count,
                                      False, False, False, False, False, False,
                                      cw_lists, lists_enabled)
@@ -2217,7 +2217,7 @@ def htmlEmojiReactionPicker(cssCache: {},
                             show_published_date_only: bool,
                             peertubeInstances: [],
                             allow_local_network_access: bool,
-                            themeName: str, system_language: str,
+                            theme_name: str, system_language: str,
                             max_like_count: int, signing_priv_key_pem: str,
                             cw_lists: {}, lists_enabled: str,
                             boxName: str, pageNumber: int) -> str:
@@ -2240,7 +2240,7 @@ def htmlEmojiReactionPicker(cssCache: {},
                              show_published_date_only,
                              peertubeInstances,
                              allow_local_network_access,
-                             themeName, system_language,
+                             theme_name, system_language,
                              max_like_count,
                              False, False, False, False, False, False,
                              cw_lists, lists_enabled)
@@ -2273,7 +2273,7 @@ def htmlEmojiReactionPicker(cssCache: {},
 
     # filename of the banner shown at the top
     bannerFile, _ = \
-        getBannerFile(base_dir, nickname, domain, themeName)
+        getBannerFile(base_dir, nickname, domain, theme_name)
 
     instanceTitle = getConfigParam(base_dir, 'instanceTitle')
     metadata = ''

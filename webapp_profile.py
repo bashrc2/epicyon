@@ -135,7 +135,7 @@ def htmlProfileAfterSearch(cssCache: {},
                            defaultTimeline: str,
                            peertubeInstances: [],
                            allow_local_network_access: bool,
-                           themeName: str,
+                           theme_name: str,
                            accessKeys: {},
                            system_language: str,
                            max_like_count: int,
@@ -347,7 +347,7 @@ def htmlProfileAfterSearch(cssCache: {},
                                      show_published_date_only,
                                      peertubeInstances,
                                      allow_local_network_access,
-                                     themeName, system_language,
+                                     theme_name, system_language,
                                      max_like_count,
                                      False, False, False, False, False, False,
                                      cw_lists, lists_enabled)
@@ -1036,7 +1036,7 @@ def _htmlProfilePosts(recentPostsCache: {}, max_recent_posts: int,
                       show_published_date_only: bool,
                       peertubeInstances: [],
                       allow_local_network_access: bool,
-                      themeName: str, system_language: str,
+                      theme_name: str, system_language: str,
                       max_like_count: int,
                       signing_priv_key_pem: str,
                       cw_lists: {}, lists_enabled: str) -> str:
@@ -1081,7 +1081,7 @@ def _htmlProfilePosts(recentPostsCache: {}, max_recent_posts: int,
                                          show_published_date_only,
                                          peertubeInstances,
                                          allow_local_network_access,
-                                         themeName, system_language,
+                                         theme_name, system_language,
                                          max_like_count,
                                          False, False, False,
                                          True, False, False,
@@ -1226,12 +1226,12 @@ def _htmlThemesDropdown(base_dir: str, translate: {}) -> str:
         editCheckBox(translate['Grayscale'], 'grayscale', grayscale)
     themesDropdown += '  <select id="themeDropdown" ' + \
         'name="themeDropdown" class="theme">'
-    for themeName in themes:
-        translatedThemeName = themeName
-        if translate.get(themeName):
-            translatedThemeName = translate[themeName]
+    for theme_name in themes:
+        translatedThemeName = theme_name
+        if translate.get(theme_name):
+            translatedThemeName = translate[theme_name]
         themesDropdown += '    <option value="' + \
-            themeName.lower() + '">' + \
+            theme_name.lower() + '">' + \
             translatedThemeName + '</option>'
     themesDropdown += '  </select><br>'
     if os.path.isfile(base_dir + '/fonts/custom.woff') or \
@@ -1241,10 +1241,10 @@ def _htmlThemesDropdown(base_dir: str, translate: {}) -> str:
         themesDropdown += \
             editCheckBox(translate['Remove the custom font'],
                          'removeCustomFont', False)
-    themeName = getConfigParam(base_dir, 'theme')
+    theme_name = getConfigParam(base_dir, 'theme')
     themesDropdown = \
-        themesDropdown.replace('<option value="' + themeName + '">',
-                               '<option value="' + themeName +
+        themesDropdown.replace('<option value="' + theme_name + '">',
+                               '<option value="' + theme_name +
                                '" selected>')
     return themesDropdown
 

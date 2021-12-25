@@ -41,7 +41,7 @@ def welcomeScreenIsComplete(base_dir: str,
 
 def htmlWelcomeScreen(base_dir: str, nickname: str,
                       language: str, translate: {},
-                      themeName: str,
+                      theme_name: str,
                       currScreen='welcome') -> str:
     """Returns the welcome screen
     """
@@ -55,9 +55,9 @@ def htmlWelcomeScreen(base_dir: str, nickname: str,
     welcomeFilename = base_dir + '/accounts/' + currScreen + '.md'
     if not os.path.isfile(welcomeFilename):
         defaultFilename = None
-        if themeName:
+        if theme_name:
             defaultFilename = \
-                base_dir + '/theme/' + themeName + '/welcome/' + \
+                base_dir + '/theme/' + theme_name + '/welcome/' + \
                 'welcome_' + language + '.md'
             if not os.path.isfile(defaultFilename):
                 defaultFilename = None

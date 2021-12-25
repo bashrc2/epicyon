@@ -110,10 +110,10 @@ def _getThemeFiles() -> []:
             'welcome.css', 'graph.css')
 
 
-def isNewsThemeName(base_dir: str, themeName: str) -> bool:
+def isNewsThemeName(base_dir: str, theme_name: str) -> bool:
     """Returns true if the given theme is a news instance
     """
-    themeDir = base_dir + '/theme/' + themeName
+    themeDir = base_dir + '/theme/' + theme_name
     if os.path.isfile(themeDir + '/is_news_instance'):
         return True
     return False
@@ -127,23 +127,23 @@ def getThemesList(base_dir: str) -> []:
     """
     themes = []
     for subdir, dirs, files in os.walk(base_dir + '/theme'):
-        for themeName in dirs:
-            if '~' not in themeName and \
-               themeName != 'icons' and themeName != 'fonts':
-                themes.append(themeName.title())
+        for theme_name in dirs:
+            if '~' not in theme_name and \
+               theme_name != 'icons' and theme_name != 'fonts':
+                themes.append(theme_name.title())
         break
     themes.sort()
     print('Themes available: ' + str(themes))
     return themes
 
 
-def _copyThemeHelpFiles(base_dir: str, themeName: str,
+def _copyThemeHelpFiles(base_dir: str, theme_name: str,
                         system_language: str) -> None:
     """Copies any theme specific help files from the welcome subdirectory
     """
     if not system_language:
         system_language = 'en'
-    themeDir = base_dir + '/theme/' + themeName + '/welcome'
+    themeDir = base_dir + '/theme/' + theme_name + '/welcome'
     if not os.path.isdir(themeDir):
         themeDir = base_dir + '/defaultwelcome'
     for subdir, dirs, files in os.walk(themeDir):
@@ -492,17 +492,17 @@ def _setCustomFont(base_dir: str):
                 cssfile.write(css)
 
 
-def setThemeFromDesigner(base_dir: str, themeName: str, domain: str,
+def setThemeFromDesigner(base_dir: str, theme_name: str, domain: str,
                          themeParams: {},
                          allow_local_network_access: bool,
                          system_language: str):
     customThemeFilename = base_dir + '/accounts/theme.json'
     saveJson(themeParams, customThemeFilename)
-    setTheme(base_dir, themeName, domain,
+    setTheme(base_dir, theme_name, domain,
              allow_local_network_access, system_language)
 
 
-def resetThemeDesignerSettings(base_dir: str, themeName: str, domain: str,
+def resetThemeDesignerSettings(base_dir: str, theme_name: str, domain: str,
                                allow_local_network_access: bool,
                                system_language: str) -> None:
     """Resets the theme designer settings
@@ -515,7 +515,7 @@ def resetThemeDesignerSettings(base_dir: str, themeName: str, domain: str,
             print('EX: unable to remove theme designer settings on reset')
 
 
-def _readVariablesFile(base_dir: str, themeName: str,
+def _readVariablesFile(base_dir: str, theme_name: str,
                        variablesFile: str,
                        allow_local_network_access: bool) -> None:
     """Reads variables from a file in the theme directory
@@ -538,7 +538,7 @@ def _readVariablesFile(base_dir: str, themeName: str,
         "options": "jpg",
         "search": "jpg"
     }
-    _setThemeFromDict(base_dir, themeName, themeParams, bgParams,
+    _setThemeFromDict(base_dir, theme_name, themeParams, bgParams,
                       allow_local_network_access)
 
 
@@ -566,13 +566,13 @@ def _setThemeDefault(base_dir: str, allow_local_network_access: bool):
                       allow_local_network_access)
 
 
-def _setThemeFonts(base_dir: str, themeName: str) -> None:
+def _setThemeFonts(base_dir: str, theme_name: str) -> None:
     """Adds custom theme fonts
     """
-    themeNameLower = themeName.lower()
+    theme_name_lower = theme_name.lower()
     fontsDir = base_dir + '/fonts'
     themeFontsDir = \
-        base_dir + '/theme/' + themeNameLower + '/fonts'
+        base_dir + '/theme/' + theme_name_lower + '/fonts'
     if not os.path.isdir(themeFontsDir):
         return
     for subdir, dirs, files in os.walk(themeFontsDir):
@@ -661,20 +661,20 @@ def _setThemeImages(base_dir: str, name: str) -> None:
     """Changes the profile background image
     and banner to the defaults
     """
-    themeNameLower = name.lower()
+    theme_name_lower = name.lower()
 
     profileImageFilename = \
-        base_dir + '/theme/' + themeNameLower + '/image.png'
+        base_dir + '/theme/' + theme_name_lower + '/image.png'
     bannerFilename = \
-        base_dir + '/theme/' + themeNameLower + '/banner.png'
+        base_dir + '/theme/' + theme_name_lower + '/banner.png'
     searchBannerFilename = \
-        base_dir + '/theme/' + themeNameLower + '/search_banner.png'
+        base_dir + '/theme/' + theme_name_lower + '/search_banner.png'
     leftColImageFilename = \
-        base_dir + '/theme/' + themeNameLower + '/left_col_image.png'
+        base_dir + '/theme/' + theme_name_lower + '/left_col_image.png'
     rightColImageFilename = \
-        base_dir + '/theme/' + themeNameLower + '/right_col_image.png'
+        base_dir + '/theme/' + theme_name_lower + '/right_col_image.png'
 
-    _setTextModeTheme(base_dir, themeNameLower)
+    _setTextModeTheme(base_dir, theme_name_lower)
 
     backgroundNames = ('login', 'shares', 'delete', 'follow',
                        'options', 'block', 'search', 'calendar',
@@ -689,13 +689,13 @@ def _setThemeImages(base_dir: str, name: str) -> None:
 
             for backgroundType in backgroundNames:
                 for ext in extensions:
-                    if themeNameLower == 'default':
+                    if theme_name_lower == 'default':
                         backgroundImageFilename = \
                             base_dir + '/theme/default/' + \
                             backgroundType + '_background.' + ext
                     else:
                         backgroundImageFilename = \
-                            base_dir + '/theme/' + themeNameLower + '/' + \
+                            base_dir + '/theme/' + theme_name_lower + '/' + \
                             backgroundType + '_background' + '.' + ext
 
                     if os.path.isfile(backgroundImageFilename):
@@ -831,18 +831,17 @@ def setTheme(base_dir: str, name: str, domain: str,
     _removeTheme(base_dir)
 
     themes = getThemesList(base_dir)
-    for themeName in themes:
-        themeNameLower = themeName.lower()
-        if name == themeNameLower:
+    for theme_name in themes:
+        theme_name_lower = theme_name.lower()
+        if name == theme_name_lower:
+            allow_access = allow_local_network_access
             try:
-                globals()['setTheme' + themeName](base_dir,
-                                                  allow_local_network_access)
+                globals()['setTheme' + theme_name](base_dir, allow_access)
             except BaseException:
-                print('EX: setTheme unable to set theme ' + themeName)
-                pass
+                print('EX: setTheme unable to set theme ' + theme_name)
 
             if prevThemeName:
-                if prevThemeName.lower() != themeNameLower:
+                if prevThemeName.lower() != theme_name_lower:
                     # change the banner and profile image
                     # to the default for the theme
                     _setThemeImages(base_dir, name)
@@ -885,10 +884,10 @@ def setTheme(base_dir: str, name: str, domain: str,
 def updateDefaultThemesList(base_dir: str) -> None:
     """Recreates the list of default themes
     """
-    themeNames = getThemesList(base_dir)
+    theme_names = getThemesList(base_dir)
     defaultThemesFilename = base_dir + '/defaultthemes.txt'
     with open(defaultThemesFilename, 'w+') as defaultThemesFile:
-        for name in themeNames:
+        for name in theme_names:
             defaultThemesFile.write(name + '\n')
 
 

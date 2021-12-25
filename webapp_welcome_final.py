@@ -19,7 +19,7 @@ from markdown import markdownToHtml
 def htmlWelcomeFinal(base_dir: str, nickname: str, domain: str,
                      http_prefix: str, domainFull: str,
                      language: str, translate: {},
-                     themeName: str) -> str:
+                     theme_name: str) -> str:
     """Returns the final welcome screen after first login
     """
     # set a custom background for the welcome screen
@@ -32,9 +32,9 @@ def htmlWelcomeFinal(base_dir: str, nickname: str, domain: str,
     finalFilename = base_dir + '/accounts/welcome_final.md'
     if not os.path.isfile(finalFilename):
         defaultFilename = None
-        if themeName:
+        if theme_name:
             defaultFilename = \
-                base_dir + '/theme/' + themeName + '/welcome/' + \
+                base_dir + '/theme/' + theme_name + '/welcome/' + \
                 'final_' + language + '.md'
             if not os.path.isfile(defaultFilename):
                 defaultFilename = None

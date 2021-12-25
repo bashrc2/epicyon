@@ -169,10 +169,10 @@ color_to_hex = {
 def htmlThemeDesigner(cssCache: {}, base_dir: str,
                       nickname: str, domain: str,
                       translate: {}, defaultTimeline: str,
-                      themeName: str, accessKeys: {}) -> str:
+                      theme_name: str, accessKeys: {}) -> str:
     """Edit theme settings
     """
-    themeFilename = base_dir + '/theme/' + themeName + '/theme.json'
+    themeFilename = base_dir + '/theme/' + theme_name + '/theme.json'
     themeJson = {}
     if os.path.isfile(themeFilename):
         themeJson = loadJson(themeFilename)
@@ -195,7 +195,7 @@ def htmlThemeDesigner(cssCache: {}, base_dir: str,
     themeForm = \
         htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     bannerFile, bannerFilename = \
-        getBannerFile(base_dir, nickname, domain, themeName)
+        getBannerFile(base_dir, nickname, domain, theme_name)
     themeForm += \
         '<a href="/users/' + nickname + '/' + defaultTimeline + '" ' + \
         'accesskey="' + accessKeys['menuTimeline'] + '">' + \

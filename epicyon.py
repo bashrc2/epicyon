@@ -992,10 +992,10 @@ if not os.path.isdir(base_dir + '/cache/announce'):
     os.mkdir(base_dir + '/cache/announce')
 
 # set the theme in config.json
-themeName = getConfigParam(base_dir, 'theme')
-if not themeName:
+theme_name = getConfigParam(base_dir, 'theme')
+if not theme_name:
     setConfigParam(base_dir, 'theme', 'default')
-    themeName = 'default'
+    theme_name = 'default'
 
 if not args.mediainstance:
     media_instance = getConfigParam(base_dir, 'media_instance')
@@ -3180,9 +3180,9 @@ if twitterDomain:
     if '.' in twitterDomain:
         args.twitter_replacement_domain = twitterDomain
 
-if setTheme(base_dir, themeName, domain,
+if setTheme(base_dir, theme_name, domain,
             args.allow_local_network_access, args.language):
-    print('Theme set to ' + themeName)
+    print('Theme set to ' + theme_name)
 
 # whether new registrations are open or closed
 if args.registration:
