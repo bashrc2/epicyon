@@ -204,8 +204,8 @@ parser.add_argument('--max_feed_item_size_kb',
                     default=2048,
                     help='Maximum size of an individual rss/atom ' +
                     'feed item in K')
-parser.add_argument('--maxMirroredArticles',
-                    dest='maxMirroredArticles', type=int,
+parser.add_argument('--max_mirrored_articles',
+                    dest='max_mirrored_articles', type=int,
                     default=100,
                     help='Maximum number of news articles to mirror.' +
                     ' Set to zero for indefinite mirroring.')
@@ -3043,10 +3043,10 @@ maxNewswireFeedSizeKb = \
 if maxNewswireFeedSizeKb:
     args.maxNewswireFeedSizeKb = int(maxNewswireFeedSizeKb)
 
-maxMirroredArticles = \
-    getConfigParam(base_dir, 'maxMirroredArticles')
-if maxMirroredArticles is not None:
-    args.maxMirroredArticles = int(maxMirroredArticles)
+max_mirrored_articles = \
+    getConfigParam(base_dir, 'max_mirrored_articles')
+if max_mirrored_articles is not None:
+    args.max_mirrored_articles = int(max_mirrored_articles)
 
 max_news_posts = \
     getConfigParam(base_dir, 'max_news_posts')
@@ -3234,7 +3234,7 @@ if __name__ == "__main__":
               args.show_publish_as_icon,
               args.max_followers,
               args.max_news_posts,
-              args.maxMirroredArticles,
+              args.max_mirrored_articles,
               args.maxNewswireFeedSizeKb,
               args.max_newswire_postsPerSource,
               args.dateonly,

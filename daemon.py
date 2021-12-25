@@ -18439,7 +18439,7 @@ def runDaemon(content_license_url: str,
               show_publish_as_icon: bool,
               max_followers: int,
               max_news_posts: int,
-              maxMirroredArticles: int,
+              max_mirrored_articles: int,
               maxNewswireFeedSizeKb: int,
               max_newswire_postsPerSource: int,
               showPublishedDateOnly: bool,
@@ -18647,7 +18647,7 @@ def runDaemon(content_license_url: str,
     httpd.showPublishedDateOnly = showPublishedDateOnly
 
     # maximum number of news articles to mirror
-    httpd.maxMirroredArticles = maxMirroredArticles
+    httpd.max_mirrored_articles = max_mirrored_articles
 
     # maximum number of posts in the news timeline/outbox
     httpd.max_news_posts = max_news_posts

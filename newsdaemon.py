@@ -440,7 +440,7 @@ def _newswireHashtagProcessing(session, base_dir: str, postJsonObject: {},
 
 def _createNewsMirror(base_dir: str, domain: str,
                       postIdNumber: str, url: str,
-                      maxMirroredArticles: int) -> bool:
+                      max_mirrored_articles: int) -> bool:
     """Creates a local mirror of a news article
     """
     if '|' in url or '>' in url:
@@ -457,7 +457,7 @@ def _createNewsMirror(base_dir: str, domain: str,
 
     mirrorIndexFilename = base_dir + '/accounts/newsmirror.txt'
 
-    if maxMirroredArticles > 0 and noOfDirs > maxMirroredArticles:
+    if max_mirrored_articles > 0 and noOfDirs > max_mirrored_articles:
         if not os.path.isfile(mirrorIndexFilename):
             # no index for mirrors found
             return True
@@ -465,7 +465,7 @@ def _createNewsMirror(base_dir: str, domain: str,
         with open(mirrorIndexFilename, 'r') as indexFile:
             # remove the oldest directories
             ctr = 0
-            while noOfDirs > maxMirroredArticles:
+            while noOfDirs > max_mirrored_articles:
                 ctr += 1
                 if ctr > 5000:
                     # escape valve
@@ -542,7 +542,7 @@ def _convertRSStoActivityPub(base_dir: str, http_prefix: str,
                              personCache: {},
                              federationList: [],
                              sendThreads: [], postLog: [],
-                             maxMirroredArticles: int,
+                             max_mirrored_articles: int,
                              allow_local_network_access: bool,
                              systemLanguage: str,
                              low_bandwidth: bool,
@@ -645,7 +645,7 @@ def _convertRSStoActivityPub(base_dir: str, http_prefix: str,
 
         if mirrored:
             if not _createNewsMirror(base_dir, domain, statusNumber,
-                                     url, maxMirroredArticles):
+                                     url, max_mirrored_articles):
                 continue
 
         idStr = \
@@ -833,7 +833,7 @@ def runNewswireDaemon(base_dir: str, httpd,
                                  httpd.federationList,
                                  httpd.sendThreads,
                                  httpd.postLog,
-                                 httpd.maxMirroredArticles,
+                                 httpd.max_mirrored_articles,
                                  httpd.allow_local_network_access,
                                  httpd.systemLanguage,
                                  httpd.low_bandwidth,
