@@ -188,7 +188,7 @@ def postMessageToOutbox(session, translate: {},
                         personCache: {}, allowDeletion: bool,
                         proxyType: str, version: str, debug: bool,
                         yt_replace_domain: str,
-                        twitterReplacementDomain: str,
+                        twitter_replacement_domain: str,
                         show_published_date_only: bool,
                         allow_local_network_access: bool,
                         city: str, systemLanguage: str,
@@ -289,7 +289,7 @@ def postMessageToOutbox(session, translate: {},
         replaceYouTube(messageJson, yt_replace_domain, systemLanguage)
         # replace twitter, so that twitter posts can be shown without
         # having a twitter account
-        replaceTwitter(messageJson, twitterReplacementDomain, systemLanguage)
+        replaceTwitter(messageJson, twitter_replacement_domain, systemLanguage)
         # https://www.w3.org/TR/activitypub/#create-activity-outbox
         messageJson['object']['attributedTo'] = messageJson['actor']
         if messageJson['object'].get('attachment'):
@@ -424,7 +424,7 @@ def postMessageToOutbox(session, translate: {},
                                     messageJson,
                                     translate,
                                     yt_replace_domain,
-                                    twitterReplacementDomain,
+                                    twitter_replacement_domain,
                                     allow_local_network_access,
                                     recentPostsCache, debug, systemLanguage,
                                     domainFull, personCache,
@@ -465,7 +465,7 @@ def postMessageToOutbox(session, translate: {},
                                          http_prefix, __version__,
                                          boxNameIndex,
                                          yt_replace_domain,
-                                         twitterReplacementDomain,
+                                         twitter_replacement_domain,
                                          show_published_date_only,
                                          peertubeInstances,
                                          allow_local_network_access,

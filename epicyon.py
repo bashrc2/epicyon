@@ -234,7 +234,7 @@ parser.add_argument('--path', dest='base_dir',
 parser.add_argument('--ytdomain', dest='yt_replace_domain',
                     type=str, default=None,
                     help='Domain used to replace youtube.com')
-parser.add_argument('--twitterdomain', dest='twitterReplacementDomain',
+parser.add_argument('--twitterdomain', dest='twitter_replacement_domain',
                     type=str, default=None,
                     help='Domain used to replace twitter.com')
 parser.add_argument('--language', dest='language',
@@ -3178,7 +3178,7 @@ if twitterDomain:
     if '/' in twitterDomain:
         twitterDomain = twitterDomain.split('/')[0]
     if '.' in twitterDomain:
-        args.twitterReplacementDomain = twitterDomain
+        args.twitter_replacement_domain = twitterDomain
 
 if setTheme(base_dir, themeName, domain,
             args.allow_local_network_access, args.language):
@@ -3249,7 +3249,7 @@ if __name__ == "__main__":
               instance_id, args.client, base_dir,
               domain, onion_domain, i2p_domain,
               args.yt_replace_domain,
-              args.twitterReplacementDomain,
+              args.twitter_replacement_domain,
               port, proxyPort, http_prefix,
               federationList, args.maxMentions,
               args.maxEmoji, args.secureMode,

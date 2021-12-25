@@ -698,7 +698,7 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
         recentPostsCache = {}
         allow_local_network_access = False
         yt_replace_domain = None
-        twitterReplacementDomain = None
+        twitter_replacement_domain = None
         postJsonObject2 = \
             downloadAnnounce(session, base_dir,
                              http_prefix,
@@ -706,7 +706,7 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
                              postJsonObject,
                              __version__, translate,
                              yt_replace_domain,
-                             twitterReplacementDomain,
+                             twitter_replacement_domain,
                              allow_local_network_access,
                              recentPostsCache, False,
                              systemLanguage,
@@ -2396,7 +2396,7 @@ def runDesktopClient(base_dir: str, proxyType: str, http_prefix: str,
                         recentPostsCache = {}
                         allow_local_network_access = False
                         yt_replace_domain = None
-                        twitterReplacementDomain = None
+                        twitter_replacement_domain = None
                         postJsonObject2 = \
                             downloadAnnounce(session, base_dir,
                                              http_prefix,
@@ -2404,7 +2404,7 @@ def runDesktopClient(base_dir: str, proxyType: str, http_prefix: str,
                                              postJsonObject,
                                              __version__, translate,
                                              yt_replace_domain,
-                                             twitterReplacementDomain,
+                                             twitter_replacement_domain,
                                              allow_local_network_access,
                                              recentPostsCache, False,
                                              systemLanguage,
