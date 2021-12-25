@@ -319,7 +319,7 @@ def setCSSparam(css: str, param: str, value: str) -> str:
 
 def _setThemeFromDict(base_dir: str, name: str,
                       themeParams: {}, bgParams: {},
-                      allowLocalNetworkAccess: bool) -> None:
+                      allow_local_network_access: bool) -> None:
     """Uses a dictionary to set a theme
     """
     if name:
@@ -334,7 +334,7 @@ def _setThemeFromDict(base_dir: str, name: str,
 
         # Ensure that any custom CSS is mostly harmless.
         # If not then just use the defaults
-        if dangerousCSS(templateFilename, allowLocalNetworkAccess) or \
+        if dangerousCSS(templateFilename, allow_local_network_access) or \
            not os.path.isfile(templateFilename):
             # use default css
             templateFilename = base_dir + '/epicyon-' + filename
@@ -494,16 +494,16 @@ def _setCustomFont(base_dir: str):
 
 def setThemeFromDesigner(base_dir: str, themeName: str, domain: str,
                          themeParams: {},
-                         allowLocalNetworkAccess: bool,
+                         allow_local_network_access: bool,
                          systemLanguage: str):
     customThemeFilename = base_dir + '/accounts/theme.json'
     saveJson(themeParams, customThemeFilename)
     setTheme(base_dir, themeName, domain,
-             allowLocalNetworkAccess, systemLanguage)
+             allow_local_network_access, systemLanguage)
 
 
 def resetThemeDesignerSettings(base_dir: str, themeName: str, domain: str,
-                               allowLocalNetworkAccess: bool,
+                               allow_local_network_access: bool,
                                systemLanguage: str) -> None:
     """Resets the theme designer settings
     """
@@ -517,7 +517,7 @@ def resetThemeDesignerSettings(base_dir: str, themeName: str, domain: str,
 
 def _readVariablesFile(base_dir: str, themeName: str,
                        variablesFile: str,
-                       allowLocalNetworkAccess: bool) -> None:
+                       allow_local_network_access: bool) -> None:
     """Reads variables from a file in the theme directory
     """
     themeParams = loadJson(variablesFile, 0)
@@ -539,10 +539,10 @@ def _readVariablesFile(base_dir: str, themeName: str,
         "search": "jpg"
     }
     _setThemeFromDict(base_dir, themeName, themeParams, bgParams,
-                      allowLocalNetworkAccess)
+                      allow_local_network_access)
 
 
-def _setThemeDefault(base_dir: str, allowLocalNetworkAccess: bool):
+def _setThemeDefault(base_dir: str, allow_local_network_access: bool):
     name = 'default'
     _removeTheme(base_dir)
     _setThemeInConfig(base_dir, name)
@@ -563,7 +563,7 @@ def _setThemeDefault(base_dir: str, allowLocalNetworkAccess: bool):
         "search-banner-height-mobile": "15vh"
     }
     _setThemeFromDict(base_dir, name, themeParams, bgParams,
-                      allowLocalNetworkAccess)
+                      allow_local_network_access)
 
 
 def _setThemeFonts(base_dir: str, themeName: str) -> None:
@@ -815,7 +815,7 @@ def _setClearCacheFlag(base_dir: str) -> None:
 
 
 def setTheme(base_dir: str, name: str, domain: str,
-             allowLocalNetworkAccess: bool, systemLanguage: str) -> bool:
+             allow_local_network_access: bool, systemLanguage: str) -> bool:
     """Sets the theme with the given name as the current theme
     """
     result = False
@@ -825,7 +825,7 @@ def setTheme(base_dir: str, name: str, domain: str,
     # if the theme has changed then remove any custom settings
     if prevThemeName != name:
         resetThemeDesignerSettings(base_dir, name, domain,
-                                   allowLocalNetworkAccess,
+                                   allow_local_network_access,
                                    systemLanguage)
 
     _removeTheme(base_dir)
@@ -836,7 +836,7 @@ def setTheme(base_dir: str, name: str, domain: str,
         if name == themeNameLower:
             try:
                 globals()['setTheme' + themeName](base_dir,
-                                                  allowLocalNetworkAccess)
+                                                  allow_local_network_access)
             except BaseException:
                 print('EX: setTheme unable to set theme ' + themeName)
                 pass
@@ -851,13 +851,13 @@ def setTheme(base_dir: str, name: str, domain: str,
 
     if not result:
         # default
-        _setThemeDefault(base_dir, allowLocalNetworkAccess)
+        _setThemeDefault(base_dir, allow_local_network_access)
         result = True
 
     variablesFile = base_dir + '/theme/' + name + '/theme.json'
     if os.path.isfile(variablesFile):
         _readVariablesFile(base_dir, name, variablesFile,
-                           allowLocalNetworkAccess)
+                           allow_local_network_access)
 
     _setCustomFont(base_dir)
 

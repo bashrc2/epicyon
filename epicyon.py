@@ -364,8 +364,8 @@ parser.add_argument("--publishButtonAtTop",
                     const=True, default=False,
                     help="Whether to show the publish button at the top of " +
                     "the newswire column")
-parser.add_argument("--allowLocalNetworkAccess",
-                    dest='allowLocalNetworkAccess',
+parser.add_argument("--allow_local_network_access",
+                    dest='allow_local_network_access',
                     type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Whether to allow access to local network " +
@@ -3103,10 +3103,10 @@ fullWidthTimelineButtonHeader = \
 if fullWidthTimelineButtonHeader is not None:
     args.fullWidthTimelineButtonHeader = bool(fullWidthTimelineButtonHeader)
 
-allowLocalNetworkAccess = \
-    getConfigParam(base_dir, 'allowLocalNetworkAccess')
-if allowLocalNetworkAccess is not None:
-    args.allowLocalNetworkAccess = bool(allowLocalNetworkAccess)
+allow_local_network_access = \
+    getConfigParam(base_dir, 'allow_local_network_access')
+if allow_local_network_access is not None:
+    args.allow_local_network_access = bool(allow_local_network_access)
 
 verify_all_signatures = \
     getConfigParam(base_dir, 'verify_all_signatures')
@@ -3181,7 +3181,7 @@ if twitterDomain:
         args.twitterReplacementDomain = twitterDomain
 
 if setTheme(base_dir, themeName, domain,
-            args.allowLocalNetworkAccess, args.language):
+            args.allow_local_network_access, args.language):
     print('Theme set to ' + themeName)
 
 # whether new registrations are open or closed
@@ -3225,7 +3225,7 @@ if __name__ == "__main__":
               args.send_threads_timeout_mins,
               args.dormant_months,
               args.max_newswire_posts,
-              args.allowLocalNetworkAccess,
+              args.allow_local_network_access,
               args.maxFeedItemSizeKb,
               args.publishButtonAtTop,
               args.rssIconAtTop,

@@ -171,7 +171,7 @@ def htmlReplaceQuoteMarks(content: str) -> str:
     return newContent
 
 
-def dangerousCSS(filename: str, allowLocalNetworkAccess: bool) -> bool:
+def dangerousCSS(filename: str, allow_local_network_access: bool) -> bool:
     """Returns true is the css file contains code which
     can create security problems
     """
@@ -209,7 +209,7 @@ def dangerousCSS(filename: str, allowLocalNetworkAccess: bool) -> bool:
 
         # an attacker can include html inside of the css
         # file as a comment and this may then be run from the html
-        if dangerousMarkup(content, allowLocalNetworkAccess):
+        if dangerousMarkup(content, allow_local_network_access):
             return True
     return False
 

@@ -842,7 +842,7 @@ def isLocalNetworkAddress(ipAddress: str) -> bool:
     return False
 
 
-def _isDangerousString(content: str, allowLocalNetworkAccess: bool,
+def _isDangerousString(content: str, allow_local_network_access: bool,
                        separators: [], invalidStrings: []) -> bool:
     """Returns true if the given string is dangerous
     """
@@ -855,7 +855,7 @@ def _isDangerousString(content: str, allowLocalNetworkAccess: bool,
             continue
         contentSections = content.split(startChar)
         invalidPartials = ()
-        if not allowLocalNetworkAccess:
+        if not allow_local_network_access:
             invalidPartials = getLocalNetworkAddresses()
         for markup in contentSections:
             if endChar not in markup:
@@ -875,7 +875,7 @@ def _isDangerousString(content: str, allowLocalNetworkAccess: bool,
     return False
 
 
-def dangerousMarkup(content: str, allowLocalNetworkAccess: bool) -> bool:
+def dangerousMarkup(content: str, allow_local_network_access: bool) -> bool:
     """Returns true if the given content contains dangerous html markup
     """
     separators = [['<', '>'], ['&lt;', '&gt;']]
@@ -885,18 +885,18 @@ def dangerousMarkup(content: str, allowLocalNetworkAccess: bool) -> bool:
         'frame', 'iframe', 'html', 'body',
         'hr', 'allow-popups', 'allow-scripts'
     ]
-    return _isDangerousString(content, allowLocalNetworkAccess,
+    return _isDangerousString(content, allow_local_network_access,
                               separators, invalidStrings)
 
 
-def dangerousSVG(content: str, allowLocalNetworkAccess: bool) -> bool:
+def dangerousSVG(content: str, allow_local_network_access: bool) -> bool:
     """Returns true if the given svg file content contains dangerous scripts
     """
     separators = [['<', '>'], ['&lt;', '&gt;']]
     invalidStrings = [
         'script'
     ]
-    return _isDangerousString(content, allowLocalNetworkAccess,
+    return _isDangerousString(content, allow_local_network_access,
                               separators, invalidStrings)
 
 

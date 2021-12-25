@@ -543,7 +543,7 @@ def _convertRSStoActivityPub(base_dir: str, http_prefix: str,
                              federationList: [],
                              sendThreads: [], postLog: [],
                              maxMirroredArticles: int,
-                             allowLocalNetworkAccess: bool,
+                             allow_local_network_access: bool,
                              systemLanguage: str,
                              low_bandwidth: bool,
                              content_license_url: str) -> None:
@@ -598,8 +598,8 @@ def _convertRSStoActivityPub(base_dir: str, http_prefix: str,
 
         rssTitle = _removeControlCharacters(item[0])
         url = item[1]
-        if dangerousMarkup(url, allowLocalNetworkAccess) or \
-           dangerousMarkup(rssTitle, allowLocalNetworkAccess):
+        if dangerousMarkup(url, allow_local_network_access) or \
+           dangerousMarkup(rssTitle, allow_local_network_access):
             continue
         rssDescription = ''
 
@@ -834,7 +834,7 @@ def runNewswireDaemon(base_dir: str, httpd,
                                  httpd.sendThreads,
                                  httpd.postLog,
                                  httpd.maxMirroredArticles,
-                                 httpd.allowLocalNetworkAccess,
+                                 httpd.allow_local_network_access,
                                  httpd.systemLanguage,
                                  httpd.low_bandwidth,
                                  httpd.content_license_url)

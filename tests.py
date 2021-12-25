@@ -779,7 +779,7 @@ def createServerAlice(path: str, domain: str, port: int,
     maxEmoji = 10
     onionDomain = None
     i2pDomain = None
-    allowLocalNetworkAccess = True
+    allow_local_network_access = True
     max_newswire_posts = 20
     dormant_months = 3
     send_threads_timeout_mins = 30
@@ -808,7 +808,7 @@ def createServerAlice(path: str, domain: str, port: int,
               verify_all_signatures,
               send_threads_timeout_mins,
               dormant_months, max_newswire_posts,
-              allowLocalNetworkAccess,
+              allow_local_network_access,
               2048, False, True, False, False, True, maxFollowers,
               0, 100, 1024, 5, False,
               0, False, 1, False, False, False,
@@ -921,7 +921,7 @@ def createServerBob(path: str, domain: str, port: int,
     maxEmoji = 10
     onionDomain = None
     i2pDomain = None
-    allowLocalNetworkAccess = True
+    allow_local_network_access = True
     max_newswire_posts = 20
     dormant_months = 3
     send_threads_timeout_mins = 30
@@ -950,7 +950,7 @@ def createServerBob(path: str, domain: str, port: int,
               verify_all_signatures,
               send_threads_timeout_mins,
               dormant_months, max_newswire_posts,
-              allowLocalNetworkAccess,
+              allow_local_network_access,
               2048, False, True, False, False, True, maxFollowers,
               0, 100, 1024, 5, False, 0,
               False, 1, False, False, False,
@@ -990,7 +990,7 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
     maxEmoji = 10
     onionDomain = None
     i2pDomain = None
-    allowLocalNetworkAccess = True
+    allow_local_network_access = True
     max_newswire_posts = 20
     dormant_months = 3
     send_threads_timeout_mins = 30
@@ -1020,7 +1020,7 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
               verify_all_signatures,
               send_threads_timeout_mins,
               dormant_months, max_newswire_posts,
-              allowLocalNetworkAccess,
+              allow_local_network_access,
               2048, False, True, False, False, True, maxFollowers,
               0, 100, 1024, 5, False, 0,
               False, 1, False, False, False,
@@ -1062,7 +1062,7 @@ def createServerGroup(path: str, domain: str, port: int,
     maxEmoji = 10
     onionDomain = None
     i2pDomain = None
-    allowLocalNetworkAccess = True
+    allow_local_network_access = True
     max_newswire_posts = 20
     dormant_months = 3
     send_threads_timeout_mins = 30
@@ -1092,7 +1092,7 @@ def createServerGroup(path: str, domain: str, port: int,
               verify_all_signatures,
               send_threads_timeout_mins,
               dormant_months, max_newswire_posts,
-              allowLocalNetworkAccess,
+              allow_local_network_access,
               2048, False, True, False, False, True, maxFollowers,
               0, 100, 1024, 5, False,
               0, False, 1, False, False, False,
@@ -3712,64 +3712,64 @@ def _testDangerousSVG(base_dir: str) -> None:
 
 def _testDangerousMarkup():
     print('testDangerousMarkup')
-    allowLocalNetworkAccess = False
+    allow_local_network_access = False
     content = '<p>This is a valid message</p>'
-    assert(not dangerousMarkup(content, allowLocalNetworkAccess))
+    assert(not dangerousMarkup(content, allow_local_network_access))
 
     content = 'This is a valid message without markup'
-    assert(not dangerousMarkup(content, allowLocalNetworkAccess))
+    assert(not dangerousMarkup(content, allow_local_network_access))
 
     content = '<p>This is a valid-looking message. But wait... ' + \
         '<script>document.getElementById("concentrated")' + \
         '.innerHTML = "evil";</script></p>'
-    assert(dangerousMarkup(content, allowLocalNetworkAccess))
+    assert(dangerousMarkup(content, allow_local_network_access))
 
     content = '<p>This is a valid-looking message. But wait... ' + \
         '&lt;script&gt;document.getElementById("concentrated")' + \
         '.innerHTML = "evil";&lt;/script&gt;</p>'
-    assert(dangerousMarkup(content, allowLocalNetworkAccess))
+    assert(dangerousMarkup(content, allow_local_network_access))
 
     content = '<p>This html contains more than you expected... ' + \
         '<script language="javascript">document.getElementById("abc")' + \
         '.innerHTML = "def";</script></p>'
-    assert(dangerousMarkup(content, allowLocalNetworkAccess))
+    assert(dangerousMarkup(content, allow_local_network_access))
 
     content = '<p>This is a valid-looking message. But wait... ' + \
         '<script src="https://evilsite/payload.js" /></p>'
-    assert(dangerousMarkup(content, allowLocalNetworkAccess))
+    assert(dangerousMarkup(content, allow_local_network_access))
 
     content = '<p>This message embeds an evil frame.' + \
         '<iframe src="somesite"></iframe></p>'
-    assert(dangerousMarkup(content, allowLocalNetworkAccess))
+    assert(dangerousMarkup(content, allow_local_network_access))
 
     content = '<p>This message tries to obfuscate an evil frame.' + \
         '<  iframe     src = "somesite"></    iframe  ></p>'
-    assert(dangerousMarkup(content, allowLocalNetworkAccess))
+    assert(dangerousMarkup(content, allow_local_network_access))
 
     content = '<p>This message is not necessarily evil, but annoying.' + \
         '<hr><br><br><br><br><br><br><br><hr><hr></p>'
-    assert(dangerousMarkup(content, allowLocalNetworkAccess))
+    assert(dangerousMarkup(content, allow_local_network_access))
 
     content = '<p>This message contans a ' + \
         '<a href="https://validsite/index.html">valid link.</a></p>'
-    assert(not dangerousMarkup(content, allowLocalNetworkAccess))
+    assert(not dangerousMarkup(content, allow_local_network_access))
 
     content = '<p>This message contans a ' + \
         '<a href="https://validsite/iframe.html">' + \
         'valid link having invalid but harmless name.</a></p>'
-    assert(not dangerousMarkup(content, allowLocalNetworkAccess))
+    assert(not dangerousMarkup(content, allow_local_network_access))
 
     content = '<p>This message which <a href="127.0.0.1:8736">' + \
         'tries to access the local network</a></p>'
-    assert(dangerousMarkup(content, allowLocalNetworkAccess))
+    assert(dangerousMarkup(content, allow_local_network_access))
 
     content = '<p>This message which <a href="http://192.168.5.10:7235">' + \
         'tries to access the local network</a></p>'
-    assert(dangerousMarkup(content, allowLocalNetworkAccess))
+    assert(dangerousMarkup(content, allow_local_network_access))
 
     content = '<p>127.0.0.1 This message which does not access ' + \
         'the local network</a></p>'
-    assert(not dangerousMarkup(content, allowLocalNetworkAccess))
+    assert(not dangerousMarkup(content, allow_local_network_access))
 
 
 def _runHtmlReplaceQuoteMarks():

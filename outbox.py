@@ -190,7 +190,7 @@ def postMessageToOutbox(session, translate: {},
                         yt_replace_domain: str,
                         twitterReplacementDomain: str,
                         showPublishedDateOnly: bool,
-                        allowLocalNetworkAccess: bool,
+                        allow_local_network_access: bool,
                         city: str, systemLanguage: str,
                         shared_items_federated_domains: [],
                         sharedItemFederationTokens: {},
@@ -225,7 +225,7 @@ def postMessageToOutbox(session, translate: {},
     if hasObjectDict(messageJson):
         contentStr = getBaseContentFromPost(messageJson, systemLanguage)
         if contentStr:
-            if dangerousMarkup(contentStr, allowLocalNetworkAccess):
+            if dangerousMarkup(contentStr, allow_local_network_access):
                 print('POST to outbox contains dangerous markup: ' +
                       str(messageJson))
                 return False
@@ -273,7 +273,7 @@ def postMessageToOutbox(session, translate: {},
             return False
 
         # sent by an actor on a local network address?
-        if not allowLocalNetworkAccess:
+        if not allow_local_network_access:
             localNetworkPatternList = getLocalNetworkAddresses()
             for localNetworkPattern in localNetworkPatternList:
                 if localNetworkPattern in messageJson['actor']:
@@ -425,7 +425,7 @@ def postMessageToOutbox(session, translate: {},
                                     translate,
                                     yt_replace_domain,
                                     twitterReplacementDomain,
-                                    allowLocalNetworkAccess,
+                                    allow_local_network_access,
                                     recentPostsCache, debug, systemLanguage,
                                     domainFull, personCache,
                                     signingPrivateKeyPem):
@@ -468,7 +468,7 @@ def postMessageToOutbox(session, translate: {},
                                          twitterReplacementDomain,
                                          showPublishedDateOnly,
                                          peertubeInstances,
-                                         allowLocalNetworkAccess,
+                                         allow_local_network_access,
                                          theme, systemLanguage,
                                          max_like_count,
                                          boxNameIndex != 'dm',

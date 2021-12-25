@@ -1296,7 +1296,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.yt_replace_domain,
                                    self.server.twitterReplacementDomain,
                                    self.server.showPublishedDateOnly,
-                                   self.server.allowLocalNetworkAccess,
+                                   self.server.allow_local_network_access,
                                    city, self.server.systemLanguage,
                                    self.server.shared_items_federated_domains,
                                    self.server.sharedItemFederationTokens,
@@ -1446,7 +1446,7 @@ class PubServer(BaseHTTPRequestHandler):
             return 3
 
         # sent by an actor on a local network address?
-        if not self.server.allowLocalNetworkAccess:
+        if not self.server.allow_local_network_access:
             localNetworkPatternList = getLocalNetworkAddresses()
             for localNetworkPattern in localNetworkPatternList:
                 if localNetworkPattern in messageJson['actor']:
@@ -2131,7 +2131,7 @@ class PubServer(BaseHTTPRequestHandler):
                        onionDomain: str, i2pDomain: str,
                        debug: bool, accessKeys: {},
                        defaultTimeline: str, themeName: str,
-                       allowLocalNetworkAccess: bool,
+                       allow_local_network_access: bool,
                        systemLanguage: str) -> None:
         """Receive POST from webapp_themeDesigner
         """
@@ -2168,10 +2168,10 @@ class PubServer(BaseHTTPRequestHandler):
            'submitThemeDesigner=' not in themeParams:
             if 'submitThemeDesignerReset=' in themeParams:
                 resetThemeDesignerSettings(base_dir, themeName, domain,
-                                           allowLocalNetworkAccess,
+                                           allow_local_network_access,
                                            systemLanguage)
                 setTheme(base_dir, themeName, domain,
-                         allowLocalNetworkAccess, systemLanguage)
+                         allow_local_network_access, systemLanguage)
 
             if callingDomain.endswith('.onion') and onionDomain:
                 originPathStr = \
@@ -2216,7 +2216,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         setThemeFromDesigner(base_dir, themeName, domain,
                              themeDesignerParams,
-                             allowLocalNetworkAccess,
+                             allow_local_network_access,
                              systemLanguage)
 
         # set boolean values
@@ -2724,7 +2724,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.twitterReplacementDomain,
                               self.server.showPublishedDateOnly,
                               self.server.peertubeInstances,
-                              self.server.allowLocalNetworkAccess,
+                              self.server.allow_local_network_access,
                               self.server.systemLanguage,
                               self.server.max_like_count,
                               self.server.signingPrivateKeyPem,
@@ -2858,7 +2858,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.twitterReplacementDomain,
                               self.server.showPublishedDateOnly,
                               self.server.peertubeInstances,
-                              self.server.allowLocalNetworkAccess,
+                              self.server.allow_local_network_access,
                               self.server.systemLanguage,
                               self.server.max_like_count,
                               self.server.signingPrivateKeyPem,
@@ -3307,7 +3307,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.twitterReplacementDomain,
                                       self.server.showPublishedDateOnly,
                                       self.server.peertubeInstances,
-                                      self.server.allowLocalNetworkAccess,
+                                      self.server.allow_local_network_access,
                                       self.server.themeName,
                                       self.server.systemLanguage,
                                       self.server.max_like_count,
@@ -3402,7 +3402,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.twitterReplacementDomain,
                                       self.server.showPublishedDateOnly,
                                       self.server.peertubeInstances,
-                                      self.server.allowLocalNetworkAccess,
+                                      self.server.allow_local_network_access,
                                       self.server.themeName, 'outbox',
                                       self.server.systemLanguage,
                                       self.server.max_like_count,
@@ -3470,7 +3470,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.twitterReplacementDomain,
                                       self.server.showPublishedDateOnly,
                                       self.server.peertubeInstances,
-                                      self.server.allowLocalNetworkAccess,
+                                      self.server.allow_local_network_access,
                                       self.server.themeName, 'bookmarks',
                                       self.server.systemLanguage,
                                       self.server.max_like_count,
@@ -3535,8 +3535,8 @@ class PubServer(BaseHTTPRequestHandler):
                     return
                 else:
                     showPublishedDateOnly = self.server.showPublishedDateOnly
-                    allowLocalNetworkAccess = \
-                        self.server.allowLocalNetworkAccess
+                    allow_local_network_access = \
+                        self.server.allow_local_network_access
 
                     accessKeys = self.server.accessKeys
                     if self.server.keyShortcuts.get(nickname):
@@ -3568,7 +3568,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                showPublishedDateOnly,
                                                self.server.defaultTimeline,
                                                self.server.peertubeInstances,
-                                               allowLocalNetworkAccess,
+                                               allow_local_network_access,
                                                self.server.themeName,
                                                accessKeys,
                                                self.server.systemLanguage,
@@ -4052,7 +4052,7 @@ class PubServer(BaseHTTPRequestHandler):
                      domain: str, domainFull: str,
                      onionDomain: str, i2pDomain: str, debug: bool,
                      defaultTimeline: str,
-                     allowLocalNetworkAccess: bool) -> None:
+                     allow_local_network_access: bool) -> None:
         """Updates the left links column of the timeline
         """
         usersPath = path.replace('/linksdata', '')
@@ -4151,7 +4151,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if fields.get('editedAbout'):
                     aboutStr = fields['editedAbout']
                     if not dangerousMarkup(aboutStr,
-                                           allowLocalNetworkAccess):
+                                           allow_local_network_access):
                         try:
                             with open(aboutFilename, 'w+') as aboutFile:
                                 aboutFile.write(aboutStr)
@@ -4168,7 +4168,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if fields.get('editedTOS'):
                     TOSStr = fields['editedTOS']
                     if not dangerousMarkup(TOSStr,
-                                           allowLocalNetworkAccess):
+                                           allow_local_network_access):
                         try:
                             with open(TOSFilename, 'w+') as TOSFile:
                                 TOSFile.write(TOSStr)
@@ -4193,7 +4193,7 @@ class PubServer(BaseHTTPRequestHandler):
                             domain: str, domainFull: str,
                             onionDomain: str, i2pDomain: str, debug: bool,
                             defaultTimeline: str,
-                            allowLocalNetworkAccess: bool) -> None:
+                            allow_local_network_access: bool) -> None:
         """On the screen after selecting a hashtag from the swarm, this sets
         the category for that tag
         """
@@ -4673,7 +4673,7 @@ class PubServer(BaseHTTPRequestHandler):
                        base_dir: str, http_prefix: str,
                        domain: str, domainFull: str,
                        onionDomain: str, i2pDomain: str,
-                       debug: bool, allowLocalNetworkAccess: bool,
+                       debug: bool, allow_local_network_access: bool,
                        systemLanguage: str, content_license_url: str) -> None:
         """Updates your user profile after editing via the Edit button
         on the profile screen
@@ -5009,7 +5009,8 @@ class PubServer(BaseHTTPRequestHandler):
                         if fields.get('themeDropdown'):
                             self.server.themeName = fields['themeDropdown']
                             setTheme(base_dir, self.server.themeName, domain,
-                                     allowLocalNetworkAccess, systemLanguage)
+                                     allow_local_network_access,
+                                     systemLanguage)
                             self.server.textModeBanner = \
                                 getTextModeBanner(self.server.base_dir)
                             self.server.iconsCache = {}
@@ -5945,10 +5946,10 @@ class PubServer(BaseHTTPRequestHandler):
                             currTheme = getTheme(base_dir)
                             if currTheme:
                                 self.server.themeName = currTheme
-                                allowLocalNetworkAccess = \
-                                    self.server.allowLocalNetworkAccess
+                                allow_local_network_access = \
+                                    self.server.allow_local_network_access
                                 setTheme(base_dir, currTheme, domain,
-                                         allowLocalNetworkAccess,
+                                         allow_local_network_access,
                                          systemLanguage)
                                 self.server.textModeBanner = \
                                     getTextModeBanner(base_dir)
@@ -7545,7 +7546,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.twitterReplacementDomain,
                               self.server.showPublishedDateOnly,
                               self.server.peertubeInstances,
-                              self.server.allowLocalNetworkAccess,
+                              self.server.allow_local_network_access,
                               self.server.themeName,
                               self.server.systemLanguage,
                               self.server.max_like_count,
@@ -7757,7 +7758,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.twitterReplacementDomain,
                                  self.server.showPublishedDateOnly,
                                  self.server.peertubeInstances,
-                                 self.server.allowLocalNetworkAccess,
+                                 self.server.allow_local_network_access,
                                  self.server.themeName,
                                  self.server.systemLanguage,
                                  self.server.max_like_count,
@@ -8217,7 +8218,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.twitterReplacementDomain,
                                      self.server.showPublishedDateOnly,
                                      self.server.peertubeInstances,
-                                     self.server.allowLocalNetworkAccess,
+                                     self.server.allow_local_network_access,
                                      self.server.themeName,
                                      self.server.systemLanguage,
                                      self.server.max_like_count,
@@ -8371,7 +8372,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.twitterReplacementDomain,
                                      self.server.showPublishedDateOnly,
                                      self.server.peertubeInstances,
-                                     self.server.allowLocalNetworkAccess,
+                                     self.server.allow_local_network_access,
                                      self.server.themeName,
                                      self.server.systemLanguage,
                                      self.server.max_like_count,
@@ -8555,7 +8556,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.twitterReplacementDomain,
                                      self.server.showPublishedDateOnly,
                                      self.server.peertubeInstances,
-                                     self.server.allowLocalNetworkAccess,
+                                     self.server.allow_local_network_access,
                                      self.server.themeName,
                                      self.server.systemLanguage,
                                      self.server.max_like_count,
@@ -8727,7 +8728,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.twitterReplacementDomain,
                                      self.server.showPublishedDateOnly,
                                      self.server.peertubeInstances,
-                                     self.server.allowLocalNetworkAccess,
+                                     self.server.allow_local_network_access,
                                      self.server.themeName,
                                      self.server.systemLanguage,
                                      self.server.max_like_count,
@@ -8825,7 +8826,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.twitterReplacementDomain,
                                     self.server.showPublishedDateOnly,
                                     self.server.peertubeInstances,
-                                    self.server.allowLocalNetworkAccess,
+                                    self.server.allow_local_network_access,
                                     self.server.themeName,
                                     self.server.systemLanguage,
                                     self.server.max_like_count,
@@ -8947,7 +8948,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.twitterReplacementDomain,
                                      self.server.showPublishedDateOnly,
                                      self.server.peertubeInstances,
-                                     self.server.allowLocalNetworkAccess,
+                                     self.server.allow_local_network_access,
                                      self.server.themeName,
                                      self.server.systemLanguage,
                                      self.server.max_like_count,
@@ -9075,7 +9076,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.twitterReplacementDomain,
                                      self.server.showPublishedDateOnly,
                                      self.server.peertubeInstances,
-                                     self.server.allowLocalNetworkAccess,
+                                     self.server.allow_local_network_access,
                                      self.server.themeName,
                                      self.server.systemLanguage,
                                      self.server.max_like_count,
@@ -9172,7 +9173,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.twitterReplacementDomain,
                                   self.server.showPublishedDateOnly,
                                   self.server.peertubeInstances,
-                                  self.server.allowLocalNetworkAccess,
+                                  self.server.allow_local_network_access,
                                   self.server.themeName,
                                   self.server.systemLanguage,
                                   self.server.max_like_count,
@@ -9277,7 +9278,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.twitterReplacementDomain,
                                      self.server.showPublishedDateOnly,
                                      self.server.peertubeInstances,
-                                     self.server.allowLocalNetworkAccess,
+                                     self.server.allow_local_network_access,
                                      self.server.themeName,
                                      self.server.systemLanguage,
                                      self.server.max_like_count,
@@ -9387,7 +9388,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.twitterReplacementDomain,
                                      self.server.showPublishedDateOnly,
                                      self.server.peertubeInstances,
-                                     self.server.allowLocalNetworkAccess,
+                                     self.server.allow_local_network_access,
                                      self.server.themeName,
                                      self.server.systemLanguage,
                                      self.server.max_like_count,
@@ -9509,7 +9510,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     twitterReplacementDomain,
                                     self.server.showPublishedDateOnly,
                                     peertubeInstances,
-                                    self.server.allowLocalNetworkAccess,
+                                    self.server.allow_local_network_access,
                                     self.server.themeName,
                                     self.server.systemLanguage,
                                     self.server.max_like_count,
@@ -9601,7 +9602,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     twitterReplacementDomain,
                                     self.server.showPublishedDateOnly,
                                     peertubeInstances,
-                                    self.server.allowLocalNetworkAccess,
+                                    self.server.allow_local_network_access,
                                     self.server.themeName,
                                     self.server.systemLanguage,
                                     self.server.max_like_count,
@@ -9707,7 +9708,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.themeName,
                                     self.server.dormant_months,
                                     self.server.peertubeInstances,
-                                    self.server.allowLocalNetworkAccess,
+                                    self.server.allow_local_network_access,
                                     self.server.textModeBanner,
                                     self.server.debug,
                                     accessKeys, city,
@@ -9783,8 +9784,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.showPublishedDateOnly
                                 iconsAsButtons = \
                                     self.server.iconsAsButtons
-                                allowLocalNetworkAccess = \
-                                    self.server.allowLocalNetworkAccess
+                                allow_local_network_access = \
+                                    self.server.allow_local_network_access
                                 accessKeys = self.server.accessKeys
                                 if self.server.keyShortcuts.get(nickname):
                                     accessKeys = \
@@ -9823,7 +9824,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                 self.server.themeName,
                                                 self.server.dormant_months,
                                                 self.server.peertubeInstances,
-                                                allowLocalNetworkAccess,
+                                                allow_local_network_access,
                                                 self.server.textModeBanner,
                                                 self.server.debug,
                                                 accessKeys, city,
@@ -9991,7 +9992,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.twitterReplacementDomain,
                                    self.server.showPublishedDateOnly,
                                    self.server.peertubeInstances,
-                                   self.server.allowLocalNetworkAccess,
+                                   self.server.allow_local_network_access,
                                    self.server.themeName,
                                    self.server.systemLanguage,
                                    self.server.max_like_count,
@@ -10254,7 +10255,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         authorized,
                                         self.server.themeName,
                                         self.server.peertubeInstances,
-                                        self.server.allowLocalNetworkAccess,
+                                        self.server.allow_local_network_access,
                                         self.server.textModeBanner,
                                         accessKeys,
                                         self.server.systemLanguage,
@@ -10371,6 +10372,8 @@ class PubServer(BaseHTTPRequestHandler):
 
                         shared_items_federated_domains = \
                             self.server.shared_items_federated_domains
+                        allow_local_network_access = \
+                            self.server.allow_local_network_access
                         msg = \
                             htmlInboxDMs(self.server.cssCache,
                                          self.server.defaultTimeline,
@@ -10402,7 +10405,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.publishButtonAtTop,
                                          authorized, self.server.themeName,
                                          self.server.peertubeInstances,
-                                         self.server.allowLocalNetworkAccess,
+                                         allow_local_network_access,
                                          self.server.textModeBanner,
                                          accessKeys,
                                          self.server.systemLanguage,
@@ -10512,6 +10515,8 @@ class PubServer(BaseHTTPRequestHandler):
 
                     shared_items_federated_domains = \
                         self.server.shared_items_federated_domains
+                    allow_local_network_access = \
+                        self.server.allow_local_network_access
                     msg = \
                         htmlInboxReplies(self.server.cssCache,
                                          self.server.defaultTimeline,
@@ -10543,7 +10548,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.publishButtonAtTop,
                                          authorized, self.server.themeName,
                                          self.server.peertubeInstances,
-                                         self.server.allowLocalNetworkAccess,
+                                         allow_local_network_access,
                                          self.server.textModeBanner,
                                          accessKeys,
                                          self.server.systemLanguage,
@@ -10685,7 +10690,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        authorized,
                                        self.server.themeName,
                                        self.server.peertubeInstances,
-                                       self.server.allowLocalNetworkAccess,
+                                       self.server.allow_local_network_access,
                                        self.server.textModeBanner,
                                        accessKeys,
                                        self.server.systemLanguage,
@@ -10827,7 +10832,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        authorized,
                                        self.server.themeName,
                                        self.server.peertubeInstances,
-                                       self.server.allowLocalNetworkAccess,
+                                       self.server.allow_local_network_access,
                                        self.server.textModeBanner,
                                        accessKeys,
                                        self.server.systemLanguage,
@@ -10979,7 +10984,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       authorized,
                                       self.server.themeName,
                                       self.server.peertubeInstances,
-                                      self.server.allowLocalNetworkAccess,
+                                      self.server.allow_local_network_access,
                                       self.server.textModeBanner,
                                       accessKeys,
                                       self.server.systemLanguage,
@@ -11094,6 +11099,8 @@ class PubServer(BaseHTTPRequestHandler):
 
                     shared_items_federated_domains = \
                         self.server.shared_items_federated_domains
+                    allow_local_network_access = \
+                        self.server.allow_local_network_access
                     msg = \
                         htmlInboxFeatures(self.server.cssCache,
                                           self.server.defaultTimeline,
@@ -11126,7 +11133,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           authorized,
                                           self.server.themeName,
                                           self.server.peertubeInstances,
-                                          self.server.allowLocalNetworkAccess,
+                                          allow_local_network_access,
                                           self.server.textModeBanner,
                                           accessKeys,
                                           self.server.systemLanguage,
@@ -11232,7 +11239,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.publishButtonAtTop,
                                    authorized, self.server.themeName,
                                    self.server.peertubeInstances,
-                                   self.server.allowLocalNetworkAccess,
+                                   self.server.allow_local_network_access,
                                    self.server.textModeBanner,
                                    accessKeys,
                                    self.server.systemLanguage,
@@ -11316,7 +11323,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.publishButtonAtTop,
                                    authorized, self.server.themeName,
                                    self.server.peertubeInstances,
-                                   self.server.allowLocalNetworkAccess,
+                                   self.server.allow_local_network_access,
                                    self.server.textModeBanner,
                                    accessKeys,
                                    self.server.systemLanguage,
@@ -11405,6 +11412,8 @@ class PubServer(BaseHTTPRequestHandler):
 
                         shared_items_federated_domains = \
                             self.server.shared_items_federated_domains
+                        allow_local_network_access = \
+                            self.server.allow_local_network_access
                         msg = \
                             htmlBookmarks(self.server.cssCache,
                                           self.server.defaultTimeline,
@@ -11437,7 +11446,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           authorized,
                                           self.server.themeName,
                                           self.server.peertubeInstances,
-                                          self.server.allowLocalNetworkAccess,
+                                          allow_local_network_access,
                                           self.server.textModeBanner,
                                           accessKeys,
                                           self.server.systemLanguage,
@@ -11575,7 +11584,7 @@ class PubServer(BaseHTTPRequestHandler):
                                authorized,
                                self.server.themeName,
                                self.server.peertubeInstances,
-                               self.server.allowLocalNetworkAccess,
+                               self.server.allow_local_network_access,
                                self.server.textModeBanner,
                                accessKeys,
                                self.server.systemLanguage,
@@ -11674,6 +11683,8 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.shared_items_federated_domains
                         twitterReplacementDomain = \
                             self.server.twitterReplacementDomain
+                        allow_local_network_access = \
+                            self.server.allow_local_network_access
                         msg = \
                             htmlModeration(self.server.cssCache,
                                            self.server.defaultTimeline,
@@ -11705,7 +11716,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            authorized, moderationActionStr,
                                            self.server.themeName,
                                            self.server.peertubeInstances,
-                                           self.server.allowLocalNetworkAccess,
+                                           allow_local_network_access,
                                            self.server.textModeBanner,
                                            accessKeys,
                                            self.server.systemLanguage,
@@ -11825,7 +11836,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.themeName,
                                     self.server.dormant_months,
                                     self.server.peertubeInstances,
-                                    self.server.allowLocalNetworkAccess,
+                                    self.server.allow_local_network_access,
                                     self.server.textModeBanner,
                                     self.server.debug,
                                     accessKeys, city,
@@ -11946,7 +11957,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.themeName,
                                     self.server.dormant_months,
                                     self.server.peertubeInstances,
-                                    self.server.allowLocalNetworkAccess,
+                                    self.server.allow_local_network_access,
                                     self.server.textModeBanner,
                                     self.server.debug,
                                     accessKeys, city,
@@ -12066,7 +12077,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.themeName,
                                     self.server.dormant_months,
                                     self.server.peertubeInstances,
-                                    self.server.allowLocalNetworkAccess,
+                                    self.server.allow_local_network_access,
                                     self.server.textModeBanner,
                                     self.server.debug,
                                     accessKeys, city,
@@ -12202,7 +12213,7 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.themeName,
                             self.server.dormant_months,
                             self.server.peertubeInstances,
-                            self.server.allowLocalNetworkAccess,
+                            self.server.allow_local_network_access,
                             self.server.textModeBanner,
                             self.server.debug,
                             accessKeys, city,
@@ -12966,7 +12977,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.twitterReplacementDomain,
                               self.server.showPublishedDateOnly,
                               self.server.peertubeInstances,
-                              self.server.allowLocalNetworkAccess,
+                              self.server.allow_local_network_access,
                               self.server.systemLanguage,
                               self.server.max_like_count,
                               self.server.signingPrivateKeyPem,
@@ -17558,7 +17569,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.i2pDomain,
                                      self.server.debug,
                                      self.server.defaultTimeline,
-                                     self.server.allowLocalNetworkAccess)
+                                     self.server.allow_local_network_access)
             self.server.POSTbusy = False
             return
 
@@ -17571,7 +17582,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.domainFull,
                                 self.server.onionDomain,
                                 self.server.i2pDomain, self.server.debug,
-                                self.server.allowLocalNetworkAccess,
+                                self.server.allow_local_network_access,
                                 self.server.systemLanguage,
                                 self.server.content_license_url)
             self.server.POSTbusy = False
@@ -17585,7 +17596,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.onionDomain,
                               self.server.i2pDomain, self.server.debug,
                               self.server.defaultTimeline,
-                              self.server.allowLocalNetworkAccess)
+                              self.server.allow_local_network_access)
             self.server.POSTbusy = False
             return
 
@@ -17913,7 +17924,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     accessKeys,
                                     self.server.defaultTimeline,
                                     self.server.themeName,
-                                    self.server.allowLocalNetworkAccess,
+                                    self.server.allow_local_network_access,
                                     self.server.systemLanguage)
                 self.server.POSTbusy = False
                 return
@@ -18416,7 +18427,7 @@ def runDaemon(content_license_url: str,
               send_threads_timeout_mins: int,
               dormant_months: int,
               max_newswire_posts: int,
-              allowLocalNetworkAccess: bool,
+              allow_local_network_access: bool,
               maxFeedItemSizeKb: int,
               publishButtonAtTop: bool,
               rssIconAtTop: bool,
@@ -18565,10 +18576,10 @@ def runDaemon(content_license_url: str,
     httpd.user_agents_blocked = user_agents_blocked
 
     httpd.unitTest = unitTest
-    httpd.allowLocalNetworkAccess = allowLocalNetworkAccess
+    httpd.allow_local_network_access = allow_local_network_access
     if unitTest:
         # unit tests are run on the local network with LAN addresses
-        httpd.allowLocalNetworkAccess = True
+        httpd.allow_local_network_access = True
     httpd.yt_replace_domain = yt_replace_domain
     httpd.twitterReplacementDomain = twitterReplacementDomain
 
@@ -18905,7 +18916,7 @@ def runDaemon(content_license_url: str,
                               httpd.twitterReplacementDomain,
                               httpd.showPublishedDateOnly,
                               httpd.maxFollowers,
-                              httpd.allowLocalNetworkAccess,
+                              httpd.allow_local_network_access,
                               httpd.peertubeInstances,
                               verify_all_signatures,
                               httpd.themeName,
