@@ -4083,7 +4083,7 @@ class PubServer(BaseHTTPRequestHandler):
             length = int(self.headers['Content-length'])
 
             # check that the POST isn't too large
-            if length > self.server.maxPostLength:
+            if length > self.server.max_post_length:
                 print('Maximum links data length exceeded ' + str(length))
                 self._redirect_headers(actorStr, cookie, callingDomain)
                 self.server.POSTbusy = False
@@ -4242,7 +4242,7 @@ class PubServer(BaseHTTPRequestHandler):
             length = int(self.headers['Content-length'])
 
             # check that the POST isn't too large
-            if length > self.server.maxPostLength:
+            if length > self.server.max_post_length:
                 print('Maximum links data length exceeded ' + str(length))
                 self._redirect_headers(tagScreenStr, cookie, callingDomain)
                 self.server.POSTbusy = False
@@ -4325,7 +4325,7 @@ class PubServer(BaseHTTPRequestHandler):
             length = int(self.headers['Content-length'])
 
             # check that the POST isn't too large
-            if length > self.server.maxPostLength:
+            if length > self.server.max_post_length:
                 print('Maximum newswire data length exceeded ' + str(length))
                 self._redirect_headers(actorStr, cookie, callingDomain)
                 self.server.POSTbusy = False
@@ -4480,7 +4480,7 @@ class PubServer(BaseHTTPRequestHandler):
             length = int(self.headers['Content-length'])
 
             # check that the POST isn't too large
-            if length > self.server.maxPostLength:
+            if length > self.server.max_post_length:
                 print('Maximum citations data length exceeded ' + str(length))
                 self._redirect_headers(actorStr, cookie, callingDomain)
                 self.server.POSTbusy = False
@@ -4575,7 +4575,7 @@ class PubServer(BaseHTTPRequestHandler):
             length = int(self.headers['Content-length'])
 
             # check that the POST isn't too large
-            if length > self.server.maxPostLength:
+            if length > self.server.max_post_length:
                 print('Maximum news data length exceeded ' + str(length))
                 if self.server.news_instance:
                     self._redirect_headers(actorStr + '/tlfeatures',
@@ -4700,7 +4700,7 @@ class PubServer(BaseHTTPRequestHandler):
             length = int(self.headers['Content-length'])
 
             # check that the POST isn't too large
-            if length > self.server.maxPostLength:
+            if length > self.server.max_post_length:
                 print('Maximum profile data length exceeded ' +
                       str(length))
                 self._redirect_headers(actorStr, cookie, callingDomain)
@@ -16456,7 +16456,7 @@ class PubServer(BaseHTTPRequestHandler):
                       ' path ' + path)
                 return -1
             length = int(headers['Content-Length'])
-            if length > self.server.maxPostLength:
+            if length > self.server.max_post_length:
                 print('POST size too large')
                 return -1
 
@@ -17259,7 +17259,7 @@ class PubServer(BaseHTTPRequestHandler):
         print('New post headers: ' + str(headersWithoutCookie))
 
         length = int(headers['Content-Length'])
-        if length > self.server.maxPostLength:
+        if length > self.server.max_post_length:
             print('POST size too large')
             return None
 
@@ -17291,7 +17291,7 @@ class PubServer(BaseHTTPRequestHandler):
                 # second length check from the bytes received
                 # since Content-Length could be untruthful
                 length = len(postBytes)
-                if length > self.server.maxPostLength:
+                if length > self.server.max_post_length:
                     print('POST size too large')
                     return None
 
@@ -18132,7 +18132,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self.server.debug:
                 print(str(self.headers))
                 length = int(self.headers['Content-length'])
-                if length < self.server.maxPostLength:
+                if length < self.server.max_post_length:
                     try:
                         unknownPost = self.rfile.read(length).decode('utf-8')
                     except SocketError as ex:
@@ -18722,8 +18722,8 @@ def runDaemon(content_license_url: str,
     httpd.project_version = project_version
     httpd.secure_mode = secure_mode
     # max POST size of 30M
-    httpd.maxPostLength = 1024 * 1024 * 30
-    httpd.maxMediaSize = httpd.maxPostLength
+    httpd.max_post_length = 1024 * 1024 * 30
+    httpd.maxMediaSize = httpd.max_post_length
     # Maximum text length is 64K - enough for a blog post
     httpd.maxMessageLength = 64000
     # Maximum overall number of posts per box
