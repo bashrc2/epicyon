@@ -64,18 +64,18 @@ def sortedWatchPoints(fitness: {}, fitnessId: str) -> []:
     return result
 
 
-def htmlWatchPointsGraph(baseDir: str, fitness: {}, fitnessId: str,
+def htmlWatchPointsGraph(base_dir: str, fitness: {}, fitnessId: str,
                          maxEntries: int) -> str:
     """Returns the html for a graph of watchpoints
     """
     watchPointsList = sortedWatchPoints(fitness, fitnessId)
 
-    cssFilename = baseDir + '/epicyon-graph.css'
-    if os.path.isfile(baseDir + '/graph.css'):
-        cssFilename = baseDir + '/graph.css'
+    cssFilename = base_dir + '/epicyon-graph.css'
+    if os.path.isfile(base_dir + '/graph.css'):
+        cssFilename = base_dir + '/graph.css'
 
     instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
+        getConfigParam(base_dir, 'instanceTitle')
     htmlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     htmlStr += \
         '<table class="graph">\n' + \
@@ -117,10 +117,10 @@ def htmlWatchPointsGraph(baseDir: str, fitness: {}, fitnessId: str,
     return htmlStr
 
 
-def fitnessThread(baseDir: str, fitness: {}):
+def fitnessThread(base_dir: str, fitness: {}):
     """Thread used to save fitness function scores
     """
-    fitnessFilename = baseDir + '/accounts/fitness.json'
+    fitnessFilename = base_dir + '/accounts/fitness.json'
     while True:
         # every 10 mins
         time.sleep(60 * 10)

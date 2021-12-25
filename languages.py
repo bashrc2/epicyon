@@ -33,7 +33,7 @@ def getActorLanguages(actorJson: {}) -> str:
     return languagesStr
 
 
-def setActorLanguages(baseDir: str, actorJson: {}, languagesStr: str) -> None:
+def setActorLanguages(base_dir: str, actorJson: {}, languagesStr: str) -> None:
     """Sets the languages used by the given actor
     """
     separator = ','
@@ -51,8 +51,8 @@ def setActorLanguages(baseDir: str, actorJson: {}, languagesStr: str) -> None:
     langList2 = ''
     for lang in langList:
         lang = lang.strip()
-        if baseDir:
-            languageFilename = baseDir + '/translations/' + lang + '.json'
+        if base_dir:
+            languageFilename = base_dir + '/translations/' + lang + '.json'
             if os.path.isfile(languageFilename):
                 if langList2:
                     langList2 += ', ' + lang.strip()
@@ -89,7 +89,7 @@ def setActorLanguages(baseDir: str, actorJson: {}, languagesStr: str) -> None:
     actorJson['attachment'].append(newLanguages)
 
 
-def understoodPostLanguage(baseDir: str, nickname: str, domain: str,
+def understoodPostLanguage(base_dir: str, nickname: str, domain: str,
                            messageJson: {}, systemLanguage: str,
                            httpPrefix: str, domainFull: str,
                            personCache: {}) -> bool:
@@ -106,7 +106,7 @@ def understoodPostLanguage(baseDir: str, nickname: str, domain: str,
     if msgObject['contentMap'].get(systemLanguage):
         return True
     personUrl = localActorUrl(httpPrefix, nickname, domainFull)
-    actorJson = getPersonFromCache(baseDir, personUrl, personCache, False)
+    actorJson = getPersonFromCache(base_dir, personUrl, personCache, False)
     if not actorJson:
         print('WARN: unable to load actor to check languages ' + personUrl)
         return False
@@ -117,9 +117,9 @@ def understoodPostLanguage(baseDir: str, nickname: str, domain: str,
         if msgObject['contentMap'].get(lang):
             return True
     # is the language for this post supported by libretranslate?
-    libretranslateUrl = getConfigParam(baseDir, "libretranslateUrl")
+    libretranslateUrl = getConfigParam(base_dir, "libretranslateUrl")
     if libretranslateUrl:
-        libretranslateApiKey = getConfigParam(baseDir, "libretranslateApiKey")
+        libretranslateApiKey = getConfigParam(base_dir, "libretranslateApiKey")
         langList = \
             libretranslateLanguages(libretranslateUrl, libretranslateApiKey)
         for lang in langList:
@@ -273,7 +273,7 @@ def libretranslate(url: str, text: str,
     return translatedText
 
 
-def autoTranslatePost(baseDir: str, postJsonObject: {},
+def autoTranslatePost(base_dir: str, postJsonObject: {},
                       systemLanguage: str, translate: {}) -> str:
     """Tries to automatically translate the given post
     """
@@ -286,10 +286,10 @@ def autoTranslatePost(baseDir: str, postJsonObject: {},
         return ''
 
     # is the language for this post supported by libretranslate?
-    libretranslateUrl = getConfigParam(baseDir, "libretranslateUrl")
+    libretranslateUrl = getConfigParam(base_dir, "libretranslateUrl")
     if not libretranslateUrl:
         return ''
-    libretranslateApiKey = getConfigParam(baseDir, "libretranslateApiKey")
+    libretranslateApiKey = getConfigParam(base_dir, "libretranslateApiKey")
     langList = \
         libretranslateLanguages(libretranslateUrl, libretranslateApiKey)
     for lang in langList:

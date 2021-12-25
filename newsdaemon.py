@@ -38,10 +38,10 @@ from inbox import storeHashTags
 from session import createSession
 
 
-def _updateFeedsOutboxIndex(baseDir: str, domain: str, postId: str) -> None:
+def _updateFeedsOutboxIndex(base_dir: str, domain: str, postId: str) -> None:
     """Updates the index used for imported RSS feeds
     """
-    basePath = baseDir + '/accounts/news@' + domain
+    basePath = base_dir + '/accounts/news@' + domain
     indexFilename = basePath + '/outbox.index'
 
     if os.path.isfile(indexFilename):
@@ -64,7 +64,7 @@ def _updateFeedsOutboxIndex(baseDir: str, domain: str, postId: str) -> None:
             print('EX: unable to write ' + indexFilename)
 
 
-def _saveArrivedTime(baseDir: str, postFilename: str, arrived: str) -> None:
+def _saveArrivedTime(base_dir: str, postFilename: str, arrived: str) -> None:
     """Saves the time when an rss post arrived to a file
     """
     try:
@@ -285,7 +285,7 @@ def hashtagRuleTree(operators: [],
     return tree
 
 
-def _hashtagAdd(baseDir: str, httpPrefix: str, domainFull: str,
+def _hashtagAdd(base_dir: str, httpPrefix: str, domainFull: str,
                 postJsonObject: {},
                 actionStr: str, hashtags: [], systemLanguage: str,
                 translate: {}) -> None:
@@ -336,7 +336,7 @@ def _hashtagAdd(baseDir: str, httpPrefix: str, domainFull: str,
     domain = domainFull
     if ':' in domain:
         domain = domain.split(':')[0]
-    storeHashTags(baseDir, 'news', domain,
+    storeHashTags(base_dir, 'news', domain,
                   httpPrefix, domainFull,
                   postJsonObject, translate)
 
@@ -373,7 +373,7 @@ def _hashtagRemove(httpPrefix: str, domainFull: str, postJsonObject: {},
         postJsonObject['object']['tag'].remove(rmTagObject)
 
 
-def _newswireHashtagProcessing(session, baseDir: str, postJsonObject: {},
+def _newswireHashtagProcessing(session, base_dir: str, postJsonObject: {},
                                hashtags: [], httpPrefix: str,
                                domain: str, port: int,
                                personCache: {},
@@ -387,7 +387,7 @@ def _newswireHashtagProcessing(session, baseDir: str, postJsonObject: {},
     Returns true if the post should be saved to the news timeline
     of this instance
     """
-    rulesFilename = baseDir + '/accounts/hashtagrules.txt'
+    rulesFilename = base_dir + '/accounts/hashtagrules.txt'
     if not os.path.isfile(rulesFilename):
         return True
     rules = []
@@ -425,7 +425,7 @@ def _newswireHashtagProcessing(session, baseDir: str, postJsonObject: {},
 
         if actionStr.startswith('add '):
             # add a hashtag
-            _hashtagAdd(baseDir, httpPrefix, domainFull,
+            _hashtagAdd(base_dir, httpPrefix, domainFull,
                         postJsonObject, actionStr, hashtags, systemLanguage,
                         translate)
         elif actionStr.startswith('remove '):
@@ -438,7 +438,7 @@ def _newswireHashtagProcessing(session, baseDir: str, postJsonObject: {},
     return True
 
 
-def _createNewsMirror(baseDir: str, domain: str,
+def _createNewsMirror(base_dir: str, domain: str,
                       postIdNumber: str, url: str,
                       maxMirroredArticles: int) -> bool:
     """Creates a local mirror of a news article
@@ -446,7 +446,7 @@ def _createNewsMirror(baseDir: str, domain: str,
     if '|' in url or '>' in url:
         return True
 
-    mirrorDir = baseDir + '/accounts/newsmirror'
+    mirrorDir = base_dir + '/accounts/newsmirror'
     if not os.path.isdir(mirrorDir):
         os.mkdir(mirrorDir)
 
@@ -455,7 +455,7 @@ def _createNewsMirror(baseDir: str, domain: str,
     for subdir, dirs, files in os.walk(mirrorDir):
         noOfDirs = len(dirs)
 
-    mirrorIndexFilename = baseDir + '/accounts/newsmirror.txt'
+    mirrorIndexFilename = base_dir + '/accounts/newsmirror.txt'
 
     if maxMirroredArticles > 0 and noOfDirs > maxMirroredArticles:
         if not os.path.isfile(mirrorIndexFilename):
@@ -533,7 +533,7 @@ def _createNewsMirror(baseDir: str, domain: str,
     return True
 
 
-def _convertRSStoActivityPub(baseDir: str, httpPrefix: str,
+def _convertRSStoActivityPub(base_dir: str, httpPrefix: str,
                              domain: str, port: int,
                              newswire: {},
                              translate: {},
@@ -553,7 +553,7 @@ def _convertRSStoActivityPub(baseDir: str, httpPrefix: str,
         print('No newswire to convert')
         return
 
-    basePath = baseDir + '/accounts/news@' + domain + '/outbox'
+    basePath = base_dir + '/accounts/news@' + domain + '/outbox'
     if not os.path.isdir(basePath):
         os.mkdir(basePath)
 
@@ -631,7 +631,7 @@ def _convertRSStoActivityPub(baseDir: str, httpPrefix: str,
         imageDescription = None
         city = 'London, England'
         conversationId = None
-        blog = createNewsPost(baseDir,
+        blog = createNewsPost(base_dir,
                               domain, port, httpPrefix,
                               rssDescription,
                               followersOnly, saveToFile,
@@ -644,7 +644,7 @@ def _convertRSStoActivityPub(baseDir: str, httpPrefix: str,
             continue
 
         if mirrored:
-            if not _createNewsMirror(baseDir, domain, statusNumber,
+            if not _createNewsMirror(base_dir, domain, statusNumber,
                                      url, maxMirroredArticles):
                 continue
 
@@ -679,7 +679,8 @@ def _convertRSStoActivityPub(baseDir: str, httpPrefix: str,
 
         moderated = item[5]
 
-        savePost = _newswireHashtagProcessing(session, baseDir, blog, hashtags,
+        savePost = _newswireHashtagProcessing(session, base_dir,
+                                              blog, hashtags,
                                               httpPrefix, domain, port,
                                               personCache, cachedWebfingers,
                                               federationList,
@@ -724,19 +725,19 @@ def _convertRSStoActivityPub(baseDir: str, httpPrefix: str,
                 if tag not in newswire[originalDateStr][6]:
                     newswire[originalDateStr][6].append(tag)
 
-            storeHashTags(baseDir, 'news', domain,
+            storeHashTags(base_dir, 'news', domain,
                           httpPrefix, domainFull,
                           blog, translate)
 
-            clearFromPostCaches(baseDir, recentPostsCache, postId)
+            clearFromPostCaches(base_dir, recentPostsCache, postId)
             if saveJson(blog, filename):
-                _updateFeedsOutboxIndex(baseDir, domain, postId + '.json')
+                _updateFeedsOutboxIndex(base_dir, domain, postId + '.json')
 
                 # Save a file containing the time when the post arrived
                 # this can then later be used to construct the news timeline
                 # excluding items during the voting period
                 if moderated:
-                    _saveArrivedTime(baseDir, filename,
+                    _saveArrivedTime(base_dir, filename,
                                      blog['object']['arrived'])
                 else:
                     if os.path.isfile(filename + '.arrived'):
@@ -769,13 +770,13 @@ def _mergeWithPreviousNewswire(oldNewswire: {}, newNewswire: {}) -> None:
             newNewswire[published][i] = fields[i]
 
 
-def runNewswireDaemon(baseDir: str, httpd,
+def runNewswireDaemon(base_dir: str, httpd,
                       httpPrefix: str, domain: str, port: int,
                       translate: {}) -> None:
     """Periodically updates RSS feeds
     """
-    newswireStateFilename = baseDir + '/accounts/.newswirestate.json'
-    refreshFilename = baseDir + '/accounts/.refresh_newswire'
+    newswireStateFilename = base_dir + '/accounts/.newswirestate.json'
+    refreshFilename = base_dir + '/accounts/.refresh_newswire'
 
     # initial sleep to allow the system to start up
     time.sleep(50)
@@ -794,7 +795,7 @@ def runNewswireDaemon(baseDir: str, httpd,
         # try to update the feeds
         print('Updating newswire feeds')
         newNewswire = \
-            getDictFromNewswire(httpd.session, baseDir, domain,
+            getDictFromNewswire(httpd.session, base_dir, domain,
                                 httpd.maxNewswirePostsPerSource,
                                 httpd.maxNewswireFeedSizeKb,
                                 httpd.maxTags,
@@ -821,7 +822,7 @@ def runNewswireDaemon(baseDir: str, httpd,
             print('No new newswire')
 
         print('Converting newswire to activitypub format')
-        _convertRSStoActivityPub(baseDir,
+        _convertRSStoActivityPub(base_dir,
                                  httpPrefix, domain, port,
                                  newNewswire, translate,
                                  httpd.recentPostsCache,
@@ -840,12 +841,12 @@ def runNewswireDaemon(baseDir: str, httpd,
         print('Newswire feed converted to ActivityPub')
 
         if httpd.maxNewsPosts > 0:
-            archiveDir = baseDir + '/archive'
+            archiveDir = base_dir + '/archive'
             archiveSubdir = \
                 archiveDir + '/accounts/news@' + domain + '/outbox'
             print('Archiving news posts')
             archivePostsForPerson(httpPrefix, 'news',
-                                  domain, baseDir, 'outbox',
+                                  domain, base_dir, 'outbox',
                                   archiveSubdir,
                                   httpd.recentPostsCache,
                                   httpd.maxNewsPosts)

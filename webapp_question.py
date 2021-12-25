@@ -13,7 +13,7 @@ from utils import removeIdEnding
 from utils import acctDir
 
 
-def insertQuestion(baseDir: str, translate: {},
+def insertQuestion(base_dir: str, translate: {},
                    nickname: str, domain: str, port: int,
                    content: str,
                    postJsonObject: {}, pageNumber: int) -> str:
@@ -31,7 +31,7 @@ def insertQuestion(baseDir: str, translate: {},
         pageNumberStr = '?page=' + str(pageNumber)
 
     votesFilename = \
-        acctDir(baseDir, nickname, domain) + '/questions.txt'
+        acctDir(base_dir, nickname, domain) + '/questions.txt'
 
     showQuestionResults = False
     if os.path.isfile(votesFilename):

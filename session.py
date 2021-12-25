@@ -17,7 +17,7 @@ from socket import error as SocketError
 import errno
 from http.client import HTTPConnection
 
-baseDirectory = None
+base_directory = None
 
 
 def createSession(proxyType: str):
@@ -439,7 +439,7 @@ def postImage(session, attachImageFilename: str, federationList: [],
     return None
 
 
-def downloadImage(session, baseDir: str, url: str,
+def downloadImage(session, base_dir: str, url: str,
                   imageFilename: str, debug: bool,
                   force: bool = False) -> bool:
     """Downloads an image with an expected mime type

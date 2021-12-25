@@ -67,13 +67,13 @@ def getSpeakerRange(displayName: str) -> int:
     return random.randint(300, 800)
 
 
-def _speakerPronounce(baseDir: str, sayText: str, translate: {}) -> str:
+def _speakerPronounce(base_dir: str, sayText: str, translate: {}) -> str:
     """Screen readers may not always pronounce correctly, so you
     can have a file which specifies conversions. File should contain
     line items such as:
     Epicyon -> Epi-cyon
     """
-    pronounceFilename = baseDir + '/accounts/speaker_pronounce.txt'
+    pronounceFilename = base_dir + '/accounts/speaker_pronounce.txt'
     convertDict = {}
     if translate:
         convertDict = {
@@ -348,7 +348,7 @@ def _speakerEndpointSSML(displayName: str, summary: str,
         '</speak>\n'
 
 
-def getSSMLbox(baseDir: str, path: str,
+def getSSMLbox(base_dir: str, path: str,
                domain: str,
                systemLanguage: str,
                instanceTitle: str,
@@ -359,7 +359,7 @@ def getSSMLbox(baseDir: str, path: str,
     if '/' in nickname:
         nickname = nickname.split('/')[0]
     speakerFilename = \
-        acctDir(baseDir, nickname, domain) + '/speaker.json'
+        acctDir(base_dir, nickname, domain) + '/speaker.json'
     if not os.path.isfile(speakerFilename):
         return None
     speakerJson = loadJson(speakerFilename)
@@ -377,7 +377,7 @@ def getSSMLbox(baseDir: str, path: str,
                                 instanceTitle, gender)
 
 
-def speakableText(baseDir: str, content: str, translate: {}) -> (str, []):
+def speakableText(base_dir: str, content: str, translate: {}) -> (str, []):
     """Convert the given text to a speakable version
     which includes changes for prononciation
     """
@@ -395,14 +395,14 @@ def speakableText(baseDir: str, content: str, translate: {}) -> (str, []):
     while '  ' in content:
         content = content.replace('  ', ' ')
     content = content.replace(' . ', '. ').strip()
-    sayContent = _speakerPronounce(baseDir, content, translate)
+    sayContent = _speakerPronounce(base_dir, content, translate)
     # replace all double spaces
     while '  ' in sayContent:
         sayContent = sayContent.replace('  ', ' ')
     return sayContent.replace(' . ', '. ').strip(), detectedLinks
 
 
-def _postToSpeakerJson(baseDir: str, httpPrefix: str,
+def _postToSpeakerJson(base_dir: str, httpPrefix: str,
                        nickname: str, domain: str, domainFull: str,
                        postJsonObject: {}, personCache: {},
                        translate: {}, announcingActor: str,
@@ -433,7 +433,7 @@ def _postToSpeakerJson(baseDir: str, httpPrefix: str,
             content = content.replace('  ', ' ')
         content = content.replace(' . ', '. ').strip()
         sayContent = content
-        sayContent = _speakerPronounce(baseDir, content, translate)
+        sayContent = _speakerPronounce(base_dir, content, translate)
         # replace all double spaces
         while '  ' in sayContent:
             sayContent = sayContent.replace('  ', ' ')
@@ -469,13 +469,13 @@ def _postToSpeakerJson(baseDir: str, httpPrefix: str,
             summary = html.unescape(summary)
 
     speakerName = \
-        getDisplayName(baseDir, postJsonObject['actor'], personCache)
+        getDisplayName(base_dir, postJsonObject['actor'], personCache)
     if not speakerName:
         return
     speakerName = _removeEmojiFromText(speakerName)
     speakerName = speakerName.replace('_', ' ')
     speakerName = camelCaseSplit(speakerName)
-    gender = getGenderFromBio(baseDir, postJsonObject['actor'],
+    gender = getGenderFromBio(base_dir, postJsonObject['actor'],
                               personCache, translate)
     if announcingActor:
         announcedNickname = getNicknameFromActor(announcingActor)
@@ -494,7 +494,7 @@ def _postToSpeakerJson(baseDir: str, httpPrefix: str,
 
     followRequestsExist = False
     followRequestsList = []
-    accountsDir = acctDir(baseDir, nickname, domainFull)
+    accountsDir = acctDir(base_dir, nickname, domainFull)
     approveFollowsFilename = accountsDir + '/followrequests.txt'
     if os.path.isfile(approveFollowsFilename):
         with open(approveFollowsFilename, 'r') as fp:
@@ -533,7 +533,7 @@ def _postToSpeakerJson(baseDir: str, httpPrefix: str,
                                 isDirect, replyToYou)
 
 
-def updateSpeaker(baseDir: str, httpPrefix: str,
+def updateSpeaker(base_dir: str, httpPrefix: str,
                   nickname: str, domain: str, domainFull: str,
                   postJsonObject: {}, personCache: {},
                   translate: {}, announcingActor: str,
@@ -542,10 +542,10 @@ def updateSpeaker(baseDir: str, httpPrefix: str,
     of incoming inbox posts
     """
     speakerJson = \
-        _postToSpeakerJson(baseDir, httpPrefix,
+        _postToSpeakerJson(base_dir, httpPrefix,
                            nickname, domain, domainFull,
                            postJsonObject, personCache,
                            translate, announcingActor,
                            themeName)
-    speakerFilename = acctDir(baseDir, nickname, domain) + '/speaker.json'
+    speakerFilename = acctDir(base_dir, nickname, domain) + '/speaker.json'
     saveJson(speakerJson, speakerFilename)

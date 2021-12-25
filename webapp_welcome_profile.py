@@ -22,37 +22,37 @@ from webapp_utils import editTextField
 from markdown import markdownToHtml
 
 
-def htmlWelcomeProfile(baseDir: str, nickname: str, domain: str,
+def htmlWelcomeProfile(base_dir: str, nickname: str, domain: str,
                        httpPrefix: str, domainFull: str,
                        language: str, translate: {},
                        themeName: str) -> str:
     """Returns the welcome profile screen to set avatar and bio
     """
     # set a custom background for the welcome screen
-    if os.path.isfile(baseDir + '/accounts/welcome-background-custom.jpg'):
-        if not os.path.isfile(baseDir + '/accounts/welcome-background.jpg'):
-            copyfile(baseDir + '/accounts/welcome-background-custom.jpg',
-                     baseDir + '/accounts/welcome-background.jpg')
+    if os.path.isfile(base_dir + '/accounts/welcome-background-custom.jpg'):
+        if not os.path.isfile(base_dir + '/accounts/welcome-background.jpg'):
+            copyfile(base_dir + '/accounts/welcome-background-custom.jpg',
+                     base_dir + '/accounts/welcome-background.jpg')
 
     profileText = 'Welcome to Epicyon'
-    profileFilename = baseDir + '/accounts/welcome_profile.md'
+    profileFilename = base_dir + '/accounts/welcome_profile.md'
     if not os.path.isfile(profileFilename):
         defaultFilename = None
         if themeName:
             defaultFilename = \
-                baseDir + '/theme/' + themeName + '/welcome/' + \
+                base_dir + '/theme/' + themeName + '/welcome/' + \
                 'profile_' + language + '.md'
             if not os.path.isfile(defaultFilename):
                 defaultFilename = None
         if not defaultFilename:
             defaultFilename = \
-                baseDir + '/defaultwelcome/profile_' + language + '.md'
+                base_dir + '/defaultwelcome/profile_' + language + '.md'
         if not os.path.isfile(defaultFilename):
-            defaultFilename = baseDir + '/defaultwelcome/profile_en.md'
+            defaultFilename = base_dir + '/defaultwelcome/profile_en.md'
         copyfile(defaultFilename, profileFilename)
 
     instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
+        getConfigParam(base_dir, 'instanceTitle')
     if not instanceTitle:
         instanceTitle = 'Epicyon'
 
@@ -63,16 +63,16 @@ def htmlWelcomeProfile(baseDir: str, nickname: str, domain: str,
             profileText = markdownToHtml(removeHtml(profileText))
 
     profileForm = ''
-    cssFilename = baseDir + '/epicyon-welcome.css'
-    if os.path.isfile(baseDir + '/welcome.css'):
-        cssFilename = baseDir + '/welcome.css'
+    cssFilename = base_dir + '/epicyon-welcome.css'
+    if os.path.isfile(base_dir + '/welcome.css'):
+        cssFilename = base_dir + '/welcome.css'
 
     profileForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
 
     # get the url of the avatar
     for ext in getImageExtensions():
         avatarFilename = \
-            acctDir(baseDir, nickname, domain) + '/avatar.' + ext
+            acctDir(base_dir, nickname, domain) + '/avatar.' + ext
         if os.path.isfile(avatarFilename):
             break
     avatarUrl = \
@@ -99,7 +99,7 @@ def htmlWelcomeProfile(baseDir: str, nickname: str, domain: str,
         'name="previewAvatar">' + translate['Preview'] + '</button> '
     profileForm += '</center>\n'
 
-    actorFilename = acctDir(baseDir, nickname, domain) + '.json'
+    actorFilename = acctDir(base_dir, nickname, domain) + '.json'
     actorJson = loadJson(actorFilename)
     displayNickname = actorJson['name']
     profileForm += '<div class="container">\n'

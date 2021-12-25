@@ -112,20 +112,20 @@ def webfingerHandle(session, handle: str, httpPrefix: str,
 
 
 def storeWebfingerEndpoint(nickname: str, domain: str, port: int,
-                           baseDir: str, wfJson: {}) -> bool:
+                           base_dir: str, wfJson: {}) -> bool:
     """Stores webfinger endpoint for a user to a file
     """
     originalDomain = domain
     domain = getFullDomain(domain, port)
     handle = nickname + '@' + domain
     wfSubdir = '/wfendpoints'
-    if not os.path.isdir(baseDir + wfSubdir):
-        os.mkdir(baseDir + wfSubdir)
-    filename = baseDir + wfSubdir + '/' + handle + '.json'
+    if not os.path.isdir(base_dir + wfSubdir):
+        os.mkdir(base_dir + wfSubdir)
+    filename = base_dir + wfSubdir + '/' + handle + '.json'
     saveJson(wfJson, filename)
     if nickname == 'inbox':
         handle = originalDomain + '@' + domain
-        filename = baseDir + wfSubdir + '/' + handle + '.json'
+        filename = base_dir + wfSubdir + '/' + handle + '.json'
         saveJson(wfJson, filename)
     return True
 
@@ -214,7 +214,7 @@ def webfingerMeta(httpPrefix: str, domainFull: str) -> str:
     return metaStr
 
 
-def webfingerLookup(path: str, baseDir: str,
+def webfingerLookup(path: str, base_dir: str,
                     domain: str, onionDomain: str,
                     port: int, debug: bool) -> {}:
     """Lookup the webfinger endpoint for an account
@@ -262,7 +262,7 @@ def webfingerLookup(path: str, baseDir: str,
         handle = handle.replace('actor@', 'inbox@', 1)
     elif handle.startswith('Actor@'):
         handle = handle.replace('Actor@', 'inbox@', 1)
-    filename = baseDir + '/wfendpoints/' + handle + '.json'
+    filename = base_dir + '/wfendpoints/' + handle + '.json'
     if debug:
         print('DEBUG: WEBFINGER filename ' + filename)
     if not os.path.isfile(filename):
@@ -420,15 +420,15 @@ def _webfingerUpdateFromProfile(wfJson: {}, actorJson: {}) -> bool:
     return changed
 
 
-def webfingerUpdate(baseDir: str, nickname: str, domain: str,
+def webfingerUpdate(base_dir: str, nickname: str, domain: str,
                     onionDomain: str,
                     cachedWebfingers: {}) -> None:
     handle = nickname + '@' + domain
     wfSubdir = '/wfendpoints'
-    if not os.path.isdir(baseDir + wfSubdir):
+    if not os.path.isdir(base_dir + wfSubdir):
         return
 
-    filename = baseDir + wfSubdir + '/' + handle + '.json'
+    filename = base_dir + wfSubdir + '/' + handle + '.json'
     onionify = False
     if onionDomain:
         if onionDomain in handle:
@@ -441,7 +441,7 @@ def webfingerUpdate(baseDir: str, nickname: str, domain: str,
     if not wfJson:
         return
 
-    actorFilename = baseDir + '/accounts/' + handle + '.json'
+    actorFilename = base_dir + '/accounts/' + handle + '.json'
     actorJson = loadJson(actorFilename)
     if not actorJson:
         return

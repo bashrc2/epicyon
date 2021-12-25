@@ -14,7 +14,7 @@ from posts import getPostDomains
 from utils import getFullDomain
 
 
-def instancesGraph(baseDir: str, handles: str,
+def instancesGraph(base_dir: str, handles: str,
                    proxyType: str,
                    port: int, httpPrefix: str,
                    debug: bool, projectVersion: str,
@@ -67,7 +67,7 @@ def instancesGraph(baseDir: str, handles: str,
         (personUrl, pubKeyId, pubKey, personId, shaedInbox, avatarUrl,
          displayName, _) = getPersonBox(signingPrivateKeyPem,
                                         originDomain,
-                                        baseDir, session, wfRequest,
+                                        base_dir, session, wfRequest,
                                         personCache,
                                         projectVersion, httpPrefix,
                                         nickname, domain, 'outbox',

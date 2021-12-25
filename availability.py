@@ -23,14 +23,14 @@ from utils import localActorUrl
 from utils import hasActor
 
 
-def setAvailability(baseDir: str, nickname: str, domain: str,
+def setAvailability(base_dir: str, nickname: str, domain: str,
                     status: str) -> bool:
     """Set an availability status
     """
     # avoid giant strings
     if len(status) > 128:
         return False
-    actorFilename = acctDir(baseDir, nickname, domain) + '.json'
+    actorFilename = acctDir(base_dir, nickname, domain) + '.json'
     if not os.path.isfile(actorFilename):
         return False
     actorJson = loadJson(actorFilename)
@@ -40,10 +40,10 @@ def setAvailability(baseDir: str, nickname: str, domain: str,
     return True
 
 
-def getAvailability(baseDir: str, nickname: str, domain: str) -> str:
+def getAvailability(base_dir: str, nickname: str, domain: str) -> str:
     """Returns the availability for a given person
     """
-    actorFilename = acctDir(baseDir, nickname, domain) + '.json'
+    actorFilename = acctDir(base_dir, nickname, domain) + '.json'
     if not os.path.isfile(actorFilename):
         return False
     actorJson = loadJson(actorFilename)
@@ -54,7 +54,7 @@ def getAvailability(baseDir: str, nickname: str, domain: str) -> str:
     return None
 
 
-def outboxAvailability(baseDir: str, nickname: str, messageJson: {},
+def outboxAvailability(base_dir: str, nickname: str, messageJson: {},
                        debug: bool) -> bool:
     """Handles receiving an availability update
     """
@@ -73,10 +73,10 @@ def outboxAvailability(baseDir: str, nickname: str, messageJson: {},
     domain, port = getDomainFromActor(messageJson['actor'])
     status = messageJson['object'].replace('"', '')
 
-    return setAvailability(baseDir, nickname, domain, status)
+    return setAvailability(base_dir, nickname, domain, status)
 
 
-def sendAvailabilityViaServer(baseDir: str, session,
+def sendAvailabilityViaServer(base_dir: str, session,
                               nickname: str, password: str,
                               domain: str, port: int,
                               httpPrefix: str,
@@ -126,7 +126,7 @@ def sendAvailabilityViaServer(baseDir: str, session,
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
      displayName, _) = getPersonBox(signingPrivateKeyPem,
                                     originDomain,
-                                    baseDir, session, wfRequest,
+                                    base_dir, session, wfRequest,
                                     personCache, projectVersion,
                                     httpPrefix, nickname,
                                     domain, postToBox, 57262)

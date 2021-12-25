@@ -24,7 +24,7 @@ from webapp_post import individualPostAsHtml
 
 def _htmlFrontScreenPosts(recentPostsCache: {}, maxRecentPosts: int,
                           translate: {},
-                          baseDir: str, httpPrefix: str,
+                          base_dir: str, httpPrefix: str,
                           nickname: str, domain: str, port: int,
                           session, cachedWebfingers: {}, personCache: {},
                           projectVersion: str,
@@ -41,7 +41,7 @@ def _htmlFrontScreenPosts(recentPostsCache: {}, maxRecentPosts: int,
     These should only be public blog posts from the features timeline
     which is the blog timeline of the news actor
     """
-    separatorStr = htmlPostSeparator(baseDir, None)
+    separatorStr = htmlPostSeparator(base_dir, None)
     profileStr = ''
     maxItems = 4
     ctr = 0
@@ -53,7 +53,7 @@ def _htmlFrontScreenPosts(recentPostsCache: {}, maxRecentPosts: int,
             '/users/' + nickname + '/' + boxName + \
             '?page=' + str(currPage)
         outboxFeed = \
-            personBoxJson({}, session, baseDir, domain, port,
+            personBoxJson({}, session, base_dir, domain, port,
                           outboxFeedPathStr,
                           httpPrefix, 10, boxName,
                           authorized, 0, False, 0)
@@ -68,7 +68,7 @@ def _htmlFrontScreenPosts(recentPostsCache: {}, maxRecentPosts: int,
                                          True, recentPostsCache,
                                          maxRecentPosts,
                                          translate, None,
-                                         baseDir, session,
+                                         base_dir, session,
                                          cachedWebfingers,
                                          personCache,
                                          nickname, domain, port, item,
@@ -99,7 +99,7 @@ def htmlFrontScreen(signingPrivateKeyPem: str,
                     defaultTimeline: str,
                     recentPostsCache: {}, maxRecentPosts: int,
                     translate: {}, projectVersion: str,
-                    baseDir: str, httpPrefix: str, authorized: bool,
+                    base_dir: str, httpPrefix: str, authorized: bool,
                     profileJson: {}, selected: str,
                     session, cachedWebfingers: {}, personCache: {},
                     YTReplacementDomain: str,
@@ -135,7 +135,7 @@ def htmlFrontScreen(signingPrivateKeyPem: str,
 
     # If this is the news account then show a different banner
     bannerFile, bannerFilename = \
-        getBannerFile(baseDir, nickname, domain, theme)
+        getBannerFile(base_dir, nickname, domain, theme)
     profileHeaderStr = \
         '<img loading="lazy" class="timeline-banner" ' + \
         'src="/users/' + nickname + '/' + bannerFile + '" />\n'
@@ -153,7 +153,7 @@ def htmlFrontScreen(signingPrivateKeyPem: str,
         '    <tr>\n' + \
         '      <td valign="top" class="col-left">\n'
     profileHeaderStr += \
-        getLeftColumnContent(baseDir, 'news', domainFull,
+        getLeftColumnContent(base_dir, 'news', domainFull,
                              httpPrefix, translate,
                              False, False,
                              False, None, rssIconAtTop, True,
@@ -165,17 +165,17 @@ def htmlFrontScreen(signingPrivateKeyPem: str,
 
     profileStr = profileHeaderStr
 
-    cssFilename = baseDir + '/epicyon-profile.css'
-    if os.path.isfile(baseDir + '/epicyon.css'):
-        cssFilename = baseDir + '/epicyon.css'
+    cssFilename = base_dir + '/epicyon-profile.css'
+    if os.path.isfile(base_dir + '/epicyon.css'):
+        cssFilename = base_dir + '/epicyon.css'
 
     licenseStr = ''
     bannerFile, bannerFilename = \
-        getBannerFile(baseDir, nickname, domain, theme)
+        getBannerFile(base_dir, nickname, domain, theme)
     profileStr += \
         _htmlFrontScreenPosts(recentPostsCache, maxRecentPosts,
                               translate,
-                              baseDir, httpPrefix,
+                              base_dir, httpPrefix,
                               nickname, domain, port,
                               session, cachedWebfingers, personCache,
                               projectVersion,
@@ -193,7 +193,7 @@ def htmlFrontScreen(signingPrivateKeyPem: str,
     profileFooterStr = '      </td>\n'
     profileFooterStr += '      <td valign="top" class="col-right">\n'
     profileFooterStr += \
-        getRightColumnContent(baseDir, 'news', domainFull,
+        getRightColumnContent(base_dir, 'news', domainFull,
                               httpPrefix, translate,
                               False, False, newswire, False,
                               False, None, False, False,
@@ -206,7 +206,7 @@ def htmlFrontScreen(signingPrivateKeyPem: str,
         '</table>\n'
 
     instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
+        getConfigParam(base_dir, 'instanceTitle')
     profileStr = \
         htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None) + \
         profileStr + profileFooterStr + htmlFooter()

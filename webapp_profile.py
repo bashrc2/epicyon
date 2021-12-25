@@ -124,7 +124,7 @@ def _validProfilePreviewPost(postJsonObject: {},
 def htmlProfileAfterSearch(cssCache: {},
                            recentPostsCache: {}, maxRecentPosts: int,
                            translate: {},
-                           baseDir: str, path: str, httpPrefix: str,
+                           base_dir: str, path: str, httpPrefix: str,
                            nickname: str, domain: str, port: int,
                            profileHandle: str,
                            session, cachedWebfingers: {}, personCache: {},
@@ -165,9 +165,9 @@ def htmlProfileAfterSearch(cssCache: {},
     searchDomainFull = getFullDomain(searchDomain, searchPort)
 
     profileStr = ''
-    cssFilename = baseDir + '/epicyon-profile.css'
-    if os.path.isfile(baseDir + '/epicyon.css'):
-        cssFilename = baseDir + '/epicyon.css'
+    cssFilename = base_dir + '/epicyon-profile.css'
+    if os.path.isfile(base_dir + '/epicyon.css'):
+        cssFilename = base_dir + '/epicyon.css'
 
     isGroup = False
     if profileJson.get('type'):
@@ -179,7 +179,7 @@ def htmlProfileAfterSearch(cssCache: {},
         if profileJson['icon'].get('url'):
             avatarUrl = profileJson['icon']['url']
     if not avatarUrl:
-        avatarUrl = getPersonAvatarUrl(baseDir, personUrl,
+        avatarUrl = getPersonAvatarUrl(base_dir, personUrl,
                                        personCache, True)
     displayName = searchNickname
     if profileJson.get('name'):
@@ -196,7 +196,7 @@ def htmlProfileAfterSearch(cssCache: {},
         displayName += ' ⌂'
 
     followsYou = \
-        isFollowerOfPerson(baseDir,
+        isFollowerOfPerson(base_dir,
                            nickname, domain,
                            searchNickname,
                            searchDomainFull)
@@ -259,7 +259,7 @@ def htmlProfileAfterSearch(cssCache: {},
             joinedDate = profileJson['published']
 
     profileStr = \
-        _getProfileHeaderAfterSearch(baseDir,
+        _getProfileHeaderAfterSearch(base_dir,
                                      nickname, defaultTimeline,
                                      searchNickname,
                                      searchDomainFull,
@@ -335,7 +335,7 @@ def htmlProfileAfterSearch(cssCache: {},
             profileStr += \
                 individualPostAsHtml(signingPrivateKeyPem,
                                      True, recentPostsCache, maxRecentPosts,
-                                     translate, None, baseDir,
+                                     translate, None, base_dir,
                                      session, cachedWebfingers, personCache,
                                      nickname, domain, port,
                                      postJsonObject, avatarUrl, False, False,
@@ -353,12 +353,12 @@ def htmlProfileAfterSearch(cssCache: {},
                 break
 
     instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
+        getConfigParam(base_dir, 'instanceTitle')
     return htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None) + \
         profileStr + htmlFooter()
 
 
-def _getProfileHeader(baseDir: str, httpPrefix: str,
+def _getProfileHeader(base_dir: str, httpPrefix: str,
                       nickname: str, domain: str,
                       domainFull: str, translate: {},
                       defaultTimeline: str,
@@ -452,7 +452,7 @@ def _getProfileHeader(baseDir: str, httpPrefix: str,
     return htmlStr
 
 
-def _getProfileHeaderAfterSearch(baseDir: str,
+def _getProfileHeaderAfterSearch(base_dir: str,
                                  nickname: str, defaultTimeline: str,
                                  searchNickname: str,
                                  searchDomainFull: str,
@@ -544,7 +544,7 @@ def htmlProfile(signingPrivateKeyPem: str,
                 defaultTimeline: str,
                 recentPostsCache: {}, maxRecentPosts: int,
                 translate: {}, projectVersion: str,
-                baseDir: str, httpPrefix: str, authorized: bool,
+                base_dir: str, httpPrefix: str, authorized: bool,
                 profileJson: {}, selected: str,
                 session, cachedWebfingers: {}, personCache: {},
                 YTReplacementDomain: str,
@@ -573,7 +573,7 @@ def htmlProfile(signingPrivateKeyPem: str,
                                defaultTimeline,
                                recentPostsCache, maxRecentPosts,
                                translate, projectVersion,
-                               baseDir, httpPrefix, authorized,
+                               base_dir, httpPrefix, authorized,
                                profileJson, selected,
                                session, cachedWebfingers, personCache,
                                YTReplacementDomain,
@@ -590,12 +590,12 @@ def htmlProfile(signingPrivateKeyPem: str,
     if not domain:
         return ""
     displayName = \
-        addEmojiToDisplayName(session, baseDir, httpPrefix,
+        addEmojiToDisplayName(session, base_dir, httpPrefix,
                               nickname, domain,
                               profileJson['name'], True)
     domainFull = getFullDomain(domain, port)
     profileDescription = \
-        addEmojiToDisplayName(session, baseDir, httpPrefix,
+        addEmojiToDisplayName(session, base_dir, httpPrefix,
                               nickname, domain,
                               profileJson['summary'], False)
     postsButton = 'button'
@@ -728,7 +728,7 @@ def htmlProfile(signingPrivateKeyPem: str,
 
         # are there any follow requests?
         followRequestsFilename = \
-            acctDir(baseDir, nickname, domain) + '/followrequests.txt'
+            acctDir(base_dir, nickname, domain) + '/followrequests.txt'
         if os.path.isfile(followRequestsFilename):
             with open(followRequestsFilename, 'r') as f:
                 for line in f:
@@ -741,7 +741,7 @@ def htmlProfile(signingPrivateKeyPem: str,
         if selected == 'followers':
             if followApprovals:
                 currFollowerDomains = \
-                    getFollowerDomains(baseDir, nickname, domain)
+                    getFollowerDomains(base_dir, nickname, domain)
                 with open(followRequestsFilename, 'r') as f:
                     for followerHandle in f:
                         if len(line) > 0:
@@ -831,7 +831,7 @@ def htmlProfile(signingPrivateKeyPem: str,
                               '://' + domainFull + '/users/')
 
     # get pinned post content
-    accountDir = acctDir(baseDir, nickname, domain)
+    accountDir = acctDir(base_dir, nickname, domain)
     pinnedFilename = accountDir + '/pinToProfile.txt'
     pinnedContent = None
     if os.path.isfile(pinnedFilename):
@@ -839,7 +839,7 @@ def htmlProfile(signingPrivateKeyPem: str,
             pinnedContent = pinFile.read()
 
     profileHeaderStr = \
-        _getProfileHeader(baseDir, httpPrefix,
+        _getProfileHeader(base_dir, httpPrefix,
                           nickname, domain,
                           domainFull, translate,
                           defaultTimeline, displayName,
@@ -855,7 +855,7 @@ def htmlProfile(signingPrivateKeyPem: str,
     deft = defaultTimeline
     isGroup = False
     followersStr = translate['Followers']
-    if isGroupAccount(baseDir, nickname, domain):
+    if isGroupAccount(base_dir, nickname, domain):
         isGroup = True
         followersStr = translate['Members']
     menuTimeline = \
@@ -884,7 +884,7 @@ def htmlProfile(signingPrivateKeyPem: str,
         menuSkills: userPathStr + '/skills#timeline',
         menuLogout: '/logout'
     }
-    if isArtist(baseDir, nickname):
+    if isArtist(base_dir, nickname):
         menuThemeDesigner = \
             htmlHideFromScreenReader('🎨') + ' ' + translate['Theme Designer']
         navLinks[menuThemeDesigner] = userPathStr + '/themedesigner'
@@ -940,9 +940,9 @@ def htmlProfile(signingPrivateKeyPem: str,
 
     profileStr += followApprovalsSection
 
-    cssFilename = baseDir + '/epicyon-profile.css'
-    if os.path.isfile(baseDir + '/epicyon.css'):
-        cssFilename = baseDir + '/epicyon.css'
+    cssFilename = base_dir + '/epicyon-profile.css'
+    if os.path.isfile(base_dir + '/epicyon.css'):
+        cssFilename = base_dir + '/epicyon.css'
 
     licenseStr = \
         '<a href="https://gitlab.com/bashrc2/epicyon">' + \
@@ -954,7 +954,7 @@ def htmlProfile(signingPrivateKeyPem: str,
         profileStr += \
             _htmlProfilePosts(recentPostsCache, maxRecentPosts,
                               translate,
-                              baseDir, httpPrefix, authorized,
+                              base_dir, httpPrefix, authorized,
                               nickname, domain, port,
                               session, cachedWebfingers, personCache,
                               projectVersion,
@@ -970,7 +970,7 @@ def htmlProfile(signingPrivateKeyPem: str,
     if not isGroup:
         if selected == 'following':
             profileStr += \
-                _htmlProfileFollowing(translate, baseDir, httpPrefix,
+                _htmlProfileFollowing(translate, base_dir, httpPrefix,
                                       authorized, nickname,
                                       domain, port, session,
                                       cachedWebfingers, personCache, extraJson,
@@ -980,7 +980,7 @@ def htmlProfile(signingPrivateKeyPem: str,
                                       signingPrivateKeyPem)
     if selected == 'followers':
         profileStr += \
-            _htmlProfileFollowing(translate, baseDir, httpPrefix,
+            _htmlProfileFollowing(translate, base_dir, httpPrefix,
                                   authorized, nickname,
                                   domain, port, session,
                                   cachedWebfingers, personCache, extraJson,
@@ -1010,7 +1010,7 @@ def htmlProfile(signingPrivateKeyPem: str,
     profileStr += '</div>'
 
     instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
+        getConfigParam(base_dir, 'instanceTitle')
     profileStr = \
         htmlHeaderWithPersonMarkup(cssFilename, instanceTitle,
                                    profileJson, city,
@@ -1021,7 +1021,7 @@ def htmlProfile(signingPrivateKeyPem: str,
 
 def _htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
                       translate: {},
-                      baseDir: str, httpPrefix: str,
+                      base_dir: str, httpPrefix: str,
                       authorized: bool,
                       nickname: str, domain: str, port: int,
                       session, cachedWebfingers: {}, personCache: {},
@@ -1038,7 +1038,7 @@ def _htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
     """Shows posts on the profile screen
     These should only be public posts
     """
-    separatorStr = htmlPostSeparator(baseDir, None)
+    separatorStr = htmlPostSeparator(base_dir, None)
     profileStr = ''
     maxItems = 4
     ctr = 0
@@ -1049,7 +1049,7 @@ def _htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
             '/users/' + nickname + '/' + boxName + '?page=' + \
             str(currPage)
         outboxFeed = \
-            personBoxJson({}, session, baseDir, domain,
+            personBoxJson({}, session, base_dir, domain,
                           port,
                           outboxFeedPathStr,
                           httpPrefix,
@@ -1066,7 +1066,7 @@ def _htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
                                          True, recentPostsCache,
                                          maxRecentPosts,
                                          translate, None,
-                                         baseDir, session, cachedWebfingers,
+                                         base_dir, session, cachedWebfingers,
                                          personCache,
                                          nickname, domain, port, item,
                                          None, True, False,
@@ -1090,7 +1090,7 @@ def _htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
     return profileStr
 
 
-def _htmlProfileFollowing(translate: {}, baseDir: str, httpPrefix: str,
+def _htmlProfileFollowing(translate: {}, base_dir: str, httpPrefix: str,
                           authorized: bool,
                           nickname: str, domain: str, port: int,
                           session, cachedWebfingers: {}, personCache: {},
@@ -1123,12 +1123,12 @@ def _htmlProfileFollowing(translate: {}, baseDir: str, httpPrefix: str,
         dormant = False
         if authorized and feedName == 'following':
             dormant = \
-                isDormant(baseDir, nickname, domain, followingActor,
+                isDormant(base_dir, nickname, domain, followingActor,
                           dormantMonths)
 
         profileStr += \
             _individualFollowAsHtml(signingPrivateKeyPem,
-                                    translate, baseDir, session,
+                                    translate, base_dir, session,
                                     cachedWebfingers, personCache,
                                     domain, followingActor,
                                     authorized, nickname,
@@ -1203,20 +1203,20 @@ def _htmlProfileShares(actor: str, translate: {},
     return profileStr
 
 
-def _grayscaleEnabled(baseDir: str) -> bool:
+def _grayscaleEnabled(base_dir: str) -> bool:
     """Is grayscale UI enabled?
     """
-    return os.path.isfile(baseDir + '/accounts/.grayscale')
+    return os.path.isfile(base_dir + '/accounts/.grayscale')
 
 
-def _htmlThemesDropdown(baseDir: str, translate: {}) -> str:
+def _htmlThemesDropdown(base_dir: str, translate: {}) -> str:
     """Returns the html for theme selection dropdown
     """
     # Themes section
-    themes = getThemesList(baseDir)
+    themes = getThemesList(base_dir)
     themesDropdown = '  <label class="labels">' + \
         translate['Theme'] + '</label><br>\n'
-    grayscale = _grayscaleEnabled(baseDir)
+    grayscale = _grayscaleEnabled(base_dir)
     themesDropdown += \
         editCheckBox(translate['Grayscale'], 'grayscale', grayscale)
     themesDropdown += '  <select id="themeDropdown" ' + \
@@ -1229,14 +1229,14 @@ def _htmlThemesDropdown(baseDir: str, translate: {}) -> str:
             themeName.lower() + '">' + \
             translatedThemeName + '</option>'
     themesDropdown += '  </select><br>'
-    if os.path.isfile(baseDir + '/fonts/custom.woff') or \
-       os.path.isfile(baseDir + '/fonts/custom.woff2') or \
-       os.path.isfile(baseDir + '/fonts/custom.otf') or \
-       os.path.isfile(baseDir + '/fonts/custom.ttf'):
+    if os.path.isfile(base_dir + '/fonts/custom.woff') or \
+       os.path.isfile(base_dir + '/fonts/custom.woff2') or \
+       os.path.isfile(base_dir + '/fonts/custom.otf') or \
+       os.path.isfile(base_dir + '/fonts/custom.ttf'):
         themesDropdown += \
             editCheckBox(translate['Remove the custom font'],
                          'removeCustomFont', False)
-    themeName = getConfigParam(baseDir, 'theme')
+    themeName = getConfigParam(base_dir, 'theme')
     themesDropdown = \
         themesDropdown.replace('<option value="' + themeName + '">',
                                '<option value="' + themeName +
@@ -1244,17 +1244,17 @@ def _htmlThemesDropdown(baseDir: str, translate: {}) -> str:
     return themesDropdown
 
 
-def _htmlEditProfileGraphicDesign(baseDir: str, translate: {}) -> str:
+def _htmlEditProfileGraphicDesign(base_dir: str, translate: {}) -> str:
     """Graphic design section on Edit Profile screen
     """
     themeFormats = '.zip, .gz'
 
     graphicsStr = beginEditSection(translate['Graphic Design'])
 
-    lowBandwidth = getConfigParam(baseDir, 'lowBandwidth')
+    lowBandwidth = getConfigParam(base_dir, 'lowBandwidth')
     if not lowBandwidth:
         lowBandwidth = False
-    graphicsStr += _htmlThemesDropdown(baseDir, translate)
+    graphicsStr += _htmlThemesDropdown(base_dir, translate)
     graphicsStr += \
         '      <label class="labels">' + \
         translate['Import Theme'] + '</label>\n'
@@ -1275,7 +1275,7 @@ def _htmlEditProfileGraphicDesign(baseDir: str, translate: {}) -> str:
     return graphicsStr
 
 
-def _htmlEditProfileTwitter(baseDir: str, translate: {},
+def _htmlEditProfileTwitter(base_dir: str, translate: {},
                             removeTwitter: str) -> str:
     """Edit twitter settings within profile
     """
@@ -1284,7 +1284,7 @@ def _htmlEditProfileTwitter(baseDir: str, translate: {},
     twitterStr += \
         editCheckBox(translate['Remove Twitter posts'],
                      'removeTwitter', removeTwitter)
-    twitterReplacementDomain = getConfigParam(baseDir, "twitterdomain")
+    twitterReplacementDomain = getConfigParam(base_dir, "twitterdomain")
     if not twitterReplacementDomain:
         twitterReplacementDomain = ''
     twitterStr += \
@@ -1294,7 +1294,7 @@ def _htmlEditProfileTwitter(baseDir: str, translate: {},
     return twitterStr
 
 
-def _htmlEditProfileInstance(baseDir: str, translate: {},
+def _htmlEditProfileInstance(base_dir: str, translate: {},
                              peertubeInstances: [],
                              mediaInstanceStr: str,
                              blogsInstanceStr: str,
@@ -1305,15 +1305,15 @@ def _htmlEditProfileInstance(baseDir: str, translate: {},
 
     # Instance details section
     instanceDescription = \
-        getConfigParam(baseDir, 'instanceDescription')
+        getConfigParam(base_dir, 'instanceDescription')
     customSubmitText = \
-        getConfigParam(baseDir, 'customSubmitText')
+        getConfigParam(base_dir, 'customSubmitText')
     instanceDescriptionShort = \
-        getConfigParam(baseDir, 'instanceDescriptionShort')
+        getConfigParam(base_dir, 'instanceDescriptionShort')
     instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
+        getConfigParam(base_dir, 'instanceTitle')
     contentLicenseUrl = \
-        getConfigParam(baseDir, 'contentLicenseUrl')
+        getConfigParam(base_dir, 'contentLicenseUrl')
     if not contentLicenseUrl:
         contentLicenseUrl = 'https://creativecommons.org/licenses/by/4.0'
 
@@ -1349,7 +1349,7 @@ def _htmlEditProfileInstance(baseDir: str, translate: {},
 
     nodeInfoStr = \
         translate['Show numbers of accounts within instance metadata']
-    if getConfigParam(baseDir, "showNodeInfoAccounts"):
+    if getConfigParam(base_dir, "showNodeInfoAccounts"):
         instanceStr += \
             editCheckBox(nodeInfoStr, 'showNodeInfoAccounts', True)
     else:
@@ -1358,14 +1358,14 @@ def _htmlEditProfileInstance(baseDir: str, translate: {},
 
     nodeInfoStr = \
         translate['Show version number within instance metadata']
-    if getConfigParam(baseDir, "showNodeInfoVersion"):
+    if getConfigParam(base_dir, "showNodeInfoVersion"):
         instanceStr += \
             editCheckBox(nodeInfoStr, 'showNodeInfoVersion', True)
     else:
         instanceStr += \
             editCheckBox(nodeInfoStr, 'showNodeInfoVersion', False)
 
-    if getConfigParam(baseDir, "verifyAllSignatures"):
+    if getConfigParam(base_dir, "verifyAllSignatures"):
         instanceStr += \
             editCheckBox(translate['Verify all signatures'],
                          'verifyallsignatures', True)
@@ -1375,7 +1375,7 @@ def _htmlEditProfileInstance(baseDir: str, translate: {},
                          'verifyallsignatures', False)
 
     instanceStr += translate['Enabling broch mode'] + '<br>\n'
-    if getConfigParam(baseDir, "brochMode"):
+    if getConfigParam(base_dir, "brochMode"):
         instanceStr += \
             editCheckBox(translate['Broch mode'], 'brochMode', True)
     else:
@@ -1399,7 +1399,7 @@ def _htmlEditProfileInstance(baseDir: str, translate: {},
 
     # Role assignments section
     moderators = ''
-    moderatorsFile = baseDir + '/accounts/moderators.txt'
+    moderatorsFile = base_dir + '/accounts/moderators.txt'
     if os.path.isfile(moderatorsFile):
         with open(moderatorsFile, 'r') as f:
             moderators = f.read()
@@ -1417,7 +1417,7 @@ def _htmlEditProfileInstance(baseDir: str, translate: {},
 
     # site editors
     editors = ''
-    editorsFile = baseDir + '/accounts/editors.txt'
+    editorsFile = base_dir + '/accounts/editors.txt'
     if os.path.isfile(editorsFile):
         with open(editorsFile, 'r') as f:
             editors = f.read()
@@ -1432,7 +1432,7 @@ def _htmlEditProfileInstance(baseDir: str, translate: {},
 
     # counselors
     counselors = ''
-    counselorsFile = baseDir + '/accounts/counselors.txt'
+    counselorsFile = base_dir + '/accounts/counselors.txt'
     if os.path.isfile(counselorsFile):
         with open(counselorsFile, 'r') as f:
             counselors = f.read()
@@ -1442,7 +1442,7 @@ def _htmlEditProfileInstance(baseDir: str, translate: {},
 
     # artists
     artists = ''
-    artistsFile = baseDir + '/accounts/artists.txt'
+    artistsFile = base_dir + '/accounts/artists.txt'
     if os.path.isfile(artistsFile):
         with open(artistsFile, 'r') as f:
             artists = f.read()
@@ -1461,7 +1461,7 @@ def _htmlEditProfileInstance(baseDir: str, translate: {},
                      peertubeInstancesStr, 200, '', False)
     peertubeStr += \
         '      <br>\n'
-    YTReplacementDomain = getConfigParam(baseDir, "youtubedomain")
+    YTReplacementDomain = getConfigParam(base_dir, "youtubedomain")
     if not YTReplacementDomain:
         YTReplacementDomain = ''
     peertubeStr += \
@@ -1469,8 +1469,8 @@ def _htmlEditProfileInstance(baseDir: str, translate: {},
                       'ytdomain', YTReplacementDomain)
     peertubeStr += endEditSection()
 
-    libretranslateUrl = getConfigParam(baseDir, 'libretranslateUrl')
-    libretranslateApiKey = getConfigParam(baseDir, 'libretranslateApiKey')
+    libretranslateUrl = getConfigParam(base_dir, 'libretranslateUrl')
+    libretranslateApiKey = getConfigParam(base_dir, 'libretranslateApiKey')
     libretranslateStr = \
         _htmlEditProfileLibreTranslate(translate,
                                        libretranslateUrl,
@@ -1508,16 +1508,16 @@ def _htmlSystemMonitor(nickname: str, translate: {}) -> str:
     return systemMonitorStr
 
 
-def _htmlEditProfileSkills(baseDir: str, nickname: str, domain: str,
+def _htmlEditProfileSkills(base_dir: str, nickname: str, domain: str,
                            translate: {}) -> str:
     """skills section of Edit Profile screen
     """
-    skills = getSkills(baseDir, nickname, domain)
+    skills = getSkills(base_dir, nickname, domain)
     skillsStr = ''
     skillCtr = 1
     if skills:
         for skillDesc, skillValue in skills.items():
-            if isFiltered(baseDir, nickname, domain, skillDesc):
+            if isFiltered(base_dir, nickname, domain, skillDesc):
                 continue
             skillsStr += \
                 '<p><input type="text" placeholder="' + translate['Skill'] + \
@@ -1549,13 +1549,13 @@ def _htmlEditProfileSkills(baseDir: str, nickname: str, domain: str,
     return editProfileForm
 
 
-def _htmlEditProfileGitProjects(baseDir: str, nickname: str, domain: str,
+def _htmlEditProfileGitProjects(base_dir: str, nickname: str, domain: str,
                                 translate: {}) -> str:
     """git projects section of edit profile screen
     """
     gitProjectsStr = ''
     gitProjectsFilename = \
-        acctDir(baseDir, nickname, domain) + '/gitprojects.txt'
+        acctDir(base_dir, nickname, domain) + '/gitprojects.txt'
     if os.path.isfile(gitProjectsFilename):
         with open(gitProjectsFilename, 'r') as gitProjectsFile:
             gitProjectsStr = gitProjectsFile.read()
@@ -1569,13 +1569,13 @@ def _htmlEditProfileGitProjects(baseDir: str, nickname: str, domain: str,
     return editProfileForm
 
 
-def _htmlEditProfileSharedItems(baseDir: str, nickname: str, domain: str,
+def _htmlEditProfileSharedItems(base_dir: str, nickname: str, domain: str,
                                 translate: {}) -> str:
     """shared items section of edit profile screen
     """
     sharedItemsStr = ''
     sharedItemsFederatedDomainsStr = \
-        getConfigParam(baseDir, 'sharedItemsFederatedDomains')
+        getConfigParam(base_dir, 'sharedItemsFederatedDomains')
     if sharedItemsFederatedDomainsStr:
         sharedItemsFederatedDomainsList = \
             sharedItemsFederatedDomainsStr.split(',')
@@ -1591,7 +1591,7 @@ def _htmlEditProfileSharedItems(baseDir: str, nickname: str, domain: str,
     return editProfileForm
 
 
-def _htmlEditProfileFiltering(baseDir: str, nickname: str, domain: str,
+def _htmlEditProfileFiltering(base_dir: str, nickname: str, domain: str,
                               userAgentsBlocked: str,
                               translate: {}, replyIntervalHours: int,
                               CWlists: {}, listsEnabled: str) -> str:
@@ -1599,56 +1599,56 @@ def _htmlEditProfileFiltering(baseDir: str, nickname: str, domain: str,
     """
     filterStr = ''
     filterFilename = \
-        acctDir(baseDir, nickname, domain) + '/filters.txt'
+        acctDir(base_dir, nickname, domain) + '/filters.txt'
     if os.path.isfile(filterFilename):
         with open(filterFilename, 'r') as filterfile:
             filterStr = filterfile.read()
 
     filterBioStr = ''
     filterBioFilename = \
-        acctDir(baseDir, nickname, domain) + '/filters_bio.txt'
+        acctDir(base_dir, nickname, domain) + '/filters_bio.txt'
     if os.path.isfile(filterBioFilename):
         with open(filterBioFilename, 'r') as filterfile:
             filterBioStr = filterfile.read()
 
     switchStr = ''
     switchFilename = \
-        acctDir(baseDir, nickname, domain) + '/replacewords.txt'
+        acctDir(base_dir, nickname, domain) + '/replacewords.txt'
     if os.path.isfile(switchFilename):
         with open(switchFilename, 'r') as switchfile:
             switchStr = switchfile.read()
 
     autoTags = ''
     autoTagsFilename = \
-        acctDir(baseDir, nickname, domain) + '/autotags.txt'
+        acctDir(base_dir, nickname, domain) + '/autotags.txt'
     if os.path.isfile(autoTagsFilename):
         with open(autoTagsFilename, 'r') as autoTagsFile:
             autoTags = autoTagsFile.read()
 
     autoCW = ''
     autoCWFilename = \
-        acctDir(baseDir, nickname, domain) + '/autocw.txt'
+        acctDir(base_dir, nickname, domain) + '/autocw.txt'
     if os.path.isfile(autoCWFilename):
         with open(autoCWFilename, 'r') as autoCWFile:
             autoCW = autoCWFile.read()
 
     blockedStr = ''
     blockedFilename = \
-        acctDir(baseDir, nickname, domain) + '/blocking.txt'
+        acctDir(base_dir, nickname, domain) + '/blocking.txt'
     if os.path.isfile(blockedFilename):
         with open(blockedFilename, 'r') as blockedfile:
             blockedStr = blockedfile.read()
 
     dmAllowedInstancesStr = ''
     dmAllowedInstancesFilename = \
-        acctDir(baseDir, nickname, domain) + '/dmAllowedInstances.txt'
+        acctDir(base_dir, nickname, domain) + '/dmAllowedInstances.txt'
     if os.path.isfile(dmAllowedInstancesFilename):
         with open(dmAllowedInstancesFilename, 'r') as dmAllowedInstancesFile:
             dmAllowedInstancesStr = dmAllowedInstancesFile.read()
 
     allowedInstancesStr = ''
     allowedInstancesFilename = \
-        acctDir(baseDir, nickname, domain) + '/allowedinstances.txt'
+        acctDir(base_dir, nickname, domain) + '/allowedinstances.txt'
     if os.path.isfile(allowedInstancesFilename):
         with open(allowedInstancesFilename, 'r') as allowedInstancesFile:
             allowedInstancesStr = allowedInstancesFile.read()
@@ -1669,13 +1669,13 @@ def _htmlEditProfileFiltering(baseDir: str, nickname: str, domain: str,
         '</label><br>\n'
 
     city = ''
-    cityFilename = acctDir(baseDir, nickname, domain) + '/city.txt'
+    cityFilename = acctDir(base_dir, nickname, domain) + '/city.txt'
     if os.path.isfile(cityFilename):
         with open(cityFilename, 'r') as fp:
             city = fp.read().replace('\n', '')
-    locationsFilename = baseDir + '/custom_locations.txt'
+    locationsFilename = base_dir + '/custom_locations.txt'
     if not os.path.isfile(locationsFilename):
-        locationsFilename = baseDir + '/locations.txt'
+        locationsFilename = base_dir + '/locations.txt'
     cities = []
     with open(locationsFilename, 'r') as f:
         cities = f.readlines()
@@ -1754,7 +1754,7 @@ def _htmlEditProfileFiltering(baseDir: str, nickname: str, domain: str,
         'style="height:200px" spellcheck="false">' + \
         allowedInstancesStr + '</textarea>\n'
 
-    if isModerator(baseDir, nickname):
+    if isModerator(base_dir, nickname):
         editProfileForm += \
             '<a href="/users/' + nickname + '/crawlers">' + \
             translate['Known Web Crawlers'] + '</a><br>\n'
@@ -1961,10 +1961,10 @@ def _htmlEditProfileOptions(isAdmin: bool,
     return editProfileForm
 
 
-def _getSupportedLanguagesSorted(baseDir: str) -> str:
+def _getSupportedLanguagesSorted(base_dir: str) -> str:
     """Returns a list of supported languages
     """
-    langList = getSupportedLanguages(baseDir)
+    langList = getSupportedLanguages(base_dir)
     if not langList:
         return ''
     langList.sort()
@@ -1977,7 +1977,7 @@ def _getSupportedLanguagesSorted(baseDir: str) -> str:
     return languagesStr
 
 
-def _htmlEditProfileMain(baseDir: str, displayNickname: str, bioStr: str,
+def _htmlEditProfileMain(base_dir: str, displayNickname: str, bioStr: str,
                          movedTo: str, donateUrl: str, websiteUrl: str,
                          blogAddress: str, actorJson: {},
                          translate: {}) -> str:
@@ -2037,7 +2037,7 @@ def _htmlEditProfileMain(baseDir: str, displayNickname: str, bioStr: str,
     editProfileForm += \
         editTextField('Blog', 'blogAddress', blogAddress, 'https://...')
 
-    languagesListStr = _getSupportedLanguagesSorted(baseDir)
+    languagesListStr = _getSupportedLanguagesSorted(base_dir)
     showLanguages = getActorLanguages(actorJson)
     editProfileForm += \
         editTextField(translate['Languages'], 'showLanguages',
@@ -2047,7 +2047,7 @@ def _htmlEditProfileMain(baseDir: str, displayNickname: str, bioStr: str,
     return editProfileForm
 
 
-def _htmlEditProfileTopBanner(baseDir: str,
+def _htmlEditProfileTopBanner(base_dir: str,
                               nickname: str, domain: str, domainFull: str,
                               defaultTimeline: str, bannerFile: str,
                               path: str, accessKeys: {}, translate: {}) -> str:
@@ -2074,7 +2074,7 @@ def _htmlEditProfileTopBanner(baseDir: str,
         '      </center>\n'
     editProfileForm += '    </div>\n'
 
-    if scheduledPostsExist(baseDir, nickname, domain):
+    if scheduledPostsExist(base_dir, nickname, domain):
         editProfileForm += '    <div class="container">\n'
         editProfileForm += \
             editCheckBox(translate['Remove scheduled posts'],
@@ -2083,7 +2083,7 @@ def _htmlEditProfileTopBanner(baseDir: str,
     return editProfileForm
 
 
-def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
+def htmlEditProfile(cssCache: {}, translate: {}, base_dir: str, path: str,
                     domain: str, port: int, httpPrefix: str,
                     defaultTimeline: str, theme: str,
                     peertubeInstances: [],
@@ -2101,13 +2101,13 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         return ''
     domainFull = getFullDomain(domain, port)
 
-    actorFilename = acctDir(baseDir, nickname, domain) + '.json'
+    actorFilename = acctDir(base_dir, nickname, domain) + '.json'
     if not os.path.isfile(actorFilename):
         return ''
 
     # filename of the banner shown at the top
     bannerFile, bannerFilename = \
-        getBannerFile(baseDir, nickname, domain, theme)
+        getBannerFile(base_dir, nickname, domain, theme)
 
     displayNickname = nickname
     isBot = isGroup = followDMs = removeTwitter = ''
@@ -2139,12 +2139,12 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         PGPpubKey = getPGPpubKey(actorJson)
         PGPfingerprint = getPGPfingerprint(actorJson)
         if actorJson.get('name'):
-            if not isFiltered(baseDir, nickname, domain, actorJson['name']):
+            if not isFiltered(base_dir, nickname, domain, actorJson['name']):
                 displayNickname = actorJson['name']
         if actorJson.get('summary'):
             bioStr = \
                 actorJson['summary'].replace('<p>', '').replace('</p>', '')
-            if isFiltered(baseDir, nickname, domain, bioStr):
+            if isFiltered(base_dir, nickname, domain, bioStr):
                 bioStr = ''
         if actorJson.get('manuallyApprovesFollowers'):
             if actorJson['manuallyApprovesFollowers']:
@@ -2158,7 +2158,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
             elif actorJson['type'] == 'Group':
                 isGroup = 'checked'
                 isBot = ''
-    accountDir = acctDir(baseDir, nickname, domain)
+    accountDir = acctDir(base_dir, nickname, domain)
     if os.path.isfile(accountDir + '/.followDMs'):
         followDMs = 'checked'
     if os.path.isfile(accountDir + '/.removeTwitter'):
@@ -2172,27 +2172,27 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     if os.path.isfile(accountDir + '/.hideReactionButton'):
         hideReactionButton = 'checked'
 
-    mediaInstance = getConfigParam(baseDir, "mediaInstance")
+    mediaInstance = getConfigParam(base_dir, "mediaInstance")
     if mediaInstance:
         if mediaInstance is True:
             mediaInstanceStr = 'checked'
             blogsInstanceStr = newsInstanceStr = ''
 
-    newsInstance = getConfigParam(baseDir, "newsInstance")
+    newsInstance = getConfigParam(base_dir, "newsInstance")
     if newsInstance:
         if newsInstance is True:
             newsInstanceStr = 'checked'
             blogsInstanceStr = mediaInstanceStr = ''
 
-    blogsInstance = getConfigParam(baseDir, "blogsInstance")
+    blogsInstance = getConfigParam(base_dir, "blogsInstance")
     if blogsInstance:
         if blogsInstance is True:
             blogsInstanceStr = 'checked'
             mediaInstanceStr = newsInstanceStr = ''
 
-    cssFilename = baseDir + '/epicyon-profile.css'
-    if os.path.isfile(baseDir + '/epicyon.css'):
-        cssFilename = baseDir + '/epicyon.css'
+    cssFilename = base_dir + '/epicyon-profile.css'
+    if os.path.isfile(base_dir + '/epicyon.css'):
+        cssFilename = base_dir + '/epicyon.css'
 
     instanceStr = ''
     roleAssignStr = ''
@@ -2202,31 +2202,31 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     graphicsStr = ''
     sharesFederationStr = ''
 
-    adminNickname = getConfigParam(baseDir, 'admin')
+    adminNickname = getConfigParam(base_dir, 'admin')
 
-    if isArtist(baseDir, nickname) or \
+    if isArtist(base_dir, nickname) or \
        path.startswith('/users/' + str(adminNickname) + '/'):
-        graphicsStr = _htmlEditProfileGraphicDesign(baseDir, translate)
+        graphicsStr = _htmlEditProfileGraphicDesign(base_dir, translate)
 
     isAdmin = False
     if adminNickname:
         if path.startswith('/users/' + adminNickname + '/'):
             isAdmin = True
             twitterStr = \
-                _htmlEditProfileTwitter(baseDir, translate, removeTwitter)
+                _htmlEditProfileTwitter(base_dir, translate, removeTwitter)
             # shared items section
             sharesFederationStr = \
-                _htmlEditProfileSharedItems(baseDir, nickname,
+                _htmlEditProfileSharedItems(base_dir, nickname,
                                             domain, translate)
             instanceStr, roleAssignStr, peertubeStr, libretranslateStr = \
-                _htmlEditProfileInstance(baseDir, translate,
+                _htmlEditProfileInstance(base_dir, translate,
                                          peertubeInstances,
                                          mediaInstanceStr,
                                          blogsInstanceStr,
                                          newsInstanceStr)
             systemMonitorStr = _htmlSystemMonitor(nickname, translate)
 
-    instanceTitle = getConfigParam(baseDir, 'instanceTitle')
+    instanceTitle = getConfigParam(base_dir, 'instanceTitle')
     editProfileForm = \
         htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
 
@@ -2252,13 +2252,13 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
 
     # top banner
     editProfileForm += \
-        _htmlEditProfileTopBanner(baseDir, nickname, domain, domainFull,
+        _htmlEditProfileTopBanner(base_dir, nickname, domain, domainFull,
                                   defaultTimeline, bannerFile,
                                   path, accessKeys, translate)
 
     # main info
     editProfileForm += \
-        _htmlEditProfileMain(baseDir, displayNickname, bioStr,
+        _htmlEditProfileMain(base_dir, displayNickname, bioStr,
                              movedTo, donateUrl, websiteUrl,
                              blogAddress, actorJson, translate)
 
@@ -2296,21 +2296,21 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     editProfileForm += systemMonitorStr
 
     # Filtering and blocking section
-    replyIntervalHours = getReplyIntervalHours(baseDir, nickname, domain,
+    replyIntervalHours = getReplyIntervalHours(base_dir, nickname, domain,
                                                defaultReplyIntervalHours)
     editProfileForm += \
-        _htmlEditProfileFiltering(baseDir, nickname, domain,
+        _htmlEditProfileFiltering(base_dir, nickname, domain,
                                   userAgentsBlocked, translate,
                                   replyIntervalHours,
                                   CWlists, listsEnabled)
 
     # git projects section
     editProfileForm += \
-        _htmlEditProfileGitProjects(baseDir, nickname, domain, translate)
+        _htmlEditProfileGitProjects(base_dir, nickname, domain, translate)
 
     # Skills section
     editProfileForm += \
-        _htmlEditProfileSkills(baseDir, nickname, domain, translate)
+        _htmlEditProfileSkills(base_dir, nickname, domain, translate)
 
     editProfileForm += roleAssignStr + peertubeStr + graphicsStr
     editProfileForm += sharesFederationStr + twitterStr + instanceStr
@@ -2334,7 +2334,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
 
 def _individualFollowAsHtml(signingPrivateKeyPem: str,
                             translate: {},
-                            baseDir: str, session,
+                            base_dir: str, session,
                             cachedWebfingers: {},
                             personCache: {}, domain: str,
                             followUrl: str,
@@ -2351,11 +2351,11 @@ def _individualFollowAsHtml(signingPrivateKeyPem: str,
     followUrlDomain, followUrlPort = getDomainFromActor(followUrl)
     followUrlDomainFull = getFullDomain(followUrlDomain, followUrlPort)
     titleStr = '@' + followUrlNickname + '@' + followUrlDomainFull
-    avatarUrl = getPersonAvatarUrl(baseDir, followUrl, personCache, True)
+    avatarUrl = getPersonAvatarUrl(base_dir, followUrl, personCache, True)
     if not avatarUrl:
         avatarUrl = followUrl + '/avatar.png'
 
-    displayName = getDisplayName(baseDir, followUrl, personCache)
+    displayName = getDisplayName(base_dir, followUrl, personCache)
     isGroup = False
     if not displayName:
         # lookup the correct webfinger for the followUrl
@@ -2370,7 +2370,7 @@ def _individualFollowAsHtml(signingPrivateKeyPem: str,
         (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl2,
          displayName, isGroup) = getPersonBox(signingPrivateKeyPem,
                                               originDomain,
-                                              baseDir, session,
+                                              base_dir, session,
                                               followUrlWf,
                                               personCache, projectVersion,
                                               httpPrefix, followUrlNickname,
@@ -2380,7 +2380,7 @@ def _individualFollowAsHtml(signingPrivateKeyPem: str,
 
     if displayName:
         displayName = \
-            addEmojiToDisplayName(None, baseDir, httpPrefix,
+            addEmojiToDisplayName(None, base_dir, httpPrefix,
                                   actorNickname, domain,
                                   displayName, False)
         titleStr = displayName
@@ -2400,7 +2400,7 @@ def _individualFollowAsHtml(signingPrivateKeyPem: str,
             elif b == 'unfollow':
                 unfollowStr = 'Unfollow'
                 if isGroup or \
-                   isGroupAccount(baseDir,
+                   isGroupAccount(base_dir,
                                   followUrlNickname, followUrlDomain):
                     unfollowStr = 'Leave'
                 buttonsStr += \

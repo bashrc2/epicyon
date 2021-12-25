@@ -116,23 +116,23 @@ def getBaseContentFromPost(postJsonObject: {}, systemLanguage: str) -> str:
     return thisPostJson['content']
 
 
-def acctDir(baseDir: str, nickname: str, domain: str) -> str:
-    return baseDir + '/accounts/' + nickname + '@' + domain
+def acctDir(base_dir: str, nickname: str, domain: str) -> str:
+    return base_dir + '/accounts/' + nickname + '@' + domain
 
 
-def isFeaturedWriter(baseDir: str, nickname: str, domain: str) -> bool:
+def isFeaturedWriter(base_dir: str, nickname: str, domain: str) -> bool:
     """Is the given account a featured writer, appearing in the features
     timeline on news instances?
     """
     featuresBlockedFilename = \
-        acctDir(baseDir, nickname, domain) + '/.nofeatures'
+        acctDir(base_dir, nickname, domain) + '/.nofeatures'
     return not os.path.isfile(featuresBlockedFilename)
 
 
-def refreshNewswire(baseDir: str):
+def refreshNewswire(base_dir: str):
     """Causes the newswire to be updates after a change to user accounts
     """
-    refreshNewswireFilename = baseDir + '/accounts/.refresh_newswire'
+    refreshNewswireFilename = base_dir + '/accounts/.refresh_newswire'
     if os.path.isfile(refreshNewswireFilename):
         return
     with open(refreshNewswireFilename, 'w+') as refreshFile:
@@ -252,12 +252,12 @@ def getFullDomain(domain: str, port: int) -> str:
     return domain + ':' + str(port)
 
 
-def isDormant(baseDir: str, nickname: str, domain: str, actor: str,
+def isDormant(base_dir: str, nickname: str, domain: str, actor: str,
               dormantMonths: int) -> bool:
     """Is the given followed actor dormant, from the standpoint
     of the given account
     """
-    lastSeenFilename = acctDir(baseDir, nickname, domain) + \
+    lastSeenFilename = acctDir(base_dir, nickname, domain) + \
         '/lastseen/' + actor.replace('/', '#') + '.txt'
 
     if not os.path.isfile(lastSeenFilename):
@@ -282,13 +282,13 @@ def isDormant(baseDir: str, nickname: str, domain: str, actor: str,
     return False
 
 
-def isEditor(baseDir: str, nickname: str) -> bool:
+def isEditor(base_dir: str, nickname: str) -> bool:
     """Returns true if the given nickname is an editor
     """
-    editorsFile = baseDir + '/accounts/editors.txt'
+    editorsFile = base_dir + '/accounts/editors.txt'
 
     if not os.path.isfile(editorsFile):
-        adminName = getConfigParam(baseDir, 'admin')
+        adminName = getConfigParam(base_dir, 'admin')
         if not adminName:
             return False
         if adminName == nickname:
@@ -298,7 +298,7 @@ def isEditor(baseDir: str, nickname: str) -> bool:
     with open(editorsFile, 'r') as f:
         lines = f.readlines()
         if len(lines) == 0:
-            adminName = getConfigParam(baseDir, 'admin')
+            adminName = getConfigParam(base_dir, 'admin')
             if not adminName:
                 return False
             if adminName == nickname:
@@ -310,13 +310,13 @@ def isEditor(baseDir: str, nickname: str) -> bool:
     return False
 
 
-def isArtist(baseDir: str, nickname: str) -> bool:
+def isArtist(base_dir: str, nickname: str) -> bool:
     """Returns true if the given nickname is an artist
     """
-    artistsFile = baseDir + '/accounts/artists.txt'
+    artistsFile = base_dir + '/accounts/artists.txt'
 
     if not os.path.isfile(artistsFile):
-        adminName = getConfigParam(baseDir, 'admin')
+        adminName = getConfigParam(base_dir, 'admin')
         if not adminName:
             return False
         if adminName == nickname:
@@ -326,7 +326,7 @@ def isArtist(baseDir: str, nickname: str) -> bool:
     with open(artistsFile, 'r') as f:
         lines = f.readlines()
         if len(lines) == 0:
-            adminName = getConfigParam(baseDir, 'admin')
+            adminName = getConfigParam(base_dir, 'admin')
             if not adminName:
                 return False
             if adminName == nickname:
@@ -489,10 +489,10 @@ def isSystemAccount(nickname: str) -> bool:
     return False
 
 
-def _createConfig(baseDir: str) -> None:
+def _createConfig(base_dir: str) -> None:
     """Creates a configuration file
     """
-    configFilename = baseDir + '/config.json'
+    configFilename = base_dir + '/config.json'
     if os.path.isfile(configFilename):
         return
     configJson = {
@@ -500,11 +500,11 @@ def _createConfig(baseDir: str) -> None:
     saveJson(configJson, configFilename)
 
 
-def setConfigParam(baseDir: str, variableName: str, variableValue) -> None:
+def setConfigParam(base_dir: str, variableName: str, variableValue) -> None:
     """Sets a configuration value
     """
-    _createConfig(baseDir)
-    configFilename = baseDir + '/config.json'
+    _createConfig(base_dir)
+    configFilename = base_dir + '/config.json'
     configJson = {}
     if os.path.isfile(configFilename):
         configJson = loadJson(configFilename)
@@ -512,11 +512,11 @@ def setConfigParam(baseDir: str, variableName: str, variableValue) -> None:
     saveJson(configJson, configFilename)
 
 
-def getConfigParam(baseDir: str, variableName: str):
+def getConfigParam(base_dir: str, variableName: str):
     """Gets a configuration value
     """
-    _createConfig(baseDir)
-    configFilename = baseDir + '/config.json'
+    _createConfig(base_dir)
+    configFilename = base_dir + '/config.json'
     configJson = loadJson(configFilename)
     if configJson:
         if variableName in configJson:
@@ -524,16 +524,16 @@ def getConfigParam(baseDir: str, variableName: str):
     return None
 
 
-def isSuspended(baseDir: str, nickname: str) -> bool:
+def isSuspended(base_dir: str, nickname: str) -> bool:
     """Returns true if the given nickname is suspended
     """
-    adminNickname = getConfigParam(baseDir, 'admin')
+    adminNickname = getConfigParam(base_dir, 'admin')
     if not adminNickname:
         return False
     if nickname == adminNickname:
         return False
 
-    suspendedFilename = baseDir + '/accounts/suspended.txt'
+    suspendedFilename = base_dir + '/accounts/suspended.txt'
     if os.path.isfile(suspendedFilename):
         with open(suspendedFilename, 'r') as f:
             lines = f.readlines()
@@ -543,12 +543,12 @@ def isSuspended(baseDir: str, nickname: str) -> bool:
     return False
 
 
-def getFollowersList(baseDir: str,
+def getFollowersList(base_dir: str,
                      nickname: str, domain: str,
                      followFile='following.txt') -> []:
     """Returns a list of followers for the given account
     """
-    filename = acctDir(baseDir, nickname, domain) + '/' + followFile
+    filename = acctDir(base_dir, nickname, domain) + '/' + followFile
 
     if not os.path.isfile(filename):
         return []
@@ -561,7 +561,7 @@ def getFollowersList(baseDir: str,
     return []
 
 
-def getFollowersOfPerson(baseDir: str,
+def getFollowersOfPerson(base_dir: str,
                          nickname: str, domain: str,
                          followFile='following.txt') -> []:
     """Returns a list containing the followers of the given person
@@ -570,9 +570,9 @@ def getFollowersOfPerson(baseDir: str,
     followers = []
     domain = removeDomainPort(domain)
     handle = nickname + '@' + domain
-    if not os.path.isdir(baseDir + '/accounts/' + handle):
+    if not os.path.isdir(base_dir + '/accounts/' + handle):
         return followers
-    for subdir, dirs, files in os.walk(baseDir + '/accounts'):
+    for subdir, dirs, files in os.walk(base_dir + '/accounts'):
         for account in dirs:
             filename = os.path.join(subdir, account) + '/' + followFile
             if account == handle or \
@@ -633,14 +633,14 @@ def getLinkPrefixes() -> []:
             'hyper://', 'gemini://', 'gopher://', 'briar:')
 
 
-def removeAvatarFromCache(baseDir: str, actorStr: str) -> None:
+def removeAvatarFromCache(base_dir: str, actorStr: str) -> None:
     """Removes any existing avatar entries from the cache
     This avoids duplicate entries with differing extensions
     """
     avatarFilenameExtensions = getImageExtensions()
     for extension in avatarFilenameExtensions:
         avatarFilename = \
-            baseDir + '/cache/avatars/' + actorStr + '.' + extension
+            base_dir + '/cache/avatars/' + actorStr + '.' + extension
         if os.path.isfile(avatarFilename):
             try:
                 os.remove(avatarFilename)
@@ -781,29 +781,29 @@ def removeInvalidChars(text: str) -> str:
     return text
 
 
-def createPersonDir(nickname: str, domain: str, baseDir: str,
+def createPersonDir(nickname: str, domain: str, base_dir: str,
                     dirname: str) -> str:
     """Create a directory for a person
     """
     handle = nickname + '@' + domain
-    if not os.path.isdir(baseDir + '/accounts/' + handle):
-        os.mkdir(baseDir + '/accounts/' + handle)
-    boxDir = baseDir + '/accounts/' + handle + '/' + dirname
+    if not os.path.isdir(base_dir + '/accounts/' + handle):
+        os.mkdir(base_dir + '/accounts/' + handle)
+    boxDir = base_dir + '/accounts/' + handle + '/' + dirname
     if not os.path.isdir(boxDir):
         os.mkdir(boxDir)
     return boxDir
 
 
-def createOutboxDir(nickname: str, domain: str, baseDir: str) -> str:
+def createOutboxDir(nickname: str, domain: str, base_dir: str) -> str:
     """Create an outbox for a person
     """
-    return createPersonDir(nickname, domain, baseDir, 'outbox')
+    return createPersonDir(nickname, domain, base_dir, 'outbox')
 
 
-def createInboxQueueDir(nickname: str, domain: str, baseDir: str) -> str:
+def createInboxQueueDir(nickname: str, domain: str, base_dir: str) -> str:
     """Create an inbox queue and returns the feed filename and directory
     """
-    return createPersonDir(nickname, domain, baseDir, 'queue')
+    return createPersonDir(nickname, domain, base_dir, 'queue')
 
 
 def domainPermitted(domain: str, federationList: []):
@@ -900,7 +900,7 @@ def dangerousSVG(content: str, allowLocalNetworkAccess: bool) -> bool:
                               separators, invalidStrings)
 
 
-def getDisplayName(baseDir: str, actor: str, personCache: {}) -> str:
+def getDisplayName(base_dir: str, actor: str, personCache: {}) -> str:
     """Returns the display name for the given actor
     """
     if '/statuses/' in actor:
@@ -914,7 +914,7 @@ def getDisplayName(baseDir: str, actor: str, personCache: {}) -> str:
     else:
         # Try to obtain from the cached actors
         cachedActorFilename = \
-            baseDir + '/cache/actors/' + (actor.replace('/', '#')) + '.json'
+            base_dir + '/cache/actors/' + (actor.replace('/', '#')) + '.json'
         if os.path.isfile(cachedActorFilename):
             actorJson = loadJson(cachedActorFilename, 1)
             if actorJson:
@@ -950,7 +950,7 @@ def _genderFromString(translate: {}, text: str) -> str:
     return gender
 
 
-def getGenderFromBio(baseDir: str, actor: str, personCache: {},
+def getGenderFromBio(base_dir: str, actor: str, personCache: {},
                      translate: {}) -> str:
     """Tries to ascertain gender from bio description
     This is for use by text-to-speech for pitch setting
@@ -971,7 +971,7 @@ def getGenderFromBio(baseDir: str, actor: str, personCache: {},
     else:
         # Try to obtain from the cached actors
         cachedActorFilename = \
-            baseDir + '/cache/actors/' + (actor.replace('/', '#')) + '.json'
+            base_dir + '/cache/actors/' + (actor.replace('/', '#')) + '.json'
         if os.path.isfile(cachedActorFilename):
             actorJson = loadJson(cachedActorFilename, 1)
     if not actorJson:
@@ -1097,13 +1097,13 @@ def getDomainFromActor(actor: str) -> (str, int):
     return domain, port
 
 
-def _setDefaultPetName(baseDir: str, nickname: str, domain: str,
+def _setDefaultPetName(base_dir: str, nickname: str, domain: str,
                        followNickname: str, followDomain: str) -> None:
     """Sets a default petname
     This helps especially when using onion or i2p address
     """
     domain = removeDomainPort(domain)
-    userPath = acctDir(baseDir, nickname, domain)
+    userPath = acctDir(base_dir, nickname, domain)
     petnamesFilename = userPath + '/petnames.txt'
 
     petnameLookupEntry = followNickname + ' ' + \
@@ -1127,7 +1127,7 @@ def _setDefaultPetName(baseDir: str, nickname: str, domain: str,
         petnamesFile.write(petnameLookupEntry)
 
 
-def followPerson(baseDir: str, nickname: str, domain: str,
+def followPerson(base_dir: str, nickname: str, domain: str,
                  followNickname: str, followDomain: str,
                  federationList: [], debug: bool,
                  groupAccount: bool,
@@ -1150,7 +1150,7 @@ def followPerson(baseDir: str, nickname: str, domain: str,
     else:
         handle = nickname + '@' + domain
 
-    if not os.path.isdir(baseDir + '/accounts/' + handle):
+    if not os.path.isdir(base_dir + '/accounts/' + handle):
         print('WARN: account for ' + handle + ' does not exist')
         return False
 
@@ -1164,7 +1164,7 @@ def followPerson(baseDir: str, nickname: str, domain: str,
         handleToFollow = '!' + handleToFollow
 
     # was this person previously unfollowed?
-    unfollowedFilename = baseDir + '/accounts/' + handle + '/unfollowed.txt'
+    unfollowedFilename = base_dir + '/accounts/' + handle + '/unfollowed.txt'
     if os.path.isfile(unfollowedFilename):
         if handleToFollow in open(unfollowedFilename).read():
             # remove them from the unfollowed file
@@ -1177,12 +1177,12 @@ def followPerson(baseDir: str, nickname: str, domain: str,
             with open(unfollowedFilename, 'w+') as f:
                 f.write(newLines)
 
-    if not os.path.isdir(baseDir + '/accounts'):
-        os.mkdir(baseDir + '/accounts')
+    if not os.path.isdir(base_dir + '/accounts'):
+        os.mkdir(base_dir + '/accounts')
     handleToFollow = followNickname + '@' + followDomain
     if groupAccount:
         handleToFollow = '!' + handleToFollow
-    filename = baseDir + '/accounts/' + handle + '/' + followFile
+    filename = base_dir + '/accounts/' + handle + '/' + followFile
     if os.path.isfile(filename):
         if handleToFollow in open(filename).read():
             if debug:
@@ -1216,10 +1216,10 @@ def followPerson(baseDir: str, nickname: str, domain: str,
         print('DEBUG: adding ' +
               followNickname + '@' + followDomain + ' to calendar of ' +
               nickname + '@' + domain)
-        addPersonToCalendar(baseDir, nickname, domain,
+        addPersonToCalendar(base_dir, nickname, domain,
                             followNickname, followDomain)
         # add a default petname
-        _setDefaultPetName(baseDir, nickname, domain,
+        _setDefaultPetName(base_dir, nickname, domain,
                            followNickname, followDomain)
     return True
 
@@ -1234,7 +1234,7 @@ def votesOnNewswireItem(status: []) -> int:
     return totalVotes
 
 
-def locateNewsVotes(baseDir: str, domain: str,
+def locateNewsVotes(base_dir: str, domain: str,
                     postUrl: str) -> str:
     """Returns the votes filename for a news post
     within the news user account
@@ -1250,7 +1250,7 @@ def locateNewsVotes(baseDir: str, domain: str,
     else:
         postUrl = postUrl + '.json.votes'
 
-    accountDir = baseDir + '/accounts/news@' + domain + '/'
+    accountDir = base_dir + '/accounts/news@' + domain + '/'
     postFilename = accountDir + 'outbox/' + postUrl
     if os.path.isfile(postFilename):
         return postFilename
@@ -1258,7 +1258,7 @@ def locateNewsVotes(baseDir: str, domain: str,
     return None
 
 
-def locateNewsArrival(baseDir: str, domain: str,
+def locateNewsArrival(base_dir: str, domain: str,
                       postUrl: str) -> str:
     """Returns the arrival time for a news post
     within the news user account
@@ -1274,7 +1274,7 @@ def locateNewsArrival(baseDir: str, domain: str,
     else:
         postUrl = postUrl + '.json.arrived'
 
-    accountDir = baseDir + '/accounts/news@' + domain + '/'
+    accountDir = base_dir + '/accounts/news@' + domain + '/'
     postFilename = accountDir + 'outbox/' + postUrl
     if os.path.isfile(postFilename):
         with open(postFilename, 'r') as arrivalFile:
@@ -1288,19 +1288,19 @@ def locateNewsArrival(baseDir: str, domain: str,
     return None
 
 
-def clearFromPostCaches(baseDir: str, recentPostsCache: {},
+def clearFromPostCaches(base_dir: str, recentPostsCache: {},
                         postId: str) -> None:
     """Clears cached html for the given post, so that edits
     to news will appear
     """
     filename = '/postcache/' + postId + '.html'
-    for subdir, dirs, files in os.walk(baseDir + '/accounts'):
+    for subdir, dirs, files in os.walk(base_dir + '/accounts'):
         for acct in dirs:
             if '@' not in acct:
                 continue
             if acct.startswith('inbox@'):
                 continue
-            cacheDir = os.path.join(baseDir + '/accounts', acct)
+            cacheDir = os.path.join(base_dir + '/accounts', acct)
             postFilename = cacheDir + filename
             if os.path.isfile(postFilename):
                 try:
@@ -1321,7 +1321,7 @@ def clearFromPostCaches(baseDir: str, recentPostsCache: {},
         break
 
 
-def locatePost(baseDir: str, nickname: str, domain: str,
+def locatePost(base_dir: str, nickname: str, domain: str,
                postUrl: str, replies: bool = False) -> str:
     """Returns the filename for the given status post url
     """
@@ -1338,20 +1338,20 @@ def locatePost(baseDir: str, nickname: str, domain: str,
 
     # search boxes
     boxes = ('inbox', 'outbox', 'tlblogs')
-    accountDir = acctDir(baseDir, nickname, domain) + '/'
+    accountDir = acctDir(base_dir, nickname, domain) + '/'
     for boxName in boxes:
         postFilename = accountDir + boxName + '/' + postUrl
         if os.path.isfile(postFilename):
             return postFilename
 
     # check news posts
-    accountDir = baseDir + '/accounts/news' + '@' + domain + '/'
+    accountDir = base_dir + '/accounts/news' + '@' + domain + '/'
     postFilename = accountDir + 'outbox/' + postUrl
     if os.path.isfile(postFilename):
         return postFilename
 
     # is it in the announce cache?
-    postFilename = baseDir + '/cache/announce/' + nickname + '/' + postUrl
+    postFilename = base_dir + '/cache/announce/' + nickname + '/' + postUrl
     if os.path.isfile(postFilename):
         return postFilename
 
@@ -1375,14 +1375,14 @@ def _getPublishedDate(postJsonObject: {}) -> str:
     return published
 
 
-def getReplyIntervalHours(baseDir: str, nickname: str, domain: str,
+def getReplyIntervalHours(base_dir: str, nickname: str, domain: str,
                           defaultReplyIntervalHours: int) -> int:
     """Returns the reply interval for the given account.
     The reply interval is the number of hours after a post being made
     during which replies are allowed
     """
     replyIntervalFilename = \
-        acctDir(baseDir, nickname, domain) + '/.replyIntervalHours'
+        acctDir(base_dir, nickname, domain) + '/.replyIntervalHours'
     if os.path.isfile(replyIntervalFilename):
         with open(replyIntervalFilename, 'r') as fp:
             hoursStr = fp.read()
@@ -1391,14 +1391,14 @@ def getReplyIntervalHours(baseDir: str, nickname: str, domain: str,
     return defaultReplyIntervalHours
 
 
-def setReplyIntervalHours(baseDir: str, nickname: str, domain: str,
+def setReplyIntervalHours(base_dir: str, nickname: str, domain: str,
                           replyIntervalHours: int) -> bool:
     """Sets the reply interval for the given account.
     The reply interval is the number of hours after a post being made
     during which replies are allowed
     """
     replyIntervalFilename = \
-        acctDir(baseDir, nickname, domain) + '/.replyIntervalHours'
+        acctDir(base_dir, nickname, domain) + '/.replyIntervalHours'
     with open(replyIntervalFilename, 'w+') as fp:
         try:
             fp.write(str(replyIntervalHours))
@@ -1411,7 +1411,7 @@ def setReplyIntervalHours(baseDir: str, nickname: str, domain: str,
     return False
 
 
-def canReplyTo(baseDir: str, nickname: str, domain: str,
+def canReplyTo(base_dir: str, nickname: str, domain: str,
                postUrl: str, replyIntervalHours: int,
                currDateStr: str = None,
                postJsonObject: {} = None) -> bool:
@@ -1422,7 +1422,7 @@ def canReplyTo(baseDir: str, nickname: str, domain: str,
     if '/statuses/' not in postUrl:
         return True
     if not postJsonObject:
-        postFilename = locatePost(baseDir, nickname, domain, postUrl)
+        postFilename = locatePost(base_dir, nickname, domain, postUrl)
         if not postFilename:
             return False
         postJsonObject = loadJson(postFilename)
@@ -1453,7 +1453,7 @@ def canReplyTo(baseDir: str, nickname: str, domain: str,
     return True
 
 
-def _removeAttachment(baseDir: str, httpPrefix: str, domain: str,
+def _removeAttachment(base_dir: str, httpPrefix: str, domain: str,
                       postJson: {}):
     if not postJson.get('attachment'):
         return
@@ -1462,7 +1462,7 @@ def _removeAttachment(baseDir: str, httpPrefix: str, domain: str,
     attachmentUrl = postJson['attachment'][0]['url']
     if not attachmentUrl:
         return
-    mediaFilename = baseDir + '/' + \
+    mediaFilename = base_dir + '/' + \
         attachmentUrl.replace(httpPrefix + '://' + domain + '/', '')
     if os.path.isfile(mediaFilename):
         try:
@@ -1480,11 +1480,11 @@ def _removeAttachment(baseDir: str, httpPrefix: str, domain: str,
     postJson['attachment'] = []
 
 
-def removeModerationPostFromIndex(baseDir: str, postUrl: str,
+def removeModerationPostFromIndex(base_dir: str, postUrl: str,
                                   debug: bool) -> None:
     """Removes a url from the moderation index
     """
-    moderationIndexFile = baseDir + '/accounts/moderation.txt'
+    moderationIndexFile = base_dir + '/accounts/moderation.txt'
     if not os.path.isfile(moderationIndexFile):
         return
     postId = removeIdEnding(postUrl)
@@ -1501,7 +1501,7 @@ def removeModerationPostFromIndex(baseDir: str, postUrl: str,
                                   ' from moderation index')
 
 
-def _isReplyToBlogPost(baseDir: str, nickname: str, domain: str,
+def _isReplyToBlogPost(base_dir: str, nickname: str, domain: str,
                        postJsonObject: str):
     """Is the given post a reply to a blog post?
     """
@@ -1511,7 +1511,7 @@ def _isReplyToBlogPost(baseDir: str, nickname: str, domain: str,
         return False
     if not isinstance(postJsonObject['object']['inReplyTo'], str):
         return False
-    blogsIndexFilename = acctDir(baseDir, nickname, domain) + '/tlblogs.index'
+    blogsIndexFilename = acctDir(base_dir, nickname, domain) + '/tlblogs.index'
     if not os.path.isfile(blogsIndexFilename):
         return False
     postId = removeIdEnding(postJsonObject['object']['inReplyTo'])
@@ -1521,7 +1521,7 @@ def _isReplyToBlogPost(baseDir: str, nickname: str, domain: str,
     return False
 
 
-def _deletePostRemoveReplies(baseDir: str, nickname: str, domain: str,
+def _deletePostRemoveReplies(base_dir: str, nickname: str, domain: str,
                              httpPrefix: str, postFilename: str,
                              recentPostsCache: {}, debug: bool) -> None:
     """Removes replies when deleting a post
@@ -1533,11 +1533,11 @@ def _deletePostRemoveReplies(baseDir: str, nickname: str, domain: str,
         print('DEBUG: removing replies to ' + postFilename)
     with open(repliesFilename, 'r') as f:
         for replyId in f:
-            replyFile = locatePost(baseDir, nickname, domain, replyId)
+            replyFile = locatePost(base_dir, nickname, domain, replyId)
             if not replyFile:
                 continue
             if os.path.isfile(replyFile):
-                deletePost(baseDir, httpPrefix,
+                deletePost(base_dir, httpPrefix,
                            nickname, domain, replyFile, debug,
                            recentPostsCache)
     # remove the replies file
@@ -1548,12 +1548,12 @@ def _deletePostRemoveReplies(baseDir: str, nickname: str, domain: str,
               str(repliesFilename))
 
 
-def _isBookmarked(baseDir: str, nickname: str, domain: str,
+def _isBookmarked(base_dir: str, nickname: str, domain: str,
                   postFilename: str) -> bool:
     """Returns True if the given post is bookmarked
     """
     bookmarksIndexFilename = \
-        acctDir(baseDir, nickname, domain) + '/bookmarks.index'
+        acctDir(base_dir, nickname, domain) + '/bookmarks.index'
     if os.path.isfile(bookmarksIndexFilename):
         bookmarkIndex = postFilename.split('/')[-1] + '\n'
         if bookmarkIndex in open(bookmarksIndexFilename).read():
@@ -1593,12 +1593,12 @@ def removePostFromCache(postJsonObject: {}, recentPostsCache: {}) -> None:
             del recentPostsCache['html'][postId]
 
 
-def _deleteCachedHtml(baseDir: str, nickname: str, domain: str,
+def _deleteCachedHtml(base_dir: str, nickname: str, domain: str,
                       postJsonObject: {}):
     """Removes cached html file for the given post
     """
     cachedPostFilename = \
-        getCachedPostFilename(baseDir, nickname, domain, postJsonObject)
+        getCachedPostFilename(base_dir, nickname, domain, postJsonObject)
     if cachedPostFilename:
         if os.path.isfile(cachedPostFilename):
             try:
@@ -1609,7 +1609,7 @@ def _deleteCachedHtml(baseDir: str, nickname: str, domain: str,
                       str(cachedPostFilename))
 
 
-def _deleteHashtagsOnPost(baseDir: str, postJsonObject: {}) -> None:
+def _deleteHashtagsOnPost(base_dir: str, postJsonObject: {}) -> None:
     """Removes hashtags when a post is deleted
     """
     removeHashtagIndex = False
@@ -1635,7 +1635,7 @@ def _deleteHashtagsOnPost(baseDir: str, postJsonObject: {}) -> None:
         if not tag.get('name'):
             continue
         # find the index file for this tag
-        tagIndexFilename = baseDir + '/tags/' + tag['name'][1:] + '.txt'
+        tagIndexFilename = base_dir + '/tags/' + tag['name'][1:] + '.txt'
         if not os.path.isfile(tagIndexFilename):
             continue
         # remove postId from the tag index file
@@ -1663,7 +1663,7 @@ def _deleteHashtagsOnPost(baseDir: str, postJsonObject: {}) -> None:
                 f.write(newlines)
 
 
-def _deleteConversationPost(baseDir: str, nickname: str, domain: str,
+def _deleteConversationPost(base_dir: str, nickname: str, domain: str,
                             postJsonObject: {}) -> None:
     """Deletes a post from a conversation
     """
@@ -1673,7 +1673,7 @@ def _deleteConversationPost(baseDir: str, nickname: str, domain: str,
         return False
     if not postJsonObject['object'].get('id'):
         return False
-    conversationDir = acctDir(baseDir, nickname, domain) + '/conversation'
+    conversationDir = acctDir(base_dir, nickname, domain) + '/conversation'
     conversationId = postJsonObject['object']['conversation']
     conversationId = conversationId.replace('/', '#')
     postId = postJsonObject['object']['id']
@@ -1705,7 +1705,7 @@ def _deleteConversationPost(baseDir: str, nickname: str, domain: str,
                   str(conversationFilename))
 
 
-def deletePost(baseDir: str, httpPrefix: str,
+def deletePost(base_dir: str, httpPrefix: str,
                nickname: str, domain: str, postFilename: str,
                debug: bool, recentPostsCache: {}) -> None:
     """Recursively deletes a post and its replies and attachments
@@ -1713,7 +1713,7 @@ def deletePost(baseDir: str, httpPrefix: str,
     postJsonObject = loadJson(postFilename, 1)
     if not postJsonObject:
         # remove any replies
-        _deletePostRemoveReplies(baseDir, nickname, domain,
+        _deletePostRemoveReplies(base_dir, nickname, domain,
                                  httpPrefix, postFilename,
                                  recentPostsCache, debug)
         # finally, remove the post itself
@@ -1726,11 +1726,11 @@ def deletePost(baseDir: str, httpPrefix: str,
         return
 
     # don't allow deletion of bookmarked posts
-    if _isBookmarked(baseDir, nickname, domain, postFilename):
+    if _isBookmarked(base_dir, nickname, domain, postFilename):
         return
 
     # don't remove replies to blog posts
-    if _isReplyToBlogPost(baseDir, nickname, domain,
+    if _isReplyToBlogPost(base_dir, nickname, domain,
                           postJsonObject):
         return
 
@@ -1738,10 +1738,10 @@ def deletePost(baseDir: str, httpPrefix: str,
     removePostFromCache(postJsonObject, recentPostsCache)
 
     # remove from conversation index
-    _deleteConversationPost(baseDir, nickname, domain, postJsonObject)
+    _deleteConversationPost(base_dir, nickname, domain, postJsonObject)
 
     # remove any attachment
-    _removeAttachment(baseDir, httpPrefix, domain, postJsonObject)
+    _removeAttachment(base_dir, httpPrefix, domain, postJsonObject)
 
     extensions = ('votes', 'arrived', 'muted', 'tts', 'reject')
     for ext in extensions:
@@ -1754,7 +1754,7 @@ def deletePost(baseDir: str, httpPrefix: str,
                       str(extFilename))
 
     # remove cached html version of the post
-    _deleteCachedHtml(baseDir, nickname, domain, postJsonObject)
+    _deleteCachedHtml(base_dir, nickname, domain, postJsonObject)
 
     hasObject = False
     if postJsonObject.get('object'):
@@ -1766,14 +1766,14 @@ def deletePost(baseDir: str, httpPrefix: str,
             if postJsonObject['object'].get('moderationStatus'):
                 if postJsonObject.get('id'):
                     postId = removeIdEnding(postJsonObject['id'])
-                    removeModerationPostFromIndex(baseDir, postId, debug)
+                    removeModerationPostFromIndex(base_dir, postId, debug)
 
     # remove any hashtags index entries
     if hasObject:
-        _deleteHashtagsOnPost(baseDir, postJsonObject)
+        _deleteHashtagsOnPost(base_dir, postJsonObject)
 
     # remove any replies
-    _deletePostRemoveReplies(baseDir, nickname, domain,
+    _deletePostRemoveReplies(base_dir, nickname, domain,
                              httpPrefix, postFilename,
                              recentPostsCache, debug)
     # finally, remove the post itself
@@ -1900,11 +1900,11 @@ def validNickname(domain: str, nickname: str) -> bool:
     return True
 
 
-def noOfAccounts(baseDir: str) -> bool:
+def noOfAccounts(base_dir: str) -> bool:
     """Returns the number of accounts on the system
     """
     accountCtr = 0
-    for subdir, dirs, files in os.walk(baseDir + '/accounts'):
+    for subdir, dirs, files in os.walk(base_dir + '/accounts'):
         for account in dirs:
             if isAccountDir(account):
                 accountCtr += 1
@@ -1912,18 +1912,18 @@ def noOfAccounts(baseDir: str) -> bool:
     return accountCtr
 
 
-def noOfActiveAccountsMonthly(baseDir: str, months: int) -> bool:
+def noOfActiveAccountsMonthly(base_dir: str, months: int) -> bool:
     """Returns the number of accounts on the system this month
     """
     accountCtr = 0
     currTime = int(time.time())
     monthSeconds = int(60*60*24*30*months)
-    for subdir, dirs, files in os.walk(baseDir + '/accounts'):
+    for subdir, dirs, files in os.walk(base_dir + '/accounts'):
         for account in dirs:
             if not isAccountDir(account):
                 continue
             lastUsedFilename = \
-                baseDir + '/accounts/' + account + '/.lastUsed'
+                base_dir + '/accounts/' + account + '/.lastUsed'
             if not os.path.isfile(lastUsedFilename):
                 continue
             with open(lastUsedFilename, 'r') as lastUsedFile:
@@ -1936,11 +1936,11 @@ def noOfActiveAccountsMonthly(baseDir: str, months: int) -> bool:
     return accountCtr
 
 
-def isPublicPostFromUrl(baseDir: str, nickname: str, domain: str,
+def isPublicPostFromUrl(base_dir: str, nickname: str, domain: str,
                         postUrl: str) -> bool:
     """Returns whether the given url is a public post
     """
-    postFilename = locatePost(baseDir, nickname, domain, postUrl)
+    postFilename = locatePost(base_dir, nickname, domain, postUrl)
     if not postFilename:
         return False
     postJsonObject = loadJson(postFilename, 1)
@@ -1978,18 +1978,18 @@ def copytree(src: str, dst: str, symlinks: str = False, ignore: bool = None):
             shutil.copy2(s, d)
 
 
-def getCachedPostDirectory(baseDir: str, nickname: str, domain: str) -> str:
+def getCachedPostDirectory(base_dir: str, nickname: str, domain: str) -> str:
     """Returns the directory where the html post cache exists
     """
-    htmlPostCacheDir = acctDir(baseDir, nickname, domain) + '/postcache'
+    htmlPostCacheDir = acctDir(base_dir, nickname, domain) + '/postcache'
     return htmlPostCacheDir
 
 
-def getCachedPostFilename(baseDir: str, nickname: str, domain: str,
+def getCachedPostFilename(base_dir: str, nickname: str, domain: str,
                           postJsonObject: {}) -> str:
     """Returns the html cache filename for the given post
     """
-    cachedPostDir = getCachedPostDirectory(baseDir, nickname, domain)
+    cachedPostDir = getCachedPostDirectory(base_dir, nickname, domain)
     if not os.path.isdir(cachedPostDir):
         # print('ERROR: invalid html cache directory ' + cachedPostDir)
         return None
@@ -2042,7 +2042,7 @@ def fileLastModified(filename: str) -> str:
     return modifiedTime.strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
-def getCSS(baseDir: str, cssFilename: str, cssCache: {}) -> str:
+def getCSS(base_dir: str, cssFilename: str, cssCache: {}) -> str:
     """Retrieves the css for a given file, or from a cache
     """
     # does the css file exist?
@@ -2093,16 +2093,16 @@ def isNewsPost(postJsonObject: {}) -> bool:
     return postJsonObject.get('news')
 
 
-def _searchVirtualBoxPosts(baseDir: str, nickname: str, domain: str,
+def _searchVirtualBoxPosts(base_dir: str, nickname: str, domain: str,
                            searchStr: str, maxResults: int,
                            boxName: str) -> []:
     """Searches through a virtual box, which is typically an index on the inbox
     """
     indexFilename = \
-        acctDir(baseDir, nickname, domain) + '/' + boxName + '.index'
+        acctDir(base_dir, nickname, domain) + '/' + boxName + '.index'
     if boxName == 'bookmarks':
         boxName = 'inbox'
-    path = acctDir(baseDir, nickname, domain) + '/' + boxName
+    path = acctDir(base_dir, nickname, domain) + '/' + boxName
     if not os.path.isdir(path):
         return []
 
@@ -2145,17 +2145,17 @@ def _searchVirtualBoxPosts(baseDir: str, nickname: str, domain: str,
     return res
 
 
-def searchBoxPosts(baseDir: str, nickname: str, domain: str,
+def searchBoxPosts(base_dir: str, nickname: str, domain: str,
                    searchStr: str, maxResults: int,
                    boxName='outbox') -> []:
     """Search your posts and return a list of the filenames
     containing matching strings
     """
-    path = acctDir(baseDir, nickname, domain) + '/' + boxName
+    path = acctDir(base_dir, nickname, domain) + '/' + boxName
     # is this a virtual box, such as direct messages?
     if not os.path.isdir(path):
         if os.path.isfile(path + '.index'):
-            return _searchVirtualBoxPosts(baseDir, nickname, domain,
+            return _searchVirtualBoxPosts(base_dir, nickname, domain,
                                           searchStr, maxResults, boxName)
         return []
     searchStr = searchStr.lower().strip()
@@ -2202,7 +2202,7 @@ def getFileCaseInsensitive(path: str) -> str:
 
 
 def undoLikesCollectionEntry(recentPostsCache: {},
-                             baseDir: str, postFilename: str, objectUrl: str,
+                             base_dir: str, postFilename: str, objectUrl: str,
                              actor: str, domain: str, debug: bool,
                              postJsonObject: {}) -> None:
     """Undoes a like for a particular actor
@@ -2214,7 +2214,7 @@ def undoLikesCollectionEntry(recentPostsCache: {},
     # remove any cached version of this post so that the
     # like icon is changed
     nickname = getNicknameFromActor(actor)
-    cachedPostFilename = getCachedPostFilename(baseDir, nickname,
+    cachedPostFilename = getCachedPostFilename(base_dir, nickname,
                                                domain, postJsonObject)
     if cachedPostFilename:
         if os.path.isfile(cachedPostFilename):
@@ -2265,7 +2265,7 @@ def undoLikesCollectionEntry(recentPostsCache: {},
 
 
 def undoReactionCollectionEntry(recentPostsCache: {},
-                                baseDir: str, postFilename: str,
+                                base_dir: str, postFilename: str,
                                 objectUrl: str,
                                 actor: str, domain: str, debug: bool,
                                 postJsonObject: {}, emojiContent: str) -> None:
@@ -2278,7 +2278,7 @@ def undoReactionCollectionEntry(recentPostsCache: {},
     # remove any cached version of this post so that the
     # like icon is changed
     nickname = getNicknameFromActor(actor)
-    cachedPostFilename = getCachedPostFilename(baseDir, nickname,
+    cachedPostFilename = getCachedPostFilename(base_dir, nickname,
                                                domain, postJsonObject)
     if cachedPostFilename:
         if os.path.isfile(cachedPostFilename):
@@ -2330,7 +2330,7 @@ def undoReactionCollectionEntry(recentPostsCache: {},
 
 
 def undoAnnounceCollectionEntry(recentPostsCache: {},
-                                baseDir: str, postFilename: str,
+                                base_dir: str, postFilename: str,
                                 actor: str, domain: str, debug: bool) -> None:
     """Undoes an announce for a particular actor by removing it from
     the "shares" collection within a post. Note that the "shares"
@@ -2343,7 +2343,7 @@ def undoAnnounceCollectionEntry(recentPostsCache: {},
     # remove any cached version of this announce so that the announce
     # icon is changed
     nickname = getNicknameFromActor(actor)
-    cachedPostFilename = getCachedPostFilename(baseDir, nickname, domain,
+    cachedPostFilename = getCachedPostFilename(base_dir, nickname, domain,
                                                postJsonObject)
     if cachedPostFilename:
         if os.path.isfile(cachedPostFilename):
@@ -2397,7 +2397,7 @@ def undoAnnounceCollectionEntry(recentPostsCache: {},
 
 
 def updateAnnounceCollection(recentPostsCache: {},
-                             baseDir: str, postFilename: str,
+                             base_dir: str, postFilename: str,
                              actor: str,
                              nickname: str, domain: str, debug: bool) -> None:
     """Updates the announcements collection within a post
@@ -2410,7 +2410,7 @@ def updateAnnounceCollection(recentPostsCache: {},
         return
     # remove any cached version of this announce so that the announce
     # icon is changed
-    cachedPostFilename = getCachedPostFilename(baseDir, nickname, domain,
+    cachedPostFilename = getCachedPostFilename(base_dir, nickname, domain,
                                                postJsonObject)
     if cachedPostFilename:
         if os.path.isfile(cachedPostFilename):
@@ -2547,12 +2547,12 @@ def camelCaseSplit(text: str) -> str:
     return resultStr.strip()
 
 
-def rejectPostId(baseDir: str, nickname: str, domain: str,
+def rejectPostId(base_dir: str, nickname: str, domain: str,
                  postId: str, recentPostsCache: {}) -> None:
     """ Marks the given post as rejected,
     for example an announce which is too old
     """
-    postFilename = locatePost(baseDir, nickname, domain, postId)
+    postFilename = locatePost(base_dir, nickname, domain, postId)
     if not postFilename:
         return
 
@@ -2667,10 +2667,10 @@ def invalidCiphertext(content: str) -> bool:
     return False
 
 
-def loadTranslationsFromFile(baseDir: str, language: str) -> ({}, str):
+def loadTranslationsFromFile(base_dir: str, language: str) -> ({}, str):
     """Returns the translations dictionary
     """
-    if not os.path.isdir(baseDir + '/translations'):
+    if not os.path.isdir(base_dir + '/translations'):
         print('ERROR: translations directory not found')
         return None, None
     if not language:
@@ -2685,16 +2685,16 @@ def loadTranslationsFromFile(baseDir: str, language: str) -> ({}, str):
         systemLanguage = systemLanguage.split('/')[1]
     if '.' in systemLanguage:
         systemLanguage = systemLanguage.split('.')[0]
-    translationsFile = baseDir + '/translations/' + \
+    translationsFile = base_dir + '/translations/' + \
         systemLanguage + '.json'
     if not os.path.isfile(translationsFile):
         systemLanguage = 'en'
-        translationsFile = baseDir + '/translations/' + \
+        translationsFile = base_dir + '/translations/' + \
             systemLanguage + '.json'
     return loadJson(translationsFile), systemLanguage
 
 
-def dmAllowedFromDomain(baseDir: str,
+def dmAllowedFromDomain(base_dir: str,
                         nickname: str, domain: str,
                         sendingActorDomain: str) -> bool:
     """When a DM is received and the .followDMs flag file exists
@@ -2704,7 +2704,7 @@ def dmAllowedFromDomain(baseDir: str,
     a few particular instances that you trust
     """
     dmAllowedInstancesFilename = \
-        acctDir(baseDir, nickname, domain) + '/dmAllowedInstances.txt'
+        acctDir(base_dir, nickname, domain) + '/dmAllowedInstances.txt'
     if not os.path.isfile(dmAllowedInstancesFilename):
         return False
     if sendingActorDomain + '\n' in open(dmAllowedInstancesFilename).read():
@@ -2981,7 +2981,7 @@ def dateSecondsToString(dateSec: int) -> str:
     return thisDate.strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
-def hasGroupType(baseDir: str, actor: str, personCache: {},
+def hasGroupType(base_dir: str, actor: str, personCache: {},
                  debug: bool = False) -> bool:
     """Does the given actor url have a group type?
     """
@@ -2994,10 +2994,10 @@ def hasGroupType(baseDir: str, actor: str, personCache: {},
                 print('grpPath ' + grpPath + ' in ' + actor)
             return True
     # is there a cached actor which can be examined for Group type?
-    return isGroupActor(baseDir, actor, personCache, debug)
+    return isGroupActor(base_dir, actor, personCache, debug)
 
 
-def isGroupActor(baseDir: str, actor: str, personCache: {},
+def isGroupActor(base_dir: str, actor: str, personCache: {},
                  debug: bool = False) -> bool:
     """Is the given actor a group?
     """
@@ -3013,7 +3013,7 @@ def isGroupActor(baseDir: str, actor: str, personCache: {},
     if debug:
         print('Actor ' + actor + ' not in cache')
     cachedActorFilename = \
-        baseDir + '/cache/actors/' + (actor.replace('/', '#')) + '.json'
+        base_dir + '/cache/actors/' + (actor.replace('/', '#')) + '.json'
     if not os.path.isfile(cachedActorFilename):
         if debug:
             print('Cached actor file not found ' + cachedActorFilename)
@@ -3025,10 +3025,10 @@ def isGroupActor(baseDir: str, actor: str, personCache: {},
     return False
 
 
-def isGroupAccount(baseDir: str, nickname: str, domain: str) -> bool:
+def isGroupAccount(base_dir: str, nickname: str, domain: str) -> bool:
     """Returns true if the given account is a group
     """
-    accountFilename = acctDir(baseDir, nickname, domain) + '.json'
+    accountFilename = acctDir(base_dir, nickname, domain) + '.json'
     if not os.path.isfile(accountFilename):
         return False
     if '"type": "Group"' in open(accountFilename).read():
@@ -3099,10 +3099,10 @@ def getCurrencies() -> {}:
     }
 
 
-def getSupportedLanguages(baseDir: str) -> []:
+def getSupportedLanguages(base_dir: str) -> []:
     """Returns a list of supported languages
     """
-    translationsDir = baseDir + '/translations'
+    translationsDir = base_dir + '/translations'
     languagesStr = []
     for _, _, files in os.walk(translationsDir):
         for f in files:
@@ -3115,10 +3115,10 @@ def getSupportedLanguages(baseDir: str) -> []:
     return languagesStr
 
 
-def getCategoryTypes(baseDir: str) -> []:
+def getCategoryTypes(base_dir: str) -> []:
     """Returns the list of ontologies
     """
-    ontologyDir = baseDir + '/ontology'
+    ontologyDir = base_dir + '/ontology'
     categories = []
     for _, _, files in os.walk(ontologyDir):
         for f in files:
@@ -3231,11 +3231,11 @@ def getNewPostEndpoints() -> []:
     )
 
 
-def getFavFilenameFromUrl(baseDir: str, faviconUrl: str) -> str:
+def getFavFilenameFromUrl(base_dir: str, faviconUrl: str) -> str:
     """Returns the cached filename for a favicon based upon its url
     """
     if '://' in faviconUrl:
         faviconUrl = faviconUrl.split('://')[1]
     if '/favicon.' in faviconUrl:
         faviconUrl = faviconUrl.replace('/favicon.', '.')
-    return baseDir + '/favicons/' + faviconUrl.replace('/', '-')
+    return base_dir + '/favicons/' + faviconUrl.replace('/', '-')

@@ -91,7 +91,7 @@ def generateRSAKey() -> (str, str):
     return privateKeyPem, publicKeyPem
 
 
-def setProfileImage(baseDir: str, httpPrefix: str, nickname: str, domain: str,
+def setProfileImage(base_dir: str, httpPrefix: str, nickname: str, domain: str,
                     port: int, imageFilename: str, imageType: str,
                     resolution: str, city: str,
                     contentLicenseUrl: str) -> bool:
@@ -110,12 +110,12 @@ def setProfileImage(baseDir: str, httpPrefix: str, nickname: str, domain: str,
     fullDomain = getFullDomain(domain, port)
 
     handle = nickname + '@' + domain
-    personFilename = baseDir + '/accounts/' + handle + '.json'
+    personFilename = base_dir + '/accounts/' + handle + '.json'
     if not os.path.isfile(personFilename):
         print('person definition not found: ' + personFilename)
         return False
-    if not os.path.isdir(baseDir + '/accounts/' + handle):
-        print('Account not found: ' + baseDir + '/accounts/' + handle)
+    if not os.path.isdir(base_dir + '/accounts/' + handle):
+        print('Account not found: ' + base_dir + '/accounts/' + handle)
         return False
 
     iconFilenameBase = 'icon'
@@ -142,7 +142,7 @@ def setProfileImage(baseDir: str, httpPrefix: str, nickname: str, domain: str,
     elif imageFilename.endswith('.svg'):
         mediaType = 'image/svg+xml'
         iconFilename = iconFilenameBase + '.svg'
-    profileFilename = baseDir + '/accounts/' + handle + '/' + iconFilename
+    profileFilename = base_dir + '/accounts/' + handle + '/' + iconFilename
 
     personJson = loadJson(personFilename)
     if personJson:
@@ -156,20 +156,20 @@ def setProfileImage(baseDir: str, httpPrefix: str, nickname: str, domain: str,
             '/usr/bin/convert ' + imageFilename + ' -size ' + \
             resolution + ' -quality 50 ' + profileFilename
         subprocess.call(cmd, shell=True)
-        processMetaData(baseDir, nickname, domain,
+        processMetaData(base_dir, nickname, domain,
                         profileFilename, profileFilename, city,
                         contentLicenseUrl)
         return True
     return False
 
 
-def _accountExists(baseDir: str, nickname: str, domain: str) -> bool:
+def _accountExists(base_dir: str, nickname: str, domain: str) -> bool:
     """Returns true if the given account exists
     """
     domain = removeDomainPort(domain)
-    accountDir = acctDir(baseDir, nickname, domain)
+    accountDir = acctDir(base_dir, nickname, domain)
     return os.path.isdir(accountDir) or \
-        os.path.isdir(baseDir + '/deactivated/' + nickname + '@' + domain)
+        os.path.isdir(base_dir + '/deactivated/' + nickname + '@' + domain)
 
 
 def randomizeActorImages(personJson: {}) -> None:
@@ -347,7 +347,7 @@ def getDefaultPersonContext() -> str:
     }
 
 
-def _createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
+def _createPersonBase(base_dir: str, nickname: str, domain: str, port: int,
                       httpPrefix: str, saveToFile: bool,
                       manualFollowerApproval: bool,
                       groupAccount: bool,
@@ -361,7 +361,7 @@ def _createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
                                 groupAccount)
     if saveToFile:
         storeWebfingerEndpoint(nickname, domain, port,
-                               baseDir, webfingerEndpoint)
+                               base_dir, webfingerEndpoint)
 
     handle = nickname + '@' + domain
     originalDomain = domain
@@ -482,36 +482,38 @@ def _createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
     if saveToFile:
         # save person to file
         peopleSubdir = '/accounts'
-        if not os.path.isdir(baseDir + peopleSubdir):
-            os.mkdir(baseDir + peopleSubdir)
-        if not os.path.isdir(baseDir + peopleSubdir + '/' + handle):
-            os.mkdir(baseDir + peopleSubdir + '/' + handle)
-        if not os.path.isdir(baseDir + peopleSubdir + '/' + handle + '/inbox'):
-            os.mkdir(baseDir + peopleSubdir + '/' + handle + '/inbox')
-        if not os.path.isdir(baseDir + peopleSubdir + '/' +
+        if not os.path.isdir(base_dir + peopleSubdir):
+            os.mkdir(base_dir + peopleSubdir)
+        if not os.path.isdir(base_dir + peopleSubdir + '/' + handle):
+            os.mkdir(base_dir + peopleSubdir + '/' + handle)
+        if not os.path.isdir(base_dir + peopleSubdir + '/' +
+                             handle + '/inbox'):
+            os.mkdir(base_dir + peopleSubdir + '/' + handle + '/inbox')
+        if not os.path.isdir(base_dir + peopleSubdir + '/' +
                              handle + '/outbox'):
-            os.mkdir(baseDir + peopleSubdir + '/' + handle + '/outbox')
-        if not os.path.isdir(baseDir + peopleSubdir + '/' + handle + '/queue'):
-            os.mkdir(baseDir + peopleSubdir + '/' + handle + '/queue')
-        filename = baseDir + peopleSubdir + '/' + handle + '.json'
+            os.mkdir(base_dir + peopleSubdir + '/' + handle + '/outbox')
+        if not os.path.isdir(base_dir + peopleSubdir + '/' +
+                             handle + '/queue'):
+            os.mkdir(base_dir + peopleSubdir + '/' + handle + '/queue')
+        filename = base_dir + peopleSubdir + '/' + handle + '.json'
         saveJson(newPerson, filename)
 
         # save to cache
-        if not os.path.isdir(baseDir + '/cache'):
-            os.mkdir(baseDir + '/cache')
-        if not os.path.isdir(baseDir + '/cache/actors'):
-            os.mkdir(baseDir + '/cache/actors')
-        cacheFilename = baseDir + '/cache/actors/' + \
+        if not os.path.isdir(base_dir + '/cache'):
+            os.mkdir(base_dir + '/cache')
+        if not os.path.isdir(base_dir + '/cache/actors'):
+            os.mkdir(base_dir + '/cache/actors')
+        cacheFilename = base_dir + '/cache/actors/' + \
             newPerson['id'].replace('/', '#') + '.json'
         saveJson(newPerson, cacheFilename)
 
         # save the private key
         privateKeysSubdir = '/keys/private'
-        if not os.path.isdir(baseDir + '/keys'):
-            os.mkdir(baseDir + '/keys')
-        if not os.path.isdir(baseDir + privateKeysSubdir):
-            os.mkdir(baseDir + privateKeysSubdir)
-        filename = baseDir + privateKeysSubdir + '/' + handle + '.key'
+        if not os.path.isdir(base_dir + '/keys'):
+            os.mkdir(base_dir + '/keys')
+        if not os.path.isdir(base_dir + privateKeysSubdir):
+            os.mkdir(base_dir + privateKeysSubdir)
+        filename = base_dir + privateKeysSubdir + '/' + handle + '.key'
         try:
             with open(filename, 'w+') as text_file:
                 print(privateKeyPem, file=text_file)
@@ -520,9 +522,9 @@ def _createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
 
         # save the public key
         publicKeysSubdir = '/keys/public'
-        if not os.path.isdir(baseDir + publicKeysSubdir):
-            os.mkdir(baseDir + publicKeysSubdir)
-        filename = baseDir + publicKeysSubdir + '/' + handle + '.pem'
+        if not os.path.isdir(base_dir + publicKeysSubdir):
+            os.mkdir(base_dir + publicKeysSubdir)
+        filename = base_dir + publicKeysSubdir + '/' + handle + '.pem'
         try:
             with open(filename, 'w+') as text_file:
                 print(publicKeyPem, file=text_file)
@@ -531,17 +533,17 @@ def _createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
 
         if password:
             password = removeLineEndings(password)
-            storeBasicCredentials(baseDir, nickname, password)
+            storeBasicCredentials(base_dir, nickname, password)
 
     return privateKeyPem, publicKeyPem, newPerson, webfingerEndpoint
 
 
-def registerAccount(baseDir: str, httpPrefix: str, domain: str, port: int,
+def registerAccount(base_dir: str, httpPrefix: str, domain: str, port: int,
                     nickname: str, password: str,
                     manualFollowerApproval: bool) -> bool:
     """Registers a new account from the web interface
     """
-    if _accountExists(baseDir, nickname, domain):
+    if _accountExists(base_dir, nickname, domain):
         return False
     if not validNickname(domain, nickname):
         print('REGISTER: Nickname ' + nickname + ' is invalid')
@@ -550,7 +552,7 @@ def registerAccount(baseDir: str, httpPrefix: str, domain: str, port: int,
         print('REGISTER: Password should be at least 8 characters')
         return False
     (privateKeyPem, publicKeyPem,
-     newPerson, webfingerEndpoint) = createPerson(baseDir, nickname,
+     newPerson, webfingerEndpoint) = createPerson(base_dir, nickname,
                                                   domain, port,
                                                   httpPrefix, True,
                                                   manualFollowerApproval,
@@ -560,13 +562,13 @@ def registerAccount(baseDir: str, httpPrefix: str, domain: str, port: int,
     return False
 
 
-def createGroup(baseDir: str, nickname: str, domain: str, port: int,
+def createGroup(base_dir: str, nickname: str, domain: str, port: int,
                 httpPrefix: str, saveToFile: bool,
                 password: str = None) -> (str, str, {}, {}):
     """Returns a group
     """
     (privateKeyPem, publicKeyPem,
-     newPerson, webfingerEndpoint) = createPerson(baseDir, nickname,
+     newPerson, webfingerEndpoint) = createPerson(base_dir, nickname,
                                                   domain, port,
                                                   httpPrefix, saveToFile,
                                                   False, password, True)
@@ -574,13 +576,13 @@ def createGroup(baseDir: str, nickname: str, domain: str, port: int,
     return privateKeyPem, publicKeyPem, newPerson, webfingerEndpoint
 
 
-def savePersonQrcode(baseDir: str,
+def savePersonQrcode(base_dir: str,
                      nickname: str, domain: str, port: int,
                      scale=6) -> None:
     """Saves a qrcode image for the handle of the person
     This helps to transfer onion or i2p handles to a mobile device
     """
-    qrcodeFilename = acctDir(baseDir, nickname, domain) + '/qrcode.png'
+    qrcodeFilename = acctDir(base_dir, nickname, domain) + '/qrcode.png'
     if os.path.isfile(qrcodeFilename):
         return
     handle = getFullDomain('@' + nickname + '@' + domain, port)
@@ -588,7 +590,7 @@ def savePersonQrcode(baseDir: str,
     url.png(qrcodeFilename, scale)
 
 
-def createPerson(baseDir: str, nickname: str, domain: str, port: int,
+def createPerson(base_dir: str, nickname: str, domain: str, port: int,
                  httpPrefix: str, saveToFile: bool,
                  manualFollowerApproval: bool,
                  password: str,
@@ -602,40 +604,40 @@ def createPerson(baseDir: str, nickname: str, domain: str, port: int,
     # remaining registrations counter
     if nickname != 'news':
         remainingConfigExists = \
-            getConfigParam(baseDir, 'registrationsRemaining')
+            getConfigParam(base_dir, 'registrationsRemaining')
         if remainingConfigExists:
             registrationsRemaining = int(remainingConfigExists)
             if registrationsRemaining <= 0:
                 return None, None, None, None
     else:
-        if os.path.isdir(baseDir + '/accounts/news@' + domain):
+        if os.path.isdir(base_dir + '/accounts/news@' + domain):
             # news account already exists
             return None, None, None, None
 
     (privateKeyPem, publicKeyPem,
-     newPerson, webfingerEndpoint) = _createPersonBase(baseDir, nickname,
+     newPerson, webfingerEndpoint) = _createPersonBase(base_dir, nickname,
                                                        domain, port,
                                                        httpPrefix,
                                                        saveToFile,
                                                        manualFollowerApproval,
                                                        groupAccount,
                                                        password)
-    if not getConfigParam(baseDir, 'admin'):
+    if not getConfigParam(base_dir, 'admin'):
         if nickname != 'news':
             # print(nickname+' becomes the instance admin and a moderator')
-            setConfigParam(baseDir, 'admin', nickname)
-            setRole(baseDir, nickname, domain, 'admin')
-            setRole(baseDir, nickname, domain, 'moderator')
-            setRole(baseDir, nickname, domain, 'editor')
+            setConfigParam(base_dir, 'admin', nickname)
+            setRole(base_dir, nickname, domain, 'admin')
+            setRole(base_dir, nickname, domain, 'moderator')
+            setRole(base_dir, nickname, domain, 'editor')
 
-    if not os.path.isdir(baseDir + '/accounts'):
-        os.mkdir(baseDir + '/accounts')
-    accountDir = acctDir(baseDir, nickname, domain)
+    if not os.path.isdir(base_dir + '/accounts'):
+        os.mkdir(base_dir + '/accounts')
+    accountDir = acctDir(base_dir, nickname, domain)
     if not os.path.isdir(accountDir):
         os.mkdir(accountDir)
 
     if manualFollowerApproval:
-        followDMsFilename = acctDir(baseDir, nickname, domain) + '/.followDMs'
+        followDMsFilename = acctDir(base_dir, nickname, domain) + '/.followDMs'
         try:
             with open(followDMsFilename, 'w+') as fFile:
                 fFile.write('\n')
@@ -645,7 +647,7 @@ def createPerson(baseDir: str, nickname: str, domain: str, port: int,
     # notify when posts are liked
     if nickname != 'news':
         notifyLikesFilename = \
-            acctDir(baseDir, nickname, domain) + '/.notifyLikes'
+            acctDir(base_dir, nickname, domain) + '/.notifyLikes'
         try:
             with open(notifyLikesFilename, 'w+') as nFile:
                 nFile.write('\n')
@@ -655,68 +657,69 @@ def createPerson(baseDir: str, nickname: str, domain: str, port: int,
     # notify when posts have emoji reactions
     if nickname != 'news':
         notifyReactionsFilename = \
-            acctDir(baseDir, nickname, domain) + '/.notifyReactions'
+            acctDir(base_dir, nickname, domain) + '/.notifyReactions'
         try:
             with open(notifyReactionsFilename, 'w+') as nFile:
                 nFile.write('\n')
         except OSError:
             print('EX: unable to write ' + notifyReactionsFilename)
 
-    theme = getConfigParam(baseDir, 'theme')
+    theme = getConfigParam(base_dir, 'theme')
     if not theme:
         theme = 'default'
 
     if nickname != 'news':
-        if os.path.isfile(baseDir + '/img/default-avatar.png'):
-            accountDir = acctDir(baseDir, nickname, domain)
-            copyfile(baseDir + '/img/default-avatar.png',
+        if os.path.isfile(base_dir + '/img/default-avatar.png'):
+            accountDir = acctDir(base_dir, nickname, domain)
+            copyfile(base_dir + '/img/default-avatar.png',
                      accountDir + '/avatar.png')
     else:
-        newsAvatar = baseDir + '/theme/' + theme + '/icons/avatar_news.png'
+        newsAvatar = base_dir + '/theme/' + theme + '/icons/avatar_news.png'
         if os.path.isfile(newsAvatar):
-            accountDir = acctDir(baseDir, nickname, domain)
+            accountDir = acctDir(base_dir, nickname, domain)
             copyfile(newsAvatar, accountDir + '/avatar.png')
 
-    defaultProfileImageFilename = baseDir + '/theme/default/image.png'
+    defaultProfileImageFilename = base_dir + '/theme/default/image.png'
     if theme:
-        if os.path.isfile(baseDir + '/theme/' + theme + '/image.png'):
+        if os.path.isfile(base_dir + '/theme/' + theme + '/image.png'):
             defaultProfileImageFilename = \
-                baseDir + '/theme/' + theme + '/image.png'
+                base_dir + '/theme/' + theme + '/image.png'
     if os.path.isfile(defaultProfileImageFilename):
-        accountDir = acctDir(baseDir, nickname, domain)
+        accountDir = acctDir(base_dir, nickname, domain)
         copyfile(defaultProfileImageFilename, accountDir + '/image.png')
-    defaultBannerFilename = baseDir + '/theme/default/banner.png'
+    defaultBannerFilename = base_dir + '/theme/default/banner.png'
     if theme:
-        if os.path.isfile(baseDir + '/theme/' + theme + '/banner.png'):
-            defaultBannerFilename = baseDir + '/theme/' + theme + '/banner.png'
+        if os.path.isfile(base_dir + '/theme/' + theme + '/banner.png'):
+            defaultBannerFilename = \
+                base_dir + '/theme/' + theme + '/banner.png'
     if os.path.isfile(defaultBannerFilename):
-        accountDir = acctDir(baseDir, nickname, domain)
+        accountDir = acctDir(base_dir, nickname, domain)
         copyfile(defaultBannerFilename, accountDir + '/banner.png')
     if nickname != 'news' and remainingConfigExists:
         registrationsRemaining -= 1
-        setConfigParam(baseDir, 'registrationsRemaining',
+        setConfigParam(base_dir, 'registrationsRemaining',
                        str(registrationsRemaining))
-    savePersonQrcode(baseDir, nickname, domain, port)
+    savePersonQrcode(base_dir, nickname, domain, port)
     return privateKeyPem, publicKeyPem, newPerson, webfingerEndpoint
 
 
-def createSharedInbox(baseDir: str, nickname: str, domain: str, port: int,
+def createSharedInbox(base_dir: str, nickname: str, domain: str, port: int,
                       httpPrefix: str) -> (str, str, {}, {}):
     """Generates the shared inbox
     """
-    return _createPersonBase(baseDir, nickname, domain, port, httpPrefix,
+    return _createPersonBase(base_dir, nickname, domain, port, httpPrefix,
                              True, True, False, None)
 
 
-def createNewsInbox(baseDir: str, domain: str, port: int,
+def createNewsInbox(base_dir: str, domain: str, port: int,
                     httpPrefix: str) -> (str, str, {}, {}):
     """Generates the news inbox
     """
-    return createPerson(baseDir, 'news', domain, port,
+    return createPerson(base_dir, 'news', domain, port,
                         httpPrefix, True, True, None)
 
 
-def personUpgradeActor(baseDir: str, personJson: {},
+def personUpgradeActor(base_dir: str, personJson: {},
                        handle: str, filename: str) -> None:
     """Alter the actor to add any new properties
     """
@@ -815,7 +818,7 @@ def personUpgradeActor(baseDir: str, personJson: {},
     # roles are configured
     rolesList = getActorRolesList(personJson)
     if not rolesList:
-        adminName = getConfigParam(baseDir, 'admin')
+        adminName = getConfigParam(base_dir, 'admin')
         if personJson['id'].endswith('/users/' + adminName):
             rolesList = ["admin", "moderator", "editor"]
             setRolesFromList(personJson, rolesList)
@@ -837,21 +840,21 @@ def personUpgradeActor(baseDir: str, personJson: {},
 
         # also update the actor within the cache
         actorCacheFilename = \
-            baseDir + '/accounts/cache/actors/' + \
+            base_dir + '/accounts/cache/actors/' + \
             personJson['id'].replace('/', '#') + '.json'
         if os.path.isfile(actorCacheFilename):
             saveJson(personJson, actorCacheFilename)
 
         # update domain/@nickname in actors cache
         actorCacheFilename = \
-            baseDir + '/accounts/cache/actors/' + \
+            base_dir + '/accounts/cache/actors/' + \
             replaceUsersWithAt(personJson['id']).replace('/', '#') + \
             '.json'
         if os.path.isfile(actorCacheFilename):
             saveJson(personJson, actorCacheFilename)
 
 
-def personLookup(domain: str, path: str, baseDir: str) -> {}:
+def personLookup(domain: str, path: str, base_dir: str) -> {}:
     """Lookup the person for an given nickname
     """
     if path.endswith('#main-key'):
@@ -880,19 +883,19 @@ def personLookup(domain: str, path: str, baseDir: str) -> {}:
         return None
     domain = removeDomainPort(domain)
     handle = nickname + '@' + domain
-    filename = baseDir + '/accounts/' + handle + '.json'
+    filename = base_dir + '/accounts/' + handle + '.json'
     if not os.path.isfile(filename):
         return None
     personJson = loadJson(filename)
     if not isSharedInbox:
-        personUpgradeActor(baseDir, personJson, handle, filename)
+        personUpgradeActor(base_dir, personJson, handle, filename)
     # if not personJson:
     #     personJson={"user": "unknown"}
     return personJson
 
 
 def personBoxJson(recentPostsCache: {},
-                  session, baseDir: str, domain: str, port: int, path: str,
+                  session, base_dir: str, domain: str, port: int, path: str,
                   httpPrefix: str, noOfItems: int, boxname: str,
                   authorized: bool,
                   newswireVotesThreshold: int, positiveVoting: bool,
@@ -943,61 +946,62 @@ def personBoxJson(recentPostsCache: {},
         return None
     if boxname == 'inbox':
         return createInbox(recentPostsCache,
-                           session, baseDir, nickname, domain, port,
+                           session, base_dir, nickname, domain, port,
                            httpPrefix,
                            noOfItems, headerOnly, pageNumber)
     elif boxname == 'dm':
         return createDMTimeline(recentPostsCache,
-                                session, baseDir, nickname, domain, port,
+                                session, base_dir, nickname, domain, port,
                                 httpPrefix,
                                 noOfItems, headerOnly, pageNumber)
     elif boxname == 'tlbookmarks' or boxname == 'bookmarks':
-        return createBookmarksTimeline(session, baseDir, nickname, domain,
+        return createBookmarksTimeline(session, base_dir, nickname, domain,
                                        port, httpPrefix,
                                        noOfItems, headerOnly,
                                        pageNumber)
     elif boxname == 'tlreplies':
         return createRepliesTimeline(recentPostsCache,
-                                     session, baseDir, nickname, domain,
+                                     session, base_dir, nickname, domain,
                                      port, httpPrefix,
                                      noOfItems, headerOnly,
                                      pageNumber)
     elif boxname == 'tlmedia':
-        return createMediaTimeline(session, baseDir, nickname, domain, port,
+        return createMediaTimeline(session, base_dir, nickname, domain, port,
                                    httpPrefix, noOfItems, headerOnly,
                                    pageNumber)
     elif boxname == 'tlnews':
-        return createNewsTimeline(session, baseDir, nickname, domain, port,
+        return createNewsTimeline(session, base_dir, nickname, domain, port,
                                   httpPrefix, noOfItems, headerOnly,
                                   newswireVotesThreshold, positiveVoting,
                                   votingTimeMins, pageNumber)
     elif boxname == 'tlfeatures':
-        return createFeaturesTimeline(session, baseDir, nickname, domain, port,
+        return createFeaturesTimeline(session, base_dir,
+                                      nickname, domain, port,
                                       httpPrefix, noOfItems, headerOnly,
                                       pageNumber)
     elif boxname == 'tlblogs':
-        return createBlogsTimeline(session, baseDir, nickname, domain, port,
+        return createBlogsTimeline(session, base_dir, nickname, domain, port,
                                    httpPrefix, noOfItems, headerOnly,
                                    pageNumber)
     elif boxname == 'outbox':
-        return createOutbox(session, baseDir, nickname, domain, port,
+        return createOutbox(session, base_dir, nickname, domain, port,
                             httpPrefix,
                             noOfItems, headerOnly, authorized,
                             pageNumber)
     elif boxname == 'moderation':
-        return createModeration(baseDir, nickname, domain, port,
+        return createModeration(base_dir, nickname, domain, port,
                                 httpPrefix,
                                 noOfItems, headerOnly,
                                 pageNumber)
     return None
 
 
-def setDisplayNickname(baseDir: str, nickname: str, domain: str,
+def setDisplayNickname(base_dir: str, nickname: str, domain: str,
                        displayName: str) -> bool:
     if len(displayName) > 32:
         return False
     handle = nickname + '@' + domain
-    filename = baseDir + '/accounts/' + handle + '.json'
+    filename = base_dir + '/accounts/' + handle + '.json'
     if not os.path.isfile(filename):
         return False
 
@@ -1009,13 +1013,13 @@ def setDisplayNickname(baseDir: str, nickname: str, domain: str,
     return True
 
 
-def setBio(baseDir: str, nickname: str, domain: str, bio: str) -> bool:
+def setBio(base_dir: str, nickname: str, domain: str, bio: str) -> bool:
     """Only used within tests
     """
     if len(bio) > 32:
         return False
     handle = nickname + '@' + domain
-    filename = baseDir + '/accounts/' + handle + '.json'
+    filename = base_dir + '/accounts/' + handle + '.json'
     if not os.path.isfile(filename):
         return False
 
@@ -1030,10 +1034,10 @@ def setBio(baseDir: str, nickname: str, domain: str, bio: str) -> bool:
     return True
 
 
-def reenableAccount(baseDir: str, nickname: str) -> None:
+def reenableAccount(base_dir: str, nickname: str) -> None:
     """Removes an account suspention
     """
-    suspendedFilename = baseDir + '/accounts/suspended.txt'
+    suspendedFilename = base_dir + '/accounts/suspended.txt'
     if os.path.isfile(suspendedFilename):
         lines = []
         with open(suspendedFilename, 'r') as f:
@@ -1048,18 +1052,18 @@ def reenableAccount(baseDir: str, nickname: str) -> None:
                   ' ' + str(ex))
 
 
-def suspendAccount(baseDir: str, nickname: str, domain: str) -> None:
+def suspendAccount(base_dir: str, nickname: str, domain: str) -> None:
     """Suspends the given account
     """
     # Don't suspend the admin
-    adminNickname = getConfigParam(baseDir, 'admin')
+    adminNickname = getConfigParam(base_dir, 'admin')
     if not adminNickname:
         return
     if nickname == adminNickname:
         return
 
     # Don't suspend moderators
-    moderatorsFile = baseDir + '/accounts/moderators.txt'
+    moderatorsFile = base_dir + '/accounts/moderators.txt'
     if os.path.isfile(moderatorsFile):
         with open(moderatorsFile, 'r') as f:
             lines = f.readlines()
@@ -1067,20 +1071,20 @@ def suspendAccount(baseDir: str, nickname: str, domain: str) -> None:
             if moderator.strip('\n').strip('\r') == nickname:
                 return
 
-    saltFilename = acctDir(baseDir, nickname, domain) + '/.salt'
+    saltFilename = acctDir(base_dir, nickname, domain) + '/.salt'
     if os.path.isfile(saltFilename):
         try:
             os.remove(saltFilename)
         except OSError:
             print('EX: suspendAccount unable to delete ' + saltFilename)
-    tokenFilename = acctDir(baseDir, nickname, domain) + '/.token'
+    tokenFilename = acctDir(base_dir, nickname, domain) + '/.token'
     if os.path.isfile(tokenFilename):
         try:
             os.remove(tokenFilename)
         except OSError:
             print('EX: suspendAccount unable to delete ' + tokenFilename)
 
-    suspendedFilename = baseDir + '/accounts/suspended.txt'
+    suspendedFilename = base_dir + '/accounts/suspended.txt'
     if os.path.isfile(suspendedFilename):
         with open(suspendedFilename, 'r') as f:
             lines = f.readlines()
@@ -1100,7 +1104,7 @@ def suspendAccount(baseDir: str, nickname: str, domain: str) -> None:
             print('EX: unable to write ' + suspendedFilename)
 
 
-def canRemovePost(baseDir: str, nickname: str,
+def canRemovePost(base_dir: str, nickname: str,
                   domain: str, port: int, postId: str) -> bool:
     """Returns true if the given post can be removed
     """
@@ -1110,14 +1114,14 @@ def canRemovePost(baseDir: str, nickname: str,
     domainFull = getFullDomain(domain, port)
 
     # is the post by the admin?
-    adminNickname = getConfigParam(baseDir, 'admin')
+    adminNickname = getConfigParam(base_dir, 'admin')
     if not adminNickname:
         return False
     if domainFull + '/users/' + adminNickname + '/' in postId:
         return False
 
     # is the post by a moderator?
-    moderatorsFile = baseDir + '/accounts/moderators.txt'
+    moderatorsFile = base_dir + '/accounts/moderators.txt'
     if os.path.isfile(moderatorsFile):
         with open(moderatorsFile, 'r') as f:
             lines = f.readlines()
@@ -1127,15 +1131,15 @@ def canRemovePost(baseDir: str, nickname: str,
     return True
 
 
-def _removeTagsForNickname(baseDir: str, nickname: str,
+def _removeTagsForNickname(base_dir: str, nickname: str,
                            domain: str, port: int) -> None:
     """Removes tags for a nickname
     """
-    if not os.path.isdir(baseDir + '/tags'):
+    if not os.path.isdir(base_dir + '/tags'):
         return
     domainFull = getFullDomain(domain, port)
     matchStr = domainFull + '/users/' + nickname + '/'
-    directory = os.fsencode(baseDir + '/tags/')
+    directory = os.fsencode(base_dir + '/tags/')
     for f in os.scandir(directory):
         f = f.name
         filename = os.fsdecode(f)
@@ -1163,19 +1167,19 @@ def _removeTagsForNickname(baseDir: str, nickname: str,
             print('EX: unable to write ' + tagFilename)
 
 
-def removeAccount(baseDir: str, nickname: str,
+def removeAccount(base_dir: str, nickname: str,
                   domain: str, port: int) -> bool:
     """Removes an account
     """
     # Don't remove the admin
-    adminNickname = getConfigParam(baseDir, 'admin')
+    adminNickname = getConfigParam(base_dir, 'admin')
     if not adminNickname:
         return False
     if nickname == adminNickname:
         return False
 
     # Don't remove moderators
-    moderatorsFile = baseDir + '/accounts/moderators.txt'
+    moderatorsFile = base_dir + '/accounts/moderators.txt'
     if os.path.isfile(moderatorsFile):
         with open(moderatorsFile, 'r') as f:
             lines = f.readlines()
@@ -1183,121 +1187,121 @@ def removeAccount(baseDir: str, nickname: str,
             if moderator.strip('\n') == nickname:
                 return False
 
-    reenableAccount(baseDir, nickname)
+    reenableAccount(base_dir, nickname)
     handle = nickname + '@' + domain
-    removePassword(baseDir, nickname)
-    _removeTagsForNickname(baseDir, nickname, domain, port)
-    if os.path.isdir(baseDir + '/deactivated/' + handle):
-        shutil.rmtree(baseDir + '/deactivated/' + handle,
+    removePassword(base_dir, nickname)
+    _removeTagsForNickname(base_dir, nickname, domain, port)
+    if os.path.isdir(base_dir + '/deactivated/' + handle):
+        shutil.rmtree(base_dir + '/deactivated/' + handle,
                       ignore_errors=False, onerror=None)
-    if os.path.isdir(baseDir + '/accounts/' + handle):
-        shutil.rmtree(baseDir + '/accounts/' + handle,
+    if os.path.isdir(base_dir + '/accounts/' + handle):
+        shutil.rmtree(base_dir + '/accounts/' + handle,
                       ignore_errors=False, onerror=None)
-    if os.path.isfile(baseDir + '/accounts/' + handle + '.json'):
+    if os.path.isfile(base_dir + '/accounts/' + handle + '.json'):
         try:
-            os.remove(baseDir + '/accounts/' + handle + '.json')
+            os.remove(base_dir + '/accounts/' + handle + '.json')
         except OSError:
             print('EX: removeAccount unable to delete ' +
-                  baseDir + '/accounts/' + handle + '.json')
-    if os.path.isfile(baseDir + '/wfendpoints/' + handle + '.json'):
+                  base_dir + '/accounts/' + handle + '.json')
+    if os.path.isfile(base_dir + '/wfendpoints/' + handle + '.json'):
         try:
-            os.remove(baseDir + '/wfendpoints/' + handle + '.json')
+            os.remove(base_dir + '/wfendpoints/' + handle + '.json')
         except OSError:
             print('EX: removeAccount unable to delete ' +
-                  baseDir + '/wfendpoints/' + handle + '.json')
-    if os.path.isfile(baseDir + '/keys/private/' + handle + '.key'):
+                  base_dir + '/wfendpoints/' + handle + '.json')
+    if os.path.isfile(base_dir + '/keys/private/' + handle + '.key'):
         try:
-            os.remove(baseDir + '/keys/private/' + handle + '.key')
+            os.remove(base_dir + '/keys/private/' + handle + '.key')
         except OSError:
             print('EX: removeAccount unable to delete ' +
-                  baseDir + '/keys/private/' + handle + '.key')
-    if os.path.isfile(baseDir + '/keys/public/' + handle + '.pem'):
+                  base_dir + '/keys/private/' + handle + '.key')
+    if os.path.isfile(base_dir + '/keys/public/' + handle + '.pem'):
         try:
-            os.remove(baseDir + '/keys/public/' + handle + '.pem')
+            os.remove(base_dir + '/keys/public/' + handle + '.pem')
         except OSError:
             print('EX: removeAccount unable to delete ' +
-                  baseDir + '/keys/public/' + handle + '.pem')
-    if os.path.isdir(baseDir + '/sharefiles/' + nickname):
-        shutil.rmtree(baseDir + '/sharefiles/' + nickname,
+                  base_dir + '/keys/public/' + handle + '.pem')
+    if os.path.isdir(base_dir + '/sharefiles/' + nickname):
+        shutil.rmtree(base_dir + '/sharefiles/' + nickname,
                       ignore_errors=False, onerror=None)
-    if os.path.isfile(baseDir + '/wfdeactivated/' + handle + '.json'):
+    if os.path.isfile(base_dir + '/wfdeactivated/' + handle + '.json'):
         try:
-            os.remove(baseDir + '/wfdeactivated/' + handle + '.json')
+            os.remove(base_dir + '/wfdeactivated/' + handle + '.json')
         except OSError:
             print('EX: removeAccount unable to delete ' +
-                  baseDir + '/wfdeactivated/' + handle + '.json')
-    if os.path.isdir(baseDir + '/sharefilesdeactivated/' + nickname):
-        shutil.rmtree(baseDir + '/sharefilesdeactivated/' + nickname,
+                  base_dir + '/wfdeactivated/' + handle + '.json')
+    if os.path.isdir(base_dir + '/sharefilesdeactivated/' + nickname):
+        shutil.rmtree(base_dir + '/sharefilesdeactivated/' + nickname,
                       ignore_errors=False, onerror=None)
 
-    refreshNewswire(baseDir)
+    refreshNewswire(base_dir)
 
     return True
 
 
-def deactivateAccount(baseDir: str, nickname: str, domain: str) -> bool:
+def deactivateAccount(base_dir: str, nickname: str, domain: str) -> bool:
     """Makes an account temporarily unavailable
     """
     handle = nickname + '@' + domain
 
-    accountDir = baseDir + '/accounts/' + handle
+    accountDir = base_dir + '/accounts/' + handle
     if not os.path.isdir(accountDir):
         return False
-    deactivatedDir = baseDir + '/deactivated'
+    deactivatedDir = base_dir + '/deactivated'
     if not os.path.isdir(deactivatedDir):
         os.mkdir(deactivatedDir)
     shutil.move(accountDir, deactivatedDir + '/' + handle)
 
-    if os.path.isfile(baseDir + '/wfendpoints/' + handle + '.json'):
-        deactivatedWebfingerDir = baseDir + '/wfdeactivated'
+    if os.path.isfile(base_dir + '/wfendpoints/' + handle + '.json'):
+        deactivatedWebfingerDir = base_dir + '/wfdeactivated'
         if not os.path.isdir(deactivatedWebfingerDir):
             os.mkdir(deactivatedWebfingerDir)
-        shutil.move(baseDir + '/wfendpoints/' + handle + '.json',
+        shutil.move(base_dir + '/wfendpoints/' + handle + '.json',
                     deactivatedWebfingerDir + '/' + handle + '.json')
 
-    if os.path.isdir(baseDir + '/sharefiles/' + nickname):
-        deactivatedSharefilesDir = baseDir + '/sharefilesdeactivated'
+    if os.path.isdir(base_dir + '/sharefiles/' + nickname):
+        deactivatedSharefilesDir = base_dir + '/sharefilesdeactivated'
         if not os.path.isdir(deactivatedSharefilesDir):
             os.mkdir(deactivatedSharefilesDir)
-        shutil.move(baseDir + '/sharefiles/' + nickname,
+        shutil.move(base_dir + '/sharefiles/' + nickname,
                     deactivatedSharefilesDir + '/' + nickname)
 
-    refreshNewswire(baseDir)
+    refreshNewswire(base_dir)
 
     return os.path.isdir(deactivatedDir + '/' + nickname + '@' + domain)
 
 
-def activateAccount(baseDir: str, nickname: str, domain: str) -> None:
+def activateAccount(base_dir: str, nickname: str, domain: str) -> None:
     """Makes a deactivated account available
     """
     handle = nickname + '@' + domain
 
-    deactivatedDir = baseDir + '/deactivated'
+    deactivatedDir = base_dir + '/deactivated'
     deactivatedAccountDir = deactivatedDir + '/' + handle
     if os.path.isdir(deactivatedAccountDir):
-        accountDir = baseDir + '/accounts/' + handle
+        accountDir = base_dir + '/accounts/' + handle
         if not os.path.isdir(accountDir):
             shutil.move(deactivatedAccountDir, accountDir)
 
-    deactivatedWebfingerDir = baseDir + '/wfdeactivated'
+    deactivatedWebfingerDir = base_dir + '/wfdeactivated'
     if os.path.isfile(deactivatedWebfingerDir + '/' + handle + '.json'):
         shutil.move(deactivatedWebfingerDir + '/' + handle + '.json',
-                    baseDir + '/wfendpoints/' + handle + '.json')
+                    base_dir + '/wfendpoints/' + handle + '.json')
 
-    deactivatedSharefilesDir = baseDir + '/sharefilesdeactivated'
+    deactivatedSharefilesDir = base_dir + '/sharefilesdeactivated'
     if os.path.isdir(deactivatedSharefilesDir + '/' + nickname):
-        if not os.path.isdir(baseDir + '/sharefiles/' + nickname):
+        if not os.path.isdir(base_dir + '/sharefiles/' + nickname):
             shutil.move(deactivatedSharefilesDir + '/' + nickname,
-                        baseDir + '/sharefiles/' + nickname)
+                        base_dir + '/sharefiles/' + nickname)
 
-    refreshNewswire(baseDir)
+    refreshNewswire(base_dir)
 
 
-def isPersonSnoozed(baseDir: str, nickname: str, domain: str,
+def isPersonSnoozed(base_dir: str, nickname: str, domain: str,
                     snoozeActor: str) -> bool:
     """Returns true if the given actor is snoozed
     """
-    snoozedFilename = acctDir(baseDir, nickname, domain) + '/snoozed.txt'
+    snoozedFilename = acctDir(base_dir, nickname, domain) + '/snoozed.txt'
     if not os.path.isfile(snoozedFilename):
         return False
     if snoozeActor + ' ' not in open(snoozedFilename).read():
@@ -1336,11 +1340,11 @@ def isPersonSnoozed(baseDir: str, nickname: str, domain: str,
     return False
 
 
-def personSnooze(baseDir: str, nickname: str, domain: str,
+def personSnooze(base_dir: str, nickname: str, domain: str,
                  snoozeActor: str) -> None:
     """Temporarily ignores the given actor
     """
-    accountDir = acctDir(baseDir, nickname, domain)
+    accountDir = acctDir(base_dir, nickname, domain)
     if not os.path.isdir(accountDir):
         print('ERROR: unknown account ' + accountDir)
         return
@@ -1356,11 +1360,11 @@ def personSnooze(baseDir: str, nickname: str, domain: str,
         print('EX: unable to append ' + snoozedFilename)
 
 
-def personUnsnooze(baseDir: str, nickname: str, domain: str,
+def personUnsnooze(base_dir: str, nickname: str, domain: str,
                    snoozeActor: str) -> None:
     """Undoes a temporarily ignore of the given actor
     """
-    accountDir = acctDir(baseDir, nickname, domain)
+    accountDir = acctDir(base_dir, nickname, domain)
     if not os.path.isdir(accountDir):
         print('ERROR: unknown account ' + accountDir)
         return
@@ -1387,7 +1391,7 @@ def personUnsnooze(baseDir: str, nickname: str, domain: str,
                 print('EX: unable to write ' + snoozedFilename)
 
 
-def setPersonNotes(baseDir: str, nickname: str, domain: str,
+def setPersonNotes(base_dir: str, nickname: str, domain: str,
                    handle: str, notes: str) -> bool:
     """Adds notes about a person
     """
@@ -1395,7 +1399,7 @@ def setPersonNotes(baseDir: str, nickname: str, domain: str,
         return False
     if handle.startswith('@'):
         handle = handle[1:]
-    notesDir = acctDir(baseDir, nickname, domain) + '/notes'
+    notesDir = acctDir(base_dir, nickname, domain) + '/notes'
     if not os.path.isdir(notesDir):
         os.mkdir(notesDir)
     notesFilename = notesDir + '/' + handle + '.txt'
@@ -1596,12 +1600,12 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
     return None, None
 
 
-def getPersonAvatarUrl(baseDir: str, personUrl: str, personCache: {},
+def getPersonAvatarUrl(base_dir: str, personUrl: str, personCache: {},
                        allowDownloads: bool) -> str:
     """Returns the avatar url for the person
     """
     personJson = \
-        getPersonFromCache(baseDir, personUrl, personCache, allowDownloads)
+        getPersonFromCache(base_dir, personUrl, personCache, allowDownloads)
     if not personJson:
         return None
 
@@ -1609,7 +1613,7 @@ def getPersonAvatarUrl(baseDir: str, personUrl: str, personCache: {},
     if not personJson.get('id'):
         return None
     actorStr = personJson['id'].replace('/', '-')
-    avatarImagePath = baseDir + '/cache/avatars/' + actorStr
+    avatarImagePath = base_dir + '/cache/avatars/' + actorStr
 
     imageExtension = getImageExtensions()
     for ext in imageExtension:
@@ -1647,7 +1651,7 @@ def addActorUpdateTimestamp(actorJson: {}) -> None:
     actorJson['image']['updated'] = currDateStr
 
 
-def validSendingActor(session, baseDir: str,
+def validSendingActor(session, base_dir: str,
                       nickname: str, domain: str,
                       personCache: {},
                       postJsonObject: {},
@@ -1660,7 +1664,7 @@ def validSendingActor(session, baseDir: str,
     sendingActor = postJsonObject['actor']
 
     # If you are following them then allow their posts
-    if isFollowingActor(baseDir, nickname, domain, sendingActor):
+    if isFollowingActor(base_dir, nickname, domain, sendingActor):
         return True
 
     # sending to yourself (reminder)
@@ -1668,7 +1672,7 @@ def validSendingActor(session, baseDir: str,
         return True
 
     # get their actor
-    actorJson = getPersonFromCache(baseDir, sendingActor, personCache, True)
+    actorJson = getPersonFromCache(base_dir, sendingActor, personCache, True)
     downloadedActor = False
     if not actorJson:
         # download the actor
@@ -1719,7 +1723,7 @@ def validSendingActor(session, baseDir: str,
         if containsInvalidChars(bioStr):
             print('REJECT: post actor bio contains invalid characters')
             return False
-        if isFilteredBio(baseDir, nickname, domain, bioStr):
+        if isFilteredBio(base_dir, nickname, domain, bioStr):
             print('REJECT: post actor bio contains filtered text')
             return False
     else:
@@ -1758,6 +1762,6 @@ def validSendingActor(session, baseDir: str,
     if downloadedActor:
         # if the actor is valid and was downloaded then
         # store it in the cache, but don't write it to file
-        storePersonInCache(baseDir, sendingActor, actorJson, personCache,
+        storePersonInCache(base_dir, sendingActor, actorJson, personCache,
                            False)
     return True

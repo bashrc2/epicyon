@@ -13,16 +13,16 @@ from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 
 
-def htmlSuspended(cssCache: {}, baseDir: str) -> str:
+def htmlSuspended(cssCache: {}, base_dir: str) -> str:
     """Show the screen for suspended accounts
     """
     suspendedForm = ''
-    cssFilename = baseDir + '/epicyon-suspended.css'
-    if os.path.isfile(baseDir + '/suspended.css'):
-        cssFilename = baseDir + '/suspended.css'
+    cssFilename = base_dir + '/epicyon-suspended.css'
+    if os.path.isfile(base_dir + '/suspended.css'):
+        cssFilename = base_dir + '/suspended.css'
 
     instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
+        getConfigParam(base_dir, 'instanceTitle')
     suspendedForm = \
         htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     suspendedForm += \

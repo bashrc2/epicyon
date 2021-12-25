@@ -241,7 +241,7 @@ def preparePostFromHtmlCache(nickname: str, postHtml: str, boxName: str,
     return prepareHtmlPostNickname(nickname, withPageNumber)
 
 
-def _saveIndividualPostAsHtmlToCache(baseDir: str,
+def _saveIndividualPostAsHtmlToCache(base_dir: str,
                                      nickname: str, domain: str,
                                      postJsonObject: {},
                                      postHtml: str) -> bool:
@@ -250,9 +250,9 @@ def _saveIndividualPostAsHtmlToCache(baseDir: str,
     refresh of the timeline
     """
     htmlPostCacheDir = \
-        getCachedPostDirectory(baseDir, nickname, domain)
+        getCachedPostDirectory(base_dir, nickname, domain)
     cachedPostFilename = \
-        getCachedPostFilename(baseDir, nickname, domain, postJsonObject)
+        getCachedPostFilename(base_dir, nickname, domain, postJsonObject)
 
     # create the cache directory if needed
     if not os.path.isdir(htmlPostCacheDir):
@@ -268,7 +268,7 @@ def _saveIndividualPostAsHtmlToCache(baseDir: str,
 
 
 def _getPostFromRecentCache(session,
-                            baseDir: str,
+                            base_dir: str,
                             httpPrefix: str,
                             nickname: str, domain: str,
                             postJsonObject: {},
@@ -304,20 +304,20 @@ def _getPostFromRecentCache(session,
     # update avatar if needed
     if not avatarUrl:
         avatarUrl = \
-            getPersonAvatarUrl(baseDir, postActor, personCache,
+            getPersonAvatarUrl(base_dir, postActor, personCache,
                                allowDownloads)
 
         _logPostTiming(enableTimingLog, postStartTime, '2.1')
 
     updateAvatarImageCache(signingPrivateKeyPem,
-                           session, baseDir, httpPrefix,
+                           session, base_dir, httpPrefix,
                            postActor, avatarUrl, personCache,
                            allowDownloads)
 
     _logPostTiming(enableTimingLog, postStartTime, '2.2')
 
     postHtml = \
-        loadIndividualPostAsHtmlFromCache(baseDir, nickname, domain,
+        loadIndividualPostAsHtmlFromCache(base_dir, nickname, domain,
                                           postJsonObject)
     if not postHtml:
         return None
@@ -378,7 +378,7 @@ def _getAvatarImageHtml(showAvatarOptions: bool,
     return avatarLink.strip()
 
 
-def _getReplyIconHtml(baseDir: str, nickname: str, domain: str,
+def _getReplyIconHtml(base_dir: str, nickname: str, domain: str,
                       isPublicRepeat: bool,
                       showIcons: bool, commentsEnabled: bool,
                       postJsonObject: {}, pageNumberParam: str,
@@ -401,7 +401,7 @@ def _getReplyIconHtml(baseDir: str, nickname: str, domain: str,
             getNicknameFromActor(postJsonObject['object']['replyTo'])
         blockDomain, _ = \
             getDomainFromActor(postJsonObject['object']['replyTo'])
-        if not isBlocked(baseDir, nickname, domain,
+        if not isBlocked(base_dir, nickname, domain,
                          blockNickname, blockDomain, {}):
             replyToLink = postJsonObject['object']['replyTo']
 
@@ -460,7 +460,7 @@ def _getReplyIconHtml(baseDir: str, nickname: str, domain: str,
     return replyStr
 
 
-def _getEditIconHtml(baseDir: str, nickname: str, domainFull: str,
+def _getEditIconHtml(base_dir: str, nickname: str, domainFull: str,
                      postJsonObject: {}, actorNickname: str,
                      translate: {}, isEvent: bool) -> str:
     """Returns html for the edit icon/button
@@ -472,7 +472,7 @@ def _getEditIconHtml(baseDir: str, nickname: str, domainFull: str,
     # _addBlogsToNewswire) in which case anyone with
     # editor status should be able to alter it
     if (actor.endswith('/' + domainFull + '/users/' + nickname) or
-        (isEditor(baseDir, nickname) and
+        (isEditor(base_dir, nickname) and
          actor.endswith('/' + domainFull + '/users/news'))):
 
         postId = removeIdEnding(postJsonObject['object']['id'])
@@ -944,7 +944,7 @@ def _announceWithDisplayNameHtml(translate: {},
         'class="announceOrReply">' + announceDisplayName + '</a>\n'
 
 
-def _getPostTitleAnnounceHtml(baseDir: str,
+def _getPostTitleAnnounceHtml(base_dir: str,
                               httpPrefix: str,
                               nickname: str, domain: str,
                               showRepeatIcon: bool,
@@ -996,8 +996,8 @@ def _getPostTitleAnnounceHtml(baseDir: str,
                 containerClassIcons, containerClass)
 
     announceDomain, announcePort = getDomainFromActor(attributedTo)
-    getPersonFromCache(baseDir, attributedTo, personCache, allowDownloads)
-    announceDisplayName = getDisplayName(baseDir, attributedTo, personCache)
+    getPersonFromCache(base_dir, attributedTo, personCache, allowDownloads)
+    announceDisplayName = getDisplayName(base_dir, attributedTo, personCache)
     if not announceDisplayName:
         announceDisplayName = announceNickname + '@' + announceDomain
 
@@ -1006,7 +1006,7 @@ def _getPostTitleAnnounceHtml(baseDir: str,
     # add any emoji to the display name
     if ':' in announceDisplayName:
         announceDisplayName = \
-            addEmojiToDisplayName(None, baseDir, httpPrefix, nickname, domain,
+            addEmojiToDisplayName(None, base_dir, httpPrefix, nickname, domain,
                                   announceDisplayName, False)
     _logPostTiming(enableTimingLog, postStartTime, '13.3.1')
     titleStr += \
@@ -1015,7 +1015,7 @@ def _getPostTitleAnnounceHtml(baseDir: str,
     # show avatar of person replied to
     announceActor = attributedTo
     announceAvatarUrl = \
-        getPersonAvatarUrl(baseDir, announceActor,
+        getPersonAvatarUrl(base_dir, announceActor,
                            personCache, allowDownloads)
 
     _logPostTiming(enableTimingLog, postStartTime, '13.4')
@@ -1110,7 +1110,7 @@ def _getReplyHtml(translate: {},
         replyDisplayName + '</a>\n'
 
 
-def _getPostTitleReplyHtml(baseDir: str,
+def _getPostTitleReplyHtml(base_dir: str,
                            httpPrefix: str,
                            nickname: str, domain: str,
                            showRepeatIcon: bool,
@@ -1178,8 +1178,8 @@ def _getPostTitleReplyHtml(baseDir: str,
         return (titleStr, replyAvatarImageInPost,
                 containerClassIcons, containerClass)
 
-    getPersonFromCache(baseDir, replyActor, personCache, allowDownloads)
-    replyDisplayName = getDisplayName(baseDir, replyActor, personCache)
+    getPersonFromCache(base_dir, replyActor, personCache, allowDownloads)
+    replyDisplayName = getDisplayName(base_dir, replyActor, personCache)
     if not replyDisplayName:
         replyDisplayName = replyNickname + '@' + replyDomain
 
@@ -1188,7 +1188,7 @@ def _getPostTitleReplyHtml(baseDir: str,
         _logPostTiming(enableTimingLog, postStartTime, '13.5')
 
         replyDisplayName = \
-            addEmojiToDisplayName(None, baseDir, httpPrefix, nickname, domain,
+            addEmojiToDisplayName(None, base_dir, httpPrefix, nickname, domain,
                                   replyDisplayName, False)
         _logPostTiming(enableTimingLog, postStartTime, '13.6')
 
@@ -1198,7 +1198,7 @@ def _getPostTitleReplyHtml(baseDir: str,
 
     # show avatar of person replied to
     replyAvatarUrl = \
-        getPersonAvatarUrl(baseDir, replyActor, personCache, allowDownloads)
+        getPersonAvatarUrl(base_dir, replyActor, personCache, allowDownloads)
 
     _logPostTiming(enableTimingLog, postStartTime, '13.8')
 
@@ -1221,7 +1221,7 @@ def _getPostTitleReplyHtml(baseDir: str,
             containerClassIcons, containerClass)
 
 
-def _getPostTitleHtml(baseDir: str,
+def _getPostTitleHtml(base_dir: str,
                       httpPrefix: str,
                       nickname: str, domain: str,
                       showRepeatIcon: bool,
@@ -1249,7 +1249,7 @@ def _getPostTitleHtml(baseDir: str,
                 isAnnounced = True
 
     if isAnnounced:
-        return _getPostTitleAnnounceHtml(baseDir,
+        return _getPostTitleAnnounceHtml(base_dir,
                                          httpPrefix,
                                          nickname, domain,
                                          showRepeatIcon,
@@ -1268,7 +1268,7 @@ def _getPostTitleHtml(baseDir: str,
                                          containerClassIcons,
                                          containerClass)
 
-    return _getPostTitleReplyHtml(baseDir,
+    return _getPostTitleReplyHtml(base_dir,
                                   httpPrefix,
                                   nickname, domain,
                                   showRepeatIcon,
@@ -1321,7 +1321,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
                          allowDownloads: bool,
                          recentPostsCache: {}, maxRecentPosts: int,
                          translate: {},
-                         pageNumber: int, baseDir: str,
+                         pageNumber: int, base_dir: str,
                          session, cachedWebfingers: {}, personCache: {},
                          nickname: str, domain: str, port: int,
                          postJsonObject: {},
@@ -1358,7 +1358,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
     postActor = postJsonObject['actor']
 
     # ZZZzzz
-    if isPersonSnoozed(baseDir, nickname, domain, postActor):
+    if isPersonSnoozed(base_dir, nickname, domain, postActor):
         return ''
 
     # if downloads of avatar images aren't enabled then we can do more
@@ -1387,7 +1387,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
 
     # get the html post from the recent posts cache if it exists there
     postHtml = \
-        _getPostFromRecentCache(session, baseDir,
+        _getPostFromRecentCache(session, base_dir,
                                 httpPrefix, nickname, domain,
                                 postJsonObject,
                                 postActor,
@@ -1412,7 +1412,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
 
     avatarUrl = \
         getAvatarImageUrl(session,
-                          baseDir, httpPrefix,
+                          base_dir, httpPrefix,
                           postActor, personCache,
                           avatarUrl, allowDownloads,
                           signingPrivateKeyPem)
@@ -1439,7 +1439,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
             (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl2,
              displayName, _) = getPersonBox(signingPrivateKeyPem,
                                             originDomain,
-                                            baseDir, session,
+                                            base_dir, session,
                                             postActorWf,
                                             personCache,
                                             projectVersion,
@@ -1455,7 +1455,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
             # add any emoji to the display name
             if ':' in displayName:
                 displayName = \
-                    addEmojiToDisplayName(session, baseDir, httpPrefix,
+                    addEmojiToDisplayName(session, base_dir, httpPrefix,
                                           nickname, domain,
                                           displayName, False)
 
@@ -1494,7 +1494,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
         announceJsonObject = postJsonObject.copy()
         blockedCache = {}
         postJsonAnnounce = \
-            downloadAnnounce(session, baseDir, httpPrefix,
+            downloadAnnounce(session, base_dir, httpPrefix,
                              nickname, domain, postJsonObject,
                              projectVersion, translate,
                              YTReplacementDomain,
@@ -1508,14 +1508,14 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
         if not postJsonAnnounce:
             # if the announce could not be downloaded then mark it as rejected
             announcedPostId = removeIdEnding(postJsonObject['id'])
-            rejectPostId(baseDir, nickname, domain, announcedPostId,
+            rejectPostId(base_dir, nickname, domain, announcedPostId,
                          recentPostsCache)
             return ''
         postJsonObject = postJsonAnnounce
 
         # is the announced post in the html cache?
         postHtml = \
-            _getPostFromRecentCache(session, baseDir,
+            _getPostFromRecentCache(session, base_dir,
                                     httpPrefix, nickname, domain,
                                     postJsonObject,
                                     postActor,
@@ -1535,17 +1535,17 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
             return postHtml
 
         announceFilename = \
-            locatePost(baseDir, nickname, domain, postJsonObject['id'])
+            locatePost(base_dir, nickname, domain, postJsonObject['id'])
         if announceFilename:
             updateAnnounceCollection(recentPostsCache,
-                                     baseDir, announceFilename,
+                                     base_dir, announceFilename,
                                      postActor, nickname, domainFull, False)
 
             # create a file for use by text-to-speech
             if isRecentPost(postJsonObject, 3):
                 if postJsonObject.get('actor'):
                     if not os.path.isfile(announceFilename + '.tts'):
-                        updateSpeaker(baseDir, httpPrefix,
+                        updateSpeaker(base_dir, httpPrefix,
                                       nickname, domain, domainFull,
                                       postJsonObject, personCache,
                                       translate, postJsonObject['actor'],
@@ -1577,11 +1577,11 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
         actorNickname = 'dev'
     actorDomain, actorPort = getDomainFromActor(postActor)
 
-    displayName = getDisplayName(baseDir, postActor, personCache)
+    displayName = getDisplayName(base_dir, postActor, personCache)
     if displayName:
         if ':' in displayName:
             displayName = \
-                addEmojiToDisplayName(session, baseDir, httpPrefix,
+                addEmojiToDisplayName(session, base_dir, httpPrefix,
                                       nickname, domain,
                                       displayName, False)
         titleStr += \
@@ -1633,7 +1633,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
     publicReply = False
     if isPublicPost(postJsonObject):
         publicReply = True
-    replyStr = _getReplyIconHtml(baseDir, nickname, domain,
+    replyStr = _getReplyIconHtml(base_dir, nickname, domain,
                                  publicReply,
                                  showIcons, commentsEnabled,
                                  postJsonObject, pageNumberParam,
@@ -1642,7 +1642,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
 
     _logPostTiming(enableTimingLog, postStartTime, '10')
 
-    editStr = _getEditIconHtml(baseDir, nickname, domainFull,
+    editStr = _getEditIconHtml(base_dir, nickname, domainFull,
                                postJsonObject, actorNickname,
                                translate, False)
 
@@ -1666,14 +1666,14 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
 
     # whether to show a like button
     hideLikeButtonFile = \
-        acctDir(baseDir, nickname, domain) + '/.hideLikeButton'
+        acctDir(base_dir, nickname, domain) + '/.hideLikeButton'
     showLikeButton = True
     if os.path.isfile(hideLikeButtonFile):
         showLikeButton = False
 
     # whether to show a reaction button
     hideReactionButtonFile = \
-        acctDir(baseDir, nickname, domain) + '/.hideReactionButton'
+        acctDir(base_dir, nickname, domain) + '/.hideReactionButton'
     showReactionButton = True
     if os.path.isfile(hideReactionButtonFile):
         showReactionButton = False
@@ -1718,7 +1718,8 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
 
     _logPostTiming(enableTimingLog, postStartTime, '12.10')
 
-    isMuted = postIsMuted(baseDir, nickname, domain, postJsonObject, messageId)
+    isMuted = postIsMuted(base_dir, nickname, domain,
+                          postJsonObject, messageId)
 
     _logPostTiming(enableTimingLog, postStartTime, '13')
 
@@ -1748,7 +1749,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
     (titleStr2,
      replyAvatarImageInPost,
      containerClassIcons,
-     containerClass) = _getPostTitleHtml(baseDir,
+     containerClass) = _getPostTitleHtml(base_dir,
                                          httpPrefix,
                                          nickname, domain,
                                          showRepeatIcon,
@@ -1848,7 +1849,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
     domainFull = getFullDomain(domain, port)
     personUrl = localActorUrl(httpPrefix, nickname, domainFull)
     actorJson = \
-        getPersonFromCache(baseDir, personUrl, personCache, False)
+        getPersonFromCache(base_dir, personUrl, personCache, False)
     languagesUnderstood = []
     if actorJson:
         languagesUnderstood = getActorLanguagesList(actorJson)
@@ -1856,12 +1857,12 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
                                     languagesUnderstood)
     if not contentStr:
         contentStr = \
-            autoTranslatePost(baseDir, postJsonObject,
+            autoTranslatePost(base_dir, postJsonObject,
                               systemLanguage, translate)
         if not contentStr:
             return ''
 
-    isPatch = isGitPatch(baseDir, nickname, domain,
+    isPatch = isGitPatch(base_dir, nickname, domain,
                          postJsonObject['object']['type'],
                          postJsonObject['object']['summary'],
                          contentStr)
@@ -1875,7 +1876,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
             objectContent = removeTextFormatting(objectContent)
             objectContent = limitRepeatedWords(objectContent, 6)
             objectContent = \
-                switchWords(baseDir, nickname, domain, objectContent)
+                switchWords(base_dir, nickname, domain, objectContent)
             objectContent = htmlReplaceEmailQuote(objectContent)
             objectContent = htmlReplaceQuoteMarks(objectContent)
         else:
@@ -1892,7 +1893,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
         contentStr = objectContent + attachmentStr
         contentStr = addEmbeddedElements(translate, contentStr,
                                          peertubeInstances)
-        contentStr = insertQuestion(baseDir, translate,
+        contentStr = insertQuestion(base_dir, translate,
                                     nickname, domain, port,
                                     contentStr, postJsonObject,
                                     pageNumber)
@@ -1902,7 +1903,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
         if postJsonObject['object'].get('summary'):
             cwStr = str(postJsonObject['object']['summary'])
             cwStr = \
-                addEmojiToDisplayName(session, baseDir, httpPrefix,
+                addEmojiToDisplayName(session, base_dir, httpPrefix,
                                       nickname, domain,
                                       cwStr, False)
             contentStr += \
@@ -1915,10 +1916,10 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
             cwContentStr = addEmbeddedElements(translate, cwContentStr,
                                                peertubeInstances)
             cwContentStr = \
-                insertQuestion(baseDir, translate, nickname, domain, port,
+                insertQuestion(base_dir, translate, nickname, domain, port,
                                cwContentStr, postJsonObject, pageNumber)
             cwContentStr = \
-                switchWords(baseDir, nickname, domain, cwContentStr)
+                switchWords(base_dir, nickname, domain, cwContentStr)
         if not isBlogPost(postJsonObject):
             # get the content warning button
             contentStr += \
@@ -1930,7 +1931,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
 
     if postJsonObject['object'].get('tag') and not isPatch:
         contentStr = \
-            replaceEmojiFromTags(session, baseDir, contentStr,
+            replaceEmojiFromTags(session, base_dir, contentStr,
                                  postJsonObject['object']['tag'],
                                  'content', False)
 
@@ -1977,7 +1978,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
     if not showPublicOnly and storeToCache and \
        boxName != 'tlmedia' and boxName != 'tlbookmarks' and \
        boxName != 'bookmarks':
-        _saveIndividualPostAsHtmlToCache(baseDir, nickname, domain,
+        _saveIndividualPostAsHtmlToCache(base_dir, nickname, domain,
                                          postJsonObject, postHtml)
         updateRecentPostsCache(recentPostsCache, maxRecentPosts,
                                postJsonObject, postHtml)
@@ -1990,7 +1991,7 @@ def individualPostAsHtml(signingPrivateKeyPem: str,
 def htmlIndividualPost(cssCache: {},
                        recentPostsCache: {}, maxRecentPosts: int,
                        translate: {},
-                       baseDir: str, session, cachedWebfingers: {},
+                       base_dir: str, session, cachedWebfingers: {},
                        personCache: {},
                        nickname: str, domain: str, port: int, authorized: bool,
                        postJsonObject: {}, httpPrefix: str,
@@ -2039,7 +2040,7 @@ def htmlIndividualPost(cssCache: {},
         followStr += \
             '    <input type="hidden" name="searchtext" value="' + \
             byStrHandle + '">\n'
-        if not isFollowingActor(baseDir, nickname, domainFull, byStr):
+        if not isFollowingActor(base_dir, nickname, domainFull, byStr):
             translateFollowStr = 'Follow'
             if translate.get(translateFollowStr):
                 translateFollowStr = translate[translateFollowStr]
@@ -2057,7 +2058,7 @@ def htmlIndividualPost(cssCache: {},
         individualPostAsHtml(signingPrivateKeyPem,
                              True, recentPostsCache, maxRecentPosts,
                              translate, None,
-                             baseDir, session, cachedWebfingers, personCache,
+                             base_dir, session, cachedWebfingers, personCache,
                              nickname, domain, port, postJsonObject,
                              None, True, False,
                              httpPrefix, projectVersion, 'inbox',
@@ -2075,7 +2076,7 @@ def htmlIndividualPost(cssCache: {},
     if hasObjectDict(postJsonObject):
         while postJsonObject['object'].get('inReplyTo'):
             postFilename = \
-                locatePost(baseDir, nickname, domain,
+                locatePost(base_dir, nickname, domain,
                            postJsonObject['object']['inReplyTo'])
             if not postFilename:
                 break
@@ -2086,7 +2087,7 @@ def htmlIndividualPost(cssCache: {},
                                          True, recentPostsCache,
                                          maxRecentPosts,
                                          translate, None,
-                                         baseDir, session, cachedWebfingers,
+                                         base_dir, session, cachedWebfingers,
                                          personCache,
                                          nickname, domain, port,
                                          postJsonObject,
@@ -2104,7 +2105,7 @@ def htmlIndividualPost(cssCache: {},
                                          CWlists, listsEnabled) + postStr
 
     # show the following posts
-    postFilename = locatePost(baseDir, nickname, domain, messageId)
+    postFilename = locatePost(base_dir, nickname, domain, messageId)
     if postFilename:
         # is there a replies file for this post?
         repliesFilename = postFilename.replace('.json', '.replies')
@@ -2113,7 +2114,7 @@ def htmlIndividualPost(cssCache: {},
             repliesJson = {
                 'orderedItems': []
             }
-            populateRepliesJson(baseDir, nickname, domain,
+            populateRepliesJson(base_dir, nickname, domain,
                                 repliesFilename, authorized, repliesJson)
             # add items to the html output
             for item in repliesJson['orderedItems']:
@@ -2122,7 +2123,7 @@ def htmlIndividualPost(cssCache: {},
                                          True, recentPostsCache,
                                          maxRecentPosts,
                                          translate, None,
-                                         baseDir, session, cachedWebfingers,
+                                         base_dir, session, cachedWebfingers,
                                          personCache,
                                          nickname, domain, port, item,
                                          None, True, False,
@@ -2137,12 +2138,12 @@ def htmlIndividualPost(cssCache: {},
                                          False, authorized,
                                          False, False, False, False,
                                          CWlists, listsEnabled)
-    cssFilename = baseDir + '/epicyon-profile.css'
-    if os.path.isfile(baseDir + '/epicyon.css'):
-        cssFilename = baseDir + '/epicyon.css'
+    cssFilename = base_dir + '/epicyon-profile.css'
+    if os.path.isfile(base_dir + '/epicyon.css'):
+        cssFilename = base_dir + '/epicyon.css'
 
     instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
+        getConfigParam(base_dir, 'instanceTitle')
     metadataStr = _htmlPostMetadataOpenGraph(domain, originalPostJson)
     headerStr = htmlHeaderWithExternalStyle(cssFilename,
                                             instanceTitle, metadataStr)
@@ -2151,7 +2152,7 @@ def htmlIndividualPost(cssCache: {},
 
 def htmlPostReplies(cssCache: {},
                     recentPostsCache: {}, maxRecentPosts: int,
-                    translate: {}, baseDir: str,
+                    translate: {}, base_dir: str,
                     session, cachedWebfingers: {}, personCache: {},
                     nickname: str, domain: str, port: int, repliesJson: {},
                     httpPrefix: str, projectVersion: str,
@@ -2174,7 +2175,7 @@ def htmlPostReplies(cssCache: {},
                                      True, recentPostsCache,
                                      maxRecentPosts,
                                      translate, None,
-                                     baseDir, session, cachedWebfingers,
+                                     base_dir, session, cachedWebfingers,
                                      personCache,
                                      nickname, domain, port, item,
                                      None, True, False,
@@ -2189,11 +2190,11 @@ def htmlPostReplies(cssCache: {},
                                      False, False, False, False, False, False,
                                      CWlists, listsEnabled)
 
-    cssFilename = baseDir + '/epicyon-profile.css'
-    if os.path.isfile(baseDir + '/epicyon.css'):
-        cssFilename = baseDir + '/epicyon.css'
+    cssFilename = base_dir + '/epicyon-profile.css'
+    if os.path.isfile(base_dir + '/epicyon.css'):
+        cssFilename = base_dir + '/epicyon.css'
 
-    instanceTitle = getConfigParam(baseDir, 'instanceTitle')
+    instanceTitle = getConfigParam(base_dir, 'instanceTitle')
     metadata = ''
     headerStr = \
         htmlHeaderWithExternalStyle(cssFilename, instanceTitle, metadata)
@@ -2203,7 +2204,7 @@ def htmlPostReplies(cssCache: {},
 def htmlEmojiReactionPicker(cssCache: {},
                             recentPostsCache: {}, maxRecentPosts: int,
                             translate: {},
-                            baseDir: str, session, cachedWebfingers: {},
+                            base_dir: str, session, cachedWebfingers: {},
                             personCache: {},
                             nickname: str, domain: str, port: int,
                             postJsonObject: {}, httpPrefix: str,
@@ -2226,7 +2227,7 @@ def htmlEmojiReactionPicker(cssCache: {},
                              True, recentPostsCache,
                              maxRecentPosts,
                              translate, None,
-                             baseDir, session, cachedWebfingers,
+                             base_dir, session, cachedWebfingers,
                              personCache,
                              nickname, domain, port, postJsonObject,
                              None, True, False,
@@ -2241,9 +2242,9 @@ def htmlEmojiReactionPicker(cssCache: {},
                              False, False, False, False, False, False,
                              CWlists, listsEnabled)
 
-    reactionsFilename = baseDir + '/emoji/reactions.json'
+    reactionsFilename = base_dir + '/emoji/reactions.json'
     if not os.path.isfile(reactionsFilename):
-        reactionsFilename = baseDir + '/emoji/default_reactions.json'
+        reactionsFilename = base_dir + '/emoji/default_reactions.json'
     reactionsJson = loadJson(reactionsFilename)
     emojiPicksStr = ''
     baseUrl = '/users/' + nickname
@@ -2263,15 +2264,15 @@ def htmlEmojiReactionPicker(cssCache: {},
                 '  <a href="' + emojiUrl + '">' + emojiLabel + '</a>\n'
         emojiPicksStr += '</div>\n'
 
-    cssFilename = baseDir + '/epicyon-profile.css'
-    if os.path.isfile(baseDir + '/epicyon.css'):
-        cssFilename = baseDir + '/epicyon.css'
+    cssFilename = base_dir + '/epicyon-profile.css'
+    if os.path.isfile(base_dir + '/epicyon.css'):
+        cssFilename = base_dir + '/epicyon.css'
 
     # filename of the banner shown at the top
     bannerFile, _ = \
-        getBannerFile(baseDir, nickname, domain, themeName)
+        getBannerFile(base_dir, nickname, domain, themeName)
 
-    instanceTitle = getConfigParam(baseDir, 'instanceTitle')
+    instanceTitle = getConfigParam(base_dir, 'instanceTitle')
     metadata = ''
     headerStr = \
         htmlHeaderWithExternalStyle(cssFilename, instanceTitle, metadata)

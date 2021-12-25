@@ -52,7 +52,7 @@ def isSelfAnnounce(postJsonObject: {}) -> bool:
 
 
 def outboxAnnounce(recentPostsCache: {},
-                   baseDir: str, messageJson: {}, debug: bool) -> bool:
+                   base_dir: str, messageJson: {}, debug: bool) -> bool:
     """ Adds or removes announce entries from the shares collection
     within a given post
     """
@@ -74,10 +74,10 @@ def outboxAnnounce(recentPostsCache: {},
             print('WARN: no nickname found in ' + messageJson['actor'])
             return False
         domain, port = getDomainFromActor(messageJson['actor'])
-        postFilename = locatePost(baseDir, nickname, domain,
+        postFilename = locatePost(base_dir, nickname, domain,
                                   messageJson['object'])
         if postFilename:
-            updateAnnounceCollection(recentPostsCache, baseDir, postFilename,
+            updateAnnounceCollection(recentPostsCache, base_dir, postFilename,
                                      messageJson['actor'],
                                      nickname, domain, debug)
             return True
@@ -92,11 +92,11 @@ def outboxAnnounce(recentPostsCache: {},
                 print('WARN: no nickname found in ' + messageJson['actor'])
                 return False
             domain, port = getDomainFromActor(messageJson['actor'])
-            postFilename = locatePost(baseDir, nickname, domain,
+            postFilename = locatePost(base_dir, nickname, domain,
                                       messageJson['object']['object'])
             if postFilename:
                 undoAnnounceCollectionEntry(recentPostsCache,
-                                            baseDir, postFilename,
+                                            base_dir, postFilename,
                                             messageJson['actor'],
                                             domain, debug)
                 return True
@@ -115,7 +115,7 @@ def announcedByPerson(isAnnounced: bool, postActor: str,
     return False
 
 
-def createAnnounce(session, baseDir: str, federationList: [],
+def createAnnounce(session, base_dir: str, federationList: [],
                    nickname: str, domain: str, port: int,
                    toUrl: str, ccUrl: str, httpPrefix: str,
                    objectUrl: str, saveToFile: bool,
@@ -156,7 +156,7 @@ def createAnnounce(session, baseDir: str, federationList: [],
         if len(ccUrl) > 0:
             newAnnounce['cc'] = [ccUrl]
     if saveToFile:
-        outboxDir = createOutboxDir(nickname, domain, baseDir)
+        outboxDir = createOutboxDir(nickname, domain, base_dir)
         filename = outboxDir + '/' + newAnnounceId.replace('/', '#') + '.json'
         saveJson(newAnnounce, filename)
 
@@ -171,11 +171,11 @@ def createAnnounce(session, baseDir: str, federationList: [],
             announceActor = \
                 objectUrl.split('/' + announceNickname + '/')[0] + \
                 '/' + announceNickname
-            if hasGroupType(baseDir, announceActor, personCache):
+            if hasGroupType(base_dir, announceActor, personCache):
                 groupAccount = True
 
     if announceNickname and announceDomain:
-        sendSignedJson(newAnnounce, session, baseDir,
+        sendSignedJson(newAnnounce, session, base_dir,
                        nickname, domain, port,
                        announceNickname, announceDomain, announcePort, None,
                        httpPrefix, True, clientToServer, federationList,
@@ -186,7 +186,7 @@ def createAnnounce(session, baseDir: str, federationList: [],
     return newAnnounce
 
 
-def announcePublic(session, baseDir: str, federationList: [],
+def announcePublic(session, base_dir: str, federationList: [],
                    nickname: str, domain: str, port: int, httpPrefix: str,
                    objectUrl: str, clientToServer: bool,
                    sendThreads: [], postLog: [],
@@ -199,7 +199,7 @@ def announcePublic(session, baseDir: str, federationList: [],
 
     toUrl = 'https://www.w3.org/ns/activitystreams#Public'
     ccUrl = localActorUrl(httpPrefix, nickname, fromDomain) + '/followers'
-    return createAnnounce(session, baseDir, federationList,
+    return createAnnounce(session, base_dir, federationList,
                           nickname, domain, port,
                           toUrl, ccUrl, httpPrefix,
                           objectUrl, True, clientToServer,
@@ -209,7 +209,7 @@ def announcePublic(session, baseDir: str, federationList: [],
                           signingPrivateKeyPem)
 
 
-def sendAnnounceViaServer(baseDir: str, session,
+def sendAnnounceViaServer(base_dir: str, session,
                           fromNickname: str, password: str,
                           fromDomain: str, fromPort: int,
                           httpPrefix: str, repeatObjectUrl: str,
@@ -266,7 +266,7 @@ def sendAnnounceViaServer(baseDir: str, session,
      sharedInbox, avatarUrl,
      displayName, _) = getPersonBox(signingPrivateKeyPem,
                                     originDomain,
-                                    baseDir, session, wfRequest,
+                                    base_dir, session, wfRequest,
                                     personCache,
                                     projectVersion, httpPrefix,
                                     fromNickname, fromDomain,
@@ -301,7 +301,7 @@ def sendAnnounceViaServer(baseDir: str, session,
     return newAnnounceJson
 
 
-def sendUndoAnnounceViaServer(baseDir: str, session,
+def sendUndoAnnounceViaServer(base_dir: str, session,
                               undoPostJsonObject: {},
                               nickname: str, password: str,
                               domain: str, port: int,
@@ -351,7 +351,7 @@ def sendUndoAnnounceViaServer(baseDir: str, session,
      sharedInbox, avatarUrl,
      displayName, _) = getPersonBox(signingPrivateKeyPem,
                                     originDomain,
-                                    baseDir, session, wfRequest,
+                                    base_dir, session, wfRequest,
                                     personCache,
                                     projectVersion, httpPrefix,
                                     nickname, domain,
@@ -387,7 +387,7 @@ def sendUndoAnnounceViaServer(baseDir: str, session,
 
 
 def outboxUndoAnnounce(recentPostsCache: {},
-                       baseDir: str, httpPrefix: str,
+                       base_dir: str, httpPrefix: str,
                        nickname: str, domain: str, port: int,
                        messageJson: {}, debug: bool) -> None:
     """ When an undo announce is received by the outbox from c2s
@@ -409,13 +409,13 @@ def outboxUndoAnnounce(recentPostsCache: {},
 
     messageId = removeIdEnding(messageJson['object']['object'])
     domain = removeDomainPort(domain)
-    postFilename = locatePost(baseDir, nickname, domain, messageId)
+    postFilename = locatePost(base_dir, nickname, domain, messageId)
     if not postFilename:
         if debug:
             print('DEBUG: c2s undo announce post not found in inbox or outbox')
             print(messageId)
         return True
-    undoAnnounceCollectionEntry(recentPostsCache, baseDir, postFilename,
+    undoAnnounceCollectionEntry(recentPostsCache, base_dir, postFilename,
                                 messageJson['actor'], domain, debug)
     if debug:
         print('DEBUG: post undo announce via c2s - ' + postFilename)

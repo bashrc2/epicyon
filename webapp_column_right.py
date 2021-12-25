@@ -47,7 +47,7 @@ def _votesIndicator(totalVotes: int, positiveVoting: bool) -> str:
     return totalVotesStr
 
 
-def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
+def getRightColumnContent(base_dir: str, nickname: str, domainFull: str,
                           httpPrefix: str, translate: {},
                           moderator: bool, editor: bool,
                           newswire: {}, positiveVoting: bool,
@@ -95,7 +95,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
     editImageClass = ''
     if showHeaderImage:
         rightImageFile, rightColumnImageFilename = \
-            getRightImageFile(baseDir, nickname, domain, theme)
+            getRightImageFile(base_dir, nickname, domain, theme)
 
         # show the image at the top of the column
         editImageClass = 'rightColEdit'
@@ -128,7 +128,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
 
     # show the edit icon
     if editor:
-        if os.path.isfile(baseDir + '/accounts/newswiremoderation.txt'):
+        if os.path.isfile(base_dir + '/accounts/newswiremoderation.txt'):
             # show the edit icon highlighted
             htmlStr += \
                 '        <a href="' + \
@@ -196,7 +196,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
 
     # show the newswire lines
     newswireContentStr = \
-        _htmlNewswire(baseDir, newswire, nickname, moderator, translate,
+        _htmlNewswire(base_dir, newswire, nickname, moderator, translate,
                       positiveVoting)
     htmlStr += newswireContentStr
 
@@ -212,11 +212,11 @@ def _getBrokenFavSubstitute() -> str:
     return " onerror=\"this.onerror=null; this.src='/newswire_favicon.ico'\""
 
 
-def _htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
+def _htmlNewswire(base_dir: str, newswire: {}, nickname: str, moderator: bool,
                   translate: {}, positiveVoting: bool) -> str:
     """Converts a newswire dict into html
     """
-    separatorStr = htmlPostSeparator(baseDir, 'right')
+    separatorStr = htmlPostSeparator(base_dir, 'right')
     htmlStr = ''
     for dateStr, item in newswire.items():
         item[0] = removeHtml(item[0]).strip()
@@ -241,20 +241,20 @@ def _htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
         faviconUrl = getNewswireFaviconUrl(url)
         faviconLink = ''
         if faviconUrl:
-            cachedFaviconFilename = getFavFilenameFromUrl(baseDir, faviconUrl)
+            cachedFaviconFilename = getFavFilenameFromUrl(base_dir, faviconUrl)
             if os.path.isfile(cachedFaviconFilename):
                 faviconUrl = \
-                    cachedFaviconFilename.replace(baseDir, '')
+                    cachedFaviconFilename.replace(base_dir, '')
             else:
                 extensions = ('png', 'jpg', 'gif', 'avif', 'svg', 'webp')
                 for ext in extensions:
                     cachedFaviconFilename = \
-                        getFavFilenameFromUrl(baseDir, faviconUrl)
+                        getFavFilenameFromUrl(base_dir, faviconUrl)
                     cachedFaviconFilename = \
                         cachedFaviconFilename.replace('.ico', '.' + ext)
                     if os.path.isfile(cachedFaviconFilename):
                         faviconUrl = \
-                            cachedFaviconFilename.replace(baseDir, '')
+                            cachedFaviconFilename.replace(base_dir, '')
 
             faviconLink = \
                 '<img loading="lazy" src="' + faviconUrl + '" ' + \
@@ -326,7 +326,7 @@ def _htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
     return htmlStr
 
 
-def htmlCitations(baseDir: str, nickname: str, domain: str,
+def htmlCitations(base_dir: str, nickname: str, domain: str,
                   httpPrefix: str, defaultTimeline: str,
                   translate: {}, newswire: {}, cssCache: {},
                   blogTitle: str, blogContent: str,
@@ -341,7 +341,7 @@ def htmlCitations(baseDir: str, nickname: str, domain: str,
     # create a list of dates for citations
     # these can then be used to re-select checkboxes later
     citationsFilename = \
-        acctDir(baseDir, nickname, domain) + '/.citations.txt'
+        acctDir(base_dir, nickname, domain) + '/.citations.txt'
     citationsSelected = []
     if os.path.isfile(citationsFilename):
         citationsSeparator = '#####'
@@ -357,17 +357,17 @@ def htmlCitations(baseDir: str, nickname: str, domain: str,
                 citationsSelected.append(dateStr)
 
     # the css filename
-    cssFilename = baseDir + '/epicyon-profile.css'
-    if os.path.isfile(baseDir + '/epicyon.css'):
-        cssFilename = baseDir + '/epicyon.css'
+    cssFilename = base_dir + '/epicyon-profile.css'
+    if os.path.isfile(base_dir + '/epicyon.css'):
+        cssFilename = base_dir + '/epicyon.css'
 
     instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
+        getConfigParam(base_dir, 'instanceTitle')
     htmlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
 
     # top banner
     bannerFile, bannerFilename = \
-        getBannerFile(baseDir, nickname, domain, theme)
+        getBannerFile(base_dir, nickname, domain, theme)
     htmlStr += \
         '<a href="/users/' + nickname + '/newblog" title="' + \
         translate['Go Back'] + '" alt="' + \
@@ -442,7 +442,7 @@ def htmlCitations(baseDir: str, nickname: str, domain: str,
     return htmlStr + htmlFooter()
 
 
-def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
+def htmlNewswireMobile(cssCache: {}, base_dir: str, nickname: str,
                        domain: str, domainFull: str,
                        httpPrefix: str, translate: {},
                        newswire: {},
@@ -460,28 +460,28 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
     htmlStr = ''
 
     # the css filename
-    cssFilename = baseDir + '/epicyon-profile.css'
-    if os.path.isfile(baseDir + '/epicyon.css'):
-        cssFilename = baseDir + '/epicyon.css'
+    cssFilename = base_dir + '/epicyon-profile.css'
+    if os.path.isfile(base_dir + '/epicyon.css'):
+        cssFilename = base_dir + '/epicyon.css'
 
     if nickname == 'news':
         editor = False
         moderator = False
     else:
         # is the user a moderator?
-        moderator = isModerator(baseDir, nickname)
+        moderator = isModerator(base_dir, nickname)
 
         # is the user a site editor?
-        editor = isEditor(baseDir, nickname)
+        editor = isEditor(base_dir, nickname)
 
     showPublishButton = editor
 
     instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
+        getConfigParam(base_dir, 'instanceTitle')
     htmlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
 
     bannerFile, bannerFilename = \
-        getBannerFile(baseDir, nickname, domain, theme)
+        getBannerFile(base_dir, nickname, domain, theme)
     htmlStr += \
         '<a href="/users/' + nickname + '/' + defaultTimeline + '" ' + \
         'accesskey="' + accessKeys['menuTimeline'] + '">' + \
@@ -496,7 +496,7 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
                                  'newswire', authorized,
                                  iconsAsButtons) + '</center>'
     htmlStr += \
-        getRightColumnContent(baseDir, nickname, domainFull,
+        getRightColumnContent(base_dir, nickname, domainFull,
                               httpPrefix, translate,
                               moderator, editor,
                               newswire, positiveVoting,
@@ -516,7 +516,7 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
     return htmlStr
 
 
-def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
+def htmlEditNewswire(cssCache: {}, translate: {}, base_dir: str, path: str,
                      domain: str, port: int, httpPrefix: str,
                      defaultTimeline: str, theme: str,
                      accessKeys: {}) -> str:
@@ -532,19 +532,19 @@ def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
         return ''
 
     # is the user a moderator?
-    if not isModerator(baseDir, nickname):
+    if not isModerator(base_dir, nickname):
         return ''
 
-    cssFilename = baseDir + '/epicyon-links.css'
-    if os.path.isfile(baseDir + '/links.css'):
-        cssFilename = baseDir + '/links.css'
+    cssFilename = base_dir + '/epicyon-links.css'
+    if os.path.isfile(base_dir + '/links.css'):
+        cssFilename = base_dir + '/links.css'
 
     # filename of the banner shown at the top
     bannerFile, bannerFilename = \
-        getBannerFile(baseDir, nickname, domain, theme)
+        getBannerFile(base_dir, nickname, domain, theme)
 
     instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
+        getConfigParam(base_dir, 'instanceTitle')
     editNewswireForm = \
         htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
 
@@ -575,7 +575,7 @@ def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
     editNewswireForm += \
         '    </div>\n'
 
-    newswireFilename = baseDir + '/accounts/newswire.txt'
+    newswireFilename = base_dir + '/accounts/newswire.txt'
     newswireStr = ''
     if os.path.isfile(newswireFilename):
         with open(newswireFilename, 'r') as fp:
@@ -597,7 +597,7 @@ def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
 
     filterStr = ''
     filterFilename = \
-        baseDir + '/accounts/news@' + domain + '/filters.txt'
+        base_dir + '/accounts/news@' + domain + '/filters.txt'
     if os.path.isfile(filterFilename):
         with open(filterFilename, 'r') as filterfile:
             filterStr = filterfile.read()
@@ -613,7 +613,7 @@ def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
 
     hashtagRulesStr = ''
     hashtagRulesFilename = \
-        baseDir + '/accounts/hashtagrules.txt'
+        base_dir + '/accounts/hashtagrules.txt'
     if os.path.isfile(hashtagRulesFilename):
         with open(hashtagRulesFilename, 'r') as rulesfile:
             hashtagRulesStr = rulesfile.read()
@@ -638,7 +638,7 @@ def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
     return editNewswireForm
 
 
-def htmlEditNewsPost(cssCache: {}, translate: {}, baseDir: str, path: str,
+def htmlEditNewsPost(cssCache: {}, translate: {}, base_dir: str, path: str,
                      domain: str, port: int,
                      httpPrefix: str, postUrl: str,
                      systemLanguage: str) -> str:
@@ -653,23 +653,23 @@ def htmlEditNewsPost(cssCache: {}, translate: {}, baseDir: str, path: str,
         return ''
 
     # is the user an editor?
-    if not isEditor(baseDir, nickname):
+    if not isEditor(base_dir, nickname):
         return ''
 
     postUrl = postUrl.replace('/', '#')
-    postFilename = locatePost(baseDir, nickname, domain, postUrl)
+    postFilename = locatePost(base_dir, nickname, domain, postUrl)
     if not postFilename:
         return ''
     postJsonObject = loadJson(postFilename)
     if not postJsonObject:
         return ''
 
-    cssFilename = baseDir + '/epicyon-links.css'
-    if os.path.isfile(baseDir + '/links.css'):
-        cssFilename = baseDir + '/links.css'
+    cssFilename = base_dir + '/epicyon-links.css'
+    if os.path.isfile(base_dir + '/links.css'):
+        cssFilename = base_dir + '/links.css'
 
     instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
+        getConfigParam(base_dir, 'instanceTitle')
     editNewsPostForm = \
         htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     editNewsPostForm += \

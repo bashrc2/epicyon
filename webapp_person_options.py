@@ -32,7 +32,7 @@ from webapp_utils import htmlKeyboardNavigation
 
 
 def htmlPersonOptions(defaultTimeline: str,
-                      cssCache: {}, translate: {}, baseDir: str,
+                      cssCache: {}, translate: {}, base_dir: str,
                       domain: str, domainFull: str,
                       originPathStr: str,
                       optionsActor: str,
@@ -68,10 +68,10 @@ def htmlPersonOptions(defaultTimeline: str,
     optionsDomain, optionsPort = getDomainFromActor(optionsActor)
     optionsDomainFull = getFullDomain(optionsDomain, optionsPort)
 
-    if os.path.isfile(baseDir + '/accounts/options-background-custom.jpg'):
-        if not os.path.isfile(baseDir + '/accounts/options-background.jpg'):
-            copyfile(baseDir + '/accounts/options-background.jpg',
-                     baseDir + '/accounts/options-background.jpg')
+    if os.path.isfile(base_dir + '/accounts/options-background-custom.jpg'):
+        if not os.path.isfile(base_dir + '/accounts/options-background.jpg'):
+            copyfile(base_dir + '/accounts/options-background.jpg',
+                     base_dir + '/accounts/options-background.jpg')
 
     dormant = False
     followStr = 'Follow'
@@ -88,21 +88,21 @@ def htmlPersonOptions(defaultTimeline: str,
         if '?' in nickname:
             nickname = nickname.split('?')[0]
         followerDomain, followerPort = getDomainFromActor(optionsActor)
-        if isFollowingActor(baseDir, nickname, domain, optionsActor):
+        if isFollowingActor(base_dir, nickname, domain, optionsActor):
             followStr = 'Unfollow'
             if isGroup:
                 followStr = 'Leave'
             dormant = \
-                isDormant(baseDir, nickname, domain, optionsActor,
+                isDormant(base_dir, nickname, domain, optionsActor,
                           dormantMonths)
 
         optionsNickname = getNicknameFromActor(optionsActor)
         optionsDomainFull = getFullDomain(optionsDomain, optionsPort)
         followsYou = \
-            isFollowerOfPerson(baseDir,
+            isFollowerOfPerson(base_dir,
                                nickname, domain,
                                optionsNickname, optionsDomainFull)
-        if isBlocked(baseDir, nickname, domain,
+        if isBlocked(base_dir, nickname, domain,
                      optionsNickname, optionsDomainFull):
             blockStr = 'Block'
 
@@ -111,14 +111,14 @@ def htmlPersonOptions(defaultTimeline: str,
         optionsLinkStr = \
             '    <input type="hidden" name="postUrl" value="' + \
             optionsLink + '">\n'
-    cssFilename = baseDir + '/epicyon-options.css'
-    if os.path.isfile(baseDir + '/options.css'):
-        cssFilename = baseDir + '/options.css'
+    cssFilename = base_dir + '/epicyon-options.css'
+    if os.path.isfile(base_dir + '/options.css'):
+        cssFilename = base_dir + '/options.css'
 
     # To snooze, or not to snooze? That is the question
     snoozeButtonStr = 'Snooze'
     if nickname:
-        if isPersonSnoozed(baseDir, nickname, domain, optionsActor):
+        if isPersonSnoozed(base_dir, nickname, domain, optionsActor):
             snoozeButtonStr = 'Unsnooze'
 
     donateStr = ''
@@ -129,7 +129,7 @@ def htmlPersonOptions(defaultTimeline: str,
             translate['Donate'] + '</button></a>\n'
 
     instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
+        getConfigParam(base_dir, 'instanceTitle')
     optionsStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     optionsStr += htmlKeyboardNavigation(textModeBanner, {}, {})
     optionsStr += '<br><br>\n'
@@ -248,7 +248,7 @@ def htmlPersonOptions(defaultTimeline: str,
         if originPathStr == '/users/' + nickname:
             if optionsNickname:
                 # handle = optionsNickname + '@' + optionsDomainFull
-                petname = getPetName(baseDir, nickname, domain, handle)
+                petname = getPetName(base_dir, nickname, domain, handle)
                 optionsStr += \
                     '    ' + translate['Petname'] + ': \n' + \
                     '    <input type="text" name="optionpetname" value="' + \
@@ -259,7 +259,7 @@ def htmlPersonOptions(defaultTimeline: str,
                     translate['Submit'] + '</button><br>\n'
 
             # Notify when a post arrives from this person
-            if isFollowingActor(baseDir, nickname, domain, optionsActor):
+            if isFollowingActor(base_dir, nickname, domain, optionsActor):
                 checkboxStr = \
                     '    <input type="checkbox" class="profilecheckbox" ' + \
                     'name="notifyOnPost" checked> 🔔' + \
@@ -267,7 +267,7 @@ def htmlPersonOptions(defaultTimeline: str,
                     '\n    <button type="submit" class="buttonsmall" ' + \
                     'name="submitNotifyOnPost">' + \
                     translate['Submit'] + '</button><br>\n'
-                if not notifyWhenPersonPosts(baseDir, nickname, domain,
+                if not notifyWhenPersonPosts(base_dir, nickname, domain,
                                              optionsNickname,
                                              optionsDomainFull):
                     checkboxStr = checkboxStr.replace(' checked>', '>')
@@ -280,7 +280,7 @@ def htmlPersonOptions(defaultTimeline: str,
                     '\n    <button type="submit" class="buttonsmall" ' + \
                     'name="submitOnCalendar">' + \
                     translate['Submit'] + '</button><br>\n'
-                if not receivingCalendarEvents(baseDir, nickname, domain,
+                if not receivingCalendarEvents(base_dir, nickname, domain,
                                                optionsNickname,
                                                optionsDomainFull):
                     checkboxStr = checkboxStr.replace(' checked>', '>')
@@ -289,12 +289,12 @@ def htmlPersonOptions(defaultTimeline: str,
             # checkbox for permission to post to newswire
             newswirePostsPermitted = False
             if optionsDomainFull == domainFull:
-                adminNickname = getConfigParam(baseDir, 'admin')
+                adminNickname = getConfigParam(base_dir, 'admin')
                 if (nickname == adminNickname or
-                    (isModerator(baseDir, nickname) and
-                     not isModerator(baseDir, optionsNickname))):
+                    (isModerator(base_dir, nickname) and
+                     not isModerator(base_dir, optionsNickname))):
                     newswireBlockedFilename = \
-                        baseDir + '/accounts/' + \
+                        base_dir + '/accounts/' + \
                         optionsNickname + '@' + optionsDomain + '/.nonewswire'
                     checkboxStr = \
                         '    <input type="checkbox" ' + \
@@ -314,7 +314,7 @@ def htmlPersonOptions(defaultTimeline: str,
             # the newswire
             if newswirePostsPermitted:
                 moderatedFilename = \
-                    baseDir + '/accounts/' + \
+                    base_dir + '/accounts/' + \
                     optionsNickname + '@' + \
                     optionsDomain + '/.newswiremoderated'
                 checkboxStr = \
@@ -330,10 +330,10 @@ def htmlPersonOptions(defaultTimeline: str,
 
             # checkbox for permission to post to featured articles
             if newsInstance and optionsDomainFull == domainFull:
-                adminNickname = getConfigParam(baseDir, 'admin')
+                adminNickname = getConfigParam(base_dir, 'admin')
                 if (nickname == adminNickname or
-                    (isModerator(baseDir, nickname) and
-                     not isModerator(baseDir, optionsNickname))):
+                    (isModerator(base_dir, nickname) and
+                     not isModerator(base_dir, optionsNickname))):
                     checkboxStr = \
                         '    <input type="checkbox" ' + \
                         'class="profilecheckbox" ' + \
@@ -342,7 +342,7 @@ def htmlPersonOptions(defaultTimeline: str,
                         '\n    <button type="submit" class="buttonsmall" ' + \
                         'name="submitPostToFeatures">' + \
                         translate['Submit'] + '</button><br>\n'
-                    if not isFeaturedWriter(baseDir, optionsNickname,
+                    if not isFeaturedWriter(base_dir, optionsNickname,
                                             optionsDomain):
                         checkboxStr = checkboxStr.replace(' checked>', '>')
                     optionsStr += checkboxStr
@@ -396,7 +396,7 @@ def htmlPersonOptions(defaultTimeline: str,
             accessKeys['reportButton'] + '">' + \
             translate['Report'] + '</button>\n'
 
-        if isModerator(baseDir, nickname):
+        if isModerator(base_dir, nickname):
             optionsStr += \
                 '    <button type="submit" class="button" ' + \
                 'name="submitPersonInfo" accesskey="' + \
@@ -406,7 +406,7 @@ def htmlPersonOptions(defaultTimeline: str,
         personNotes = ''
         if originPathStr == '/users/' + nickname:
             personNotesFilename = \
-                acctDir(baseDir, nickname, domain) + \
+                acctDir(base_dir, nickname, domain) + \
                 '/notes/' + handle + '.txt'
             if os.path.isfile(personNotesFilename):
                 with open(personNotesFilename, 'r') as fp:

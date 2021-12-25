@@ -55,45 +55,46 @@ def htmlGetLoginCredentials(loginParams: str,
 
 
 def htmlLogin(cssCache: {}, translate: {},
-              baseDir: str,
+              base_dir: str,
               httpPrefix: str, domain: str,
               systemLanguage: str,
               autocomplete: bool) -> str:
     """Shows the login screen
     """
-    accounts = noOfAccounts(baseDir)
+    accounts = noOfAccounts(base_dir)
 
     loginImage = 'login.png'
     loginImageFilename = None
-    if os.path.isfile(baseDir + '/accounts/' + loginImage):
-        loginImageFilename = baseDir + '/accounts/' + loginImage
-    elif os.path.isfile(baseDir + '/accounts/login.jpg'):
+    if os.path.isfile(base_dir + '/accounts/' + loginImage):
+        loginImageFilename = base_dir + '/accounts/' + loginImage
+    elif os.path.isfile(base_dir + '/accounts/login.jpg'):
         loginImage = 'login.jpg'
-        loginImageFilename = baseDir + '/accounts/' + loginImage
-    elif os.path.isfile(baseDir + '/accounts/login.jpeg'):
+        loginImageFilename = base_dir + '/accounts/' + loginImage
+    elif os.path.isfile(base_dir + '/accounts/login.jpeg'):
         loginImage = 'login.jpeg'
-        loginImageFilename = baseDir + '/accounts/' + loginImage
-    elif os.path.isfile(baseDir + '/accounts/login.gif'):
+        loginImageFilename = base_dir + '/accounts/' + loginImage
+    elif os.path.isfile(base_dir + '/accounts/login.gif'):
         loginImage = 'login.gif'
-        loginImageFilename = baseDir + '/accounts/' + loginImage
-    elif os.path.isfile(baseDir + '/accounts/login.svg'):
+        loginImageFilename = base_dir + '/accounts/' + loginImage
+    elif os.path.isfile(base_dir + '/accounts/login.svg'):
         loginImage = 'login.svg'
-        loginImageFilename = baseDir + '/accounts/' + loginImage
-    elif os.path.isfile(baseDir + '/accounts/login.webp'):
+        loginImageFilename = base_dir + '/accounts/' + loginImage
+    elif os.path.isfile(base_dir + '/accounts/login.webp'):
         loginImage = 'login.webp'
-        loginImageFilename = baseDir + '/accounts/' + loginImage
-    elif os.path.isfile(baseDir + '/accounts/login.avif'):
+        loginImageFilename = base_dir + '/accounts/' + loginImage
+    elif os.path.isfile(base_dir + '/accounts/login.avif'):
         loginImage = 'login.avif'
-        loginImageFilename = baseDir + '/accounts/' + loginImage
+        loginImageFilename = base_dir + '/accounts/' + loginImage
 
     if not loginImageFilename:
-        loginImageFilename = baseDir + '/accounts/' + loginImage
-        copyfile(baseDir + '/img/login.png', loginImageFilename)
+        loginImageFilename = base_dir + '/accounts/' + loginImage
+        copyfile(base_dir + '/img/login.png', loginImageFilename)
 
-    textModeLogo = getTextModeLogo(baseDir)
+    textModeLogo = getTextModeLogo(base_dir)
     textModeLogoHtml = htmlKeyboardNavigation(textModeLogo, {}, {})
 
-    setCustomBackground(baseDir, 'login-background-custom', 'login-background')
+    setCustomBackground(base_dir, 'login-background-custom',
+                        'login-background')
 
     if accounts > 0:
         loginText = \
@@ -107,19 +108,19 @@ def htmlLogin(cssCache: {}, translate: {},
             '<p class="login-text">' + \
             translate['You will become the admin of this site.'] + \
             '</p>'
-    if os.path.isfile(baseDir + '/accounts/login.txt'):
+    if os.path.isfile(base_dir + '/accounts/login.txt'):
         # custom login message
-        with open(baseDir + '/accounts/login.txt', 'r') as file:
+        with open(base_dir + '/accounts/login.txt', 'r') as file:
             loginText = '<p class="login-text">' + file.read() + '</p>'
 
-    cssFilename = baseDir + '/epicyon-login.css'
-    if os.path.isfile(baseDir + '/login.css'):
-        cssFilename = baseDir + '/login.css'
+    cssFilename = base_dir + '/epicyon-login.css'
+    if os.path.isfile(base_dir + '/login.css'):
+        cssFilename = base_dir + '/login.css'
 
     # show the register button
     registerButtonStr = ''
-    if getConfigParam(baseDir, 'registration') == 'open':
-        if int(getConfigParam(baseDir, 'registrationsRemaining')) > 0:
+    if getConfigParam(base_dir, 'registration') == 'open':
+        if int(getConfigParam(base_dir, 'registrationsRemaining')) > 0:
             if accounts > 0:
                 idx = 'Welcome. Please login or register a new account.'
                 loginText = \
@@ -148,14 +149,14 @@ def htmlLogin(cssCache: {}, translate: {},
         autocompletePasswordStr = 'autocomplete="off" value=""'
 
     instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
+        getConfigParam(base_dir, 'instanceTitle')
     loginForm = \
         htmlHeaderWithWebsiteMarkup(cssFilename, instanceTitle,
                                     httpPrefix, domain,
                                     systemLanguage)
 
     nicknamePattern = getNicknameValidationPattern()
-    instanceTitle = getConfigParam(baseDir, 'instanceTitle')
+    instanceTitle = getConfigParam(base_dir, 'instanceTitle')
     loginForm += \
         '<br>\n' + \
         '<form method="POST" action="/login">\n' + \

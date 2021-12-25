@@ -40,7 +40,7 @@ def getBrokenLinkSubstitute() -> str:
         "/icons/avatar_default.png'\""
 
 
-def htmlFollowingList(cssCache: {}, baseDir: str,
+def htmlFollowingList(cssCache: {}, base_dir: str,
                       followingFilename: str) -> str:
     """Returns a list of handles being followed
     """
@@ -49,12 +49,12 @@ def htmlFollowingList(cssCache: {}, baseDir: str,
         followingList = msg.split('\n')
         followingList.sort()
         if followingList:
-            cssFilename = baseDir + '/epicyon-profile.css'
-            if os.path.isfile(baseDir + '/epicyon.css'):
-                cssFilename = baseDir + '/epicyon.css'
+            cssFilename = base_dir + '/epicyon-profile.css'
+            if os.path.isfile(base_dir + '/epicyon.css'):
+                cssFilename = base_dir + '/epicyon.css'
 
             instanceTitle = \
-                getConfigParam(baseDir, 'instanceTitle')
+                getConfigParam(base_dir, 'instanceTitle')
             followingListHtml = \
                 htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
             for followingAddress in followingList:
@@ -67,16 +67,16 @@ def htmlFollowingList(cssCache: {}, baseDir: str,
     return ''
 
 
-def htmlHashtagBlocked(cssCache: {}, baseDir: str, translate: {}) -> str:
+def htmlHashtagBlocked(cssCache: {}, base_dir: str, translate: {}) -> str:
     """Show the screen for a blocked hashtag
     """
     blockedHashtagForm = ''
-    cssFilename = baseDir + '/epicyon-suspended.css'
-    if os.path.isfile(baseDir + '/suspended.css'):
-        cssFilename = baseDir + '/suspended.css'
+    cssFilename = base_dir + '/epicyon-suspended.css'
+    if os.path.isfile(base_dir + '/suspended.css'):
+        cssFilename = base_dir + '/suspended.css'
 
     instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
+        getConfigParam(base_dir, 'instanceTitle')
     blockedHashtagForm = \
         htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     blockedHashtagForm += '<div><center>\n'
@@ -234,7 +234,7 @@ def setBlogAddress(actorJson: {}, blogAddress: str) -> None:
 
 
 def updateAvatarImageCache(signingPrivateKeyPem: str,
-                           session, baseDir: str, httpPrefix: str,
+                           session, base_dir: str, httpPrefix: str,
                            actor: str, avatarUrl: str,
                            personCache: {}, allowDownloads: bool,
                            force: bool = False, debug: bool = False) -> str:
@@ -243,7 +243,7 @@ def updateAvatarImageCache(signingPrivateKeyPem: str,
     if not avatarUrl:
         return None
     actorStr = actor.replace('/', '-')
-    avatarImagePath = baseDir + '/cache/avatars/' + actorStr
+    avatarImagePath = base_dir + '/cache/avatars/' + actorStr
 
     # try different image types
     imageFormats = {
@@ -291,7 +291,7 @@ def updateAvatarImageCache(signingPrivateKeyPem: str,
                     f.write(result.content)
                     if debug:
                         print('avatar image downloaded for ' + actor)
-                    return avatarImageFilename.replace(baseDir + '/cache', '')
+                    return avatarImageFilename.replace(base_dir + '/cache', '')
         except Exception as ex:
             print('EX: Failed to download avatar image: ' +
                   str(avatarUrl) + ' ' + str(ex))
@@ -324,19 +324,19 @@ def updateAvatarImageCache(signingPrivateKeyPem: str,
                       "public keys don't match when downloading actor for " +
                       actor)
                 return None
-            storePersonInCache(baseDir, actor, personJson, personCache,
+            storePersonInCache(base_dir, actor, personJson, personCache,
                                allowDownloads)
-            return getPersonAvatarUrl(baseDir, actor, personCache,
+            return getPersonAvatarUrl(base_dir, actor, personCache,
                                       allowDownloads)
         return None
-    return avatarImageFilename.replace(baseDir + '/cache', '')
+    return avatarImageFilename.replace(base_dir + '/cache', '')
 
 
-def scheduledPostsExist(baseDir: str, nickname: str, domain: str) -> bool:
+def scheduledPostsExist(base_dir: str, nickname: str, domain: str) -> bool:
     """Returns true if there are posts scheduled to be delivered
     """
     scheduleIndexFilename = \
-        acctDir(baseDir, nickname, domain) + '/schedule.index'
+        acctDir(base_dir, nickname, domain) + '/schedule.index'
     if not os.path.isfile(scheduleIndexFilename):
         return False
     if '#users#' in open(scheduleIndexFilename).read():
@@ -345,7 +345,7 @@ def scheduledPostsExist(baseDir: str, nickname: str, domain: str) -> bool:
 
 
 def sharesTimelineJson(actor: str, pageNumber: int, itemsPerPage: int,
-                       baseDir: str, domain: str, nickname: str,
+                       base_dir: str, domain: str, nickname: str,
                        maxSharesPerAccount: int,
                        sharedItemsFederatedDomains: [],
                        sharesFileType: str) -> ({}, bool):
@@ -354,11 +354,11 @@ def sharesTimelineJson(actor: str, pageNumber: int, itemsPerPage: int,
     by sharing a large number of things
     """
     allSharesJson = {}
-    for subdir, dirs, files in os.walk(baseDir + '/accounts'):
+    for subdir, dirs, files in os.walk(base_dir + '/accounts'):
         for handle in dirs:
             if not isAccountDir(handle):
                 continue
-            accountDir = baseDir + '/accounts/' + handle
+            accountDir = base_dir + '/accounts/' + handle
             sharesFilename = accountDir + '/' + sharesFileType + '.json'
             if not os.path.isfile(sharesFilename):
                 continue
@@ -368,7 +368,7 @@ def sharesTimelineJson(actor: str, pageNumber: int, itemsPerPage: int,
             accountNickname = handle.split('@')[0]
             # Don't include shared items from blocked accounts
             if accountNickname != nickname:
-                if isBlocked(baseDir, nickname, domain,
+                if isBlocked(base_dir, nickname, domain,
                              accountNickname, domain, None):
                     continue
             # actor who owns this share
@@ -385,9 +385,9 @@ def sharesTimelineJson(actor: str, pageNumber: int, itemsPerPage: int,
         break
     if sharedItemsFederatedDomains:
         if sharesFileType == 'shares':
-            catalogsDir = baseDir + '/cache/catalogs'
+            catalogsDir = base_dir + '/cache/catalogs'
         else:
-            catalogsDir = baseDir + '/cache/wantedItems'
+            catalogsDir = base_dir + '/cache/wantedItems'
         if os.path.isdir(catalogsDir):
             for subdir, dirs, files in os.walk(catalogsDir):
                 for f in files:
@@ -411,7 +411,7 @@ def sharesTimelineJson(actor: str, pageNumber: int, itemsPerPage: int,
                         shareActor = shareActor.replace('___', '://')
                         shareActor = shareActor.replace('--', '/')
                         shareNickname = getNicknameFromActor(shareActor)
-                        if isBlocked(baseDir, nickname, domain,
+                        if isBlocked(base_dir, nickname, domain,
                                      shareNickname, federatedDomain, None):
                             continue
                         item['actor'] = shareActor
@@ -466,7 +466,7 @@ def postContainsPublic(postJsonObject: {}) -> bool:
     return containsPublic
 
 
-def _getImageFile(baseDir: str, name: str, directory: str,
+def _getImageFile(base_dir: str, name: str, directory: str,
                   nickname: str, domain: str, theme: str) -> (str, str):
     """
     returns the filenames for an image with the given name
@@ -483,7 +483,7 @@ def _getImageFile(baseDir: str, name: str, directory: str,
             return bannerFile, bannerFilename
     # if not found then use the default image
     theme = 'default'
-    directory = baseDir + '/theme/' + theme
+    directory = base_dir + '/theme/' + theme
     for ext in bannerExtensions:
         bannerFileTest = name + '.' + ext
         bannerFilenameTest = directory + '/' + bannerFileTest
@@ -494,31 +494,31 @@ def _getImageFile(baseDir: str, name: str, directory: str,
     return bannerFile, bannerFilename
 
 
-def getBannerFile(baseDir: str,
+def getBannerFile(base_dir: str,
                   nickname: str, domain: str, theme: str) -> (str, str):
-    accountDir = acctDir(baseDir, nickname, domain)
-    return _getImageFile(baseDir, 'banner', accountDir,
+    accountDir = acctDir(base_dir, nickname, domain)
+    return _getImageFile(base_dir, 'banner', accountDir,
                          nickname, domain, theme)
 
 
-def getSearchBannerFile(baseDir: str,
+def getSearchBannerFile(base_dir: str,
                         nickname: str, domain: str, theme: str) -> (str, str):
-    accountDir = acctDir(baseDir, nickname, domain)
-    return _getImageFile(baseDir, 'search_banner', accountDir,
+    accountDir = acctDir(base_dir, nickname, domain)
+    return _getImageFile(base_dir, 'search_banner', accountDir,
                          nickname, domain, theme)
 
 
-def getLeftImageFile(baseDir: str,
+def getLeftImageFile(base_dir: str,
                      nickname: str, domain: str, theme: str) -> (str, str):
-    accountDir = acctDir(baseDir, nickname, domain)
-    return _getImageFile(baseDir, 'left_col_image', accountDir,
+    accountDir = acctDir(base_dir, nickname, domain)
+    return _getImageFile(base_dir, 'left_col_image', accountDir,
                          nickname, domain, theme)
 
 
-def getRightImageFile(baseDir: str,
+def getRightImageFile(base_dir: str,
                       nickname: str, domain: str, theme: str) -> (str, str):
-    accountDir = acctDir(baseDir, nickname, domain)
-    return _getImageFile(baseDir, 'right_col_image',
+    accountDir = acctDir(base_dir, nickname, domain)
+    return _getImageFile(base_dir, 'right_col_image',
                          accountDir, nickname, domain, theme)
 
 
@@ -856,7 +856,7 @@ def htmlFooter() -> str:
     return htmlStr
 
 
-def loadIndividualPostAsHtmlFromCache(baseDir: str,
+def loadIndividualPostAsHtmlFromCache(base_dir: str,
                                       nickname: str, domain: str,
                                       postJsonObject: {}) -> str:
     """If a cached html version of the given post exists then load it and
@@ -864,7 +864,7 @@ def loadIndividualPostAsHtmlFromCache(baseDir: str,
     This is much quicker than generating the html from the json object
     """
     cachedPostFilename = \
-        getCachedPostFilename(baseDir, nickname, domain, postJsonObject)
+        getCachedPostFilename(base_dir, nickname, domain, postJsonObject)
 
     postHtml = ''
     if not cachedPostFilename:
@@ -888,7 +888,7 @@ def loadIndividualPostAsHtmlFromCache(baseDir: str,
         return postHtml
 
 
-def addEmojiToDisplayName(session, baseDir: str, httpPrefix: str,
+def addEmojiToDisplayName(session, base_dir: str, httpPrefix: str,
                           nickname: str, domain: str,
                           displayName: str, inProfileName: bool) -> str:
     """Adds emoji icons to display names or CW on individual posts
@@ -900,7 +900,7 @@ def addEmojiToDisplayName(session, baseDir: str, httpPrefix: str,
     emojiTags = {}
 #    print('TAG: displayName before tags: ' + displayName)
     displayName = \
-        addHtmlTags(baseDir, httpPrefix,
+        addHtmlTags(base_dir, httpPrefix,
                     nickname, domain, displayName, [], emojiTags)
     displayName = displayName.replace('<p>', '').replace('</p>', '')
 #    print('TAG: displayName after tags: ' + displayName)
@@ -911,12 +911,12 @@ def addEmojiToDisplayName(session, baseDir: str, httpPrefix: str,
 #    print('TAG: emoji tags list: ' + str(emojiTagsList))
     if not inProfileName:
         displayName = \
-            replaceEmojiFromTags(session, baseDir,
+            replaceEmojiFromTags(session, base_dir,
                                  displayName, emojiTagsList, 'post header',
                                  False)
     else:
         displayName = \
-            replaceEmojiFromTags(session, baseDir,
+            replaceEmojiFromTags(session, base_dir,
                                  displayName, emojiTagsList, 'profile',
                                  False)
 #    print('TAG: displayName after tags 2: ' + displayName)
@@ -1199,16 +1199,17 @@ def getPostAttachmentsAsHtml(postJsonObject: {}, boxName: str, translate: {},
     return attachmentStr, galleryStr
 
 
-def htmlPostSeparator(baseDir: str, column: str) -> str:
+def htmlPostSeparator(base_dir: str, column: str) -> str:
     """Returns the html for a timeline post separator image
     """
-    theme = getConfigParam(baseDir, 'theme')
+    theme = getConfigParam(base_dir, 'theme')
     filename = 'separator.png'
     separatorClass = "postSeparatorImage"
     if column:
         separatorClass = "postSeparatorImage" + column.title()
         filename = 'separator_' + column + '.png'
-    separatorImageFilename = baseDir + '/theme/' + theme + '/icons/' + filename
+    separatorImageFilename = \
+        base_dir + '/theme/' + theme + '/icons/' + filename
     separatorStr = ''
     if os.path.isfile(separatorImageFilename):
         separatorStr = \
@@ -1230,7 +1231,7 @@ def htmlHighlightLabel(label: str, highlight: bool) -> str:
 
 
 def getAvatarImageUrl(session,
-                      baseDir: str, httpPrefix: str,
+                      base_dir: str, httpPrefix: str,
                       postActor: str, personCache: {},
                       avatarUrl: str, allowDownloads: bool,
                       signingPrivateKeyPem: str) -> str:
@@ -1239,16 +1240,16 @@ def getAvatarImageUrl(session,
     # get the avatar image url for the post actor
     if not avatarUrl:
         avatarUrl = \
-            getPersonAvatarUrl(baseDir, postActor, personCache,
+            getPersonAvatarUrl(base_dir, postActor, personCache,
                                allowDownloads)
         avatarUrl = \
             updateAvatarImageCache(signingPrivateKeyPem,
-                                   session, baseDir, httpPrefix,
+                                   session, base_dir, httpPrefix,
                                    postActor, avatarUrl, personCache,
                                    allowDownloads)
     else:
         updateAvatarImageCache(signingPrivateKeyPem,
-                               session, baseDir, httpPrefix,
+                               session, base_dir, httpPrefix,
                                postActor, avatarUrl, personCache,
                                allowDownloads)
 
@@ -1404,7 +1405,7 @@ def editTextArea(label: str, name: str, value: str,
     return text
 
 
-def htmlSearchResultShare(baseDir: str, sharedItem: {}, translate: {},
+def htmlSearchResultShare(base_dir: str, sharedItem: {}, translate: {},
                           httpPrefix: str, domainFull: str,
                           contactNickname: str, itemID: str,
                           actor: str, sharesFileType: str,
@@ -1468,10 +1469,10 @@ def htmlSearchResultShare(baseDir: str, sharedItem: {}, translate: {},
     nickname = getNicknameFromActor(actor)
     if actor.endswith('/users/' + contactNickname):
         showRemoveButton = True
-    elif isModerator(baseDir, nickname):
+    elif isModerator(base_dir, nickname):
         showRemoveButton = True
     else:
-        adminNickname = getConfigParam(baseDir, 'admin')
+        adminNickname = getConfigParam(base_dir, 'admin')
         if adminNickname:
             if actor.endswith('/users/' + adminNickname):
                 showRemoveButton = True
@@ -1491,7 +1492,7 @@ def htmlSearchResultShare(baseDir: str, sharedItem: {}, translate: {},
     return sharedItemsForm
 
 
-def htmlShowShare(baseDir: str, domain: str, nickname: str,
+def htmlShowShare(base_dir: str, domain: str, nickname: str,
                   httpPrefix: str, domainFull: str,
                   itemID: str, translate: {},
                   sharedItemsFederatedDomains: [],
@@ -1509,7 +1510,7 @@ def htmlShowShare(baseDir: str, domain: str, nickname: str,
     if '://' + domainFull + '/' in shareUrl:
         # shared item on this instance
         sharesFilename = \
-            acctDir(baseDir, contactNickname, domain) + '/' + \
+            acctDir(base_dir, contactNickname, domain) + '/' + \
             sharesFileType + '.json'
         if not os.path.isfile(sharesFilename):
             return None
@@ -1517,9 +1518,9 @@ def htmlShowShare(baseDir: str, domain: str, nickname: str,
     else:
         # federated shared item
         if sharesFileType == 'shares':
-            catalogsDir = baseDir + '/cache/catalogs'
+            catalogsDir = base_dir + '/cache/catalogs'
         else:
-            catalogsDir = baseDir + '/cache/wantedItems'
+            catalogsDir = base_dir + '/cache/wantedItems'
         if not os.path.isdir(catalogsDir):
             return None
         for subdir, dirs, files in os.walk(catalogsDir):
@@ -1548,7 +1549,7 @@ def htmlShowShare(baseDir: str, domain: str, nickname: str,
 
     # filename of the banner shown at the top
     bannerFile, bannerFilename = \
-        getBannerFile(baseDir, nickname, domain, theme)
+        getBannerFile(base_dir, nickname, domain, theme)
 
     shareStr = \
         '<header>\n' + \
@@ -1559,32 +1560,32 @@ def htmlShowShare(baseDir: str, domain: str, nickname: str,
         'src="/users/' + nickname + '/' + bannerFile + '" /></a>\n' + \
         '</header><br>\n'
     shareStr += \
-        htmlSearchResultShare(baseDir, sharedItem, translate, httpPrefix,
+        htmlSearchResultShare(base_dir, sharedItem, translate, httpPrefix,
                               domainFull, contactNickname, itemID,
                               actor, sharesFileType, category)
 
-    cssFilename = baseDir + '/epicyon-profile.css'
-    if os.path.isfile(baseDir + '/epicyon.css'):
-        cssFilename = baseDir + '/epicyon.css'
+    cssFilename = base_dir + '/epicyon-profile.css'
+    if os.path.isfile(base_dir + '/epicyon.css'):
+        cssFilename = base_dir + '/epicyon.css'
     instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
+        getConfigParam(base_dir, 'instanceTitle')
 
     return htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None) + \
         shareStr + htmlFooter()
 
 
-def setCustomBackground(baseDir: str, background: str,
+def setCustomBackground(base_dir: str, background: str,
                         newBackground: str) -> str:
     """Sets a custom background
     Returns the extension, if found
     """
     ext = 'jpg'
-    if os.path.isfile(baseDir + '/img/' + background + '.' + ext):
+    if os.path.isfile(base_dir + '/img/' + background + '.' + ext):
         if not newBackground:
             newBackground = background
-        if not os.path.isfile(baseDir + '/accounts/' +
+        if not os.path.isfile(base_dir + '/accounts/' +
                               newBackground + '.' + ext):
-            copyfile(baseDir + '/img/' + background + '.' + ext,
-                     baseDir + '/accounts/' + newBackground + '.' + ext)
+            copyfile(base_dir + '/img/' + background + '.' + ext,
+                     base_dir + '/accounts/' + newBackground + '.' + ext)
         return ext
     return None

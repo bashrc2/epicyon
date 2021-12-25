@@ -15,12 +15,12 @@ from utils import removeDomainPort
 from utils import acctDir
 
 
-def _clearRoleStatus(baseDir: str, role: str) -> None:
+def _clearRoleStatus(base_dir: str, role: str) -> None:
     """Removes role status from all accounts
     This could be slow if there are many users, but only happens
     rarely when roles are appointed or removed
     """
-    directory = os.fsencode(baseDir + '/accounts/')
+    directory = os.fsencode(base_dir + '/accounts/')
     for f in os.scandir(directory):
         f = f.name
         filename = os.fsdecode(f)
@@ -28,7 +28,7 @@ def _clearRoleStatus(baseDir: str, role: str) -> None:
             continue
         if not filename.endswith(".json"):
             continue
-        filename = os.path.join(baseDir + '/accounts/', filename)
+        filename = os.path.join(base_dir + '/accounts/', filename)
         if '"' + role + '"' not in open(filename).read():
             continue
         actorJson = loadJson(filename)
@@ -41,45 +41,45 @@ def _clearRoleStatus(baseDir: str, role: str) -> None:
             saveJson(actorJson, filename)
 
 
-def clearEditorStatus(baseDir: str) -> None:
+def clearEditorStatus(base_dir: str) -> None:
     """Removes editor status from all accounts
     This could be slow if there are many users, but only happens
     rarely when editors are appointed or removed
     """
-    _clearRoleStatus(baseDir, 'editor')
+    _clearRoleStatus(base_dir, 'editor')
 
 
-def clearCounselorStatus(baseDir: str) -> None:
+def clearCounselorStatus(base_dir: str) -> None:
     """Removes counselor status from all accounts
     This could be slow if there are many users, but only happens
     rarely when counselors are appointed or removed
     """
-    _clearRoleStatus(baseDir, 'editor')
+    _clearRoleStatus(base_dir, 'editor')
 
 
-def clearArtistStatus(baseDir: str) -> None:
+def clearArtistStatus(base_dir: str) -> None:
     """Removes artist status from all accounts
     This could be slow if there are many users, but only happens
     rarely when artists are appointed or removed
     """
-    _clearRoleStatus(baseDir, 'artist')
+    _clearRoleStatus(base_dir, 'artist')
 
 
-def clearModeratorStatus(baseDir: str) -> None:
+def clearModeratorStatus(base_dir: str) -> None:
     """Removes moderator status from all accounts
     This could be slow if there are many users, but only happens
     rarely when moderators are appointed or removed
     """
-    _clearRoleStatus(baseDir, 'moderator')
+    _clearRoleStatus(base_dir, 'moderator')
 
 
-def _addRole(baseDir: str, nickname: str, domain: str,
+def _addRole(base_dir: str, nickname: str, domain: str,
              roleFilename: str) -> None:
     """Adds a role nickname to the file.
     This is a file containing the nicknames of accounts having this role
     """
     domain = removeDomainPort(domain)
-    roleFile = baseDir + '/accounts/' + roleFilename
+    roleFile = base_dir + '/accounts/' + roleFilename
     if os.path.isfile(roleFile):
         # is this nickname already in the file?
         with open(roleFile, 'r') as f:
@@ -94,21 +94,21 @@ def _addRole(baseDir: str, nickname: str, domain: str,
                 roleNickname = roleNickname.strip('\n').strip('\r')
                 if len(roleNickname) < 2:
                     continue
-                if os.path.isdir(baseDir + '/accounts/' +
+                if os.path.isdir(base_dir + '/accounts/' +
                                  roleNickname + '@' + domain):
                     f.write(roleNickname + '\n')
     else:
         with open(roleFile, 'w+') as f:
-            accountDir = acctDir(baseDir, nickname, domain)
+            accountDir = acctDir(base_dir, nickname, domain)
             if os.path.isdir(accountDir):
                 f.write(nickname + '\n')
 
 
-def _removeRole(baseDir: str, nickname: str, roleFilename: str) -> None:
+def _removeRole(base_dir: str, nickname: str, roleFilename: str) -> None:
     """Removes a role nickname from the file.
     This is a file containing the nicknames of accounts having this role
     """
-    roleFile = baseDir + '/accounts/' + roleFilename
+    roleFile = base_dir + '/accounts/' + roleFilename
     if not os.path.isfile(roleFile):
         return
     with open(roleFile, 'r') as f:
@@ -223,7 +223,7 @@ def getActorRolesList(actorJson: {}) -> []:
     return rolesList
 
 
-def setRole(baseDir: str, nickname: str, domain: str,
+def setRole(base_dir: str, nickname: str, domain: str,
             role: str) -> bool:
     """Set a person's role
     Setting the role to an empty string or None will remove it
@@ -231,7 +231,7 @@ def setRole(baseDir: str, nickname: str, domain: str,
     # avoid giant strings
     if len(role) > 128:
         return False
-    actorFilename = acctDir(baseDir, nickname, domain) + '.json'
+    actorFilename = acctDir(base_dir, nickname, domain) + '.json'
     if not os.path.isfile(actorFilename):
         return False
 
@@ -251,7 +251,7 @@ def setRole(baseDir: str, nickname: str, domain: str,
         if role:
             # add the role
             if roleFiles.get(role):
-                _addRole(baseDir, nickname, domain, roleFiles[role])
+                _addRole(base_dir, nickname, domain, roleFiles[role])
             if role not in rolesList:
                 rolesList.append(role)
                 rolesList.sort()
@@ -260,7 +260,7 @@ def setRole(baseDir: str, nickname: str, domain: str,
         else:
             # remove the role
             if roleFiles.get(role):
-                _removeRole(baseDir, nickname, roleFiles[role])
+                _removeRole(base_dir, nickname, roleFiles[role])
             if role in rolesList:
                 rolesList.remove(role)
                 setRolesFromList(actorJson, rolesList)

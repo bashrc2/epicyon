@@ -39,7 +39,7 @@ def headerButtonsTimeline(defaultTimeline: str,
                           eventsButtonStr: str,
                           moderationButtonStr: str,
                           newPostButtonStr: str,
-                          baseDir: str,
+                          base_dir: str,
                           nickname: str, domain: str,
                           timelineStartTime,
                           newCalendarEvent: bool,
@@ -93,7 +93,7 @@ def headerButtonsTimeline(defaultTimeline: str,
             '</span></button></a>'
 
         repliesIndexFilename = \
-            acctDir(baseDir, nickname, domain) + '/tlreplies.index'
+            acctDir(base_dir, nickname, domain) + '/tlreplies.index'
         if os.path.isfile(repliesIndexFilename):
             tlStr += \
                 '<a href="' + usersPath + '/tlreplies" tabindex="-1">' + \
@@ -155,7 +155,7 @@ def headerButtonsTimeline(defaultTimeline: str,
         now = datetime.now()
         tomorrow = datetime.now() + timedelta(1)
         twodays = datetime.now() + timedelta(2)
-        if dayEventsCheck(baseDir, nickname, domain, now):
+        if dayEventsCheck(base_dir, nickname, domain, now):
             # happening today button
             if not iconsAsButtons:
                 happeningStr += \
@@ -172,7 +172,7 @@ def headerButtonsTimeline(defaultTimeline: str,
                     '<button class="button">' + \
                     translate['Happening Today'] + '</button></a>'
 
-        elif dayEventsCheck(baseDir, nickname, domain, tomorrow):
+        elif dayEventsCheck(base_dir, nickname, domain, tomorrow):
             # happening tomorrow button
             if not iconsAsButtons:
                 happeningStr += \
@@ -188,7 +188,7 @@ def headerButtonsTimeline(defaultTimeline: str,
                     '?day=' + str(tomorrow.day) + '" tabindex="-1">' + \
                     '<button class="button">' + \
                     translate['Happening Tomorrow'] + '</button></a>'
-        elif dayEventsCheck(baseDir, nickname, domain, twodays):
+        elif dayEventsCheck(base_dir, nickname, domain, twodays):
             if not iconsAsButtons:
                 happeningStr += \
                     '<a href="' + usersPath + \

@@ -452,7 +452,7 @@ def pgpLocalPublicKey() -> str:
     return extractPGPPublicKey(result.decode('utf-8'))
 
 
-def pgpPublicKeyUpload(baseDir: str, session,
+def pgpPublicKeyUpload(base_dir: str, session,
                        nickname: str, password: str,
                        domain: str, port: int,
                        httpPrefix: str,
@@ -577,7 +577,7 @@ def pgpPublicKeyUpload(baseDir: str, session,
     originDomain = domain
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
      displayName, _) = getPersonBox(signingPrivateKeyPem, originDomain,
-                                    baseDir, session, wfRequest, personCache,
+                                    base_dir, session, wfRequest, personCache,
                                     __version__, httpPrefix, nickname,
                                     domain, postToBox, 35725)
 

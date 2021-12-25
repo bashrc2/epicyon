@@ -45,7 +45,7 @@ def _removeEventFromTimeline(eventId: str, tlEventsFilename: str) -> None:
             print('EX: ERROR: unable to save events timeline')
 
 
-def saveEventPost(baseDir: str, handle: str, postId: str,
+def saveEventPost(base_dir: str, handle: str, postId: str,
                   eventJson: {}) -> bool:
     """Saves an event to the calendar and/or the events timeline
     If an event has extra fields, as per Mobilizon,
@@ -54,10 +54,10 @@ def saveEventPost(baseDir: str, handle: str, postId: str,
     See https://framagit.org/framasoft/mobilizon/-/blob/
     master/lib/federation/activity_stream/converter/event.ex
     """
-    if not os.path.isdir(baseDir + '/accounts/' + handle):
+    if not os.path.isdir(base_dir + '/accounts/' + handle):
         print('WARN: Account does not exist at ' +
-              baseDir + '/accounts/' + handle)
-    calendarPath = baseDir + '/accounts/' + handle + '/calendar'
+              base_dir + '/accounts/' + handle)
+    calendarPath = base_dir + '/accounts/' + handle + '/calendar'
     if not os.path.isdir(calendarPath):
         os.mkdir(calendarPath)
 
@@ -81,11 +81,11 @@ def saveEventPost(baseDir: str, handle: str, postId: str,
         print('Mobilizon type event')
         # if this is a full description of an event then save it
         # as a separate json file
-        eventsPath = baseDir + '/accounts/' + handle + '/events'
+        eventsPath = base_dir + '/accounts/' + handle + '/events'
         if not os.path.isdir(eventsPath):
             os.mkdir(eventsPath)
         eventsYearPath = \
-            baseDir + '/accounts/' + handle + '/events/' + str(eventYear)
+            base_dir + '/accounts/' + handle + '/events/' + str(eventYear)
         if not os.path.isdir(eventsYearPath):
             os.mkdir(eventsYearPath)
         eventId = str(eventYear) + '-' + eventTime.strftime("%m") + '-' + \
@@ -94,7 +94,7 @@ def saveEventPost(baseDir: str, handle: str, postId: str,
 
         saveJson(eventJson, eventFilename)
         # save to the events timeline
-        tlEventsFilename = baseDir + '/accounts/' + handle + '/events.txt'
+        tlEventsFilename = base_dir + '/accounts/' + handle + '/events.txt'
 
         if os.path.isfile(tlEventsFilename):
             _removeEventFromTimeline(eventId, tlEventsFilename)
@@ -138,7 +138,7 @@ def saveEventPost(baseDir: str, handle: str, postId: str,
 
     # create a file which will trigger a notification that
     # a new event has been added
-    calNotifyFilename = baseDir + '/accounts/' + handle + '/.newCalendar'
+    calNotifyFilename = base_dir + '/accounts/' + handle + '/.newCalendar'
     notifyStr = \
         '/calendar?year=' + str(eventYear) + '?month=' + \
         str(eventMonthNumber) + '?day=' + str(eventDayOfMonth)
@@ -173,7 +173,7 @@ def _isHappeningPost(postJsonObject: {}) -> bool:
     return True
 
 
-def getTodaysEvents(baseDir: str, nickname: str, domain: str,
+def getTodaysEvents(base_dir: str, nickname: str, domain: str,
                     currYear: int, currMonthNumber: int,
                     currDayOfMonth: int) -> {}:
     """Retrieves calendar events for today
@@ -194,7 +194,7 @@ def getTodaysEvents(baseDir: str, nickname: str, domain: str,
         dayNumber = currDayOfMonth
 
     calendarFilename = \
-        acctDir(baseDir, nickname, domain) + \
+        acctDir(base_dir, nickname, domain) + \
         '/calendar/' + str(year) + '/' + str(monthNumber) + '.txt'
     events = {}
     if not os.path.isfile(calendarFilename):
@@ -205,7 +205,7 @@ def getTodaysEvents(baseDir: str, nickname: str, domain: str,
     with open(calendarFilename, 'r') as eventsFile:
         for postId in eventsFile:
             postId = postId.replace('\n', '').replace('\r', '')
-            postFilename = locatePost(baseDir, nickname, domain, postId)
+            postFilename = locatePost(base_dir, nickname, domain, postId)
             if not postFilename:
                 recreateEventsFile = True
                 continue
@@ -262,7 +262,8 @@ def getTodaysEvents(baseDir: str, nickname: str, domain: str,
     return events
 
 
-def dayEventsCheck(baseDir: str, nickname: str, domain: str, currDate) -> bool:
+def dayEventsCheck(base_dir: str, nickname: str, domain: str,
+                   currDate) -> bool:
     """Are there calendar events for the given date?
     """
     year = currDate.year
@@ -270,7 +271,7 @@ def dayEventsCheck(baseDir: str, nickname: str, domain: str, currDate) -> bool:
     dayNumber = currDate.day
 
     calendarFilename = \
-        acctDir(baseDir, nickname, domain) + \
+        acctDir(base_dir, nickname, domain) + \
         '/calendar/' + str(year) + '/' + str(monthNumber) + '.txt'
     if not os.path.isfile(calendarFilename):
         return False
@@ -279,7 +280,7 @@ def dayEventsCheck(baseDir: str, nickname: str, domain: str, currDate) -> bool:
     with open(calendarFilename, 'r') as eventsFile:
         for postId in eventsFile:
             postId = postId.replace('\n', '').replace('\r', '')
-            postFilename = locatePost(baseDir, nickname, domain, postId)
+            postFilename = locatePost(base_dir, nickname, domain, postId)
             if not postFilename:
                 continue
 
@@ -311,7 +312,7 @@ def dayEventsCheck(baseDir: str, nickname: str, domain: str, currDate) -> bool:
     return eventsExist
 
 
-def getThisWeeksEvents(baseDir: str, nickname: str, domain: str) -> {}:
+def getThisWeeksEvents(base_dir: str, nickname: str, domain: str) -> {}:
     """Retrieves calendar events for this week
     Returns a dictionary indexed by day number of lists containing
     Event and Place activities
@@ -323,7 +324,7 @@ def getThisWeeksEvents(baseDir: str, nickname: str, domain: str) -> {}:
     monthNumber = now.month
 
     calendarFilename = \
-        acctDir(baseDir, nickname, domain) + \
+        acctDir(base_dir, nickname, domain) + \
         '/calendar/' + str(year) + '/' + str(monthNumber) + '.txt'
 
     events = {}
@@ -335,7 +336,7 @@ def getThisWeeksEvents(baseDir: str, nickname: str, domain: str) -> {}:
     with open(calendarFilename, 'r') as eventsFile:
         for postId in eventsFile:
             postId = postId.replace('\n', '').replace('\r', '')
-            postFilename = locatePost(baseDir, nickname, domain, postId)
+            postFilename = locatePost(base_dir, nickname, domain, postId)
             if not postFilename:
                 recreateEventsFile = True
                 continue
@@ -381,14 +382,14 @@ def getThisWeeksEvents(baseDir: str, nickname: str, domain: str) -> {}:
     return events
 
 
-def getCalendarEvents(baseDir: str, nickname: str, domain: str,
+def getCalendarEvents(base_dir: str, nickname: str, domain: str,
                       year: int, monthNumber: int) -> {}:
     """Retrieves calendar events
     Returns a dictionary indexed by day number of lists containing
     Event and Place activities
     """
     calendarFilename = \
-        acctDir(baseDir, nickname, domain) + \
+        acctDir(base_dir, nickname, domain) + \
         '/calendar/' + str(year) + '/' + str(monthNumber) + '.txt'
 
     events = {}
@@ -400,7 +401,7 @@ def getCalendarEvents(baseDir: str, nickname: str, domain: str,
     with open(calendarFilename, 'r') as eventsFile:
         for postId in eventsFile:
             postId = postId.replace('\n', '').replace('\r', '')
-            postFilename = locatePost(baseDir, nickname, domain, postId)
+            postFilename = locatePost(base_dir, nickname, domain, postId)
             if not postFilename:
                 recreateEventsFile = True
                 continue
@@ -448,12 +449,12 @@ def getCalendarEvents(baseDir: str, nickname: str, domain: str,
     return events
 
 
-def removeCalendarEvent(baseDir: str, nickname: str, domain: str,
+def removeCalendarEvent(base_dir: str, nickname: str, domain: str,
                         year: int, monthNumber: int, messageId: str) -> None:
     """Removes a calendar event
     """
     calendarFilename = \
-        acctDir(baseDir, nickname, domain) + \
+        acctDir(base_dir, nickname, domain) + \
         '/calendar/' + str(year) + '/' + str(monthNumber) + '.txt'
     if not os.path.isfile(calendarFilename):
         return

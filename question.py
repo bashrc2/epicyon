@@ -14,7 +14,7 @@ from utils import saveJson
 from utils import hasObjectDict
 
 
-def questionUpdateVotes(baseDir: str, nickname: str, domain: str,
+def questionUpdateVotes(base_dir: str, nickname: str, domain: str,
                         replyJson: {}) -> ({}, str):
     """ For a given reply update the votes on a question
     Returns the question json object if the vote totals were changed
@@ -30,7 +30,7 @@ def questionUpdateVotes(baseDir: str, nickname: str, domain: str,
     if not replyJson['object'].get('name'):
         return None, None
     inReplyTo = replyJson['object']['inReplyTo']
-    questionPostFilename = locatePost(baseDir, nickname, domain, inReplyTo)
+    questionPostFilename = locatePost(base_dir, nickname, domain, inReplyTo)
     if not questionPostFilename:
         return None, None
     questionJson = loadJson(questionPostFilename)

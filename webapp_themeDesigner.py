@@ -166,19 +166,19 @@ color_to_hex = {
 }
 
 
-def htmlThemeDesigner(cssCache: {}, baseDir: str,
+def htmlThemeDesigner(cssCache: {}, base_dir: str,
                       nickname: str, domain: str,
                       translate: {}, defaultTimeline: str,
                       themeName: str, accessKeys: {}) -> str:
     """Edit theme settings
     """
-    themeFilename = baseDir + '/theme/' + themeName + '/theme.json'
+    themeFilename = base_dir + '/theme/' + themeName + '/theme.json'
     themeJson = {}
     if os.path.isfile(themeFilename):
         themeJson = loadJson(themeFilename)
 
     # set custom theme parameters
-    customVariablesFile = baseDir + '/accounts/theme.json'
+    customVariablesFile = base_dir + '/accounts/theme.json'
     if os.path.isfile(customVariablesFile):
         customThemeParams = loadJson(customVariablesFile, 0)
         if customThemeParams:
@@ -186,16 +186,16 @@ def htmlThemeDesigner(cssCache: {}, baseDir: str,
                 themeJson[variableName] = value
 
     themeForm = ''
-    cssFilename = baseDir + '/epicyon-profile.css'
-    if os.path.isfile(baseDir + '/epicyon.css'):
-        cssFilename = baseDir + '/epicyon.css'
+    cssFilename = base_dir + '/epicyon-profile.css'
+    if os.path.isfile(base_dir + '/epicyon.css'):
+        cssFilename = base_dir + '/epicyon.css'
 
     instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
+        getConfigParam(base_dir, 'instanceTitle')
     themeForm = \
         htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     bannerFile, bannerFilename = \
-        getBannerFile(baseDir, nickname, domain, themeName)
+        getBannerFile(base_dir, nickname, domain, themeName)
     themeForm += \
         '<a href="/users/' + nickname + '/' + defaultTimeline + '" ' + \
         'accesskey="' + accessKeys['menuTimeline'] + '">' + \

@@ -74,7 +74,7 @@ class threadWithTrace(threading.Thread):
                                daemon=True)
 
 
-def removeDormantThreads(baseDir: str, threadsList: [], debug: bool,
+def removeDormantThreads(base_dir: str, threadsList: [], debug: bool,
                          timeoutMins: int) -> None:
     """Removes threads whose execution has completed
     """
@@ -143,7 +143,7 @@ def removeDormantThreads(baseDir: str, threadsList: [], debug: bool,
         return
 
     if debug:
-        sendLogFilename = baseDir + '/send.csv'
+        sendLogFilename = base_dir + '/send.csv'
         try:
             with open(sendLogFilename, 'a+') as logFile:
                 logFile.write(currTime.strftime("%Y-%m-%dT%H:%M:%SZ") +

@@ -23,7 +23,7 @@ from utils import hasActor
 from utils import hasObjectStringType
 
 
-def _createAcceptReject(baseDir: str, federationList: [],
+def _createAcceptReject(base_dir: str, federationList: [],
                         nickname: str, domain: str, port: int,
                         toUrl: str, ccUrl: str, httpPrefix: str,
                         objectJson: {}, acceptType: str) -> {}:
@@ -55,27 +55,27 @@ def _createAcceptReject(baseDir: str, federationList: [],
     return newAccept
 
 
-def createAccept(baseDir: str, federationList: [],
+def createAccept(base_dir: str, federationList: [],
                  nickname: str, domain: str, port: int,
                  toUrl: str, ccUrl: str, httpPrefix: str,
                  objectJson: {}) -> {}:
-    return _createAcceptReject(baseDir, federationList,
+    return _createAcceptReject(base_dir, federationList,
                                nickname, domain, port,
                                toUrl, ccUrl, httpPrefix,
                                objectJson, 'Accept')
 
 
-def createReject(baseDir: str, federationList: [],
+def createReject(base_dir: str, federationList: [],
                  nickname: str, domain: str, port: int,
                  toUrl: str, ccUrl: str, httpPrefix: str,
                  objectJson: {}) -> {}:
-    return _createAcceptReject(baseDir, federationList,
+    return _createAcceptReject(base_dir, federationList,
                                nickname, domain, port,
                                toUrl, ccUrl,
                                httpPrefix, objectJson, 'Reject')
 
 
-def _acceptFollow(baseDir: str, domain: str, messageJson: {},
+def _acceptFollow(base_dir: str, domain: str, messageJson: {},
                   federationList: [], debug: bool) -> None:
     """Receiving a follow Accept activity
     """
@@ -150,7 +150,7 @@ def _acceptFollow(baseDir: str, domain: str, messageJson: {},
 
     # has this person already been unfollowed?
     unfollowedFilename = \
-        acctDir(baseDir, nickname, acceptedDomainFull) + '/unfollowed.txt'
+        acctDir(base_dir, nickname, acceptedDomainFull) + '/unfollowed.txt'
     if os.path.isfile(unfollowedFilename):
         if followedNickname + '@' + followedDomainFull in \
            open(unfollowedFilename).read():
@@ -162,12 +162,12 @@ def _acceptFollow(baseDir: str, domain: str, messageJson: {},
             return
 
     # does the url path indicate that this is a group actor
-    groupAccount = hasGroupType(baseDir, followedActor, None, debug)
+    groupAccount = hasGroupType(base_dir, followedActor, None, debug)
     if debug:
         print('Accepted follow is a group: ' + str(groupAccount) +
-              ' ' + followedActor + ' ' + baseDir)
+              ' ' + followedActor + ' ' + base_dir)
 
-    if followPerson(baseDir,
+    if followPerson(base_dir,
                     nickname, acceptedDomainFull,
                     followedNickname, followedDomainFull,
                     federationList, debug, groupAccount):
@@ -181,7 +181,7 @@ def _acceptFollow(baseDir: str, domain: str, messageJson: {},
                   followedNickname + '@' + followedDomain)
 
 
-def receiveAcceptReject(session, baseDir: str,
+def receiveAcceptReject(session, base_dir: str,
                         httpPrefix: str, domain: str, port: int,
                         sendThreads: [], postLog: [], cachedWebfingers: {},
                         personCache: {}, messageJson: {}, federationList: [],
@@ -211,7 +211,7 @@ def receiveAcceptReject(session, baseDir: str,
                   ' does not contain a nickname. ' +
                   'Assuming single user instance.')
     # receive follow accept
-    _acceptFollow(baseDir, domain, messageJson, federationList, debug)
+    _acceptFollow(base_dir, domain, messageJson, federationList, debug)
     if debug:
         print('DEBUG: Uh, ' + messageJson['type'] + ', I guess')
     return True

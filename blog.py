@@ -39,7 +39,7 @@ from newswire import rss2Footer
 from cache import getPersonFromCache
 
 
-def _noOfBlogReplies(baseDir: str, httpPrefix: str, translate: {},
+def _noOfBlogReplies(base_dir: str, httpPrefix: str, translate: {},
                      nickname: str, domain: str, domainFull: str,
                      postId: str, depth=0) -> int:
     """Returns the number of replies on the post
@@ -54,7 +54,7 @@ def _noOfBlogReplies(baseDir: str, httpPrefix: str, translate: {},
     boxFound = False
     for postBox in tryPostBox:
         postFilename = \
-            acctDir(baseDir, nickname, domain) + '/' + postBox + '/' + \
+            acctDir(base_dir, nickname, domain) + '/' + postBox + '/' + \
             postId.replace('/', '#') + '.replies'
         if os.path.isfile(postFilename):
             boxFound = True
@@ -63,7 +63,7 @@ def _noOfBlogReplies(baseDir: str, httpPrefix: str, translate: {},
         # post may exist but has no replies
         for postBox in tryPostBox:
             postFilename = \
-                acctDir(baseDir, nickname, domain) + '/' + postBox + '/' + \
+                acctDir(base_dir, nickname, domain) + '/' + postBox + '/' + \
                 postId.replace('/', '#')
             if os.path.isfile(postFilename):
                 return 1
@@ -81,10 +81,10 @@ def _noOfBlogReplies(baseDir: str, httpPrefix: str, translate: {},
     for replyPostId in lines:
         replyPostId = replyPostId.replace('\n', '').replace('\r', '')
         replyPostId = replyPostId.replace('.json', '')
-        if locatePost(baseDir, nickname, domain, replyPostId):
+        if locatePost(base_dir, nickname, domain, replyPostId):
             replyPostId = replyPostId.replace('.replies', '')
             replies += \
-                1 + _noOfBlogReplies(baseDir, httpPrefix, translate,
+                1 + _noOfBlogReplies(base_dir, httpPrefix, translate,
                                      nickname, domain, domainFull,
                                      replyPostId, depth+1)
         else:
@@ -109,7 +109,7 @@ def _noOfBlogReplies(baseDir: str, httpPrefix: str, translate: {},
     return replies
 
 
-def _getBlogReplies(baseDir: str, httpPrefix: str, translate: {},
+def _getBlogReplies(base_dir: str, httpPrefix: str, translate: {},
                     nickname: str, domain: str, domainFull: str,
                     postId: str, depth=0) -> str:
     """Returns a string containing html blog posts
@@ -123,7 +123,7 @@ def _getBlogReplies(baseDir: str, httpPrefix: str, translate: {},
     boxFound = False
     for postBox in tryPostBox:
         postFilename = \
-            acctDir(baseDir, nickname, domain) + '/' + postBox + '/' + \
+            acctDir(base_dir, nickname, domain) + '/' + postBox + '/' + \
             postId.replace('/', '#') + '.replies'
         if os.path.isfile(postFilename):
             boxFound = True
@@ -132,10 +132,10 @@ def _getBlogReplies(baseDir: str, httpPrefix: str, translate: {},
         # post may exist but has no replies
         for postBox in tryPostBox:
             postFilename = \
-                acctDir(baseDir, nickname, domain) + '/' + postBox + '/' + \
+                acctDir(base_dir, nickname, domain) + '/' + postBox + '/' + \
                 postId.replace('/', '#') + '.json'
             if os.path.isfile(postFilename):
-                postFilename = acctDir(baseDir, nickname, domain) + \
+                postFilename = acctDir(base_dir, nickname, domain) + \
                     '/postcache/' + \
                     postId.replace('/', '#') + '.html'
                 if os.path.isfile(postFilename):
@@ -159,7 +159,7 @@ def _getBlogReplies(baseDir: str, httpPrefix: str, translate: {},
             replyPostId = replyPostId.replace('\n', '').replace('\r', '')
             replyPostId = replyPostId.replace('.json', '')
             replyPostId = replyPostId.replace('.replies', '')
-            postFilename = acctDir(baseDir, nickname, domain) + \
+            postFilename = acctDir(base_dir, nickname, domain) + \
                 '/postcache/' + \
                 replyPostId.replace('/', '#') + '.html'
             if not os.path.isfile(postFilename):
@@ -169,7 +169,7 @@ def _getBlogReplies(baseDir: str, httpPrefix: str, translate: {},
                     repliesStr += postFile.read() + '\n'
             except OSError:
                 print('EX: unable to read blog replies ' + postFilename)
-            rply = _getBlogReplies(baseDir, httpPrefix, translate,
+            rply = _getBlogReplies(base_dir, httpPrefix, translate,
                                    nickname, domain, domainFull,
                                    replyPostId, depth+1)
             if rply not in repliesStr:
@@ -186,7 +186,7 @@ def _getBlogReplies(baseDir: str, httpPrefix: str, translate: {},
 
 
 def _htmlBlogPostContent(debug: bool, session, authorized: bool,
-                         baseDir: str, httpPrefix: str, translate: {},
+                         base_dir: str, httpPrefix: str, translate: {},
                          nickname: str, domain: str, domainFull: str,
                          postJsonObject: {},
                          handle: str, restrictToDomain: bool,
@@ -266,7 +266,7 @@ def _htmlBlogPostContent(debug: bool, session, authorized: bool,
 
     personUrl = localActorUrl(httpPrefix, nickname, domainFull)
     actorJson = \
-        getPersonFromCache(baseDir, personUrl, personCache, False)
+        getPersonFromCache(base_dir, personUrl, personCache, False)
     languagesUnderstood = []
     if actorJson:
         languagesUnderstood = getActorLanguagesList(actorJson)
@@ -276,7 +276,7 @@ def _htmlBlogPostContent(debug: bool, session, authorized: bool,
         contentStr = addEmbeddedElements(translate, jsonContent,
                                          peertubeInstances)
         if postJsonObject['object'].get('tag'):
-            contentStr = replaceEmojiFromTags(session, baseDir, contentStr,
+            contentStr = replaceEmojiFromTags(session, base_dir, contentStr,
                                               postJsonObject['object']['tag'],
                                               'content', debug)
         if articleAdded:
@@ -313,7 +313,7 @@ def _htmlBlogPostContent(debug: bool, session, authorized: bool,
             '">' + translate['About the author'] + \
             '</a></p>\n'
 
-    replies = _noOfBlogReplies(baseDir, httpPrefix, translate,
+    replies = _noOfBlogReplies(base_dir, httpPrefix, translate,
                                nickname, domain, domainFull,
                                postJsonObject['object']['id'])
 
@@ -332,11 +332,11 @@ def _htmlBlogPostContent(debug: bool, session, authorized: bool,
     else:
         blogStr += blogSeparator + '<h1>' + translate['Replies'] + '</h1>\n'
         if not titleStr:
-            blogStr += _getBlogReplies(baseDir, httpPrefix, translate,
+            blogStr += _getBlogReplies(base_dir, httpPrefix, translate,
                                        nickname, domain, domainFull,
                                        postJsonObject['object']['id'])
         else:
-            blogRepliesStr = _getBlogReplies(baseDir, httpPrefix, translate,
+            blogRepliesStr = _getBlogReplies(base_dir, httpPrefix, translate,
                                              nickname, domain, domainFull,
                                              postJsonObject['object']['id'])
             blogStr += blogRepliesStr.replace('>' + titleStr + '<', '')
@@ -345,7 +345,7 @@ def _htmlBlogPostContent(debug: bool, session, authorized: bool,
 
 
 def _htmlBlogPostRSS2(authorized: bool,
-                      baseDir: str, httpPrefix: str, translate: {},
+                      base_dir: str, httpPrefix: str, translate: {},
                       nickname: str, domain: str, domainFull: str,
                       postJsonObject: {},
                       handle: str, restrictToDomain: bool,
@@ -378,7 +378,7 @@ def _htmlBlogPostRSS2(authorized: bool,
 
 
 def _htmlBlogPostRSS3(authorized: bool,
-                      baseDir: str, httpPrefix: str, translate: {},
+                      base_dir: str, httpPrefix: str, translate: {},
                       nickname: str, domain: str, domainFull: str,
                       postJsonObject: {},
                       handle: str, restrictToDomain: bool,
@@ -436,7 +436,7 @@ def _getSnippetFromBlogContent(postJsonObject: {}, systemLanguage: str) -> str:
 
 
 def htmlBlogPost(session, authorized: bool,
-                 baseDir: str, httpPrefix: str, translate: {},
+                 base_dir: str, httpPrefix: str, translate: {},
                  nickname: str, domain: str, domainFull: str,
                  postJsonObject: {},
                  peertubeInstances: [],
@@ -446,11 +446,11 @@ def htmlBlogPost(session, authorized: bool,
     """
     blogStr = ''
 
-    cssFilename = baseDir + '/epicyon-blog.css'
-    if os.path.isfile(baseDir + '/blog.css'):
-        cssFilename = baseDir + '/blog.css'
+    cssFilename = base_dir + '/epicyon-blog.css'
+    if os.path.isfile(base_dir + '/blog.css'):
+        cssFilename = base_dir + '/blog.css'
     instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
+        getConfigParam(base_dir, 'instanceTitle')
     published = postJsonObject['object']['published']
     modified = published
     if postJsonObject['object'].get('updated'):
@@ -467,7 +467,7 @@ def htmlBlogPost(session, authorized: bool,
                                        contentLicenseUrl)
     _htmlBlogRemoveCwButton(blogStr, translate)
 
-    blogStr += _htmlBlogPostContent(debug, session, authorized, baseDir,
+    blogStr += _htmlBlogPostContent(debug, session, authorized, base_dir,
                                     httpPrefix, translate,
                                     nickname, domain,
                                     domainFull, postJsonObject,
@@ -498,7 +498,7 @@ def htmlBlogPost(session, authorized: bool,
 
 
 def htmlBlogPage(authorized: bool, session,
-                 baseDir: str, httpPrefix: str, translate: {},
+                 base_dir: str, httpPrefix: str, translate: {},
                  nickname: str, domain: str, port: int,
                  noOfItems: int, pageNumber: int,
                  peertubeInstances: [], systemLanguage: str,
@@ -510,19 +510,19 @@ def htmlBlogPage(authorized: bool, session,
         return None
     blogStr = ''
 
-    cssFilename = baseDir + '/epicyon-profile.css'
-    if os.path.isfile(baseDir + '/epicyon.css'):
-        cssFilename = baseDir + '/epicyon.css'
+    cssFilename = base_dir + '/epicyon-profile.css'
+    if os.path.isfile(base_dir + '/epicyon.css'):
+        cssFilename = base_dir + '/epicyon.css'
     instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
+        getConfigParam(base_dir, 'instanceTitle')
     blogStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     _htmlBlogRemoveCwButton(blogStr, translate)
 
-    blogsIndex = acctDir(baseDir, nickname, domain) + '/tlblogs.index'
+    blogsIndex = acctDir(base_dir, nickname, domain) + '/tlblogs.index'
     if not os.path.isfile(blogsIndex):
         return blogStr + htmlFooter()
 
-    timelineJson = createBlogsTimeline(session, baseDir,
+    timelineJson = createBlogsTimeline(session, base_dir,
                                        nickname, domain, port,
                                        httpPrefix,
                                        noOfItems, False,
@@ -559,7 +559,7 @@ def htmlBlogPage(authorized: bool, session,
         if item['type'] != 'Create':
             continue
 
-        blogStr += _htmlBlogPostContent(debug, session, authorized, baseDir,
+        blogStr += _htmlBlogPostContent(debug, session, authorized, base_dir,
                                         httpPrefix, translate,
                                         nickname, domain,
                                         domainFull, item,
@@ -591,7 +591,7 @@ def htmlBlogPage(authorized: bool, session,
 
 
 def htmlBlogPageRSS2(authorized: bool, session,
-                     baseDir: str, httpPrefix: str, translate: {},
+                     base_dir: str, httpPrefix: str, translate: {},
                      nickname: str, domain: str, port: int,
                      noOfItems: int, pageNumber: int,
                      includeHeader: bool, systemLanguage: str) -> str:
@@ -608,14 +608,14 @@ def htmlBlogPageRSS2(authorized: bool, session,
         blogRSS2 = rss2Header(httpPrefix, nickname, domainFull,
                               'Blog', translate)
 
-    blogsIndex = acctDir(baseDir, nickname, domain) + '/tlblogs.index'
+    blogsIndex = acctDir(base_dir, nickname, domain) + '/tlblogs.index'
     if not os.path.isfile(blogsIndex):
         if includeHeader:
             return blogRSS2 + rss2Footer()
         else:
             return blogRSS2
 
-    timelineJson = createBlogsTimeline(session, baseDir,
+    timelineJson = createBlogsTimeline(session, base_dir,
                                        nickname, domain, port,
                                        httpPrefix,
                                        noOfItems, False,
@@ -633,7 +633,7 @@ def htmlBlogPageRSS2(authorized: bool, session,
                 continue
 
             blogRSS2 += \
-                _htmlBlogPostRSS2(authorized, baseDir,
+                _htmlBlogPostRSS2(authorized, base_dir,
                                   httpPrefix, translate,
                                   nickname, domain,
                                   domainFull, item,
@@ -646,7 +646,7 @@ def htmlBlogPageRSS2(authorized: bool, session,
 
 
 def htmlBlogPageRSS3(authorized: bool, session,
-                     baseDir: str, httpPrefix: str, translate: {},
+                     base_dir: str, httpPrefix: str, translate: {},
                      nickname: str, domain: str, port: int,
                      noOfItems: int, pageNumber: int,
                      systemLanguage: str) -> str:
@@ -660,11 +660,11 @@ def htmlBlogPageRSS3(authorized: bool, session,
 
     blogRSS3 = ''
 
-    blogsIndex = acctDir(baseDir, nickname, domain) + '/tlblogs.index'
+    blogsIndex = acctDir(base_dir, nickname, domain) + '/tlblogs.index'
     if not os.path.isfile(blogsIndex):
         return blogRSS3
 
-    timelineJson = createBlogsTimeline(session, baseDir,
+    timelineJson = createBlogsTimeline(session, base_dir,
                                        nickname, domain, port,
                                        httpPrefix,
                                        noOfItems, False,
@@ -679,7 +679,7 @@ def htmlBlogPageRSS3(authorized: bool, session,
                 continue
 
             blogRSS3 += \
-                _htmlBlogPostRSS3(authorized, baseDir,
+                _htmlBlogPostRSS3(authorized, base_dir,
                                   httpPrefix, translate,
                                   nickname, domain,
                                   domainFull, item,
@@ -689,15 +689,15 @@ def htmlBlogPageRSS3(authorized: bool, session,
     return blogRSS3
 
 
-def _noOfBlogAccounts(baseDir: str) -> int:
+def _noOfBlogAccounts(base_dir: str) -> int:
     """Returns the number of blog accounts
     """
     ctr = 0
-    for subdir, dirs, files in os.walk(baseDir + '/accounts'):
+    for subdir, dirs, files in os.walk(base_dir + '/accounts'):
         for acct in dirs:
             if not isAccountDir(acct):
                 continue
-            accountDir = os.path.join(baseDir + '/accounts', acct)
+            accountDir = os.path.join(base_dir + '/accounts', acct)
             blogsIndex = accountDir + '/tlblogs.index'
             if os.path.isfile(blogsIndex):
                 ctr += 1
@@ -705,14 +705,14 @@ def _noOfBlogAccounts(baseDir: str) -> int:
     return ctr
 
 
-def _singleBlogAccountNickname(baseDir: str) -> str:
+def _singleBlogAccountNickname(base_dir: str) -> str:
     """Returns the nickname of a single blog account
     """
-    for subdir, dirs, files in os.walk(baseDir + '/accounts'):
+    for subdir, dirs, files in os.walk(base_dir + '/accounts'):
         for acct in dirs:
             if not isAccountDir(acct):
                 continue
-            accountDir = os.path.join(baseDir + '/accounts', acct)
+            accountDir = os.path.join(base_dir + '/accounts', acct)
             blogsIndex = accountDir + '/tlblogs.index'
             if os.path.isfile(blogsIndex):
                 return acct.split('@')[0]
@@ -721,7 +721,7 @@ def _singleBlogAccountNickname(baseDir: str) -> str:
 
 
 def htmlBlogView(authorized: bool,
-                 session, baseDir: str, httpPrefix: str,
+                 session, base_dir: str, httpPrefix: str,
                  translate: {}, domain: str, port: int,
                  noOfItems: int,
                  peertubeInstances: [], systemLanguage: str,
@@ -730,29 +730,29 @@ def htmlBlogView(authorized: bool,
     """
     blogStr = ''
 
-    cssFilename = baseDir + '/epicyon-profile.css'
-    if os.path.isfile(baseDir + '/epicyon.css'):
-        cssFilename = baseDir + '/epicyon.css'
+    cssFilename = base_dir + '/epicyon-profile.css'
+    if os.path.isfile(base_dir + '/epicyon.css'):
+        cssFilename = base_dir + '/epicyon.css'
     instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
+        getConfigParam(base_dir, 'instanceTitle')
     blogStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
 
-    if _noOfBlogAccounts(baseDir) <= 1:
-        nickname = _singleBlogAccountNickname(baseDir)
+    if _noOfBlogAccounts(base_dir) <= 1:
+        nickname = _singleBlogAccountNickname(base_dir)
         if nickname:
             return htmlBlogPage(authorized, session,
-                                baseDir, httpPrefix, translate,
+                                base_dir, httpPrefix, translate,
                                 nickname, domain, port,
                                 noOfItems, 1, peertubeInstances,
                                 systemLanguage, personCache, debug)
 
     domainFull = getFullDomain(domain, port)
 
-    for subdir, dirs, files in os.walk(baseDir + '/accounts'):
+    for subdir, dirs, files in os.walk(base_dir + '/accounts'):
         for acct in dirs:
             if not isAccountDir(acct):
                 continue
-            accountDir = os.path.join(baseDir + '/accounts', acct)
+            accountDir = os.path.join(base_dir + '/accounts', acct)
             blogsIndex = accountDir + '/tlblogs.index'
             if os.path.isfile(blogsIndex):
                 blogStr += '<p class="blogaccount">'
@@ -766,14 +766,14 @@ def htmlBlogView(authorized: bool,
 
 
 def htmlEditBlog(mediaInstance: bool, translate: {},
-                 baseDir: str, httpPrefix: str,
+                 base_dir: str, httpPrefix: str,
                  path: str,
                  pageNumber: int,
                  nickname: str, domain: str,
                  postUrl: str, systemLanguage: str) -> str:
     """Edit a blog post after it was created
     """
-    postFilename = locatePost(baseDir, nickname, domain, postUrl)
+    postFilename = locatePost(base_dir, nickname, domain, postUrl)
     if not postFilename:
         print('Edit blog: Filename not found for ' + postUrl)
         return None
@@ -785,16 +785,16 @@ def htmlEditBlog(mediaInstance: bool, translate: {},
 
     editBlogText = '<h1">' + translate['Write your post text below.'] + '</h1>'
 
-    if os.path.isfile(baseDir + '/accounts/newpost.txt'):
+    if os.path.isfile(base_dir + '/accounts/newpost.txt'):
         try:
-            with open(baseDir + '/accounts/newpost.txt', 'r') as file:
+            with open(base_dir + '/accounts/newpost.txt', 'r') as file:
                 editBlogText = '<p>' + file.read() + '</p>'
         except OSError:
-            print('EX: unable to read ' + baseDir + '/accounts/newpost.txt')
+            print('EX: unable to read ' + base_dir + '/accounts/newpost.txt')
 
-    cssFilename = baseDir + '/epicyon-profile.css'
-    if os.path.isfile(baseDir + '/epicyon.css'):
-        cssFilename = baseDir + '/epicyon.css'
+    cssFilename = base_dir + '/epicyon-profile.css'
+    if os.path.isfile(base_dir + '/epicyon.css'):
+        cssFilename = base_dir + '/epicyon.css'
 
     if '?' in path:
         path = path.split('?')[0]
@@ -840,7 +840,7 @@ def htmlEditBlog(mediaInstance: bool, translate: {},
     dateAndLocation += '</div>'
 
     instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
+        getConfigParam(base_dir, 'instanceTitle')
     editBlogForm = \
         htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
 
@@ -910,7 +910,7 @@ def htmlEditBlog(mediaInstance: bool, translate: {},
     return editBlogForm
 
 
-def pathContainsBlogLink(baseDir: str,
+def pathContainsBlogLink(base_dir: str,
                          httpPrefix: str, domain: str,
                          domainFull: str, path: str) -> (str, str):
     """If the path contains a blog entry then return its filename
@@ -930,14 +930,14 @@ def pathContainsBlogLink(baseDir: str,
     if not userEnding2[1].isdigit():
         return None, None
     # check for blog posts
-    blogIndexFilename = acctDir(baseDir, nickname, domain) + '/tlblogs.index'
+    blogIndexFilename = acctDir(base_dir, nickname, domain) + '/tlblogs.index'
     if not os.path.isfile(blogIndexFilename):
         return None, None
     if '#' + userEnding2[1] + '.' not in open(blogIndexFilename).read():
         return None, None
     messageId = localActorUrl(httpPrefix, nickname, domainFull) + \
         '/statuses/' + userEnding2[1]
-    return locatePost(baseDir, nickname, domain, messageId), nickname
+    return locatePost(base_dir, nickname, domain, messageId), nickname
 
 
 def getBlogAddress(actorJson: {}) -> str:

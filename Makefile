@@ -29,5 +29,6 @@ clean:
 	rm -f scripts/*~
 	rm -f deploy/*~
 	rm -f translations/*~
+	rm -f flycheck_*
 	rm -rf __pycache__
 	rm -f calendar.css blog.css epicyon.css follow.css login.css options.css search.css suspended.css

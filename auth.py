@@ -83,7 +83,7 @@ def createBasicAuthHeader(nickname: str, password: str) -> str:
     return 'Basic ' + base64.b64encode(authStr.encode('utf-8')).decode('utf-8')
 
 
-def authorizeBasic(baseDir: str, path: str, authHeader: str,
+def authorizeBasic(base_dir: str, path: str, authHeader: str,
                    debug: bool) -> bool:
     """HTTP basic auth
     """
@@ -126,7 +126,7 @@ def authorizeBasic(baseDir: str, path: str, authHeader: str,
                   ') does not match the one in the Authorization header (' +
                   nickname + ')')
         return False
-    passwordFile = baseDir + '/accounts/passwords'
+    passwordFile = base_dir + '/accounts/passwords'
     if not os.path.isfile(passwordFile):
         if debug:
             print('DEBUG: passwords file missing')
@@ -152,7 +152,7 @@ def authorizeBasic(baseDir: str, path: str, authHeader: str,
     return False
 
 
-def storeBasicCredentials(baseDir: str, nickname: str, password: str) -> bool:
+def storeBasicCredentials(base_dir: str, nickname: str, password: str) -> bool:
     """Stores login credentials to a file
     """
     if ':' in nickname or ':' in password:
@@ -160,10 +160,10 @@ def storeBasicCredentials(baseDir: str, nickname: str, password: str) -> bool:
     nickname = nickname.replace('\n', '').replace('\r', '').strip()
     password = password.replace('\n', '').replace('\r', '').strip()
 
-    if not os.path.isdir(baseDir + '/accounts'):
-        os.mkdir(baseDir + '/accounts')
+    if not os.path.isdir(base_dir + '/accounts'):
+        os.mkdir(base_dir + '/accounts')
 
-    passwordFile = baseDir + '/accounts/passwords'
+    passwordFile = base_dir + '/accounts/passwords'
     storeStr = nickname + ':' + _hashPassword(password)
     if os.path.isfile(passwordFile):
         if nickname + ':' in open(passwordFile).read():
@@ -203,11 +203,11 @@ def storeBasicCredentials(baseDir: str, nickname: str, password: str) -> bool:
     return True
 
 
-def removePassword(baseDir: str, nickname: str) -> None:
+def removePassword(base_dir: str, nickname: str) -> None:
     """Removes the password entry for the given nickname
     This is called during account removal
     """
-    passwordFile = baseDir + '/accounts/passwords'
+    passwordFile = base_dir + '/accounts/passwords'
     if os.path.isfile(passwordFile):
         try:
             with open(passwordFile, 'r') as fin:
@@ -226,11 +226,11 @@ def removePassword(baseDir: str, nickname: str) -> None:
             return
 
 
-def authorize(baseDir: str, path: str, authHeader: str, debug: bool) -> bool:
+def authorize(base_dir: str, path: str, authHeader: str, debug: bool) -> bool:
     """Authorize using http header
     """
     if authHeader.lower().startswith('basic '):
-        return authorizeBasic(baseDir, path, authHeader, debug)
+        return authorizeBasic(base_dir, path, authHeader, debug)
     return False
 
 
@@ -240,7 +240,7 @@ def createPassword(length: int):
     return ''.join((secrets.choice(validChars) for i in range(length)))
 
 
-def recordLoginFailure(baseDir: str, ipAddress: str,
+def recordLoginFailure(base_dir: str, ipAddress: str,
                        countDict: {}, failTime: int,
                        logToFile: bool) -> None:
     """Keeps ip addresses and the number of times login failures
@@ -271,7 +271,7 @@ def recordLoginFailure(baseDir: str, ipAddress: str,
     if not logToFile:
         return
 
-    failureLog = baseDir + '/accounts/loginfailures.log'
+    failureLog = base_dir + '/accounts/loginfailures.log'
     writeType = 'a+'
     if not os.path.isfile(failureLog):
         writeType = 'w+'

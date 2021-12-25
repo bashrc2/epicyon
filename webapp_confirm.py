@@ -26,7 +26,7 @@ from webapp_post import individualPostAsHtml
 def htmlConfirmDelete(cssCache: {},
                       recentPostsCache: {}, maxRecentPosts: int,
                       translate, pageNumber: int,
-                      session, baseDir: str, messageId: str,
+                      session, base_dir: str, messageId: str,
                       httpPrefix: str, projectVersion: str,
                       cachedWebfingers: {}, personCache: {},
                       callingDomain: str,
@@ -47,7 +47,7 @@ def htmlConfirmDelete(cssCache: {},
     domain, port = getDomainFromActor(actor)
     domainFull = getFullDomain(domain, port)
 
-    postFilename = locatePost(baseDir, nickname, domain, messageId)
+    postFilename = locatePost(base_dir, nickname, domain, messageId)
     if not postFilename:
         return None
 
@@ -56,19 +56,19 @@ def htmlConfirmDelete(cssCache: {},
         return None
 
     deletePostStr = None
-    cssFilename = baseDir + '/epicyon-profile.css'
-    if os.path.isfile(baseDir + '/epicyon.css'):
-        cssFilename = baseDir + '/epicyon.css'
+    cssFilename = base_dir + '/epicyon-profile.css'
+    if os.path.isfile(base_dir + '/epicyon.css'):
+        cssFilename = base_dir + '/epicyon.css'
 
     instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
+        getConfigParam(base_dir, 'instanceTitle')
     deletePostStr = \
         htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     deletePostStr += \
         individualPostAsHtml(signingPrivateKeyPem,
                              True, recentPostsCache, maxRecentPosts,
                              translate, pageNumber,
-                             baseDir, session, cachedWebfingers, personCache,
+                             base_dir, session, cachedWebfingers, personCache,
                              nickname, domain, port, postJsonObject,
                              None, True, False,
                              httpPrefix, projectVersion, 'outbox',
@@ -105,7 +105,7 @@ def htmlConfirmDelete(cssCache: {},
     return deletePostStr
 
 
-def htmlConfirmRemoveSharedItem(cssCache: {}, translate: {}, baseDir: str,
+def htmlConfirmRemoveSharedItem(cssCache: {}, translate: {}, base_dir: str,
                                 actor: str, itemID: str,
                                 callingDomain: str,
                                 sharesFileType: str) -> str:
@@ -115,7 +115,7 @@ def htmlConfirmRemoveSharedItem(cssCache: {}, translate: {}, baseDir: str,
     domain, port = getDomainFromActor(actor)
     domainFull = getFullDomain(domain, port)
     sharesFile = \
-        acctDir(baseDir, nickname, domain) + '/' + sharesFileType + '.json'
+        acctDir(base_dir, nickname, domain) + '/' + sharesFileType + '.json'
     if not os.path.isfile(sharesFile):
         print('ERROR: no ' + sharesFileType + ' file ' + sharesFile)
         return None
@@ -131,13 +131,13 @@ def htmlConfirmRemoveSharedItem(cssCache: {}, translate: {}, baseDir: str,
     if sharesJson[itemID].get('imageUrl'):
         sharedItemImageUrl = sharesJson[itemID]['imageUrl']
 
-    setCustomBackground(baseDir, 'shares-background', 'follow-background')
+    setCustomBackground(base_dir, 'shares-background', 'follow-background')
 
-    cssFilename = baseDir + '/epicyon-follow.css'
-    if os.path.isfile(baseDir + '/follow.css'):
-        cssFilename = baseDir + '/follow.css'
+    cssFilename = base_dir + '/epicyon-follow.css'
+    if os.path.isfile(base_dir + '/follow.css'):
+        cssFilename = base_dir + '/follow.css'
 
-    instanceTitle = getConfigParam(baseDir, 'instanceTitle')
+    instanceTitle = getConfigParam(base_dir, 'instanceTitle')
     sharesStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     sharesStr += '<div class="follow">\n'
     sharesStr += '  <div class="followAvatar">\n'
@@ -173,7 +173,7 @@ def htmlConfirmRemoveSharedItem(cssCache: {}, translate: {}, baseDir: str,
     return sharesStr
 
 
-def htmlConfirmFollow(cssCache: {}, translate: {}, baseDir: str,
+def htmlConfirmFollow(cssCache: {}, translate: {}, base_dir: str,
                       originPathStr: str,
                       followActor: str,
                       followProfileUrl: str) -> str:
@@ -181,16 +181,16 @@ def htmlConfirmFollow(cssCache: {}, translate: {}, baseDir: str,
     """
     followDomain, port = getDomainFromActor(followActor)
 
-    if os.path.isfile(baseDir + '/accounts/follow-background-custom.jpg'):
-        if not os.path.isfile(baseDir + '/accounts/follow-background.jpg'):
-            copyfile(baseDir + '/accounts/follow-background-custom.jpg',
-                     baseDir + '/accounts/follow-background.jpg')
+    if os.path.isfile(base_dir + '/accounts/follow-background-custom.jpg'):
+        if not os.path.isfile(base_dir + '/accounts/follow-background.jpg'):
+            copyfile(base_dir + '/accounts/follow-background-custom.jpg',
+                     base_dir + '/accounts/follow-background.jpg')
 
-    cssFilename = baseDir + '/epicyon-follow.css'
-    if os.path.isfile(baseDir + '/follow.css'):
-        cssFilename = baseDir + '/follow.css'
+    cssFilename = base_dir + '/epicyon-follow.css'
+    if os.path.isfile(base_dir + '/follow.css'):
+        cssFilename = base_dir + '/follow.css'
 
-    instanceTitle = getConfigParam(baseDir, 'instanceTitle')
+    instanceTitle = getConfigParam(base_dir, 'instanceTitle')
     followStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     followStr += '<div class="follow">\n'
     followStr += '  <div class="followAvatar">\n'
@@ -218,7 +218,7 @@ def htmlConfirmFollow(cssCache: {}, translate: {}, baseDir: str,
     return followStr
 
 
-def htmlConfirmUnfollow(cssCache: {}, translate: {}, baseDir: str,
+def htmlConfirmUnfollow(cssCache: {}, translate: {}, base_dir: str,
                         originPathStr: str,
                         followActor: str,
                         followProfileUrl: str) -> str:
@@ -226,16 +226,16 @@ def htmlConfirmUnfollow(cssCache: {}, translate: {}, baseDir: str,
     """
     followDomain, port = getDomainFromActor(followActor)
 
-    if os.path.isfile(baseDir + '/accounts/follow-background-custom.jpg'):
-        if not os.path.isfile(baseDir + '/accounts/follow-background.jpg'):
-            copyfile(baseDir + '/accounts/follow-background-custom.jpg',
-                     baseDir + '/accounts/follow-background.jpg')
+    if os.path.isfile(base_dir + '/accounts/follow-background-custom.jpg'):
+        if not os.path.isfile(base_dir + '/accounts/follow-background.jpg'):
+            copyfile(base_dir + '/accounts/follow-background-custom.jpg',
+                     base_dir + '/accounts/follow-background.jpg')
 
-    cssFilename = baseDir + '/epicyon-follow.css'
-    if os.path.isfile(baseDir + '/follow.css'):
-        cssFilename = baseDir + '/follow.css'
+    cssFilename = base_dir + '/epicyon-follow.css'
+    if os.path.isfile(base_dir + '/follow.css'):
+        cssFilename = base_dir + '/follow.css'
 
-    instanceTitle = getConfigParam(baseDir, 'instanceTitle')
+    instanceTitle = getConfigParam(base_dir, 'instanceTitle')
     followStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     followStr += '<div class="follow">\n'
     followStr += '  <div class="followAvatar">\n'
@@ -264,7 +264,7 @@ def htmlConfirmUnfollow(cssCache: {}, translate: {}, baseDir: str,
     return followStr
 
 
-def htmlConfirmUnblock(cssCache: {}, translate: {}, baseDir: str,
+def htmlConfirmUnblock(cssCache: {}, translate: {}, base_dir: str,
                        originPathStr: str,
                        blockActor: str,
                        blockProfileUrl: str) -> str:
@@ -272,13 +272,13 @@ def htmlConfirmUnblock(cssCache: {}, translate: {}, baseDir: str,
     """
     blockDomain, port = getDomainFromActor(blockActor)
 
-    setCustomBackground(baseDir, 'block-background', 'follow-background')
+    setCustomBackground(base_dir, 'block-background', 'follow-background')
 
-    cssFilename = baseDir + '/epicyon-follow.css'
-    if os.path.isfile(baseDir + '/follow.css'):
-        cssFilename = baseDir + '/follow.css'
+    cssFilename = base_dir + '/epicyon-follow.css'
+    if os.path.isfile(base_dir + '/follow.css'):
+        cssFilename = base_dir + '/follow.css'
 
-    instanceTitle = getConfigParam(baseDir, 'instanceTitle')
+    instanceTitle = getConfigParam(base_dir, 'instanceTitle')
     blockStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     blockStr += '<div class="block">\n'
     blockStr += '  <div class="blockAvatar">\n'

@@ -17,11 +17,11 @@ from utils import getFileCaseInsensitive
 from utils import getUserPaths
 
 
-def _removePersonFromCache(baseDir: str, personUrl: str,
+def _removePersonFromCache(base_dir: str, personUrl: str,
                            personCache: {}) -> bool:
     """Removes an actor from the cache
     """
-    cacheFilename = baseDir + '/cache/actors/' + \
+    cacheFilename = base_dir + '/cache/actors/' + \
         personUrl.replace('/', '#') + '.json'
     if os.path.isfile(cacheFilename):
         try:
@@ -32,7 +32,7 @@ def _removePersonFromCache(baseDir: str, personUrl: str,
         del personCache[personUrl]
 
 
-def checkForChangedActor(session, baseDir: str,
+def checkForChangedActor(session, base_dir: str,
                          httpPrefix: str, domainFull: str,
                          personUrl: str, avatarUrl: str, personCache: {},
                          timeoutSec: int):
@@ -47,10 +47,10 @@ def checkForChangedActor(session, baseDir: str,
         return
     if urlExists(session, avatarUrl, timeoutSec, httpPrefix, domainFull):
         return
-    _removePersonFromCache(baseDir, personUrl, personCache)
+    _removePersonFromCache(base_dir, personUrl, personCache)
 
 
-def storePersonInCache(baseDir: str, personUrl: str,
+def storePersonInCache(base_dir: str, personUrl: str,
                        personJson: {}, personCache: {},
                        allowWriteToFile: bool) -> None:
     """Store an actor in the cache
@@ -64,20 +64,20 @@ def storePersonInCache(baseDir: str, personUrl: str,
         "actor": personJson,
         "timestamp": currTime.strftime("%Y-%m-%dT%H:%M:%SZ")
     }
-    if not baseDir:
+    if not base_dir:
         return
 
     # store to file
     if not allowWriteToFile:
         return
-    if os.path.isdir(baseDir + '/cache/actors'):
-        cacheFilename = baseDir + '/cache/actors/' + \
+    if os.path.isdir(base_dir + '/cache/actors'):
+        cacheFilename = base_dir + '/cache/actors/' + \
             personUrl.replace('/', '#') + '.json'
         if not os.path.isfile(cacheFilename):
             saveJson(personJson, cacheFilename)
 
 
-def getPersonFromCache(baseDir: str, personUrl: str, personCache: {},
+def getPersonFromCache(base_dir: str, personUrl: str, personCache: {},
                        allowWriteToFile: bool) -> {}:
     """Get an actor from the cache
     """
@@ -85,13 +85,13 @@ def getPersonFromCache(baseDir: str, personUrl: str, personCache: {},
     loadedFromFile = False
     if not personCache.get(personUrl):
         # does the person exist as a cached file?
-        cacheFilename = baseDir + '/cache/actors/' + \
+        cacheFilename = base_dir + '/cache/actors/' + \
             personUrl.replace('/', '#') + '.json'
         actorFilename = getFileCaseInsensitive(cacheFilename)
         if actorFilename:
             personJson = loadJson(actorFilename)
             if personJson:
-                storePersonInCache(baseDir, personUrl, personJson,
+                storePersonInCache(base_dir, personUrl, personJson,
                                    personCache, False)
                 loadedFromFile = True
 
@@ -136,7 +136,7 @@ def getWebfingerFromCache(handle: str, cachedWebfingers: {}) -> {}:
     return None
 
 
-def getPersonPubKey(baseDir: str, session, personUrl: str,
+def getPersonPubKey(base_dir: str, session, personUrl: str,
                     personCache: {}, debug: bool,
                     projectVersion: str, httpPrefix: str,
                     domain: str, onionDomain: str,
@@ -153,7 +153,7 @@ def getPersonPubKey(baseDir: str, session, personUrl: str,
                 personUrl.replace(possibleUsersPath + 'inbox', '/inbox')
             break
     personJson = \
-        getPersonFromCache(baseDir, personUrl, personCache, True)
+        getPersonFromCache(base_dir, personUrl, personCache, True)
     if not personJson:
         if debug:
             print('DEBUG: Obtaining public key for ' + personUrl)
@@ -183,5 +183,5 @@ def getPersonPubKey(baseDir: str, session, personUrl: str,
         if debug:
             print('DEBUG: Public key not found for ' + personUrl)
 
-    storePersonInCache(baseDir, personUrl, personJson, personCache, True)
+    storePersonInCache(base_dir, personUrl, personJson, personCache, True)
     return pubKey

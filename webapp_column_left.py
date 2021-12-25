@@ -25,14 +25,14 @@ from webapp_utils import editTextField
 from shares import shareCategoryIcon
 
 
-def _linksExist(baseDir: str) -> bool:
+def _linksExist(base_dir: str) -> bool:
     """Returns true if links have been created
     """
-    linksFilename = baseDir + '/accounts/links.txt'
+    linksFilename = base_dir + '/accounts/links.txt'
     return os.path.isfile(linksFilename)
 
 
-def _getLeftColumnShares(baseDir: str,
+def _getLeftColumnShares(base_dir: str,
                          httpPrefix: str, domain: str, domainFull: str,
                          nickname: str,
                          maxSharesInLeftColumn: int,
@@ -46,7 +46,7 @@ def _getLeftColumnShares(baseDir: str,
     # shared items is large
     sharesJson, lastPage = \
         sharesTimelineJson(actor, pageNumber, maxSharesInLeftColumn,
-                           baseDir, domain, nickname, maxSharesInLeftColumn,
+                           base_dir, domain, nickname, maxSharesInLeftColumn,
                            sharedItemsFederatedDomains, 'shares')
     if not sharesJson:
         return []
@@ -74,7 +74,7 @@ def _getLeftColumnShares(baseDir: str,
     return linksList
 
 
-def _getLeftColumnWanted(baseDir: str,
+def _getLeftColumnWanted(base_dir: str,
                          httpPrefix: str, domain: str, domainFull: str,
                          nickname: str,
                          maxSharesInLeftColumn: int,
@@ -88,7 +88,7 @@ def _getLeftColumnWanted(baseDir: str,
     # wanted items is large
     sharesJson, lastPage = \
         sharesTimelineJson(actor, pageNumber, maxSharesInLeftColumn,
-                           baseDir, domain, nickname, maxSharesInLeftColumn,
+                           base_dir, domain, nickname, maxSharesInLeftColumn,
                            sharedItemsFederatedDomains, 'wanted')
     if not sharesJson:
         return []
@@ -112,7 +112,7 @@ def _getLeftColumnWanted(baseDir: str,
     return linksList
 
 
-def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
+def getLeftColumnContent(base_dir: str, nickname: str, domainFull: str,
                          httpPrefix: str, translate: {},
                          editor: bool, artist: bool,
                          showBackButton: bool, timelinePath: str,
@@ -124,13 +124,13 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
     """
     htmlStr = ''
 
-    separatorStr = htmlPostSeparator(baseDir, 'left')
+    separatorStr = htmlPostSeparator(base_dir, 'left')
     domain = removeDomainPort(domainFull)
 
     editImageClass = ''
     if showHeaderImage:
         leftImageFile, leftColumnImageFilename = \
-            getLeftImageFile(baseDir, nickname, domain, theme)
+            getLeftImageFile(base_dir, nickname, domain, theme)
 
         # show the image at the top of the column
         editImageClass = 'leftColEdit'
@@ -206,7 +206,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
     # flag used not to show the first separator
     firstSeparatorAdded = False
 
-    linksFilename = baseDir + '/accounts/links.txt'
+    linksFilename = base_dir + '/accounts/links.txt'
     linksFileContainsEntries = False
     linksList = None
     if os.path.isfile(linksFilename):
@@ -217,7 +217,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
         # show a number of shares
         maxSharesInLeftColumn = 3
         sharesList = \
-            _getLeftColumnShares(baseDir,
+            _getLeftColumnShares(base_dir,
                                  httpPrefix, domain, domainFull, nickname,
                                  maxSharesInLeftColumn, translate,
                                  sharedItemsFederatedDomains)
@@ -225,7 +225,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
             linksList = sharesList + linksList
 
         wantedList = \
-            _getLeftColumnWanted(baseDir,
+            _getLeftColumnWanted(base_dir,
                                  httpPrefix, domain, domainFull, nickname,
                                  maxSharesInLeftColumn, translate,
                                  sharedItemsFederatedDomains)
@@ -348,7 +348,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
     return htmlStr
 
 
-def htmlLinksMobile(cssCache: {}, baseDir: str,
+def htmlLinksMobile(cssCache: {}, base_dir: str,
                     nickname: str, domainFull: str,
                     httpPrefix: str, translate,
                     timelinePath: str, authorized: bool,
@@ -362,25 +362,25 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
     htmlStr = ''
 
     # the css filename
-    cssFilename = baseDir + '/epicyon-profile.css'
-    if os.path.isfile(baseDir + '/epicyon.css'):
-        cssFilename = baseDir + '/epicyon.css'
+    cssFilename = base_dir + '/epicyon-profile.css'
+    if os.path.isfile(base_dir + '/epicyon.css'):
+        cssFilename = base_dir + '/epicyon.css'
 
     # is the user a site editor?
     if nickname == 'news':
         editor = False
         artist = False
     else:
-        editor = isEditor(baseDir, nickname)
-        artist = isArtist(baseDir, nickname)
+        editor = isEditor(base_dir, nickname)
+        artist = isArtist(base_dir, nickname)
 
     domain = removeDomainPort(domainFull)
 
     instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
+        getConfigParam(base_dir, 'instanceTitle')
     htmlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     bannerFile, bannerFilename = \
-        getBannerFile(baseDir, nickname, domain, theme)
+        getBannerFile(base_dir, nickname, domain, theme)
     htmlStr += \
         '<a href="/users/' + nickname + '/' + defaultTimeline + '" ' + \
         'accesskey="' + accessKeys['menuTimeline'] + '">' + \
@@ -394,14 +394,14 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
                                  'links', authorized,
                                  iconsAsButtons) + '</center>'
     htmlStr += \
-        getLeftColumnContent(baseDir, nickname, domainFull,
+        getLeftColumnContent(base_dir, nickname, domainFull,
                              httpPrefix, translate,
                              editor, artist,
                              False, timelinePath,
                              rssIconAtTop, False, False,
                              theme, accessKeys,
                              sharedItemsFederatedDomains)
-    if editor and not _linksExist(baseDir):
+    if editor and not _linksExist(base_dir):
         htmlStr += '<br><br><br>\n<center>\n  '
         htmlStr += translate['Select the edit icon to add web links']
         htmlStr += '\n</center>\n'
@@ -413,7 +413,7 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
     return htmlStr
 
 
-def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
+def htmlEditLinks(cssCache: {}, translate: {}, base_dir: str, path: str,
                   domain: str, port: int, httpPrefix: str,
                   defaultTimeline: str, theme: str,
                   accessKeys: {}) -> str:
@@ -429,19 +429,19 @@ def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
         return ''
 
     # is the user a moderator?
-    if not isEditor(baseDir, nickname):
+    if not isEditor(base_dir, nickname):
         return ''
 
-    cssFilename = baseDir + '/epicyon-links.css'
-    if os.path.isfile(baseDir + '/links.css'):
-        cssFilename = baseDir + '/links.css'
+    cssFilename = base_dir + '/epicyon-links.css'
+    if os.path.isfile(base_dir + '/links.css'):
+        cssFilename = base_dir + '/links.css'
 
     # filename of the banner shown at the top
     bannerFile, bannerFilename = \
-        getBannerFile(baseDir, nickname, domain, theme)
+        getBannerFile(base_dir, nickname, domain, theme)
 
     instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
+        getConfigParam(base_dir, 'instanceTitle')
     editLinksForm = \
         htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
 
@@ -474,7 +474,7 @@ def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
     editLinksForm += \
         '    </div>\n'
 
-    linksFilename = baseDir + '/accounts/links.txt'
+    linksFilename = base_dir + '/accounts/links.txt'
     linksStr = ''
     if os.path.isfile(linksFilename):
         with open(linksFilename, 'r') as fp:
@@ -495,10 +495,10 @@ def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
         '</div>'
 
     # the admin can edit terms of service and about text
-    adminNickname = getConfigParam(baseDir, 'admin')
+    adminNickname = getConfigParam(base_dir, 'admin')
     if adminNickname:
         if nickname == adminNickname:
-            aboutFilename = baseDir + '/accounts/about.md'
+            aboutFilename = base_dir + '/accounts/about.md'
             aboutStr = ''
             if os.path.isfile(aboutFilename):
                 with open(aboutFilename, 'r') as fp:
@@ -517,7 +517,7 @@ def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
             editLinksForm += \
                 '</div>'
 
-            TOSFilename = baseDir + '/accounts/tos.md'
+            TOSFilename = base_dir + '/accounts/tos.md'
             TOSStr = ''
             if os.path.isfile(TOSFilename):
                 with open(TOSFilename, 'r') as fp:

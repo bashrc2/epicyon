@@ -26,7 +26,7 @@ from auth import createBasicAuthHeader
 from posts import getPersonBox
 
 
-def sendDeleteViaServer(baseDir: str, session,
+def sendDeleteViaServer(base_dir: str, session,
                         fromNickname: str, password: str,
                         fromDomain: str, fromPort: int,
                         httpPrefix: str, deleteObjectUrl: str,
@@ -77,7 +77,7 @@ def sendDeleteViaServer(baseDir: str, session,
     (inboxUrl, pubKeyId, pubKey,
      fromPersonId, sharedInbox, avatarUrl,
      displayName, _) = getPersonBox(signingPrivateKeyPem, originDomain,
-                                    baseDir, session, wfRequest, personCache,
+                                    base_dir, session, wfRequest, personCache,
                                     projectVersion, httpPrefix, fromNickname,
                                     fromDomain, postToBox, 53036)
 
@@ -112,7 +112,7 @@ def sendDeleteViaServer(baseDir: str, session,
     return newDeleteJson
 
 
-def outboxDelete(baseDir: str, httpPrefix: str,
+def outboxDelete(base_dir: str, httpPrefix: str,
                  nickname: str, domain: str,
                  messageJson: {}, debug: bool,
                  allowDeletion: bool,
@@ -160,21 +160,21 @@ def outboxDelete(baseDir: str, httpPrefix: str,
             print("DEBUG: you can't delete a post which " +
                   "wasn't created by you (domain does not match)")
         return
-    removeModerationPostFromIndex(baseDir, messageId, debug)
-    postFilename = locatePost(baseDir, deleteNickname, deleteDomain,
+    removeModerationPostFromIndex(base_dir, messageId, debug)
+    postFilename = locatePost(base_dir, deleteNickname, deleteDomain,
                               messageId)
     if not postFilename:
         if debug:
             print('DEBUG: c2s delete post not found in inbox or outbox')
             print(messageId)
         return True
-    deletePost(baseDir, httpPrefix, deleteNickname, deleteDomain,
+    deletePost(base_dir, httpPrefix, deleteNickname, deleteDomain,
                postFilename, debug, recentPostsCache)
     if debug:
         print('DEBUG: post deleted via c2s - ' + postFilename)
 
 
-def removeOldHashtags(baseDir: str, maxMonths: int) -> str:
+def removeOldHashtags(base_dir: str, maxMonths: int) -> str:
     """Remove old hashtags
     """
     if maxMonths > 11:
@@ -183,9 +183,9 @@ def removeOldHashtags(baseDir: str, maxMonths: int) -> str:
         (datetime.utcnow() - datetime(1970, 1 + maxMonths, 1)).days
     removeHashtags = []
 
-    for subdir, dirs, files in os.walk(baseDir + '/tags'):
+    for subdir, dirs, files in os.walk(base_dir + '/tags'):
         for f in files:
-            tagsFilename = os.path.join(baseDir + '/tags', f)
+            tagsFilename = os.path.join(base_dir + '/tags', f)
             if not os.path.isfile(tagsFilename):
                 continue
             # get last modified datetime

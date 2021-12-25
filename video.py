@@ -15,7 +15,7 @@ from blocking import isBlocked
 from filters import isFiltered
 
 
-def convertVideoToNote(baseDir: str, nickname: str, domain: str,
+def convertVideoToNote(base_dir: str, nickname: str, domain: str,
                        systemLanguage: str,
                        postJsonObject: {}, blockedCache: {}) -> {}:
     """Converts a PeerTube Video ActivityPub(ish) object into
@@ -68,14 +68,14 @@ def convertVideoToNote(baseDir: str, nickname: str, domain: str,
     if not postDomain:
         return None
     postDomainFull = getFullDomain(postDomain, postDomainPort)
-    if isBlocked(baseDir, nickname, domain,
+    if isBlocked(base_dir, nickname, domain,
                  postNickname, postDomainFull, blockedCache):
         return None
 
     # check that the content is valid
-    if isFiltered(baseDir, nickname, domain, postJsonObject['name']):
+    if isFiltered(base_dir, nickname, domain, postJsonObject['name']):
         return None
-    if isFiltered(baseDir, nickname, domain, postJsonObject['content']):
+    if isFiltered(base_dir, nickname, domain, postJsonObject['content']):
         return None
 
     # get the content
@@ -83,7 +83,7 @@ def convertVideoToNote(baseDir: str, nickname: str, domain: str,
     if postJsonObject.get('license'):
         if isinstance(postJsonObject['license'], dict):
             if postJsonObject['license'].get('name'):
-                if isFiltered(baseDir, nickname, domain,
+                if isFiltered(base_dir, nickname, domain,
                               postJsonObject['license']['name']):
                     return None
                 content += '<p>' + postJsonObject['license']['name'] + '</p>'

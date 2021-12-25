@@ -17,21 +17,21 @@ from webapp_utils import htmlFooter
 from markdown import markdownToHtml
 
 
-def isWelcomeScreenComplete(baseDir: str, nickname: str, domain: str) -> bool:
+def isWelcomeScreenComplete(base_dir: str, nickname: str, domain: str) -> bool:
     """Returns true if the welcome screen is complete for the given account
     """
-    accountPath = acctDir(baseDir, nickname, domain)
+    accountPath = acctDir(base_dir, nickname, domain)
     if not os.path.isdir(accountPath):
         return
     completeFilename = accountPath + '/.welcome_complete'
     return os.path.isfile(completeFilename)
 
 
-def welcomeScreenIsComplete(baseDir: str,
+def welcomeScreenIsComplete(base_dir: str,
                             nickname: str, domain: str) -> None:
     """Indicates that the welcome screen has been shown for a given account
     """
-    accountPath = acctDir(baseDir, nickname, domain)
+    accountPath = acctDir(base_dir, nickname, domain)
     if not os.path.isdir(accountPath):
         return
     completeFilename = accountPath + '/.welcome_complete'
@@ -39,39 +39,39 @@ def welcomeScreenIsComplete(baseDir: str,
         completeFile.write('\n')
 
 
-def htmlWelcomeScreen(baseDir: str, nickname: str,
+def htmlWelcomeScreen(base_dir: str, nickname: str,
                       language: str, translate: {},
                       themeName: str,
                       currScreen='welcome') -> str:
     """Returns the welcome screen
     """
     # set a custom background for the welcome screen
-    if os.path.isfile(baseDir + '/accounts/welcome-background-custom.jpg'):
-        if not os.path.isfile(baseDir + '/accounts/welcome-background.jpg'):
-            copyfile(baseDir + '/accounts/welcome-background-custom.jpg',
-                     baseDir + '/accounts/welcome-background.jpg')
+    if os.path.isfile(base_dir + '/accounts/welcome-background-custom.jpg'):
+        if not os.path.isfile(base_dir + '/accounts/welcome-background.jpg'):
+            copyfile(base_dir + '/accounts/welcome-background-custom.jpg',
+                     base_dir + '/accounts/welcome-background.jpg')
 
     welcomeText = 'Welcome to Epicyon'
-    welcomeFilename = baseDir + '/accounts/' + currScreen + '.md'
+    welcomeFilename = base_dir + '/accounts/' + currScreen + '.md'
     if not os.path.isfile(welcomeFilename):
         defaultFilename = None
         if themeName:
             defaultFilename = \
-                baseDir + '/theme/' + themeName + '/welcome/' + \
+                base_dir + '/theme/' + themeName + '/welcome/' + \
                 'welcome_' + language + '.md'
             if not os.path.isfile(defaultFilename):
                 defaultFilename = None
         if not defaultFilename:
             defaultFilename = \
-                baseDir + '/defaultwelcome/' + \
+                base_dir + '/defaultwelcome/' + \
                 currScreen + '_' + language + '.md'
         if not os.path.isfile(defaultFilename):
             defaultFilename = \
-                baseDir + '/defaultwelcome/' + currScreen + '_en.md'
+                base_dir + '/defaultwelcome/' + currScreen + '_en.md'
         copyfile(defaultFilename, welcomeFilename)
 
     instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
+        getConfigParam(base_dir, 'instanceTitle')
     if not instanceTitle:
         instanceTitle = 'Epicyon'
 
@@ -82,9 +82,9 @@ def htmlWelcomeScreen(baseDir: str, nickname: str,
             welcomeText = markdownToHtml(removeHtml(welcomeText))
 
     welcomeForm = ''
-    cssFilename = baseDir + '/epicyon-welcome.css'
-    if os.path.isfile(baseDir + '/welcome.css'):
-        cssFilename = baseDir + '/welcome.css'
+    cssFilename = base_dir + '/epicyon-welcome.css'
+    if os.path.isfile(base_dir + '/welcome.css'):
+        cssFilename = base_dir + '/welcome.css'
 
     welcomeForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     welcomeForm += \

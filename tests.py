@@ -183,7 +183,7 @@ thrBob = None
 thrEve = None
 
 
-def _testHttpSignedGET(baseDir: str):
+def _testHttpSignedGET(base_dir: str):
     print('testHttpSignedGET')
     httpPrefix = 'https'
     debug = True
@@ -249,7 +249,7 @@ def _testHttpSignedGET(baseDir: str):
                                  boxpath, GETmethod, messageBodyDigest,
                                  messageBodyJsonStr, debug, noRecencyCheck)
 
-    path = baseDir + '/.testHttpsigGET'
+    path = base_dir + '/.testHttpsigGET'
     if os.path.isdir(path):
         shutil.rmtree(path, ignore_errors=False, onerror=None)
     os.mkdir(path)
@@ -523,10 +523,10 @@ def _testHttpSigNew(algorithm: str, digestAlgorithm: str):
                                  messageBodyJsonStr, debug, True)
 
 
-def _testHttpsigBase(withDigest: bool, baseDir: str):
+def _testHttpsigBase(withDigest: bool, base_dir: str):
     print('testHttpsig(' + str(withDigest) + ')')
 
-    path = baseDir + '/.testHttpsigBase'
+    path = base_dir + '/.testHttpsigBase'
     if os.path.isdir(path):
         shutil.rmtree(path, ignore_errors=False, onerror=None)
     os.mkdir(path)
@@ -636,13 +636,13 @@ def _testHttpsigBase(withDigest: bool, baseDir: str):
                              boxpath, not GETmethod, None,
                              messageBodyJsonStr, False) is False
 
-    os.chdir(baseDir)
+    os.chdir(base_dir)
     shutil.rmtree(path, ignore_errors=False, onerror=None)
 
 
-def _testHttpsig(baseDir: str):
-    _testHttpsigBase(True, baseDir)
-    _testHttpsigBase(False, baseDir)
+def _testHttpsig(base_dir: str):
+    _testHttpsigBase(True, base_dir)
+    _testHttpsigBase(False, base_dir)
 
 
 def _testCache():
@@ -1106,7 +1106,7 @@ def createServerGroup(path: str, domain: str, port: int,
               False)
 
 
-def testPostMessageBetweenServers(baseDir: str) -> None:
+def testPostMessageBetweenServers(base_dir: str) -> None:
     print('Testing sending message from one server to the inbox of another')
 
     global testServerAliceRunning
@@ -1119,17 +1119,17 @@ def testPostMessageBetweenServers(baseDir: str) -> None:
     proxyType = None
     contentLicenseUrl = 'https://creativecommons.org/licenses/by/4.0'
 
-    if os.path.isdir(baseDir + '/.tests'):
-        shutil.rmtree(baseDir + '/.tests', ignore_errors=False, onerror=None)
-    os.mkdir(baseDir + '/.tests')
+    if os.path.isdir(base_dir + '/.tests'):
+        shutil.rmtree(base_dir + '/.tests', ignore_errors=False, onerror=None)
+    os.mkdir(base_dir + '/.tests')
 
     # create the servers
-    aliceDir = baseDir + '/.tests/alice'
+    aliceDir = base_dir + '/.tests/alice'
     aliceDomain = '127.0.0.50'
     alicePort = 61935
     aliceAddress = aliceDomain + ':' + str(alicePort)
 
-    bobDir = baseDir + '/.tests/bob'
+    bobDir = base_dir + '/.tests/bob'
     bobDomain = '127.0.0.100'
     bobPort = 61936
     federationList = [bobDomain, aliceDomain]
@@ -1192,7 +1192,7 @@ def testPostMessageBetweenServers(baseDir: str) -> None:
     aliceCachedWebfingers = {}
     aliceSharedItemsFederatedDomains = []
     aliceSharedItemFederationTokens = {}
-    attachedImageFilename = baseDir + '/img/logo.png'
+    attachedImageFilename = base_dir + '/img/logo.png'
     testImageWidth, testImageHeight = \
         getImageDimensions(attachedImageFilename)
     assert testImageWidth
@@ -1425,12 +1425,12 @@ def testPostMessageBetweenServers(baseDir: str) -> None:
     thrBob.join()
     assert thrBob.is_alive() is False
 
-    os.chdir(baseDir)
+    os.chdir(base_dir)
     shutil.rmtree(aliceDir, ignore_errors=False, onerror=None)
     shutil.rmtree(bobDir, ignore_errors=False, onerror=None)
 
 
-def testFollowBetweenServers(baseDir: str) -> None:
+def testFollowBetweenServers(base_dir: str) -> None:
     print('Testing sending a follow request from one server to another')
 
     global testServerAliceRunning
@@ -1444,18 +1444,18 @@ def testFollowBetweenServers(baseDir: str) -> None:
     federationList = []
     contentLicenseUrl = 'https://creativecommons.org/licenses/by/4.0'
 
-    if os.path.isdir(baseDir + '/.tests'):
-        shutil.rmtree(baseDir + '/.tests', ignore_errors=False, onerror=None)
-    os.mkdir(baseDir + '/.tests')
+    if os.path.isdir(base_dir + '/.tests'):
+        shutil.rmtree(base_dir + '/.tests', ignore_errors=False, onerror=None)
+    os.mkdir(base_dir + '/.tests')
 
     # create the servers
-    aliceDir = baseDir + '/.tests/alice'
+    aliceDir = base_dir + '/.tests/alice'
     aliceDomain = '127.0.0.47'
     alicePort = 61935
     aliceSendThreads = []
     aliceAddress = aliceDomain + ':' + str(alicePort)
 
-    bobDir = baseDir + '/.tests/bob'
+    bobDir = base_dir + '/.tests/bob'
     bobDomain = '127.0.0.79'
     bobPort = 61936
     bobSendThreads = []
@@ -1615,11 +1615,11 @@ def testFollowBetweenServers(baseDir: str) -> None:
     assert len([name for name in os.listdir(queuePath)
                 if os.path.isfile(os.path.join(queuePath, name))]) == 0
 
-    os.chdir(baseDir)
-    shutil.rmtree(baseDir + '/.tests', ignore_errors=False, onerror=None)
+    os.chdir(base_dir)
+    shutil.rmtree(base_dir + '/.tests', ignore_errors=False, onerror=None)
 
 
-def testSharedItemsFederation(baseDir: str) -> None:
+def testSharedItemsFederation(base_dir: str) -> None:
     print('Testing federation of shared items between Alice and Bob')
 
     global testServerAliceRunning
@@ -1633,18 +1633,18 @@ def testSharedItemsFederation(baseDir: str) -> None:
     federationList = []
     contentLicenseUrl = 'https://creativecommons.org/licenses/by/4.0'
 
-    if os.path.isdir(baseDir + '/.tests'):
-        shutil.rmtree(baseDir + '/.tests', ignore_errors=False, onerror=None)
-    os.mkdir(baseDir + '/.tests')
+    if os.path.isdir(base_dir + '/.tests'):
+        shutil.rmtree(base_dir + '/.tests', ignore_errors=False, onerror=None)
+    os.mkdir(base_dir + '/.tests')
 
     # create the servers
-    aliceDir = baseDir + '/.tests/alice'
+    aliceDir = base_dir + '/.tests/alice'
     aliceDomain = '127.0.0.74'
     alicePort = 61917
     aliceSendThreads = []
     aliceAddress = aliceDomain + ':' + str(alicePort)
 
-    bobDir = baseDir + '/.tests/bob'
+    bobDir = base_dir + '/.tests/bob'
     bobDomain = '127.0.0.81'
     bobPort = 61983
     bobSendThreads = []
@@ -1781,16 +1781,16 @@ def testSharedItemsFederation(baseDir: str) -> None:
     if os.path.isdir(bobDir + '/ontology'):
         shutil.rmtree(bobDir + '/ontology', ignore_errors=False, onerror=None)
     os.mkdir(bobDir + '/ontology')
-    copyfile(baseDir + '/img/logo.png', bobDir + '/logo.png')
-    copyfile(baseDir + '/ontology/foodTypes.json',
+    copyfile(base_dir + '/img/logo.png', bobDir + '/logo.png')
+    copyfile(base_dir + '/ontology/foodTypes.json',
              bobDir + '/ontology/foodTypes.json')
-    copyfile(baseDir + '/ontology/toolTypes.json',
+    copyfile(base_dir + '/ontology/toolTypes.json',
              bobDir + '/ontology/toolTypes.json')
-    copyfile(baseDir + '/ontology/clothesTypes.json',
+    copyfile(base_dir + '/ontology/clothesTypes.json',
              bobDir + '/ontology/clothesTypes.json')
-    copyfile(baseDir + '/ontology/medicalTypes.json',
+    copyfile(base_dir + '/ontology/medicalTypes.json',
              bobDir + '/ontology/medicalTypes.json')
-    copyfile(baseDir + '/ontology/accommodationTypes.json',
+    copyfile(base_dir + '/ontology/accommodationTypes.json',
              bobDir + '/ontology/accommodationTypes.json')
     assert os.path.isfile(bobDir + '/logo.png')
     assert os.path.isfile(bobDir + '/ontology/foodTypes.json')
@@ -2016,13 +2016,13 @@ def testSharedItemsFederation(baseDir: str) -> None:
     thrBob.join()
     assert thrBob.is_alive() is False
 
-    os.chdir(baseDir)
-    shutil.rmtree(baseDir + '/.tests', ignore_errors=False, onerror=None)
+    os.chdir(base_dir)
+    shutil.rmtree(base_dir + '/.tests', ignore_errors=False, onerror=None)
     print('Testing federation of shared items between ' +
           'Alice and Bob is complete')
 
 
-def testGroupFollow(baseDir: str) -> None:
+def testGroupFollow(base_dir: str) -> None:
     print('Testing following of a group')
 
     global testServerAliceRunning
@@ -2039,24 +2039,24 @@ def testGroupFollow(baseDir: str) -> None:
     federationList = []
     contentLicenseUrl = 'https://creativecommons.org/licenses/by/4.0'
 
-    if os.path.isdir(baseDir + '/.tests'):
-        shutil.rmtree(baseDir + '/.tests', ignore_errors=False, onerror=None)
-    os.mkdir(baseDir + '/.tests')
+    if os.path.isdir(base_dir + '/.tests'):
+        shutil.rmtree(base_dir + '/.tests', ignore_errors=False, onerror=None)
+    os.mkdir(base_dir + '/.tests')
 
     # create the servers
-    aliceDir = baseDir + '/.tests/alice'
+    aliceDir = base_dir + '/.tests/alice'
     aliceDomain = '127.0.0.57'
     alicePort = 61927
     aliceSendThreads = []
     aliceAddress = aliceDomain + ':' + str(alicePort)
 
-    bobDir = baseDir + '/.tests/bob'
+    bobDir = base_dir + '/.tests/bob'
     bobDomain = '127.0.0.59'
     bobPort = 61814
     bobSendThreads = []
     # bobAddress = bobDomain + ':' + str(bobPort)
 
-    testgroupDir = baseDir + '/.tests/testgroup'
+    testgroupDir = base_dir + '/.tests/testgroup'
     testgroupDomain = '127.0.0.63'
     testgroupPort = 61925
     testgroupSendThreads = []
@@ -2426,63 +2426,63 @@ def testGroupFollow(baseDir: str) -> None:
     assert len([name for name in os.listdir(queuePath)
                 if os.path.isfile(os.path.join(queuePath, name))]) == 0
 
-    os.chdir(baseDir)
-    shutil.rmtree(baseDir + '/.tests', ignore_errors=False, onerror=None)
+    os.chdir(base_dir)
+    shutil.rmtree(base_dir + '/.tests', ignore_errors=False, onerror=None)
     print('Testing following of a group is complete')
 
 
-def _testFollowersOfPerson(baseDir: str) -> None:
+def _testFollowersOfPerson(base_dir: str) -> None:
     print('testFollowersOfPerson')
-    currDir = baseDir
+    currDir = base_dir
     nickname = 'mxpop'
     domain = 'diva.domain'
     password = 'birb'
     port = 80
     httpPrefix = 'https'
     federationList = []
-    baseDir = currDir + '/.tests_followersofperson'
-    if os.path.isdir(baseDir):
-        shutil.rmtree(baseDir, ignore_errors=False, onerror=None)
-    os.mkdir(baseDir)
-    os.chdir(baseDir)
-    createPerson(baseDir, nickname, domain, port,
+    base_dir = currDir + '/.tests_followersofperson'
+    if os.path.isdir(base_dir):
+        shutil.rmtree(base_dir, ignore_errors=False, onerror=None)
+    os.mkdir(base_dir)
+    os.chdir(base_dir)
+    createPerson(base_dir, nickname, domain, port,
                  httpPrefix, True, False, password)
-    createPerson(baseDir, 'maxboardroom', domain, port,
+    createPerson(base_dir, 'maxboardroom', domain, port,
                  httpPrefix, True, False, password)
-    createPerson(baseDir, 'ultrapancake', domain, port,
+    createPerson(base_dir, 'ultrapancake', domain, port,
                  httpPrefix, True, False, password)
-    createPerson(baseDir, 'drokk', domain, port,
+    createPerson(base_dir, 'drokk', domain, port,
                  httpPrefix, True, False, password)
-    createPerson(baseDir, 'sausagedog', domain, port,
+    createPerson(base_dir, 'sausagedog', domain, port,
                  httpPrefix, True, False, password)
 
-    clearFollows(baseDir, nickname, domain)
-    followPerson(baseDir, nickname, domain, 'maxboardroom', domain,
+    clearFollows(base_dir, nickname, domain)
+    followPerson(base_dir, nickname, domain, 'maxboardroom', domain,
                  federationList, False, False)
-    followPerson(baseDir, 'drokk', domain, 'ultrapancake', domain,
+    followPerson(base_dir, 'drokk', domain, 'ultrapancake', domain,
                  federationList, False, False)
     # deliberate duplication
-    followPerson(baseDir, 'drokk', domain, 'ultrapancake', domain,
+    followPerson(base_dir, 'drokk', domain, 'ultrapancake', domain,
                  federationList, False, False)
-    followPerson(baseDir, 'sausagedog', domain, 'ultrapancake', domain,
+    followPerson(base_dir, 'sausagedog', domain, 'ultrapancake', domain,
                  federationList, False, False)
-    followPerson(baseDir, nickname, domain, 'ultrapancake', domain,
+    followPerson(base_dir, nickname, domain, 'ultrapancake', domain,
                  federationList, False, False)
-    followPerson(baseDir, nickname, domain, 'someother', 'randodomain.net',
+    followPerson(base_dir, nickname, domain, 'someother', 'randodomain.net',
                  federationList, False, False)
 
-    followList = getFollowersOfPerson(baseDir, 'ultrapancake', domain)
+    followList = getFollowersOfPerson(base_dir, 'ultrapancake', domain)
     assert len(followList) == 3
     assert 'mxpop@' + domain in followList
     assert 'drokk@' + domain in followList
     assert 'sausagedog@' + domain in followList
     os.chdir(currDir)
-    shutil.rmtree(baseDir, ignore_errors=False, onerror=None)
+    shutil.rmtree(base_dir, ignore_errors=False, onerror=None)
 
 
-def _testNoOfFollowersOnDomain(baseDir: str) -> None:
+def _testNoOfFollowersOnDomain(base_dir: str) -> None:
     print('testNoOfFollowersOnDomain')
-    currDir = baseDir
+    currDir = base_dir
     nickname = 'mxpop'
     domain = 'diva.domain'
     otherdomain = 'soup.dragon'
@@ -2490,91 +2490,91 @@ def _testNoOfFollowersOnDomain(baseDir: str) -> None:
     port = 80
     httpPrefix = 'https'
     federationList = []
-    baseDir = currDir + '/.tests_nooffollowersOndomain'
-    if os.path.isdir(baseDir):
-        shutil.rmtree(baseDir, ignore_errors=False, onerror=None)
-    os.mkdir(baseDir)
-    os.chdir(baseDir)
-    createPerson(baseDir, nickname, domain, port, httpPrefix, True,
+    base_dir = currDir + '/.tests_nooffollowersOndomain'
+    if os.path.isdir(base_dir):
+        shutil.rmtree(base_dir, ignore_errors=False, onerror=None)
+    os.mkdir(base_dir)
+    os.chdir(base_dir)
+    createPerson(base_dir, nickname, domain, port, httpPrefix, True,
                  False, password)
-    createPerson(baseDir, 'maxboardroom', otherdomain, port,
+    createPerson(base_dir, 'maxboardroom', otherdomain, port,
                  httpPrefix, True, False, password)
-    createPerson(baseDir, 'ultrapancake', otherdomain, port,
+    createPerson(base_dir, 'ultrapancake', otherdomain, port,
                  httpPrefix, True, False, password)
-    createPerson(baseDir, 'drokk', otherdomain, port,
+    createPerson(base_dir, 'drokk', otherdomain, port,
                  httpPrefix, True, False, password)
-    createPerson(baseDir, 'sausagedog', otherdomain, port,
+    createPerson(base_dir, 'sausagedog', otherdomain, port,
                  httpPrefix, True, False, password)
 
-    followPerson(baseDir, 'drokk', otherdomain, nickname, domain,
+    followPerson(base_dir, 'drokk', otherdomain, nickname, domain,
                  federationList, False, False)
-    followPerson(baseDir, 'sausagedog', otherdomain, nickname, domain,
+    followPerson(base_dir, 'sausagedog', otherdomain, nickname, domain,
                  federationList, False, False)
-    followPerson(baseDir, 'maxboardroom', otherdomain, nickname, domain,
+    followPerson(base_dir, 'maxboardroom', otherdomain, nickname, domain,
                  federationList, False, False)
 
-    followerOfPerson(baseDir, nickname, domain,
+    followerOfPerson(base_dir, nickname, domain,
                      'cucumber', 'sandwiches.party',
                      federationList, False, False)
-    followerOfPerson(baseDir, nickname, domain,
+    followerOfPerson(base_dir, nickname, domain,
                      'captainsensible', 'damned.zone',
                      federationList, False, False)
-    followerOfPerson(baseDir, nickname, domain, 'pilchard', 'zombies.attack',
+    followerOfPerson(base_dir, nickname, domain, 'pilchard', 'zombies.attack',
                      federationList, False, False)
-    followerOfPerson(baseDir, nickname, domain, 'drokk', otherdomain,
+    followerOfPerson(base_dir, nickname, domain, 'drokk', otherdomain,
                      federationList, False, False)
-    followerOfPerson(baseDir, nickname, domain, 'sausagedog', otherdomain,
+    followerOfPerson(base_dir, nickname, domain, 'sausagedog', otherdomain,
                      federationList, False, False)
-    followerOfPerson(baseDir, nickname, domain, 'maxboardroom', otherdomain,
+    followerOfPerson(base_dir, nickname, domain, 'maxboardroom', otherdomain,
                      federationList, False, False)
 
     followersOnOtherDomain = \
-        noOfFollowersOnDomain(baseDir, nickname + '@' + domain, otherdomain)
+        noOfFollowersOnDomain(base_dir, nickname + '@' + domain, otherdomain)
     assert followersOnOtherDomain == 3
 
-    unfollowerOfAccount(baseDir, nickname, domain, 'sausagedog', otherdomain,
+    unfollowerOfAccount(base_dir, nickname, domain, 'sausagedog', otherdomain,
                         False, False)
     followersOnOtherDomain = \
-        noOfFollowersOnDomain(baseDir, nickname + '@' + domain, otherdomain)
+        noOfFollowersOnDomain(base_dir, nickname + '@' + domain, otherdomain)
     assert followersOnOtherDomain == 2
 
     os.chdir(currDir)
-    shutil.rmtree(baseDir, ignore_errors=False, onerror=None)
+    shutil.rmtree(base_dir, ignore_errors=False, onerror=None)
 
 
-def _testGroupFollowers(baseDir: str) -> None:
+def _testGroupFollowers(base_dir: str) -> None:
     print('testGroupFollowers')
 
-    currDir = baseDir
+    currDir = base_dir
     nickname = 'test735'
     domain = 'mydomain.com'
     password = 'somepass'
     port = 80
     httpPrefix = 'https'
     federationList = []
-    baseDir = currDir + '/.tests_testgroupfollowers'
-    if os.path.isdir(baseDir):
-        shutil.rmtree(baseDir, ignore_errors=False, onerror=None)
-    os.mkdir(baseDir)
-    os.chdir(baseDir)
-    createPerson(baseDir, nickname, domain, port, httpPrefix, True,
+    base_dir = currDir + '/.tests_testgroupfollowers'
+    if os.path.isdir(base_dir):
+        shutil.rmtree(base_dir, ignore_errors=False, onerror=None)
+    os.mkdir(base_dir)
+    os.chdir(base_dir)
+    createPerson(base_dir, nickname, domain, port, httpPrefix, True,
                  False, password)
 
-    clearFollowers(baseDir, nickname, domain)
-    followerOfPerson(baseDir, nickname, domain, 'badger', 'wild.domain',
+    clearFollowers(base_dir, nickname, domain)
+    followerOfPerson(base_dir, nickname, domain, 'badger', 'wild.domain',
                      federationList, False, False)
-    followerOfPerson(baseDir, nickname, domain, 'squirrel', 'wild.domain',
+    followerOfPerson(base_dir, nickname, domain, 'squirrel', 'wild.domain',
                      federationList, False, False)
-    followerOfPerson(baseDir, nickname, domain, 'rodent', 'wild.domain',
+    followerOfPerson(base_dir, nickname, domain, 'rodent', 'wild.domain',
                      federationList, False, False)
-    followerOfPerson(baseDir, nickname, domain, 'utterly', 'clutterly.domain',
+    followerOfPerson(base_dir, nickname, domain, 'utterly', 'clutterly.domain',
                      federationList, False, False)
-    followerOfPerson(baseDir, nickname, domain, 'zonked', 'zzz.domain',
+    followerOfPerson(base_dir, nickname, domain, 'zonked', 'zzz.domain',
                      federationList, False, False)
-    followerOfPerson(baseDir, nickname, domain, 'nap', 'zzz.domain',
+    followerOfPerson(base_dir, nickname, domain, 'nap', 'zzz.domain',
                      federationList, False, False)
 
-    grouped = groupFollowersByDomain(baseDir, nickname, domain)
+    grouped = groupFollowersByDomain(base_dir, nickname, domain)
     assert len(grouped.items()) == 3
     assert grouped.get('zzz.domain')
     assert grouped.get('clutterly.domain')
@@ -2584,39 +2584,39 @@ def _testGroupFollowers(baseDir: str) -> None:
     assert len(grouped['clutterly.domain']) == 1
 
     os.chdir(currDir)
-    shutil.rmtree(baseDir, ignore_errors=False, onerror=None)
+    shutil.rmtree(base_dir, ignore_errors=False, onerror=None)
 
 
-def _testFollows(baseDir: str) -> None:
+def _testFollows(base_dir: str) -> None:
     print('testFollows')
-    currDir = baseDir
+    currDir = base_dir
     nickname = 'test529'
     domain = 'testdomain.com'
     password = 'mypass'
     port = 80
     httpPrefix = 'https'
     federationList = ['wild.com', 'mesh.com']
-    baseDir = currDir + '/.tests_testfollows'
-    if os.path.isdir(baseDir):
-        shutil.rmtree(baseDir, ignore_errors=False, onerror=None)
-    os.mkdir(baseDir)
-    os.chdir(baseDir)
-    createPerson(baseDir, nickname, domain, port, httpPrefix, True,
+    base_dir = currDir + '/.tests_testfollows'
+    if os.path.isdir(base_dir):
+        shutil.rmtree(base_dir, ignore_errors=False, onerror=None)
+    os.mkdir(base_dir)
+    os.chdir(base_dir)
+    createPerson(base_dir, nickname, domain, port, httpPrefix, True,
                  False, password)
 
-    clearFollows(baseDir, nickname, domain)
-    followPerson(baseDir, nickname, domain, 'badger', 'wild.com',
+    clearFollows(base_dir, nickname, domain)
+    followPerson(base_dir, nickname, domain, 'badger', 'wild.com',
                  federationList, False, False)
-    followPerson(baseDir, nickname, domain, 'squirrel', 'secret.com',
+    followPerson(base_dir, nickname, domain, 'squirrel', 'secret.com',
                  federationList, False, False)
-    followPerson(baseDir, nickname, domain, 'rodent', 'drainpipe.com',
+    followPerson(base_dir, nickname, domain, 'rodent', 'drainpipe.com',
                  federationList, False, False)
-    followPerson(baseDir, nickname, domain, 'batman', 'mesh.com',
+    followPerson(base_dir, nickname, domain, 'batman', 'mesh.com',
                  federationList, False, False)
-    followPerson(baseDir, nickname, domain, 'giraffe', 'trees.com',
+    followPerson(base_dir, nickname, domain, 'giraffe', 'trees.com',
                  federationList, False, False)
 
-    accountDir = acctDir(baseDir, nickname, domain)
+    accountDir = acctDir(base_dir, nickname, domain)
     f = open(accountDir + '/following.txt', 'r')
     domainFound = False
     for followingDomain in f:
@@ -2629,7 +2629,7 @@ def _testFollows(baseDir: str) -> None:
             assert(False)
 
     assert(domainFound)
-    unfollowAccount(baseDir, nickname, domain, 'batman', 'mesh.com',
+    unfollowAccount(base_dir, nickname, domain, 'batman', 'mesh.com',
                     True, False)
 
     domainFound = False
@@ -2640,19 +2640,19 @@ def _testFollows(baseDir: str) -> None:
             domainFound = True
     assert(domainFound is False)
 
-    clearFollowers(baseDir, nickname, domain)
-    followerOfPerson(baseDir, nickname, domain, 'badger', 'wild.com',
+    clearFollowers(base_dir, nickname, domain)
+    followerOfPerson(base_dir, nickname, domain, 'badger', 'wild.com',
                      federationList, False, False)
-    followerOfPerson(baseDir, nickname, domain, 'squirrel', 'secret.com',
+    followerOfPerson(base_dir, nickname, domain, 'squirrel', 'secret.com',
                      federationList, False, False)
-    followerOfPerson(baseDir, nickname, domain, 'rodent', 'drainpipe.com',
+    followerOfPerson(base_dir, nickname, domain, 'rodent', 'drainpipe.com',
                      federationList, False, False)
-    followerOfPerson(baseDir, nickname, domain, 'batman', 'mesh.com',
+    followerOfPerson(base_dir, nickname, domain, 'batman', 'mesh.com',
                      federationList, False, False)
-    followerOfPerson(baseDir, nickname, domain, 'giraffe', 'trees.com',
+    followerOfPerson(base_dir, nickname, domain, 'giraffe', 'trees.com',
                      federationList, False, False)
 
-    accountDir = acctDir(baseDir, nickname, domain)
+    accountDir = acctDir(base_dir, nickname, domain)
     f = open(accountDir + '/followers.txt', 'r')
     for followerDomain in f:
         testDomain = followerDomain.split('@')[1]
@@ -2662,35 +2662,35 @@ def _testFollows(baseDir: str) -> None:
             assert(False)
 
     os.chdir(currDir)
-    shutil.rmtree(baseDir, ignore_errors=False, onerror=None)
+    shutil.rmtree(base_dir, ignore_errors=False, onerror=None)
 
 
-def _testCreatePerson(baseDir: str):
+def _testCreatePerson(base_dir: str):
     print('testCreatePerson')
     systemLanguage = 'en'
-    currDir = baseDir
+    currDir = base_dir
     nickname = 'test382'
     domain = 'badgerdomain.com'
     password = 'mypass'
     port = 80
     httpPrefix = 'https'
     clientToServer = False
-    baseDir = currDir + '/.tests_createperson'
-    if os.path.isdir(baseDir):
-        shutil.rmtree(baseDir, ignore_errors=False, onerror=None)
-    os.mkdir(baseDir)
-    os.chdir(baseDir)
+    base_dir = currDir + '/.tests_createperson'
+    if os.path.isdir(base_dir):
+        shutil.rmtree(base_dir, ignore_errors=False, onerror=None)
+    os.mkdir(base_dir)
+    os.chdir(base_dir)
 
     privateKeyPem, publicKeyPem, person, wfEndpoint = \
-        createPerson(baseDir, nickname, domain, port,
+        createPerson(base_dir, nickname, domain, port,
                      httpPrefix, True, False, password)
-    assert os.path.isfile(baseDir + '/accounts/passwords')
-    deleteAllPosts(baseDir, nickname, domain, 'inbox')
-    deleteAllPosts(baseDir, nickname, domain, 'outbox')
-    setDisplayNickname(baseDir, nickname, domain, 'badger')
-    setBio(baseDir, nickname, domain, 'Randomly roaming in your backyard')
-    archivePostsForPerson(nickname, domain, baseDir, 'inbox', None, {}, 4)
-    archivePostsForPerson(nickname, domain, baseDir, 'outbox', None, {}, 4)
+    assert os.path.isfile(base_dir + '/accounts/passwords')
+    deleteAllPosts(base_dir, nickname, domain, 'inbox')
+    deleteAllPosts(base_dir, nickname, domain, 'outbox')
+    setDisplayNickname(base_dir, nickname, domain, 'badger')
+    setBio(base_dir, nickname, domain, 'Randomly roaming in your backyard')
+    archivePostsForPerson(nickname, domain, base_dir, 'inbox', None, {}, 4)
+    archivePostsForPerson(nickname, domain, base_dir, 'outbox', None, {}, 4)
     testInReplyTo = None
     testInReplyToAtomUri = None
     testSubject = None
@@ -2708,7 +2708,7 @@ def _testCreatePerson(baseDir: str):
     conversationId = None
     lowBandwidth = True
     contentLicenseUrl = 'https://creativecommons.org/licenses/by/4.0'
-    createPublicPost(baseDir, nickname, domain, port, httpPrefix,
+    createPublicPost(base_dir, nickname, domain, port, httpPrefix,
                      content, followersOnly, saveToFile, clientToServer,
                      commentsEnabled, attachImageFilename, mediaType,
                      'Not suitable for Vogons', 'London, England',
@@ -2719,7 +2719,7 @@ def _testCreatePerson(baseDir: str):
                      lowBandwidth, contentLicenseUrl)
 
     os.chdir(currDir)
-    shutil.rmtree(baseDir, ignore_errors=False, onerror=None)
+    shutil.rmtree(base_dir, ignore_errors=False, onerror=None)
 
 
 def showTestBoxes(name: str, inboxPath: str, outboxPath: str) -> None:
@@ -2734,47 +2734,47 @@ def showTestBoxes(name: str, inboxPath: str, outboxPath: str) -> None:
           str(outboxPosts) + ' outbox posts')
 
 
-def _testAuthentication(baseDir: str) -> None:
+def _testAuthentication(base_dir: str) -> None:
     print('testAuthentication')
-    currDir = baseDir
+    currDir = base_dir
     nickname = 'test8743'
     password = 'SuperSecretPassword12345'
 
-    baseDir = currDir + '/.tests_authentication'
-    if os.path.isdir(baseDir):
-        shutil.rmtree(baseDir, ignore_errors=False, onerror=None)
-    os.mkdir(baseDir)
-    os.chdir(baseDir)
+    base_dir = currDir + '/.tests_authentication'
+    if os.path.isdir(base_dir):
+        shutil.rmtree(base_dir, ignore_errors=False, onerror=None)
+    os.mkdir(base_dir)
+    os.chdir(base_dir)
 
-    assert storeBasicCredentials(baseDir, 'othernick', 'otherpass')
-    assert storeBasicCredentials(baseDir, 'bad:nick', 'otherpass') is False
-    assert storeBasicCredentials(baseDir, 'badnick', 'otherpa:ss') is False
-    assert storeBasicCredentials(baseDir, nickname, password)
+    assert storeBasicCredentials(base_dir, 'othernick', 'otherpass')
+    assert storeBasicCredentials(base_dir, 'bad:nick', 'otherpass') is False
+    assert storeBasicCredentials(base_dir, 'badnick', 'otherpa:ss') is False
+    assert storeBasicCredentials(base_dir, nickname, password)
 
     authHeader = createBasicAuthHeader(nickname, password)
-    assert authorizeBasic(baseDir, '/users/' + nickname + '/inbox',
+    assert authorizeBasic(base_dir, '/users/' + nickname + '/inbox',
                           authHeader, False)
-    assert authorizeBasic(baseDir, '/users/' + nickname,
+    assert authorizeBasic(base_dir, '/users/' + nickname,
                           authHeader, False) is False
-    assert authorizeBasic(baseDir, '/users/othernick/inbox',
+    assert authorizeBasic(base_dir, '/users/othernick/inbox',
                           authHeader, False) is False
 
     authHeader = createBasicAuthHeader(nickname, password + '1')
-    assert authorizeBasic(baseDir, '/users/' + nickname + '/inbox',
+    assert authorizeBasic(base_dir, '/users/' + nickname + '/inbox',
                           authHeader, False) is False
 
     password = 'someOtherPassword'
-    assert storeBasicCredentials(baseDir, nickname, password)
+    assert storeBasicCredentials(base_dir, nickname, password)
 
     authHeader = createBasicAuthHeader(nickname, password)
-    assert authorizeBasic(baseDir, '/users/' + nickname + '/inbox',
+    assert authorizeBasic(base_dir, '/users/' + nickname + '/inbox',
                           authHeader, False)
 
     os.chdir(currDir)
-    shutil.rmtree(baseDir, ignore_errors=False, onerror=None)
+    shutil.rmtree(base_dir, ignore_errors=False, onerror=None)
 
 
-def testClientToServer(baseDir: str):
+def testClientToServer(base_dir: str):
     print('EVENT: Testing sending a post via c2s')
 
     global testServerAliceRunning
@@ -2789,18 +2789,18 @@ def testClientToServer(baseDir: str):
     federationList = []
     lowBandwidth = False
 
-    if os.path.isdir(baseDir + '/.tests'):
-        shutil.rmtree(baseDir + '/.tests', ignore_errors=False, onerror=None)
-    os.mkdir(baseDir + '/.tests')
+    if os.path.isdir(base_dir + '/.tests'):
+        shutil.rmtree(base_dir + '/.tests', ignore_errors=False, onerror=None)
+    os.mkdir(base_dir + '/.tests')
 
     # create the servers
-    aliceDir = baseDir + '/.tests/alice'
+    aliceDir = base_dir + '/.tests/alice'
     aliceDomain = '127.0.0.42'
     alicePort = 61935
     aliceSendThreads = []
     aliceAddress = aliceDomain + ':' + str(alicePort)
 
-    bobDir = baseDir + '/.tests/bob'
+    bobDir = base_dir + '/.tests/bob'
     bobDomain = '127.0.0.64'
     bobPort = 61936
     bobSendThreads = []
@@ -2856,7 +2856,7 @@ def testClientToServer(baseDir: str):
 
     sessionAlice = createSession(proxyType)
     followersOnly = False
-    attachedImageFilename = baseDir + '/img/logo.png'
+    attachedImageFilename = base_dir + '/img/logo.png'
     mediaType = getAttachmentMediaType(attachedImageFilename)
     attachedImageDescription = 'Logo'
     city = 'London, England'
@@ -3189,7 +3189,7 @@ def testClientToServer(baseDir: str):
 
     print('\n\nEVENT: Alice unfollows Bob')
     password = 'alicepass'
-    sendUnfollowRequestViaServer(baseDir, sessionAlice,
+    sendUnfollowRequestViaServer(base_dir, sessionAlice,
                                  'alice', password,
                                  aliceDomain, alicePort,
                                  'bob', bobDomain, bobPort,
@@ -3226,7 +3226,7 @@ def testClientToServer(baseDir: str):
     thrBob.join()
     assert thrBob.is_alive() is False
 
-    os.chdir(baseDir)
+    os.chdir(base_dir)
     # shutil.rmtree(aliceDir, ignore_errors=False, onerror=None)
     # shutil.rmtree(bobDir, ignore_errors=False, onerror=None)
 
@@ -3405,7 +3405,7 @@ def _testWebLinks():
     assert resultText == exampleText
 
 
-def _testAddEmoji(baseDir: str):
+def _testAddEmoji(base_dir: str):
     print('testAddEmoji')
     content = "Emoji :lemon: :strawberry: :banana:"
     httpPrefix = 'http'
@@ -3414,26 +3414,26 @@ def _testAddEmoji(baseDir: str):
     port = 3682
     recipients = []
     hashtags = {}
-    baseDirOriginal = baseDir
-    path = baseDir + '/.tests'
+    base_dirOriginal = base_dir
+    path = base_dir + '/.tests'
     if not os.path.isdir(path):
         os.mkdir(path)
-    path = baseDir + '/.tests/emoji'
+    path = base_dir + '/.tests/emoji'
     if os.path.isdir(path):
         shutil.rmtree(path, ignore_errors=False, onerror=None)
     os.mkdir(path)
-    baseDir = path
-    path = baseDir + '/emoji'
+    base_dir = path
+    path = base_dir + '/emoji'
     if os.path.isdir(path):
         shutil.rmtree(path, ignore_errors=False, onerror=None)
     os.mkdir(path)
-    copytree(baseDirOriginal + '/emoji', baseDir + '/emoji')
-    os.chdir(baseDir)
+    copytree(base_dirOriginal + '/emoji', base_dir + '/emoji')
+    os.chdir(base_dir)
     privateKeyPem, publicKeyPem, person, wfEndpoint = \
-        createPerson(baseDir, nickname, domain, port,
+        createPerson(base_dir, nickname, domain, port,
                      httpPrefix, True, False, 'password')
     contentModified = \
-        addHtmlTags(baseDir, httpPrefix,
+        addHtmlTags(base_dir, httpPrefix,
                     nickname, domain, content,
                     recipients, hashtags, True)
     assert ':lemon:' in contentModified
@@ -3444,12 +3444,12 @@ def _testAddEmoji(baseDir: str):
         tags.append(tag)
     content = contentModified
     contentModified = \
-        replaceEmojiFromTags(None, baseDir, content, tags, 'content', True)
+        replaceEmojiFromTags(None, base_dir, content, tags, 'content', True)
     # print('contentModified: ' + contentModified)
     assert contentModified == '<p>Emoji 🍋 🍓 🍌</p>'
 
-    os.chdir(baseDirOriginal)
-    shutil.rmtree(baseDirOriginal + '/.tests',
+    os.chdir(base_dirOriginal)
+    shutil.rmtree(base_dirOriginal + '/.tests',
                   ignore_errors=False, onerror=None)
 
 
@@ -3667,17 +3667,17 @@ def _testRemoveHtml():
            'This string contains a url http://somesite.or.other')
 
 
-def _testDangerousCSS(baseDir: str) -> None:
+def _testDangerousCSS(base_dir: str) -> None:
     print('testDangerousCSS')
-    for subdir, dirs, files in os.walk(baseDir):
+    for subdir, dirs, files in os.walk(base_dir):
         for f in files:
             if not f.endswith('.css'):
                 continue
-            assert not dangerousCSS(baseDir + '/' + f, False)
+            assert not dangerousCSS(base_dir + '/' + f, False)
         break
 
 
-def _testDangerousSVG(baseDir: str) -> None:
+def _testDangerousSVG(base_dir: str) -> None:
     print('testDangerousSVG')
     svgContent = \
         '  <svg viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg">' + \
@@ -3705,7 +3705,7 @@ def _testDangerousSVG(baseDir: str) -> None:
         '</svg>'
     assert dangerousSVG(svgContent, False)
 
-    assert not scanThemesForScripts(baseDir)
+    assert not scanThemesForScripts(base_dir)
 
 
 def _testDangerousMarkup():
@@ -3870,9 +3870,9 @@ def _testValidContentWarning():
     assert resultStr == 'Invalid content warning'
 
 
-def _testTranslations(baseDir: str) -> None:
+def _testTranslations(base_dir: str) -> None:
     print('testTranslations')
-    languagesStr = getSupportedLanguages(baseDir)
+    languagesStr = getSupportedLanguages(base_dir)
     assert languagesStr
 
     # load all translations into a dict
@@ -4212,10 +4212,10 @@ def _testGuessHashtagCategory() -> None:
     assert guess == "bar"
 
 
-def _testGetMentionedPeople(baseDir: str) -> None:
+def _testGetMentionedPeople(base_dir: str) -> None:
     print('testGetMentionedPeople')
     content = "@dragon@cave.site @bat@cave.site This is a test."
-    actors = getMentionedPeople(baseDir, 'https',
+    actors = getMentionedPeople(base_dir, 'https',
                                 content,
                                 'mydomain', False)
     assert actors
@@ -4224,7 +4224,7 @@ def _testGetMentionedPeople(baseDir: str) -> None:
     assert actors[1] == "https://cave.site/users/bat"
 
 
-def _testReplyToPublicPost(baseDir: str) -> None:
+def _testReplyToPublicPost(base_dir: str) -> None:
     systemLanguage = 'en'
     nickname = 'test7492362'
     domain = 'other.site'
@@ -4252,7 +4252,7 @@ def _testReplyToPublicPost(baseDir: str) -> None:
     lowBandwidth = True
     contentLicenseUrl = 'https://creativecommons.org/licenses/by/4.0'
     reply = \
-        createPublicPost(baseDir, nickname, domain, port, httpPrefix,
+        createPublicPost(base_dir, nickname, domain, port, httpPrefix,
                          content, followersOnly, saveToFile,
                          clientToServer, commentsEnabled,
                          attachImageFilename, mediaType,
@@ -4769,7 +4769,7 @@ def _testFunctions():
                    modules, modGroups, maxModuleCalls)
 
 
-def _testLinksWithinPost(baseDir: str) -> None:
+def _testLinksWithinPost(base_dir: str) -> None:
     systemLanguage = 'en'
     nickname = 'test27636'
     domain = 'rando.site'
@@ -4798,7 +4798,7 @@ def _testLinksWithinPost(baseDir: str) -> None:
     contentLicenseUrl = 'https://creativecommons.org/licenses/by/4.0'
 
     postJsonObject = \
-        createPublicPost(baseDir, nickname, domain, port, httpPrefix,
+        createPublicPost(base_dir, nickname, domain, port, httpPrefix,
                          content, followersOnly, saveToFile,
                          clientToServer, commentsEnabled,
                          attachImageFilename, mediaType,
@@ -4834,7 +4834,7 @@ def _testLinksWithinPost(baseDir: str) -> None:
         "taggedthing\" class=\"mention hashtag\" rel=\"tag\" " + \
         "target=\"_blank\">#<span>taggedthing</span></a></p>"
     postJsonObject = \
-        createPublicPost(baseDir, nickname, domain, port, httpPrefix,
+        createPublicPost(base_dir, nickname, domain, port, httpPrefix,
                          content,
                          False, False,
                          False, True,
@@ -5058,7 +5058,7 @@ def _testExtractPGPPublicKey():
     assert result == pubKey
 
 
-def testUpdateActor(baseDir: str):
+def testUpdateActor(base_dir: str):
     print('Testing update of actor properties')
 
     global testServerAliceRunning
@@ -5068,13 +5068,13 @@ def testUpdateActor(baseDir: str):
     proxyType = None
     federationList = []
 
-    if os.path.isdir(baseDir + '/.tests'):
-        shutil.rmtree(baseDir + '/.tests',
+    if os.path.isdir(base_dir + '/.tests'):
+        shutil.rmtree(base_dir + '/.tests',
                       ignore_errors=False, onerror=None)
-    os.mkdir(baseDir + '/.tests')
+    os.mkdir(base_dir + '/.tests')
 
     # create the server
-    aliceDir = baseDir + '/.tests/alice'
+    aliceDir = base_dir + '/.tests/alice'
     aliceDomain = '127.0.0.11'
     alicePort = 61792
     aliceSendThreads = []
@@ -5170,9 +5170,9 @@ def testUpdateActor(baseDir: str):
     thrAlice.join()
     assert thrAlice.is_alive() is False
 
-    os.chdir(baseDir)
-    if os.path.isdir(baseDir + '/.tests'):
-        shutil.rmtree(baseDir + '/.tests', ignore_errors=False, onerror=None)
+    os.chdir(base_dir)
+    if os.path.isdir(base_dir + '/.tests'):
+        shutil.rmtree(base_dir + '/.tests', ignore_errors=False, onerror=None)
 
 
 def _testRemovePostInteractions() -> None:
@@ -5511,7 +5511,7 @@ def _testUserAgentDomain() -> None:
     assert userAgentDomain(userAgent, False) is None
 
 
-def _testSwitchWords(baseDir: str) -> None:
+def _testSwitchWords(base_dir: str) -> None:
     print('testSwitchWords')
     rules = [
         "rock -> hamster",
@@ -5521,15 +5521,15 @@ def _testSwitchWords(baseDir: str) -> None:
     domain = 'testdomain.com'
 
     content = 'This is a test'
-    result = switchWords(baseDir, nickname, domain, content, rules)
+    result = switchWords(base_dir, nickname, domain, content, rules)
     assert result == content
 
     content = 'This is orange test'
-    result = switchWords(baseDir, nickname, domain, content, rules)
+    result = switchWords(base_dir, nickname, domain, content, rules)
     assert result == 'This is lemon test'
 
     content = 'This is a test rock'
-    result = switchWords(baseDir, nickname, domain, content, rules)
+    result = switchWords(base_dir, nickname, domain, content, rules)
     assert result == 'This is a test hamster'
 
 
@@ -5699,19 +5699,19 @@ def _testGetPriceFromString() -> None:
     assert curr == "USD"
 
 
-def _translateOntology(baseDir: str) -> None:
+def _translateOntology(base_dir: str) -> None:
     return
-    ontologyTypes = getCategoryTypes(baseDir)
+    ontologyTypes = getCategoryTypes(base_dir)
     url = 'https://translate.astian.org'
     apiKey = None
     ltLangList = libretranslateLanguages(url, apiKey)
 
-    languagesStr = getSupportedLanguages(baseDir)
+    languagesStr = getSupportedLanguages(base_dir)
     assert languagesStr
 
     for oType in ontologyTypes:
         changed = False
-        filename = baseDir + '/ontology/' + oType + 'Types.json'
+        filename = base_dir + '/ontology/' + oType + 'Types.json'
         if not os.path.isfile(filename):
             continue
         ontologyJson = loadJson(filename)
@@ -5755,7 +5755,7 @@ def _translateOntology(baseDir: str) -> None:
         saveJson(ontologyJson, filename + '.new')
 
 
-def _testCanReplyTo(baseDir: str) -> None:
+def _testCanReplyTo(base_dir: str) -> None:
     print('testCanReplyTo')
     systemLanguage = 'en'
     nickname = 'test27637'
@@ -5785,7 +5785,7 @@ def _testCanReplyTo(baseDir: str) -> None:
     contentLicenseUrl = 'https://creativecommons.org/licenses/by/4.0'
 
     postJsonObject = \
-        createPublicPost(baseDir, nickname, domain, port, httpPrefix,
+        createPublicPost(base_dir, nickname, domain, port, httpPrefix,
                          content, followersOnly, saveToFile,
                          clientToServer, commentsEnabled,
                          attachImageFilename, mediaType,
@@ -5804,14 +5804,14 @@ def _testCanReplyTo(baseDir: str) -> None:
     postUrl = postJsonObject['object']['id']
     replyIntervalHours = 2
     currDateStr = "2021-09-08T21:32:10Z"
-    assert canReplyTo(baseDir, nickname, domain,
+    assert canReplyTo(base_dir, nickname, domain,
                       postUrl, replyIntervalHours,
                       currDateStr,
                       postJsonObject)
 
     # test a post outside of the reply interval
     currDateStr = "2021-09-09T09:24:47Z"
-    assert not canReplyTo(baseDir, nickname, domain,
+    assert not canReplyTo(base_dir, nickname, domain,
                           postUrl, replyIntervalHours,
                           currDateStr,
                           postJsonObject)
@@ -5854,10 +5854,10 @@ def _testWordsSimilarity() -> None:
     assert similarity > 80
 
 
-def _testAddCWfromLists(baseDir: str) -> None:
+def _testAddCWfromLists(base_dir: str) -> None:
     print('testAddCWfromLists')
     translate = {}
-    CWlists = loadCWLists(baseDir, True)
+    CWlists = loadCWLists(base_dir, True)
     assert CWlists
 
     postJsonObject = {
@@ -5904,12 +5904,12 @@ def _testValidEmojiContent() -> None:
     assert validEmojiContent('😄')
 
 
-def _testHttpsigBaseNew(withDigest: bool, baseDir: str,
+def _testHttpsigBaseNew(withDigest: bool, base_dir: str,
                         algorithm: str, digestAlgorithm: str) -> None:
     print('testHttpsigNew(' + str(withDigest) + ')')
 
     debug = True
-    path = baseDir + '/.testHttpsigBaseNew'
+    path = base_dir + '/.testHttpsigBaseNew'
     if os.path.isdir(path):
         shutil.rmtree(path, ignore_errors=False, onerror=None)
     os.mkdir(path)
@@ -6023,7 +6023,7 @@ def _testHttpsigBaseNew(withDigest: bool, baseDir: str,
                              boxpath, not GETmethod, None,
                              messageBodyJsonStr, False) is False
 
-    os.chdir(baseDir)
+    os.chdir(base_dir)
     shutil.rmtree(path, ignore_errors=False, onerror=None)
 
 
@@ -6040,20 +6040,20 @@ def _testGetActorFromInReplyTo() -> None:
 
 
 def runAllTests():
-    baseDir = os.getcwd()
+    base_dir = os.getcwd()
     print('Running tests...')
     updateDefaultThemesList(os.getcwd())
-    _translateOntology(baseDir)
+    _translateOntology(base_dir)
     _testGetPriceFromString()
     _testFunctions()
     _testGetActorFromInReplyTo()
     _testValidEmojiContent()
-    _testAddCWfromLists(baseDir)
+    _testAddCWfromLists(base_dir)
     _testWordsSimilarity()
     _testSecondsBetweenPublished()
     _testSignAndVerify()
-    _testDangerousSVG(baseDir)
-    _testCanReplyTo(baseDir)
+    _testDangerousSVG(base_dir)
+    _testCanReplyTo(base_dir)
     _testDateConversions()
     _testAuthorizeSharedItems()
     _testValidPassword()
@@ -6061,7 +6061,7 @@ def runAllTests():
     _testSetActorLanguages()
     _testLimitRepetedWords()
     _testLimitWordLengths()
-    _testSwitchWords(baseDir)
+    _testSwitchWords(base_dir)
     _testUserAgentDomain()
     _testRoles()
     _testSkills()
@@ -6077,9 +6077,9 @@ def runAllTests():
     _testPrepareHtmlPostNickname()
     _testDomainHandling()
     _testMastoApi()
-    _testLinksWithinPost(baseDir)
-    _testReplyToPublicPost(baseDir)
-    _testGetMentionedPeople(baseDir)
+    _testLinksWithinPost(base_dir)
+    _testReplyToPublicPost(base_dir)
+    _testGetMentionedPeople(base_dir)
     _testGuessHashtagCategory()
     _testValidNickname()
     _testParseFeedDate()
@@ -6089,12 +6089,12 @@ def runAllTests():
     _testRemoveHtmlTag()
     _testReplaceEmailQuote()
     _testConstantTimeStringCheck()
-    _testTranslations(baseDir)
+    _testTranslations(base_dir)
     _testValidContentWarning()
     _testRemoveIdEnding()
     _testJsonPostAllowsComments()
     _runHtmlReplaceQuoteMarks()
-    _testDangerousCSS(baseDir)
+    _testDangerousCSS(base_dir)
     _testDangerousMarkup()
     _testRemoveHtml()
     _testSiteIsActive()
@@ -6106,19 +6106,19 @@ def runAllTests():
     _testSaveLoadJson()
     _testJsonString()
     _testGetStatusNumber()
-    _testAddEmoji(baseDir)
+    _testAddEmoji(base_dir)
     _testActorParsing()
-    _testHttpsig(baseDir)
-    _testHttpSignedGET(baseDir)
+    _testHttpsig(base_dir)
+    _testHttpSignedGET(base_dir)
     _testHttpSigNew('rsa-sha256', 'rsa-sha256')
-    _testHttpsigBaseNew(True, baseDir, 'rsa-sha256', 'rsa-sha256')
-    _testHttpsigBaseNew(False, baseDir, 'rsa-sha256', 'rsa-sha256')
+    _testHttpsigBaseNew(True, base_dir, 'rsa-sha256', 'rsa-sha256')
+    _testHttpsigBaseNew(False, base_dir, 'rsa-sha256', 'rsa-sha256')
     _testCache()
     _testThreads()
-    _testCreatePerson(baseDir)
-    _testAuthentication(baseDir)
-    _testFollowersOfPerson(baseDir)
-    _testNoOfFollowersOnDomain(baseDir)
-    _testFollows(baseDir)
-    _testGroupFollowers(baseDir)
+    _testCreatePerson(base_dir)
+    _testAuthentication(base_dir)
+    _testFollowersOfPerson(base_dir)
+    _testNoOfFollowersOnDomain(base_dir)
+    _testFollows(base_dir)
+    _testGroupFollowers(base_dir)
     print('Tests succeeded\n')

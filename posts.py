@@ -90,13 +90,13 @@ from video import convertVideoToNote
 from context import getIndividualPostContext
 
 
-def isModerator(baseDir: str, nickname: str) -> bool:
+def isModerator(base_dir: str, nickname: str) -> bool:
     """Returns true if the given nickname is a moderator
     """
-    moderatorsFile = baseDir + '/accounts/moderators.txt'
+    moderatorsFile = base_dir + '/accounts/moderators.txt'
 
     if not os.path.isfile(moderatorsFile):
-        adminName = getConfigParam(baseDir, 'admin')
+        adminName = getConfigParam(base_dir, 'admin')
         if not adminName:
             return False
         if adminName == nickname:
@@ -106,7 +106,7 @@ def isModerator(baseDir: str, nickname: str) -> bool:
     with open(moderatorsFile, 'r') as f:
         lines = f.readlines()
         if len(lines) == 0:
-            adminName = getConfigParam(baseDir, 'admin')
+            adminName = getConfigParam(base_dir, 'admin')
             if not adminName:
                 return False
             if adminName == nickname:
@@ -118,11 +118,11 @@ def isModerator(baseDir: str, nickname: str) -> bool:
     return False
 
 
-def noOfFollowersOnDomain(baseDir: str, handle: str,
+def noOfFollowersOnDomain(base_dir: str, handle: str,
                           domain: str, followFile='followers.txt') -> int:
     """Returns the number of followers of the given handle from the given domain
     """
-    filename = baseDir + '/accounts/' + handle + '/' + followFile
+    filename = base_dir + '/accounts/' + handle + '/' + followFile
     if not os.path.isfile(filename):
         return 0
 
@@ -138,13 +138,13 @@ def noOfFollowersOnDomain(baseDir: str, handle: str,
     return ctr
 
 
-def _getLocalPrivateKey(baseDir: str, nickname: str, domain: str) -> str:
+def _getLocalPrivateKey(base_dir: str, nickname: str, domain: str) -> str:
     """Returns the private key for a local account
     """
     if not domain or not nickname:
         return None
     handle = nickname + '@' + domain
-    keyFilename = baseDir + '/keys/private/' + handle.lower() + '.key'
+    keyFilename = base_dir + '/keys/private/' + handle.lower() + '.key'
     if not os.path.isfile(keyFilename):
         return None
     with open(keyFilename, 'r') as pemFile:
@@ -152,20 +152,20 @@ def _getLocalPrivateKey(baseDir: str, nickname: str, domain: str) -> str:
     return None
 
 
-def getInstanceActorKey(baseDir: str, domain: str) -> str:
+def getInstanceActorKey(base_dir: str, domain: str) -> str:
     """Returns the private key for the instance actor used for
     signing GET posts
     """
-    return _getLocalPrivateKey(baseDir, 'inbox', domain)
+    return _getLocalPrivateKey(base_dir, 'inbox', domain)
 
 
-def _getLocalPublicKey(baseDir: str, nickname: str, domain: str) -> str:
+def _getLocalPublicKey(base_dir: str, nickname: str, domain: str) -> str:
     """Returns the public key for a local account
     """
     if not domain or not nickname:
         return None
     handle = nickname + '@' + domain
-    keyFilename = baseDir + '/keys/public/' + handle.lower() + '.key'
+    keyFilename = base_dir + '/keys/public/' + handle.lower() + '.key'
     if not os.path.isfile(keyFilename):
         return None
     with open(keyFilename, 'r') as pemFile:
@@ -173,14 +173,14 @@ def _getLocalPublicKey(baseDir: str, nickname: str, domain: str) -> str:
     return None
 
 
-def _getPersonKey(nickname: str, domain: str, baseDir: str,
+def _getPersonKey(nickname: str, domain: str, base_dir: str,
                   keyType: str = 'public', debug: bool = False):
     """Returns the public or private key of a person
     """
     if keyType == 'private':
-        keyPem = _getLocalPrivateKey(baseDir, nickname, domain)
+        keyPem = _getLocalPrivateKey(base_dir, nickname, domain)
     else:
-        keyPem = _getLocalPublicKey(baseDir, nickname, domain)
+        keyPem = _getLocalPublicKey(base_dir, nickname, domain)
     if not keyPem:
         if debug:
             print('DEBUG: ' + keyType + ' key file not found')
@@ -295,7 +295,7 @@ def parseUserFeed(signingPrivateKeyPem: str,
     return None
 
 
-def _getPersonBoxActor(session, baseDir: str, actor: str,
+def _getPersonBoxActor(session, base_dir: str, actor: str,
                        profileStr: str, asHeader: {},
                        debug: bool, projectVersion: str,
                        httpPrefix: str, originDomain: str,
@@ -305,7 +305,7 @@ def _getPersonBoxActor(session, baseDir: str, actor: str,
     """Returns the actor json for the given actor url
     """
     personJson = \
-        getPersonFromCache(baseDir, actor, personCache, True)
+        getPersonFromCache(base_dir, actor, personCache, True)
     if personJson:
         return personJson
 
@@ -331,7 +331,7 @@ def _getPersonBoxActor(session, baseDir: str, actor: str,
 
 
 def getPersonBox(signingPrivateKeyPem: str, originDomain: str,
-                 baseDir: str, session, wfRequest: {}, personCache: {},
+                 base_dir: str, session, wfRequest: {}, personCache: {},
                  projectVersion: str, httpPrefix: str,
                  nickname: str, domain: str,
                  boxName: str = 'inbox',
@@ -365,7 +365,7 @@ def getPersonBox(signingPrivateKeyPem: str, originDomain: str,
 
     # get the actor json from the url
     personJson = \
-        _getPersonBoxActor(session, baseDir, personUrl,
+        _getPersonBoxActor(session, base_dir, personUrl,
                            profileStr, asHeader,
                            debug, projectVersion,
                            httpPrefix, originDomain,
@@ -416,7 +416,7 @@ def getPersonBox(signingPrivateKeyPem: str, originDomain: str,
         displayName = personJson['name']
         if dangerousMarkup(personJson['name'], False):
             displayName = '*ADVERSARY*'
-        elif isFiltered(baseDir,
+        elif isFiltered(base_dir,
                         nickname, domain,
                         displayName):
             displayName = '*FILTERED*'
@@ -424,7 +424,7 @@ def getPersonBox(signingPrivateKeyPem: str, originDomain: str,
         if personJson.get('movedTo'):
             displayName += ' ⌂'
 
-    storePersonInCache(baseDir, personUrl, personJson, personCache, True)
+    storePersonInCache(base_dir, personUrl, personJson, personCache, True)
 
     return boxJson, pubKeyId, pubKey, personId, sharedInbox, \
         avatarUrl, displayName, isGroup
@@ -808,7 +808,7 @@ def getPostDomains(session, outboxUrl: str, maxPosts: int,
     return postDomains
 
 
-def _getPostsForBlockedDomains(baseDir: str,
+def _getPostsForBlockedDomains(base_dir: str,
                                session, outboxUrl: str, maxPosts: int,
                                maxMentions: int,
                                maxEmoji: int, maxAttachments: int,
@@ -853,7 +853,7 @@ def _getPostsForBlockedDomains(baseDir: str,
             if isinstance(item['object']['inReplyTo'], str):
                 postDomain, postPort = \
                     getDomainFromActor(item['object']['inReplyTo'])
-                if isBlockedDomain(baseDir, postDomain):
+                if isBlockedDomain(base_dir, postDomain):
                     if item['object'].get('url'):
                         url = item['object']['url']
                     else:
@@ -872,7 +872,7 @@ def _getPostsForBlockedDomains(baseDir: str,
                 if tagType == 'mention' and tagItem.get('href'):
                     postDomain, postPort = \
                         getDomainFromActor(tagItem['href'])
-                    if isBlockedDomain(baseDir, postDomain):
+                    if isBlockedDomain(base_dir, postDomain):
                         if item['object'].get('url'):
                             url = item['object']['url']
                         else:
@@ -885,14 +885,14 @@ def _getPostsForBlockedDomains(baseDir: str,
     return blockedPosts
 
 
-def deleteAllPosts(baseDir: str,
+def deleteAllPosts(base_dir: str,
                    nickname: str, domain: str, boxname: str) -> None:
     """Deletes all posts for a person from inbox or outbox
     """
     if boxname != 'inbox' and boxname != 'outbox' and \
        boxname != 'tlblogs' and boxname != 'tlnews':
         return
-    boxDir = createPersonDir(nickname, domain, baseDir, boxname)
+    boxDir = createPersonDir(nickname, domain, base_dir, boxname)
     for deleteFilename in os.scandir(boxDir):
         deleteFilename = deleteFilename.name
         filePath = os.path.join(boxDir, deleteFilename)
@@ -905,7 +905,7 @@ def deleteAllPosts(baseDir: str,
             print('ERROR: deleteAllPosts ' + str(ex))
 
 
-def savePostToBox(baseDir: str, httpPrefix: str, postId: str,
+def savePostToBox(base_dir: str, httpPrefix: str, postId: str,
                   nickname: str, domain: str, postJsonObject: {},
                   boxname: str) -> str:
     """Saves the give json to the give box
@@ -928,14 +928,14 @@ def savePostToBox(baseDir: str, httpPrefix: str, postId: str,
         postJsonObject['object']['id'] = postId
         postJsonObject['object']['atomUri'] = postId
 
-    boxDir = createPersonDir(nickname, domain, baseDir, boxname)
+    boxDir = createPersonDir(nickname, domain, base_dir, boxname)
     filename = boxDir + '/' + postId.replace('/', '#') + '.json'
 
     saveJson(postJsonObject, filename)
     return filename
 
 
-def _updateHashtagsIndex(baseDir: str, tag: {}, newPostId: str) -> None:
+def _updateHashtagsIndex(base_dir: str, tag: {}, newPostId: str) -> None:
     """Writes the post url for hashtags to a file
     This allows posts for a hashtag to be quickly looked up
     """
@@ -943,7 +943,7 @@ def _updateHashtagsIndex(baseDir: str, tag: {}, newPostId: str) -> None:
         return
 
     # create hashtags directory
-    tagsDir = baseDir + '/tags'
+    tagsDir = base_dir + '/tags'
     if not os.path.isdir(tagsDir):
         os.mkdir(tagsDir)
     tagName = tag['name']
@@ -968,12 +968,13 @@ def _updateHashtagsIndex(baseDir: str, tag: {}, newPostId: str) -> None:
                       tagsFilename + ' ' + str(ex))
 
 
-def _addSchedulePost(baseDir: str, nickname: str, domain: str,
+def _addSchedulePost(base_dir: str, nickname: str, domain: str,
                      eventDateStr: str, postId: str) -> None:
     """Adds a scheduled post to the index
     """
     handle = nickname + '@' + domain
-    scheduleIndexFilename = baseDir + '/accounts/' + handle + '/schedule.index'
+    scheduleIndexFilename = \
+        base_dir + '/accounts/' + handle + '/schedule.index'
 
     indexStr = eventDateStr + ' ' + postId.replace('/', '#')
     if os.path.isfile(scheduleIndexFilename):
@@ -1004,11 +1005,11 @@ def validContentWarning(cw: str) -> str:
     return removeInvalidChars(cw)
 
 
-def _loadAutoCW(baseDir: str, nickname: str, domain: str) -> []:
+def _loadAutoCW(base_dir: str, nickname: str, domain: str) -> []:
     """Loads automatic CWs file and returns a list containing
     the lines of the file
     """
-    filename = acctDir(baseDir, nickname, domain) + '/autocw.txt'
+    filename = acctDir(base_dir, nickname, domain) + '/autocw.txt'
     if not os.path.isfile(filename):
         return []
     with open(filename, 'r') as f:
@@ -1016,13 +1017,13 @@ def _loadAutoCW(baseDir: str, nickname: str, domain: str) -> []:
     return []
 
 
-def _addAutoCW(baseDir: str, nickname: str, domain: str,
+def _addAutoCW(base_dir: str, nickname: str, domain: str,
                subject: str, content: str) -> str:
     """Appends any automatic CW to the subject line
     and returns the new subject line
     """
     newSubject = subject
-    autoCWList = _loadAutoCW(baseDir, nickname, domain)
+    autoCWList = _loadAutoCW(base_dir, nickname, domain)
     for cwRule in autoCWList:
         if '->' not in cwRule:
             continue
@@ -1038,7 +1039,7 @@ def _addAutoCW(baseDir: str, nickname: str, domain: str,
     return newSubject
 
 
-def _createPostCWFromReply(baseDir: str, nickname: str, domain: str,
+def _createPostCWFromReply(base_dir: str, nickname: str, domain: str,
                            inReplyTo: str,
                            sensitive: bool, summary: str) -> (bool, str):
     """If this is a reply and the original post has a CW
@@ -1049,7 +1050,7 @@ def _createPostCWFromReply(baseDir: str, nickname: str, domain: str,
         # it has a content warning. If it does then reproduce
         # the same warning
         replyPostFilename = \
-            locatePost(baseDir, nickname, domain, inReplyTo)
+            locatePost(base_dir, nickname, domain, inReplyTo)
         if replyPostFilename:
             replyToJson = loadJson(replyPostFilename)
             if replyToJson:
@@ -1062,7 +1063,7 @@ def _createPostCWFromReply(baseDir: str, nickname: str, domain: str,
     return sensitive, summary
 
 
-def _createPostS2S(baseDir: str, nickname: str, domain: str, port: int,
+def _createPostS2S(base_dir: str, nickname: str, domain: str, port: int,
                    httpPrefix: str, content: str, statusNumber: str,
                    published: str, newPostId: str, postContext: {},
                    toRecipients: [], toCC: [], inReplyTo: str,
@@ -1130,14 +1131,14 @@ def _createPostS2S(baseDir: str, nickname: str, domain: str, port: int,
     }
     if attachImageFilename:
         newPost['object'] = \
-            attachMedia(baseDir, httpPrefix, nickname, domain, port,
+            attachMedia(base_dir, httpPrefix, nickname, domain, port,
                         newPost['object'], attachImageFilename,
                         mediaType, imageDescription, city, lowBandwidth,
                         contentLicenseUrl)
     return newPost
 
 
-def _createPostC2S(baseDir: str, nickname: str, domain: str, port: int,
+def _createPostC2S(base_dir: str, nickname: str, domain: str, port: int,
                    httpPrefix: str, content: str, statusNumber: str,
                    published: str, newPostId: str, postContext: {},
                    toRecipients: [], toCC: [], inReplyTo: str,
@@ -1195,7 +1196,7 @@ def _createPostC2S(baseDir: str, nickname: str, domain: str, port: int,
     }
     if attachImageFilename:
         newPost = \
-            attachMedia(baseDir, httpPrefix, nickname, domain, port,
+            attachMedia(base_dir, httpPrefix, nickname, domain, port,
                         newPost, attachImageFilename,
                         mediaType, imageDescription, city, lowBandwidth,
                         contentLicenseUrl)
@@ -1316,7 +1317,7 @@ def _createPostMentions(ccUrl: str, newPost: {},
         _consolidateActorsList(['cc'])
 
 
-def _createPostModReport(baseDir: str,
+def _createPostModReport(base_dir: str,
                          isModerationReport: bool, newPost: {},
                          newPostId: str) -> None:
     """ if this is a moderation report then add a status
@@ -1329,7 +1330,7 @@ def _createPostModReport(baseDir: str,
     else:
         newPost['moderationStatus'] = 'pending'
     # save to index file
-    moderationIndexFile = baseDir + '/accounts/moderation.txt'
+    moderationIndexFile = base_dir + '/accounts/moderation.txt'
     with open(moderationIndexFile, 'a+') as modFile:
         modFile.write(newPostId + '\n')
 
@@ -1358,7 +1359,7 @@ def getActorFromInReplyTo(inReplyTo: str) -> str:
     return replyActor
 
 
-def _createPostBase(baseDir: str,
+def _createPostBase(base_dir: str,
                     nickname: str, domain: str, port: int,
                     toUrl: str, ccUrl: str, httpPrefix: str, content: str,
                     followersOnly: bool, saveToFile: bool,
@@ -1386,11 +1387,11 @@ def _createPostBase(baseDir: str,
     """
     content = removeInvalidChars(content)
 
-    subject = _addAutoCW(baseDir, nickname, domain, subject, content)
+    subject = _addAutoCW(base_dir, nickname, domain, subject, content)
 
     if nickname != 'news':
         mentionedRecipients = \
-            getMentionedPeople(baseDir, httpPrefix, content, domain, False)
+            getMentionedPeople(base_dir, httpPrefix, content, domain, False)
     else:
         mentionedRecipients = ''
 
@@ -1402,7 +1403,7 @@ def _createPostBase(baseDir: str,
     # add tags
     if nickname != 'news':
         content = \
-            addHtmlTags(baseDir, httpPrefix,
+            addHtmlTags(base_dir, httpPrefix,
                         nickname, domain, content,
                         mentionedRecipients,
                         hashtagsDict, True)
@@ -1415,7 +1416,7 @@ def _createPostBase(baseDir: str,
     # get list of tags
     if nickname != 'news':
         content = \
-            replaceEmojiFromTags(None, baseDir, content, tags, 'content',
+            replaceEmojiFromTags(None, base_dir, content, tags, 'content',
                                  False)
     # remove replaced emoji
     hashtagsDictCopy = hashtagsDict.copy()
@@ -1463,11 +1464,11 @@ def _createPostBase(baseDir: str,
             if not tagExists(tag['type'], tag['name'], tags):
                 tags.append(tag)
             if isPublic:
-                _updateHashtagsIndex(baseDir, tag, newPostId)
+                _updateHashtagsIndex(base_dir, tag, newPostId)
         # print('Content tags: ' + str(tags))
 
     sensitive, summary = \
-        _createPostCWFromReply(baseDir, nickname, domain,
+        _createPostCWFromReply(base_dir, nickname, domain,
                                inReplyTo, sensitive, summary)
 
     eventDateStr = \
@@ -1507,7 +1508,7 @@ def _createPostBase(baseDir: str,
 
     if not clientToServer:
         newPost = \
-            _createPostS2S(baseDir, nickname, domain, port,
+            _createPostS2S(base_dir, nickname, domain, port,
                            httpPrefix, content, statusNumber,
                            published, newPostId, postContext,
                            toRecipients, toCC, inReplyTo,
@@ -1520,7 +1521,7 @@ def _createPostBase(baseDir: str,
                            contentLicenseUrl)
     else:
         newPost = \
-            _createPostC2S(baseDir, nickname, domain, port,
+            _createPostC2S(base_dir, nickname, domain, port,
                            httpPrefix, content, statusNumber,
                            published, newPostId, postContext,
                            toRecipients, toCC, inReplyTo,
@@ -1534,18 +1535,18 @@ def _createPostBase(baseDir: str,
 
     _createPostMentions(ccUrl, newPost, toRecipients, tags)
 
-    _createPostModReport(baseDir, isModerationReport, newPost, newPostId)
+    _createPostModReport(base_dir, isModerationReport, newPost, newPostId)
 
     # If a patch has been posted - i.e. the output from
     # git format-patch - then convert the activitypub type
-    convertPostToPatch(baseDir, nickname, domain, newPost)
+    convertPostToPatch(base_dir, nickname, domain, newPost)
 
     if schedulePost:
         if eventDate and eventTime:
             # add an item to the scheduled post index file
-            _addSchedulePost(baseDir, nickname, domain,
+            _addSchedulePost(base_dir, nickname, domain,
                              eventDateStr, newPostId)
-            savePostToBox(baseDir, httpPrefix, newPostId,
+            savePostToBox(base_dir, httpPrefix, newPostId,
                           nickname, domain, newPost, 'scheduled')
         else:
             print('Unable to create scheduled post without ' +
@@ -1553,10 +1554,10 @@ def _createPostBase(baseDir: str,
             return newPost
     elif saveToFile:
         if isArticle:
-            savePostToBox(baseDir, httpPrefix, newPostId,
+            savePostToBox(base_dir, httpPrefix, newPostId,
                           nickname, domain, newPost, 'tlblogs')
         else:
-            savePostToBox(baseDir, httpPrefix, newPostId,
+            savePostToBox(base_dir, httpPrefix, newPostId,
                           nickname, domain, newPost, 'outbox')
     return newPost
 
@@ -1597,7 +1598,7 @@ def outboxMessageCreateWrap(httpPrefix: str,
     return newPost
 
 
-def _postIsAddressedToFollowers(baseDir: str,
+def _postIsAddressedToFollowers(base_dir: str,
                                 nickname: str, domain: str, port: int,
                                 httpPrefix: str,
                                 postJsonObject: {}) -> bool:
@@ -1633,11 +1634,11 @@ def _postIsAddressedToFollowers(baseDir: str,
     return addressedToFollowers
 
 
-def pinPost(baseDir: str, nickname: str, domain: str,
+def pinPost(base_dir: str, nickname: str, domain: str,
             pinnedContent: str, followersOnly: bool) -> None:
     """Pins the given post Id to the profile of then given account
     """
-    accountDir = acctDir(baseDir, nickname, domain)
+    accountDir = acctDir(base_dir, nickname, domain)
     pinnedFilename = accountDir + '/pinToProfile.txt'
     try:
         with open(pinnedFilename, 'w+') as pinFile:
@@ -1646,10 +1647,10 @@ def pinPost(baseDir: str, nickname: str, domain: str,
         print('EX: unable to write ' + pinnedFilename)
 
 
-def undoPinnedPost(baseDir: str, nickname: str, domain: str) -> None:
+def undoPinnedPost(base_dir: str, nickname: str, domain: str) -> None:
     """Removes pinned content for then given account
     """
-    accountDir = acctDir(baseDir, nickname, domain)
+    accountDir = acctDir(base_dir, nickname, domain)
     pinnedFilename = accountDir + '/pinToProfile.txt'
     if os.path.isfile(pinnedFilename):
         try:
@@ -1658,12 +1659,12 @@ def undoPinnedPost(baseDir: str, nickname: str, domain: str) -> None:
             print('EX: undoPinnedPost unable to delete ' + pinnedFilename)
 
 
-def getPinnedPostAsJson(baseDir: str, httpPrefix: str,
+def getPinnedPostAsJson(base_dir: str, httpPrefix: str,
                         nickname: str, domain: str,
                         domainFull: str, systemLanguage: str) -> {}:
     """Returns the pinned profile post as json
     """
-    accountDir = acctDir(baseDir, nickname, domain)
+    accountDir = acctDir(base_dir, nickname, domain)
     pinnedFilename = accountDir + '/pinToProfile.txt'
     pinnedPostJson = {}
     actor = localActorUrl(httpPrefix, nickname, domainFull)
@@ -1698,13 +1699,13 @@ def getPinnedPostAsJson(baseDir: str, httpPrefix: str,
     return pinnedPostJson
 
 
-def jsonPinPost(baseDir: str, httpPrefix: str,
+def jsonPinPost(base_dir: str, httpPrefix: str,
                 nickname: str, domain: str,
                 domainFull: str, systemLanguage: str) -> {}:
     """Returns a pinned post as json
     """
     pinnedPostJson = \
-        getPinnedPostAsJson(baseDir, httpPrefix,
+        getPinnedPostAsJson(base_dir, httpPrefix,
                             nickname, domain,
                             domainFull, systemLanguage)
     itemsList = []
@@ -1722,12 +1723,12 @@ def jsonPinPost(baseDir: str, httpPrefix: str,
     }
 
 
-def regenerateIndexForBox(baseDir: str,
+def regenerateIndexForBox(base_dir: str,
                           nickname: str, domain: str, boxName: str) -> None:
     """Generates an index for the given box if it doesn't exist
     Used by unit tests to artificially create an index
     """
-    boxDir = acctDir(baseDir, nickname, domain) + '/' + boxName
+    boxDir = acctDir(base_dir, nickname, domain) + '/' + boxName
     boxIndexFilename = boxDir + '.index'
 
     if not os.path.isdir(boxDir):
@@ -1753,7 +1754,7 @@ def regenerateIndexForBox(baseDir: str,
     print('Index generated for ' + boxName + '\n' + result)
 
 
-def createPublicPost(baseDir: str,
+def createPublicPost(base_dir: str,
                      nickname: str, domain: str, port: int, httpPrefix: str,
                      content: str, followersOnly: bool, saveToFile: bool,
                      clientToServer: bool, commentsEnabled: bool,
@@ -1783,7 +1784,7 @@ def createPublicPost(baseDir: str,
     eventStatus = None
     ticketUrl = None
     localActor = localActorUrl(httpPrefix, nickname, domainFull)
-    return _createPostBase(baseDir, nickname, domain, port,
+    return _createPostBase(base_dir, nickname, domain, port,
                            'https://www.w3.org/ns/activitystreams#Public',
                            localActor + '/followers',
                            httpPrefix, content, followersOnly, saveToFile,
@@ -1802,14 +1803,14 @@ def createPublicPost(baseDir: str,
                            contentLicenseUrl)
 
 
-def _appendCitationsToBlogPost(baseDir: str,
+def _appendCitationsToBlogPost(base_dir: str,
                                nickname: str, domain: str,
                                blogJson: {}) -> None:
     """Appends any citations to a new blog post
     """
     # append citations tags, stored in a file
     citationsFilename = \
-        acctDir(baseDir, nickname, domain) + '/.citations.txt'
+        acctDir(base_dir, nickname, domain) + '/.citations.txt'
     if not os.path.isfile(citationsFilename):
         return
     citationsSeparator = '#####'
@@ -1832,7 +1833,7 @@ def _appendCitationsToBlogPost(baseDir: str,
             blogJson['object']['tag'].append(tagJson)
 
 
-def createBlogPost(baseDir: str,
+def createBlogPost(base_dir: str,
                    nickname: str, domain: str, port: int, httpPrefix: str,
                    content: str, followersOnly: bool, saveToFile: bool,
                    clientToServer: bool, commentsEnabled: bool,
@@ -1845,7 +1846,7 @@ def createBlogPost(baseDir: str,
                    conversationId: str, lowBandwidth: bool,
                    contentLicenseUrl: str) -> {}:
     blogJson = \
-        createPublicPost(baseDir,
+        createPublicPost(base_dir,
                          nickname, domain, port, httpPrefix,
                          content, followersOnly, saveToFile,
                          clientToServer, commentsEnabled,
@@ -1858,12 +1859,12 @@ def createBlogPost(baseDir: str,
                          lowBandwidth, contentLicenseUrl)
     blogJson['object']['url'] = \
         blogJson['object']['url'].replace('/@', '/users/')
-    _appendCitationsToBlogPost(baseDir, nickname, domain, blogJson)
+    _appendCitationsToBlogPost(base_dir, nickname, domain, blogJson)
 
     return blogJson
 
 
-def createNewsPost(baseDir: str,
+def createNewsPost(base_dir: str,
                    domain: str, port: int, httpPrefix: str,
                    content: str, followersOnly: bool, saveToFile: bool,
                    attachImageFilename: str, mediaType: str,
@@ -1879,7 +1880,7 @@ def createNewsPost(baseDir: str,
     eventTime = None
     location = None
     blog = \
-        createPublicPost(baseDir,
+        createPublicPost(base_dir,
                          'news', domain, port, httpPrefix,
                          content, followersOnly, saveToFile,
                          clientToServer, False,
@@ -1894,7 +1895,7 @@ def createNewsPost(baseDir: str,
     return blog
 
 
-def createQuestionPost(baseDir: str,
+def createQuestionPost(base_dir: str,
                        nickname: str, domain: str, port: int, httpPrefix: str,
                        content: str, qOptions: [],
                        followersOnly: bool, saveToFile: bool,
@@ -1909,7 +1910,7 @@ def createQuestionPost(baseDir: str,
     domainFull = getFullDomain(domain, port)
     localActor = localActorUrl(httpPrefix, nickname, domainFull)
     messageJson = \
-        _createPostBase(baseDir, nickname, domain, port,
+        _createPostBase(base_dir, nickname, domain, port,
                         'https://www.w3.org/ns/activitystreams#Public',
                         localActor + '/followers',
                         httpPrefix, content, followersOnly, saveToFile,
@@ -1942,7 +1943,7 @@ def createQuestionPost(baseDir: str,
     return messageJson
 
 
-def createUnlistedPost(baseDir: str,
+def createUnlistedPost(base_dir: str,
                        nickname: str, domain: str, port: int, httpPrefix: str,
                        content: str, followersOnly: bool, saveToFile: bool,
                        clientToServer: bool, commentsEnabled: bool,
@@ -1958,7 +1959,7 @@ def createUnlistedPost(baseDir: str,
     """
     domainFull = getFullDomain(domain, port)
     localActor = localActorUrl(httpPrefix, nickname, domainFull)
-    return _createPostBase(baseDir, nickname, domain, port,
+    return _createPostBase(base_dir, nickname, domain, port,
                            localActor + '/followers',
                            'https://www.w3.org/ns/activitystreams#Public',
                            httpPrefix, content, followersOnly, saveToFile,
@@ -1974,7 +1975,7 @@ def createUnlistedPost(baseDir: str,
                            contentLicenseUrl)
 
 
-def createFollowersOnlyPost(baseDir: str,
+def createFollowersOnlyPost(base_dir: str,
                             nickname: str, domain: str, port: int,
                             httpPrefix: str,
                             content: str, followersOnly: bool,
@@ -1993,7 +1994,7 @@ def createFollowersOnlyPost(baseDir: str,
     """
     domainFull = getFullDomain(domain, port)
     localActor = localActorUrl(httpPrefix, nickname, domainFull)
-    return _createPostBase(baseDir, nickname, domain, port,
+    return _createPostBase(base_dir, nickname, domain, port,
                            localActor + '/followers',
                            None,
                            httpPrefix, content, followersOnly, saveToFile,
@@ -2009,7 +2010,7 @@ def createFollowersOnlyPost(baseDir: str,
                            contentLicenseUrl)
 
 
-def getMentionedPeople(baseDir: str, httpPrefix: str,
+def getMentionedPeople(base_dir: str, httpPrefix: str,
                        content: str, domain: str, debug: bool) -> []:
     """Extracts a list of mentioned actors from the given message content
     """
@@ -2025,7 +2026,7 @@ def getMentionedPeople(baseDir: str, httpPrefix: str,
             print('DEBUG: mentioned handle ' + handle)
         if '@' not in handle:
             handle = handle + '@' + domain
-            if not os.path.isdir(baseDir + '/accounts/' + handle):
+            if not os.path.isdir(base_dir + '/accounts/' + handle):
                 continue
         else:
             externalDomain = handle.split('@')[1]
@@ -2044,7 +2045,7 @@ def getMentionedPeople(baseDir: str, httpPrefix: str,
     return mentions
 
 
-def createDirectMessagePost(baseDir: str,
+def createDirectMessagePost(base_dir: str,
                             nickname: str, domain: str, port: int,
                             httpPrefix: str,
                             content: str, followersOnly: bool,
@@ -2062,9 +2063,9 @@ def createDirectMessagePost(baseDir: str,
                             contentLicenseUrl: str) -> {}:
     """Direct Message post
     """
-    content = resolvePetnames(baseDir, nickname, domain, content)
+    content = resolvePetnames(base_dir, nickname, domain, content)
     mentionedPeople = \
-        getMentionedPeople(baseDir, httpPrefix, content, domain, debug)
+        getMentionedPeople(base_dir, httpPrefix, content, domain, debug)
     if debug:
         print('mentionedPeople: ' + str(mentionedPeople))
     if not mentionedPeople:
@@ -2072,7 +2073,7 @@ def createDirectMessagePost(baseDir: str,
     postTo = None
     postCc = None
     messageJson = \
-        _createPostBase(baseDir, nickname, domain, port,
+        _createPostBase(base_dir, nickname, domain, port,
                         postTo, postCc,
                         httpPrefix, content, followersOnly, saveToFile,
                         clientToServer, commentsEnabled,
@@ -2092,12 +2093,12 @@ def createDirectMessagePost(baseDir: str,
     messageJson['object']['cc'] = []
     if schedulePost:
         postId = removeIdEnding(messageJson['object']['id'])
-        savePostToBox(baseDir, httpPrefix, postId,
+        savePostToBox(base_dir, httpPrefix, postId,
                       nickname, domain, messageJson, 'scheduled')
     return messageJson
 
 
-def createReportPost(baseDir: str,
+def createReportPost(base_dir: str,
                      nickname: str, domain: str, port: int, httpPrefix: str,
                      content: str, followersOnly: bool, saveToFile: bool,
                      clientToServer: bool, commentsEnabled: bool,
@@ -2120,7 +2121,7 @@ def createReportPost(baseDir: str,
 
     # create the list of moderators from the moderators file
     moderatorsList = []
-    moderatorsFile = baseDir + '/accounts/moderators.txt'
+    moderatorsFile = base_dir + '/accounts/moderators.txt'
     if os.path.isfile(moderatorsFile):
         with open(moderatorsFile, 'r') as fileHandler:
             for line in fileHandler:
@@ -2151,7 +2152,7 @@ def createReportPost(baseDir: str,
                             moderatorsList.append(moderatorActor)
     if len(moderatorsList) == 0:
         # if there are no moderators then the admin becomes the moderator
-        adminNickname = getConfigParam(baseDir, 'admin')
+        adminNickname = getConfigParam(base_dir, 'admin')
         if adminNickname:
             localActor = localActorUrl(httpPrefix, adminNickname, domainFull)
             moderatorsList.append(localActor)
@@ -2169,7 +2170,7 @@ def createReportPost(baseDir: str,
         handle = toNickname + '@' + domain
 
         postJsonObject = \
-            _createPostBase(baseDir, nickname, domain, port,
+            _createPostBase(base_dir, nickname, domain, port,
                             toUrl, postCc,
                             httpPrefix, content, followersOnly, saveToFile,
                             clientToServer, commentsEnabled,
@@ -2185,7 +2186,7 @@ def createReportPost(baseDir: str,
 
         # save a notification file so that the moderator
         # knows something new has appeared
-        newReportFile = baseDir + '/accounts/' + handle + '/.newReport'
+        newReportFile = base_dir + '/accounts/' + handle + '/.newReport'
         if os.path.isfile(newReportFile):
             continue
         try:
@@ -2198,7 +2199,7 @@ def createReportPost(baseDir: str,
 
 
 def threadSendPost(session, postJsonStr: str, federationList: [],
-                   inboxUrl: str, baseDir: str,
+                   inboxUrl: str, base_dir: str,
                    signatureHeaderJson: {}, postLog: [],
                    debug: bool) -> None:
     """Sends a with retries
@@ -2240,7 +2241,7 @@ def threadSendPost(session, postJsonStr: str, federationList: [],
             postLog.pop(0)
         if debug:
             # save the log file
-            postLogFilename = baseDir + '/post.log'
+            postLogFilename = base_dir + '/post.log'
             if os.path.isfile(postLogFilename):
                 with open(postLogFilename, 'a+') as logFile:
                     logFile.write(logStr + '\n')
@@ -2263,7 +2264,7 @@ def threadSendPost(session, postJsonStr: str, federationList: [],
 
 
 def sendPost(signingPrivateKeyPem: str, projectVersion: str,
-             session, baseDir: str, nickname: str, domain: str, port: int,
+             session, base_dir: str, nickname: str, domain: str, port: int,
              toNickname: str, toDomain: str, toPort: int, cc: str,
              httpPrefix: str, content: str, followersOnly: bool,
              saveToFile: bool, clientToServer: bool,
@@ -2315,7 +2316,7 @@ def sendPost(signingPrivateKeyPem: str, projectVersion: str,
     (inboxUrl, pubKeyId, pubKey, toPersonId, sharedInbox, avatarUrl,
      displayName, _) = getPersonBox(signingPrivateKeyPem,
                                     originDomain,
-                                    baseDir, session, wfRequest,
+                                    base_dir, session, wfRequest,
                                     personCache,
                                     projectVersion, httpPrefix,
                                     nickname, domain, postToBox,
@@ -2330,7 +2331,7 @@ def sendPost(signingPrivateKeyPem: str, projectVersion: str,
     # sharedInbox is optional
 
     postJsonObject = \
-        _createPostBase(baseDir, nickname, domain, port,
+        _createPostBase(base_dir, nickname, domain, port,
                         toPersonId, cc, httpPrefix, content,
                         followersOnly, saveToFile, clientToServer,
                         commentsEnabled,
@@ -2345,7 +2346,7 @@ def sendPost(signingPrivateKeyPem: str, projectVersion: str,
                         contentLicenseUrl)
 
     # get the senders private key
-    privateKeyPem = _getPersonKey(nickname, domain, baseDir, 'private')
+    privateKeyPem = _getPersonKey(nickname, domain, base_dir, 'private')
     if len(privateKeyPem) == 0:
         return 6
 
@@ -2404,7 +2405,7 @@ def sendPost(signingPrivateKeyPem: str, projectVersion: str,
                         args=(session,
                               postJsonStr,
                               federationList,
-                              inboxUrl, baseDir,
+                              inboxUrl, base_dir,
                               signatureHeaderJson.copy(),
                               postLog,
                               debug), daemon=True)
@@ -2414,7 +2415,7 @@ def sendPost(signingPrivateKeyPem: str, projectVersion: str,
 
 
 def sendPostViaServer(signingPrivateKeyPem: str, projectVersion: str,
-                      baseDir: str, session, fromNickname: str, password: str,
+                      base_dir: str, session, fromNickname: str, password: str,
                       fromDomain: str, fromPort: int,
                       toNickname: str, toDomain: str, toPort: int, cc: str,
                       httpPrefix: str, content: str, followersOnly: bool,
@@ -2463,7 +2464,7 @@ def sendPostViaServer(signingPrivateKeyPem: str, projectVersion: str,
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
      displayName, _) = getPersonBox(signingPrivateKeyPem,
                                     originDomain,
-                                    baseDir, session, wfRequest,
+                                    base_dir, session, wfRequest,
                                     personCache,
                                     projectVersion, httpPrefix,
                                     fromNickname,
@@ -2480,7 +2481,7 @@ def sendPostViaServer(signingPrivateKeyPem: str, projectVersion: str,
         return 4
 
     # Get the json for the c2s post, not saving anything to file
-    # Note that baseDir is set to None
+    # Note that base_dir is set to None
     saveToFile = False
     clientToServer = True
     if toDomain.lower().endswith('public'):
@@ -2498,7 +2499,7 @@ def sendPostViaServer(signingPrivateKeyPem: str, projectVersion: str,
             toPersonId = localActorUrl(httpPrefix, toNickname, toDomainFull)
 
     postJsonObject = \
-        _createPostBase(baseDir,
+        _createPostBase(base_dir,
                         fromNickname, fromDomain, fromPort,
                         toPersonId, cc, httpPrefix, content,
                         followersOnly, saveToFile, clientToServer,
@@ -2552,11 +2553,11 @@ def sendPostViaServer(signingPrivateKeyPem: str, projectVersion: str,
     return 0
 
 
-def groupFollowersByDomain(baseDir: str, nickname: str, domain: str) -> {}:
+def groupFollowersByDomain(base_dir: str, nickname: str, domain: str) -> {}:
     """Returns a dictionary with followers grouped by domain
     """
     handle = nickname + '@' + domain
-    followersFilename = baseDir + '/accounts/' + handle + '/followers.txt'
+    followersFilename = base_dir + '/accounts/' + handle + '/followers.txt'
     if not os.path.isfile(followersFilename):
         return None
     grouped = {}
@@ -2606,7 +2607,7 @@ def _addFollowersToPublicPost(postJsonObject: {}) -> None:
         postJsonObject['object']['cc'] = postJsonObject['actor'] + '/followers'
 
 
-def sendSignedJson(postJsonObject: {}, session, baseDir: str,
+def sendSignedJson(postJsonObject: {}, session, base_dir: str,
                    nickname: str, domain: str, port: int,
                    toNickname: str, toDomain: str, toPort: int, cc: str,
                    httpPrefix: str, saveToFile: bool, clientToServer: bool,
@@ -2677,7 +2678,7 @@ def sendSignedJson(postJsonObject: {}, session, baseDir: str,
     (inboxUrl, pubKeyId, pubKey, toPersonId, sharedInboxUrl, avatarUrl,
      displayName, _) = getPersonBox(signingPrivateKeyPem,
                                     originDomain,
-                                    baseDir, session, wfRequest,
+                                    base_dir, session, wfRequest,
                                     personCache,
                                     projectVersion, httpPrefix,
                                     nickname, domain, postToBox,
@@ -2709,11 +2710,12 @@ def sendSignedJson(postJsonObject: {}, session, baseDir: str,
     # sharedInbox is optional
 
     # get the senders private key
-    privateKeyPem = _getPersonKey(nickname, domain, baseDir, 'private', debug)
+    privateKeyPem = _getPersonKey(nickname, domain, base_dir, 'private', debug)
     if len(privateKeyPem) == 0:
         if debug:
             print('DEBUG: Private key not found for ' +
-                  nickname + '@' + domain + ' in ' + baseDir + '/keys/private')
+                  nickname + '@' + domain +
+                  ' in ' + base_dir + '/keys/private')
         return 6
 
     if toDomain not in inboxUrl:
@@ -2766,7 +2768,7 @@ def sendSignedJson(postJsonObject: {}, session, baseDir: str,
                         args=(session,
                               postJsonStr,
                               federationList,
-                              inboxUrl, baseDir,
+                              inboxUrl, base_dir,
                               signatureHeaderJson.copy(),
                               postLog,
                               debug), daemon=True)
@@ -2854,7 +2856,7 @@ def _isProfileUpdate(postJsonObject: {}) -> bool:
     return False
 
 
-def _sendToNamedAddresses(session, baseDir: str,
+def _sendToNamedAddresses(session, base_dir: str,
                           nickname: str, domain: str,
                           onionDomain: str, i2pDomain: str, port: int,
                           httpPrefix: str, federationList: [],
@@ -2992,9 +2994,9 @@ def _sendToNamedAddresses(session, baseDir: str,
             if sharedItemFederationTokens.get(fromDomainFull):
                 sharedItemsToken = sharedItemFederationTokens[fromDomainFull]
 
-        groupAccount = hasGroupType(baseDir, address, personCache)
+        groupAccount = hasGroupType(base_dir, address, personCache)
 
-        sendSignedJson(postJsonObject, session, baseDir,
+        sendSignedJson(postJsonObject, session, base_dir,
                        nickname, fromDomain, port,
                        toNickname, toDomain, toPort,
                        cc, fromHttpPrefix, True, clientToServer,
@@ -3005,7 +3007,7 @@ def _sendToNamedAddresses(session, baseDir: str,
                        signingPrivateKeyPem, 34436782)
 
 
-def sendToNamedAddressesThread(session, baseDir: str,
+def sendToNamedAddressesThread(session, base_dir: str,
                                nickname: str, domain: str,
                                onionDomain: str, i2pDomain: str, port: int,
                                httpPrefix: str, federationList: [],
@@ -3020,7 +3022,7 @@ def sendToNamedAddressesThread(session, baseDir: str,
     """
     sendThread = \
         threadWithTrace(target=_sendToNamedAddresses,
-                        args=(session, baseDir,
+                        args=(session, base_dir,
                               nickname, domain,
                               onionDomain, i2pDomain, port,
                               httpPrefix, federationList,
@@ -3080,7 +3082,7 @@ def _sendingProfileUpdate(postJsonObject: {}) -> bool:
     return False
 
 
-def sendToFollowers(session, baseDir: str,
+def sendToFollowers(session, base_dir: str,
                     nickname: str,
                     domain: str,
                     onionDomain: str, i2pDomain: str, port: int,
@@ -3098,7 +3100,7 @@ def sendToFollowers(session, baseDir: str,
     if not session:
         print('WARN: No session for sendToFollowers')
         return
-    if not _postIsAddressedToFollowers(baseDir, nickname, domain,
+    if not _postIsAddressedToFollowers(base_dir, nickname, domain,
                                        port, httpPrefix,
                                        postJsonObject):
         if debug:
@@ -3106,7 +3108,7 @@ def sendToFollowers(session, baseDir: str,
         return
     print('Post is addressed to followers')
 
-    grouped = groupFollowersByDomain(baseDir, nickname, domain)
+    grouped = groupFollowersByDomain(base_dir, nickname, domain)
     if not grouped:
         if debug:
             print('Post to followers did not resolve any domains')
@@ -3204,7 +3206,7 @@ def sendToFollowers(session, baseDir: str,
                   nickname + '@' + domain +
                   ' to ' + toNickname + '@' + toDomain)
 
-            sendSignedJson(postJsonObject, session, baseDir,
+            sendSignedJson(postJsonObject, session, base_dir,
                            nickname, fromDomain, port,
                            toNickname, toDomain, toPort,
                            cc, fromHttpPrefix, True, clientToServer,
@@ -3233,7 +3235,7 @@ def sendToFollowers(session, baseDir: str,
                           nickname + '@' + domain + ' to ' +
                           toNickname + '@' + toDomain)
 
-                sendSignedJson(postJsonObject, session, baseDir,
+                sendSignedJson(postJsonObject, session, base_dir,
                                nickname, fromDomain, port,
                                toNickname, toDomain, toPort,
                                cc, fromHttpPrefix, True, clientToServer,
@@ -3253,7 +3255,7 @@ def sendToFollowers(session, baseDir: str,
     print('Sending post to followers ends ' + str(sendingMins) + ' mins')
 
 
-def sendToFollowersThread(session, baseDir: str,
+def sendToFollowersThread(session, base_dir: str,
                           nickname: str,
                           domain: str,
                           onionDomain: str, i2pDomain: str, port: int,
@@ -3269,7 +3271,7 @@ def sendToFollowersThread(session, baseDir: str,
     """
     sendThread = \
         threadWithTrace(target=sendToFollowers,
-                        args=(session, baseDir,
+                        args=(session, base_dir,
                               nickname, domain,
                               onionDomain, i2pDomain, port,
                               httpPrefix, federationList,
@@ -3294,98 +3296,98 @@ def sendToFollowersThread(session, baseDir: str,
 
 
 def createInbox(recentPostsCache: {},
-                session, baseDir: str, nickname: str, domain: str, port: int,
+                session, base_dir: str, nickname: str, domain: str, port: int,
                 httpPrefix: str, itemsPerPage: int, headerOnly: bool,
                 pageNumber: int) -> {}:
     return _createBoxIndexed(recentPostsCache,
-                             session, baseDir, 'inbox',
+                             session, base_dir, 'inbox',
                              nickname, domain, port, httpPrefix,
                              itemsPerPage, headerOnly, True,
                              0, False, 0, pageNumber)
 
 
-def createBookmarksTimeline(session, baseDir: str, nickname: str, domain: str,
+def createBookmarksTimeline(session, base_dir: str, nickname: str, domain: str,
                             port: int, httpPrefix: str, itemsPerPage: int,
                             headerOnly: bool, pageNumber: int) -> {}:
-    return _createBoxIndexed({}, session, baseDir, 'tlbookmarks',
+    return _createBoxIndexed({}, session, base_dir, 'tlbookmarks',
                              nickname, domain,
                              port, httpPrefix, itemsPerPage, headerOnly,
                              True, 0, False, 0, pageNumber)
 
 
 def createDMTimeline(recentPostsCache: {},
-                     session, baseDir: str, nickname: str, domain: str,
+                     session, base_dir: str, nickname: str, domain: str,
                      port: int, httpPrefix: str, itemsPerPage: int,
                      headerOnly: bool, pageNumber: int) -> {}:
     return _createBoxIndexed(recentPostsCache,
-                             session, baseDir, 'dm', nickname,
+                             session, base_dir, 'dm', nickname,
                              domain, port, httpPrefix, itemsPerPage,
                              headerOnly, True, 0, False, 0, pageNumber)
 
 
 def createRepliesTimeline(recentPostsCache: {},
-                          session, baseDir: str, nickname: str, domain: str,
+                          session, base_dir: str, nickname: str, domain: str,
                           port: int, httpPrefix: str, itemsPerPage: int,
                           headerOnly: bool, pageNumber: int) -> {}:
-    return _createBoxIndexed(recentPostsCache, session, baseDir, 'tlreplies',
+    return _createBoxIndexed(recentPostsCache, session, base_dir, 'tlreplies',
                              nickname, domain, port, httpPrefix,
                              itemsPerPage, headerOnly, True,
                              0, False, 0, pageNumber)
 
 
-def createBlogsTimeline(session, baseDir: str, nickname: str, domain: str,
+def createBlogsTimeline(session, base_dir: str, nickname: str, domain: str,
                         port: int, httpPrefix: str, itemsPerPage: int,
                         headerOnly: bool, pageNumber: int) -> {}:
-    return _createBoxIndexed({}, session, baseDir, 'tlblogs', nickname,
+    return _createBoxIndexed({}, session, base_dir, 'tlblogs', nickname,
                              domain, port, httpPrefix,
                              itemsPerPage, headerOnly, True,
                              0, False, 0, pageNumber)
 
 
-def createFeaturesTimeline(session, baseDir: str, nickname: str, domain: str,
+def createFeaturesTimeline(session, base_dir: str, nickname: str, domain: str,
                            port: int, httpPrefix: str, itemsPerPage: int,
                            headerOnly: bool, pageNumber: int) -> {}:
-    return _createBoxIndexed({}, session, baseDir, 'tlfeatures', nickname,
+    return _createBoxIndexed({}, session, base_dir, 'tlfeatures', nickname,
                              domain, port, httpPrefix,
                              itemsPerPage, headerOnly, True,
                              0, False, 0, pageNumber)
 
 
-def createMediaTimeline(session, baseDir: str, nickname: str, domain: str,
+def createMediaTimeline(session, base_dir: str, nickname: str, domain: str,
                         port: int, httpPrefix: str, itemsPerPage: int,
                         headerOnly: bool, pageNumber: int) -> {}:
-    return _createBoxIndexed({}, session, baseDir, 'tlmedia', nickname,
+    return _createBoxIndexed({}, session, base_dir, 'tlmedia', nickname,
                              domain, port, httpPrefix,
                              itemsPerPage, headerOnly, True,
                              0, False, 0, pageNumber)
 
 
-def createNewsTimeline(session, baseDir: str, nickname: str, domain: str,
+def createNewsTimeline(session, base_dir: str, nickname: str, domain: str,
                        port: int, httpPrefix: str, itemsPerPage: int,
                        headerOnly: bool, newswireVotesThreshold: int,
                        positiveVoting: bool, votingTimeMins: int,
                        pageNumber: int) -> {}:
-    return _createBoxIndexed({}, session, baseDir, 'outbox', 'news',
+    return _createBoxIndexed({}, session, base_dir, 'outbox', 'news',
                              domain, port, httpPrefix,
                              itemsPerPage, headerOnly, True,
                              newswireVotesThreshold, positiveVoting,
                              votingTimeMins, pageNumber)
 
 
-def createOutbox(session, baseDir: str, nickname: str, domain: str,
+def createOutbox(session, base_dir: str, nickname: str, domain: str,
                  port: int, httpPrefix: str,
                  itemsPerPage: int, headerOnly: bool, authorized: bool,
                  pageNumber: int) -> {}:
-    return _createBoxIndexed({}, session, baseDir, 'outbox',
+    return _createBoxIndexed({}, session, base_dir, 'outbox',
                              nickname, domain, port, httpPrefix,
                              itemsPerPage, headerOnly, authorized,
                              0, False, 0, pageNumber)
 
 
-def createModeration(baseDir: str, nickname: str, domain: str, port: int,
+def createModeration(base_dir: str, nickname: str, domain: str, port: int,
                      httpPrefix: str, itemsPerPage: int, headerOnly: bool,
                      pageNumber: int) -> {}:
-    boxDir = createPersonDir(nickname, domain, baseDir, 'inbox')
+    boxDir = createPersonDir(nickname, domain, base_dir, 'inbox')
     boxname = 'moderation'
 
     domain = getFullDomain(domain, port)
@@ -3412,8 +3414,8 @@ def createModeration(baseDir: str, nickname: str, domain: str, port: int,
         'type': 'OrderedCollectionPage'
     }
 
-    if isModerator(baseDir, nickname):
-        moderationIndexFile = baseDir + '/accounts/moderation.txt'
+    if isModerator(base_dir, nickname):
+        moderationIndexFile = base_dir + '/accounts/moderation.txt'
         if os.path.isfile(moderationIndexFile):
             with open(moderationIndexFile, 'r') as f:
                 lines = f.readlines()
@@ -3448,7 +3450,7 @@ def createModeration(baseDir: str, nickname: str, domain: str, port: int,
     return boxItems
 
 
-def isImageMedia(session, baseDir: str, httpPrefix: str,
+def isImageMedia(session, base_dir: str, httpPrefix: str,
                  nickname: str, domain: str,
                  postJsonObject: {}, translate: {},
                  YTReplacementDomain: str,
@@ -3463,7 +3465,7 @@ def isImageMedia(session, baseDir: str, httpPrefix: str,
     if postJsonObject['type'] == 'Announce':
         blockedCache = {}
         postJsonAnnounce = \
-            downloadAnnounce(session, baseDir, httpPrefix,
+            downloadAnnounce(session, base_dir, httpPrefix,
                              nickname, domain, postJsonObject,
                              __version__, translate,
                              YTReplacementDomain,
@@ -3597,7 +3599,7 @@ def removePostInteractions(postJsonObject: {}, force: bool) -> bool:
 
 
 def _passedNewswireVoting(newswireVotesThreshold: int,
-                          baseDir: str, domain: str,
+                          base_dir: str, domain: str,
                           postFilename: str,
                           positiveVoting: bool,
                           votingTimeMins: int) -> bool:
@@ -3609,7 +3611,7 @@ def _passedNewswireVoting(newswireVotesThreshold: int,
     # note that the presence of an arrival file also indicates
     # that this post is moderated
     arrivalDate = \
-        locateNewsArrival(baseDir, domain, postFilename)
+        locateNewsArrival(base_dir, domain, postFilename)
     if not arrivalDate:
         return True
     # how long has elapsed since this post arrived?
@@ -3623,7 +3625,7 @@ def _passedNewswireVoting(newswireVotesThreshold: int,
         return False
     # if there a votes file for this post?
     votesFilename = \
-        locateNewsVotes(baseDir, domain, postFilename)
+        locateNewsVotes(base_dir, domain, postFilename)
     if not votesFilename:
         return True
     # load the votes file and count the votes
@@ -3648,7 +3650,7 @@ def _passedNewswireVoting(newswireVotesThreshold: int,
 
 
 def _createBoxIndexed(recentPostsCache: {},
-                      session, baseDir: str, boxname: str,
+                      session, base_dir: str, boxname: str,
                       nickname: str, domain: str, port: int, httpPrefix: str,
                       itemsPerPage: int, headerOnly: bool, authorized: bool,
                       newswireVotesThreshold: int, positiveVoting: bool,
@@ -3716,7 +3718,7 @@ def _createBoxIndexed(recentPostsCache: {},
     postUrlsInBox = []
 
     indexFilename = \
-        acctDir(baseDir, timelineNickname, originalDomain) + \
+        acctDir(base_dir, timelineNickname, originalDomain) + \
         '/' + indexBoxName + '.index'
     totalPostsCount = 0
     postsAddedToTimeline = 0
@@ -3731,7 +3733,7 @@ def _createBoxIndexed(recentPostsCache: {},
 
                 # Has this post passed through the newswire voting stage?
                 if not _passedNewswireVoting(newswireVotesThreshold,
-                                             baseDir, domain,
+                                             base_dir, domain,
                                              postFilename,
                                              positiveVoting,
                                              votingTimeMins):
@@ -3773,7 +3775,7 @@ def _createBoxIndexed(recentPostsCache: {},
 
                 # read the post from file
                 fullPostFilename = \
-                    locatePost(baseDir, nickname,
+                    locatePost(base_dir, nickname,
                                originalDomain, postUrl, False)
                 if fullPostFilename:
                     # has the post been rejected?
@@ -3793,7 +3795,7 @@ def _createBoxIndexed(recentPostsCache: {},
                     if timelineNickname != nickname:
                         # if this is the features timeline
                         fullPostFilename = \
-                            locatePost(baseDir, timelineNickname,
+                            locatePost(base_dir, timelineNickname,
                                        originalDomain, postUrl, False)
                         if fullPostFilename:
                             if _addPostToTimeline(fullPostFilename, boxname,
@@ -3869,7 +3871,7 @@ def _createBoxIndexed(recentPostsCache: {},
     return boxItems
 
 
-def expireCache(baseDir: str, personCache: {},
+def expireCache(base_dir: str, personCache: {},
                 httpPrefix: str, archiveDir: str,
                 recentPostsCache: {},
                 maxPostsInBox=32000):
@@ -3879,11 +3881,11 @@ def expireCache(baseDir: str, personCache: {},
         # once per day
         time.sleep(60 * 60 * 24)
         expirePersonCache(personCache)
-        archivePosts(baseDir, httpPrefix, archiveDir, recentPostsCache,
+        archivePosts(base_dir, httpPrefix, archiveDir, recentPostsCache,
                      maxPostsInBox)
 
 
-def archivePosts(baseDir: str, httpPrefix: str, archiveDir: str,
+def archivePosts(base_dir: str, httpPrefix: str, archiveDir: str,
                  recentPostsCache: {},
                  maxPostsInBox=32000) -> None:
     """Archives posts for all accounts
@@ -3899,7 +3901,7 @@ def archivePosts(baseDir: str, httpPrefix: str, archiveDir: str,
         if not os.path.isdir(archiveDir + '/accounts'):
             os.mkdir(archiveDir + '/accounts')
 
-    for subdir, dirs, files in os.walk(baseDir + '/accounts'):
+    for subdir, dirs, files in os.walk(base_dir + '/accounts'):
         for handle in dirs:
             if '@' in handle:
                 nickname = handle.split('@')[0]
@@ -3918,20 +3920,20 @@ def archivePosts(baseDir: str, httpPrefix: str, archiveDir: str,
                                  handle + '/outbox')
                     archiveSubdir = archiveDir + '/accounts/' + \
                         handle + '/inbox'
-                archivePostsForPerson(httpPrefix, nickname, domain, baseDir,
+                archivePostsForPerson(httpPrefix, nickname, domain, base_dir,
                                       'inbox', archiveSubdir,
                                       recentPostsCache, maxPostsInBox)
                 if archiveDir:
                     archiveSubdir = archiveDir + '/accounts/' + \
                         handle + '/outbox'
-                archivePostsForPerson(httpPrefix, nickname, domain, baseDir,
+                archivePostsForPerson(httpPrefix, nickname, domain, base_dir,
                                       'outbox', archiveSubdir,
                                       recentPostsCache, maxPostsInBox)
         break
 
 
 def archivePostsForPerson(httpPrefix: str, nickname: str, domain: str,
-                          baseDir: str,
+                          base_dir: str,
                           boxname: str, archiveDir: str,
                           recentPostsCache: {},
                           maxPostsInBox=32000) -> None:
@@ -3943,7 +3945,7 @@ def archivePostsForPerson(httpPrefix: str, nickname: str, domain: str,
     if archiveDir:
         if not os.path.isdir(archiveDir):
             os.mkdir(archiveDir)
-    boxDir = createPersonDir(nickname, domain, baseDir, boxname)
+    boxDir = createPersonDir(nickname, domain, base_dir, boxname)
     postsInBox = os.scandir(boxDir)
     noOfPosts = 0
     for f in postsInBox:
@@ -3955,7 +3957,7 @@ def archivePostsForPerson(httpPrefix: str, nickname: str, domain: str,
 
     # remove entries from the index
     handle = nickname + '@' + domain
-    indexFilename = baseDir + '/accounts/' + handle + '/' + boxname + '.index'
+    indexFilename = base_dir + '/accounts/' + handle + '/' + boxname + '.index'
     if os.path.isfile(indexFilename):
         indexCtr = 0
         # get the existing index entries as a string
@@ -4025,7 +4027,7 @@ def archivePostsForPerson(httpPrefix: str, nickname: str, domain: str,
                         os.rename(extPath,
                                   archivePath.replace('.json', '.json.' + ext))
         else:
-            deletePost(baseDir, httpPrefix, nickname, domain,
+            deletePost(base_dir, httpPrefix, nickname, domain,
                        filePath, False, recentPostsCache)
 
         # remove cached html posts
@@ -4052,7 +4054,7 @@ def archivePostsForPerson(httpPrefix: str, nickname: str, domain: str,
           ' in ' + boxname)
 
 
-def getPublicPostsOfPerson(baseDir: str, nickname: str, domain: str,
+def getPublicPostsOfPerson(base_dir: str, nickname: str, domain: str,
                            raw: bool, simple: bool, proxyType: str,
                            port: int, httpPrefix: str,
                            debug: bool, projectVersion: str,
@@ -4101,7 +4103,7 @@ def getPublicPostsOfPerson(baseDir: str, nickname: str, domain: str,
     (personUrl, pubKeyId, pubKey, personId, shaedInbox, avatarUrl,
      displayName, _) = getPersonBox(signingPrivateKeyPem,
                                     originDomain,
-                                    baseDir, session, wfRequest,
+                                    base_dir, session, wfRequest,
                                     personCache,
                                     projectVersion, httpPrefix,
                                     nickname, domain, 'outbox',
@@ -4121,7 +4123,7 @@ def getPublicPostsOfPerson(baseDir: str, nickname: str, domain: str,
               signingPrivateKeyPem)
 
 
-def getPublicPostDomains(session, baseDir: str, nickname: str, domain: str,
+def getPublicPostDomains(session, base_dir: str, nickname: str, domain: str,
                          originDomain: str,
                          proxyType: str, port: int, httpPrefix: str,
                          debug: bool, projectVersion: str,
@@ -4154,7 +4156,7 @@ def getPublicPostDomains(session, baseDir: str, nickname: str, domain: str,
     (personUrl, pubKeyId, pubKey, personId, sharedInbox, avatarUrl,
      displayName, _) = getPersonBox(signingPrivateKeyPem,
                                     originDomain,
-                                    baseDir, session, wfRequest,
+                                    base_dir, session, wfRequest,
                                     personCache,
                                     projectVersion, httpPrefix,
                                     nickname, domain, 'outbox',
@@ -4218,7 +4220,7 @@ def downloadFollowCollection(signingPrivateKeyPem: str,
     return result
 
 
-def getPublicPostInfo(session, baseDir: str, nickname: str, domain: str,
+def getPublicPostInfo(session, base_dir: str, nickname: str, domain: str,
                       originDomain: str,
                       proxyType: str, port: int, httpPrefix: str,
                       debug: bool, projectVersion: str,
@@ -4250,7 +4252,7 @@ def getPublicPostInfo(session, baseDir: str, nickname: str, domain: str,
     (personUrl, pubKeyId, pubKey, personId, sharedInbox, avatarUrl,
      displayName, _) = getPersonBox(signingPrivateKeyPem,
                                     originDomain,
-                                    baseDir, session, wfRequest,
+                                    base_dir, session, wfRequest,
                                     personCache,
                                     projectVersion, httpPrefix,
                                     nickname, domain, 'outbox',
@@ -4272,7 +4274,7 @@ def getPublicPostInfo(session, baseDir: str, nickname: str, domain: str,
             domainsInfo[d] = []
 
     blockedPosts = \
-        _getPostsForBlockedDomains(baseDir, session, personUrl, maxPosts,
+        _getPostsForBlockedDomains(base_dir, session, personUrl, maxPosts,
                                    maxMentions,
                                    maxEmoji, maxAttachments,
                                    federationList,
@@ -4286,7 +4288,7 @@ def getPublicPostInfo(session, baseDir: str, nickname: str, domain: str,
     return domainsInfo
 
 
-def getPublicPostDomainsBlocked(session, baseDir: str,
+def getPublicPostDomainsBlocked(session, base_dir: str,
                                 nickname: str, domain: str,
                                 proxyType: str, port: int, httpPrefix: str,
                                 debug: bool, projectVersion: str,
@@ -4298,7 +4300,7 @@ def getPublicPostDomainsBlocked(session, baseDir: str,
     """
     originDomain = domain
     postDomains = \
-        getPublicPostDomains(session, baseDir, nickname, domain,
+        getPublicPostDomains(session, base_dir, nickname, domain,
                              originDomain,
                              proxyType, port, httpPrefix,
                              debug, projectVersion,
@@ -4307,7 +4309,7 @@ def getPublicPostDomainsBlocked(session, baseDir: str,
     if not postDomains:
         return []
 
-    blockingFilename = baseDir + '/accounts/blocking.txt'
+    blockingFilename = base_dir + '/accounts/blocking.txt'
     if not os.path.isfile(blockingFilename):
         return []
 
@@ -4331,15 +4333,15 @@ def getPublicPostDomainsBlocked(session, baseDir: str,
     return blockedDomains
 
 
-def _getNonMutualsOfPerson(baseDir: str,
+def _getNonMutualsOfPerson(base_dir: str,
                            nickname: str, domain: str) -> []:
     """Returns the followers who are not mutuals of a person
     i.e. accounts which follow you but you don't follow them
     """
     followers = \
-        getFollowersList(baseDir, nickname, domain, 'followers.txt')
+        getFollowersList(base_dir, nickname, domain, 'followers.txt')
     following = \
-        getFollowersList(baseDir, nickname, domain, 'following.txt')
+        getFollowersList(base_dir, nickname, domain, 'following.txt')
     nonMutuals = []
     for handle in followers:
         if handle not in following:
@@ -4347,7 +4349,7 @@ def _getNonMutualsOfPerson(baseDir: str,
     return nonMutuals
 
 
-def checkDomains(session, baseDir: str,
+def checkDomains(session, base_dir: str,
                  nickname: str, domain: str,
                  proxyType: str, port: int, httpPrefix: str,
                  debug: bool, projectVersion: str,
@@ -4357,11 +4359,11 @@ def checkDomains(session, baseDir: str,
     """Checks follower accounts for references to globally blocked domains
     """
     wordFrequency = {}
-    nonMutuals = _getNonMutualsOfPerson(baseDir, nickname, domain)
+    nonMutuals = _getNonMutualsOfPerson(base_dir, nickname, domain)
     if not nonMutuals:
         print('No non-mutual followers were found')
         return
-    followerWarningFilename = baseDir + '/accounts/followerWarnings.txt'
+    followerWarningFilename = base_dir + '/accounts/followerWarnings.txt'
     updateFollowerWarnings = False
     followerWarningStr = ''
     if os.path.isfile(followerWarningFilename):
@@ -4376,7 +4378,7 @@ def checkDomains(session, baseDir: str,
             nonMutualNickname = handle.split('@')[0]
             nonMutualDomain = handle.split('@')[1].strip()
             blockedDomains = \
-                getPublicPostDomainsBlocked(session, baseDir,
+                getPublicPostDomainsBlocked(session, base_dir,
                                             nonMutualNickname,
                                             nonMutualDomain,
                                             proxyType, port, httpPrefix,
@@ -4398,7 +4400,7 @@ def checkDomains(session, baseDir: str,
             nonMutualNickname = handle.split('@')[0]
             nonMutualDomain = handle.split('@')[1].strip()
             blockedDomains = \
-                getPublicPostDomainsBlocked(session, baseDir,
+                getPublicPostDomainsBlocked(session, base_dir,
                                             nonMutualNickname,
                                             nonMutualDomain,
                                             proxyType, port, httpPrefix,
@@ -4421,7 +4423,7 @@ def checkDomains(session, baseDir: str,
             print(followerWarningStr)
 
 
-def populateRepliesJson(baseDir: str, nickname: str, domain: str,
+def populateRepliesJson(base_dir: str, nickname: str, domain: str,
                         postRepliesFilename: str, authorized: bool,
                         repliesJson: {}) -> None:
     pubStr = 'https://www.w3.org/ns/activitystreams#Public'
@@ -4434,7 +4436,7 @@ def populateRepliesJson(baseDir: str, nickname: str, domain: str,
             for boxname in repliesBoxes:
                 messageId2 = messageId.replace('\n', '').replace('\r', '')
                 searchFilename = \
-                    acctDir(baseDir, nickname, domain) + '/' + \
+                    acctDir(base_dir, nickname, domain) + '/' + \
                     boxname + '/' + \
                     messageId2.replace('/', '#') + '.json'
                 if os.path.isfile(searchFilename):
@@ -4460,7 +4462,7 @@ def populateRepliesJson(baseDir: str, nickname: str, domain: str,
             if not replyFound:
                 messageId2 = messageId.replace('\n', '').replace('\r', '')
                 searchFilename = \
-                    baseDir + \
+                    base_dir + \
                     '/accounts/inbox@' + \
                     domain + '/inbox/' + \
                     messageId2.replace('/', '#') + '.json'
@@ -4486,11 +4488,11 @@ def populateRepliesJson(baseDir: str, nickname: str, domain: str,
 
 
 def _rejectAnnounce(announceFilename: str,
-                    baseDir: str, nickname: str, domain: str,
+                    base_dir: str, nickname: str, domain: str,
                     announcePostId: str, recentPostsCache: {}):
     """Marks an announce as rejected
     """
-    rejectPostId(baseDir, nickname, domain, announcePostId, recentPostsCache)
+    rejectPostId(base_dir, nickname, domain, announcePostId, recentPostsCache)
 
     # reject the post referenced by the announce activity object
     if not os.path.isfile(announceFilename + '.reject'):
@@ -4498,7 +4500,7 @@ def _rejectAnnounce(announceFilename: str,
             rejectAnnounceFile.write('\n')
 
 
-def downloadAnnounce(session, baseDir: str, httpPrefix: str,
+def downloadAnnounce(session, base_dir: str, httpPrefix: str,
                      nickname: str, domain: str,
                      postJsonObject: {}, projectVersion: str,
                      translate: {},
@@ -4521,7 +4523,7 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
         return None
 
     # get the announced post
-    announceCacheDir = baseDir + '/cache/announce/' + nickname
+    announceCacheDir = base_dir + '/cache/announce/' + nickname
     if not os.path.isdir(announceCacheDir):
         os.mkdir(announceCacheDir)
 
@@ -4565,7 +4567,7 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
                   'valid domain or port number: ' +
                   str(postJsonObject['actor']))
             return None
-        if isBlocked(baseDir, nickname, domain, actorNickname, actorDomain):
+        if isBlocked(base_dir, nickname, domain, actorNickname, actorDomain):
             print('Announce download blocked actor: ' +
                   actorNickname + '@' + actorDomain)
             return None
@@ -4576,7 +4578,7 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
                   'valid domain or port number: ' +
                   str(postJsonObject['object']))
             return None
-        if isBlocked(baseDir, nickname, domain, objectNickname, objectDomain):
+        if isBlocked(base_dir, nickname, domain, objectNickname, objectDomain):
             if objectNickname and objectDomain:
                 print('Announce download blocked object: ' +
                       objectNickname + '@' + objectDomain)
@@ -4598,34 +4600,34 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
             print('WARN: announce json is not a dict - ' +
                   postJsonObject['object'])
             _rejectAnnounce(announceFilename,
-                            baseDir, nickname, domain, postId,
+                            base_dir, nickname, domain, postId,
                             recentPostsCache)
             return None
         if not announcedJson.get('id'):
             _rejectAnnounce(announceFilename,
-                            baseDir, nickname, domain, postId,
+                            base_dir, nickname, domain, postId,
                             recentPostsCache)
             return None
         if not announcedJson.get('type'):
             _rejectAnnounce(announceFilename,
-                            baseDir, nickname, domain, postId,
+                            base_dir, nickname, domain, postId,
                             recentPostsCache)
             return None
         if announcedJson['type'] == 'Video':
             convertedJson = \
-                convertVideoToNote(baseDir, nickname, domain,
+                convertVideoToNote(base_dir, nickname, domain,
                                    systemLanguage,
                                    announcedJson, blockedCache)
             if convertedJson:
                 announcedJson = convertedJson
         if '/statuses/' not in announcedJson['id']:
             _rejectAnnounce(announceFilename,
-                            baseDir, nickname, domain, postId,
+                            base_dir, nickname, domain, postId,
                             recentPostsCache)
             return None
         if not hasUsersPath(announcedJson['id']):
             _rejectAnnounce(announceFilename,
-                            baseDir, nickname, domain, postId,
+                            base_dir, nickname, domain, postId,
                             recentPostsCache)
             return None
         if announcedJson['type'] != 'Note' and \
@@ -4633,25 +4635,25 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
            announcedJson['type'] != 'Article':
             # You can only announce Note or Article types
             _rejectAnnounce(announceFilename,
-                            baseDir, nickname, domain, postId,
+                            base_dir, nickname, domain, postId,
                             recentPostsCache)
             return None
         if not announcedJson.get('content'):
             _rejectAnnounce(announceFilename,
-                            baseDir, nickname, domain, postId,
+                            base_dir, nickname, domain, postId,
                             recentPostsCache)
             return None
         if not announcedJson.get('published'):
             _rejectAnnounce(announceFilename,
-                            baseDir, nickname, domain, postId,
+                            base_dir, nickname, domain, postId,
                             recentPostsCache)
             return None
         if not validPostDate(announcedJson['published'], 90, debug):
             _rejectAnnounce(announceFilename,
-                            baseDir, nickname, domain, postId,
+                            base_dir, nickname, domain, postId,
                             recentPostsCache)
             return None
-        if not understoodPostLanguage(baseDir, nickname, domain,
+        if not understoodPostLanguage(base_dir, nickname, domain,
                                       announcedJson, systemLanguage,
                                       httpPrefix, domainFull,
                                       personCache):
@@ -4660,19 +4662,19 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
         contentStr = announcedJson['content']
         if dangerousMarkup(contentStr, allowLocalNetworkAccess):
             _rejectAnnounce(announceFilename,
-                            baseDir, nickname, domain, postId,
+                            base_dir, nickname, domain, postId,
                             recentPostsCache)
             return None
 
-        if isFiltered(baseDir, nickname, domain, contentStr):
+        if isFiltered(base_dir, nickname, domain, contentStr):
             _rejectAnnounce(announceFilename,
-                            baseDir, nickname, domain, postId,
+                            base_dir, nickname, domain, postId,
                             recentPostsCache)
             return None
 
         if invalidCiphertext(contentStr):
             _rejectAnnounce(announceFilename,
-                            baseDir, nickname, domain, postId,
+                            base_dir, nickname, domain, postId,
                             recentPostsCache)
             print('WARN: Invalid ciphertext within announce ' +
                   str(announcedJson))
@@ -4698,7 +4700,7 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
         if announcedJson['type'] != 'Create':
             # Create wrap failed
             _rejectAnnounce(announceFilename,
-                            baseDir, nickname, domain, postId,
+                            base_dir, nickname, domain, postId,
                             recentPostsCache)
             return None
 
@@ -4713,10 +4715,10 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
             getDomainFromActor(announcedJson['object']['id'])
         if attributedNickname and attributedDomain:
             attributedDomain = getFullDomain(attributedDomain, attributedPort)
-            if isBlocked(baseDir, nickname, domain,
+            if isBlocked(base_dir, nickname, domain,
                          attributedNickname, attributedDomain):
                 _rejectAnnounce(announceFilename,
-                                baseDir, nickname, domain, postId,
+                                base_dir, nickname, domain, postId,
                                 recentPostsCache)
                 return None
         postJsonObject = announcedJson
@@ -4728,17 +4730,17 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
     return None
 
 
-def isMuted(baseDir: str, nickname: str, domain: str, postId: str,
+def isMuted(base_dir: str, nickname: str, domain: str, postId: str,
             conversationId: str) -> bool:
     """Returns true if the given post is muted
     """
     if conversationId:
         convMutedFilename = \
-            acctDir(baseDir, nickname, domain) + '/conversation/' + \
+            acctDir(base_dir, nickname, domain) + '/conversation/' + \
             conversationId.replace('/', '#') + '.muted'
         if os.path.isfile(convMutedFilename):
             return True
-    postFilename = locatePost(baseDir, nickname, domain, postId)
+    postFilename = locatePost(base_dir, nickname, domain, postId)
     if not postFilename:
         return False
     if os.path.isfile(postFilename + '.muted'):
@@ -4746,7 +4748,7 @@ def isMuted(baseDir: str, nickname: str, domain: str, postId: str,
     return False
 
 
-def sendBlockViaServer(baseDir: str, session,
+def sendBlockViaServer(base_dir: str, session,
                        fromNickname: str, password: str,
                        fromDomain: str, fromPort: int,
                        httpPrefix: str, blockedUrl: str,
@@ -4797,7 +4799,7 @@ def sendBlockViaServer(baseDir: str, session,
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
      displayName, _) = getPersonBox(signingPrivateKeyPem,
                                     originDomain,
-                                    baseDir, session, wfRequest,
+                                    base_dir, session, wfRequest,
                                     personCache,
                                     projectVersion, httpPrefix, fromNickname,
                                     fromDomain, postToBox, 72652)
@@ -4830,7 +4832,7 @@ def sendBlockViaServer(baseDir: str, session,
     return newBlockJson
 
 
-def sendMuteViaServer(baseDir: str, session,
+def sendMuteViaServer(base_dir: str, session,
                       fromNickname: str, password: str,
                       fromDomain: str, fromPort: int,
                       httpPrefix: str, mutedUrl: str,
@@ -4877,7 +4879,7 @@ def sendMuteViaServer(baseDir: str, session,
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
      displayName, _) = getPersonBox(signingPrivateKeyPem,
                                     originDomain,
-                                    baseDir, session, wfRequest,
+                                    base_dir, session, wfRequest,
                                     personCache,
                                     projectVersion, httpPrefix, fromNickname,
                                     fromDomain, postToBox, 72652)
@@ -4910,7 +4912,7 @@ def sendMuteViaServer(baseDir: str, session,
     return newMuteJson
 
 
-def sendUndoMuteViaServer(baseDir: str, session,
+def sendUndoMuteViaServer(base_dir: str, session,
                           fromNickname: str, password: str,
                           fromDomain: str, fromPort: int,
                           httpPrefix: str, mutedUrl: str,
@@ -4962,7 +4964,7 @@ def sendUndoMuteViaServer(baseDir: str, session,
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
      displayName, _) = getPersonBox(signingPrivateKeyPem,
                                     originDomain,
-                                    baseDir, session, wfRequest,
+                                    base_dir, session, wfRequest,
                                     personCache,
                                     projectVersion, httpPrefix, fromNickname,
                                     fromDomain, postToBox, 72652)
@@ -4996,7 +4998,7 @@ def sendUndoMuteViaServer(baseDir: str, session,
     return undoMuteJson
 
 
-def sendUndoBlockViaServer(baseDir: str, session,
+def sendUndoBlockViaServer(base_dir: str, session,
                            fromNickname: str, password: str,
                            fromDomain: str, fromPort: int,
                            httpPrefix: str, blockedUrl: str,
@@ -5051,7 +5053,7 @@ def sendUndoBlockViaServer(baseDir: str, session,
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
      displayName, _) = getPersonBox(signingPrivateKeyPem,
                                     originDomain,
-                                    baseDir, session, wfRequest, personCache,
+                                    base_dir, session, wfRequest, personCache,
                                     projectVersion, httpPrefix, fromNickname,
                                     fromDomain, postToBox, 53892)
 
@@ -5084,7 +5086,7 @@ def sendUndoBlockViaServer(baseDir: str, session,
     return newBlockJson
 
 
-def postIsMuted(baseDir: str, nickname: str, domain: str,
+def postIsMuted(base_dir: str, nickname: str, domain: str,
                 postJsonObject: {}, messageId: str) -> bool:
     """ Returns true if the given post is muted
     """
@@ -5095,7 +5097,7 @@ def postIsMuted(baseDir: str, nickname: str, domain: str,
         return isMuted
 
     isMuted = False
-    postDir = acctDir(baseDir, nickname, domain)
+    postDir = acctDir(base_dir, nickname, domain)
     muteFilename = \
         postDir + '/inbox/' + messageId.replace('/', '#') + '.json.muted'
     if os.path.isfile(muteFilename):
@@ -5107,14 +5109,14 @@ def postIsMuted(baseDir: str, nickname: str, domain: str,
             isMuted = True
         else:
             muteFilename = \
-                baseDir + '/accounts/cache/announce/' + nickname + \
+                base_dir + '/accounts/cache/announce/' + nickname + \
                 '/' + messageId.replace('/', '#') + '.json.muted'
             if os.path.isfile(muteFilename):
                 isMuted = True
     return isMuted
 
 
-def c2sBoxJson(baseDir: str, session,
+def c2sBoxJson(base_dir: str, session,
                nickname: str, password: str,
                domain: str, port: int,
                httpPrefix: str,
@@ -5170,7 +5172,7 @@ def secondsBetweenPublished(published1: str, published2: str) -> int:
     return (published2Time - published1Time).seconds
 
 
-def editedPostFilename(baseDir: str, nickname: str, domain: str,
+def editedPostFilename(base_dir: str, nickname: str, domain: str,
                        postJsonObject: {}, debug: bool,
                        maxTimeDiffSeconds: int) -> str:
     """Returns the filename of the edited post
@@ -5193,7 +5195,7 @@ def editedPostFilename(baseDir: str, nickname: str, domain: str,
         return ''
     actor = postJsonObject['object']['attributedTo']
     actorFilename = \
-        acctDir(baseDir, nickname, domain) + '/lastpost/' + \
+        acctDir(base_dir, nickname, domain) + '/lastpost/' + \
         actor.replace('/', '#')
     if not os.path.isfile(actorFilename):
         return ''
@@ -5210,7 +5212,7 @@ def editedPostFilename(baseDir: str, nickname: str, domain: str,
     if lastpostId == postId:
         return ''
     lastpostFilename = \
-        locatePost(baseDir, nickname, domain, lastpostId, False)
+        locatePost(base_dir, nickname, domain, lastpostId, False)
     if not lastpostFilename:
         return ''
     lastpostJson = loadJson(lastpostFilename, 0)
@@ -5248,13 +5250,13 @@ def editedPostFilename(baseDir: str, nickname: str, domain: str,
     return lastpostFilename
 
 
-def getOriginalPostFromAnnounceUrl(announceUrl: str, baseDir: str,
+def getOriginalPostFromAnnounceUrl(announceUrl: str, base_dir: str,
                                    nickname: str,
                                    domain: str) -> (str, str, str):
     """From the url of an announce this returns the actor, url and
     filename (if available) of the original post being announced
     """
-    postFilename = locatePost(baseDir, nickname, domain, announceUrl)
+    postFilename = locatePost(base_dir, nickname, domain, announceUrl)
     if not postFilename:
         return None, None, None
     announcePostJson = loadJson(postFilename, 0, 1)
@@ -5271,7 +5273,7 @@ def getOriginalPostFromAnnounceUrl(announceUrl: str, baseDir: str,
     actor = url = None
     # do we have the original post?
     origPostId = announcePostJson['object']
-    origFilename = locatePost(baseDir, nickname, domain, origPostId)
+    origFilename = locatePost(base_dir, nickname, domain, origPostId)
     if origFilename:
         # we have the original post
         origPostJson = loadJson(origFilename, 0, 1)

@@ -46,17 +46,17 @@ from content import getPriceFromString
 from blocking import isBlocked
 
 
-def _loadDfcIds(baseDir: str, systemLanguage: str,
+def _loadDfcIds(base_dir: str, systemLanguage: str,
                 productType: str,
                 httpPrefix: str, domainFull: str) -> {}:
     """Loads the product types ontology
     This is used to add an id to shared items
     """
     productTypesFilename = \
-        baseDir + '/ontology/custom' + productType.title() + 'Types.json'
+        base_dir + '/ontology/custom' + productType.title() + 'Types.json'
     if not os.path.isfile(productTypesFilename):
         productTypesFilename = \
-            baseDir + '/ontology/' + productType + 'Types.json'
+            base_dir + '/ontology/' + productType + 'Types.json'
     productTypes = loadJson(productTypesFilename)
     if not productTypes:
         print('Unable to load ontology: ' + productTypesFilename)
@@ -118,14 +118,14 @@ def _getValidSharedItemID(actor: str, displayName: str) -> str:
     return actor + '--shareditems--' + displayName
 
 
-def removeSharedItem(baseDir: str, nickname: str, domain: str,
+def removeSharedItem(base_dir: str, nickname: str, domain: str,
                      itemID: str,
                      httpPrefix: str, domainFull: str,
                      sharesFileType: str) -> None:
     """Removes a share for a person
     """
     sharesFilename = \
-        acctDir(baseDir, nickname, domain) + '/' + sharesFileType + '.json'
+        acctDir(base_dir, nickname, domain) + '/' + sharesFileType + '.json'
     if not os.path.isfile(sharesFilename):
         print('ERROR: remove shared item, missing ' +
               sharesFileType + '.json ' + sharesFilename)
@@ -140,7 +140,7 @@ def removeSharedItem(baseDir: str, nickname: str, domain: str,
 
     if sharesJson.get(itemID):
         # remove any image for the item
-        itemIDfile = baseDir + '/sharefiles/' + nickname + '/' + itemID
+        itemIDfile = base_dir + '/sharefiles/' + nickname + '/' + itemID
         if sharesJson[itemID]['imageUrl']:
             formats = getImageExtensions()
             for ext in formats:
@@ -180,14 +180,14 @@ def _addShareDurationSec(duration: str, published: int) -> int:
     return 0
 
 
-def _dfcProductTypeFromCategory(baseDir: str,
+def _dfcProductTypeFromCategory(base_dir: str,
                                 itemCategory: str, translate: {}) -> str:
     """Does the shared item category match a DFC product type?
     If so then return the product type.
     This will be used to select an appropriate ontology file
     such as ontology/foodTypes.json
     """
-    productTypesList = getCategoryTypes(baseDir)
+    productTypesList = getCategoryTypes(base_dir)
     categoryLower = itemCategory.lower()
     for productType in productTypesList:
         if translate.get(productType):
@@ -199,7 +199,7 @@ def _dfcProductTypeFromCategory(baseDir: str,
     return None
 
 
-def _getshareDfcId(baseDir: str, systemLanguage: str,
+def _getshareDfcId(base_dir: str, systemLanguage: str,
                    itemType: str, itemCategory: str,
                    translate: {},
                    httpPrefix: str, domainFull: str,
@@ -211,13 +211,13 @@ def _getshareDfcId(baseDir: str, systemLanguage: str,
     # does the category field match any prodyct type ontology
     # files in the ontology subdirectory?
     matchedProductType = \
-        _dfcProductTypeFromCategory(baseDir, itemCategory, translate)
+        _dfcProductTypeFromCategory(base_dir, itemCategory, translate)
     if not matchedProductType:
         itemType = itemType.replace(' ', '_')
         itemType = itemType.replace('.', '')
         return 'epicyon#' + itemType
     if not dfcIds:
-        dfcIds = _loadDfcIds(baseDir, systemLanguage, matchedProductType,
+        dfcIds = _loadDfcIds(base_dir, systemLanguage, matchedProductType,
                              httpPrefix, domainFull)
         if not dfcIds:
             return ''
@@ -264,16 +264,16 @@ def _getshareTypeFromDfcId(dfcUri: str, dfcIds: {}) -> str:
     return None
 
 
-def _indicateNewShareAvailable(baseDir: str, httpPrefix: str,
+def _indicateNewShareAvailable(base_dir: str, httpPrefix: str,
                                nickname: str, domain: str,
                                domainFull: str, sharesFileType: str) -> None:
     """Indicate to each account that a new share is available
     """
-    for subdir, dirs, files in os.walk(baseDir + '/accounts'):
+    for subdir, dirs, files in os.walk(base_dir + '/accounts'):
         for handle in dirs:
             if not isAccountDir(handle):
                 continue
-            accountDir = baseDir + '/accounts/' + handle
+            accountDir = base_dir + '/accounts/' + handle
             if sharesFileType == 'shares':
                 newShareFile = accountDir + '/.newShare'
             else:
@@ -283,7 +283,7 @@ def _indicateNewShareAvailable(baseDir: str, httpPrefix: str,
             accountNickname = handle.split('@')[0]
             # does this account block you?
             if accountNickname != nickname:
-                if isBlocked(baseDir, accountNickname, domain,
+                if isBlocked(base_dir, accountNickname, domain,
                              nickname, domain, None):
                     continue
             localActor = localActorUrl(httpPrefix, accountNickname, domainFull)
@@ -299,7 +299,7 @@ def _indicateNewShareAvailable(baseDir: str, httpPrefix: str,
         break
 
 
-def addShare(baseDir: str,
+def addShare(base_dir: str,
              httpPrefix: str, nickname: str, domain: str, port: int,
              displayName: str, summary: str, imageFilename: str,
              itemQty: float, itemType: str, itemCategory: str, location: str,
@@ -310,13 +310,13 @@ def addShare(baseDir: str,
              contentLicenseUrl: str) -> None:
     """Adds a new share
     """
-    if isFilteredGlobally(baseDir,
+    if isFilteredGlobally(base_dir,
                           displayName + ' ' + summary + ' ' +
                           itemType + ' ' + itemCategory):
         print('Shared item was filtered due to content')
         return
     sharesFilename = \
-        acctDir(baseDir, nickname, domain) + '/' + sharesFileType + '.json'
+        acctDir(base_dir, nickname, domain) + '/' + sharesFileType + '.json'
     sharesJson = {}
     if os.path.isfile(sharesFilename):
         sharesJson = loadJson(sharesFilename, 1, 2)
@@ -328,7 +328,7 @@ def addShare(baseDir: str,
     domainFull = getFullDomain(domain, port)
     actor = localActorUrl(httpPrefix, nickname, domainFull)
     itemID = _getValidSharedItemID(actor, displayName)
-    dfcId = _getshareDfcId(baseDir, systemLanguage,
+    dfcId = _getshareDfcId(base_dir, systemLanguage,
                            itemType, itemCategory, translate,
                            httpPrefix, domainFull)
 
@@ -337,7 +337,7 @@ def addShare(baseDir: str,
     moveImage = False
     if not imageFilename:
         sharesImageFilename = \
-            acctDir(baseDir, nickname, domain) + '/upload'
+            acctDir(base_dir, nickname, domain) + '/upload'
         formats = getImageExtensions()
         for ext in formats:
             if os.path.isfile(sharesImageFilename + '.' + ext):
@@ -349,18 +349,18 @@ def addShare(baseDir: str,
     # copy or move the image for the shared item to its destination
     if imageFilename:
         if os.path.isfile(imageFilename):
-            if not os.path.isdir(baseDir + '/sharefiles'):
-                os.mkdir(baseDir + '/sharefiles')
-            if not os.path.isdir(baseDir + '/sharefiles/' + nickname):
-                os.mkdir(baseDir + '/sharefiles/' + nickname)
-            itemIDfile = baseDir + '/sharefiles/' + nickname + '/' + itemID
+            if not os.path.isdir(base_dir + '/sharefiles'):
+                os.mkdir(base_dir + '/sharefiles')
+            if not os.path.isdir(base_dir + '/sharefiles/' + nickname):
+                os.mkdir(base_dir + '/sharefiles/' + nickname)
+            itemIDfile = base_dir + '/sharefiles/' + nickname + '/' + itemID
             formats = getImageExtensions()
             for ext in formats:
                 if not imageFilename.endswith('.' + ext):
                     continue
                 if lowBandwidth:
                     convertImageToLowBandwidth(imageFilename)
-                processMetaData(baseDir, nickname, domain,
+                processMetaData(base_dir, nickname, domain,
                                 imageFilename, itemIDfile + '.' + ext,
                                 city, contentLicenseUrl)
                 if moveImage:
@@ -390,34 +390,34 @@ def addShare(baseDir: str,
 
     saveJson(sharesJson, sharesFilename)
 
-    _indicateNewShareAvailable(baseDir, httpPrefix,
+    _indicateNewShareAvailable(base_dir, httpPrefix,
                                nickname, domain, domainFull,
                                sharesFileType)
 
 
-def expireShares(baseDir: str) -> None:
+def expireShares(base_dir: str) -> None:
     """Removes expired items from shares
     """
-    for subdir, dirs, files in os.walk(baseDir + '/accounts'):
+    for subdir, dirs, files in os.walk(base_dir + '/accounts'):
         for account in dirs:
             if not isAccountDir(account):
                 continue
             nickname = account.split('@')[0]
             domain = account.split('@')[1]
             for sharesFileType in getSharesFilesList():
-                _expireSharesForAccount(baseDir, nickname, domain,
+                _expireSharesForAccount(base_dir, nickname, domain,
                                         sharesFileType)
         break
 
 
-def _expireSharesForAccount(baseDir: str, nickname: str, domain: str,
+def _expireSharesForAccount(base_dir: str, nickname: str, domain: str,
                             sharesFileType: str) -> None:
     """Removes expired items from shares for a particular account
     """
     handleDomain = removeDomainPort(domain)
     handle = nickname + '@' + handleDomain
     sharesFilename = \
-        baseDir + '/accounts/' + handle + '/' + sharesFileType + '.json'
+        base_dir + '/accounts/' + handle + '/' + sharesFileType + '.json'
     if not os.path.isfile(sharesFilename):
         return
     sharesJson = loadJson(sharesFilename, 1, 2)
@@ -433,7 +433,7 @@ def _expireSharesForAccount(baseDir: str, nickname: str, domain: str,
     for itemID in deleteItemID:
         del sharesJson[itemID]
         # remove any associated images
-        itemIDfile = baseDir + '/sharefiles/' + nickname + '/' + itemID
+        itemIDfile = base_dir + '/sharefiles/' + nickname + '/' + itemID
         formats = getImageExtensions()
         for ext in formats:
             if os.path.isfile(itemIDfile + '.' + ext):
@@ -445,7 +445,7 @@ def _expireSharesForAccount(baseDir: str, nickname: str, domain: str,
     saveJson(sharesJson, sharesFilename)
 
 
-def getSharesFeedForPerson(baseDir: str,
+def getSharesFeedForPerson(base_dir: str,
                            domain: str, port: int,
                            path: str, httpPrefix: str,
                            sharesFileType: str,
@@ -489,7 +489,7 @@ def getSharesFeedForPerson(baseDir: str,
 
     handleDomain = removeDomainPort(domain)
     sharesFilename = \
-        acctDir(baseDir, nickname, handleDomain) + '/' + \
+        acctDir(base_dir, nickname, handleDomain) + '/' + \
         sharesFileType + '.json'
 
     if headerOnly:
@@ -550,7 +550,7 @@ def getSharesFeedForPerson(baseDir: str,
     return shares
 
 
-def sendShareViaServer(baseDir, session,
+def sendShareViaServer(base_dir, session,
                        fromNickname: str, password: str,
                        fromDomain: str, fromPort: int,
                        httpPrefix: str, displayName: str,
@@ -628,7 +628,7 @@ def sendShareViaServer(baseDir, session,
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
      displayName, _) = getPersonBox(signingPrivateKeyPem,
                                     originDomain,
-                                    baseDir, session, wfRequest,
+                                    base_dir, session, wfRequest,
                                     personCache, projectVersion,
                                     httpPrefix, fromNickname,
                                     fromDomain, postToBox,
@@ -675,7 +675,7 @@ def sendShareViaServer(baseDir, session,
     return newShareJson
 
 
-def sendUndoShareViaServer(baseDir: str, session,
+def sendUndoShareViaServer(base_dir: str, session,
                            fromNickname: str, password: str,
                            fromDomain: str, fromPort: int,
                            httpPrefix: str, displayName: str,
@@ -732,7 +732,7 @@ def sendUndoShareViaServer(baseDir: str, session,
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
      displayName, _) = getPersonBox(signingPrivateKeyPem,
                                     originDomain,
-                                    baseDir, session, wfRequest,
+                                    base_dir, session, wfRequest,
                                     personCache, projectVersion,
                                     httpPrefix, fromNickname,
                                     fromDomain, postToBox,
@@ -770,7 +770,7 @@ def sendUndoShareViaServer(baseDir: str, session,
     return undoShareJson
 
 
-def sendWantedViaServer(baseDir, session,
+def sendWantedViaServer(base_dir, session,
                         fromNickname: str, password: str,
                         fromDomain: str, fromPort: int,
                         httpPrefix: str, displayName: str,
@@ -848,7 +848,7 @@ def sendWantedViaServer(baseDir, session,
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
      displayName, _) = getPersonBox(signingPrivateKeyPem,
                                     originDomain,
-                                    baseDir, session, wfRequest,
+                                    base_dir, session, wfRequest,
                                     personCache, projectVersion,
                                     httpPrefix, fromNickname,
                                     fromDomain, postToBox,
@@ -895,7 +895,7 @@ def sendWantedViaServer(baseDir, session,
     return newShareJson
 
 
-def sendUndoWantedViaServer(baseDir: str, session,
+def sendUndoWantedViaServer(base_dir: str, session,
                             fromNickname: str, password: str,
                             fromDomain: str, fromPort: int,
                             httpPrefix: str, displayName: str,
@@ -952,7 +952,7 @@ def sendUndoWantedViaServer(baseDir: str, session,
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
      displayName, _) = getPersonBox(signingPrivateKeyPem,
                                     originDomain,
-                                    baseDir, session, wfRequest,
+                                    base_dir, session, wfRequest,
                                     personCache, projectVersion,
                                     httpPrefix, fromNickname,
                                     fromDomain, postToBox,
@@ -990,7 +990,7 @@ def sendUndoWantedViaServer(baseDir: str, session,
     return undoShareJson
 
 
-def getSharedItemsCatalogViaServer(baseDir, session,
+def getSharedItemsCatalogViaServer(base_dir, session,
                                    nickname: str, password: str,
                                    domain: str, port: int,
                                    httpPrefix: str, debug: bool,
@@ -1026,7 +1026,7 @@ def getSharedItemsCatalogViaServer(baseDir, session,
     return catalogJson
 
 
-def outboxShareUpload(baseDir: str, httpPrefix: str,
+def outboxShareUpload(base_dir: str, httpPrefix: str,
                       nickname: str, domain: str, port: int,
                       messageJson: {}, debug: bool, city: str,
                       systemLanguage: str, translate: {},
@@ -1079,7 +1079,7 @@ def outboxShareUpload(baseDir: str, httpPrefix: str,
         print('Adding shared item')
         pprint(messageJson)
 
-    addShare(baseDir,
+    addShare(base_dir,
              httpPrefix, nickname, domain, port,
              messageJson['object']['displayName'],
              messageJson['object']['summary'],
@@ -1098,7 +1098,7 @@ def outboxShareUpload(baseDir: str, httpPrefix: str,
         print('DEBUG: shared item received via c2s')
 
 
-def outboxUndoShareUpload(baseDir: str, httpPrefix: str,
+def outboxUndoShareUpload(base_dir: str, httpPrefix: str,
                           nickname: str, domain: str, port: int,
                           messageJson: {}, debug: bool) -> None:
     """ When a shared item is removed via c2s
@@ -1118,7 +1118,7 @@ def outboxUndoShareUpload(baseDir: str, httpPrefix: str,
             print('DEBUG: displayName missing from Offer')
         return
     domainFull = getFullDomain(domain, port)
-    removeSharedItem(baseDir, nickname, domain,
+    removeSharedItem(base_dir, nickname, domain,
                      messageJson['object']['displayName'],
                      httpPrefix, domainFull, 'shares')
     if debug:
@@ -1156,7 +1156,7 @@ def _sharesCatalogParams(path: str) -> (bool, float, float, str):
     return today, minPrice, maxPrice, matchPattern
 
 
-def sharesCatalogAccountEndpoint(baseDir: str, httpPrefix: str,
+def sharesCatalogAccountEndpoint(base_dir: str, httpPrefix: str,
                                  nickname: str, domain: str,
                                  domainFull: str,
                                  path: str, debug: bool,
@@ -1191,7 +1191,7 @@ def sharesCatalogAccountEndpoint(baseDir: str, httpPrefix: str,
     currDateStr = currDate.strftime("%Y-%m-%d")
 
     sharesFilename = \
-        acctDir(baseDir, nickname, domain) + '/' + sharesFileType + '.json'
+        acctDir(base_dir, nickname, domain) + '/' + sharesFileType + '.json'
     if not os.path.isfile(sharesFilename):
         if debug:
             print(sharesFileType + '.json file not found: ' + sharesFilename)
@@ -1248,7 +1248,7 @@ def sharesCatalogAccountEndpoint(baseDir: str, httpPrefix: str,
     return endpoint
 
 
-def sharesCatalogEndpoint(baseDir: str, httpPrefix: str,
+def sharesCatalogEndpoint(base_dir: str, httpPrefix: str,
                           domainFull: str,
                           path: str, sharesFileType: str) -> {}:
     """Returns the endpoint for the shares catalog for the instance
@@ -1276,7 +1276,7 @@ def sharesCatalogEndpoint(baseDir: str, httpPrefix: str,
     currDate = datetime.datetime.utcnow()
     currDateStr = currDate.strftime("%Y-%m-%d")
 
-    for subdir, dirs, files in os.walk(baseDir + '/accounts'):
+    for subdir, dirs, files in os.walk(base_dir + '/accounts'):
         for acct in dirs:
             if not isAccountDir(acct):
                 continue
@@ -1285,7 +1285,7 @@ def sharesCatalogEndpoint(baseDir: str, httpPrefix: str,
             owner = localActorUrl(httpPrefix, nickname, domainFull)
 
             sharesFilename = \
-                acctDir(baseDir, nickname, domain) + '/' + \
+                acctDir(base_dir, nickname, domain) + '/' + \
                 sharesFileType + '.json'
             if not os.path.isfile(sharesFilename):
                 continue
@@ -1337,13 +1337,13 @@ def sharesCatalogEndpoint(baseDir: str, httpPrefix: str,
     return endpoint
 
 
-def sharesCatalogCSVEndpoint(baseDir: str, httpPrefix: str,
+def sharesCatalogCSVEndpoint(base_dir: str, httpPrefix: str,
                              domainFull: str,
                              path: str, sharesFileType: str) -> str:
     """Returns a CSV version of the shares catalog
     """
     catalogJson = \
-        sharesCatalogEndpoint(baseDir, httpPrefix, domainFull, path,
+        sharesCatalogEndpoint(base_dir, httpPrefix, domainFull, path,
                               sharesFileType)
     if not catalogJson:
         return ''
@@ -1369,16 +1369,16 @@ def sharesCatalogCSVEndpoint(baseDir: str, httpPrefix: str,
 
 
 def generateSharedItemFederationTokens(sharedItemsFederatedDomains: [],
-                                       baseDir: str) -> {}:
+                                       base_dir: str) -> {}:
     """Generates tokens for shared item federated domains
     """
     if not sharedItemsFederatedDomains:
         return {}
 
     tokensJson = {}
-    if baseDir:
+    if base_dir:
         tokensFilename = \
-            baseDir + '/accounts/sharedItemsFederationTokens.json'
+            base_dir + '/accounts/sharedItemsFederationTokens.json'
         if os.path.isfile(tokensFilename):
             tokensJson = loadJson(tokensFilename, 1, 2)
             if tokensJson is None:
@@ -1392,12 +1392,12 @@ def generateSharedItemFederationTokens(sharedItemsFederatedDomains: [],
 
     if not tokensAdded:
         return tokensJson
-    if baseDir:
+    if base_dir:
         saveJson(tokensJson, tokensFilename)
     return tokensJson
 
 
-def updateSharedItemFederationToken(baseDir: str,
+def updateSharedItemFederationToken(base_dir: str,
                                     tokenDomainFull: str, newToken: str,
                                     debug: bool,
                                     tokensJson: {} = None) -> {}:
@@ -1407,9 +1407,9 @@ def updateSharedItemFederationToken(baseDir: str,
         print('Updating shared items token for ' + tokenDomainFull)
     if not tokensJson:
         tokensJson = {}
-    if baseDir:
+    if base_dir:
         tokensFilename = \
-            baseDir + '/accounts/sharedItemsFederationTokens.json'
+            base_dir + '/accounts/sharedItemsFederationTokens.json'
         if os.path.isfile(tokensFilename):
             if debug:
                 print('Update loading tokens for ' + tokenDomainFull)
@@ -1424,12 +1424,12 @@ def updateSharedItemFederationToken(baseDir: str,
         updateRequired = True
     if updateRequired:
         tokensJson[tokenDomainFull] = newToken
-        if baseDir:
+        if base_dir:
             saveJson(tokensJson, tokensFilename)
     return tokensJson
 
 
-def mergeSharedItemTokens(baseDir: str, domainFull: str,
+def mergeSharedItemTokens(base_dir: str, domainFull: str,
                           newSharedItemsFederatedDomains: [],
                           tokensJson: {}) -> {}:
     """When the shared item federation domains list has changed, update
@@ -1452,14 +1452,14 @@ def mergeSharedItemTokens(baseDir: str, domainFull: str,
         if tokenDomainFull not in tokensJson:
             tokensJson[tokenDomainFull] = ''
             changed = True
-    if baseDir and changed:
+    if base_dir and changed:
         tokensFilename = \
-            baseDir + '/accounts/sharedItemsFederationTokens.json'
+            base_dir + '/accounts/sharedItemsFederationTokens.json'
         saveJson(tokensJson, tokensFilename)
     return tokensJson
 
 
-def createSharedItemFederationToken(baseDir: str,
+def createSharedItemFederationToken(base_dir: str,
                                     tokenDomainFull: str,
                                     force: bool,
                                     tokensJson: {} = None) -> {}:
@@ -1467,22 +1467,22 @@ def createSharedItemFederationToken(baseDir: str,
     """
     if not tokensJson:
         tokensJson = {}
-    if baseDir:
+    if base_dir:
         tokensFilename = \
-            baseDir + '/accounts/sharedItemsFederationTokens.json'
+            base_dir + '/accounts/sharedItemsFederationTokens.json'
         if os.path.isfile(tokensFilename):
             tokensJson = loadJson(tokensFilename, 1, 2)
             if tokensJson is None:
                 tokensJson = {}
     if force or not tokensJson.get(tokenDomainFull):
         tokensJson[tokenDomainFull] = secrets.token_urlsafe(64)
-        if baseDir:
+        if base_dir:
             saveJson(tokensJson, tokensFilename)
     return tokensJson
 
 
 def authorizeSharedItems(sharedItemsFederatedDomains: [],
-                         baseDir: str,
+                         base_dir: str,
                          originDomainFull: str,
                          callingDomainFull: str,
                          authHeader: str,
@@ -1515,7 +1515,7 @@ def authorizeSharedItems(sharedItemsFederatedDomains: [],
         return False
     if not tokensJson:
         tokensFilename = \
-            baseDir + '/accounts/sharedItemsFederationTokens.json'
+            base_dir + '/accounts/sharedItemsFederationTokens.json'
         if not os.path.isfile(tokensFilename):
             if debug:
                 print('DEBUG: shared item federation tokens file missing ' +
@@ -1539,7 +1539,7 @@ def authorizeSharedItems(sharedItemsFederatedDomains: [],
 
 
 def _updateFederatedSharesCache(session, sharedItemsFederatedDomains: [],
-                                baseDir: str, domainFull: str,
+                                base_dir: str, domainFull: str,
                                 httpPrefix: str,
                                 tokensJson: {}, debug: bool,
                                 systemLanguage: str,
@@ -1549,7 +1549,7 @@ def _updateFederatedSharesCache(session, sharedItemsFederatedDomains: [],
     might not be online
     """
     # create directories where catalogs will be stored
-    cacheDir = baseDir + '/cache'
+    cacheDir = base_dir + '/cache'
     if not os.path.isdir(cacheDir):
         os.mkdir(cacheDir)
     if sharesFileType == 'shares':
@@ -1589,7 +1589,7 @@ def _updateFederatedSharesCache(session, sharedItemsFederatedDomains: [],
         if saveJson(catalogJson, catalogFilename):
             print('Downloaded shared items catalog for ' + federatedDomainFull)
             sharesJson = _dfcToSharesFormat(catalogJson,
-                                            baseDir, systemLanguage,
+                                            base_dir, systemLanguage,
                                             httpPrefix, domainFull)
             if sharesJson:
                 sharesFilename = \
@@ -1620,14 +1620,14 @@ def runFederatedSharesWatchdog(projectVersion: str, httpd) -> None:
         print('Restarting federated shares daemon...')
 
 
-def _generateNextSharesTokenUpdate(baseDir: str,
+def _generateNextSharesTokenUpdate(base_dir: str,
                                    minDays: int, maxDays: int) -> None:
     """Creates a file containing the next date when the shared items token
     for this instance will be updated
     """
-    tokenUpdateDir = baseDir + '/accounts'
-    if not os.path.isdir(baseDir):
-        os.mkdir(baseDir)
+    tokenUpdateDir = base_dir + '/accounts'
+    if not os.path.isdir(base_dir):
+        os.mkdir(base_dir)
     if not os.path.isdir(tokenUpdateDir):
         os.mkdir(tokenUpdateDir)
     tokenUpdateFilename = tokenUpdateDir + '/.tokenUpdate'
@@ -1656,7 +1656,7 @@ def _generateNextSharesTokenUpdate(baseDir: str,
             fp.write(str(nextUpdateSec))
 
 
-def _regenerateSharesToken(baseDir: str, domainFull: str,
+def _regenerateSharesToken(base_dir: str, domainFull: str,
                            minDays: int, maxDays: int, httpd) -> None:
     """Occasionally the shared items token for your instance is updated.
     Scenario:
@@ -1673,7 +1673,7 @@ def _regenerateSharesToken(baseDir: str, domainFull: str,
     federated shares list of domains continue to follow and communicate
     then they will receive the new token automatically
     """
-    tokenUpdateFilename = baseDir + '/accounts/.tokenUpdate'
+    tokenUpdateFilename = base_dir + '/accounts/.tokenUpdate'
     if not os.path.isfile(tokenUpdateFilename):
         return
     nextUpdateSec = None
@@ -1687,15 +1687,15 @@ def _regenerateSharesToken(baseDir: str, domainFull: str,
     currTime = int(time.time())
     if currTime <= nextUpdateSec:
         return
-    createSharedItemFederationToken(baseDir, domainFull, True, None)
-    _generateNextSharesTokenUpdate(baseDir, minDays, maxDays)
+    createSharedItemFederationToken(base_dir, domainFull, True, None)
+    _generateNextSharesTokenUpdate(base_dir, minDays, maxDays)
     # update the tokens used within the daemon
     httpd.sharedItemFederationTokens = \
         generateSharedItemFederationTokens(httpd.sharedItemsFederatedDomains,
-                                           baseDir)
+                                           base_dir)
 
 
-def runFederatedSharesDaemon(baseDir: str, httpd, httpPrefix: str,
+def runFederatedSharesDaemon(base_dir: str, httpd, httpPrefix: str,
                              domainFull: str, proxyType: str, debug: bool,
                              systemLanguage: str) -> None:
     """Runs the daemon used to update federated shared items
@@ -1706,17 +1706,17 @@ def runFederatedSharesDaemon(baseDir: str, httpd, httpPrefix: str,
     # the token for this instance will be changed every 7-14 days
     minDays = 7
     maxDays = 14
-    _generateNextSharesTokenUpdate(baseDir, minDays, maxDays)
+    _generateNextSharesTokenUpdate(base_dir, minDays, maxDays)
     while True:
         sharedItemsFederatedDomainsStr = \
-            getConfigParam(baseDir, 'sharedItemsFederatedDomains')
+            getConfigParam(base_dir, 'sharedItemsFederatedDomains')
         if not sharedItemsFederatedDomainsStr:
             time.sleep(fileCheckIntervalSec)
             continue
 
         # occasionally change the federated shared items token
         # for this instance
-        _regenerateSharesToken(baseDir, domainFull, minDays, maxDays, httpd)
+        _regenerateSharesToken(base_dir, domainFull, minDays, maxDays, httpd)
 
         # get a list of the domains within the shared items federation
         sharedItemsFederatedDomains = []
@@ -1730,7 +1730,7 @@ def runFederatedSharesDaemon(baseDir: str, httpd, httpPrefix: str,
 
         # load the tokens
         tokensFilename = \
-            baseDir + '/accounts/sharedItemsFederationTokens.json'
+            base_dir + '/accounts/sharedItemsFederationTokens.json'
         if not os.path.isfile(tokensFilename):
             time.sleep(fileCheckIntervalSec)
             continue
@@ -1742,14 +1742,14 @@ def runFederatedSharesDaemon(baseDir: str, httpd, httpPrefix: str,
         session = createSession(proxyType)
         for sharesFileType in getSharesFilesList():
             _updateFederatedSharesCache(session, sharedItemsFederatedDomains,
-                                        baseDir, domainFull, httpPrefix,
+                                        base_dir, domainFull, httpPrefix,
                                         tokensJson, debug, systemLanguage,
                                         sharesFileType)
         time.sleep(secondsPerHour * 6)
 
 
 def _dfcToSharesFormat(catalogJson: {},
-                       baseDir: str, systemLanguage: str,
+                       base_dir: str, systemLanguage: str,
                        httpPrefix: str, domainFull: str) -> {}:
     """Converts DFC format into the internal formal used to store shared items.
     This simplifies subsequent search and display
@@ -1759,10 +1759,11 @@ def _dfcToSharesFormat(catalogJson: {},
     sharesJson = {}
 
     dfcIds = {}
-    productTypesList = getCategoryTypes(baseDir)
+    productTypesList = getCategoryTypes(base_dir)
     for productType in productTypesList:
-        dfcIds[productType] = _loadDfcIds(baseDir, systemLanguage, productType,
-                                          httpPrefix, domainFull)
+        dfcIds[productType] = \
+            _loadDfcIds(base_dir, systemLanguage, productType,
+                        httpPrefix, domainFull)
 
     currTime = int(time.time())
     for item in catalogJson['DFC:supplies']:
@@ -1812,7 +1813,7 @@ def _dfcToSharesFormat(catalogJson: {},
             continue
 
         allText = item['DFC:description'] + ' ' + itemType + ' ' + itemCategory
-        if isFilteredGlobally(baseDir, allText):
+        if isFilteredGlobally(base_dir, allText):
             continue
 
         dfcId = None

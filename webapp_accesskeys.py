@@ -16,15 +16,15 @@ from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 
 
-def loadAccessKeysForAccounts(baseDir: str, keyShortcuts: {},
+def loadAccessKeysForAccounts(base_dir: str, keyShortcuts: {},
                               accessKeysTemplate: {}) -> None:
     """Loads key shortcuts for each account
     """
-    for subdir, dirs, files in os.walk(baseDir + '/accounts'):
+    for subdir, dirs, files in os.walk(base_dir + '/accounts'):
         for acct in dirs:
             if not isAccountDir(acct):
                 continue
-            accountDir = os.path.join(baseDir + '/accounts', acct)
+            accountDir = os.path.join(base_dir + '/accounts', acct)
             accessKeysFilename = accountDir + '/accessKeys.json'
             if not os.path.isfile(accessKeysFilename):
                 continue
@@ -39,7 +39,7 @@ def loadAccessKeysForAccounts(baseDir: str, keyShortcuts: {},
         break
 
 
-def htmlAccessKeys(cssCache: {}, baseDir: str,
+def htmlAccessKeys(cssCache: {}, base_dir: str,
                    nickname: str, domain: str,
                    translate: {}, accessKeys: {},
                    defaultAccessKeys: {},
@@ -47,19 +47,19 @@ def htmlAccessKeys(cssCache: {}, baseDir: str,
     """Show and edit key shortcuts
     """
     accessKeysFilename = \
-        acctDir(baseDir, nickname, domain) + '/accessKeys.json'
+        acctDir(base_dir, nickname, domain) + '/accessKeys.json'
     if os.path.isfile(accessKeysFilename):
         accessKeysFromFile = loadJson(accessKeysFilename)
         if accessKeysFromFile:
             accessKeys = accessKeysFromFile
 
     accessKeysForm = ''
-    cssFilename = baseDir + '/epicyon-profile.css'
-    if os.path.isfile(baseDir + '/epicyon.css'):
-        cssFilename = baseDir + '/epicyon.css'
+    cssFilename = base_dir + '/epicyon-profile.css'
+    if os.path.isfile(base_dir + '/epicyon.css'):
+        cssFilename = base_dir + '/epicyon.css'
 
     instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
+        getConfigParam(base_dir, 'instanceTitle')
     accessKeysForm = \
         htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     accessKeysForm += '<div class="container">\n'

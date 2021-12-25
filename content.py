@@ -214,7 +214,7 @@ def dangerousCSS(filename: str, allowLocalNetworkAccess: bool) -> bool:
     return False
 
 
-def switchWords(baseDir: str, nickname: str, domain: str, content: str,
+def switchWords(base_dir: str, nickname: str, domain: str, content: str,
                 rules: [] = []) -> str:
     """Performs word replacements. eg. Trump -> The Orange Menace
     """
@@ -223,7 +223,7 @@ def switchWords(baseDir: str, nickname: str, domain: str, content: str,
 
     if not rules:
         switchWordsFilename = \
-            acctDir(baseDir, nickname, domain) + '/replacewords.txt'
+            acctDir(base_dir, nickname, domain) + '/replacewords.txt'
         if not os.path.isfile(switchWordsFilename):
             return content
         try:
@@ -249,7 +249,7 @@ def switchWords(baseDir: str, nickname: str, domain: str, content: str,
     return content
 
 
-def _saveCustomEmoji(session, baseDir: str, emojiName: str, url: str,
+def _saveCustomEmoji(session, base_dir: str, emojiName: str, url: str,
                      debug: bool) -> None:
     """Saves custom emoji to file
     """
@@ -265,11 +265,11 @@ def _saveCustomEmoji(session, baseDir: str, emojiName: str, url: str,
             print('EX: Custom emoji is wrong format ' + url)
         return
     emojiName = emojiName.replace(':', '').strip().lower()
-    customEmojiDir = baseDir + '/emojicustom'
+    customEmojiDir = base_dir + '/emojicustom'
     if not os.path.isdir(customEmojiDir):
         os.mkdir(customEmojiDir)
     emojiImageFilename = customEmojiDir + '/' + emojiName + '.' + ext
-    if not downloadImage(session, baseDir, url,
+    if not downloadImage(session, base_dir, url,
                          emojiImageFilename, debug, False):
         if debug:
             print('EX: custom emoji not downloaded ' + url)
@@ -289,7 +289,7 @@ def _saveCustomEmoji(session, baseDir: str, emojiName: str, url: str,
         print('EX: cusom emoji already saved')
 
 
-def replaceEmojiFromTags(session, baseDir: str,
+def replaceEmojiFromTags(session, base_dir: str,
                          content: str, tag: [], messageType: str,
                          debug: bool) -> str:
     """Uses the tags to replace :emoji: with html image markup
@@ -332,7 +332,7 @@ def replaceEmojiFromTags(session, baseDir: str,
                                       tagItem['name'] + ' ' +
                                       tagItem['icon']['url'])
                             if not replaced:
-                                _saveCustomEmoji(session, baseDir,
+                                _saveCustomEmoji(session, base_dir,
                                                  tagItem['name'],
                                                  tagItem['icon']['url'],
                                                  debug)
@@ -354,7 +354,7 @@ def replaceEmojiFromTags(session, baseDir: str,
                                           tagItem['name'] + ' ' +
                                           tagItem['icon']['url'])
                                 if not replaced:
-                                    _saveCustomEmoji(session, baseDir,
+                                    _saveCustomEmoji(session, base_dir,
                                                      tagItem['name'],
                                                      tagItem['icon']['url'],
                                                      debug)
@@ -505,7 +505,7 @@ def _addHashTags(wordStr: str, httpPrefix: str, domain: str,
     return True
 
 
-def _addEmoji(baseDir: str, wordStr: str,
+def _addEmoji(base_dir: str, wordStr: str,
               httpPrefix: str, domain: str,
               replaceEmoji: {}, postTags: {},
               emojiDict: {}) -> bool:
@@ -528,7 +528,7 @@ def _addEmoji(baseDir: str, wordStr: str,
         return False
     if not emojiDict.get(emoji):
         return False
-    emojiFilename = baseDir + '/emoji/' + emojiDict[emoji] + '.png'
+    emojiFilename = base_dir + '/emoji/' + emojiDict[emoji] + '.png'
     if not os.path.isfile(emojiFilename):
         return False
     emojiUrl = httpPrefix + "://" + domain + \
@@ -780,11 +780,11 @@ def removeLongWords(content: str, maxWordLength: int,
     return content
 
 
-def _loadAutoTags(baseDir: str, nickname: str, domain: str) -> []:
+def _loadAutoTags(base_dir: str, nickname: str, domain: str) -> []:
     """Loads automatic tags file and returns a list containing
     the lines of the file
     """
-    filename = acctDir(baseDir, nickname, domain) + '/autotags.txt'
+    filename = acctDir(base_dir, nickname, domain) + '/autotags.txt'
     if not os.path.isfile(filename):
         return []
     try:
@@ -795,7 +795,7 @@ def _loadAutoTags(baseDir: str, nickname: str, domain: str) -> []:
     return []
 
 
-def _autoTag(baseDir: str, nickname: str, domain: str,
+def _autoTag(base_dir: str, nickname: str, domain: str,
              wordStr: str, autoTagList: [],
              appendTags: []):
     """Generates a list of tags to be automatically appended to the content
@@ -817,7 +817,7 @@ def _autoTag(baseDir: str, nickname: str, domain: str,
                 appendTags.append('#' + tagName)
 
 
-def addHtmlTags(baseDir: str, httpPrefix: str,
+def addHtmlTags(base_dir: str, httpPrefix: str,
                 nickname: str, domain: str, content: str,
                 recipients: [], hashtags: {},
                 isJsonContent: bool = False) -> str:
@@ -856,7 +856,7 @@ def addHtmlTags(baseDir: str, httpPrefix: str,
     emojiDict = {}
     originalDomain = domain
     domain = removeDomainPort(domain)
-    followingFilename = acctDir(baseDir, nickname, domain) + '/following.txt'
+    followingFilename = acctDir(base_dir, nickname, domain) + '/following.txt'
 
     # read the following list so that we can detect just @nick
     # in addition to @nick@domain
@@ -871,14 +871,14 @@ def addHtmlTags(baseDir: str, httpPrefix: str,
             except OSError:
                 print('EX: unable to read ' + followingFilename)
             for handle in following:
-                pet = getPetName(baseDir, nickname, domain, handle)
+                pet = getPetName(base_dir, nickname, domain, handle)
                 if pet:
                     petnames.append(pet + '\n')
 
     # extract mentions and tags from words
     longWordsList = []
     prevWordStr = ''
-    autoTagsList = _loadAutoTags(baseDir, nickname, domain)
+    autoTagsList = _loadAutoTags(base_dir, nickname, domain)
     appendTags = []
     for wordStr in words:
         wordLen = len(wordStr)
@@ -910,29 +910,29 @@ def addHtmlTags(baseDir: str, httpPrefix: str,
                     # emoji.json is generated so that it can be customized and
                     # the changes will be retained even if default_emoji.json
                     # is subsequently updated
-                    if not os.path.isfile(baseDir + '/emoji/emoji.json'):
-                        copyfile(baseDir + '/emoji/default_emoji.json',
-                                 baseDir + '/emoji/emoji.json')
-                emojiDict = loadJson(baseDir + '/emoji/emoji.json')
+                    if not os.path.isfile(base_dir + '/emoji/emoji.json'):
+                        copyfile(base_dir + '/emoji/default_emoji.json',
+                                 base_dir + '/emoji/emoji.json')
+                emojiDict = loadJson(base_dir + '/emoji/emoji.json')
 
                 # append custom emoji to the dict
-                if os.path.isfile(baseDir + '/emojicustom/emoji.json'):
+                if os.path.isfile(base_dir + '/emojicustom/emoji.json'):
                     customEmojiDict = \
-                        loadJson(baseDir + '/emojicustom/emoji.json')
+                        loadJson(base_dir + '/emojicustom/emoji.json')
                     if customEmojiDict:
                         emojiDict = dict(emojiDict, **customEmojiDict)
 
 #                print('TAG: looking up emoji for :' + wordStr2 + ':')
-                _addEmoji(baseDir, ':' + wordStr2 + ':', httpPrefix,
+                _addEmoji(base_dir, ':' + wordStr2 + ':', httpPrefix,
                           originalDomain, replaceEmoji, hashtags,
                           emojiDict)
             else:
-                if _autoTag(baseDir, nickname, domain, wordStr,
+                if _autoTag(base_dir, nickname, domain, wordStr,
                             autoTagsList, appendTags):
                     prevWordStr = ''
                     continue
                 if prevWordStr:
-                    if _autoTag(baseDir, nickname, domain,
+                    if _autoTag(base_dir, nickname, domain,
                                 prevWordStr + ' ' + wordStr,
                                 autoTagsList, appendTags):
                         prevWordStr = ''

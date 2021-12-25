@@ -23,12 +23,12 @@ from shutil import rmtree
 from content import dangerousCSS
 
 
-def importTheme(baseDir: str, filename: str) -> bool:
+def importTheme(base_dir: str, filename: str) -> bool:
     """Imports a theme
     """
     if not os.path.isfile(filename):
         return False
-    tempThemeDir = baseDir + '/imports/files'
+    tempThemeDir = base_dir + '/imports/files'
     if os.path.isdir(tempThemeDir):
         rmtree(tempThemeDir, ignore_errors=False, onerror=None)
     os.mkdir(tempThemeDir)
@@ -61,12 +61,12 @@ def importTheme(baseDir: str, filename: str) -> bool:
         return False
 
     # if the theme name in the default themes list?
-    defaultThemesFilename = baseDir + '/defaultthemes.txt'
+    defaultThemesFilename = base_dir + '/defaultthemes.txt'
     if os.path.isfile(defaultThemesFilename):
         if newThemeName.title() + '\n' in open(defaultThemesFilename).read():
             newThemeName = newThemeName + '2'
 
-    themeDir = baseDir + '/theme/' + newThemeName
+    themeDir = base_dir + '/theme/' + newThemeName
     if not os.path.isdir(themeDir):
         os.mkdir(themeDir)
     copytree(tempThemeDir, themeDir)
@@ -78,25 +78,25 @@ def importTheme(baseDir: str, filename: str) -> bool:
     return os.path.isfile(themeDir + '/theme.json')
 
 
-def exportTheme(baseDir: str, theme: str) -> bool:
+def exportTheme(base_dir: str, theme: str) -> bool:
     """Exports a theme as a zip file
     """
-    themeDir = baseDir + '/theme/' + theme
+    themeDir = base_dir + '/theme/' + theme
     if not os.path.isfile(themeDir + '/theme.json'):
         return False
-    if not os.path.isdir(baseDir + '/exports'):
-        os.mkdir(baseDir + '/exports')
-    exportFilename = baseDir + '/exports/' + theme + '.zip'
+    if not os.path.isdir(base_dir + '/exports'):
+        os.mkdir(base_dir + '/exports')
+    exportFilename = base_dir + '/exports/' + theme + '.zip'
     if os.path.isfile(exportFilename):
         try:
             os.remove(exportFilename)
         except OSError:
             print('EX: exportTheme unable to delete ' + str(exportFilename))
     try:
-        make_archive(baseDir + '/exports/' + theme, 'zip', themeDir)
+        make_archive(base_dir + '/exports/' + theme, 'zip', themeDir)
     except BaseException:
         print('EX: exportTheme unable to archive ' +
-              baseDir + '/exports/' + str(theme))
+              base_dir + '/exports/' + str(theme))
         pass
     return os.path.isfile(exportFilename)
 
@@ -110,23 +110,23 @@ def _getThemeFiles() -> []:
             'welcome.css', 'graph.css')
 
 
-def isNewsThemeName(baseDir: str, themeName: str) -> bool:
+def isNewsThemeName(base_dir: str, themeName: str) -> bool:
     """Returns true if the given theme is a news instance
     """
-    themeDir = baseDir + '/theme/' + themeName
+    themeDir = base_dir + '/theme/' + themeName
     if os.path.isfile(themeDir + '/is_news_instance'):
         return True
     return False
 
 
-def getThemesList(baseDir: str) -> []:
+def getThemesList(base_dir: str) -> []:
     """Returns the list of available themes
     Note that these should be capitalized, since they're
     also used to create the web interface dropdown list
     and to lookup function names
     """
     themes = []
-    for subdir, dirs, files in os.walk(baseDir + '/theme'):
+    for subdir, dirs, files in os.walk(base_dir + '/theme'):
         for themeName in dirs:
             if '~' not in themeName and \
                themeName != 'icons' and themeName != 'fonts':
@@ -137,15 +137,15 @@ def getThemesList(baseDir: str) -> []:
     return themes
 
 
-def _copyThemeHelpFiles(baseDir: str, themeName: str,
+def _copyThemeHelpFiles(base_dir: str, themeName: str,
                         systemLanguage: str) -> None:
     """Copies any theme specific help files from the welcome subdirectory
     """
     if not systemLanguage:
         systemLanguage = 'en'
-    themeDir = baseDir + '/theme/' + themeName + '/welcome'
+    themeDir = base_dir + '/theme/' + themeName + '/welcome'
     if not os.path.isdir(themeDir):
-        themeDir = baseDir + '/defaultwelcome'
+        themeDir = base_dir + '/defaultwelcome'
     for subdir, dirs, files in os.walk(themeDir):
         for helpMarkdownFile in files:
             if not helpMarkdownFile.endswith('_' + systemLanguage + '.md'):
@@ -155,16 +155,16 @@ def _copyThemeHelpFiles(baseDir: str, themeName: str,
             if destHelpMarkdownFile == 'profile.md' or \
                destHelpMarkdownFile == 'final.md':
                 destHelpMarkdownFile = 'welcome_' + destHelpMarkdownFile
-            if os.path.isdir(baseDir + '/accounts'):
+            if os.path.isdir(base_dir + '/accounts'):
                 copyfile(themeDir + '/' + helpMarkdownFile,
-                         baseDir + '/accounts/' + destHelpMarkdownFile)
+                         base_dir + '/accounts/' + destHelpMarkdownFile)
         break
 
 
-def _setThemeInConfig(baseDir: str, name: str) -> bool:
+def _setThemeInConfig(base_dir: str, name: str) -> bool:
     """Sets the theme with the given name within config.json
     """
-    configFilename = baseDir + '/config.json'
+    configFilename = base_dir + '/config.json'
     if not os.path.isfile(configFilename):
         return False
     configJson = loadJson(configFilename, 0)
@@ -174,10 +174,10 @@ def _setThemeInConfig(baseDir: str, name: str) -> bool:
     return saveJson(configJson, configFilename)
 
 
-def _setNewswirePublishAsIcon(baseDir: str, useIcon: bool) -> bool:
+def _setNewswirePublishAsIcon(base_dir: str, useIcon: bool) -> bool:
     """Shows the newswire publish action as an icon or a button
     """
-    configFilename = baseDir + '/config.json'
+    configFilename = base_dir + '/config.json'
     if not os.path.isfile(configFilename):
         return False
     configJson = loadJson(configFilename, 0)
@@ -187,11 +187,11 @@ def _setNewswirePublishAsIcon(baseDir: str, useIcon: bool) -> bool:
     return saveJson(configJson, configFilename)
 
 
-def _setIconsAsButtons(baseDir: str, useButtons: bool) -> bool:
+def _setIconsAsButtons(base_dir: str, useButtons: bool) -> bool:
     """Whether to show icons in the header (inbox, outbox, etc)
     as buttons
     """
-    configFilename = baseDir + '/config.json'
+    configFilename = base_dir + '/config.json'
     if not os.path.isfile(configFilename):
         return False
     configJson = loadJson(configFilename, 0)
@@ -201,10 +201,10 @@ def _setIconsAsButtons(baseDir: str, useButtons: bool) -> bool:
     return saveJson(configJson, configFilename)
 
 
-def _setRssIconAtTop(baseDir: str, atTop: bool) -> bool:
+def _setRssIconAtTop(base_dir: str, atTop: bool) -> bool:
     """Whether to show RSS icon at the top of the timeline
     """
-    configFilename = baseDir + '/config.json'
+    configFilename = base_dir + '/config.json'
     if not os.path.isfile(configFilename):
         return False
     configJson = loadJson(configFilename, 0)
@@ -214,11 +214,11 @@ def _setRssIconAtTop(baseDir: str, atTop: bool) -> bool:
     return saveJson(configJson, configFilename)
 
 
-def _setPublishButtonAtTop(baseDir: str, atTop: bool) -> bool:
+def _setPublishButtonAtTop(base_dir: str, atTop: bool) -> bool:
     """Whether to show the publish button above the title image
     in the newswire column
     """
-    configFilename = baseDir + '/config.json'
+    configFilename = base_dir + '/config.json'
     if not os.path.isfile(configFilename):
         return False
     configJson = loadJson(configFilename, 0)
@@ -228,11 +228,11 @@ def _setPublishButtonAtTop(baseDir: str, atTop: bool) -> bool:
     return saveJson(configJson, configFilename)
 
 
-def _setFullWidthTimelineButtonHeader(baseDir: str, fullWidth: bool) -> bool:
+def _setFullWidthTimelineButtonHeader(base_dir: str, fullWidth: bool) -> bool:
     """Shows the timeline button header containing inbox, outbox,
     calendar, etc as full width
     """
-    configFilename = baseDir + '/config.json'
+    configFilename = base_dir + '/config.json'
     if not os.path.isfile(configFilename):
         return False
     configJson = loadJson(configFilename, 0)
@@ -242,10 +242,10 @@ def _setFullWidthTimelineButtonHeader(baseDir: str, fullWidth: bool) -> bool:
     return saveJson(configJson, configFilename)
 
 
-def getTheme(baseDir: str) -> str:
+def getTheme(base_dir: str) -> str:
     """Gets the current theme name from config.json
     """
-    configFilename = baseDir + '/config.json'
+    configFilename = base_dir + '/config.json'
     if os.path.isfile(configFilename):
         configJson = loadJson(configFilename, 0)
         if configJson:
@@ -254,18 +254,18 @@ def getTheme(baseDir: str) -> str:
     return 'default'
 
 
-def _removeTheme(baseDir: str):
+def _removeTheme(base_dir: str):
     """Removes the current theme style sheets
     """
     themeFiles = _getThemeFiles()
     for filename in themeFiles:
-        if not os.path.isfile(baseDir + '/' + filename):
+        if not os.path.isfile(base_dir + '/' + filename):
             continue
         try:
-            os.remove(baseDir + '/' + filename)
+            os.remove(base_dir + '/' + filename)
         except OSError:
             print('EX: _removeTheme unable to delete ' +
-                  baseDir + '/' + filename)
+                  base_dir + '/' + filename)
 
 
 def setCSSparam(css: str, param: str, value: str) -> str:
@@ -317,29 +317,29 @@ def setCSSparam(css: str, param: str, value: str) -> str:
     return newcss.strip()
 
 
-def _setThemeFromDict(baseDir: str, name: str,
+def _setThemeFromDict(base_dir: str, name: str,
                       themeParams: {}, bgParams: {},
                       allowLocalNetworkAccess: bool) -> None:
     """Uses a dictionary to set a theme
     """
     if name:
-        _setThemeInConfig(baseDir, name)
+        _setThemeInConfig(base_dir, name)
     themeFiles = _getThemeFiles()
     for filename in themeFiles:
         # check for custom css within the theme directory
-        templateFilename = baseDir + '/theme/' + name + '/epicyon-' + filename
+        templateFilename = base_dir + '/theme/' + name + '/epicyon-' + filename
         if filename == 'epicyon.css':
             templateFilename = \
-                baseDir + '/theme/' + name + '/epicyon-profile.css'
+                base_dir + '/theme/' + name + '/epicyon-profile.css'
 
         # Ensure that any custom CSS is mostly harmless.
         # If not then just use the defaults
         if dangerousCSS(templateFilename, allowLocalNetworkAccess) or \
            not os.path.isfile(templateFilename):
             # use default css
-            templateFilename = baseDir + '/epicyon-' + filename
+            templateFilename = base_dir + '/epicyon-' + filename
             if filename == 'epicyon.css':
-                templateFilename = baseDir + '/epicyon-profile.css'
+                templateFilename = base_dir + '/epicyon-profile.css'
 
         if not os.path.isfile(templateFilename):
             continue
@@ -349,36 +349,36 @@ def _setThemeFromDict(baseDir: str, name: str,
             for paramName, paramValue in themeParams.items():
                 if paramName == 'newswire-publish-icon':
                     if paramValue.lower() == 'true':
-                        _setNewswirePublishAsIcon(baseDir, True)
+                        _setNewswirePublishAsIcon(base_dir, True)
                     else:
-                        _setNewswirePublishAsIcon(baseDir, False)
+                        _setNewswirePublishAsIcon(base_dir, False)
                     continue
                 elif paramName == 'full-width-timeline-buttons':
                     if paramValue.lower() == 'true':
-                        _setFullWidthTimelineButtonHeader(baseDir, True)
+                        _setFullWidthTimelineButtonHeader(base_dir, True)
                     else:
-                        _setFullWidthTimelineButtonHeader(baseDir, False)
+                        _setFullWidthTimelineButtonHeader(base_dir, False)
                     continue
                 elif paramName == 'icons-as-buttons':
                     if paramValue.lower() == 'true':
-                        _setIconsAsButtons(baseDir, True)
+                        _setIconsAsButtons(base_dir, True)
                     else:
-                        _setIconsAsButtons(baseDir, False)
+                        _setIconsAsButtons(base_dir, False)
                     continue
                 elif paramName == 'rss-icon-at-top':
                     if paramValue.lower() == 'true':
-                        _setRssIconAtTop(baseDir, True)
+                        _setRssIconAtTop(base_dir, True)
                     else:
-                        _setRssIconAtTop(baseDir, False)
+                        _setRssIconAtTop(base_dir, False)
                     continue
                 elif paramName == 'publish-button-at-top':
                     if paramValue.lower() == 'true':
-                        _setPublishButtonAtTop(baseDir, True)
+                        _setPublishButtonAtTop(base_dir, True)
                     else:
-                        _setPublishButtonAtTop(baseDir, False)
+                        _setPublishButtonAtTop(base_dir, False)
                     continue
                 css = setCSSparam(css, paramName, paramValue)
-            filename = baseDir + '/' + filename
+            filename = base_dir + '/' + filename
             with open(filename, 'w+') as cssfile:
                 cssfile.write(css)
 
@@ -387,16 +387,16 @@ def _setThemeFromDict(baseDir: str, name: str,
     )
     for s in screenName:
         if bgParams.get(s):
-            _setBackgroundFormat(baseDir, name, s, bgParams[s])
+            _setBackgroundFormat(base_dir, name, s, bgParams[s])
 
 
-def _setBackgroundFormat(baseDir: str, name: str,
+def _setBackgroundFormat(base_dir: str, name: str,
                          backgroundType: str, extension: str) -> None:
     """Sets the background file extension
     """
     if extension == 'jpg':
         return
-    cssFilename = baseDir + '/' + backgroundType + '.css'
+    cssFilename = base_dir + '/' + backgroundType + '.css'
     if not os.path.isfile(cssFilename):
         return
     with open(cssFilename, 'r') as cssfile:
@@ -406,12 +406,12 @@ def _setBackgroundFormat(baseDir: str, name: str,
             cssfile2.write(css)
 
 
-def enableGrayscale(baseDir: str) -> None:
+def enableGrayscale(base_dir: str) -> None:
     """Enables grayscale for the current theme
     """
     themeFiles = _getThemeFiles()
     for filename in themeFiles:
-        templateFilename = baseDir + '/' + filename
+        templateFilename = base_dir + '/' + filename
         if not os.path.isfile(templateFilename):
             continue
         with open(templateFilename, 'r') as cssfile:
@@ -420,21 +420,21 @@ def enableGrayscale(baseDir: str) -> None:
                 css = \
                     css.replace('body, html {',
                                 'body, html {\n    filter: grayscale(100%);')
-                filename = baseDir + '/' + filename
+                filename = base_dir + '/' + filename
                 with open(filename, 'w+') as cssfile:
                     cssfile.write(css)
-    grayscaleFilename = baseDir + '/accounts/.grayscale'
+    grayscaleFilename = base_dir + '/accounts/.grayscale'
     if not os.path.isfile(grayscaleFilename):
         with open(grayscaleFilename, 'w+') as grayfile:
             grayfile.write(' ')
 
 
-def disableGrayscale(baseDir: str) -> None:
+def disableGrayscale(base_dir: str) -> None:
     """Disables grayscale for the current theme
     """
     themeFiles = _getThemeFiles()
     for filename in themeFiles:
-        templateFilename = baseDir + '/' + filename
+        templateFilename = base_dir + '/' + filename
         if not os.path.isfile(templateFilename):
             continue
         with open(templateFilename, 'r') as cssfile:
@@ -442,10 +442,10 @@ def disableGrayscale(baseDir: str) -> None:
             if 'grayscale' in css:
                 css = \
                     css.replace('\n    filter: grayscale(100%);', '')
-                filename = baseDir + '/' + filename
+                filename = base_dir + '/' + filename
                 with open(filename, 'w+') as cssfile:
                     cssfile.write(css)
-    grayscaleFilename = baseDir + '/accounts/.grayscale'
+    grayscaleFilename = base_dir + '/accounts/.grayscale'
     if os.path.isfile(grayscaleFilename):
         try:
             os.remove(grayscaleFilename)
@@ -454,7 +454,7 @@ def disableGrayscale(baseDir: str) -> None:
                   grayscaleFilename)
 
 
-def _setCustomFont(baseDir: str):
+def _setCustomFont(base_dir: str):
     """Uses a dictionary to set a theme
     """
     customFontExt = None
@@ -466,7 +466,7 @@ def _setCustomFont(baseDir: str):
         'ttf': 'truetype'
     }
     for ext, extType in fontExtension.items():
-        filename = baseDir + '/fonts/custom.' + ext
+        filename = base_dir + '/fonts/custom.' + ext
         if os.path.isfile(filename):
             customFontExt = ext
             customFontType = extType
@@ -475,7 +475,7 @@ def _setCustomFont(baseDir: str):
 
     themeFiles = _getThemeFiles()
     for filename in themeFiles:
-        templateFilename = baseDir + '/' + filename
+        templateFilename = base_dir + '/' + filename
         if not os.path.isfile(templateFilename):
             continue
         with open(templateFilename, 'r') as cssfile:
@@ -487,27 +487,27 @@ def _setCustomFont(baseDir: str):
                             "') format('" +
                             customFontType + "')")
             css = setCSSparam(css, "*font-family", "'CustomFont'")
-            filename = baseDir + '/' + filename
+            filename = base_dir + '/' + filename
             with open(filename, 'w+') as cssfile:
                 cssfile.write(css)
 
 
-def setThemeFromDesigner(baseDir: str, themeName: str, domain: str,
+def setThemeFromDesigner(base_dir: str, themeName: str, domain: str,
                          themeParams: {},
                          allowLocalNetworkAccess: bool,
                          systemLanguage: str):
-    customThemeFilename = baseDir + '/accounts/theme.json'
+    customThemeFilename = base_dir + '/accounts/theme.json'
     saveJson(themeParams, customThemeFilename)
-    setTheme(baseDir, themeName, domain,
+    setTheme(base_dir, themeName, domain,
              allowLocalNetworkAccess, systemLanguage)
 
 
-def resetThemeDesignerSettings(baseDir: str, themeName: str, domain: str,
+def resetThemeDesignerSettings(base_dir: str, themeName: str, domain: str,
                                allowLocalNetworkAccess: bool,
                                systemLanguage: str) -> None:
     """Resets the theme designer settings
     """
-    customVariablesFile = baseDir + '/accounts/theme.json'
+    customVariablesFile = base_dir + '/accounts/theme.json'
     if os.path.isfile(customVariablesFile):
         try:
             os.remove(customVariablesFile)
@@ -515,7 +515,7 @@ def resetThemeDesignerSettings(baseDir: str, themeName: str, domain: str,
             print('EX: unable to remove theme designer settings on reset')
 
 
-def _readVariablesFile(baseDir: str, themeName: str,
+def _readVariablesFile(base_dir: str, themeName: str,
                        variablesFile: str,
                        allowLocalNetworkAccess: bool) -> None:
     """Reads variables from a file in the theme directory
@@ -525,7 +525,7 @@ def _readVariablesFile(baseDir: str, themeName: str,
         return
 
     # set custom theme parameters
-    customVariablesFile = baseDir + '/accounts/theme.json'
+    customVariablesFile = base_dir + '/accounts/theme.json'
     if os.path.isfile(customVariablesFile):
         customThemeParams = loadJson(customVariablesFile, 0)
         if customThemeParams:
@@ -538,14 +538,14 @@ def _readVariablesFile(baseDir: str, themeName: str,
         "options": "jpg",
         "search": "jpg"
     }
-    _setThemeFromDict(baseDir, themeName, themeParams, bgParams,
+    _setThemeFromDict(base_dir, themeName, themeParams, bgParams,
                       allowLocalNetworkAccess)
 
 
-def _setThemeDefault(baseDir: str, allowLocalNetworkAccess: bool):
+def _setThemeDefault(base_dir: str, allowLocalNetworkAccess: bool):
     name = 'default'
-    _removeTheme(baseDir)
-    _setThemeInConfig(baseDir, name)
+    _removeTheme(base_dir)
+    _setThemeInConfig(base_dir, name)
     bgParams = {
         "login": "jpg",
         "follow": "jpg",
@@ -562,17 +562,17 @@ def _setThemeDefault(baseDir: str, allowLocalNetworkAccess: bool):
         "banner-height-mobile": "10vh",
         "search-banner-height-mobile": "15vh"
     }
-    _setThemeFromDict(baseDir, name, themeParams, bgParams,
+    _setThemeFromDict(base_dir, name, themeParams, bgParams,
                       allowLocalNetworkAccess)
 
 
-def _setThemeFonts(baseDir: str, themeName: str) -> None:
+def _setThemeFonts(base_dir: str, themeName: str) -> None:
     """Adds custom theme fonts
     """
     themeNameLower = themeName.lower()
-    fontsDir = baseDir + '/fonts'
+    fontsDir = base_dir + '/fonts'
     themeFontsDir = \
-        baseDir + '/theme/' + themeNameLower + '/fonts'
+        base_dir + '/theme/' + themeNameLower + '/fonts'
     if not os.path.isdir(themeFontsDir):
         return
     for subdir, dirs, files in os.walk(themeFontsDir):
@@ -590,10 +590,10 @@ def _setThemeFonts(baseDir: str, themeName: str) -> None:
         break
 
 
-def getTextModeBanner(baseDir: str) -> str:
+def getTextModeBanner(base_dir: str) -> str:
     """Returns the banner used for shell browsers, like Lynx
     """
-    textModeBannerFilename = baseDir + '/accounts/banner.txt'
+    textModeBannerFilename = base_dir + '/accounts/banner.txt'
     if os.path.isfile(textModeBannerFilename):
         with open(textModeBannerFilename, 'r') as fp:
             bannerStr = fp.read()
@@ -602,12 +602,12 @@ def getTextModeBanner(baseDir: str) -> str:
     return None
 
 
-def getTextModeLogo(baseDir: str) -> str:
+def getTextModeLogo(base_dir: str) -> str:
     """Returns the login screen logo used for shell browsers, like Lynx
     """
-    textModeLogoFilename = baseDir + '/accounts/logo.txt'
+    textModeLogoFilename = base_dir + '/accounts/logo.txt'
     if not os.path.isfile(textModeLogoFilename):
-        textModeLogoFilename = baseDir + '/img/logo.txt'
+        textModeLogoFilename = base_dir + '/img/logo.txt'
 
     with open(textModeLogoFilename, 'r') as fp:
         logoStr = fp.read()
@@ -616,92 +616,92 @@ def getTextModeLogo(baseDir: str) -> str:
     return None
 
 
-def _setTextModeTheme(baseDir: str, name: str) -> None:
+def _setTextModeTheme(base_dir: str, name: str) -> None:
     # set the text mode logo which appears on the login screen
     # in browsers such as Lynx
     textModeLogoFilename = \
-        baseDir + '/theme/' + name + '/logo.txt'
+        base_dir + '/theme/' + name + '/logo.txt'
     if os.path.isfile(textModeLogoFilename):
         try:
             copyfile(textModeLogoFilename,
-                     baseDir + '/accounts/logo.txt')
+                     base_dir + '/accounts/logo.txt')
         except OSError:
             print('EX: _setTextModeTheme unable to copy ' +
                   textModeLogoFilename + ' ' +
-                  baseDir + '/accounts/logo.txt')
+                  base_dir + '/accounts/logo.txt')
     else:
         try:
-            copyfile(baseDir + '/img/logo.txt',
-                     baseDir + '/accounts/logo.txt')
+            copyfile(base_dir + '/img/logo.txt',
+                     base_dir + '/accounts/logo.txt')
         except OSError:
             print('EX: _setTextModeTheme unable to copy ' +
-                  baseDir + '/img/logo.txt ' +
-                  baseDir + '/accounts/logo.txt')
+                  base_dir + '/img/logo.txt ' +
+                  base_dir + '/accounts/logo.txt')
 
     # set the text mode banner which appears in browsers such as Lynx
     textModeBannerFilename = \
-        baseDir + '/theme/' + name + '/banner.txt'
-    if os.path.isfile(baseDir + '/accounts/banner.txt'):
+        base_dir + '/theme/' + name + '/banner.txt'
+    if os.path.isfile(base_dir + '/accounts/banner.txt'):
         try:
-            os.remove(baseDir + '/accounts/banner.txt')
+            os.remove(base_dir + '/accounts/banner.txt')
         except OSError:
             print('EX: _setTextModeTheme unable to delete ' +
-                  baseDir + '/accounts/banner.txt')
+                  base_dir + '/accounts/banner.txt')
     if os.path.isfile(textModeBannerFilename):
         try:
             copyfile(textModeBannerFilename,
-                     baseDir + '/accounts/banner.txt')
+                     base_dir + '/accounts/banner.txt')
         except OSError:
             print('EX: _setTextModeTheme unable to copy ' +
                   textModeBannerFilename + ' ' +
-                  baseDir + '/accounts/banner.txt')
+                  base_dir + '/accounts/banner.txt')
 
 
-def _setThemeImages(baseDir: str, name: str) -> None:
+def _setThemeImages(base_dir: str, name: str) -> None:
     """Changes the profile background image
     and banner to the defaults
     """
     themeNameLower = name.lower()
 
     profileImageFilename = \
-        baseDir + '/theme/' + themeNameLower + '/image.png'
+        base_dir + '/theme/' + themeNameLower + '/image.png'
     bannerFilename = \
-        baseDir + '/theme/' + themeNameLower + '/banner.png'
+        base_dir + '/theme/' + themeNameLower + '/banner.png'
     searchBannerFilename = \
-        baseDir + '/theme/' + themeNameLower + '/search_banner.png'
+        base_dir + '/theme/' + themeNameLower + '/search_banner.png'
     leftColImageFilename = \
-        baseDir + '/theme/' + themeNameLower + '/left_col_image.png'
+        base_dir + '/theme/' + themeNameLower + '/left_col_image.png'
     rightColImageFilename = \
-        baseDir + '/theme/' + themeNameLower + '/right_col_image.png'
+        base_dir + '/theme/' + themeNameLower + '/right_col_image.png'
 
-    _setTextModeTheme(baseDir, themeNameLower)
+    _setTextModeTheme(base_dir, themeNameLower)
 
     backgroundNames = ('login', 'shares', 'delete', 'follow',
                        'options', 'block', 'search', 'calendar',
                        'welcome')
     extensions = getImageExtensions()
 
-    for subdir, dirs, files in os.walk(baseDir + '/accounts'):
+    for subdir, dirs, files in os.walk(base_dir + '/accounts'):
         for acct in dirs:
             if not isAccountDir(acct):
                 continue
-            accountDir = os.path.join(baseDir + '/accounts', acct)
+            accountDir = os.path.join(base_dir + '/accounts', acct)
 
             for backgroundType in backgroundNames:
                 for ext in extensions:
                     if themeNameLower == 'default':
                         backgroundImageFilename = \
-                            baseDir + '/theme/default/' + \
+                            base_dir + '/theme/default/' + \
                             backgroundType + '_background.' + ext
                     else:
                         backgroundImageFilename = \
-                            baseDir + '/theme/' + themeNameLower + '/' + \
+                            base_dir + '/theme/' + themeNameLower + '/' + \
                             backgroundType + '_background' + '.' + ext
 
                     if os.path.isfile(backgroundImageFilename):
                         try:
                             copyfile(backgroundImageFilename,
-                                     baseDir + '/accounts/' +
+                                     base_dir + '/accounts/' +
                                      backgroundType + '-background.' + ext)
                             continue
                         except OSError:
@@ -709,14 +709,14 @@ def _setThemeImages(baseDir: str, name: str) -> None:
                                   backgroundImageFilename)
                     # background image was not found
                     # so remove any existing file
-                    if os.path.isfile(baseDir + '/accounts/' +
+                    if os.path.isfile(base_dir + '/accounts/' +
                                       backgroundType + '-background.' + ext):
                         try:
-                            os.remove(baseDir + '/accounts/' +
+                            os.remove(base_dir + '/accounts/' +
                                       backgroundType + '-background.' + ext)
                         except OSError:
                             print('EX: _setThemeImages unable to delete ' +
-                                  baseDir + '/accounts/' +
+                                  base_dir + '/accounts/' +
                                   backgroundType + '-background.' + ext)
 
             if os.path.isfile(profileImageFilename) and \
@@ -776,66 +776,66 @@ def _setThemeImages(baseDir: str, name: str) -> None:
         break
 
 
-def setNewsAvatar(baseDir: str, name: str,
+def setNewsAvatar(base_dir: str, name: str,
                   httpPrefix: str,
                   domain: str, domainFull: str) -> None:
     """Sets the avatar for the news account
     """
     nickname = 'news'
-    newFilename = baseDir + '/theme/' + name + '/icons/avatar_news.png'
+    newFilename = base_dir + '/theme/' + name + '/icons/avatar_news.png'
     if not os.path.isfile(newFilename):
-        newFilename = baseDir + '/theme/default/icons/avatar_news.png'
+        newFilename = base_dir + '/theme/default/icons/avatar_news.png'
     if not os.path.isfile(newFilename):
         return
     avatarFilename = \
         localActorUrl(httpPrefix, domainFull, nickname) + '.png'
     avatarFilename = avatarFilename.replace('/', '-')
-    filename = baseDir + '/cache/avatars/' + avatarFilename
+    filename = base_dir + '/cache/avatars/' + avatarFilename
 
     if os.path.isfile(filename):
         try:
             os.remove(filename)
         except OSError:
             print('EX: setNewsAvatar unable to delete ' + filename)
-    if os.path.isdir(baseDir + '/cache/avatars'):
+    if os.path.isdir(base_dir + '/cache/avatars'):
         copyfile(newFilename, filename)
-    accountDir = acctDir(baseDir, nickname, domain)
+    accountDir = acctDir(base_dir, nickname, domain)
     copyfile(newFilename, accountDir + '/avatar.png')
 
 
-def _setClearCacheFlag(baseDir: str) -> None:
+def _setClearCacheFlag(base_dir: str) -> None:
     """Sets a flag which can be used by an external system
     (eg. a script in a cron job) to clear the browser cache
     """
-    if not os.path.isdir(baseDir + '/accounts'):
+    if not os.path.isdir(base_dir + '/accounts'):
         return
-    flagFilename = baseDir + '/accounts/.clear_cache'
+    flagFilename = base_dir + '/accounts/.clear_cache'
     with open(flagFilename, 'w+') as flagFile:
         flagFile.write('\n')
 
 
-def setTheme(baseDir: str, name: str, domain: str,
+def setTheme(base_dir: str, name: str, domain: str,
              allowLocalNetworkAccess: bool, systemLanguage: str) -> bool:
     """Sets the theme with the given name as the current theme
     """
     result = False
 
-    prevThemeName = getTheme(baseDir)
+    prevThemeName = getTheme(base_dir)
 
     # if the theme has changed then remove any custom settings
     if prevThemeName != name:
-        resetThemeDesignerSettings(baseDir, name, domain,
+        resetThemeDesignerSettings(base_dir, name, domain,
                                    allowLocalNetworkAccess,
                                    systemLanguage)
 
-    _removeTheme(baseDir)
+    _removeTheme(base_dir)
 
-    themes = getThemesList(baseDir)
+    themes = getThemesList(base_dir)
     for themeName in themes:
         themeNameLower = themeName.lower()
         if name == themeNameLower:
             try:
-                globals()['setTheme' + themeName](baseDir,
+                globals()['setTheme' + themeName](base_dir,
                                                   allowLocalNetworkAccess)
             except BaseException:
                 print('EX: setTheme unable to set theme ' + themeName)
@@ -845,57 +845,57 @@ def setTheme(baseDir: str, name: str, domain: str,
                 if prevThemeName.lower() != themeNameLower:
                     # change the banner and profile image
                     # to the default for the theme
-                    _setThemeImages(baseDir, name)
-                    _setThemeFonts(baseDir, name)
+                    _setThemeImages(base_dir, name)
+                    _setThemeFonts(base_dir, name)
             result = True
 
     if not result:
         # default
-        _setThemeDefault(baseDir, allowLocalNetworkAccess)
+        _setThemeDefault(base_dir, allowLocalNetworkAccess)
         result = True
 
-    variablesFile = baseDir + '/theme/' + name + '/theme.json'
+    variablesFile = base_dir + '/theme/' + name + '/theme.json'
     if os.path.isfile(variablesFile):
-        _readVariablesFile(baseDir, name, variablesFile,
+        _readVariablesFile(base_dir, name, variablesFile,
                            allowLocalNetworkAccess)
 
-    _setCustomFont(baseDir)
+    _setCustomFont(base_dir)
 
     # set the news avatar
     newsAvatarThemeFilename = \
-        baseDir + '/theme/' + name + '/icons/avatar_news.png'
-    if os.path.isdir(baseDir + '/accounts/news@' + domain):
+        base_dir + '/theme/' + name + '/icons/avatar_news.png'
+    if os.path.isdir(base_dir + '/accounts/news@' + domain):
         if os.path.isfile(newsAvatarThemeFilename):
             newsAvatarFilename = \
-                baseDir + '/accounts/news@' + domain + '/avatar.png'
+                base_dir + '/accounts/news@' + domain + '/avatar.png'
             copyfile(newsAvatarThemeFilename, newsAvatarFilename)
 
-    grayscaleFilename = baseDir + '/accounts/.grayscale'
+    grayscaleFilename = base_dir + '/accounts/.grayscale'
     if os.path.isfile(grayscaleFilename):
-        enableGrayscale(baseDir)
+        enableGrayscale(base_dir)
     else:
-        disableGrayscale(baseDir)
+        disableGrayscale(base_dir)
 
-    _copyThemeHelpFiles(baseDir, name, systemLanguage)
-    _setThemeInConfig(baseDir, name)
-    _setClearCacheFlag(baseDir)
+    _copyThemeHelpFiles(base_dir, name, systemLanguage)
+    _setThemeInConfig(base_dir, name)
+    _setClearCacheFlag(base_dir)
     return result
 
 
-def updateDefaultThemesList(baseDir: str) -> None:
+def updateDefaultThemesList(base_dir: str) -> None:
     """Recreates the list of default themes
     """
-    themeNames = getThemesList(baseDir)
-    defaultThemesFilename = baseDir + '/defaultthemes.txt'
+    themeNames = getThemesList(base_dir)
+    defaultThemesFilename = base_dir + '/defaultthemes.txt'
     with open(defaultThemesFilename, 'w+') as defaultThemesFile:
         for name in themeNames:
             defaultThemesFile.write(name + '\n')
 
 
-def scanThemesForScripts(baseDir: str) -> bool:
+def scanThemesForScripts(base_dir: str) -> bool:
     """Scans the theme directory for any svg files containing scripts
     """
-    for subdir, dirs, files in os.walk(baseDir + '/theme'):
+    for subdir, dirs, files in os.walk(base_dir + '/theme'):
         for f in files:
             if not f.endswith('.svg'):
                 continue

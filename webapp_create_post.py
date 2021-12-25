@@ -26,13 +26,13 @@ from webapp_utils import editCurrencyField
 from webapp_post import individualPostAsHtml
 
 
-def _htmlFollowingDataList(baseDir: str, nickname: str,
+def _htmlFollowingDataList(base_dir: str, nickname: str,
                            domain: str, domainFull: str) -> str:
     """Returns a datalist of handles being followed
     """
     listStr = '<datalist id="followingHandles">\n'
     followingFilename = \
-        acctDir(baseDir, nickname, domain) + '/following.txt'
+        acctDir(base_dir, nickname, domain) + '/following.txt'
     msg = None
     if os.path.isfile(followingFilename):
         with open(followingFilename, 'r') as followingFile:
@@ -43,7 +43,7 @@ def _htmlFollowingDataList(baseDir: str, nickname: str,
     if msg:
         # include petnames
         petnamesFilename = \
-            acctDir(baseDir, nickname, domain) + '/petnames.txt'
+            acctDir(base_dir, nickname, domain) + '/petnames.txt'
         if os.path.isfile(petnamesFilename):
             followingList = []
             with open(petnamesFilename, 'r') as petnamesFile:
@@ -185,7 +185,7 @@ def _htmlNewPostDropDown(scopeIcon: str, scopeDescription: str,
 
 
 def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
-                baseDir: str, httpPrefix: str,
+                base_dir: str, httpPrefix: str,
                 path: str, inReplyTo: str,
                 mentions: [],
                 shareDescription: str,
@@ -240,7 +240,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
 
     # filename of the banner shown at the top
     bannerFile, bannerFilename = \
-        getBannerFile(baseDir, nickname, domain, theme)
+        getBannerFile(base_dir, nickname, domain, theme)
 
     if not path.endswith('/newshare') and not path.endswith('/newwanted'):
         if not path.endswith('/newreport'):
@@ -263,7 +263,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
                                                  True, recentPostsCache,
                                                  maxRecentPosts,
                                                  translate, None,
-                                                 baseDir, session,
+                                                 base_dir, session,
                                                  cachedWebfingers,
                                                  personCache,
                                                  nickname, domain, port,
@@ -287,7 +287,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
 
                 # if replying to a non-public post then also make
                 # this post non-public
-                if not isPublicPostFromUrl(baseDir, nickname, domain,
+                if not isPublicPostFromUrl(base_dir, nickname, domain,
                                            inReplyTo):
                     newPostPath = path
                     if '?' in newPostPath:
@@ -302,8 +302,8 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
                 '<h1>' + translate['Write your report below.'] + '</h1>\n'
 
             # custom report header with any additional instructions
-            if os.path.isfile(baseDir + '/accounts/report.txt'):
-                with open(baseDir + '/accounts/report.txt', 'r') as file:
+            if os.path.isfile(base_dir + '/accounts/report.txt'):
+                with open(base_dir + '/accounts/report.txt', 'r') as file:
                     customReportText = file.read()
                     if '</p>' not in customReportText:
                         customReportText = \
@@ -339,14 +339,14 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
             translate['Enter the choices for your question below.'] + \
             '</h1>\n'
 
-    if os.path.isfile(baseDir + '/accounts/newpost.txt'):
-        with open(baseDir + '/accounts/newpost.txt', 'r') as file:
+    if os.path.isfile(base_dir + '/accounts/newpost.txt'):
+        with open(base_dir + '/accounts/newpost.txt', 'r') as file:
             newPostText = \
                 '<p>' + file.read() + '</p>\n'
 
-    cssFilename = baseDir + '/epicyon-profile.css'
-    if os.path.isfile(baseDir + '/epicyon.css'):
-        cssFilename = baseDir + '/epicyon.css'
+    cssFilename = base_dir + '/epicyon-profile.css'
+    if os.path.isfile(base_dir + '/epicyon.css'):
+        cssFilename = base_dir + '/epicyon.css'
 
     if '?' in path:
         path = path.split('?')[0]
@@ -452,7 +452,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         extraFields += '<br>' + \
             editTextField(translate['Type of shared item. eg. hat'] + ':',
                           'itemType', '', '', True)
-        categoryTypes = getCategoryTypes(baseDir)
+        categoryTypes = getCategoryTypes(base_dir)
         catStr = translate['Category of shared item. eg. clothing']
         extraFields += '<label class="labels">' + catStr + '</label><br>\n'
 
@@ -489,7 +489,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         for symbol, currName in currencies.items():
             currencyList.append(currName + ' ' + symbol)
         currencyList.sort()
-        defaultCurrency = getConfigParam(baseDir, 'defaultCurrency')
+        defaultCurrency = getConfigParam(base_dir, 'defaultCurrency')
         if not defaultCurrency:
             defaultCurrency = "EUR"
         for currName in currencyList:
@@ -517,7 +517,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         extraFields += '<br>' + \
             editTextField(translate['Type of wanted item. eg. hat'] + ':',
                           'itemType', '', '', True)
-        categoryTypes = getCategoryTypes(baseDir)
+        categoryTypes = getCategoryTypes(base_dir)
         catStr = translate['Category of wanted item. eg. clothes']
         extraFields += '<label class="labels">' + catStr + '</label><br>\n'
 
@@ -554,7 +554,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         for symbol, currName in currencies.items():
             currencyList.append(currName + ' ' + symbol)
         currencyList.sort()
-        defaultCurrency = getConfigParam(baseDir, 'defaultCurrency')
+        defaultCurrency = getConfigParam(base_dir, 'defaultCurrency')
         if not defaultCurrency:
             defaultCurrency = "EUR"
         for currName in currencyList:
@@ -572,7 +572,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
     citationsStr = ''
     if endpoint == 'newblog':
         citationsFilename = \
-            acctDir(baseDir, nickname, domain) + '/.citations.txt'
+            acctDir(base_dir, nickname, domain) + '/.citations.txt'
         if os.path.isfile(citationsFilename):
             citationsStr = '<div class="container">\n'
             citationsStr += '<p><label class="labels">' + \
@@ -636,7 +636,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
             editTextField(translate['Location'], 'location', '')
         dateAndLocation += '</div>\n'
 
-    instanceTitle = getConfigParam(baseDir, 'instanceTitle')
+    instanceTitle = getConfigParam(base_dir, 'instanceTitle')
     newPostForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
 
     newPostForm += \
@@ -812,7 +812,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
             '    <input type="text" name="mentions" ' + \
             'list="followingHandles" value="' + mentionsStr + '" selected>\n'
         newPostForm += \
-            _htmlFollowingDataList(baseDir, nickname, domain, domainFull)
+            _htmlFollowingDataList(base_dir, nickname, domain, domainFull)
         newPostForm += ''
         selectedStr = ''
 

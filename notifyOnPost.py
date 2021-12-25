@@ -12,7 +12,7 @@ from utils import removeDomainPort
 from utils import acctDir
 
 
-def _notifyOnPostArrival(baseDir: str, nickname: str, domain: str,
+def _notifyOnPostArrival(base_dir: str, nickname: str, domain: str,
                          followingNickname: str,
                          followingDomain: str,
                          add: bool) -> None:
@@ -21,7 +21,7 @@ def _notifyOnPostArrival(baseDir: str, nickname: str, domain: str,
     """
     # check that a following file exists
     domain = removeDomainPort(domain)
-    followingFilename = acctDir(baseDir, nickname, domain) + '/following.txt'
+    followingFilename = acctDir(base_dir, nickname, domain) + '/following.txt'
     if not os.path.isfile(followingFilename):
         print("WARN: following.txt doesn't exist for " +
               nickname + '@' + domain)
@@ -34,7 +34,7 @@ def _notifyOnPostArrival(baseDir: str, nickname: str, domain: str,
         return
 
     notifyOnPostFilename = \
-        acctDir(baseDir, nickname, domain) + '/notifyOnPost.txt'
+        acctDir(base_dir, nickname, domain) + '/notifyOnPost.txt'
 
     # get the contents of the notifyOnPost file, which is
     # a set of handles
@@ -73,21 +73,21 @@ def _notifyOnPostArrival(baseDir: str, nickname: str, domain: str,
                 fp.write(followingHandles)
 
 
-def addNotifyOnPost(baseDir: str, nickname: str, domain: str,
+def addNotifyOnPost(base_dir: str, nickname: str, domain: str,
                     followingNickname: str,
                     followingDomain: str) -> None:
-    _notifyOnPostArrival(baseDir, nickname, domain,
+    _notifyOnPostArrival(base_dir, nickname, domain,
                          followingNickname, followingDomain, True)
 
 
-def removeNotifyOnPost(baseDir: str, nickname: str, domain: str,
+def removeNotifyOnPost(base_dir: str, nickname: str, domain: str,
                        followingNickname: str,
                        followingDomain: str) -> None:
-    _notifyOnPostArrival(baseDir, nickname, domain,
+    _notifyOnPostArrival(base_dir, nickname, domain,
                          followingNickname, followingDomain, False)
 
 
-def notifyWhenPersonPosts(baseDir: str, nickname: str, domain: str,
+def notifyWhenPersonPosts(base_dir: str, nickname: str, domain: str,
                           followingNickname: str,
                           followingDomain: str) -> bool:
     """Returns true if receiving notifications when the given publishes a post
@@ -95,7 +95,7 @@ def notifyWhenPersonPosts(baseDir: str, nickname: str, domain: str,
     if followingNickname == nickname and followingDomain == domain:
         return False
     notifyOnPostFilename = \
-        acctDir(baseDir, nickname, domain) + '/notifyOnPost.txt'
+        acctDir(base_dir, nickname, domain) + '/notifyOnPost.txt'
     handle = followingNickname + '@' + followingDomain
     if not os.path.isfile(notifyOnPostFilename):
         # create a new notifyOnPost file

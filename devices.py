@@ -37,11 +37,11 @@ from utils import acctDir
 from utils import localActorUrl
 
 
-def E2EEremoveDevice(baseDir: str, nickname: str, domain: str,
+def E2EEremoveDevice(base_dir: str, nickname: str, domain: str,
                      deviceId: str) -> bool:
     """Unregisters a device for e2ee
     """
-    personDir = acctDir(baseDir, nickname, domain)
+    personDir = acctDir(base_dir, nickname, domain)
     deviceFilename = personDir + '/devices/' + deviceId + '.json'
     if os.path.isfile(deviceFilename):
         try:
@@ -102,7 +102,7 @@ def E2EEvalidDevice(deviceJson: {}) -> bool:
     return True
 
 
-def E2EEaddDevice(baseDir: str, nickname: str, domain: str,
+def E2EEaddDevice(base_dir: str, nickname: str, domain: str,
                   deviceId: str, name: str, claimUrl: str,
                   fingerprintPublicKey: str,
                   identityPublicKey: str,
@@ -116,7 +116,7 @@ def E2EEaddDevice(baseDir: str, nickname: str, domain: str,
        '?' in deviceId or '#' in deviceId or \
        '.' in deviceId:
         return False
-    personDir = acctDir(baseDir, nickname, domain)
+    personDir = acctDir(base_dir, nickname, domain)
     if not os.path.isdir(personDir):
         return False
     if not os.path.isdir(personDir + '/devices'):
@@ -139,11 +139,11 @@ def E2EEaddDevice(baseDir: str, nickname: str, domain: str,
     return saveJson(deviceDict, deviceFilename)
 
 
-def E2EEdevicesCollection(baseDir: str, nickname: str, domain: str,
+def E2EEdevicesCollection(base_dir: str, nickname: str, domain: str,
                           domainFull: str, httpPrefix: str) -> {}:
     """Returns a list of registered devices
     """
-    personDir = acctDir(baseDir, nickname, domain)
+    personDir = acctDir(base_dir, nickname, domain)
     if not os.path.isdir(personDir):
         return {}
     personId = localActorUrl(httpPrefix, nickname, domainFull)

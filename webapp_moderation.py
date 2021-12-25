@@ -33,7 +33,7 @@ from session import createSession
 def htmlModeration(cssCache: {}, defaultTimeline: str,
                    recentPostsCache: {}, maxRecentPosts: int,
                    translate: {}, pageNumber: int, itemsPerPage: int,
-                   session, baseDir: str, wfRequest: {}, personCache: {},
+                   session, base_dir: str, wfRequest: {}, personCache: {},
                    nickname: str, domain: str, port: int, inboxJson: {},
                    allowDeletion: bool,
                    httpPrefix: str, projectVersion: str,
@@ -58,11 +58,12 @@ def htmlModeration(cssCache: {}, defaultTimeline: str,
     """Show the moderation feed as html
     This is what you see when selecting the "mod" timeline
     """
-    artist = isArtist(baseDir, nickname)
+    artist = isArtist(base_dir, nickname)
     return htmlTimeline(cssCache, defaultTimeline,
                         recentPostsCache, maxRecentPosts,
                         translate, pageNumber,
-                        itemsPerPage, session, baseDir, wfRequest, personCache,
+                        itemsPerPage, session, base_dir,
+                        wfRequest, personCache,
                         nickname, domain, port, inboxJson, 'moderation',
                         allowDeletion, httpPrefix, projectVersion, True, False,
                         YTReplacementDomain,
@@ -79,7 +80,7 @@ def htmlModeration(cssCache: {}, defaultTimeline: str,
 
 
 def htmlAccountInfo(cssCache: {}, translate: {},
-                    baseDir: str, httpPrefix: str,
+                    base_dir: str, httpPrefix: str,
                     nickname: str, domain: str, port: int,
                     searchHandle: str, debug: bool,
                     systemLanguage: str, signingPrivateKeyPem: str) -> str:
@@ -91,12 +92,12 @@ def htmlAccountInfo(cssCache: {}, translate: {},
     msgStr1 = 'This account interacts with the following instances'
 
     infoForm = ''
-    cssFilename = baseDir + '/epicyon-profile.css'
-    if os.path.isfile(baseDir + '/epicyon.css'):
-        cssFilename = baseDir + '/epicyon.css'
+    cssFilename = base_dir + '/epicyon-profile.css'
+    if os.path.isfile(base_dir + '/epicyon.css'):
+        cssFilename = base_dir + '/epicyon.css'
 
     instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
+        getConfigParam(base_dir, 'instanceTitle')
     infoForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
 
     searchNickname = getNicknameFromActor(searchHandle)
@@ -123,7 +124,7 @@ def htmlAccountInfo(cssCache: {}, translate: {},
     wordFrequency = {}
     originDomain = None
     domainDict = getPublicPostInfo(session,
-                                   baseDir, searchNickname, searchDomain,
+                                   base_dir, searchNickname, searchDomain,
                                    originDomain,
                                    proxyType, searchPort,
                                    httpPrefix, debug,
@@ -140,7 +141,7 @@ def htmlAccountInfo(cssCache: {}, translate: {},
         followerNickname = getNicknameFromActor(followerActor)
         followerDomain, followerPort = getDomainFromActor(followerActor)
         followerDomainFull = getFullDomain(followerDomain, followerPort)
-        if isBlocked(baseDir, nickname, domain,
+        if isBlocked(base_dir, nickname, domain,
                      followerNickname, followerDomainFull):
             blockedFollowers.append(followerActor)
 
@@ -154,7 +155,7 @@ def htmlAccountInfo(cssCache: {}, translate: {},
         followingNickname = getNicknameFromActor(followingActor)
         followingDomain, followingPort = getDomainFromActor(followingActor)
         followingDomainFull = getFullDomain(followingDomain, followingPort)
-        if isBlocked(baseDir, nickname, domain,
+        if isBlocked(base_dir, nickname, domain,
                      followingNickname, followingDomainFull):
             blockedFollowing.append(followingActor)
 
@@ -166,7 +167,7 @@ def htmlAccountInfo(cssCache: {}, translate: {},
             httpPrefix + '://' + postDomain + '" ' + \
             'target="_blank" rel="nofollow noopener noreferrer">' + \
             postDomain + '</a> '
-        if isBlockedDomain(baseDir, postDomain):
+        if isBlockedDomain(base_dir, postDomain):
             blockedPostsLinks = ''
             urlCtr = 0
             for url in blockedPostUrls:
@@ -270,7 +271,7 @@ def htmlAccountInfo(cssCache: {}, translate: {},
 
 
 def htmlModerationInfo(cssCache: {}, translate: {},
-                       baseDir: str, httpPrefix: str,
+                       base_dir: str, httpPrefix: str,
                        nickname: str) -> str:
     msgStr1 = \
         'These are globally blocked for all accounts on this instance'
@@ -278,12 +279,12 @@ def htmlModerationInfo(cssCache: {}, translate: {},
         'Any blocks or suspensions made by moderators will be shown here.'
 
     infoForm = ''
-    cssFilename = baseDir + '/epicyon-profile.css'
-    if os.path.isfile(baseDir + '/epicyon.css'):
-        cssFilename = baseDir + '/epicyon.css'
+    cssFilename = base_dir + '/epicyon-profile.css'
+    if os.path.isfile(base_dir + '/epicyon.css'):
+        cssFilename = base_dir + '/epicyon.css'
 
     instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
+        getConfigParam(base_dir, 'instanceTitle')
     infoForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
 
     infoForm += \
@@ -294,7 +295,7 @@ def htmlModerationInfo(cssCache: {}, translate: {},
     infoShown = False
 
     accounts = []
-    for subdir, dirs, files in os.walk(baseDir + '/accounts'):
+    for subdir, dirs, files in os.walk(base_dir + '/accounts'):
         for acct in dirs:
             if not isAccountDir(acct):
                 continue
@@ -317,7 +318,7 @@ def htmlModerationInfo(cssCache: {}, translate: {},
     col = 0
     for acct in accounts:
         acctNickname = acct.split('@')[0]
-        accountDir = os.path.join(baseDir + '/accounts', acct)
+        accountDir = os.path.join(base_dir + '/accounts', acct)
         actorJson = loadJson(accountDir + '.json')
         if not actorJson:
             continue
@@ -336,11 +337,11 @@ def htmlModerationInfo(cssCache: {}, translate: {},
         infoForm += '<img loading="lazy" style="width:90%" '
         infoForm += 'src="' + avatarUrl + '" />'
         infoForm += '<br><center>'
-        if isModerator(baseDir, acctNickname):
+        if isModerator(base_dir, acctNickname):
             infoForm += '<b><u>' + acctNickname + '</u></b>'
         else:
             infoForm += acctNickname
-        if isEditor(baseDir, acctNickname):
+        if isEditor(base_dir, acctNickname):
             infoForm += ' ✍'
         infoForm += '</center></a>\n</td>\n'
         col += 1
@@ -352,7 +353,7 @@ def htmlModerationInfo(cssCache: {}, translate: {},
     if len(accounts) > 10:
         infoForm += '</details>\n'
 
-    suspendedFilename = baseDir + '/accounts/suspended.txt'
+    suspendedFilename = base_dir + '/accounts/suspended.txt'
     if os.path.isfile(suspendedFilename):
         with open(suspendedFilename, 'r') as f:
             suspendedStr = f.read()
@@ -368,7 +369,7 @@ def htmlModerationInfo(cssCache: {}, translate: {},
             infoForm += '</div>\n'
             infoShown = True
 
-    blockingFilename = baseDir + '/accounts/blocking.txt'
+    blockingFilename = base_dir + '/accounts/blocking.txt'
     if os.path.isfile(blockingFilename):
         with open(blockingFilename, 'r') as f:
             blockedStr = f.read()
@@ -386,7 +387,7 @@ def htmlModerationInfo(cssCache: {}, translate: {},
             infoForm += '</div>\n'
             infoShown = True
 
-    filtersFilename = baseDir + '/accounts/filters.txt'
+    filtersFilename = base_dir + '/accounts/filters.txt'
     if os.path.isfile(filtersFilename):
         with open(filtersFilename, 'r') as f:
             filteredStr = f.read()

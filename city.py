@@ -176,7 +176,7 @@ def parseNogoString(nogoLine: str) -> []:
     return polygon
 
 
-def spoofGeolocation(baseDir: str,
+def spoofGeolocation(base_dir: str,
                      city: str, currTime, decoySeed: int,
                      citiesList: [],
                      nogoList: []) -> (float, float, str, str,
@@ -186,13 +186,13 @@ def spoofGeolocation(baseDir: str,
     returns latitude, longitude, N/S, E/W,
     camera make, camera model, camera serial number
     """
-    locationsFilename = baseDir + '/custom_locations.txt'
+    locationsFilename = base_dir + '/custom_locations.txt'
     if not os.path.isfile(locationsFilename):
-        locationsFilename = baseDir + '/locations.txt'
+        locationsFilename = base_dir + '/locations.txt'
 
-    nogoFilename = baseDir + '/custom_locations_nogo.txt'
+    nogoFilename = base_dir + '/custom_locations_nogo.txt'
     if not os.path.isfile(nogoFilename):
-        nogoFilename = baseDir + '/locations_nogo.txt'
+        nogoFilename = base_dir + '/locations_nogo.txt'
 
     manCityRadius = 0.1
     varianceAtLocation = 0.0004
@@ -308,12 +308,13 @@ def spoofGeolocation(baseDir: str,
             "", "", 0)
 
 
-def getSpoofedCity(city: str, baseDir: str, nickname: str, domain: str) -> str:
+def getSpoofedCity(city: str, base_dir: str,
+                   nickname: str, domain: str) -> str:
     """Returns the name of the city to use as a GPS spoofing location for
     image metadata
     """
     city = ''
-    cityFilename = acctDir(baseDir, nickname, domain) + '/city.txt'
+    cityFilename = acctDir(base_dir, nickname, domain) + '/city.txt'
     if os.path.isfile(cityFilename):
         try:
             with open(cityFilename, 'r') as fp:

@@ -61,7 +61,7 @@ def validEmojiContent(emojiContent: str) -> bool:
 
 
 def _reaction(recentPostsCache: {},
-              session, baseDir: str, federationList: [],
+              session, base_dir: str, federationList: [],
               nickname: str, domain: str, port: int,
               ccList: [], httpPrefix: str,
               objectUrl: str, emojiContent: str,
@@ -104,7 +104,7 @@ def _reaction(recentPostsCache: {},
         reactionPostNickname = getNicknameFromActor(actorReaction)
         reactionPostDomain, reactionPostPort = \
             getDomainFromActor(actorReaction)
-        groupAccount = hasGroupType(baseDir, actorReaction, personCache)
+        groupAccount = hasGroupType(base_dir, actorReaction, personCache)
     else:
         if hasUsersPath(objectUrl):
             reactionPostNickname = getNicknameFromActor(objectUrl)
@@ -115,24 +115,24 @@ def _reaction(recentPostsCache: {},
                     objectUrl.split('/' + reactionPostNickname + '/')[0] + \
                     '/' + reactionPostNickname
                 groupAccount = \
-                    hasGroupType(baseDir, actorReaction, personCache)
+                    hasGroupType(base_dir, actorReaction, personCache)
 
     if reactionPostNickname:
-        postFilename = locatePost(baseDir, nickname, domain, objectUrl)
+        postFilename = locatePost(base_dir, nickname, domain, objectUrl)
         if not postFilename:
-            print('DEBUG: reaction baseDir: ' + baseDir)
+            print('DEBUG: reaction base_dir: ' + base_dir)
             print('DEBUG: reaction nickname: ' + nickname)
             print('DEBUG: reaction domain: ' + domain)
             print('DEBUG: reaction objectUrl: ' + objectUrl)
             return None
 
         updateReactionCollection(recentPostsCache,
-                                 baseDir, postFilename, objectUrl,
+                                 base_dir, postFilename, objectUrl,
                                  newReactionJson['actor'],
                                  nickname, domain, debug, None,
                                  emojiContent)
 
-        sendSignedJson(newReactionJson, session, baseDir,
+        sendSignedJson(newReactionJson, session, base_dir,
                        nickname, domain, port,
                        reactionPostNickname,
                        reactionPostDomain, reactionPostPort,
@@ -146,7 +146,7 @@ def _reaction(recentPostsCache: {},
 
 
 def reactionPost(recentPostsCache: {},
-                 session, baseDir: str, federationList: [],
+                 session, base_dir: str, federationList: [],
                  nickname: str, domain: str, port: int, httpPrefix: str,
                  reactionNickname: str, reactionDomain: str, reactionPort: int,
                  ccList: [],
@@ -164,7 +164,7 @@ def reactionPost(recentPostsCache: {},
     objectUrl = actorReaction + '/statuses/' + str(reactionStatusNumber)
 
     return _reaction(recentPostsCache,
-                     session, baseDir, federationList,
+                     session, base_dir, federationList,
                      nickname, domain, port,
                      ccList, httpPrefix, objectUrl, emojiContent,
                      actorReaction, clientToServer,
@@ -172,7 +172,7 @@ def reactionPost(recentPostsCache: {},
                      debug, projectVersion, signingPrivateKeyPem)
 
 
-def sendReactionViaServer(baseDir: str, session,
+def sendReactionViaServer(base_dir: str, session,
                           fromNickname: str, password: str,
                           fromDomain: str, fromPort: int,
                           httpPrefix: str, reactionUrl: str,
@@ -225,7 +225,7 @@ def sendReactionViaServer(baseDir: str, session,
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
      displayName, _) = getPersonBox(signingPrivateKeyPem,
                                     originDomain,
-                                    baseDir, session, wfRequest,
+                                    base_dir, session, wfRequest,
                                     personCache,
                                     projectVersion, httpPrefix,
                                     fromNickname, fromDomain,
@@ -262,7 +262,7 @@ def sendReactionViaServer(baseDir: str, session,
     return newReactionJson
 
 
-def sendUndoReactionViaServer(baseDir: str, session,
+def sendUndoReactionViaServer(base_dir: str, session,
                               fromNickname: str, password: str,
                               fromDomain: str, fromPort: int,
                               httpPrefix: str, reactionUrl: str,
@@ -316,7 +316,7 @@ def sendUndoReactionViaServer(baseDir: str, session,
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
      displayName, _) = getPersonBox(signingPrivateKeyPem,
                                     originDomain,
-                                    baseDir, session, wfRequest,
+                                    base_dir, session, wfRequest,
                                     personCache, projectVersion,
                                     httpPrefix, fromNickname,
                                     fromDomain, postToBox,
@@ -354,7 +354,7 @@ def sendUndoReactionViaServer(baseDir: str, session,
 
 
 def outboxReaction(recentPostsCache: {},
-                   baseDir: str, httpPrefix: str,
+                   base_dir: str, httpPrefix: str,
                    nickname: str, domain: str, port: int,
                    messageJson: {}, debug: bool) -> None:
     """ When a reaction request is received by the outbox from c2s
@@ -383,14 +383,14 @@ def outboxReaction(recentPostsCache: {},
     messageId = removeIdEnding(messageJson['object'])
     domain = removeDomainPort(domain)
     emojiContent = messageJson['content']
-    postFilename = locatePost(baseDir, nickname, domain, messageId)
+    postFilename = locatePost(base_dir, nickname, domain, messageId)
     if not postFilename:
         if debug:
             print('DEBUG: c2s reaction post not found in inbox or outbox')
             print(messageId)
         return True
     updateReactionCollection(recentPostsCache,
-                             baseDir, postFilename, messageId,
+                             base_dir, postFilename, messageId,
                              messageJson['actor'],
                              nickname, domain, debug, None, emojiContent)
     if debug:
@@ -398,7 +398,7 @@ def outboxReaction(recentPostsCache: {},
 
 
 def outboxUndoReaction(recentPostsCache: {},
-                       baseDir: str, httpPrefix: str,
+                       base_dir: str, httpPrefix: str,
                        nickname: str, domain: str, port: int,
                        messageJson: {}, debug: bool) -> None:
     """ When an undo reaction request is received by the outbox from c2s
@@ -425,13 +425,13 @@ def outboxUndoReaction(recentPostsCache: {},
     messageId = removeIdEnding(messageJson['object']['object'])
     emojiContent = messageJson['object']['content']
     domain = removeDomainPort(domain)
-    postFilename = locatePost(baseDir, nickname, domain, messageId)
+    postFilename = locatePost(base_dir, nickname, domain, messageId)
     if not postFilename:
         if debug:
             print('DEBUG: c2s undo reaction post not found in inbox or outbox')
             print(messageId)
         return True
-    undoReactionCollectionEntry(recentPostsCache, baseDir, postFilename,
+    undoReactionCollectionEntry(recentPostsCache, base_dir, postFilename,
                                 messageId, messageJson['actor'],
                                 domain, debug, None, emojiContent)
     if debug:
@@ -439,7 +439,7 @@ def outboxUndoReaction(recentPostsCache: {},
 
 
 def updateReactionCollection(recentPostsCache: {},
-                             baseDir: str, postFilename: str,
+                             base_dir: str, postFilename: str,
                              objectUrl: str, actor: str,
                              nickname: str, domain: str, debug: bool,
                              postJsonObject: {},
@@ -454,7 +454,7 @@ def updateReactionCollection(recentPostsCache: {},
     # remove any cached version of this post so that the
     # reaction icon is changed
     removePostFromCache(postJsonObject, recentPostsCache)
-    cachedPostFilename = getCachedPostFilename(baseDir, nickname,
+    cachedPostFilename = getCachedPostFilename(base_dir, nickname,
                                                domain, postJsonObject)
     if cachedPostFilename:
         if os.path.isfile(cachedPostFilename):

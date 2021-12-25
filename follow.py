@@ -38,16 +38,16 @@ from session import getJson
 from session import postJson
 
 
-def createInitialLastSeen(baseDir: str, httpPrefix: str) -> None:
+def createInitialLastSeen(base_dir: str, httpPrefix: str) -> None:
     """Creates initial lastseen files for all follows.
     The lastseen files are used to generate the Zzz icons on
     follows/following lists on the profile screen.
     """
-    for subdir, dirs, files in os.walk(baseDir + '/accounts'):
+    for subdir, dirs, files in os.walk(base_dir + '/accounts'):
         for acct in dirs:
             if not isAccountDir(acct):
                 continue
-            accountDir = os.path.join(baseDir + '/accounts', acct)
+            accountDir = os.path.join(base_dir + '/accounts', acct)
             followingFilename = accountDir + '/following.txt'
             if not os.path.isfile(followingFilename):
                 continue
@@ -83,13 +83,13 @@ def createInitialLastSeen(baseDir: str, httpPrefix: str) -> None:
         break
 
 
-def _preApprovedFollower(baseDir: str,
+def _preApprovedFollower(base_dir: str,
                          nickname: str, domain: str,
                          approveHandle: str) -> bool:
     """Is the given handle an already manually approved follower?
     """
     handle = nickname + '@' + domain
-    accountDir = baseDir + '/accounts/' + handle
+    accountDir = base_dir + '/accounts/' + handle
     approvedFilename = accountDir + '/approved.txt'
     if os.path.isfile(approvedFilename):
         if approveHandle in open(approvedFilename).read():
@@ -97,14 +97,14 @@ def _preApprovedFollower(baseDir: str,
     return False
 
 
-def _removeFromFollowBase(baseDir: str,
+def _removeFromFollowBase(base_dir: str,
                           nickname: str, domain: str,
                           acceptOrDenyHandle: str, followFile: str,
                           debug: bool) -> None:
     """Removes a handle/actor from follow requests or rejects file
     """
     handle = nickname + '@' + domain
-    accountsDir = baseDir + '/accounts/' + handle
+    accountsDir = base_dir + '/accounts/' + handle
     approveFollowsFilename = accountsDir + '/' + followFile + '.txt'
     if not os.path.isfile(approveFollowsFilename):
         if debug:
@@ -146,34 +146,34 @@ def _removeFromFollowBase(baseDir: str,
     os.rename(approveFollowsFilename + '.new', approveFollowsFilename)
 
 
-def removeFromFollowRequests(baseDir: str,
+def removeFromFollowRequests(base_dir: str,
                              nickname: str, domain: str,
                              denyHandle: str, debug: bool) -> None:
     """Removes a handle from follow requests
     """
-    _removeFromFollowBase(baseDir, nickname, domain,
+    _removeFromFollowBase(base_dir, nickname, domain,
                           denyHandle, 'followrequests', debug)
 
 
-def _removeFromFollowRejects(baseDir: str,
+def _removeFromFollowRejects(base_dir: str,
                              nickname: str, domain: str,
                              acceptHandle: str, debug: bool) -> None:
     """Removes a handle from follow rejects
     """
-    _removeFromFollowBase(baseDir, nickname, domain,
+    _removeFromFollowBase(base_dir, nickname, domain,
                           acceptHandle, 'followrejects', debug)
 
 
-def isFollowingActor(baseDir: str,
+def isFollowingActor(base_dir: str,
                      nickname: str, domain: str, actor: str) -> bool:
     """Is the given nickname following the given actor?
     The actor can also be a handle: nickname@domain
     """
     domain = removeDomainPort(domain)
     handle = nickname + '@' + domain
-    if not os.path.isdir(baseDir + '/accounts/' + handle):
+    if not os.path.isdir(base_dir + '/accounts/' + handle):
         return False
-    followingFile = baseDir + '/accounts/' + handle + '/following.txt'
+    followingFile = base_dir + '/accounts/' + handle + '/following.txt'
     if not os.path.isfile(followingFile):
         return False
     if actor.lower() in open(followingFile).read().lower():
@@ -190,15 +190,15 @@ def isFollowingActor(baseDir: str,
     return False
 
 
-def getMutualsOfPerson(baseDir: str,
+def getMutualsOfPerson(base_dir: str,
                        nickname: str, domain: str) -> []:
     """Returns the mutuals of a person
     i.e. accounts which they follow and which also follow back
     """
     followers = \
-        getFollowersList(baseDir, nickname, domain, 'followers.txt')
+        getFollowersList(base_dir, nickname, domain, 'followers.txt')
     following = \
-        getFollowersList(baseDir, nickname, domain, 'following.txt')
+        getFollowersList(base_dir, nickname, domain, 'following.txt')
     mutuals = []
     for handle in following:
         if handle in followers:
@@ -206,22 +206,22 @@ def getMutualsOfPerson(baseDir: str,
     return mutuals
 
 
-def followerOfPerson(baseDir: str, nickname: str, domain: str,
+def followerOfPerson(base_dir: str, nickname: str, domain: str,
                      followerNickname: str, followerDomain: str,
                      federationList: [], debug: bool,
                      groupAccount: bool) -> bool:
     """Adds a follower of the given person
     """
-    return followPerson(baseDir, nickname, domain,
+    return followPerson(base_dir, nickname, domain,
                         followerNickname, followerDomain,
                         federationList, debug, groupAccount, 'followers.txt')
 
 
-def getFollowerDomains(baseDir: str, nickname: str, domain: str) -> []:
+def getFollowerDomains(base_dir: str, nickname: str, domain: str) -> []:
     """Returns a list of domains for followers
     """
     domain = removeDomainPort(domain)
-    followersFile = acctDir(baseDir, nickname, domain) + '/followers.txt'
+    followersFile = acctDir(base_dir, nickname, domain) + '/followers.txt'
     if not os.path.isfile(followersFile):
         return []
 
@@ -243,7 +243,7 @@ def getFollowerDomains(baseDir: str, nickname: str, domain: str) -> []:
     return domainsList
 
 
-def isFollowerOfPerson(baseDir: str, nickname: str, domain: str,
+def isFollowerOfPerson(base_dir: str, nickname: str, domain: str,
                        followerNickname: str, followerDomain: str) -> bool:
     """is the given nickname a follower of followerNickname?
     """
@@ -254,7 +254,7 @@ def isFollowerOfPerson(baseDir: str, nickname: str, domain: str,
         print('No followerNickname for ' + followerDomain)
         return False
     domain = removeDomainPort(domain)
-    followersFile = acctDir(baseDir, nickname, domain) + '/followers.txt'
+    followersFile = acctDir(base_dir, nickname, domain) + '/followers.txt'
     if not os.path.isfile(followersFile):
         return False
     handle = followerNickname + '@' + followerDomain
@@ -281,7 +281,7 @@ def isFollowerOfPerson(baseDir: str, nickname: str, domain: str,
     return alreadyFollowing
 
 
-def unfollowAccount(baseDir: str, nickname: str, domain: str,
+def unfollowAccount(base_dir: str, nickname: str, domain: str,
                     followNickname: str, followDomain: str,
                     debug: bool, groupAccount: bool,
                     followFile: str = 'following.txt') -> bool:
@@ -292,12 +292,12 @@ def unfollowAccount(baseDir: str, nickname: str, domain: str,
     handleToUnfollow = followNickname + '@' + followDomain
     if groupAccount:
         handleToUnfollow = '!' + handleToUnfollow
-    if not os.path.isdir(baseDir + '/accounts'):
-        os.mkdir(baseDir + '/accounts')
-    if not os.path.isdir(baseDir + '/accounts/' + handle):
-        os.mkdir(baseDir + '/accounts/' + handle)
+    if not os.path.isdir(base_dir + '/accounts'):
+        os.mkdir(base_dir + '/accounts')
+    if not os.path.isdir(base_dir + '/accounts/' + handle):
+        os.mkdir(base_dir + '/accounts/' + handle)
 
-    filename = baseDir + '/accounts/' + handle + '/' + followFile
+    filename = base_dir + '/accounts/' + handle + '/' + followFile
     if not os.path.isfile(filename):
         if debug:
             print('DEBUG: follow file ' + filename + ' was not found')
@@ -327,7 +327,7 @@ def unfollowAccount(baseDir: str, nickname: str, domain: str,
 
     # write to an unfollowed file so that if a follow accept
     # later arrives then it can be ignored
-    unfollowedFilename = baseDir + '/accounts/' + handle + '/unfollowed.txt'
+    unfollowedFilename = base_dir + '/accounts/' + handle + '/unfollowed.txt'
     if os.path.isfile(unfollowedFilename):
         if handleToUnfollowLower not in \
            open(unfollowedFilename).read().lower():
@@ -346,26 +346,26 @@ def unfollowAccount(baseDir: str, nickname: str, domain: str,
     return True
 
 
-def unfollowerOfAccount(baseDir: str, nickname: str, domain: str,
+def unfollowerOfAccount(base_dir: str, nickname: str, domain: str,
                         followerNickname: str, followerDomain: str,
                         debug: bool, groupAccount: bool) -> bool:
     """Remove a follower of a person
     """
-    return unfollowAccount(baseDir, nickname, domain,
+    return unfollowAccount(base_dir, nickname, domain,
                            followerNickname, followerDomain,
                            debug, groupAccount, 'followers.txt')
 
 
-def clearFollows(baseDir: str, nickname: str, domain: str,
+def clearFollows(base_dir: str, nickname: str, domain: str,
                  followFile: str = 'following.txt') -> None:
     """Removes all follows
     """
     handle = nickname + '@' + domain
-    if not os.path.isdir(baseDir + '/accounts'):
-        os.mkdir(baseDir + '/accounts')
-    if not os.path.isdir(baseDir + '/accounts/' + handle):
-        os.mkdir(baseDir + '/accounts/' + handle)
-    filename = baseDir + '/accounts/' + handle + '/' + followFile
+    if not os.path.isdir(base_dir + '/accounts'):
+        os.mkdir(base_dir + '/accounts')
+    if not os.path.isdir(base_dir + '/accounts/' + handle):
+        os.mkdir(base_dir + '/accounts/' + handle)
+    filename = base_dir + '/accounts/' + handle + '/' + followFile
     if os.path.isfile(filename):
         try:
             os.remove(filename)
@@ -373,13 +373,13 @@ def clearFollows(baseDir: str, nickname: str, domain: str,
             print('EX: clearFollows unable to delete ' + filename)
 
 
-def clearFollowers(baseDir: str, nickname: str, domain: str) -> None:
+def clearFollowers(base_dir: str, nickname: str, domain: str) -> None:
     """Removes all followers
     """
-    clearFollows(baseDir, nickname, domain, 'followers.txt')
+    clearFollows(base_dir, nickname, domain, 'followers.txt')
 
 
-def _getNoOfFollows(baseDir: str, nickname: str, domain: str,
+def _getNoOfFollows(base_dir: str, nickname: str, domain: str,
                     authenticated: bool,
                     followFile='following.txt') -> int:
     """Returns the number of follows or followers
@@ -389,7 +389,7 @@ def _getNoOfFollows(baseDir: str, nickname: str, domain: str,
     # if not authenticated:
     #     return 9999
     handle = nickname + '@' + domain
-    filename = baseDir + '/accounts/' + handle + '/' + followFile
+    filename = base_dir + '/accounts/' + handle + '/' + followFile
     if not os.path.isfile(filename):
         return 0
     ctr = 0
@@ -414,15 +414,15 @@ def _getNoOfFollows(baseDir: str, nickname: str, domain: str,
     return ctr
 
 
-def getNoOfFollowers(baseDir: str,
+def getNoOfFollowers(base_dir: str,
                      nickname: str, domain: str, authenticated: bool) -> int:
     """Returns the number of followers of the given person
     """
-    return _getNoOfFollows(baseDir, nickname, domain,
+    return _getNoOfFollows(base_dir, nickname, domain,
                            authenticated, 'followers.txt')
 
 
-def getFollowingFeed(baseDir: str, domain: str, port: int, path: str,
+def getFollowingFeed(base_dir: str, domain: str, port: int, path: str,
                      httpPrefix: str, authorized: bool,
                      followsPerPage=12,
                      followFile='following') -> {}:
@@ -473,7 +473,7 @@ def getFollowingFeed(baseDir: str, domain: str, port: int, path: str,
         idStr = \
             localActorUrl(httpPrefix, nickname, domain) + '/' + followFile
         totalStr = \
-            _getNoOfFollows(baseDir, nickname, domain, authorized)
+            _getNoOfFollows(base_dir, nickname, domain, authorized)
         following = {
             '@context': 'https://www.w3.org/ns/activitystreams',
             'first': firstStr,
@@ -504,7 +504,7 @@ def getFollowingFeed(baseDir: str, domain: str, port: int, path: str,
     handleDomain = domain
     handleDomain = removeDomainPort(handleDomain)
     handle = nickname + '@' + handleDomain
-    filename = baseDir + '/accounts/' + handle + '/' + followFile + '.txt'
+    filename = base_dir + '/accounts/' + handle + '/' + followFile + '.txt'
     if not os.path.isfile(filename):
         return following
     currPage = 1
@@ -558,19 +558,19 @@ def getFollowingFeed(baseDir: str, domain: str, port: int, path: str,
     return following
 
 
-def followApprovalRequired(baseDir: str, nicknameToFollow: str,
+def followApprovalRequired(base_dir: str, nicknameToFollow: str,
                            domainToFollow: str, debug: bool,
                            followRequestHandle: str) -> bool:
     """ Returns the policy for follower approvals
     """
     # has this handle already been manually approved?
-    if _preApprovedFollower(baseDir, nicknameToFollow, domainToFollow,
+    if _preApprovedFollower(base_dir, nicknameToFollow, domainToFollow,
                             followRequestHandle):
         return False
 
     manuallyApproveFollows = False
     domainToFollow = removeDomainPort(domainToFollow)
-    actorFilename = baseDir + '/accounts/' + \
+    actorFilename = base_dir + '/accounts/' + \
         nicknameToFollow + '@' + domainToFollow + '.json'
     if os.path.isfile(actorFilename):
         actor = loadJson(actorFilename)
@@ -587,13 +587,13 @@ def followApprovalRequired(baseDir: str, nicknameToFollow: str,
     return manuallyApproveFollows
 
 
-def noOfFollowRequests(baseDir: str,
+def noOfFollowRequests(base_dir: str,
                        nicknameToFollow: str, domainToFollow: str,
                        nickname: str, domain: str, fromPort: int,
                        followType: str) -> int:
     """Returns the current number of follow requests
     """
-    accountsDir = baseDir + '/accounts/' + \
+    accountsDir = base_dir + '/accounts/' + \
         nicknameToFollow + '@' + domainToFollow
     approveFollowsFilename = accountsDir + '/followrequests.txt'
     if not os.path.isfile(approveFollowsFilename):
@@ -619,7 +619,7 @@ def noOfFollowRequests(baseDir: str,
     return ctr
 
 
-def storeFollowRequest(baseDir: str,
+def storeFollowRequest(base_dir: str,
                        nicknameToFollow: str, domainToFollow: str, port: int,
                        nickname: str, domain: str, fromPort: int,
                        followJson: {},
@@ -627,7 +627,7 @@ def storeFollowRequest(baseDir: str,
                        groupAccount: bool) -> bool:
     """Stores the follow request for later use
     """
-    accountsDir = baseDir + '/accounts/' + \
+    accountsDir = base_dir + '/accounts/' + \
         nicknameToFollow + '@' + domainToFollow
     if not os.path.isdir(accountsDir):
         return False
@@ -670,7 +670,7 @@ def storeFollowRequest(baseDir: str,
     denyFollowsFilename = accountsDir + '/followrejects.txt'
     if os.path.isfile(denyFollowsFilename):
         if approveHandle in open(denyFollowsFilename).read():
-            removeFromFollowRequests(baseDir, nicknameToFollow,
+            removeFromFollowRequests(base_dir, nicknameToFollow,
                                      domainToFollow, approveHandle, debug)
             print(approveHandle + ' was already denied as a follower of ' +
                   nicknameToFollow)
@@ -713,7 +713,7 @@ def storeFollowRequest(baseDir: str,
     return saveJson(followJson, followActivityfilename)
 
 
-def followedAccountAccepts(session, baseDir: str, httpPrefix: str,
+def followedAccountAccepts(session, base_dir: str, httpPrefix: str,
                            nicknameToFollow: str, domainToFollow: str,
                            port: int,
                            nickname: str, domain: str, fromPort: int,
@@ -734,7 +734,7 @@ def followedAccountAccepts(session, baseDir: str, httpPrefix: str,
               'follow request which arrived at ' +
               nicknameToFollow + '@' + domainToFollow +
               ' back to ' + acceptHandle)
-    acceptJson = createAccept(baseDir, federationList,
+    acceptJson = createAccept(base_dir, federationList,
                               nicknameToFollow, domainToFollow, port,
                               personUrl, '', httpPrefix,
                               followJson)
@@ -749,7 +749,7 @@ def followedAccountAccepts(session, baseDir: str, httpPrefix: str,
     if removeFollowActivity:
         # remove the follow request json
         followActivityfilename = \
-            acctDir(baseDir, nicknameToFollow, domainToFollow) + \
+            acctDir(base_dir, nicknameToFollow, domainToFollow) + \
             '/requests/' + \
             nickname + '@' + domain + '.follow'
         if os.path.isfile(followActivityfilename):
@@ -762,10 +762,10 @@ def followedAccountAccepts(session, baseDir: str, httpPrefix: str,
     groupAccount = False
     if followJson:
         if followJson.get('actor'):
-            if hasGroupType(baseDir, followJson['actor'], personCache):
+            if hasGroupType(base_dir, followJson['actor'], personCache):
                 groupAccount = True
 
-    return sendSignedJson(acceptJson, session, baseDir,
+    return sendSignedJson(acceptJson, session, base_dir,
                           nicknameToFollow, domainToFollow, port,
                           nickname, domain, fromPort, '',
                           httpPrefix, True, clientToServer,
@@ -776,7 +776,7 @@ def followedAccountAccepts(session, baseDir: str, httpPrefix: str,
                           7856837)
 
 
-def followedAccountRejects(session, baseDir: str, httpPrefix: str,
+def followedAccountRejects(session, base_dir: str, httpPrefix: str,
                            nicknameToFollow: str, domainToFollow: str,
                            port: int,
                            nickname: str, domain: str, fromPort: int,
@@ -797,7 +797,7 @@ def followedAccountRejects(session, baseDir: str, httpPrefix: str,
 
     # get the json for the original follow request
     followActivityfilename = \
-        acctDir(baseDir, nicknameToFollow, domainToFollow) + '/requests/' + \
+        acctDir(base_dir, nicknameToFollow, domainToFollow) + '/requests/' + \
         nickname + '@' + domain + '.follow'
     followJson = loadJson(followActivityfilename)
     if not followJson:
@@ -809,7 +809,7 @@ def followedAccountRejects(session, baseDir: str, httpPrefix: str,
 
     # create the reject activity
     rejectJson = \
-        createReject(baseDir, federationList,
+        createReject(base_dir, federationList,
                      nicknameToFollow, domainToFollow, port,
                      personUrl, '', httpPrefix, followJson)
     if debug:
@@ -821,10 +821,10 @@ def followedAccountRejects(session, baseDir: str, httpPrefix: str,
     clientToServer = False
     denyHandle = getFullDomain(nickname + '@' + domain, fromPort)
     groupAccount = False
-    if hasGroupType(baseDir, personUrl, personCache):
+    if hasGroupType(base_dir, personUrl, personCache):
         groupAccount = True
     # remove from the follow requests file
-    removeFromFollowRequests(baseDir, nicknameToFollow, domainToFollow,
+    removeFromFollowRequests(base_dir, nicknameToFollow, domainToFollow,
                              denyHandle, debug)
     # remove the follow request json
     try:
@@ -833,7 +833,7 @@ def followedAccountRejects(session, baseDir: str, httpPrefix: str,
         print('EX: followedAccountRejects unable to delete ' +
               followActivityfilename)
     # send the reject activity
-    return sendSignedJson(rejectJson, session, baseDir,
+    return sendSignedJson(rejectJson, session, base_dir,
                           nicknameToFollow, domainToFollow, port,
                           nickname, domain, fromPort, '',
                           httpPrefix, True, clientToServer,
@@ -844,7 +844,7 @@ def followedAccountRejects(session, baseDir: str, httpPrefix: str,
                           6393063)
 
 
-def sendFollowRequest(session, baseDir: str,
+def sendFollowRequest(session, base_dir: str,
                       nickname: str, domain: str, port: int, httpPrefix: str,
                       followNickname: str, followDomain: str,
                       followedActor: str,
@@ -873,7 +873,7 @@ def sendFollowRequest(session, baseDir: str,
     if followNickname:
         followedId = followedActor
         followHandle = followNickname + '@' + requestDomain
-        groupAccount = hasGroupType(baseDir, followedActor, personCache)
+        groupAccount = hasGroupType(base_dir, followedActor, personCache)
         if groupAccount:
             followHandle = '!' + followHandle
             print('Follow request being sent to group account')
@@ -885,7 +885,8 @@ def sendFollowRequest(session, baseDir: str,
         followHandle = singleUserNickname + '@' + requestDomain
 
     # remove follow handle from unfollowed.txt
-    unfollowedFilename = acctDir(baseDir, nickname, domain) + '/unfollowed.txt'
+    unfollowedFilename = \
+        acctDir(base_dir, nickname, domain) + '/unfollowed.txt'
     if os.path.isfile(unfollowedFilename):
         if followHandle in open(unfollowedFilename).read():
             unfollowedFile = None
@@ -914,17 +915,17 @@ def sendFollowRequest(session, baseDir: str,
         newFollowJson['to'] = followedId
         print('Follow request: ' + str(newFollowJson))
 
-    if followApprovalRequired(baseDir, nickname, domain, debug,
+    if followApprovalRequired(base_dir, nickname, domain, debug,
                               followHandle):
         # Remove any follow requests rejected for the account being followed.
         # It's assumed that if you are following someone then you are
         # ok with them following back. If this isn't the case then a rejected
         # follow request will block them again.
-        _removeFromFollowRejects(baseDir,
+        _removeFromFollowRejects(base_dir,
                                  nickname, domain,
                                  followHandle, debug)
 
-    sendSignedJson(newFollowJson, session, baseDir, nickname, domain, port,
+    sendSignedJson(newFollowJson, session, base_dir, nickname, domain, port,
                    followNickname, followDomain, followPort,
                    'https://www.w3.org/ns/activitystreams#Public',
                    httpPrefix, True, clientToServer,
@@ -936,7 +937,7 @@ def sendFollowRequest(session, baseDir: str,
     return newFollowJson
 
 
-def sendFollowRequestViaServer(baseDir: str, session,
+def sendFollowRequestViaServer(base_dir: str, session,
                                fromNickname: str, password: str,
                                fromDomain: str, fromPort: int,
                                followNickname: str, followDomain: str,
@@ -991,7 +992,7 @@ def sendFollowRequestViaServer(baseDir: str, session,
     (inboxUrl, pubKeyId, pubKey,
      fromPersonId, sharedInbox, avatarUrl,
      displayName, _) = getPersonBox(signingPrivateKeyPem, originDomain,
-                                    baseDir, session, wfRequest, personCache,
+                                    base_dir, session, wfRequest, personCache,
                                     projectVersion, httpPrefix, fromNickname,
                                     fromDomain, postToBox, 52025)
 
@@ -1026,7 +1027,7 @@ def sendFollowRequestViaServer(baseDir: str, session,
     return newFollowJson
 
 
-def sendUnfollowRequestViaServer(baseDir: str, session,
+def sendUnfollowRequestViaServer(base_dir: str, session,
                                  fromNickname: str, password: str,
                                  fromDomain: str, fromPort: int,
                                  followNickname: str, followDomain: str,
@@ -1085,7 +1086,7 @@ def sendUnfollowRequestViaServer(baseDir: str, session,
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
      displayName, _) = getPersonBox(signingPrivateKeyPem,
                                     originDomain,
-                                    baseDir, session,
+                                    base_dir, session,
                                     wfRequest, personCache,
                                     projectVersion, httpPrefix,
                                     fromNickname,
@@ -1123,7 +1124,7 @@ def sendUnfollowRequestViaServer(baseDir: str, session,
     return unfollowJson
 
 
-def getFollowingViaServer(baseDir: str, session,
+def getFollowingViaServer(base_dir: str, session,
                           nickname: str, password: str,
                           domain: str, port: int,
                           httpPrefix: str, pageNumber: int,
@@ -1164,7 +1165,7 @@ def getFollowingViaServer(baseDir: str, session,
     return followingJson
 
 
-def getFollowersViaServer(baseDir: str, session,
+def getFollowersViaServer(base_dir: str, session,
                           nickname: str, password: str,
                           domain: str, port: int,
                           httpPrefix: str, pageNumber: int,
@@ -1205,7 +1206,7 @@ def getFollowersViaServer(baseDir: str, session,
     return followersJson
 
 
-def getFollowRequestsViaServer(baseDir: str, session,
+def getFollowRequestsViaServer(base_dir: str, session,
                                nickname: str, password: str,
                                domain: str, port: int,
                                httpPrefix: str, pageNumber: int,
@@ -1246,7 +1247,7 @@ def getFollowRequestsViaServer(baseDir: str, session,
     return followersJson
 
 
-def approveFollowRequestViaServer(baseDir: str, session,
+def approveFollowRequestViaServer(base_dir: str, session,
                                   nickname: str, password: str,
                                   domain: str, port: int,
                                   httpPrefix: str, approveHandle: int,
@@ -1287,7 +1288,7 @@ def approveFollowRequestViaServer(baseDir: str, session,
     return approveHtml
 
 
-def denyFollowRequestViaServer(baseDir: str, session,
+def denyFollowRequestViaServer(base_dir: str, session,
                                nickname: str, password: str,
                                domain: str, port: int,
                                httpPrefix: str, denyHandle: int,
@@ -1328,7 +1329,7 @@ def denyFollowRequestViaServer(baseDir: str, session,
     return denyHtml
 
 
-def getFollowersOfActor(baseDir: str, actor: str, debug: bool) -> {}:
+def getFollowersOfActor(base_dir: str, actor: str, debug: bool) -> {}:
     """In a shared inbox if we receive a post we know who it's from
     and if it's addressed to followers then we need to get a list of those.
     This returns a list of account handles which follow the given actor
@@ -1352,7 +1353,7 @@ def getFollowersOfActor(baseDir: str, actor: str, debug: bool) -> {}:
     if debug:
         print('DEBUG: searching for handle ' + actorHandle)
     # for each of the accounts
-    for subdir, dirs, files in os.walk(baseDir + '/accounts'):
+    for subdir, dirs, files in os.walk(base_dir + '/accounts'):
         for account in dirs:
             if '@' in account and not account.startswith('inbox@'):
                 followingFilename = \
@@ -1374,7 +1375,7 @@ def getFollowersOfActor(baseDir: str, actor: str, debug: bool) -> {}:
     return recipientsDict
 
 
-def outboxUndoFollow(baseDir: str, messageJson: {}, debug: bool) -> None:
+def outboxUndoFollow(base_dir: str, messageJson: {}, debug: bool) -> None:
     """When an unfollow request is received by the outbox from c2s
     This removes the followed handle from the following.txt file
     of the relevant account
@@ -1413,8 +1414,9 @@ def outboxUndoFollow(baseDir: str, messageJson: {}, debug: bool) -> None:
         getDomainFromActor(messageJson['object']['object'])
     domainFollowingFull = getFullDomain(domainFollowing, portFollowing)
 
-    groupAccount = hasGroupType(baseDir, messageJson['object']['object'], None)
-    if unfollowAccount(baseDir, nicknameFollower, domainFollowerFull,
+    groupAccount = \
+        hasGroupType(base_dir, messageJson['object']['object'], None)
+    if unfollowAccount(base_dir, nicknameFollower, domainFollowerFull,
                        nicknameFollowing, domainFollowingFull,
                        debug, groupAccount):
         if debug:
@@ -1426,11 +1428,11 @@ def outboxUndoFollow(baseDir: str, messageJson: {}, debug: bool) -> None:
                   nicknameFollowing + '@' + domainFollowingFull)
 
 
-def followerApprovalActive(baseDir: str, nickname: str, domain: str) -> bool:
+def followerApprovalActive(base_dir: str, nickname: str, domain: str) -> bool:
     """Returns true if the given account requires follower approval
     """
     manuallyApprovesFollowers = False
-    actorFilename = acctDir(baseDir, nickname, domain) + '.json'
+    actorFilename = acctDir(base_dir, nickname, domain) + '.json'
     if os.path.isfile(actorFilename):
         actorJson = loadJson(actorFilename)
         if actorJson:

@@ -112,14 +112,14 @@ def setActorSkillLevel(actorJson: {},
     return True
 
 
-def setSkillLevel(baseDir: str, nickname: str, domain: str,
+def setSkillLevel(base_dir: str, nickname: str, domain: str,
                   skill: str, skillLevelPercent: int) -> bool:
     """Set a skill level for a person
     Setting skill level to zero removes it
     """
     if skillLevelPercent < 0 or skillLevelPercent > 100:
         return False
-    actorFilename = acctDir(baseDir, nickname, domain) + '.json'
+    actorFilename = acctDir(base_dir, nickname, domain) + '.json'
     if not os.path.isfile(actorFilename):
         return False
 
@@ -128,10 +128,10 @@ def setSkillLevel(baseDir: str, nickname: str, domain: str,
                               skill, skillLevelPercent)
 
 
-def getSkills(baseDir: str, nickname: str, domain: str) -> []:
+def getSkills(base_dir: str, nickname: str, domain: str) -> []:
     """Returns the skills for a given person
     """
-    actorFilename = acctDir(baseDir, nickname, domain) + '.json'
+    actorFilename = acctDir(base_dir, nickname, domain) + '.json'
     if not os.path.isfile(actorFilename):
         return False
 
@@ -144,7 +144,7 @@ def getSkills(baseDir: str, nickname: str, domain: str) -> []:
     return None
 
 
-def outboxSkills(baseDir: str, nickname: str, messageJson: {},
+def outboxSkills(base_dir: str, nickname: str, messageJson: {},
                  debug: bool) -> bool:
     """Handles receiving a skills update
     """
@@ -168,11 +168,11 @@ def outboxSkills(baseDir: str, nickname: str, messageJson: {},
     if skillLevelPercentStr.isdigit():
         skillLevelPercent = int(skillLevelPercentStr)
 
-    return setSkillLevel(baseDir, nickname, domain,
+    return setSkillLevel(base_dir, nickname, domain,
                          skill, skillLevelPercent)
 
 
-def sendSkillViaServer(baseDir: str, session, nickname: str, password: str,
+def sendSkillViaServer(base_dir: str, session, nickname: str, password: str,
                        domain: str, port: int,
                        httpPrefix: str,
                        skill: str, skillLevelPercent: int,
@@ -228,7 +228,7 @@ def sendSkillViaServer(baseDir: str, session, nickname: str, password: str,
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
      displayName, _) = getPersonBox(signingPrivateKeyPem,
                                     originDomain,
-                                    baseDir, session, wfRequest,
+                                    base_dir, session, wfRequest,
                                     personCache, projectVersion,
                                     httpPrefix, nickname, domain,
                                     postToBox, 76121)

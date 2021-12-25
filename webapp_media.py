@@ -11,11 +11,11 @@ import os
 from utils import validUrlPrefix
 
 
-def loadPeertubeInstances(baseDir: str, peertubeInstances: []) -> None:
+def loadPeertubeInstances(base_dir: str, peertubeInstances: []) -> None:
     """Loads peertube instances from file into the given list
     """
     peertubeList = None
-    peertubeInstancesFilename = baseDir + '/accounts/peertube.txt'
+    peertubeInstancesFilename = base_dir + '/accounts/peertube.txt'
     if os.path.isfile(peertubeInstancesFilename):
         with open(peertubeInstancesFilename, 'r') as fp:
             peertubeStr = fp.read()

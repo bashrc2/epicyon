@@ -69,7 +69,7 @@ def likedByPerson(postJsonObject: {}, nickname: str, domain: str) -> bool:
 
 
 def _like(recentPostsCache: {},
-          session, baseDir: str, federationList: [],
+          session, base_dir: str, federationList: [],
           nickname: str, domain: str, port: int,
           ccList: [], httpPrefix: str,
           objectUrl: str, actorLiked: str,
@@ -106,7 +106,7 @@ def _like(recentPostsCache: {},
     if actorLiked:
         likedPostNickname = getNicknameFromActor(actorLiked)
         likedPostDomain, likedPostPort = getDomainFromActor(actorLiked)
-        groupAccount = hasGroupType(baseDir, actorLiked, personCache)
+        groupAccount = hasGroupType(base_dir, actorLiked, personCache)
     else:
         if hasUsersPath(objectUrl):
             likedPostNickname = getNicknameFromActor(objectUrl)
@@ -115,23 +115,23 @@ def _like(recentPostsCache: {},
                 actorLiked = \
                     objectUrl.split('/' + likedPostNickname + '/')[0] + \
                     '/' + likedPostNickname
-                groupAccount = hasGroupType(baseDir, actorLiked, personCache)
+                groupAccount = hasGroupType(base_dir, actorLiked, personCache)
 
     if likedPostNickname:
-        postFilename = locatePost(baseDir, nickname, domain, objectUrl)
+        postFilename = locatePost(base_dir, nickname, domain, objectUrl)
         if not postFilename:
-            print('DEBUG: like baseDir: ' + baseDir)
+            print('DEBUG: like base_dir: ' + base_dir)
             print('DEBUG: like nickname: ' + nickname)
             print('DEBUG: like domain: ' + domain)
             print('DEBUG: like objectUrl: ' + objectUrl)
             return None
 
         updateLikesCollection(recentPostsCache,
-                              baseDir, postFilename, objectUrl,
+                              base_dir, postFilename, objectUrl,
                               newLikeJson['actor'],
                               nickname, domain, debug, None)
 
-        sendSignedJson(newLikeJson, session, baseDir,
+        sendSignedJson(newLikeJson, session, base_dir,
                        nickname, domain, port,
                        likedPostNickname, likedPostDomain, likedPostPort,
                        'https://www.w3.org/ns/activitystreams#Public',
@@ -144,7 +144,7 @@ def _like(recentPostsCache: {},
 
 
 def likePost(recentPostsCache: {},
-             session, baseDir: str, federationList: [],
+             session, base_dir: str, federationList: [],
              nickname: str, domain: str, port: int, httpPrefix: str,
              likeNickname: str, likeDomain: str, likePort: int,
              ccList: [],
@@ -161,13 +161,13 @@ def likePost(recentPostsCache: {},
     objectUrl = actorLiked + '/statuses/' + str(likeStatusNumber)
 
     return _like(recentPostsCache,
-                 session, baseDir, federationList, nickname, domain, port,
+                 session, base_dir, federationList, nickname, domain, port,
                  ccList, httpPrefix, objectUrl, actorLiked, clientToServer,
                  sendThreads, postLog, personCache, cachedWebfingers,
                  debug, projectVersion, signingPrivateKeyPem)
 
 
-def sendLikeViaServer(baseDir: str, session,
+def sendLikeViaServer(base_dir: str, session,
                       fromNickname: str, password: str,
                       fromDomain: str, fromPort: int,
                       httpPrefix: str, likeUrl: str,
@@ -214,7 +214,7 @@ def sendLikeViaServer(baseDir: str, session,
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
      displayName, _) = getPersonBox(signingPrivateKeyPem,
                                     originDomain,
-                                    baseDir, session, wfRequest,
+                                    base_dir, session, wfRequest,
                                     personCache,
                                     projectVersion, httpPrefix,
                                     fromNickname, fromDomain,
@@ -250,7 +250,7 @@ def sendLikeViaServer(baseDir: str, session,
     return newLikeJson
 
 
-def sendUndoLikeViaServer(baseDir: str, session,
+def sendUndoLikeViaServer(base_dir: str, session,
                           fromNickname: str, password: str,
                           fromDomain: str, fromPort: int,
                           httpPrefix: str, likeUrl: str,
@@ -302,7 +302,7 @@ def sendUndoLikeViaServer(baseDir: str, session,
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
      displayName, _) = getPersonBox(signingPrivateKeyPem,
                                     originDomain,
-                                    baseDir, session, wfRequest,
+                                    base_dir, session, wfRequest,
                                     personCache, projectVersion,
                                     httpPrefix, fromNickname,
                                     fromDomain, postToBox,
@@ -339,7 +339,7 @@ def sendUndoLikeViaServer(baseDir: str, session,
 
 
 def outboxLike(recentPostsCache: {},
-               baseDir: str, httpPrefix: str,
+               base_dir: str, httpPrefix: str,
                nickname: str, domain: str, port: int,
                messageJson: {}, debug: bool) -> None:
     """ When a like request is received by the outbox from c2s
@@ -359,14 +359,14 @@ def outboxLike(recentPostsCache: {},
 
     messageId = removeIdEnding(messageJson['object'])
     domain = removeDomainPort(domain)
-    postFilename = locatePost(baseDir, nickname, domain, messageId)
+    postFilename = locatePost(base_dir, nickname, domain, messageId)
     if not postFilename:
         if debug:
             print('DEBUG: c2s like post not found in inbox or outbox')
             print(messageId)
         return True
     updateLikesCollection(recentPostsCache,
-                          baseDir, postFilename, messageId,
+                          base_dir, postFilename, messageId,
                           messageJson['actor'],
                           nickname, domain, debug, None)
     if debug:
@@ -374,7 +374,7 @@ def outboxLike(recentPostsCache: {},
 
 
 def outboxUndoLike(recentPostsCache: {},
-                   baseDir: str, httpPrefix: str,
+                   base_dir: str, httpPrefix: str,
                    nickname: str, domain: str, port: int,
                    messageJson: {}, debug: bool) -> None:
     """ When an undo like request is received by the outbox from c2s
@@ -396,13 +396,13 @@ def outboxUndoLike(recentPostsCache: {},
 
     messageId = removeIdEnding(messageJson['object']['object'])
     domain = removeDomainPort(domain)
-    postFilename = locatePost(baseDir, nickname, domain, messageId)
+    postFilename = locatePost(base_dir, nickname, domain, messageId)
     if not postFilename:
         if debug:
             print('DEBUG: c2s undo like post not found in inbox or outbox')
             print(messageId)
         return True
-    undoLikesCollectionEntry(recentPostsCache, baseDir, postFilename,
+    undoLikesCollectionEntry(recentPostsCache, base_dir, postFilename,
                              messageId, messageJson['actor'],
                              domain, debug, None)
     if debug:
@@ -410,7 +410,7 @@ def outboxUndoLike(recentPostsCache: {},
 
 
 def updateLikesCollection(recentPostsCache: {},
-                          baseDir: str, postFilename: str,
+                          base_dir: str, postFilename: str,
                           objectUrl: str, actor: str,
                           nickname: str, domain: str, debug: bool,
                           postJsonObject: {}) -> None:
@@ -424,7 +424,7 @@ def updateLikesCollection(recentPostsCache: {},
     # remove any cached version of this post so that the
     # like icon is changed
     removePostFromCache(postJsonObject, recentPostsCache)
-    cachedPostFilename = getCachedPostFilename(baseDir, nickname,
+    cachedPostFilename = getCachedPostFilename(base_dir, nickname,
                                                domain, postJsonObject)
     if cachedPostFilename:
         if os.path.isfile(cachedPostFilename):

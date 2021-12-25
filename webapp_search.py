@@ -43,27 +43,27 @@ from webapp_hashtagswarm import htmlHashTagSwarm
 
 
 def htmlSearchEmoji(cssCache: {}, translate: {},
-                    baseDir: str, httpPrefix: str,
+                    base_dir: str, httpPrefix: str,
                     searchStr: str) -> str:
     """Search results for emoji
     """
     # emoji.json is generated so that it can be customized and the changes
     # will be retained even if default_emoji.json is subsequently updated
-    if not os.path.isfile(baseDir + '/emoji/emoji.json'):
-        copyfile(baseDir + '/emoji/default_emoji.json',
-                 baseDir + '/emoji/emoji.json')
+    if not os.path.isfile(base_dir + '/emoji/emoji.json'):
+        copyfile(base_dir + '/emoji/default_emoji.json',
+                 base_dir + '/emoji/emoji.json')
 
     searchStr = searchStr.lower().replace(':', '').strip('\n').strip('\r')
-    cssFilename = baseDir + '/epicyon-profile.css'
-    if os.path.isfile(baseDir + '/epicyon.css'):
-        cssFilename = baseDir + '/epicyon.css'
+    cssFilename = base_dir + '/epicyon-profile.css'
+    if os.path.isfile(base_dir + '/epicyon.css'):
+        cssFilename = base_dir + '/epicyon.css'
 
-    emojiLookupFilename = baseDir + '/emoji/emoji.json'
-    customEmojiLookupFilename = baseDir + '/emojicustom/emoji.json'
+    emojiLookupFilename = base_dir + '/emoji/emoji.json'
+    customEmojiLookupFilename = base_dir + '/emojicustom/emoji.json'
 
     # create header
     instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
+        getConfigParam(base_dir, 'instanceTitle')
     emojiForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     emojiForm += '<center><h1>' + \
         translate['Emoji Search'] + \
@@ -100,8 +100,8 @@ def htmlSearchEmoji(cssCache: {}, translate: {},
         msgStr1 = translate['Copy the text then paste it into your post']
         msgStr2 = ':<img loading="lazy" class="searchEmoji" src="/emoji/'
         for emojiName, filename in results.items():
-            if not os.path.isfile(baseDir + '/emoji/' + filename):
-                if not os.path.isfile(baseDir + '/emojicustom/' + filename):
+            if not os.path.isfile(base_dir + '/emoji/' + filename):
+                if not os.path.isfile(base_dir + '/emojicustom/' + filename):
                     continue
             if not headingShown:
                 emojiForm += \
@@ -169,7 +169,7 @@ def _htmlSearchResultSharePage(actor: str, domainFull: str,
     return sharedItemsForm
 
 
-def _htmlSharesResult(baseDir: str,
+def _htmlSharesResult(base_dir: str,
                       sharesJson: {}, pageNumber: int, resultsPerPage: int,
                       searchStrLowerList: [], currPage: int, ctr: int,
                       callingDomain: str, httpPrefix: str, domainFull: str,
@@ -187,7 +187,7 @@ def _htmlSharesResult(baseDir: str,
             if currPage == pageNumber:
                 # show individual search result
                 sharedItemsForm += \
-                    htmlSearchResultShare(baseDir, sharedItem, translate,
+                    htmlSearchResultShare(base_dir, sharedItem, translate,
                                           httpPrefix, domainFull,
                                           contactNickname,
                                           name, actor, sharesFileType,
@@ -218,7 +218,7 @@ def _htmlSharesResult(baseDir: str,
 
 
 def htmlSearchSharedItems(cssCache: {}, translate: {},
-                          baseDir: str, searchStr: str,
+                          base_dir: str, searchStr: str,
                           pageNumber: int,
                           resultsPerPage: int,
                           httpPrefix: str,
@@ -234,12 +234,12 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
     searchStrLower = urllib.parse.unquote(searchStr)
     searchStrLower = searchStrLower.lower().strip('\n').strip('\r')
     searchStrLowerList = searchStrLower.split('+')
-    cssFilename = baseDir + '/epicyon-profile.css'
-    if os.path.isfile(baseDir + '/epicyon.css'):
-        cssFilename = baseDir + '/epicyon.css'
+    cssFilename = base_dir + '/epicyon-profile.css'
+    if os.path.isfile(base_dir + '/epicyon.css'):
+        cssFilename = base_dir + '/epicyon.css'
 
     instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
+        getConfigParam(base_dir, 'instanceTitle')
     sharedItemsForm = \
         htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     if sharesFileType == 'shares':
@@ -250,12 +250,12 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
         '<center><h1>' + \
         '<a href="' + actor + '/search">' + titleStr + '</a></h1></center>'
     resultsExist = False
-    for subdir, dirs, files in os.walk(baseDir + '/accounts'):
+    for subdir, dirs, files in os.walk(base_dir + '/accounts'):
         for handle in dirs:
             if not isAccountDir(handle):
                 continue
             contactNickname = handle.split('@')[0]
-            sharesFilename = baseDir + '/accounts/' + handle + \
+            sharesFilename = base_dir + '/accounts/' + handle + \
                 '/' + sharesFileType + '.json'
             if not os.path.isfile(sharesFilename):
                 continue
@@ -265,7 +265,7 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
                 continue
 
             (resultsExist, currPage, ctr,
-             resultStr) = _htmlSharesResult(baseDir, sharesJson, pageNumber,
+             resultStr) = _htmlSharesResult(base_dir, sharesJson, pageNumber,
                                             resultsPerPage,
                                             searchStrLowerList,
                                             currPage, ctr,
@@ -283,9 +283,9 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
 
     # search federated shared items
     if sharesFileType == 'shares':
-        catalogsDir = baseDir + '/cache/catalogs'
+        catalogsDir = base_dir + '/cache/catalogs'
     else:
-        catalogsDir = baseDir + '/cache/wantedItems'
+        catalogsDir = base_dir + '/cache/wantedItems'
     if currPage <= pageNumber and os.path.isdir(catalogsDir):
         for subdir, dirs, files in os.walk(catalogsDir):
             for f in files:
@@ -302,7 +302,7 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
                     continue
 
                 (resultsExist, currPage, ctr,
-                 resultStr) = _htmlSharesResult(baseDir, sharesJson,
+                 resultStr) = _htmlSharesResult(base_dir, sharesJson,
                                                 pageNumber,
                                                 resultsPerPage,
                                                 searchStrLowerList,
@@ -327,26 +327,26 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
 
 
 def htmlSearchEmojiTextEntry(cssCache: {}, translate: {},
-                             baseDir: str, path: str) -> str:
+                             base_dir: str, path: str) -> str:
     """Search for an emoji by name
     """
     # emoji.json is generated so that it can be customized and the changes
     # will be retained even if default_emoji.json is subsequently updated
-    if not os.path.isfile(baseDir + '/emoji/emoji.json'):
-        copyfile(baseDir + '/emoji/default_emoji.json',
-                 baseDir + '/emoji/emoji.json')
+    if not os.path.isfile(base_dir + '/emoji/emoji.json'):
+        copyfile(base_dir + '/emoji/default_emoji.json',
+                 base_dir + '/emoji/emoji.json')
 
     actor = path.replace('/search', '')
     domain, port = getDomainFromActor(actor)
 
-    setCustomBackground(baseDir, 'search-background', 'follow-background')
+    setCustomBackground(base_dir, 'search-background', 'follow-background')
 
-    cssFilename = baseDir + '/epicyon-follow.css'
-    if os.path.isfile(baseDir + '/follow.css'):
-        cssFilename = baseDir + '/follow.css'
+    cssFilename = base_dir + '/epicyon-follow.css'
+    if os.path.isfile(base_dir + '/follow.css'):
+        cssFilename = base_dir + '/follow.css'
 
     instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
+        getConfigParam(base_dir, 'instanceTitle')
     emojiStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     emojiStr += '<div class="follow">\n'
     emojiStr += '  <div class="followAvatar">\n'
@@ -371,7 +371,7 @@ def htmlSearchEmojiTextEntry(cssCache: {}, translate: {},
 
 
 def htmlSearch(cssCache: {}, translate: {},
-               baseDir: str, path: str, domain: str,
+               base_dir: str, path: str, domain: str,
                defaultTimeline: str, theme: str,
                textModeBanner: str, accessKeys: {}) -> str:
     """Search called from the timeline icon
@@ -379,18 +379,18 @@ def htmlSearch(cssCache: {}, translate: {},
     actor = path.replace('/search', '')
     searchNickname = getNicknameFromActor(actor)
 
-    setCustomBackground(baseDir, 'search-background', 'follow-background')
+    setCustomBackground(base_dir, 'search-background', 'follow-background')
 
-    cssFilename = baseDir + '/epicyon-search.css'
-    if os.path.isfile(baseDir + '/search.css'):
-        cssFilename = baseDir + '/search.css'
+    cssFilename = base_dir + '/epicyon-search.css'
+    if os.path.isfile(base_dir + '/search.css'):
+        cssFilename = base_dir + '/search.css'
 
-    instanceTitle = getConfigParam(baseDir, 'instanceTitle')
+    instanceTitle = getConfigParam(base_dir, 'instanceTitle')
     followStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
 
     # show a banner above the search box
     searchBannerFile, searchBannerFilename = \
-        getSearchBannerFile(baseDir, searchNickname, domain, theme)
+        getSearchBannerFile(base_dir, searchNickname, domain, theme)
 
     textModeBannerStr = htmlKeyboardNavigation(textModeBanner, {}, {})
     if textModeBannerStr is None:
@@ -427,7 +427,7 @@ def htmlSearch(cssCache: {}, translate: {},
     followStr += '  </form>\n'
 
     cachedHashtagSwarmFilename = \
-        acctDir(baseDir, searchNickname, domain) + '/.hashtagSwarm'
+        acctDir(base_dir, searchNickname, domain) + '/.hashtagSwarm'
     swarmStr = ''
     if os.path.isfile(cachedHashtagSwarmFilename):
         try:
@@ -437,7 +437,7 @@ def htmlSearch(cssCache: {}, translate: {},
             print('EX: htmlSearch unable to read cached hashtag swarm ' +
                   cachedHashtagSwarmFilename)
     if not swarmStr:
-        swarmStr = htmlHashTagSwarm(baseDir, actor, translate)
+        swarmStr = htmlHashTagSwarm(base_dir, actor, translate)
         if swarmStr:
             try:
                 with open(cachedHashtagSwarmFilename, 'w+') as fp:
@@ -455,7 +455,7 @@ def htmlSearch(cssCache: {}, translate: {},
 
 
 def htmlSkillsSearch(actor: str,
-                     cssCache: {}, translate: {}, baseDir: str,
+                     cssCache: {}, translate: {}, base_dir: str,
                      httpPrefix: str,
                      skillsearch: str, instanceOnly: bool,
                      postsPerPage: int) -> str:
@@ -468,7 +468,7 @@ def htmlSkillsSearch(actor: str,
 
     results = []
     # search instance accounts
-    for subdir, dirs, files in os.walk(baseDir + '/accounts/'):
+    for subdir, dirs, files in os.walk(base_dir + '/accounts/'):
         for f in files:
             if not f.endswith('.json'):
                 continue
@@ -503,7 +503,7 @@ def htmlSkillsSearch(actor: str,
         break
     if not instanceOnly:
         # search actor cache
-        for subdir, dirs, files in os.walk(baseDir + '/cache/actors/'):
+        for subdir, dirs, files in os.walk(base_dir + '/cache/actors/'):
             for f in files:
                 if not f.endswith('.json'):
                     continue
@@ -542,12 +542,12 @@ def htmlSkillsSearch(actor: str,
 
     results.sort(reverse=True)
 
-    cssFilename = baseDir + '/epicyon-profile.css'
-    if os.path.isfile(baseDir + '/epicyon.css'):
-        cssFilename = baseDir + '/epicyon.css'
+    cssFilename = base_dir + '/epicyon-profile.css'
+    if os.path.isfile(base_dir + '/epicyon.css'):
+        cssFilename = base_dir + '/epicyon.css'
 
     instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
+        getConfigParam(base_dir, 'instanceTitle')
     skillSearchForm = \
         htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     skillSearchForm += \
@@ -585,7 +585,7 @@ def htmlSkillsSearch(actor: str,
     return skillSearchForm
 
 
-def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
+def htmlHistorySearch(cssCache: {}, translate: {}, base_dir: str,
                       httpPrefix: str,
                       nickname: str, domain: str,
                       historysearch: str,
@@ -616,15 +616,15 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
     historysearch = historysearch.lower().strip('\n').strip('\r')
 
     boxFilenames = \
-        searchBoxPosts(baseDir, nickname, domain,
+        searchBoxPosts(base_dir, nickname, domain,
                        historysearch, postsPerPage, boxName)
 
-    cssFilename = baseDir + '/epicyon-profile.css'
-    if os.path.isfile(baseDir + '/epicyon.css'):
-        cssFilename = baseDir + '/epicyon.css'
+    cssFilename = base_dir + '/epicyon-profile.css'
+    if os.path.isfile(base_dir + '/epicyon.css'):
+        cssFilename = base_dir + '/epicyon.css'
 
     instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
+        getConfigParam(base_dir, 'instanceTitle')
     historySearchForm = \
         htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
 
@@ -645,7 +645,7 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
             '</h5></center>'
         return historySearchForm
 
-    separatorStr = htmlPostSeparator(baseDir, None)
+    separatorStr = htmlPostSeparator(base_dir, None)
 
     # ensure that the page number is in bounds
     if not pageNumber:
@@ -677,7 +677,7 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
                                  True, recentPostsCache,
                                  maxRecentPosts,
                                  translate, None,
-                                 baseDir, session, cachedWebfingers,
+                                 base_dir, session, cachedWebfingers,
                                  personCache,
                                  nickname, domain, port,
                                  postJsonObject,
@@ -706,7 +706,7 @@ def htmlHashtagSearch(cssCache: {},
                       nickname: str, domain: str, port: int,
                       recentPostsCache: {}, maxRecentPosts: int,
                       translate: {},
-                      baseDir: str, hashtag: str, pageNumber: int,
+                      base_dir: str, hashtag: str, pageNumber: int,
                       postsPerPage: int,
                       session, cachedWebfingers: {}, personCache: {},
                       httpPrefix: str, projectVersion: str,
@@ -725,20 +725,20 @@ def htmlHashtagSearch(cssCache: {},
     if hashtag.startswith('#'):
         hashtag = hashtag[1:]
     hashtag = urllib.parse.unquote(hashtag)
-    hashtagIndexFile = baseDir + '/tags/' + hashtag + '.txt'
+    hashtagIndexFile = base_dir + '/tags/' + hashtag + '.txt'
     if not os.path.isfile(hashtagIndexFile):
         if hashtag != hashtag.lower():
             hashtag = hashtag.lower()
-            hashtagIndexFile = baseDir + '/tags/' + hashtag + '.txt'
+            hashtagIndexFile = base_dir + '/tags/' + hashtag + '.txt'
     if not os.path.isfile(hashtagIndexFile):
         print('WARN: hashtag file not found ' + hashtagIndexFile)
         return None
 
-    separatorStr = htmlPostSeparator(baseDir, None)
+    separatorStr = htmlPostSeparator(base_dir, None)
 
     # check that the directory for the nickname exists
     if nickname:
-        accountDir = acctDir(baseDir, nickname, domain)
+        accountDir = acctDir(base_dir, nickname, domain)
         if not os.path.isdir(accountDir):
             nickname = None
 
@@ -747,9 +747,9 @@ def htmlHashtagSearch(cssCache: {},
         lines = f.readlines()
 
     # read the css
-    cssFilename = baseDir + '/epicyon-profile.css'
-    if os.path.isfile(baseDir + '/epicyon.css'):
-        cssFilename = baseDir + '/epicyon.css'
+    cssFilename = base_dir + '/epicyon-profile.css'
+    if os.path.isfile(base_dir + '/epicyon.css'):
+        cssFilename = base_dir + '/epicyon.css'
 
     # ensure that the page number is in bounds
     if not pageNumber:
@@ -766,7 +766,7 @@ def htmlHashtagSearch(cssCache: {},
 
     # add the page title
     instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
+        getConfigParam(base_dir, 'instanceTitle')
     hashtagSearchForm = \
         htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     if nickname:
@@ -785,8 +785,8 @@ def htmlHashtagSearch(cssCache: {},
         'icons/logorss.png" /></a></center>\n'
 
     # edit the category for this hashtag
-    if isEditor(baseDir, nickname):
-        category = getHashtagCategory(baseDir, hashtag)
+    if isEditor(base_dir, nickname):
+        category = getHashtagCategory(base_dir, hashtag)
         hashtagSearchForm += '<div class="hashtagCategoryContainer">\n'
         hashtagSearchForm += '  <form enctype="multipart/form-data" ' + \
             'method="POST" accept-charset="UTF-8" action="' + \
@@ -831,7 +831,7 @@ def htmlHashtagSearch(cssCache: {},
                 continue
             nickname = postFields[1]
             postId = postFields[2]
-        postFilename = locatePost(baseDir, nickname, domain, postId)
+        postFilename = locatePost(base_dir, nickname, domain, postId)
         if not postFilename:
             index += 1
             continue
@@ -859,7 +859,7 @@ def htmlHashtagSearch(cssCache: {},
                                  allowDownloads, recentPostsCache,
                                  maxRecentPosts,
                                  translate, None,
-                                 baseDir, session, cachedWebfingers,
+                                 base_dir, session, cachedWebfingers,
                                  personCache,
                                  nickname, domain, port,
                                  postJsonObject,
@@ -899,7 +899,7 @@ def htmlHashtagSearch(cssCache: {},
 def rssHashtagSearch(nickname: str, domain: str, port: int,
                      recentPostsCache: {}, maxRecentPosts: int,
                      translate: {},
-                     baseDir: str, hashtag: str,
+                     base_dir: str, hashtag: str,
                      postsPerPage: int,
                      session, cachedWebfingers: {}, personCache: {},
                      httpPrefix: str, projectVersion: str,
@@ -911,18 +911,18 @@ def rssHashtagSearch(nickname: str, domain: str, port: int,
     if hashtag.startswith('#'):
         hashtag = hashtag[1:]
     hashtag = urllib.parse.unquote(hashtag)
-    hashtagIndexFile = baseDir + '/tags/' + hashtag + '.txt'
+    hashtagIndexFile = base_dir + '/tags/' + hashtag + '.txt'
     if not os.path.isfile(hashtagIndexFile):
         if hashtag != hashtag.lower():
             hashtag = hashtag.lower()
-            hashtagIndexFile = baseDir + '/tags/' + hashtag + '.txt'
+            hashtagIndexFile = base_dir + '/tags/' + hashtag + '.txt'
     if not os.path.isfile(hashtagIndexFile):
         print('WARN: hashtag file not found ' + hashtagIndexFile)
         return None
 
     # check that the directory for the nickname exists
     if nickname:
-        accountDir = acctDir(baseDir, nickname, domain)
+        accountDir = acctDir(base_dir, nickname, domain)
         if not os.path.isdir(accountDir):
             nickname = None
 
@@ -956,7 +956,7 @@ def rssHashtagSearch(nickname: str, domain: str, port: int,
                 continue
             nickname = postFields[1]
             postId = postFields[2]
-        postFilename = locatePost(baseDir, nickname, domain, postId)
+        postFilename = locatePost(base_dir, nickname, domain, postId)
         if not postFilename:
             index += 1
             if index >= maxFeedLength:

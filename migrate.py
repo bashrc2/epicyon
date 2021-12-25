@@ -20,7 +20,7 @@ from follow import unfollowAccount
 from person import getActorJson
 
 
-def _moveFollowingHandlesForAccount(baseDir: str, nickname: str, domain: str,
+def _moveFollowingHandlesForAccount(base_dir: str, nickname: str, domain: str,
                                     session,
                                     httpPrefix: str, cachedWebfingers: {},
                                     debug: bool,
@@ -28,7 +28,7 @@ def _moveFollowingHandlesForAccount(baseDir: str, nickname: str, domain: str,
     """Goes through all follows for an account and updates any that have moved
     """
     ctr = 0
-    followingFilename = acctDir(baseDir, nickname, domain) + '/following.txt'
+    followingFilename = acctDir(base_dir, nickname, domain) + '/following.txt'
     if not os.path.isfile(followingFilename):
         return ctr
     with open(followingFilename, 'r') as f:
@@ -36,14 +36,14 @@ def _moveFollowingHandlesForAccount(baseDir: str, nickname: str, domain: str,
         for followHandle in followingHandles:
             followHandle = followHandle.strip("\n").strip("\r")
             ctr += \
-                _updateMovedHandle(baseDir, nickname, domain,
+                _updateMovedHandle(base_dir, nickname, domain,
                                    followHandle, session,
                                    httpPrefix, cachedWebfingers,
                                    debug, signingPrivateKeyPem)
     return ctr
 
 
-def _updateMovedHandle(baseDir: str, nickname: str, domain: str,
+def _updateMovedHandle(base_dir: str, nickname: str, domain: str,
                        handle: str, session,
                        httpPrefix: str, cachedWebfingers: {},
                        debug: bool, signingPrivateKeyPem: str) -> int:
@@ -106,17 +106,17 @@ def _updateMovedHandle(baseDir: str, nickname: str, domain: str,
     if movedToPort:
         if movedToPort != 80 and movedToPort != 443:
             movedToDomainFull = movedToDomain + ':' + str(movedToPort)
-    groupAccount = hasGroupType(baseDir, movedToUrl, None)
-    if isBlocked(baseDir, nickname, domain,
+    groupAccount = hasGroupType(base_dir, movedToUrl, None)
+    if isBlocked(base_dir, nickname, domain,
                  movedToNickname, movedToDomain):
         # someone that you follow has moved to a blocked domain
         # so just unfollow them
-        unfollowAccount(baseDir, nickname, domain,
+        unfollowAccount(base_dir, nickname, domain,
                         movedToNickname, movedToDomainFull,
                         debug, groupAccount, 'following.txt')
         return ctr
 
-    followingFilename = acctDir(baseDir, nickname, domain) + '/following.txt'
+    followingFilename = acctDir(base_dir, nickname, domain) + '/following.txt'
     if os.path.isfile(followingFilename):
         with open(followingFilename, 'r') as f:
             followingHandles = f.readlines()
@@ -125,7 +125,7 @@ def _updateMovedHandle(baseDir: str, nickname: str, domain: str,
             handleLower = handle.lower()
 
             refollowFilename = \
-                acctDir(baseDir, nickname, domain) + '/refollow.txt'
+                acctDir(base_dir, nickname, domain) + '/refollow.txt'
 
             # unfollow the old handle
             with open(followingFilename, 'w+') as f:
@@ -136,7 +136,7 @@ def _updateMovedHandle(baseDir: str, nickname: str, domain: str,
                     else:
                         handleNickname = handle.split('@')[0]
                         handleDomain = handle.split('@')[1]
-                        unfollowAccount(baseDir, nickname, domain,
+                        unfollowAccount(base_dir, nickname, domain,
                                         handleNickname,
                                         handleDomain,
                                         debug, groupAccount, 'following.txt')
@@ -153,7 +153,7 @@ def _updateMovedHandle(baseDir: str, nickname: str, domain: str,
                                 f.write(movedToHandle + '\n')
 
     followersFilename = \
-        acctDir(baseDir, nickname, domain) + '/followers.txt'
+        acctDir(base_dir, nickname, domain) + '/followers.txt'
     if os.path.isfile(followersFilename):
         with open(followersFilename, 'r') as f:
             followerHandles = f.readlines()
@@ -173,7 +173,7 @@ def _updateMovedHandle(baseDir: str, nickname: str, domain: str,
     return ctr
 
 
-def migrateAccounts(baseDir: str, session,
+def migrateAccounts(base_dir: str, session,
                     httpPrefix: str, cachedWebfingers: {},
                     debug: bool, signingPrivateKeyPem: str) -> int:
     """If followed accounts change then this modifies the
@@ -182,14 +182,14 @@ def migrateAccounts(baseDir: str, session,
     """
     # update followers and following lists for each account
     ctr = 0
-    for subdir, dirs, files in os.walk(baseDir + '/accounts'):
+    for subdir, dirs, files in os.walk(base_dir + '/accounts'):
         for handle in dirs:
             if not isAccountDir(handle):
                 continue
             nickname = handle.split('@')[0]
             domain = handle.split('@')[1]
             ctr += \
-                _moveFollowingHandlesForAccount(baseDir, nickname, domain,
+                _moveFollowingHandlesForAccount(base_dir, nickname, domain,
                                                 session, httpPrefix,
                                                 cachedWebfingers, debug,
                                                 signingPrivateKeyPem)

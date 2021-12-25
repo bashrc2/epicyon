@@ -13,7 +13,7 @@ from utils import acctDir
 from utils import removeIdEnding
 
 
-def _getConversationFilename(baseDir: str, nickname: str, domain: str,
+def _getConversationFilename(base_dir: str, nickname: str, domain: str,
                              postJsonObject: {}) -> str:
     """Returns the conversation filename
     """
@@ -23,7 +23,7 @@ def _getConversationFilename(baseDir: str, nickname: str, domain: str,
         return None
     if not postJsonObject['object'].get('id'):
         return None
-    conversationDir = acctDir(baseDir, nickname, domain) + '/conversation'
+    conversationDir = acctDir(base_dir, nickname, domain) + '/conversation'
     if not os.path.isdir(conversationDir):
         os.mkdir(conversationDir)
     conversationId = postJsonObject['object']['conversation']
@@ -31,12 +31,12 @@ def _getConversationFilename(baseDir: str, nickname: str, domain: str,
     return conversationDir + '/' + conversationId
 
 
-def updateConversation(baseDir: str, nickname: str, domain: str,
+def updateConversation(base_dir: str, nickname: str, domain: str,
                        postJsonObject: {}) -> bool:
     """Ads a post to a conversation index in the /conversation subdirectory
     """
     conversationFilename = \
-        _getConversationFilename(baseDir, nickname, domain, postJsonObject)
+        _getConversationFilename(base_dir, nickname, domain, postJsonObject)
     if not conversationFilename:
         return False
     postId = removeIdEnding(postJsonObject['object']['id'])
@@ -59,11 +59,11 @@ def updateConversation(baseDir: str, nickname: str, domain: str,
     return False
 
 
-def muteConversation(baseDir: str, nickname: str, domain: str,
+def muteConversation(base_dir: str, nickname: str, domain: str,
                      conversationId: str) -> None:
     """Mutes the given conversation
     """
-    conversationDir = acctDir(baseDir, nickname, domain) + '/conversation'
+    conversationDir = acctDir(base_dir, nickname, domain) + '/conversation'
     conversationFilename = \
         conversationDir + '/' + conversationId.replace('/', '#')
     if not os.path.isfile(conversationFilename):
@@ -77,11 +77,11 @@ def muteConversation(baseDir: str, nickname: str, domain: str,
         print('EX: unable to write mute ' + conversationFilename)
 
 
-def unmuteConversation(baseDir: str, nickname: str, domain: str,
+def unmuteConversation(base_dir: str, nickname: str, domain: str,
                        conversationId: str) -> None:
     """Unmutes the given conversation
     """
-    conversationDir = acctDir(baseDir, nickname, domain) + '/conversation'
+    conversationDir = acctDir(base_dir, nickname, domain) + '/conversation'
     conversationFilename = \
         conversationDir + '/' + conversationId.replace('/', '#')
     if not os.path.isfile(conversationFilename):

@@ -51,39 +51,39 @@ def _logTimelineTiming(enableTimingLog: bool, timelineStartTime,
               boxName + ' ' + debugId + ' = ' + str(timeDiff))
 
 
-def _getHelpForTimeline(baseDir: str, boxName: str) -> str:
+def _getHelpForTimeline(base_dir: str, boxName: str) -> str:
     """Shows help text for the given timeline
     """
     # get the filename for help for this timeline
-    helpFilename = baseDir + '/accounts/help_' + boxName + '.md'
+    helpFilename = base_dir + '/accounts/help_' + boxName + '.md'
     if not os.path.isfile(helpFilename):
         language = \
-            getConfigParam(baseDir, 'language')
+            getConfigParam(base_dir, 'language')
         if not language:
             language = 'en'
         themeName = \
-            getConfigParam(baseDir, 'theme')
+            getConfigParam(base_dir, 'theme')
         defaultFilename = None
         if themeName:
             defaultFilename = \
-                baseDir + '/theme/' + themeName + '/welcome/' + \
+                base_dir + '/theme/' + themeName + '/welcome/' + \
                 'help_' + boxName + '_' + language + '.md'
             if not os.path.isfile(defaultFilename):
                 defaultFilename = None
         if not defaultFilename:
             defaultFilename = \
-                baseDir + '/defaultwelcome/' + \
+                base_dir + '/defaultwelcome/' + \
                 'help_' + boxName + '_' + language + '.md'
         if not os.path.isfile(defaultFilename):
             defaultFilename = \
-                baseDir + '/defaultwelcome/help_' + boxName + '_en.md'
+                base_dir + '/defaultwelcome/help_' + boxName + '_en.md'
         if os.path.isfile(defaultFilename):
             copyfile(defaultFilename, helpFilename)
 
     # show help text
     if os.path.isfile(helpFilename):
         instanceTitle = \
-            getConfigParam(baseDir, 'instanceTitle')
+            getConfigParam(base_dir, 'instanceTitle')
         if not instanceTitle:
             instanceTitle = 'Epicyon'
         with open(helpFilename, 'r') as helpFile:
@@ -356,7 +356,7 @@ def _htmlTimelineKeyboard(moderator: bool, textModeBanner: str, usersPath: str,
                                   None, usersPath, translate, followApprovals)
 
 
-def _htmlTimelineEnd(baseDir: str, nickname: str, domainFull: str,
+def _htmlTimelineEnd(base_dir: str, nickname: str, domainFull: str,
                      httpPrefix: str, translate: {},
                      moderator: bool, editor: bool,
                      newswire: {}, positiveVoting: bool,
@@ -375,7 +375,7 @@ def _htmlTimelineEnd(baseDir: str, nickname: str, domainFull: str,
     tlStr += '  </td>\n'
 
     # right column
-    rightColumnStr = getRightColumnContent(baseDir, nickname, domainFull,
+    rightColumnStr = getRightColumnContent(base_dir, nickname, domainFull,
                                            httpPrefix, translate,
                                            moderator, editor,
                                            newswire, positiveVoting,
@@ -420,7 +420,7 @@ def _pageNumberButtons(usersPath: str, boxName: str, pageNumber: int) -> str:
 def htmlTimeline(cssCache: {}, defaultTimeline: str,
                  recentPostsCache: {}, maxRecentPosts: int,
                  translate: {}, pageNumber: int,
-                 itemsPerPage: int, session, baseDir: str,
+                 itemsPerPage: int, session, base_dir: str,
                  cachedWebfingers: {}, personCache: {},
                  nickname: str, domain: str, port: int, timelineJson: {},
                  boxName: str, allowDeletion: bool,
@@ -455,7 +455,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
 
     timelineStartTime = time.time()
 
-    accountDir = acctDir(baseDir, nickname, domain)
+    accountDir = acctDir(base_dir, nickname, domain)
 
     # should the calendar icon be highlighted?
     newCalendarEvent = False
@@ -526,26 +526,26 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
 
     separatorStr = ''
     if boxName != 'tlmedia':
-        separatorStr = htmlPostSeparator(baseDir, None)
+        separatorStr = htmlPostSeparator(base_dir, None)
 
     # the css filename
-    cssFilename = baseDir + '/epicyon-profile.css'
-    if os.path.isfile(baseDir + '/epicyon.css'):
-        cssFilename = baseDir + '/epicyon.css'
+    cssFilename = base_dir + '/epicyon-profile.css'
+    if os.path.isfile(base_dir + '/epicyon.css'):
+        cssFilename = base_dir + '/epicyon.css'
 
     # filename of the banner shown at the top
     bannerFile, bannerFilename = \
-        getBannerFile(baseDir, nickname, domain, theme)
+        getBannerFile(base_dir, nickname, domain, theme)
 
     _logTimelineTiming(enableTimingLog, timelineStartTime, boxName, '1')
 
     # is the user a moderator?
     if not moderator:
-        moderator = isModerator(baseDir, nickname)
+        moderator = isModerator(base_dir, nickname)
 
     # is the user a site editor?
     if not editor:
-        editor = isEditor(baseDir, nickname)
+        editor = isEditor(base_dir, nickname)
 
     _logTimelineTiming(enableTimingLog, timelineStartTime, boxName, '2')
 
@@ -619,7 +619,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     # show an icon for new follow approvals
     followApprovals = ''
     followRequestsFilename = \
-        acctDir(baseDir, nickname, domain) + '/followrequests.txt'
+        acctDir(base_dir, nickname, domain) + '/followrequests.txt'
     if os.path.isfile(followRequestsFilename):
         with open(followRequestsFilename, 'r') as f:
             for line in f:
@@ -672,7 +672,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             '</span></button></a>'
 
     instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
+        getConfigParam(base_dir, 'instanceTitle')
     tlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
 
     _logTimelineTiming(enableTimingLog, timelineStartTime, boxName, '4')
@@ -722,7 +722,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                   sharesButtonStr, wantedButtonStr,
                                   bookmarksButtonStr,
                                   eventsButtonStr, moderationButtonStr,
-                                  newPostButtonStr, baseDir, nickname,
+                                  newPostButtonStr, base_dir, nickname,
                                   domain, timelineStartTime,
                                   newCalendarEvent, calendarPath,
                                   calendarImage, followApprovals,
@@ -743,7 +743,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
 
     # left column
     leftColumnStr = \
-        getLeftColumnContent(baseDir, nickname, domainFull,
+        getLeftColumnContent(base_dir, nickname, domainFull,
                              httpPrefix, translate,
                              editor, artist, False, None, rssIconAtTop,
                              True, False, theme, accessKeys,
@@ -765,7 +765,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                   sharesButtonStr, wantedButtonStr,
                                   bookmarksButtonStr,
                                   eventsButtonStr, moderationButtonStr,
-                                  newPostButtonStr, baseDir, nickname,
+                                  newPostButtonStr, base_dir, nickname,
                                   domain, timelineStartTime,
                                   newCalendarEvent, calendarPath,
                                   calendarImage, followApprovals,
@@ -784,10 +784,10 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         maxSharesPerAccount = itemsPerPage
         return (tlStr +
                 _htmlSharesTimeline(translate, pageNumber, itemsPerPage,
-                                    baseDir, actor, nickname, domain, port,
+                                    base_dir, actor, nickname, domain, port,
                                     maxSharesPerAccount, httpPrefix,
                                     sharedItemsFederatedDomains, 'shares') +
-                _htmlTimelineEnd(baseDir, nickname, domainFull,
+                _htmlTimelineEnd(base_dir, nickname, domainFull,
                                  httpPrefix, translate,
                                  moderator, editor,
                                  newswire, positiveVoting,
@@ -802,10 +802,10 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         maxSharesPerAccount = itemsPerPage
         return (tlStr +
                 _htmlSharesTimeline(translate, pageNumber, itemsPerPage,
-                                    baseDir, actor, nickname, domain, port,
+                                    base_dir, actor, nickname, domain, port,
                                     maxSharesPerAccount, httpPrefix,
                                     sharedItemsFederatedDomains, 'wanted') +
-                _htmlTimelineEnd(baseDir, nickname, domainFull,
+                _htmlTimelineEnd(base_dir, nickname, domainFull,
                                  httpPrefix, translate,
                                  moderator, editor,
                                  newswire, positiveVoting,
@@ -866,7 +866,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             if item['type'] == 'Create' or \
                item['type'] == 'Announce':
                 # is the actor who sent this post snoozed?
-                if isPersonSnoozed(baseDir, nickname, domain, item['actor']):
+                if isPersonSnoozed(base_dir, nickname, domain, item['actor']):
                     continue
                 if isSelfAnnounce(item):
                     continue
@@ -897,7 +897,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                              False, recentPostsCache,
                                              maxRecentPosts,
                                              translate, pageNumber,
-                                             baseDir, session,
+                                             base_dir, session,
                                              cachedWebfingers,
                                              personCache,
                                              nickname, domain, port,
@@ -950,10 +950,10 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         tlStr += _pageNumberButtons(usersPath, boxName, pageNumber)
         tlStr += textModeSeparator
     elif itemCtr == 0:
-        tlStr += _getHelpForTimeline(baseDir, boxName)
+        tlStr += _getHelpForTimeline(base_dir, boxName)
 
     tlStr += \
-        _htmlTimelineEnd(baseDir, nickname, domainFull,
+        _htmlTimelineEnd(base_dir, nickname, domainFull,
                          httpPrefix, translate,
                          moderator, editor,
                          newswire, positiveVoting,
@@ -1040,7 +1040,7 @@ def htmlIndividualShare(domain: str, shareId: str,
 
 
 def _htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
-                        baseDir: str, actor: str,
+                        base_dir: str, actor: str,
                         nickname: str, domain: str, port: int,
                         maxSharesPerAccount: int, httpPrefix: str,
                         sharedItemsFederatedDomains: [],
@@ -1049,11 +1049,11 @@ def _htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
     """
     sharesJson, lastPage = \
         sharesTimelineJson(actor, pageNumber, itemsPerPage,
-                           baseDir, domain, nickname, maxSharesPerAccount,
+                           base_dir, domain, nickname, maxSharesPerAccount,
                            sharedItemsFederatedDomains, sharesFileType)
     domainFull = getFullDomain(domain, port)
     actor = localActorUrl(httpPrefix, nickname, domainFull)
-    adminNickname = getConfigParam(baseDir, 'admin')
+    adminNickname = getConfigParam(base_dir, 'admin')
     adminActor = ''
     if adminNickname:
         adminActor = \
@@ -1072,14 +1072,14 @@ def _htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
             '" alt="' + translate['Page up'] + '"></a>\n' + \
             '  </center>\n'
 
-    separatorStr = htmlPostSeparator(baseDir, None)
+    separatorStr = htmlPostSeparator(base_dir, None)
     ctr = 0
 
     isAdminAccount = False
     if adminActor and actor == adminActor:
         isAdminAccount = True
     isModeratorAccount = False
-    if isModerator(baseDir, nickname):
+    if isModerator(base_dir, nickname):
         isModeratorAccount = True
 
     for published, sharedItem in sharesJson.items():
@@ -1100,7 +1100,7 @@ def _htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
         ctr += 1
 
     if ctr == 0:
-        timelineStr += _getHelpForTimeline(baseDir, 'tl' + sharesFileType)
+        timelineStr += _getHelpForTimeline(base_dir, 'tl' + sharesFileType)
 
     if not lastPage:
         timelineStr += \
@@ -1120,7 +1120,7 @@ def _htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
 def htmlShares(cssCache: {}, defaultTimeline: str,
                recentPostsCache: {}, maxRecentPosts: int,
                translate: {}, pageNumber: int, itemsPerPage: int,
-               session, baseDir: str,
+               session, base_dir: str,
                cachedWebfingers: {}, personCache: {},
                nickname: str, domain: str, port: int,
                allowDeletion: bool,
@@ -1146,13 +1146,13 @@ def htmlShares(cssCache: {}, defaultTimeline: str,
     """Show the shares timeline as html
     """
     manuallyApproveFollowers = \
-        followerApprovalActive(baseDir, nickname, domain)
-    artist = isArtist(baseDir, nickname)
+        followerApprovalActive(base_dir, nickname, domain)
+    artist = isArtist(base_dir, nickname)
 
     return htmlTimeline(cssCache, defaultTimeline,
                         recentPostsCache, maxRecentPosts,
                         translate, pageNumber,
-                        itemsPerPage, session, baseDir,
+                        itemsPerPage, session, base_dir,
                         cachedWebfingers, personCache,
                         nickname, domain, port, None,
                         'tlshares', allowDeletion,
@@ -1175,7 +1175,7 @@ def htmlShares(cssCache: {}, defaultTimeline: str,
 def htmlWanted(cssCache: {}, defaultTimeline: str,
                recentPostsCache: {}, maxRecentPosts: int,
                translate: {}, pageNumber: int, itemsPerPage: int,
-               session, baseDir: str,
+               session, base_dir: str,
                cachedWebfingers: {}, personCache: {},
                nickname: str, domain: str, port: int,
                allowDeletion: bool,
@@ -1201,13 +1201,13 @@ def htmlWanted(cssCache: {}, defaultTimeline: str,
     """Show the wanted timeline as html
     """
     manuallyApproveFollowers = \
-        followerApprovalActive(baseDir, nickname, domain)
-    artist = isArtist(baseDir, nickname)
+        followerApprovalActive(base_dir, nickname, domain)
+    artist = isArtist(base_dir, nickname)
 
     return htmlTimeline(cssCache, defaultTimeline,
                         recentPostsCache, maxRecentPosts,
                         translate, pageNumber,
-                        itemsPerPage, session, baseDir,
+                        itemsPerPage, session, base_dir,
                         cachedWebfingers, personCache,
                         nickname, domain, port, None,
                         'tlwanted', allowDeletion,
@@ -1230,7 +1230,7 @@ def htmlWanted(cssCache: {}, defaultTimeline: str,
 def htmlInbox(cssCache: {}, defaultTimeline: str,
               recentPostsCache: {}, maxRecentPosts: int,
               translate: {}, pageNumber: int, itemsPerPage: int,
-              session, baseDir: str,
+              session, base_dir: str,
               cachedWebfingers: {}, personCache: {},
               nickname: str, domain: str, port: int, inboxJson: {},
               allowDeletion: bool,
@@ -1257,13 +1257,13 @@ def htmlInbox(cssCache: {}, defaultTimeline: str,
     """Show the inbox as html
     """
     manuallyApproveFollowers = \
-        followerApprovalActive(baseDir, nickname, domain)
-    artist = isArtist(baseDir, nickname)
+        followerApprovalActive(base_dir, nickname, domain)
+    artist = isArtist(base_dir, nickname)
 
     return htmlTimeline(cssCache, defaultTimeline,
                         recentPostsCache, maxRecentPosts,
                         translate, pageNumber,
-                        itemsPerPage, session, baseDir,
+                        itemsPerPage, session, base_dir,
                         cachedWebfingers, personCache,
                         nickname, domain, port, inboxJson,
                         'inbox', allowDeletion,
@@ -1286,7 +1286,7 @@ def htmlInbox(cssCache: {}, defaultTimeline: str,
 def htmlBookmarks(cssCache: {}, defaultTimeline: str,
                   recentPostsCache: {}, maxRecentPosts: int,
                   translate: {}, pageNumber: int, itemsPerPage: int,
-                  session, baseDir: str,
+                  session, base_dir: str,
                   cachedWebfingers: {}, personCache: {},
                   nickname: str, domain: str, port: int, bookmarksJson: {},
                   allowDeletion: bool,
@@ -1313,13 +1313,13 @@ def htmlBookmarks(cssCache: {}, defaultTimeline: str,
     """Show the bookmarks as html
     """
     manuallyApproveFollowers = \
-        followerApprovalActive(baseDir, nickname, domain)
-    artist = isArtist(baseDir, nickname)
+        followerApprovalActive(base_dir, nickname, domain)
+    artist = isArtist(base_dir, nickname)
 
     return htmlTimeline(cssCache, defaultTimeline,
                         recentPostsCache, maxRecentPosts,
                         translate, pageNumber,
-                        itemsPerPage, session, baseDir,
+                        itemsPerPage, session, base_dir,
                         cachedWebfingers, personCache,
                         nickname, domain, port, bookmarksJson,
                         'tlbookmarks', allowDeletion,
@@ -1342,7 +1342,7 @@ def htmlBookmarks(cssCache: {}, defaultTimeline: str,
 def htmlInboxDMs(cssCache: {}, defaultTimeline: str,
                  recentPostsCache: {}, maxRecentPosts: int,
                  translate: {}, pageNumber: int, itemsPerPage: int,
-                 session, baseDir: str,
+                 session, base_dir: str,
                  cachedWebfingers: {}, personCache: {},
                  nickname: str, domain: str, port: int, inboxJson: {},
                  allowDeletion: bool,
@@ -1368,11 +1368,11 @@ def htmlInboxDMs(cssCache: {}, defaultTimeline: str,
                  CWlists: {}, listsEnabled: str) -> str:
     """Show the DM timeline as html
     """
-    artist = isArtist(baseDir, nickname)
+    artist = isArtist(base_dir, nickname)
     return htmlTimeline(cssCache, defaultTimeline,
                         recentPostsCache, maxRecentPosts,
                         translate, pageNumber,
-                        itemsPerPage, session, baseDir,
+                        itemsPerPage, session, base_dir,
                         cachedWebfingers, personCache,
                         nickname, domain, port, inboxJson, 'dm', allowDeletion,
                         httpPrefix, projectVersion, False, minimal,
@@ -1393,7 +1393,7 @@ def htmlInboxDMs(cssCache: {}, defaultTimeline: str,
 def htmlInboxReplies(cssCache: {}, defaultTimeline: str,
                      recentPostsCache: {}, maxRecentPosts: int,
                      translate: {}, pageNumber: int, itemsPerPage: int,
-                     session, baseDir: str,
+                     session, base_dir: str,
                      cachedWebfingers: {}, personCache: {},
                      nickname: str, domain: str, port: int, inboxJson: {},
                      allowDeletion: bool,
@@ -1419,11 +1419,11 @@ def htmlInboxReplies(cssCache: {}, defaultTimeline: str,
                      CWlists: {}, listsEnabled: str) -> str:
     """Show the replies timeline as html
     """
-    artist = isArtist(baseDir, nickname)
+    artist = isArtist(base_dir, nickname)
     return htmlTimeline(cssCache, defaultTimeline,
                         recentPostsCache, maxRecentPosts,
                         translate, pageNumber,
-                        itemsPerPage, session, baseDir,
+                        itemsPerPage, session, base_dir,
                         cachedWebfingers, personCache,
                         nickname, domain, port, inboxJson, 'tlreplies',
                         allowDeletion, httpPrefix, projectVersion, False,
@@ -1445,7 +1445,7 @@ def htmlInboxReplies(cssCache: {}, defaultTimeline: str,
 def htmlInboxMedia(cssCache: {}, defaultTimeline: str,
                    recentPostsCache: {}, maxRecentPosts: int,
                    translate: {}, pageNumber: int, itemsPerPage: int,
-                   session, baseDir: str,
+                   session, base_dir: str,
                    cachedWebfingers: {}, personCache: {},
                    nickname: str, domain: str, port: int, inboxJson: {},
                    allowDeletion: bool,
@@ -1471,11 +1471,11 @@ def htmlInboxMedia(cssCache: {}, defaultTimeline: str,
                    CWlists: {}, listsEnabled: str) -> str:
     """Show the media timeline as html
     """
-    artist = isArtist(baseDir, nickname)
+    artist = isArtist(base_dir, nickname)
     return htmlTimeline(cssCache, defaultTimeline,
                         recentPostsCache, maxRecentPosts,
                         translate, pageNumber,
-                        itemsPerPage, session, baseDir,
+                        itemsPerPage, session, base_dir,
                         cachedWebfingers, personCache,
                         nickname, domain, port, inboxJson, 'tlmedia',
                         allowDeletion, httpPrefix, projectVersion, False,
@@ -1497,7 +1497,7 @@ def htmlInboxMedia(cssCache: {}, defaultTimeline: str,
 def htmlInboxBlogs(cssCache: {}, defaultTimeline: str,
                    recentPostsCache: {}, maxRecentPosts: int,
                    translate: {}, pageNumber: int, itemsPerPage: int,
-                   session, baseDir: str,
+                   session, base_dir: str,
                    cachedWebfingers: {}, personCache: {},
                    nickname: str, domain: str, port: int, inboxJson: {},
                    allowDeletion: bool,
@@ -1523,11 +1523,11 @@ def htmlInboxBlogs(cssCache: {}, defaultTimeline: str,
                    CWlists: {}, listsEnabled: str) -> str:
     """Show the blogs timeline as html
     """
-    artist = isArtist(baseDir, nickname)
+    artist = isArtist(base_dir, nickname)
     return htmlTimeline(cssCache, defaultTimeline,
                         recentPostsCache, maxRecentPosts,
                         translate, pageNumber,
-                        itemsPerPage, session, baseDir,
+                        itemsPerPage, session, base_dir,
                         cachedWebfingers, personCache,
                         nickname, domain, port, inboxJson, 'tlblogs',
                         allowDeletion, httpPrefix, projectVersion, False,
@@ -1549,7 +1549,7 @@ def htmlInboxBlogs(cssCache: {}, defaultTimeline: str,
 def htmlInboxFeatures(cssCache: {}, defaultTimeline: str,
                       recentPostsCache: {}, maxRecentPosts: int,
                       translate: {}, pageNumber: int, itemsPerPage: int,
-                      session, baseDir: str,
+                      session, base_dir: str,
                       cachedWebfingers: {}, personCache: {},
                       nickname: str, domain: str, port: int, inboxJson: {},
                       allowDeletion: bool,
@@ -1579,7 +1579,7 @@ def htmlInboxFeatures(cssCache: {}, defaultTimeline: str,
     return htmlTimeline(cssCache, defaultTimeline,
                         recentPostsCache, maxRecentPosts,
                         translate, pageNumber,
-                        itemsPerPage, session, baseDir,
+                        itemsPerPage, session, base_dir,
                         cachedWebfingers, personCache,
                         nickname, domain, port, inboxJson, 'tlfeatures',
                         allowDeletion, httpPrefix, projectVersion, False,
@@ -1601,7 +1601,7 @@ def htmlInboxFeatures(cssCache: {}, defaultTimeline: str,
 def htmlInboxNews(cssCache: {}, defaultTimeline: str,
                   recentPostsCache: {}, maxRecentPosts: int,
                   translate: {}, pageNumber: int, itemsPerPage: int,
-                  session, baseDir: str,
+                  session, base_dir: str,
                   cachedWebfingers: {}, personCache: {},
                   nickname: str, domain: str, port: int, inboxJson: {},
                   allowDeletion: bool,
@@ -1630,7 +1630,7 @@ def htmlInboxNews(cssCache: {}, defaultTimeline: str,
     return htmlTimeline(cssCache, defaultTimeline,
                         recentPostsCache, maxRecentPosts,
                         translate, pageNumber,
-                        itemsPerPage, session, baseDir,
+                        itemsPerPage, session, base_dir,
                         cachedWebfingers, personCache,
                         nickname, domain, port, inboxJson, 'tlnews',
                         allowDeletion, httpPrefix, projectVersion, False,
@@ -1652,7 +1652,7 @@ def htmlInboxNews(cssCache: {}, defaultTimeline: str,
 def htmlOutbox(cssCache: {}, defaultTimeline: str,
                recentPostsCache: {}, maxRecentPosts: int,
                translate: {}, pageNumber: int, itemsPerPage: int,
-               session, baseDir: str,
+               session, base_dir: str,
                cachedWebfingers: {}, personCache: {},
                nickname: str, domain: str, port: int, outboxJson: {},
                allowDeletion: bool,
@@ -1679,12 +1679,12 @@ def htmlOutbox(cssCache: {}, defaultTimeline: str,
     """Show the Outbox as html
     """
     manuallyApproveFollowers = \
-        followerApprovalActive(baseDir, nickname, domain)
-    artist = isArtist(baseDir, nickname)
+        followerApprovalActive(base_dir, nickname, domain)
+    artist = isArtist(base_dir, nickname)
     return htmlTimeline(cssCache, defaultTimeline,
                         recentPostsCache, maxRecentPosts,
                         translate, pageNumber,
-                        itemsPerPage, session, baseDir,
+                        itemsPerPage, session, base_dir,
                         cachedWebfingers, personCache,
                         nickname, domain, port, outboxJson, 'outbox',
                         allowDeletion, httpPrefix, projectVersion,

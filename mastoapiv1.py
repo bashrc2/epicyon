@@ -50,12 +50,12 @@ def getNicknameFromMastoApiV1Id(mastoId: int) -> str:
     return nickname[::-1]
 
 
-def _getMastoApiV1Account(baseDir: str, nickname: str, domain: str) -> {}:
+def _getMastoApiV1Account(base_dir: str, nickname: str, domain: str) -> {}:
     """See https://github.com/McKael/mastodon-documentation/
     blob/master/Using-the-API/API.md#account
     Authorization has already been performed
     """
-    accountFilename = acctDir(baseDir, nickname, domain) + '.json'
+    accountFilename = acctDir(base_dir, nickname, domain) + '.json'
     if not os.path.isfile(accountFilename):
         return {}
     accountJson = loadJson(accountFilename)
@@ -85,7 +85,7 @@ def mastoApiV1Response(path: str, callingDomain: str,
                        uaStr: str,
                        authorized: bool,
                        httpPrefix: str,
-                       baseDir: str, nickname: str, domain: str,
+                       base_dir: str, nickname: str, domain: str,
                        domainFull: str,
                        onionDomain: str, i2pDomain: str,
                        translate: {},
@@ -107,7 +107,7 @@ def mastoApiV1Response(path: str, callingDomain: str,
     # parts of the api needing authorization
     if authorized and nickname:
         if path == '/api/v1/accounts/verify_credentials':
-            sendJson = _getMastoApiV1Account(baseDir, nickname, domain)
+            sendJson = _getMastoApiV1Account(base_dir, nickname, domain)
             sendJsonStr = \
                 'masto API account sent for ' + nickname + ' ' + uaStr
 
@@ -153,7 +153,7 @@ def mastoApiV1Response(path: str, callingDomain: str,
                     callingInfo
             else:
                 sendJson = \
-                    _getMastoApiV1Account(baseDir, pathNickname, domain)
+                    _getMastoApiV1Account(base_dir, pathNickname, domain)
                 sendJsonStr = \
                     'masto API account sent for ' + nickname + \
                     callingInfo
@@ -196,17 +196,17 @@ def mastoApiV1Response(path: str, callingDomain: str,
         sendJsonStr = \
             'masto API custom emojis sent ' + path + callingInfo
 
-    adminNickname = getConfigParam(baseDir, 'admin')
+    adminNickname = getConfigParam(base_dir, 'admin')
     if adminNickname and path == '/api/v1/instance':
         instanceDescriptionShort = \
-            getConfigParam(baseDir,
+            getConfigParam(base_dir,
                            'instanceDescriptionShort')
         if not instanceDescriptionShort:
             instanceDescriptionShort = \
                 translate['Yet another Epicyon Instance']
-        instanceDescription = getConfigParam(baseDir,
+        instanceDescription = getConfigParam(base_dir,
                                              'instanceDescription')
-        instanceTitle = getConfigParam(baseDir, 'instanceTitle')
+        instanceTitle = getConfigParam(base_dir, 'instanceTitle')
 
         if callingDomain.endswith('.onion') and onionDomain:
             domainFull = onionDomain
@@ -224,7 +224,7 @@ def mastoApiV1Response(path: str, callingDomain: str,
                              instanceDescriptionShort,
                              instanceDescription,
                              httpPrefix,
-                             baseDir,
+                             base_dir,
                              adminNickname,
                              domain,
                              domainFull,

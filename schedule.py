@@ -18,11 +18,12 @@ from utils import acctDir
 from outbox import postMessageToOutbox
 
 
-def _updatePostSchedule(baseDir: str, handle: str, httpd,
+def _updatePostSchedule(base_dir: str, handle: str, httpd,
                         maxScheduledPosts: int) -> None:
     """Checks if posts are due to be delivered and if so moves them to the outbox
     """
-    scheduleIndexFilename = baseDir + '/accounts/' + handle + '/schedule.index'
+    scheduleIndexFilename = \
+        base_dir + '/accounts/' + handle + '/schedule.index'
     if not os.path.isfile(scheduleIndexFilename):
         return
 
@@ -30,7 +31,7 @@ def _updatePostSchedule(baseDir: str, handle: str, httpd,
     currTime = datetime.datetime.utcnow()
     daysSinceEpoch = (currTime - datetime.datetime(1970, 1, 1)).days
 
-    scheduleDir = baseDir + '/accounts/' + handle + '/scheduled/'
+    scheduleDir = base_dir + '/accounts/' + handle + '/scheduled/'
     indexLines = []
     deleteSchedulePost = False
     nickname = handle.split('@')[0]
@@ -95,7 +96,7 @@ def _updatePostSchedule(baseDir: str, handle: str, httpd,
             if not postMessageToOutbox(httpd.session,
                                        httpd.translate,
                                        postJsonObject, nickname,
-                                       httpd, baseDir,
+                                       httpd, base_dir,
                                        httpd.httpPrefix,
                                        httpd.domain,
                                        httpd.domainFull,
@@ -150,19 +151,19 @@ def _updatePostSchedule(baseDir: str, handle: str, httpd,
 
     # write the new schedule index file
     scheduleIndexFile = \
-        baseDir + '/accounts/' + handle + '/schedule.index'
+        base_dir + '/accounts/' + handle + '/schedule.index'
     with open(scheduleIndexFile, 'w+') as scheduleFile:
         for line in indexLines:
             scheduleFile.write(line)
 
 
-def runPostSchedule(baseDir: str, httpd, maxScheduledPosts: int):
+def runPostSchedule(base_dir: str, httpd, maxScheduledPosts: int):
     """Dispatches scheduled posts
     """
     while True:
         time.sleep(60)
         # for each account
-        for subdir, dirs, files in os.walk(baseDir + '/accounts'):
+        for subdir, dirs, files in os.walk(base_dir + '/accounts'):
             for account in dirs:
                 if '@' not in account:
                     continue
@@ -170,10 +171,11 @@ def runPostSchedule(baseDir: str, httpd, maxScheduledPosts: int):
                     continue
                 # scheduled posts index for this account
                 scheduleIndexFilename = \
-                    baseDir + '/accounts/' + account + '/schedule.index'
+                    base_dir + '/accounts/' + account + '/schedule.index'
                 if not os.path.isfile(scheduleIndexFilename):
                     continue
-                _updatePostSchedule(baseDir, account, httpd, maxScheduledPosts)
+                _updatePostSchedule(base_dir, account,
+                                    httpd, maxScheduledPosts)
             break
 
 
@@ -195,12 +197,12 @@ def runPostScheduleWatchdog(projectVersion: str, httpd) -> None:
         print('Restarting scheduled posts...')
 
 
-def removeScheduledPosts(baseDir: str, nickname: str, domain: str) -> None:
+def removeScheduledPosts(base_dir: str, nickname: str, domain: str) -> None:
     """Removes any scheduled posts
     """
     # remove the index
     scheduleIndexFilename = \
-        acctDir(baseDir, nickname, domain) + '/schedule.index'
+        acctDir(base_dir, nickname, domain) + '/schedule.index'
     if os.path.isfile(scheduleIndexFilename):
         try:
             os.remove(scheduleIndexFilename)
@@ -208,7 +210,7 @@ def removeScheduledPosts(baseDir: str, nickname: str, domain: str) -> None:
             print('EX: removeScheduledPosts unable to delete ' +
                   scheduleIndexFilename)
     # remove the scheduled posts
-    scheduledDir = acctDir(baseDir, nickname, domain) + '/scheduled'
+    scheduledDir = acctDir(base_dir, nickname, domain) + '/scheduled'
     if not os.path.isdir(scheduledDir):
         return
     for scheduledPostFilename in os.listdir(scheduledDir):

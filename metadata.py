@@ -14,11 +14,11 @@ from utils import noOfAccounts
 from utils import noOfActiveAccountsMonthly
 
 
-def _getStatusCount(baseDir: str) -> int:
+def _getStatusCount(base_dir: str) -> int:
     """Get the total number of posts
     """
     statusCtr = 0
-    accountsDir = baseDir + '/accounts'
+    accountsDir = base_dir + '/accounts'
     for subdir, dirs, files in os.walk(accountsDir):
         for acct in dirs:
             if not isAccountDir(acct):
@@ -31,7 +31,7 @@ def _getStatusCount(baseDir: str) -> int:
     return statusCtr
 
 
-def metaDataNodeInfo(baseDir: str,
+def metaDataNodeInfo(base_dir: str,
                      aboutUrl: str,
                      termsOfServiceUrl: str,
                      registration: bool, version: str,
@@ -47,10 +47,10 @@ def metaDataNodeInfo(baseDir: str,
     sensitive
     """
     if showAccounts:
-        activeAccounts = noOfAccounts(baseDir)
-        activeAccountsMonthly = noOfActiveAccountsMonthly(baseDir, 1)
-        activeAccountsHalfYear = noOfActiveAccountsMonthly(baseDir, 6)
-        localPosts = _getStatusCount(baseDir)
+        activeAccounts = noOfAccounts(base_dir)
+        activeAccountsMonthly = noOfActiveAccountsMonthly(base_dir, 1)
+        activeAccountsHalfYear = noOfActiveAccountsMonthly(base_dir, 6)
+        localPosts = _getStatusCount(base_dir)
     else:
         activeAccounts = 1
         activeAccountsMonthly = 1
@@ -85,14 +85,14 @@ def metaDataInstance(showAccounts: bool,
                      instanceTitle: str,
                      instanceDescriptionShort: str,
                      instanceDescription: str,
-                     httpPrefix: str, baseDir: str,
+                     httpPrefix: str, base_dir: str,
                      adminNickname: str, domain: str, domainFull: str,
                      registration: bool, systemLanguage: str,
                      version: str) -> {}:
     """ /api/v1/instance endpoint
     """
     adminActorFilename = \
-        baseDir + '/accounts/' + adminNickname + '@' + domain + '.json'
+        base_dir + '/accounts/' + adminNickname + '@' + domain + '.json'
     if not os.path.isfile(adminActorFilename):
         return {}
 
@@ -103,7 +103,7 @@ def metaDataInstance(showAccounts: bool,
 
     rulesList = []
     rulesFilename = \
-        baseDir + '/accounts/tos.md'
+        base_dir + '/accounts/tos.md'
     if os.path.isfile(rulesFilename):
         with open(rulesFilename, 'r') as fp:
             rulesLines = fp.readlines()
@@ -132,8 +132,8 @@ def metaDataInstance(showAccounts: bool,
         adminActor['preferredUsername']
 
     if showAccounts:
-        activeAccounts = noOfAccounts(baseDir)
-        localPosts = _getStatusCount(baseDir)
+        activeAccounts = noOfAccounts(base_dir)
+        localPosts = _getStatusCount(base_dir)
     else:
         activeAccounts = 1
         localPosts = 1
@@ -207,7 +207,7 @@ def metaDataInstance(showAccounts: bool,
     return instance
 
 
-def metadataCustomEmoji(baseDir: str,
+def metadataCustomEmoji(base_dir: str,
                         httpPrefix: str, domainFull: str) -> {}:
     """Returns the custom emoji
     Endpoint /api/v1/custom_emojis
@@ -215,7 +215,7 @@ def metadataCustomEmoji(baseDir: str,
     """
     result = []
     emojisUrl = httpPrefix + '://' + domainFull + '/emoji'
-    for subdir, dirs, files in os.walk(baseDir + '/emoji'):
+    for subdir, dirs, files in os.walk(base_dir + '/emoji'):
         for f in files:
             if len(f) < 3:
                 continue

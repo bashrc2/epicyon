@@ -31,7 +31,7 @@ from webapp_utils import htmlHideFromScreenReader
 from webapp_utils import htmlKeyboardNavigation
 
 
-def htmlCalendarDeleteConfirm(cssCache: {}, translate: {}, baseDir: str,
+def htmlCalendarDeleteConfirm(cssCache: {}, translate: {}, base_dir: str,
                               path: str, httpPrefix: str,
                               domainFull: str, postId: str, postTime: str,
                               year: int, monthNumber: int,
@@ -43,7 +43,7 @@ def htmlCalendarDeleteConfirm(cssCache: {}, translate: {}, baseDir: str,
     domain, port = getDomainFromActor(actor)
     messageId = actor + '/statuses/' + postId
 
-    postFilename = locatePost(baseDir, nickname, domain, messageId)
+    postFilename = locatePost(base_dir, nickname, domain, messageId)
     if not postFilename:
         return None
 
@@ -52,12 +52,12 @@ def htmlCalendarDeleteConfirm(cssCache: {}, translate: {}, baseDir: str,
         return None
 
     deletePostStr = None
-    cssFilename = baseDir + '/epicyon-profile.css'
-    if os.path.isfile(baseDir + '/epicyon.css'):
-        cssFilename = baseDir + '/epicyon.css'
+    cssFilename = base_dir + '/epicyon-profile.css'
+    if os.path.isfile(base_dir + '/epicyon.css'):
+        cssFilename = base_dir + '/epicyon.css'
 
     instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
+        getConfigParam(base_dir, 'instanceTitle')
     deletePostStr = \
         htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     deletePostStr += \
@@ -97,13 +97,13 @@ def htmlCalendarDeleteConfirm(cssCache: {}, translate: {}, baseDir: str,
 
 
 def _htmlCalendarDay(personCache: {}, cssCache: {}, translate: {},
-                     baseDir: str, path: str,
+                     base_dir: str, path: str,
                      year: int, monthNumber: int, dayNumber: int,
                      nickname: str, domain: str, dayEvents: [],
                      monthName: str, actor: str) -> str:
     """Show a day within the calendar
     """
-    accountDir = acctDir(baseDir, nickname, domain)
+    accountDir = acctDir(base_dir, nickname, domain)
     calendarFile = accountDir + '/.newCalendar'
     if os.path.isfile(calendarFile):
         try:
@@ -111,15 +111,15 @@ def _htmlCalendarDay(personCache: {}, cssCache: {}, translate: {},
         except OSError:
             print('EX: _htmlCalendarDay unable to delete ' + calendarFile)
 
-    cssFilename = baseDir + '/epicyon-calendar.css'
-    if os.path.isfile(baseDir + '/calendar.css'):
-        cssFilename = baseDir + '/calendar.css'
+    cssFilename = base_dir + '/epicyon-calendar.css'
+    if os.path.isfile(base_dir + '/calendar.css'):
+        cssFilename = base_dir + '/calendar.css'
 
     calActor = actor
     if '/users/' in actor:
         calActor = '/users/' + actor.split('/users/')[1]
 
-    instanceTitle = getConfigParam(baseDir, 'instanceTitle')
+    instanceTitle = getConfigParam(base_dir, 'instanceTitle')
     calendarStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     calendarStr += '<main><table class="calendar">\n'
     calendarStr += '<caption class="calendar__banner--month">\n'
@@ -159,7 +159,7 @@ def _htmlCalendarDay(personCache: {}, cssCache: {}, translate: {},
                         if ev.get('sender'):
                             senderActor = ev['sender']
                             dispName = \
-                                getDisplayName(baseDir, senderActor,
+                                getDisplayName(base_dir, senderActor,
                                                personCache)
                             if dispName:
                                 senderName = \
@@ -244,7 +244,7 @@ def _htmlCalendarDay(personCache: {}, cssCache: {}, translate: {},
 
 
 def htmlCalendar(personCache: {}, cssCache: {}, translate: {},
-                 baseDir: str, path: str,
+                 base_dir: str, path: str,
                  httpPrefix: str, domainFull: str,
                  textModeBanner: str, accessKeys: {}) -> str:
     """Show the calendar for a person
@@ -282,7 +282,7 @@ def htmlCalendar(personCache: {}, cssCache: {}, translate: {},
 
     nickname = getNicknameFromActor(actor)
 
-    setCustomBackground(baseDir, 'calendar-background', 'calendar-background')
+    setCustomBackground(base_dir, 'calendar-background', 'calendar-background')
 
     months = (
         'January', 'February', 'March', 'April', 'May', 'June',
@@ -293,19 +293,19 @@ def htmlCalendar(personCache: {}, cssCache: {}, translate: {},
     if dayNumber:
         dayEvents = None
         events = \
-            getTodaysEvents(baseDir, nickname, domain,
+            getTodaysEvents(base_dir, nickname, domain,
                             year, monthNumber, dayNumber)
         if events:
             if events.get(str(dayNumber)):
                 dayEvents = events[str(dayNumber)]
         return _htmlCalendarDay(personCache, cssCache,
-                                translate, baseDir, path,
+                                translate, base_dir, path,
                                 year, monthNumber, dayNumber,
                                 nickname, domain, dayEvents,
                                 monthName, actor)
 
     events = \
-        getCalendarEvents(baseDir, nickname, domain, year, monthNumber)
+        getCalendarEvents(base_dir, nickname, domain, year, monthNumber)
 
     prevYear = year
     prevMonthNumber = monthNumber - 1
@@ -330,16 +330,16 @@ def htmlCalendar(personCache: {}, cssCache: {}, translate: {},
             (date(year + 1, 1, 1) - date(year, monthNumber, 1)).days
     # print('daysInMonth ' + str(monthNumber) + ': ' + str(daysInMonth))
 
-    cssFilename = baseDir + '/epicyon-calendar.css'
-    if os.path.isfile(baseDir + '/calendar.css'):
-        cssFilename = baseDir + '/calendar.css'
+    cssFilename = base_dir + '/epicyon-calendar.css'
+    if os.path.isfile(base_dir + '/calendar.css'):
+        cssFilename = base_dir + '/calendar.css'
 
     calActor = actor
     if '/users/' in actor:
         calActor = '/users/' + actor.split('/users/')[1]
 
     instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
+        getConfigParam(base_dir, 'instanceTitle')
     headerStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
 
     # the main graphical calendar as a table

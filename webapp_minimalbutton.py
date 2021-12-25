@@ -11,11 +11,11 @@ import os
 from utils import acctDir
 
 
-def isMinimal(baseDir: str, domain: str, nickname: str) -> bool:
+def isMinimal(base_dir: str, domain: str, nickname: str) -> bool:
     """Returns true if minimal buttons should be shown
        for the given account
     """
-    accountDir = acctDir(baseDir, nickname, domain)
+    accountDir = acctDir(base_dir, nickname, domain)
     if not os.path.isdir(accountDir):
         return True
     minimalFilename = accountDir + '/.notminimal'
@@ -24,11 +24,11 @@ def isMinimal(baseDir: str, domain: str, nickname: str) -> bool:
     return True
 
 
-def setMinimal(baseDir: str, domain: str, nickname: str,
+def setMinimal(base_dir: str, domain: str, nickname: str,
                minimal: bool) -> None:
     """Sets whether an account should display minimal buttons
     """
-    accountDir = acctDir(baseDir, nickname, domain)
+    accountDir = acctDir(base_dir, nickname, domain)
     if not os.path.isdir(accountDir):
         return
     minimalFilename = accountDir + '/.notminimal'

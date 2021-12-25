@@ -25,7 +25,7 @@ def _gitFormatContent(content: str) -> str:
     return patchStr
 
 
-def _getGitProjectName(baseDir: str, nickname: str, domain: str,
+def _getGitProjectName(base_dir: str, nickname: str, domain: str,
                        subject: str) -> str:
     """Returns the project name for a git patch
     The project name should be contained within the subject line
@@ -33,7 +33,7 @@ def _getGitProjectName(baseDir: str, nickname: str, domain: str,
     holder wants to receive
     """
     gitProjectsFilename = \
-        acctDir(baseDir, nickname, domain) + '/gitprojects.txt'
+        acctDir(base_dir, nickname, domain) + '/gitprojects.txt'
     if not os.path.isfile(gitProjectsFilename):
         return None
     subjectLineWords = subject.lower().split(' ')
@@ -43,7 +43,7 @@ def _getGitProjectName(baseDir: str, nickname: str, domain: str,
     return None
 
 
-def isGitPatch(baseDir: str, nickname: str, domain: str,
+def isGitPatch(base_dir: str, nickname: str, domain: str,
                messageType: str,
                subject: str, content: str,
                checkProjectName: bool = True) -> bool:
@@ -75,7 +75,7 @@ def isGitPatch(baseDir: str, nickname: str, domain: str,
             return False
     if checkProjectName:
         projectName = \
-            _getGitProjectName(baseDir, nickname, domain, subject)
+            _getGitProjectName(base_dir, nickname, domain, subject)
         if not projectName:
             return False
     return True
@@ -111,7 +111,7 @@ def _getPatchDescription(patchStr: str) -> str:
     return description
 
 
-def convertPostToPatch(baseDir: str, nickname: str, domain: str,
+def convertPostToPatch(base_dir: str, nickname: str, domain: str,
                        postJsonObject: {}) -> bool:
     """Detects whether the given post contains a patch
     and if so then converts it to a Patch ActivityPub type
@@ -128,7 +128,7 @@ def convertPostToPatch(baseDir: str, nickname: str, domain: str,
         return False
     if not isinstance(postJsonObject['object']['attributedTo'], str):
         return False
-    if not isGitPatch(baseDir, nickname, domain,
+    if not isGitPatch(base_dir, nickname, domain,
                       postJsonObject['object']['type'],
                       postJsonObject['object']['summary'],
                       postJsonObject['object']['content'],
@@ -172,12 +172,12 @@ def _gitAddFromHandle(patchStr: str, handle: str) -> str:
     return patchStr
 
 
-def receiveGitPatch(baseDir: str, nickname: str, domain: str,
+def receiveGitPatch(base_dir: str, nickname: str, domain: str,
                     messageType: str, subject: str, content: str,
                     fromNickname: str, fromDomain: str) -> bool:
     """Receive a git patch
     """
-    if not isGitPatch(baseDir, nickname, domain,
+    if not isGitPatch(base_dir, nickname, domain,
                       messageType, subject, content):
         return False
 
@@ -186,7 +186,7 @@ def receiveGitPatch(baseDir: str, nickname: str, domain: str,
     patchLines = patchStr.split('\n')
     patchFilename = None
     projectDir = None
-    patchesDir = acctDir(baseDir, nickname, domain) + '/patches'
+    patchesDir = acctDir(base_dir, nickname, domain) + '/patches'
     # get the subject line and turn it into a filename
     for line in patchLines:
         if line.startswith('Subject:'):
@@ -195,7 +195,7 @@ def receiveGitPatch(baseDir: str, nickname: str, domain: str,
             patchSubject = patchSubject.replace('[PATCH]', '').strip()
             patchSubject = patchSubject.replace(' ', '_')
             projectName = \
-                _getGitProjectName(baseDir, nickname, domain, subject)
+                _getGitProjectName(base_dir, nickname, domain, subject)
             if not os.path.isdir(patchesDir):
                 os.mkdir(patchesDir)
             projectDir = patchesDir + '/' + projectName
@@ -212,7 +212,7 @@ def receiveGitPatch(baseDir: str, nickname: str, domain: str,
         with open(patchFilename, 'w+') as patchFile:
             patchFile.write(patchStr)
             patchNotifyFilename = \
-                acctDir(baseDir, nickname, domain) + '/.newPatchContent'
+                acctDir(base_dir, nickname, domain) + '/.newPatchContent'
             with open(patchNotifyFilename, 'w+') as patchFile:
                 patchFile.write(patchStr)
                 return True

@@ -412,7 +412,7 @@ def _sayCommand(content: str, sayStr: str, screenreader: str,
 
 
 def _desktopReplyToPost(session, postId: str,
-                        baseDir: str, nickname: str, password: str,
+                        base_dir: str, nickname: str, password: str,
                         domain: str, port: int, httpPrefix: str,
                         cachedWebfingers: {}, personCache: {},
                         debug: bool, subject: str,
@@ -466,7 +466,7 @@ def _desktopReplyToPost(session, postId: str,
     sayStr = 'Sending reply'
     _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
     if sendPostViaServer(signingPrivateKeyPem, __version__,
-                         baseDir, session, nickname, password,
+                         base_dir, session, nickname, password,
                          domain, port,
                          toNickname, toDomain, toPort, ccUrl,
                          httpPrefix, replyMessage, followersOnly,
@@ -484,7 +484,7 @@ def _desktopReplyToPost(session, postId: str,
 
 
 def _desktopNewPost(session,
-                    baseDir: str, nickname: str, password: str,
+                    base_dir: str, nickname: str, password: str,
                     domain: str, port: int, httpPrefix: str,
                     cachedWebfingers: {}, personCache: {},
                     debug: bool,
@@ -533,7 +533,7 @@ def _desktopNewPost(session,
     sayStr = 'Sending'
     _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
     if sendPostViaServer(signingPrivateKeyPem, __version__,
-                         baseDir, session, nickname, password,
+                         base_dir, session, nickname, password,
                          domain, port,
                          None, '#Public', port, ccUrl,
                          httpPrefix, newMessage, followersOnly,
@@ -664,7 +664,7 @@ def _showRepliesOnPost(postJsonObject: {}, maxReplies: int) -> None:
 
 
 def _readLocalBoxPost(session, nickname: str, domain: str,
-                      httpPrefix: str, baseDir: str, boxName: str,
+                      httpPrefix: str, base_dir: str, boxName: str,
                       pageNumber: int, index: int, boxJson: {},
                       systemLanguage: str,
                       screenreader: str, espeak,
@@ -700,7 +700,7 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
         YTReplacementDomain = None
         twitterReplacementDomain = None
         postJsonObject2 = \
-            downloadAnnounce(session, baseDir,
+            downloadAnnounce(session, base_dir,
                              httpPrefix,
                              nickname, domain,
                              postJsonObject,
@@ -734,7 +734,7 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
                             _textOnlyContent(content)
                         content += _getImageDescription(postJsonObject2)
                         messageStr, detectedLinks = \
-                            speakableText(baseDir, content, translate)
+                            speakableText(base_dir, content, translate)
                         sayStr = content
                         _sayCommand(sayStr, messageStr, screenreader,
                                     systemLanguage, espeak)
@@ -763,7 +763,7 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
             return {}
 
     content = _safeMessage(content)
-    messageStr, detectedLinks = speakableText(baseDir, content, translate)
+    messageStr, detectedLinks = speakableText(base_dir, content, translate)
 
     if screenreader:
         time.sleep(2)
@@ -796,7 +796,7 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
     return postJsonObject
 
 
-def _desktopShowActor(baseDir: str, actorJson: {}, translate: {},
+def _desktopShowActor(base_dir: str, actorJson: {}, translate: {},
                       systemLanguage: str, screenreader: str,
                       espeak) -> None:
     """Shows information for the given actor
@@ -827,12 +827,12 @@ def _desktopShowActor(baseDir: str, actorJson: {}, translate: {},
     if actorJson.get('summary'):
         sayStr = html.unescape(removeHtml(actorJson['summary']))
         sayStr = sayStr.replace('"', "'")
-        sayStr2 = speakableText(baseDir, sayStr, translate)[0]
+        sayStr2 = speakableText(base_dir, sayStr, translate)[0]
         _sayCommand(sayStr, sayStr2, screenreader, systemLanguage, espeak)
 
 
 def _desktopShowProfile(session, nickname: str, domain: str,
-                        httpPrefix: str, baseDir: str, boxName: str,
+                        httpPrefix: str, base_dir: str, boxName: str,
                         pageNumber: int, index: int, boxJson: {},
                         systemLanguage: str,
                         screenreader: str, espeak,
@@ -871,14 +871,14 @@ def _desktopShowProfile(session, nickname: str, domain: str,
         getActorJson(domain, actor, isHttp, False, False, True,
                      signingPrivateKeyPem, session)
 
-    _desktopShowActor(baseDir, actorJson, translate,
+    _desktopShowActor(base_dir, actorJson, translate,
                       systemLanguage, screenreader, espeak)
 
     return actorJson
 
 
 def _desktopShowProfileFromHandle(session, nickname: str, domain: str,
-                                  httpPrefix: str, baseDir: str, boxName: str,
+                                  httpPrefix: str, base_dir: str, boxName: str,
                                   handle: str,
                                   systemLanguage: str,
                                   screenreader: str, espeak,
@@ -892,7 +892,7 @@ def _desktopShowProfileFromHandle(session, nickname: str, domain: str,
         getActorJson(domain, handle, False, False, False, True,
                      signingPrivateKeyPem, session)
 
-    _desktopShowActor(baseDir, actorJson, translate,
+    _desktopShowActor(base_dir, actorJson, translate,
                       systemLanguage, screenreader, espeak)
 
     return actorJson
@@ -1124,7 +1124,7 @@ def _desktopShowBox(indent: str,
 
 
 def _desktopNewDM(session, toHandle: str,
-                  baseDir: str, nickname: str, password: str,
+                  base_dir: str, nickname: str, password: str,
                   domain: str, port: int, httpPrefix: str,
                   cachedWebfingers: {}, personCache: {},
                   debug: bool,
@@ -1147,7 +1147,7 @@ def _desktopNewDM(session, toHandle: str,
     for handle in handlesList:
         handle = handle.strip()
         _desktopNewDMbase(session, handle,
-                          baseDir, nickname, password,
+                          base_dir, nickname, password,
                           domain, port, httpPrefix,
                           cachedWebfingers, personCache,
                           debug,
@@ -1158,7 +1158,7 @@ def _desktopNewDM(session, toHandle: str,
 
 
 def _desktopNewDMbase(session, toHandle: str,
-                      baseDir: str, nickname: str, password: str,
+                      base_dir: str, nickname: str, password: str,
                       domain: str, port: int, httpPrefix: str,
                       cachedWebfingers: {}, personCache: {},
                       debug: bool,
@@ -1247,7 +1247,7 @@ def _desktopNewDMbase(session, toHandle: str,
     sayStr = 'Sending'
     _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
     if sendPostViaServer(signingPrivateKeyPem, __version__,
-                         baseDir, session, nickname, password,
+                         base_dir, session, nickname, password,
                          domain, port,
                          toNickname, toDomain, toPort, ccUrl,
                          httpPrefix, newMessage, followersOnly,
@@ -1312,7 +1312,7 @@ def _desktopShowFollowing(followingJson: {}, translate: {},
               handleNickname + '@' + handleDomainFull)
 
 
-def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
+def runDesktopClient(base_dir: str, proxyType: str, httpPrefix: str,
                      nickname: str, domain: str, port: int,
                      password: str, screenreader: str,
                      systemLanguage: str,
@@ -1395,7 +1395,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
     _sayCommand(sayStr, sayStr, screenreader,
                 systemLanguage, espeak)
     translate, systemLanguage = \
-        loadTranslationsFromFile(baseDir, language)
+        loadTranslationsFromFile(base_dir, language)
 
     sayStr = indent + 'Connecting...'
     _sayCommand(sayStr, sayStr, screenreader,
@@ -1428,7 +1428,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                 sayStr = indent + 'Uploading PGP public key'
                 _sayCommand(sayStr, sayStr, screenreader,
                             systemLanguage, espeak)
-                pgpPublicKeyUpload(baseDir, session,
+                pgpPublicKeyUpload(base_dir, session,
                                    nickname, password,
                                    domain, port, httpPrefix,
                                    cachedWebfingers, personCache,
@@ -1439,14 +1439,14 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                             systemLanguage, espeak)
             pgpKeyUpload = True
 
-        boxJson = c2sBoxJson(baseDir, session,
+        boxJson = c2sBoxJson(base_dir, session,
                              nickname, password,
                              domain, port, httpPrefix,
                              currTimeline, pageNumber,
                              debug, signingPrivateKeyPem)
 
         followRequestsJson = \
-            getFollowRequestsViaServer(baseDir, session,
+            getFollowRequestsViaServer(base_dir, session,
                                        nickname, password,
                                        domain, port,
                                        httpPrefix, 1,
@@ -1456,7 +1456,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
 
         if not (currTimeline == 'inbox' and pageNumber == 1):
             # monitor the inbox to generate notifications
-            inboxJson = c2sBoxJson(baseDir, session,
+            inboxJson = c2sBoxJson(base_dir, session,
                                    nickname, password,
                                    domain, port, httpPrefix,
                                    'inbox', 1, debug,
@@ -1533,7 +1533,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                 pageNumber = 1
                 prevTimelineFirstId = ''
                 currTimeline = 'dm'
-                boxJson = c2sBoxJson(baseDir, session,
+                boxJson = c2sBoxJson(base_dir, session,
                                      nickname, password,
                                      domain, port, httpPrefix,
                                      currTimeline, pageNumber,
@@ -1550,7 +1550,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                 pageNumber = 1
                 prevTimelineFirstId = ''
                 currTimeline = 'tlreplies'
-                boxJson = c2sBoxJson(baseDir, session,
+                boxJson = c2sBoxJson(base_dir, session,
                                      nickname, password,
                                      domain, port, httpPrefix,
                                      currTimeline, pageNumber,
@@ -1568,7 +1568,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                 pageNumber = 1
                 prevTimelineFirstId = ''
                 currTimeline = 'tlbookmarks'
-                boxJson = c2sBoxJson(baseDir, session,
+                boxJson = c2sBoxJson(base_dir, session,
                                      nickname, password,
                                      domain, port, httpPrefix,
                                      currTimeline, pageNumber,
@@ -1587,7 +1587,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                 pageNumber = 1
                 prevTimelineFirstId = ''
                 currTimeline = 'outbox'
-                boxJson = c2sBoxJson(baseDir, session,
+                boxJson = c2sBoxJson(base_dir, session,
                                      nickname, password,
                                      domain, port, httpPrefix,
                                      currTimeline, pageNumber,
@@ -1614,7 +1614,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                 if pageNumber < 1:
                     pageNumber = 1
                 prevTimelineFirstId = ''
-                boxJson = c2sBoxJson(baseDir, session,
+                boxJson = c2sBoxJson(base_dir, session,
                                      nickname, password,
                                      domain, port, httpPrefix,
                                      currTimeline, pageNumber,
@@ -1637,7 +1637,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                     postIndex = int(postIndexStr)
                     postJsonObject = \
                         _readLocalBoxPost(session, nickname, domain,
-                                          httpPrefix, baseDir, currTimeline,
+                                          httpPrefix, base_dir, currTimeline,
                                           pageNumber, postIndex, boxJson,
                                           systemLanguage, screenreader,
                                           espeak, translate, yourActor,
@@ -1659,7 +1659,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                     if postJsonObject:
                         actorJson = \
                             _desktopShowProfile(session, nickname, domain,
-                                                httpPrefix, baseDir,
+                                                httpPrefix, base_dir,
                                                 currTimeline,
                                                 pageNumber, postIndex,
                                                 boxJson,
@@ -1677,7 +1677,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                     _desktopClearScreen()
                     _desktopShowBanner()
                     _desktopShowProfileFromHandle(session, nickname, domain,
-                                                  httpPrefix, baseDir,
+                                                  httpPrefix, base_dir,
                                                   currTimeline, profileHandle,
                                                   systemLanguage, screenreader,
                                                   espeak, translate, yourActor,
@@ -1695,7 +1695,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                     postIndex = int(postIndexStr)
                     actorJson = \
                         _desktopShowProfile(session, nickname, domain,
-                                            httpPrefix, baseDir, currTimeline,
+                                            httpPrefix, base_dir, currTimeline,
                                             pageNumber, postIndex, boxJson,
                                             systemLanguage, screenreader,
                                             espeak, translate, yourActor,
@@ -1721,7 +1721,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                 postJsonObject['object']['conversation']
                         sessionReply = createSession(proxyType)
                         _desktopReplyToPost(sessionReply, postId,
-                                            baseDir, nickname, password,
+                                            base_dir, nickname, password,
                                             domain, port, httpPrefix,
                                             cachedWebfingers, personCache,
                                             debug, subject,
@@ -1758,7 +1758,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                         toHandle = commandStr.split('direct message ', 1)[1]
                     if toHandle:
                         _desktopNewDM(sessionPost, toHandle,
-                                      baseDir, nickname, password,
+                                      base_dir, nickname, password,
                                       domain, port, httpPrefix,
                                       cachedWebfingers, personCache,
                                       debug,
@@ -1770,7 +1770,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                 else:
                     # public post
                     _desktopNewPost(sessionPost,
-                                    baseDir, nickname, password,
+                                    base_dir, nickname, password,
                                     domain, port, httpPrefix,
                                     cachedWebfingers, personCache,
                                     debug,
@@ -1798,7 +1798,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                     screenreader,
                                     systemLanguage, espeak)
                         sessionLike = createSession(proxyType)
-                        sendLikeViaServer(baseDir, sessionLike,
+                        sendLikeViaServer(base_dir, sessionLike,
                                           nickname, password,
                                           domain, port, httpPrefix,
                                           postJsonObject['id'],
@@ -1837,7 +1837,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                     screenreader,
                                     systemLanguage, espeak)
                         sessionMute = createSession(proxyType)
-                        sendUndoMuteViaServer(baseDir, sessionMute,
+                        sendUndoMuteViaServer(base_dir, sessionMute,
                                               nickname, password,
                                               domain, port,
                                               httpPrefix, postJsonObject['id'],
@@ -1867,7 +1867,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                     screenreader,
                                     systemLanguage, espeak)
                         sessionMute = createSession(proxyType)
-                        sendMuteViaServer(baseDir, sessionMute,
+                        sendMuteViaServer(base_dir, sessionMute,
                                           nickname, password,
                                           domain, port,
                                           httpPrefix, postJsonObject['id'],
@@ -1908,7 +1908,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                     screenreader,
                                     systemLanguage, espeak)
                         sessionbm = createSession(proxyType)
-                        sendUndoBookmarkViaServer(baseDir, sessionbm,
+                        sendUndoBookmarkViaServer(base_dir, sessionbm,
                                                   nickname, password,
                                                   domain, port, httpPrefix,
                                                   postJsonObject['id'],
@@ -1939,7 +1939,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                     screenreader,
                                     systemLanguage, espeak)
                         sessionbm = createSession(proxyType)
-                        sendBookmarkViaServer(baseDir, sessionbm,
+                        sendBookmarkViaServer(base_dir, sessionbm,
                                               nickname, password,
                                               domain, port, httpPrefix,
                                               postJsonObject['id'],
@@ -1973,7 +1973,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                             screenreader,
                                             systemLanguage, espeak)
                                 sessionBlock = createSession(proxyType)
-                                sendUndoBlockViaServer(baseDir, sessionBlock,
+                                sendUndoBlockViaServer(base_dir, sessionBlock,
                                                        nickname, password,
                                                        domain, port,
                                                        httpPrefix,
@@ -2019,7 +2019,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                 screenreader,
                                 systemLanguage, espeak)
                     sessionBlock = createSession(proxyType)
-                    sendBlockViaServer(baseDir, sessionBlock,
+                    sendBlockViaServer(base_dir, sessionBlock,
                                        nickname, password,
                                        domain, port,
                                        httpPrefix,
@@ -2049,7 +2049,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                     screenreader,
                                     systemLanguage, espeak)
                         sessionUnlike = createSession(proxyType)
-                        sendUndoLikeViaServer(baseDir, sessionUnlike,
+                        sendUndoLikeViaServer(base_dir, sessionUnlike,
                                               nickname, password,
                                               domain, port, httpPrefix,
                                               postJsonObject['id'],
@@ -2080,7 +2080,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                     screenreader,
                                     systemLanguage, espeak)
                         sessionAnnounce = createSession(proxyType)
-                        sendAnnounceViaServer(baseDir, sessionAnnounce,
+                        sendAnnounceViaServer(base_dir, sessionAnnounce,
                                               nickname, password,
                                               domain, port,
                                               httpPrefix, postId,
@@ -2113,7 +2113,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                     screenreader,
                                     systemLanguage, espeak)
                         sessionAnnounce = createSession(proxyType)
-                        sendUndoAnnounceViaServer(baseDir, sessionAnnounce,
+                        sendUndoAnnounceViaServer(base_dir, sessionAnnounce,
                                                   postJsonObject,
                                                   nickname, password,
                                                   domain, port,
@@ -2132,7 +2132,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                     if pageNum.isdigit():
                         currPage = int(pageNum)
                 followRequestsJson = \
-                    getFollowRequestsViaServer(baseDir, session,
+                    getFollowRequestsViaServer(base_dir, session,
                                                nickname, password,
                                                domain, port,
                                                httpPrefix, currPage,
@@ -2152,7 +2152,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                     if pageNum.isdigit():
                         currPage = int(pageNum)
                 followingJson = \
-                    getFollowingViaServer(baseDir, session,
+                    getFollowingViaServer(base_dir, session,
                                           nickname, password,
                                           domain, port,
                                           httpPrefix, currPage,
@@ -2173,7 +2173,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                     if pageNum.isdigit():
                         currPage = int(pageNum)
                 followersJson = \
-                    getFollowersViaServer(baseDir, session,
+                    getFollowersViaServer(base_dir, session,
                                           nickname, password,
                                           domain, port,
                                           httpPrefix, currPage,
@@ -2208,7 +2208,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                         _sayCommand(sayStr, sayStr,
                                     screenreader, systemLanguage, espeak)
                         sessionFollow = createSession(proxyType)
-                        sendFollowRequestViaServer(baseDir,
+                        sendFollowRequestViaServer(base_dir,
                                                    sessionFollow,
                                                    nickname, password,
                                                    domain, port,
@@ -2244,7 +2244,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                         _sayCommand(sayStr, sayStr,
                                     screenreader, systemLanguage, espeak)
                         sessionUnfollow = createSession(proxyType)
-                        sendUnfollowRequestViaServer(baseDir, sessionUnfollow,
+                        sendUnfollowRequestViaServer(base_dir, sessionUnfollow,
                                                      nickname, password,
                                                      domain, port,
                                                      followNickname,
@@ -2275,7 +2275,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                         _sayCommand(sayStr, sayStr,
                                     screenreader, systemLanguage, espeak)
                         sessionApprove = createSession(proxyType)
-                        approveFollowRequestViaServer(baseDir, sessionApprove,
+                        approveFollowRequestViaServer(base_dir, sessionApprove,
                                                       nickname, password,
                                                       domain, port,
                                                       httpPrefix,
@@ -2308,7 +2308,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                         _sayCommand(sayStr, sayStr,
                                     screenreader, systemLanguage, espeak)
                         sessionDeny = createSession(proxyType)
-                        denyFollowRequestViaServer(baseDir, sessionDeny,
+                        denyFollowRequestViaServer(base_dir, sessionDeny,
                                                    nickname, password,
                                                    domain, port,
                                                    httpPrefix,
@@ -2394,7 +2394,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                         YTReplacementDomain = None
                         twitterReplacementDomain = None
                         postJsonObject2 = \
-                            downloadAnnounce(session, baseDir,
+                            downloadAnnounce(session, base_dir,
                                              httpPrefix,
                                              nickname, domain,
                                              postJsonObject,
@@ -2413,7 +2413,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                     content = \
                         getBaseContentFromPost(postJsonObject, systemLanguage)
                     messageStr, detectedLinks = \
-                        speakableText(baseDir, content, translate)
+                        speakableText(base_dir, content, translate)
                     linkOpened = False
                     for url in detectedLinks:
                         if '://' in url:
@@ -2481,7 +2481,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                             screenreader,
                                             systemLanguage, espeak)
                                 sessionrm = createSession(proxyType)
-                                sendDeleteViaServer(baseDir, sessionrm,
+                                sendDeleteViaServer(base_dir, sessionrm,
                                                     nickname, password,
                                                     domain, port,
                                                     httpPrefix,

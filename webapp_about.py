@@ -15,33 +15,33 @@ from webapp_utils import htmlFooter
 from markdown import markdownToHtml
 
 
-def htmlAbout(cssCache: {}, baseDir: str, httpPrefix: str,
+def htmlAbout(cssCache: {}, base_dir: str, httpPrefix: str,
               domainFull: str, onionDomain: str, translate: {},
               systemLanguage: str) -> str:
     """Show the about screen
     """
-    adminNickname = getConfigParam(baseDir, 'admin')
-    if not os.path.isfile(baseDir + '/accounts/about.md'):
-        copyfile(baseDir + '/default_about.md',
-                 baseDir + '/accounts/about.md')
+    adminNickname = getConfigParam(base_dir, 'admin')
+    if not os.path.isfile(base_dir + '/accounts/about.md'):
+        copyfile(base_dir + '/default_about.md',
+                 base_dir + '/accounts/about.md')
 
-    if os.path.isfile(baseDir + '/accounts/login-background-custom.jpg'):
-        if not os.path.isfile(baseDir + '/accounts/login-background.jpg'):
-            copyfile(baseDir + '/accounts/login-background-custom.jpg',
-                     baseDir + '/accounts/login-background.jpg')
+    if os.path.isfile(base_dir + '/accounts/login-background-custom.jpg'):
+        if not os.path.isfile(base_dir + '/accounts/login-background.jpg'):
+            copyfile(base_dir + '/accounts/login-background-custom.jpg',
+                     base_dir + '/accounts/login-background.jpg')
 
     aboutText = 'Information about this instance goes here.'
-    if os.path.isfile(baseDir + '/accounts/about.md'):
-        with open(baseDir + '/accounts/about.md', 'r') as aboutFile:
+    if os.path.isfile(base_dir + '/accounts/about.md'):
+        with open(base_dir + '/accounts/about.md', 'r') as aboutFile:
             aboutText = markdownToHtml(aboutFile.read())
 
     aboutForm = ''
-    cssFilename = baseDir + '/epicyon-profile.css'
-    if os.path.isfile(baseDir + '/epicyon.css'):
-        cssFilename = baseDir + '/epicyon.css'
+    cssFilename = base_dir + '/epicyon-profile.css'
+    if os.path.isfile(base_dir + '/epicyon.css'):
+        cssFilename = base_dir + '/epicyon.css'
 
     instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
+        getConfigParam(base_dir, 'instanceTitle')
     aboutForm = \
         htmlHeaderWithWebsiteMarkup(cssFilename, instanceTitle,
                                     httpPrefix, domainFull,

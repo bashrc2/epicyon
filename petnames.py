@@ -11,7 +11,7 @@ import os
 from utils import acctDir
 
 
-def setPetName(baseDir: str, nickname: str, domain: str,
+def setPetName(base_dir: str, nickname: str, domain: str,
                handle: str, petname: str) -> bool:
     """Adds a new petname
     """
@@ -23,7 +23,7 @@ def setPetName(baseDir: str, nickname: str, domain: str,
         handle = handle[1:]
     if petname.startswith('@'):
         petname = petname[1:]
-    petnamesFilename = acctDir(baseDir, nickname, domain) + '/petnames.txt'
+    petnamesFilename = acctDir(base_dir, nickname, domain) + '/petnames.txt'
     entry = petname + ' ' + handle + '\n'
 
     # does this entry already exist?
@@ -67,7 +67,7 @@ def setPetName(baseDir: str, nickname: str, domain: str,
     return True
 
 
-def getPetName(baseDir: str, nickname: str, domain: str,
+def getPetName(base_dir: str, nickname: str, domain: str,
                handle: str) -> str:
     """Given a handle returns the petname
     """
@@ -75,7 +75,7 @@ def getPetName(baseDir: str, nickname: str, domain: str,
         return ''
     if handle.startswith('@'):
         handle = handle[1:]
-    petnamesFilename = acctDir(baseDir, nickname, domain) + '/petnames.txt'
+    petnamesFilename = acctDir(base_dir, nickname, domain) + '/petnames.txt'
 
     if not os.path.isfile(petnamesFilename):
         return ''
@@ -96,13 +96,13 @@ def getPetName(baseDir: str, nickname: str, domain: str,
     return ''
 
 
-def _getPetNameHandle(baseDir: str, nickname: str, domain: str,
+def _getPetNameHandle(base_dir: str, nickname: str, domain: str,
                       petname: str) -> str:
     """Given a petname returns the handle
     """
     if petname.startswith('@'):
         petname = petname[1:]
-    petnamesFilename = acctDir(baseDir, nickname, domain) + '/petnames.txt'
+    petnamesFilename = acctDir(base_dir, nickname, domain) + '/petnames.txt'
 
     if not os.path.isfile(petnamesFilename):
         return ''
@@ -117,7 +117,7 @@ def _getPetNameHandle(baseDir: str, nickname: str, domain: str,
     return ''
 
 
-def resolvePetnames(baseDir: str, nickname: str, domain: str,
+def resolvePetnames(base_dir: str, nickname: str, domain: str,
                     content: str) -> str:
     """Replaces petnames with their full handles
     """
@@ -131,7 +131,7 @@ def resolvePetnames(baseDir: str, nickname: str, domain: str,
         if not wrd.startswith('@'):
             break
         # does a petname handle exist for this?
-        handle = _getPetNameHandle(baseDir, nickname, domain, wrd)
+        handle = _getPetNameHandle(base_dir, nickname, domain, wrd)
         if not handle:
             continue
         # replace the petname with the handle

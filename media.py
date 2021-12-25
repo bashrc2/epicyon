@@ -106,7 +106,7 @@ def _removeMetaData(imageFilename: str, outputFilename: str) -> None:
         os.system('/usr/bin/mogrify -strip ' + outputFilename)  # nosec
 
 
-def _spoofMetaData(baseDir: str, nickname: str, domain: str,
+def _spoofMetaData(base_dir: str, nickname: str, domain: str,
                    outputFilename: str, spoofCity: str,
                    contentLicenseUrl: str) -> None:
     """Spoof image metadata using a decoy model for a given city
@@ -116,7 +116,7 @@ def _spoofMetaData(baseDir: str, nickname: str, domain: str,
         return
 
     # get the random seed used to generate a unique pattern for this account
-    decoySeedFilename = acctDir(baseDir, nickname, domain) + '/decoyseed'
+    decoySeedFilename = acctDir(base_dir, nickname, domain) + '/decoyseed'
     decoySeed = 63725
     if os.path.isfile(decoySeedFilename):
         with open(decoySeedFilename, 'r') as fp:
@@ -137,7 +137,7 @@ def _spoofMetaData(baseDir: str, nickname: str, domain: str,
         published = currTimeAdjusted.strftime("%Y:%m:%d %H:%M:%S+00:00")
         (latitude, longitude, latitudeRef, longitudeRef,
          camMake, camModel, camSerialNumber) = \
-            spoofGeolocation(baseDir, spoofCity, currTimeAdjusted,
+            spoofGeolocation(base_dir, spoofCity, currTimeAdjusted,
                              decoySeed, None, None)
         if os.system('exiftool -artist=@"' + nickname + '@' + domain + '" ' +
                      '-Make="' + camMake + '" ' +
@@ -200,7 +200,7 @@ def convertImageToLowBandwidth(imageFilename: str) -> None:
               lowBandwidthFilename)
 
 
-def processMetaData(baseDir: str, nickname: str, domain: str,
+def processMetaData(base_dir: str, nickname: str, domain: str,
                     imageFilename: str, outputFilename: str,
                     city: str, contentLicenseUrl: str) -> None:
     """Handles image metadata. This tries to spoof the metadata
@@ -210,7 +210,7 @@ def processMetaData(baseDir: str, nickname: str, domain: str,
     _removeMetaData(imageFilename, outputFilename)
 
     # now add some spoofed data to misdirect surveillance capitalists
-    _spoofMetaData(baseDir, nickname, domain, outputFilename, city,
+    _spoofMetaData(base_dir, nickname, domain, outputFilename, city,
                    contentLicenseUrl)
 
 
@@ -228,11 +228,11 @@ def _isMedia(imageFilename: str) -> bool:
     return False
 
 
-def createMediaDirs(baseDir: str, mediaPath: str) -> None:
-    if not os.path.isdir(baseDir + '/media'):
-        os.mkdir(baseDir + '/media')
-    if not os.path.isdir(baseDir + '/' + mediaPath):
-        os.mkdir(baseDir + '/' + mediaPath)
+def createMediaDirs(base_dir: str, mediaPath: str) -> None:
+    if not os.path.isdir(base_dir + '/media'):
+        os.mkdir(base_dir + '/media')
+    if not os.path.isdir(base_dir + '/' + mediaPath):
+        os.mkdir(base_dir + '/' + mediaPath)
 
 
 def getMediaPath() -> str:
@@ -293,7 +293,7 @@ def _updateEtag(mediaFilename: str) -> None:
               str(mediaFilename) + '.etag')
 
 
-def attachMedia(baseDir: str, httpPrefix: str,
+def attachMedia(base_dir: str, httpPrefix: str,
                 nickname: str, domain: str, port: int,
                 postJson: {}, imageFilename: str,
                 mediaType: str, description: str,
@@ -328,9 +328,9 @@ def attachMedia(baseDir: str, httpPrefix: str,
 
     mPath = getMediaPath()
     mediaPath = mPath + '/' + createPassword(32) + '.' + fileExtension
-    if baseDir:
-        createMediaDirs(baseDir, mPath)
-        mediaFilename = baseDir + '/' + mediaPath
+    if base_dir:
+        createMediaDirs(base_dir, mPath)
+        mediaFilename = base_dir + '/' + mediaPath
 
     mediaPath = \
         mediaPath.replace('media/', 'system/media_attachments/files/', 1)
@@ -351,11 +351,11 @@ def attachMedia(baseDir: str, httpPrefix: str,
 
     postJson['attachment'] = [attachmentJson]
 
-    if baseDir:
+    if base_dir:
         if mediaType.startswith('image/'):
             if lowBandwidth:
                 convertImageToLowBandwidth(imageFilename)
-            processMetaData(baseDir, nickname, domain,
+            processMetaData(base_dir, nickname, domain,
                             imageFilename, mediaFilename, city,
                             contentLicenseUrl)
         else:
@@ -365,7 +365,7 @@ def attachMedia(baseDir: str, httpPrefix: str,
     return postJson
 
 
-def archiveMedia(baseDir: str, archiveDirectory: str, maxWeeks: int) -> None:
+def archiveMedia(base_dir: str, archiveDirectory: str, maxWeeks: int) -> None:
     """Any media older than the given number of weeks gets archived
     """
     if maxWeeks == 0:
@@ -381,15 +381,15 @@ def archiveMedia(baseDir: str, archiveDirectory: str, maxWeeks: int) -> None:
         if not os.path.isdir(archiveDirectory + '/media'):
             os.mkdir(archiveDirectory + '/media')
 
-    for subdir, dirs, files in os.walk(baseDir + '/media'):
+    for subdir, dirs, files in os.walk(base_dir + '/media'):
         for weekDir in dirs:
             if int(weekDir) < minWeek:
                 if archiveDirectory:
-                    move(os.path.join(baseDir + '/media', weekDir),
+                    move(os.path.join(base_dir + '/media', weekDir),
                          archiveDirectory + '/media')
                 else:
                     # archive to /dev/null
-                    rmtree(os.path.join(baseDir + '/media', weekDir),
+                    rmtree(os.path.join(base_dir + '/media', weekDir),
                            ignore_errors=False, onerror=None)
         break
 

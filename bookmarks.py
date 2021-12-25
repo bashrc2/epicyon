@@ -33,7 +33,7 @@ from session import postJson
 
 
 def undoBookmarksCollectionEntry(recentPostsCache: {},
-                                 baseDir: str, postFilename: str,
+                                 base_dir: str, postFilename: str,
                                  objectUrl: str,
                                  actor: str, domain: str, debug: bool) -> None:
     """Undoes a bookmark for a particular actor
@@ -45,7 +45,7 @@ def undoBookmarksCollectionEntry(recentPostsCache: {},
     # remove any cached version of this post so that the
     # bookmark icon is changed
     nickname = getNicknameFromActor(actor)
-    cachedPostFilename = getCachedPostFilename(baseDir, nickname,
+    cachedPostFilename = getCachedPostFilename(base_dir, nickname,
                                                domain, postJsonObject)
     if cachedPostFilename:
         if os.path.isfile(cachedPostFilename):
@@ -60,7 +60,7 @@ def undoBookmarksCollectionEntry(recentPostsCache: {},
 
     # remove from the index
     bookmarksIndexFilename = \
-        acctDir(baseDir, nickname, domain) + '/bookmarks.index'
+        acctDir(base_dir, nickname, domain) + '/bookmarks.index'
     if not os.path.isfile(bookmarksIndexFilename):
         return
     if '/' in postFilename:
@@ -153,7 +153,7 @@ def _noOfBookmarks(postJsonObject: {}) -> int:
 
 
 def updateBookmarksCollection(recentPostsCache: {},
-                              baseDir: str, postFilename: str,
+                              base_dir: str, postFilename: str,
                               objectUrl: str,
                               actor: str, domain: str, debug: bool) -> None:
     """Updates the bookmarks collection within a post
@@ -163,7 +163,7 @@ def updateBookmarksCollection(recentPostsCache: {},
         # remove any cached version of this post so that the
         # bookmark icon is changed
         nickname = getNicknameFromActor(actor)
-        cachedPostFilename = getCachedPostFilename(baseDir, nickname,
+        cachedPostFilename = getCachedPostFilename(base_dir, nickname,
                                                    domain, postJsonObject)
         if cachedPostFilename:
             if os.path.isfile(cachedPostFilename):
@@ -222,7 +222,7 @@ def updateBookmarksCollection(recentPostsCache: {},
 
         # prepend to the index
         bookmarksIndexFilename = \
-            acctDir(baseDir, nickname, domain) + '/bookmarks.index'
+            acctDir(base_dir, nickname, domain) + '/bookmarks.index'
         bookmarkIndex = postFilename.split('/')[-1]
         if os.path.isfile(bookmarksIndexFilename):
             if bookmarkIndex not in open(bookmarksIndexFilename).read():
@@ -247,7 +247,7 @@ def updateBookmarksCollection(recentPostsCache: {},
 
 
 def bookmark(recentPostsCache: {},
-             session, baseDir: str, federationList: [],
+             session, base_dir: str, federationList: [],
              nickname: str, domain: str, port: int,
              ccList: [], httpPrefix: str,
              objectUrl: str, actorBookmarked: str,
@@ -290,23 +290,23 @@ def bookmark(recentPostsCache: {},
             bookmarkedPostDomain, bookmarkedPostPort = getDomainFromActor(ou)
 
     if bookmarkedPostNickname:
-        postFilename = locatePost(baseDir, nickname, domain, objectUrl)
+        postFilename = locatePost(base_dir, nickname, domain, objectUrl)
         if not postFilename:
-            print('DEBUG: bookmark baseDir: ' + baseDir)
+            print('DEBUG: bookmark base_dir: ' + base_dir)
             print('DEBUG: bookmark nickname: ' + nickname)
             print('DEBUG: bookmark domain: ' + domain)
             print('DEBUG: bookmark objectUrl: ' + objectUrl)
             return None
 
         updateBookmarksCollection(recentPostsCache,
-                                  baseDir, postFilename, objectUrl,
+                                  base_dir, postFilename, objectUrl,
                                   newBookmarkJson['actor'], domain, debug)
 
     return newBookmarkJson
 
 
 def undoBookmark(recentPostsCache: {},
-                 session, baseDir: str, federationList: [],
+                 session, base_dir: str, federationList: [],
                  nickname: str, domain: str, port: int,
                  ccList: [], httpPrefix: str,
                  objectUrl: str, actorBookmarked: str,
@@ -354,12 +354,12 @@ def undoBookmark(recentPostsCache: {},
             bookmarkedPostDomain, bookmarkedPostPort = getDomainFromActor(ou)
 
     if bookmarkedPostNickname:
-        postFilename = locatePost(baseDir, nickname, domain, objectUrl)
+        postFilename = locatePost(base_dir, nickname, domain, objectUrl)
         if not postFilename:
             return None
 
         undoBookmarksCollectionEntry(recentPostsCache,
-                                     baseDir, postFilename, objectUrl,
+                                     base_dir, postFilename, objectUrl,
                                      newUndoBookmarkJson['actor'],
                                      domain, debug)
     else:
@@ -368,7 +368,7 @@ def undoBookmark(recentPostsCache: {},
     return newUndoBookmarkJson
 
 
-def sendBookmarkViaServer(baseDir: str, session,
+def sendBookmarkViaServer(base_dir: str, session,
                           nickname: str, password: str,
                           domain: str, fromPort: int,
                           httpPrefix: str, bookmarkUrl: str,
@@ -421,7 +421,7 @@ def sendBookmarkViaServer(baseDir: str, session,
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
      displayName, _) = getPersonBox(signingPrivateKeyPem,
                                     originDomain,
-                                    baseDir, session, wfRequest,
+                                    base_dir, session, wfRequest,
                                     personCache,
                                     projectVersion, httpPrefix,
                                     nickname, domain,
@@ -458,7 +458,7 @@ def sendBookmarkViaServer(baseDir: str, session,
     return newBookmarkJson
 
 
-def sendUndoBookmarkViaServer(baseDir: str, session,
+def sendUndoBookmarkViaServer(base_dir: str, session,
                               nickname: str, password: str,
                               domain: str, fromPort: int,
                               httpPrefix: str, bookmarkUrl: str,
@@ -511,7 +511,7 @@ def sendUndoBookmarkViaServer(baseDir: str, session,
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
      displayName, _) = getPersonBox(signingPrivateKeyPem,
                                     originDomain,
-                                    baseDir, session, wfRequest,
+                                    base_dir, session, wfRequest,
                                     personCache,
                                     projectVersion, httpPrefix,
                                     nickname, domain,
@@ -549,7 +549,7 @@ def sendUndoBookmarkViaServer(baseDir: str, session,
 
 
 def outboxBookmark(recentPostsCache: {},
-                   baseDir: str, httpPrefix: str,
+                   base_dir: str, httpPrefix: str,
                    nickname: str, domain: str, port: int,
                    messageJson: {}, debug: bool) -> None:
     """ When a bookmark request is received by the outbox from c2s
@@ -591,21 +591,21 @@ def outboxBookmark(recentPostsCache: {},
 
     messageUrl = removeIdEnding(messageJson['object']['url'])
     domain = removeDomainPort(domain)
-    postFilename = locatePost(baseDir, nickname, domain, messageUrl)
+    postFilename = locatePost(base_dir, nickname, domain, messageUrl)
     if not postFilename:
         if debug:
             print('DEBUG: c2s like post not found in inbox or outbox')
             print(messageUrl)
         return True
     updateBookmarksCollection(recentPostsCache,
-                              baseDir, postFilename, messageUrl,
+                              base_dir, postFilename, messageUrl,
                               messageJson['actor'], domain, debug)
     if debug:
         print('DEBUG: post bookmarked via c2s - ' + postFilename)
 
 
 def outboxUndoBookmark(recentPostsCache: {},
-                       baseDir: str, httpPrefix: str,
+                       base_dir: str, httpPrefix: str,
                        nickname: str, domain: str, port: int,
                        messageJson: {}, debug: bool) -> None:
     """ When an undo bookmark request is received by the outbox from c2s
@@ -647,14 +647,14 @@ def outboxUndoBookmark(recentPostsCache: {},
 
     messageUrl = removeIdEnding(messageJson['object']['url'])
     domain = removeDomainPort(domain)
-    postFilename = locatePost(baseDir, nickname, domain, messageUrl)
+    postFilename = locatePost(base_dir, nickname, domain, messageUrl)
     if not postFilename:
         if debug:
             print('DEBUG: c2s unbookmark post not found in inbox or outbox')
             print(messageUrl)
         return True
     updateBookmarksCollection(recentPostsCache,
-                              baseDir, postFilename, messageUrl,
+                              base_dir, postFilename, messageUrl,
                               messageJson['actor'], domain, debug)
     if debug:
         print('DEBUG: post unbookmarked via c2s - ' + postFilename)

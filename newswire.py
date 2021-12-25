@@ -145,7 +145,7 @@ def getNewswireFaviconUrl(url: str) -> str:
     return url.split('://')[0] + '://' + domain + '/favicon.ico'
 
 
-def _downloadNewswireFeedFavicon(session, baseDir: str,
+def _downloadNewswireFeedFavicon(session, base_dir: str,
                                  link: str, debug: bool) -> bool:
     """Downloads the favicon for the given feed link
     """
@@ -174,8 +174,8 @@ def _downloadNewswireFeedFavicon(session, baseDir: str,
             break
 
     # create cached favicons directory if needed
-    if not os.path.isdir(baseDir + '/favicons'):
-        os.mkdir(baseDir + '/favicons')
+    if not os.path.isdir(base_dir + '/favicons'):
+        os.mkdir(base_dir + '/favicons')
 
     # check svg for dubious scripts
     if favUrl.endswith('.svg'):
@@ -184,7 +184,7 @@ def _downloadNewswireFeedFavicon(session, baseDir: str,
             return False
 
     # save to the cache
-    favFilename = getFavFilenameFromUrl(baseDir, favUrl)
+    favFilename = getFavFilenameFromUrl(base_dir, favUrl)
     if os.path.isfile(favFilename):
         return True
     try:
@@ -197,7 +197,7 @@ def _downloadNewswireFeedFavicon(session, baseDir: str,
     return True
 
 
-def _addNewswireDictEntry(baseDir: str, domain: str,
+def _addNewswireDictEntry(base_dir: str, domain: str,
                           newswire: {}, dateStr: str,
                           title: str, link: str,
                           votesStatus: str, postFilename: str,
@@ -214,7 +214,7 @@ def _addNewswireDictEntry(baseDir: str, domain: str,
     allText = title + ' ' + description
 
     # check that none of the text is filtered against
-    if isFiltered(baseDir, None, None, allText):
+    if isFiltered(base_dir, None, None, allText):
         return
 
     title = limitWordLengths(title, 13)
@@ -234,10 +234,10 @@ def _addNewswireDictEntry(baseDir: str, domain: str,
 
     # check that no tags are blocked
     for tag in postTags:
-        if isBlockedHashtag(baseDir, tag):
+        if isBlockedHashtag(base_dir, tag):
             return
 
-    _downloadNewswireFeedFavicon(session, baseDir, link, debug)
+    _downloadNewswireFeedFavicon(session, base_dir, link, debug)
 
     newswire[dateStr] = [
         title,
@@ -323,22 +323,22 @@ def parseFeedDate(pubDate: str) -> str:
     return pubDateStr
 
 
-def loadHashtagCategories(baseDir: str, language: str) -> None:
+def loadHashtagCategories(base_dir: str, language: str) -> None:
     """Loads an rss file containing hashtag categories
     """
-    hashtagCategoriesFilename = baseDir + '/categories.xml'
+    hashtagCategoriesFilename = base_dir + '/categories.xml'
     if not os.path.isfile(hashtagCategoriesFilename):
         hashtagCategoriesFilename = \
-            baseDir + '/defaultcategories/' + language + '.xml'
+            base_dir + '/defaultcategories/' + language + '.xml'
         if not os.path.isfile(hashtagCategoriesFilename):
             return
 
     with open(hashtagCategoriesFilename, 'r') as fp:
         xmlStr = fp.read()
-        _xml2StrToHashtagCategories(baseDir, xmlStr, 1024, True)
+        _xml2StrToHashtagCategories(base_dir, xmlStr, 1024, True)
 
 
-def _xml2StrToHashtagCategories(baseDir: str, xmlStr: str,
+def _xml2StrToHashtagCategories(base_dir: str, xmlStr: str,
                                 maxCategoriesFeedItemSizeKb: int,
                                 force: bool = False) -> None:
     """Updates hashtag categories based upon an rss feed
@@ -372,13 +372,13 @@ def _xml2StrToHashtagCategories(baseDir: str, xmlStr: str,
         if 'CDATA' in hashtagListStr:
             continue
         hashtagList = hashtagListStr.split(' ')
-        if not isBlockedHashtag(baseDir, categoryStr):
+        if not isBlockedHashtag(base_dir, categoryStr):
             for hashtag in hashtagList:
-                setHashtagCategory(baseDir, hashtag, categoryStr,
+                setHashtagCategory(base_dir, hashtag, categoryStr,
                                    False, force)
 
 
-def _xml2StrToDict(baseDir: str, domain: str, xmlStr: str,
+def _xml2StrToDict(base_dir: str, domain: str, xmlStr: str,
                    moderated: bool, mirrored: bool,
                    maxPostsPerSource: int,
                    maxFeedItemSizeKb: int,
@@ -392,7 +392,7 @@ def _xml2StrToDict(baseDir: str, domain: str, xmlStr: str,
 
     # is this an rss feed containing hashtag categories?
     if '<title>#categories</title>' in xmlStr:
-        _xml2StrToHashtagCategories(baseDir, xmlStr,
+        _xml2StrToHashtagCategories(base_dir, xmlStr,
                                     maxCategoriesFeedItemSizeKb)
         return {}
 
@@ -437,7 +437,7 @@ def _xml2StrToDict(baseDir: str, domain: str, xmlStr: str,
         itemDomain = link.split('://')[1]
         if '/' in itemDomain:
             itemDomain = itemDomain.split('/')[0]
-        if isBlockedDomain(baseDir, itemDomain):
+        if isBlockedDomain(base_dir, itemDomain):
             continue
         pubDate = rssItem.split('<pubDate>')[1]
         pubDate = pubDate.split('</pubDate>')[0]
@@ -447,7 +447,7 @@ def _xml2StrToDict(baseDir: str, domain: str, xmlStr: str,
             if _validFeedDate(pubDateStr):
                 postFilename = ''
                 votesStatus = []
-                _addNewswireDictEntry(baseDir, domain,
+                _addNewswireDictEntry(base_dir, domain,
                                       result, pubDateStr,
                                       title, link,
                                       votesStatus, postFilename,
@@ -462,7 +462,7 @@ def _xml2StrToDict(baseDir: str, domain: str, xmlStr: str,
     return result
 
 
-def _xml1StrToDict(baseDir: str, domain: str, xmlStr: str,
+def _xml1StrToDict(base_dir: str, domain: str, xmlStr: str,
                    moderated: bool, mirrored: bool,
                    maxPostsPerSource: int,
                    maxFeedItemSizeKb: int,
@@ -478,7 +478,7 @@ def _xml1StrToDict(baseDir: str, domain: str, xmlStr: str,
 
     # is this an rss feed containing hashtag categories?
     if '<title>#categories</title>' in xmlStr:
-        _xml2StrToHashtagCategories(baseDir, xmlStr,
+        _xml2StrToHashtagCategories(base_dir, xmlStr,
                                     maxCategoriesFeedItemSizeKb)
         return {}
 
@@ -525,7 +525,7 @@ def _xml1StrToDict(baseDir: str, domain: str, xmlStr: str,
         itemDomain = link.split('://')[1]
         if '/' in itemDomain:
             itemDomain = itemDomain.split('/')[0]
-        if isBlockedDomain(baseDir, itemDomain):
+        if isBlockedDomain(base_dir, itemDomain):
             continue
         pubDate = rssItem.split('<dc:date>')[1]
         pubDate = pubDate.split('</dc:date>')[0]
@@ -535,7 +535,7 @@ def _xml1StrToDict(baseDir: str, domain: str, xmlStr: str,
             if _validFeedDate(pubDateStr):
                 postFilename = ''
                 votesStatus = []
-                _addNewswireDictEntry(baseDir, domain,
+                _addNewswireDictEntry(base_dir, domain,
                                       result, pubDateStr,
                                       title, link,
                                       votesStatus, postFilename,
@@ -550,7 +550,7 @@ def _xml1StrToDict(baseDir: str, domain: str, xmlStr: str,
     return result
 
 
-def _atomFeedToDict(baseDir: str, domain: str, xmlStr: str,
+def _atomFeedToDict(base_dir: str, domain: str, xmlStr: str,
                     moderated: bool, mirrored: bool,
                     maxPostsPerSource: int,
                     maxFeedItemSizeKb: int,
@@ -601,7 +601,7 @@ def _atomFeedToDict(baseDir: str, domain: str, xmlStr: str,
         itemDomain = link.split('://')[1]
         if '/' in itemDomain:
             itemDomain = itemDomain.split('/')[0]
-        if isBlockedDomain(baseDir, itemDomain):
+        if isBlockedDomain(base_dir, itemDomain):
             continue
         pubDate = atomItem.split('<updated>')[1]
         pubDate = pubDate.split('</updated>')[0]
@@ -611,7 +611,7 @@ def _atomFeedToDict(baseDir: str, domain: str, xmlStr: str,
             if _validFeedDate(pubDateStr):
                 postFilename = ''
                 votesStatus = []
-                _addNewswireDictEntry(baseDir, domain,
+                _addNewswireDictEntry(base_dir, domain,
                                       result, pubDateStr,
                                       title, link,
                                       votesStatus, postFilename,
@@ -626,7 +626,7 @@ def _atomFeedToDict(baseDir: str, domain: str, xmlStr: str,
     return result
 
 
-def _jsonFeedV1ToDict(baseDir: str, domain: str, xmlStr: str,
+def _jsonFeedV1ToDict(base_dir: str, domain: str, xmlStr: str,
                       moderated: bool, mirrored: bool,
                       maxPostsPerSource: int,
                       maxFeedItemSizeKb: int,
@@ -707,7 +707,7 @@ def _jsonFeedV1ToDict(baseDir: str, domain: str, xmlStr: str,
         itemDomain = link.split('://')[1]
         if '/' in itemDomain:
             itemDomain = itemDomain.split('/')[0]
-        if isBlockedDomain(baseDir, itemDomain):
+        if isBlockedDomain(base_dir, itemDomain):
             continue
         if jsonFeedItem.get('date_published'):
             if not isinstance(jsonFeedItem['date_published'], str):
@@ -723,7 +723,7 @@ def _jsonFeedV1ToDict(baseDir: str, domain: str, xmlStr: str,
             if _validFeedDate(pubDateStr):
                 postFilename = ''
                 votesStatus = []
-                _addNewswireDictEntry(baseDir, domain,
+                _addNewswireDictEntry(base_dir, domain,
                                       result, pubDateStr,
                                       title, link,
                                       votesStatus, postFilename,
@@ -738,7 +738,7 @@ def _jsonFeedV1ToDict(baseDir: str, domain: str, xmlStr: str,
     return result
 
 
-def _atomFeedYTToDict(baseDir: str, domain: str, xmlStr: str,
+def _atomFeedYTToDict(base_dir: str, domain: str, xmlStr: str,
                       moderated: bool, mirrored: bool,
                       maxPostsPerSource: int,
                       maxFeedItemSizeKb: int,
@@ -747,7 +747,7 @@ def _atomFeedYTToDict(baseDir: str, domain: str, xmlStr: str,
     """
     if '<entry>' not in xmlStr:
         return {}
-    if isBlockedDomain(baseDir, 'www.youtube.com'):
+    if isBlockedDomain(base_dir, 'www.youtube.com'):
         return {}
     result = {}
     atomItems = xmlStr.split('<entry>')
@@ -796,7 +796,7 @@ def _atomFeedYTToDict(baseDir: str, domain: str, xmlStr: str,
             if _validFeedDate(pubDateStr):
                 postFilename = ''
                 votesStatus = []
-                _addNewswireDictEntry(baseDir, domain,
+                _addNewswireDictEntry(base_dir, domain,
                                       result, pubDateStr,
                                       title, link,
                                       votesStatus, postFilename,
@@ -810,7 +810,7 @@ def _atomFeedYTToDict(baseDir: str, domain: str, xmlStr: str,
     return result
 
 
-def _xmlStrToDict(baseDir: str, domain: str, xmlStr: str,
+def _xmlStrToDict(base_dir: str, domain: str, xmlStr: str,
                   moderated: bool, mirrored: bool,
                   maxPostsPerSource: int,
                   maxFeedItemSizeKb: int,
@@ -820,29 +820,29 @@ def _xmlStrToDict(baseDir: str, domain: str, xmlStr: str,
     """
     if '<yt:videoId>' in xmlStr and '<yt:channelId>' in xmlStr:
         print('YouTube feed: reading')
-        return _atomFeedYTToDict(baseDir, domain,
+        return _atomFeedYTToDict(base_dir, domain,
                                  xmlStr, moderated, mirrored,
                                  maxPostsPerSource, maxFeedItemSizeKb,
                                  session, debug)
     elif 'rss version="2.0"' in xmlStr:
-        return _xml2StrToDict(baseDir, domain,
+        return _xml2StrToDict(base_dir, domain,
                               xmlStr, moderated, mirrored,
                               maxPostsPerSource, maxFeedItemSizeKb,
                               maxCategoriesFeedItemSizeKb,
                               session, debug)
     elif '<?xml version="1.0"' in xmlStr:
-        return _xml1StrToDict(baseDir, domain,
+        return _xml1StrToDict(base_dir, domain,
                               xmlStr, moderated, mirrored,
                               maxPostsPerSource, maxFeedItemSizeKb,
                               maxCategoriesFeedItemSizeKb,
                               session, debug)
     elif 'xmlns="http://www.w3.org/2005/Atom"' in xmlStr:
-        return _atomFeedToDict(baseDir, domain,
+        return _atomFeedToDict(base_dir, domain,
                                xmlStr, moderated, mirrored,
                                maxPostsPerSource, maxFeedItemSizeKb,
                                session, debug)
     elif 'https://jsonfeed.org/version/1' in xmlStr:
-        return _jsonFeedV1ToDict(baseDir, domain,
+        return _jsonFeedV1ToDict(base_dir, domain,
                                  xmlStr, moderated, mirrored,
                                  maxPostsPerSource, maxFeedItemSizeKb,
                                  session, debug)
@@ -861,7 +861,7 @@ def _YTchannelToAtomFeed(url: str) -> str:
     return channelUrl
 
 
-def getRSS(baseDir: str, domain: str, session, url: str,
+def getRSS(base_dir: str, domain: str, session, url: str,
            moderated: bool, mirrored: bool,
            maxPostsPerSource: int, maxFeedSizeKb: int,
            maxFeedItemSizeKb: int,
@@ -892,7 +892,7 @@ def getRSS(baseDir: str, domain: str, session, url: str,
         if result:
             if int(len(result.text) / 1024) < maxFeedSizeKb and \
                not containsInvalidChars(result.text):
-                return _xmlStrToDict(baseDir, domain, result.text,
+                return _xmlStrToDict(base_dir, domain, result.text,
                                      moderated, mirrored,
                                      maxPostsPerSource,
                                      maxFeedItemSizeKb,
@@ -919,7 +919,7 @@ def getRSS(baseDir: str, domain: str, session, url: str,
     return None
 
 
-def getRSSfromDict(baseDir: str, newswire: {},
+def getRSSfromDict(base_dir: str, newswire: {},
                    httpPrefix: str, domainFull: str,
                    title: str, translate: {}) -> str:
     """Returns an rss feed from the current newswire dict.
@@ -1004,7 +1004,7 @@ def _getHashtagsFromPost(postJsonObject: {}) -> []:
     return tags
 
 
-def _addAccountBlogsToNewswire(baseDir: str, nickname: str, domain: str,
+def _addAccountBlogsToNewswire(base_dir: str, nickname: str, domain: str,
                                newswire: {},
                                maxBlogsPerAccount: int,
                                indexFilename: str,
@@ -1019,7 +1019,7 @@ def _addAccountBlogsToNewswire(baseDir: str, nickname: str, domain: str,
 
     # local blogs can potentially be moderated
     moderatedFilename = \
-        acctDir(baseDir, nickname, domain) + '/.newswiremoderated'
+        acctDir(base_dir, nickname, domain) + '/.newswiremoderated'
     if os.path.isfile(moderatedFilename):
         moderated = True
 
@@ -1042,7 +1042,7 @@ def _addAccountBlogsToNewswire(baseDir: str, nickname: str, domain: str,
 
                 # read the post from file
                 fullPostFilename = \
-                    locatePost(baseDir, nickname,
+                    locatePost(base_dir, nickname,
                                domain, postUrl, False)
                 if not fullPostFilename:
                     print('Unable to locate post for newswire ' + postUrl)
@@ -1066,7 +1066,7 @@ def _addAccountBlogsToNewswire(baseDir: str, nickname: str, domain: str,
                     description = firstParagraphFromString(content)
                     description = removeHtml(description)
                     tagsFromPost = _getHashtagsFromPost(postJsonObject)
-                    _addNewswireDictEntry(baseDir, domain,
+                    _addNewswireDictEntry(base_dir, domain,
                                           newswire, published,
                                           postJsonObject['object']['summary'],
                                           postJsonObject['object']['url'],
@@ -1080,7 +1080,7 @@ def _addAccountBlogsToNewswire(baseDir: str, nickname: str, domain: str,
                 break
 
 
-def _addBlogsToNewswire(baseDir: str, domain: str, newswire: {},
+def _addBlogsToNewswire(base_dir: str, domain: str, newswire: {},
                         maxBlogsPerAccount: int,
                         maxTags: int, systemLanguage: str,
                         session, debug: bool) -> None:
@@ -1089,7 +1089,7 @@ def _addBlogsToNewswire(baseDir: str, domain: str, newswire: {},
     moderationDict = {}
 
     # go through each account
-    for subdir, dirs, files in os.walk(baseDir + '/accounts'):
+    for subdir, dirs, files in os.walk(base_dir + '/accounts'):
         for handle in dirs:
             if not isAccountDir(handle):
                 continue
@@ -1097,19 +1097,19 @@ def _addBlogsToNewswire(baseDir: str, domain: str, newswire: {},
             nickname = handle.split('@')[0]
 
             # has this account been suspended?
-            if isSuspended(baseDir, nickname):
+            if isSuspended(base_dir, nickname):
                 continue
 
-            if os.path.isfile(baseDir + '/accounts/' + handle +
+            if os.path.isfile(base_dir + '/accounts/' + handle +
                               '/.nonewswire'):
                 continue
 
             # is there a blogs timeline for this account?
-            accountDir = os.path.join(baseDir + '/accounts', handle)
+            accountDir = os.path.join(base_dir + '/accounts', handle)
             blogsIndex = accountDir + '/tlblogs.index'
             if os.path.isfile(blogsIndex):
                 domain = handle.split('@')[1]
-                _addAccountBlogsToNewswire(baseDir, nickname, domain,
+                _addAccountBlogsToNewswire(base_dir, nickname, domain,
                                            newswire, maxBlogsPerAccount,
                                            blogsIndex, maxTags,
                                            systemLanguage, session,
@@ -1120,7 +1120,7 @@ def _addBlogsToNewswire(baseDir: str, domain: str, newswire: {},
     sortedModerationDict = \
         OrderedDict(sorted(moderationDict.items(), reverse=True))
     # save the moderation queue details for later display
-    newswireModerationFilename = baseDir + '/accounts/newswiremoderation.txt'
+    newswireModerationFilename = base_dir + '/accounts/newswiremoderation.txt'
     if sortedModerationDict:
         saveJson(sortedModerationDict, newswireModerationFilename)
     else:
@@ -1133,7 +1133,7 @@ def _addBlogsToNewswire(baseDir: str, domain: str, newswire: {},
                       str(newswireModerationFilename))
 
 
-def getDictFromNewswire(session, baseDir: str, domain: str,
+def getDictFromNewswire(session, base_dir: str, domain: str,
                         maxPostsPerSource: int, maxFeedSizeKb: int,
                         maxTags: int, maxFeedItemSizeKb: int,
                         maxNewswirePosts: int,
@@ -1141,7 +1141,7 @@ def getDictFromNewswire(session, baseDir: str, domain: str,
                         systemLanguage: str, debug: bool) -> {}:
     """Gets rss feeds as a dictionary from newswire file
     """
-    subscriptionsFilename = baseDir + '/accounts/newswire.txt'
+    subscriptionsFilename = base_dir + '/accounts/newswire.txt'
     if not os.path.isfile(subscriptionsFilename):
         return {}
 
@@ -1175,7 +1175,7 @@ def getDictFromNewswire(session, baseDir: str, domain: str,
             mirrored = True
             url = url.replace('!', '').strip()
 
-        itemsList = getRSS(baseDir, domain, session, url,
+        itemsList = getRSS(base_dir, domain, session, url,
                            moderated, mirrored,
                            maxPostsPerSource, maxFeedSizeKb,
                            maxFeedItemSizeKb,
@@ -1185,7 +1185,7 @@ def getDictFromNewswire(session, baseDir: str, domain: str,
                 result[dateStr] = item
 
     # add blogs from each user account
-    _addBlogsToNewswire(baseDir, domain, result,
+    _addBlogsToNewswire(base_dir, domain, result,
                         maxPostsPerSource, maxTags, systemLanguage,
                         session, debug)
 

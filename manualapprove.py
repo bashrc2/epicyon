@@ -19,7 +19,7 @@ from utils import acctDir
 from threads import threadWithTrace
 
 
-def manualDenyFollowRequest(session, baseDir: str,
+def manualDenyFollowRequest(session, base_dir: str,
                             httpPrefix: str,
                             nickname: str, domain: str, port: int,
                             denyHandle: str,
@@ -31,19 +31,19 @@ def manualDenyFollowRequest(session, baseDir: str,
                             signingPrivateKeyPem: str) -> None:
     """Manually deny a follow request
     """
-    accountsDir = acctDir(baseDir, nickname, domain)
+    accountsDir = acctDir(base_dir, nickname, domain)
 
     # has this handle already been rejected?
     rejectedFollowsFilename = accountsDir + '/followrejects.txt'
     if os.path.isfile(rejectedFollowsFilename):
         if denyHandle in open(rejectedFollowsFilename).read():
-            removeFromFollowRequests(baseDir, nickname, domain,
+            removeFromFollowRequests(base_dir, nickname, domain,
                                      denyHandle, debug)
             print(denyHandle + ' has already been rejected as a follower of ' +
                   nickname)
             return
 
-    removeFromFollowRequests(baseDir, nickname, domain, denyHandle, debug)
+    removeFromFollowRequests(base_dir, nickname, domain, denyHandle, debug)
 
     # Store rejected follows
     try:
@@ -59,7 +59,7 @@ def manualDenyFollowRequest(session, baseDir: str,
     if ':' in denyDomain:
         denyPort = getPortFromDomain(denyDomain)
         denyDomain = removeDomainPort(denyDomain)
-    followedAccountRejects(session, baseDir, httpPrefix,
+    followedAccountRejects(session, base_dir, httpPrefix,
                            nickname, domain, port,
                            denyNickname, denyDomain, denyPort,
                            federationList,
@@ -71,7 +71,7 @@ def manualDenyFollowRequest(session, baseDir: str,
     print('Follow request from ' + denyHandle + ' was denied.')
 
 
-def manualDenyFollowRequestThread(session, baseDir: str,
+def manualDenyFollowRequestThread(session, base_dir: str,
                                   httpPrefix: str,
                                   nickname: str, domain: str, port: int,
                                   denyHandle: str,
@@ -86,7 +86,7 @@ def manualDenyFollowRequestThread(session, baseDir: str,
     """
     thr = \
         threadWithTrace(target=manualDenyFollowRequest,
-                        args=(session, baseDir,
+                        args=(session, base_dir,
                               httpPrefix,
                               nickname, domain, port,
                               denyHandle,
@@ -120,7 +120,7 @@ def _approveFollowerHandle(accountDir: str, approveHandle: str) -> None:
             print('EX: unable to write ' + approvedFilename)
 
 
-def manualApproveFollowRequest(session, baseDir: str,
+def manualApproveFollowRequest(session, base_dir: str,
                                httpPrefix: str,
                                nickname: str, domain: str, port: int,
                                approveHandle: str,
@@ -135,7 +135,7 @@ def manualApproveFollowRequest(session, baseDir: str,
     handle = nickname + '@' + domain
     print('Manual follow accept: ' + handle +
           ' approving follow request from ' + approveHandle)
-    accountDir = baseDir + '/accounts/' + handle
+    accountDir = base_dir + '/accounts/' + handle
     approveFollowsFilename = accountDir + '/followrequests.txt'
     if not os.path.isfile(approveFollowsFilename):
         print('Manual follow accept: follow requests file ' +
@@ -205,7 +205,7 @@ def manualApproveFollowRequest(session, baseDir: str,
                             print('Manual follow accept: Sending Accept for ' +
                                   handle + ' follow request from ' +
                                   approveNickname + '@' + approveDomain)
-                            followedAccountAccepts(session, baseDir,
+                            followedAccountAccepts(session, base_dir,
                                                    httpPrefix,
                                                    nickname, domain, port,
                                                    approveNickname,
@@ -277,7 +277,7 @@ def manualApproveFollowRequest(session, baseDir: str,
                   approveFollowsFilename + '.new')
 
 
-def manualApproveFollowRequestThread(session, baseDir: str,
+def manualApproveFollowRequestThread(session, base_dir: str,
                                      httpPrefix: str,
                                      nickname: str, domain: str, port: int,
                                      approveHandle: str,
@@ -292,7 +292,7 @@ def manualApproveFollowRequestThread(session, baseDir: str,
     """
     thr = \
         threadWithTrace(target=manualApproveFollowRequest,
-                        args=(session, baseDir,
+                        args=(session, base_dir,
                               httpPrefix,
                               nickname, domain, port,
                               approveHandle,
