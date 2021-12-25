@@ -3848,7 +3848,7 @@ def _receiveFollowRequest(session, base_dir: str, http_prefix: str,
                           cachedWebfingers: {}, personCache: {},
                           messageJson: {}, federationList: [],
                           debug: bool, projectVersion: str,
-                          maxFollowers: int, onionDomain: str,
+                          max_followers: int, onionDomain: str,
                           signingPrivateKeyPem: str, unitTest: bool) -> bool:
     """Receives a follow request within the POST section of HTTPServer
     """
@@ -3902,10 +3902,10 @@ def _receiveFollowRequest(session, base_dir: str, http_prefix: str,
             print('DEBUG: Cannot follow system account - ' +
                   nicknameToFollow)
         return True
-    if maxFollowers > 0:
+    if max_followers > 0:
         if getNoOfFollowers(base_dir,
                             nicknameToFollow, domainToFollow,
-                            True) > maxFollowers:
+                            True) > max_followers:
             print('WARN: ' + nicknameToFollow +
                   ' has reached their maximum number of followers')
             return True
@@ -4074,7 +4074,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                   yt_replace_domain: str,
                   twitterReplacementDomain: str,
                   showPublishedDateOnly: bool,
-                  maxFollowers: int,
+                  max_followers: int,
                   allow_local_network_access: bool,
                   peertubeInstances: [],
                   verify_all_signatures: bool,
@@ -4371,7 +4371,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                                  queueJson['post'],
                                  federationList,
                                  debug, projectVersion,
-                                 maxFollowers, onionDomain,
+                                 max_followers, onionDomain,
                                  signingPrivateKeyPem, unitTest):
             if os.path.isfile(queueFilename):
                 try:

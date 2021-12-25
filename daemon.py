@@ -18437,7 +18437,7 @@ def runDaemon(content_license_url: str,
               icons_as_buttons: bool,
               full_width_tl_button_header: bool,
               show_publish_as_icon: bool,
-              maxFollowers: int,
+              max_followers: int,
               maxNewsPosts: int,
               maxMirroredArticles: int,
               maxNewswireFeedSizeKb: int,
@@ -18657,7 +18657,7 @@ def runDaemon(content_license_url: str,
     httpd.maxTags = 32
 
     # maximum number of followers per account
-    httpd.maxFollowers = maxFollowers
+    httpd.max_followers = max_followers
 
     # whether to show an icon for publish on the
     # newswire, or a 'Publish' button
@@ -18918,7 +18918,7 @@ def runDaemon(content_license_url: str,
                               httpd.yt_replace_domain,
                               httpd.twitterReplacementDomain,
                               httpd.showPublishedDateOnly,
-                              httpd.maxFollowers,
+                              httpd.max_followers,
                               httpd.allow_local_network_access,
                               httpd.peertubeInstances,
                               verify_all_signatures,

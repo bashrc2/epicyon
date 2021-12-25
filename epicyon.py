@@ -214,8 +214,8 @@ parser.add_argument('--maxNewsPosts',
                     default=0,
                     help='Maximum number of news timeline posts to keep. ' +
                     'Zero for no expiry.')
-parser.add_argument('--maxFollowers',
-                    dest='maxFollowers', type=int,
+parser.add_argument('--max_followers',
+                    dest='max_followers', type=int,
                     default=2000,
                     help='Maximum number of followers per account. ' +
                     'Zero for no limit.')
@@ -3053,10 +3053,10 @@ maxNewsPosts = \
 if maxNewsPosts is not None:
     args.maxNewsPosts = int(maxNewsPosts)
 
-maxFollowers = \
-    getConfigParam(base_dir, 'maxFollowers')
-if maxFollowers is not None:
-    args.maxFollowers = int(maxFollowers)
+max_followers = \
+    getConfigParam(base_dir, 'max_followers')
+if max_followers is not None:
+    args.max_followers = int(max_followers)
 
 max_feed_item_size_kb = \
     getConfigParam(base_dir, 'max_feed_item_size_kb')
@@ -3232,7 +3232,7 @@ if __name__ == "__main__":
               args.icons_as_buttons,
               args.full_width_tl_button_header,
               args.show_publish_as_icon,
-              args.maxFollowers,
+              args.max_followers,
               args.maxNewsPosts,
               args.maxMirroredArticles,
               args.maxNewswireFeedSizeKb,
