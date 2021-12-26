@@ -14,7 +14,7 @@ from session import getJson
 from utils import loadJson
 from utils import saveJson
 from utils import getFileCaseInsensitive
-from utils import getUserPaths
+from utils import get_user_paths
 
 
 def _removePersonFromCache(base_dir: str, personUrl: str,
@@ -144,7 +144,7 @@ def getPersonPubKey(base_dir: str, session, personUrl: str,
     if not personUrl:
         return None
     personUrl = personUrl.replace('#main-key', '')
-    usersPaths = getUserPaths()
+    usersPaths = get_user_paths()
     for possibleUsersPath in usersPaths:
         if personUrl.endswith(possibleUsersPath + 'inbox'):
             if debug:

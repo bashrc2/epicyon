@@ -194,7 +194,7 @@ def get_locked_account(actor_json: {}) -> bool:
 def has_users_path(pathStr: str) -> bool:
     """Whether there is a /users/ path (or equivalent) in the given string
     """
-    usersList = getUserPaths()
+    usersList = get_user_paths()
     for usersStr in usersList:
         if usersStr in pathStr:
             return True
@@ -1022,7 +1022,7 @@ def getNicknameFromActor(actor: str) -> str:
     """
     if actor.startswith('@'):
         actor = actor[1:]
-    usersPaths = getUserPaths()
+    usersPaths = get_user_paths()
     for possiblePath in usersPaths:
         if possiblePath in actor:
             nickStr = actor.split(possiblePath)[1].replace('@', '')
@@ -1052,7 +1052,7 @@ def getNicknameFromActor(actor: str) -> str:
     return None
 
 
-def getUserPaths() -> []:
+def get_user_paths() -> []:
     """Returns possible user paths
     e.g. /users/nickname, /channel/nickname
     """
@@ -1074,7 +1074,7 @@ def getDomainFromActor(actor: str) -> (str, int):
         actor = actor[1:]
     port = None
     prefixes = getProtocolPrefixes()
-    usersPaths = getUserPaths()
+    usersPaths = get_user_paths()
     for possiblePath in usersPaths:
         if possiblePath in actor:
             domain = actor.split(possiblePath)[0]
@@ -3148,7 +3148,7 @@ def getSharesFilesList() -> []:
 def replaceUsersWithAt(actor: str) -> str:
     """ https://domain/users/nick becomes https://domain/@nick
     """
-    uPaths = getUserPaths()
+    uPaths = get_user_paths()
     for path in uPaths:
         if path in actor:
             actor = actor.replace(path, '/@')

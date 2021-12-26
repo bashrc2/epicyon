@@ -32,7 +32,7 @@ from webfinger import webfingerHandle
 from httpsig import createSignedHeader
 from siteactive import siteIsActive
 from languages import understoodPostLanguage
-from utils import getUserPaths
+from utils import get_user_paths
 from utils import invalidCiphertext
 from utils import hasObjectStringType
 from utils import removeIdEnding
@@ -1271,7 +1271,7 @@ def _consolidateActorsList(actorsList: []) -> None:
             if ccActor not in possibleDuplicateActors:
                 possibleDuplicateActors.append(ccActor)
     if possibleDuplicateActors:
-        uPaths = getUserPaths()
+        uPaths = get_user_paths()
         removeActors = []
         for ccActor in possibleDuplicateActors:
             for usrPath in uPaths:

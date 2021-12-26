@@ -56,7 +56,7 @@ from utils import has_users_path
 from utils import getImageExtensions
 from utils import isImageFile
 from utils import acct_dir
-from utils import getUserPaths
+from utils import get_user_paths
 from utils import getGroupPaths
 from utils import local_actor_url
 from utils import dangerousSVG
@@ -1421,7 +1421,7 @@ def _detectUsersPath(url: str) -> str:
     """
     if '/' not in url:
         return '/users/'
-    usersPaths = getUserPaths()
+    usersPaths = get_user_paths()
     for possibleUsersPath in usersPaths:
         if possibleUsersPath in url:
             return possibleUsersPath
@@ -1460,7 +1460,7 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
         for prefix in prefixes:
             handle = handle.replace(prefix, '')
         handle = handle.replace('/@', detectedUsersPath)
-        paths = getUserPaths()
+        paths = get_user_paths()
         userPathFound = False
         for userPath in paths:
             if userPath in handle:
@@ -1570,7 +1570,7 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
     if not personUrl and wfRequest:
         personUrl = getUserUrl(wfRequest, 0, debug)
     if nickname == domain:
-        paths = getUserPaths()
+        paths = get_user_paths()
         for userPath in paths:
             personUrl = personUrl.replace(userPath, '/actor/')
     if not personUrl and group_account:

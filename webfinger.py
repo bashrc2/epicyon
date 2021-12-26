@@ -18,7 +18,7 @@ from utils import loadJsonOnionify
 from utils import saveJson
 from utils import getProtocolPrefixes
 from utils import removeDomainPort
-from utils import getUserPaths
+from utils import get_user_paths
 from utils import getGroupPaths
 from utils import local_actor_url
 
@@ -48,7 +48,7 @@ def _parseHandle(handle: str) -> (str, str, bool):
         return nickname, domain, group_account
 
     # try for different /users/ paths
-    usersPaths = getUserPaths()
+    usersPaths = get_user_paths()
     groupPaths = getGroupPaths()
     for possibleUsersPath in usersPaths:
         if possibleUsersPath in handle:

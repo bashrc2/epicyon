@@ -26,7 +26,7 @@ from posts import getPersonBox
 from utils import loadJson
 from utils import saveJson
 from utils import isAccountDir
-from utils import getUserPaths
+from utils import get_user_paths
 from utils import acct_dir
 from utils import hasGroupType
 from utils import local_actor_url
@@ -118,7 +118,7 @@ def _removeFromFollowBase(base_dir: str,
         acceptDenyDomain = acceptOrDenyHandle.split('@')[1]
         # for each possible users path construct an actor and
         # check if it exists in teh file
-        usersPaths = getUserPaths()
+        usersPaths = get_user_paths()
         actorFound = False
         for usersName in usersPaths:
             acceptDenyActor = \
@@ -271,7 +271,7 @@ def isFollowerOfPerson(base_dir: str, nickname: str, domain: str,
     if handle in followersStr:
         alreadyFollowing = True
     else:
-        paths = getUserPaths()
+        paths = get_user_paths()
         for userPath in paths:
             url = '://' + followerDomain + userPath + followerNickname
             if url in followersStr:
@@ -652,7 +652,7 @@ def storeFollowRequest(base_dir: str,
         if approveHandle in followersStr:
             alreadyFollowing = True
         else:
-            usersPaths = getUserPaths()
+            usersPaths = get_user_paths()
             for possibleUsersPath in usersPaths:
                 url = '://' + domain_full + possibleUsersPath + nickname
                 if url in followersStr:

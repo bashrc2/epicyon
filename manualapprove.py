@@ -14,7 +14,7 @@ from follow import removeFromFollowRequests
 from utils import loadJson
 from utils import removeDomainPort
 from utils import getPortFromDomain
-from utils import getUserPaths
+from utils import get_user_paths
 from utils import acct_dir
 from threads import threadWithTrace
 
@@ -157,7 +157,7 @@ def manualApproveFollowRequest(session, base_dir: str,
         reqNick = approveHandle.split('@')[0].replace('!', '')
         reqDomain = approveHandle.split('@')[1].strip()
         reqPrefix = http_prefix + '://' + reqDomain
-        paths = getUserPaths()
+        paths = get_user_paths()
         for userPath in paths:
             if reqPrefix + userPath + reqNick in approveFollowsStr:
                 exists = True

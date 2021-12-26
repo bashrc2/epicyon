@@ -27,7 +27,7 @@ from utils import hasObjectString
 from utils import hasObjectStringObject
 from utils import getReplyIntervalHours
 from utils import canReplyTo
-from utils import getUserPaths
+from utils import get_user_paths
 from utils import get_base_content_from_post
 from utils import acct_dir
 from utils import removeDomainPort
@@ -836,7 +836,7 @@ def _personReceiveUpdate(base_dir: str,
               ' ' + str(personJson))
     domain_full = getFullDomain(domain, port)
     updateDomainFull = getFullDomain(updateDomain, updatePort)
-    usersPaths = getUserPaths()
+    usersPaths = get_user_paths()
     usersStrFound = False
     for usersStr in usersPaths:
         actor = updateDomainFull + usersStr + updateNickname
