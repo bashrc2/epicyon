@@ -17,7 +17,7 @@ def _dirAcct(base_dir: str, nickname: str, domain: str) -> str:
 def _portDomainRemove(domain: str) -> str:
     """If the domain has a port appended then remove it
     eg. mydomain.com:80 becomes mydomain.com
-    same as removeDomainPort in utils.py
+    same as remove_domain_port in utils.py
     """
     if ':' in domain:
         if domain.startswith('did:'):

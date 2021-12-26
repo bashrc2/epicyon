@@ -39,7 +39,7 @@ from utils import removeIdEnding
 from utils import replace_users_with_at
 from utils import has_group_type
 from utils import get_base_content_from_post
-from utils import removeDomainPort
+from utils import remove_domain_port
 from utils import get_port_from_domain
 from utils import has_object_dict
 from utils import rejectPostId
@@ -916,7 +916,7 @@ def savePostToBox(base_dir: str, http_prefix: str, postId: str,
        boxname != 'scheduled':
         return None
     originalDomain = domain
-    domain = removeDomainPort(domain)
+    domain = remove_domain_port(domain)
 
     if not postId:
         statusNumber, published = getStatusNumber()
@@ -2036,7 +2036,7 @@ def getMentionedPeople(base_dir: str, http_prefix: str,
         mentionedNickname = handle.split('@')[0]
         mentionedDomain = handle.split('@')[1].strip('\n').strip('\r')
         if ':' in mentionedDomain:
-            mentionedDomain = removeDomainPort(mentionedDomain)
+            mentionedDomain = remove_domain_port(mentionedDomain)
         if not validNickname(mentionedDomain, mentionedNickname):
             continue
         actor = \
@@ -3172,7 +3172,7 @@ def sendToFollowers(session, base_dir: str,
         toDomain = followerHandles[index].split('@')[1]
         if ':' in toDomain:
             toPort = get_port_from_domain(toDomain)
-            toDomain = removeDomainPort(toDomain)
+            toDomain = remove_domain_port(toDomain)
 
         cc = ''
 

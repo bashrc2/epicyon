@@ -12,7 +12,7 @@ import email.parser
 import urllib.parse
 from shutil import copyfile
 from utils import dangerousSVG
-from utils import removeDomainPort
+from utils import remove_domain_port
 from utils import isValidLanguage
 from utils import get_image_extensions
 from utils import load_json
@@ -855,7 +855,7 @@ def addHtmlTags(base_dir: str, http_prefix: str,
     replaceEmoji = {}
     emojiDict = {}
     originalDomain = domain
-    domain = removeDomainPort(domain)
+    domain = remove_domain_port(domain)
     followingFilename = acct_dir(base_dir, nickname, domain) + '/following.txt'
 
     # read the following list so that we can detect just @nick

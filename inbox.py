@@ -30,7 +30,7 @@ from utils import canReplyTo
 from utils import get_user_paths
 from utils import get_base_content_from_post
 from utils import acct_dir
-from utils import removeDomainPort
+from utils import remove_domain_port
 from utils import get_port_from_domain
 from utils import has_object_dict
 from utils import dmAllowedFromDomain
@@ -324,7 +324,7 @@ def _inboxStorePostToHtmlCache(recentPostsCache: {}, max_recent_posts: int,
 def validInbox(base_dir: str, nickname: str, domain: str) -> bool:
     """Checks whether files were correctly saved to the inbox
     """
-    domain = removeDomainPort(domain)
+    domain = remove_domain_port(domain)
     inboxDir = acct_dir(base_dir, nickname, domain) + '/inbox'
     if not os.path.isdir(inboxDir):
         return True
@@ -346,7 +346,7 @@ def validInboxFilenames(base_dir: str, nickname: str, domain: str,
     """Used by unit tests to check that the port number gets appended to
     domain names within saved post filenames
     """
-    domain = removeDomainPort(domain)
+    domain = remove_domain_port(domain)
     inboxDir = acct_dir(base_dir, nickname, domain) + '/inbox'
     if not os.path.isdir(inboxDir):
         print('Not an inbox directory: ' + inboxDir)
@@ -465,7 +465,7 @@ def savePostToInboxQueue(base_dir: str, http_prefix: str,
               str(len(messageBytes)) + ' bytes')
         return None
     originalDomain = domain
-    domain = removeDomainPort(domain)
+    domain = remove_domain_port(domain)
 
     # block at the ealiest stage possible, which means the data
     # isn't written to file
@@ -644,7 +644,7 @@ def _inboxPostRecipients(base_dir: str, post_json_object: {},
             print('WARNING: inbox post has no actor')
         return recipientsDict, recipientsDictFollowers
 
-    domain = removeDomainPort(domain)
+    domain = remove_domain_port(domain)
     domainBase = domain
     domain = get_full_domain(domain, port)
     domainMatch = '/' + domain + '/users/'
@@ -1564,7 +1564,7 @@ def _receiveBookmark(recentPostsCache: {},
         print('DEBUG: c2s inbox bookmark Add request arrived in outbox')
 
     messageUrl = removeIdEnding(message_json['object']['url'])
-    domain = removeDomainPort(domain)
+    domain = remove_domain_port(domain)
     postFilename = locatePost(base_dir, nickname, domain, messageUrl)
     if not postFilename:
         if debug:
@@ -1677,7 +1677,7 @@ def _receiveUndoBookmark(recentPostsCache: {},
               'request arrived in outbox')
 
     messageUrl = removeIdEnding(message_json['object']['url'])
-    domain = removeDomainPort(domain)
+    domain = remove_domain_port(domain)
     postFilename = locatePost(base_dir, nickname, domain, messageUrl)
     if not postFilename:
         if debug:
@@ -2770,7 +2770,7 @@ def _updateLastSeen(base_dir: str, handle: str, actor: str) -> None:
         return
     nickname = handle.split('@')[0]
     domain = handle.split('@')[1]
-    domain = removeDomainPort(domain)
+    domain = remove_domain_port(domain)
     accountPath = acct_dir(base_dir, nickname, domain)
     if not os.path.isdir(accountPath):
         return
@@ -2831,7 +2831,7 @@ def _bounceDM(senderPostId: str, session, http_prefix: str,
     senderPort = port
     if ':' in senderDomain:
         senderPort = get_port_from_domain(senderDomain)
-        senderDomain = removeDomainPort(senderDomain)
+        senderDomain = remove_domain_port(senderDomain)
     cc = []
 
     # create the bounce DM

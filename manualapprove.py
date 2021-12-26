@@ -12,7 +12,7 @@ from follow import followedAccountAccepts
 from follow import followedAccountRejects
 from follow import removeFromFollowRequests
 from utils import load_json
-from utils import removeDomainPort
+from utils import remove_domain_port
 from utils import get_port_from_domain
 from utils import get_user_paths
 from utils import acct_dir
@@ -58,7 +58,7 @@ def manualDenyFollowRequest(session, base_dir: str,
     denyPort = port
     if ':' in denyDomain:
         denyPort = get_port_from_domain(denyDomain)
-        denyDomain = removeDomainPort(denyDomain)
+        denyDomain = remove_domain_port(denyDomain)
     followedAccountRejects(session, base_dir, http_prefix,
                            nickname, domain, port,
                            denyNickname, denyDomain, denyPort,
@@ -202,7 +202,8 @@ def manualApproveFollowRequest(session, base_dir: str,
                             if ':' in approveDomain:
                                 approvePort = \
                                     get_port_from_domain(approveDomain)
-                                approveDomain = removeDomainPort(approveDomain)
+                                approveDomain = \
+                                    remove_domain_port(approveDomain)
                             print('Manual follow accept: Sending Accept for ' +
                                   handle + ' follow request from ' +
                                   approveNickname + '@' + approveDomain)

@@ -42,7 +42,7 @@ from utils import removeHtml
 from utils import containsInvalidChars
 from utils import replace_users_with_at
 from utils import remove_line_endings
-from utils import removeDomainPort
+from utils import remove_domain_port
 from utils import getStatusNumber
 from utils import get_full_domain
 from utils import validNickname
@@ -107,7 +107,7 @@ def setProfileImage(base_dir: str, http_prefix: str,
     if image_filename.startswith('~/'):
         image_filename = image_filename.replace('~/', str(Path.home()) + '/')
 
-    domain = removeDomainPort(domain)
+    domain = remove_domain_port(domain)
     fullDomain = get_full_domain(domain, port)
 
     handle = nickname + '@' + domain
@@ -167,7 +167,7 @@ def setProfileImage(base_dir: str, http_prefix: str,
 def _accountExists(base_dir: str, nickname: str, domain: str) -> bool:
     """Returns true if the given account exists
     """
-    domain = removeDomainPort(domain)
+    domain = remove_domain_port(domain)
     accountDir = acct_dir(base_dir, nickname, domain)
     return os.path.isdir(accountDir) or \
         os.path.isdir(base_dir + '/deactivated/' + nickname + '@' + domain)
@@ -885,7 +885,7 @@ def personLookup(domain: str, path: str, base_dir: str) -> {}:
         return None
     if not isSharedInbox and not validNickname(domain, nickname):
         return None
-    domain = removeDomainPort(domain)
+    domain = remove_domain_port(domain)
     handle = nickname + '@' + domain
     filename = base_dir + '/accounts/' + handle + '.json'
     if not os.path.isfile(filename):

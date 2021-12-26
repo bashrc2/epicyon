@@ -20,7 +20,7 @@ from utils import votesOnNewswireItem
 from utils import getNicknameFromActor
 from utils import is_editor
 from utils import get_config_param
-from utils import removeDomainPort
+from utils import remove_domain_port
 from utils import acct_dir
 from posts import isModerator
 from newswire import getNewswireFaviconUrl
@@ -65,7 +65,7 @@ def getRightColumnContent(base_dir: str, nickname: str, domain_full: str,
     """
     htmlStr = ''
 
-    domain = removeDomainPort(domain_full)
+    domain = remove_domain_port(domain_full)
 
     if authorized:
         # only show the publish button if logged in, otherwise replace it with

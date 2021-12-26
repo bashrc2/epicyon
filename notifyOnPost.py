@@ -8,7 +8,7 @@ __status__ = "Production"
 __module_group__ = "Calendar"
 
 import os
-from utils import removeDomainPort
+from utils import remove_domain_port
 from utils import acct_dir
 
 
@@ -20,7 +20,7 @@ def _notifyOnPostArrival(base_dir: str, nickname: str, domain: str,
     indicating whether to notify when a new post arrives from that account
     """
     # check that a following file exists
-    domain = removeDomainPort(domain)
+    domain = remove_domain_port(domain)
     followingFilename = acct_dir(base_dir, nickname, domain) + '/following.txt'
     if not os.path.isfile(followingFilename):
         print("WARN: following.txt doesn't exist for " +

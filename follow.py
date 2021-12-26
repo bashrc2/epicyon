@@ -11,7 +11,7 @@ from pprint import pprint
 import os
 from utils import has_object_string_object
 from utils import has_object_stringType
-from utils import removeDomainPort
+from utils import remove_domain_port
 from utils import has_users_path
 from utils import get_full_domain
 from utils import getFollowersList
@@ -169,7 +169,7 @@ def isFollowingActor(base_dir: str,
     """Is the given nickname following the given actor?
     The actor can also be a handle: nickname@domain
     """
-    domain = removeDomainPort(domain)
+    domain = remove_domain_port(domain)
     handle = nickname + '@' + domain
     if not os.path.isdir(base_dir + '/accounts/' + handle):
         return False
@@ -221,7 +221,7 @@ def followerOfPerson(base_dir: str, nickname: str, domain: str,
 def getFollowerDomains(base_dir: str, nickname: str, domain: str) -> []:
     """Returns a list of domains for followers
     """
-    domain = removeDomainPort(domain)
+    domain = remove_domain_port(domain)
     followersFile = acct_dir(base_dir, nickname, domain) + '/followers.txt'
     if not os.path.isfile(followersFile):
         return []
@@ -254,7 +254,7 @@ def isFollowerOfPerson(base_dir: str, nickname: str, domain: str,
     if not followerNickname:
         print('No followerNickname for ' + followerDomain)
         return False
-    domain = removeDomainPort(domain)
+    domain = remove_domain_port(domain)
     followersFile = acct_dir(base_dir, nickname, domain) + '/followers.txt'
     if not os.path.isfile(followersFile):
         return False
@@ -288,7 +288,7 @@ def unfollowAccount(base_dir: str, nickname: str, domain: str,
                     followFile: str = 'following.txt') -> bool:
     """Removes a person to the follow list
     """
-    domain = removeDomainPort(domain)
+    domain = remove_domain_port(domain)
     handle = nickname + '@' + domain
     handleToUnfollow = followNickname + '@' + followDomain
     if group_account:
@@ -503,7 +503,7 @@ def getFollowingFeed(base_dir: str, domain: str, port: int, path: str,
     }
 
     handleDomain = domain
-    handleDomain = removeDomainPort(handleDomain)
+    handleDomain = remove_domain_port(handleDomain)
     handle = nickname + '@' + handleDomain
     filename = base_dir + '/accounts/' + handle + '/' + followFile + '.txt'
     if not os.path.isfile(filename):
@@ -570,7 +570,7 @@ def followApprovalRequired(base_dir: str, nicknameToFollow: str,
         return False
 
     manuallyApproveFollows = False
-    domainToFollow = removeDomainPort(domainToFollow)
+    domainToFollow = remove_domain_port(domainToFollow)
     actorFilename = base_dir + '/accounts/' + \
         nicknameToFollow + '@' + domainToFollow + '.json'
     if os.path.isfile(actorFilename):

@@ -17,7 +17,7 @@ from utils import load_json
 from utils import load_json_onionify
 from utils import save_json
 from utils import getProtocolPrefixes
-from utils import removeDomainPort
+from utils import remove_domain_port
 from utils import get_user_paths
 from utils import get_group_paths
 from utils import local_actor_url
@@ -75,7 +75,7 @@ def webfingerHandle(session, handle: str, http_prefix: str,
     nickname, domain, grpAccount = _parseHandle(handle)
     if not nickname:
         return None
-    wfDomain = removeDomainPort(domain)
+    wfDomain = remove_domain_port(domain)
 
     wfHandle = nickname + '@' + wfDomain
     wf = getWebfingerFromCache(wfHandle, cached_webfingers)

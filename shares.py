@@ -31,7 +31,7 @@ from utils import validNickname
 from utils import load_json
 from utils import save_json
 from utils import get_image_extensions
-from utils import removeDomainPort
+from utils import remove_domain_port
 from utils import isAccountDir
 from utils import acct_dir
 from utils import is_float
@@ -415,7 +415,7 @@ def _expireSharesForAccount(base_dir: str, nickname: str, domain: str,
                             sharesFileType: str) -> None:
     """Removes expired items from shares for a particular account
     """
-    handleDomain = removeDomainPort(domain)
+    handleDomain = remove_domain_port(domain)
     handle = nickname + '@' + handleDomain
     sharesFilename = \
         base_dir + '/accounts/' + handle + '/' + sharesFileType + '.json'
@@ -488,7 +488,7 @@ def getSharesFeedForPerson(base_dir: str,
 
     domain = get_full_domain(domain, port)
 
-    handleDomain = removeDomainPort(domain)
+    handleDomain = remove_domain_port(domain)
     sharesFilename = \
         acct_dir(base_dir, nickname, handleDomain) + '/' + \
         sharesFileType + '.json'

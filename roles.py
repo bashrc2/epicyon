@@ -11,7 +11,7 @@ import os
 from utils import load_json
 from utils import save_json
 from utils import getStatusNumber
-from utils import removeDomainPort
+from utils import remove_domain_port
 from utils import acct_dir
 
 
@@ -78,7 +78,7 @@ def _addRole(base_dir: str, nickname: str, domain: str,
     """Adds a role nickname to the file.
     This is a file containing the nicknames of accounts having this role
     """
-    domain = removeDomainPort(domain)
+    domain = remove_domain_port(domain)
     roleFile = base_dir + '/accounts/' + roleFilename
     if os.path.isfile(roleFile):
         # is this nickname already in the file?

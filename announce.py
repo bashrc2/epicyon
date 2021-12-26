@@ -9,7 +9,7 @@ __module_group__ = "ActivityPub"
 
 from utils import has_object_string_object
 from utils import has_group_type
-from utils import removeDomainPort
+from utils import remove_domain_port
 from utils import removeIdEnding
 from utils import has_users_path
 from utils import get_full_domain
@@ -133,7 +133,7 @@ def createAnnounce(session, base_dir: str, federation_list: [],
     if not urlPermitted(objectUrl, federation_list):
         return None
 
-    domain = removeDomainPort(domain)
+    domain = remove_domain_port(domain)
     fullDomain = get_full_domain(domain, port)
 
     statusNumber, published = getStatusNumber()
@@ -408,7 +408,7 @@ def outboxUndoAnnounce(recentPostsCache: {},
         print('DEBUG: c2s undo announce request arrived in outbox')
 
     messageId = removeIdEnding(message_json['object']['object'])
-    domain = removeDomainPort(domain)
+    domain = remove_domain_port(domain)
     postFilename = locatePost(base_dir, nickname, domain, messageId)
     if not postFilename:
         if debug:

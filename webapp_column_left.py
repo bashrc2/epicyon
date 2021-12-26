@@ -12,7 +12,7 @@ from utils import get_config_param
 from utils import getNicknameFromActor
 from utils import is_editor
 from utils import is_artist
-from utils import removeDomainPort
+from utils import remove_domain_port
 from utils import local_actor_url
 from webapp_utils import sharesTimelineJson
 from webapp_utils import htmlPostSeparator
@@ -125,7 +125,7 @@ def getLeftColumnContent(base_dir: str, nickname: str, domain_full: str,
     htmlStr = ''
 
     separatorStr = htmlPostSeparator(base_dir, 'left')
-    domain = removeDomainPort(domain_full)
+    domain = remove_domain_port(domain_full)
 
     editImageClass = ''
     if showHeaderImage:
@@ -374,7 +374,7 @@ def htmlLinksMobile(cssCache: {}, base_dir: str,
         editor = is_editor(base_dir, nickname)
         artist = is_artist(base_dir, nickname)
 
-    domain = removeDomainPort(domain_full)
+    domain = remove_domain_port(domain_full)
 
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')

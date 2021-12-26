@@ -573,7 +573,7 @@ def getFollowersOfPerson(base_dir: str,
     Used by the shared inbox to know who to send incoming mail to
     """
     followers = []
-    domain = removeDomainPort(domain)
+    domain = remove_domain_port(domain)
     handle = nickname + '@' + domain
     if not os.path.isdir(base_dir + '/accounts/' + handle):
         return followers
@@ -814,7 +814,7 @@ def createInboxQueueDir(nickname: str, domain: str, base_dir: str) -> str:
 def domainPermitted(domain: str, federation_list: []):
     if len(federation_list) == 0:
         return True
-    domain = removeDomainPort(domain)
+    domain = remove_domain_port(domain)
     if domain in federation_list:
         return True
     return False
@@ -1098,7 +1098,7 @@ def getDomainFromActor(actor: str) -> (str, int):
             domain = domain.split('/')[0]
     if ':' in domain:
         port = get_port_from_domain(domain)
-        domain = removeDomainPort(domain)
+        domain = remove_domain_port(domain)
     return domain, port
 
 
@@ -1107,7 +1107,7 @@ def _setDefaultPetName(base_dir: str, nickname: str, domain: str,
     """Sets a default petname
     This helps especially when using onion or i2p address
     """
-    domain = removeDomainPort(domain)
+    domain = remove_domain_port(domain)
     userPath = acct_dir(base_dir, nickname, domain)
     petnamesFilename = userPath + '/petnames.txt'
 
@@ -1150,7 +1150,7 @@ def followPerson(base_dir: str, nickname: str, domain: str,
         print('DEBUG: follow of domain ' + followDomain)
 
     if ':' in domain:
-        domainOnly = removeDomainPort(domain)
+        domainOnly = remove_domain_port(domain)
         handle = nickname + '@' + domainOnly
     else:
         handle = nickname + '@' + domain
@@ -1160,7 +1160,7 @@ def followPerson(base_dir: str, nickname: str, domain: str,
         return False
 
     if ':' in followDomain:
-        followDomainOnly = removeDomainPort(followDomain)
+        followDomainOnly = remove_domain_port(followDomain)
         handleToFollow = followNickname + '@' + followDomainOnly
     else:
         handleToFollow = followNickname + '@' + followDomain
@@ -2909,7 +2909,7 @@ def getActorPropertyUrl(actor_json: {}, propertyName: str) -> str:
     return ''
 
 
-def removeDomainPort(domain: str) -> str:
+def remove_domain_port(domain: str) -> str:
     """If the domain has a port appended then remove it
     eg. mydomain.com:80 becomes mydomain.com
     """

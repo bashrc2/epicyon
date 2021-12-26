@@ -14,7 +14,7 @@ from pprint import pprint
 from utils import has_object_string
 from utils import has_object_string_object
 from utils import has_object_stringType
-from utils import removeDomainPort
+from utils import remove_domain_port
 from utils import has_object_dict
 from utils import has_users_path
 from utils import get_full_domain
@@ -382,7 +382,7 @@ def outboxReaction(recentPostsCache: {},
         print('DEBUG: c2s reaction request arrived in outbox')
 
     messageId = removeIdEnding(message_json['object'])
-    domain = removeDomainPort(domain)
+    domain = remove_domain_port(domain)
     emojiContent = message_json['content']
     postFilename = locatePost(base_dir, nickname, domain, messageId)
     if not postFilename:
@@ -425,7 +425,7 @@ def outboxUndoReaction(recentPostsCache: {},
 
     messageId = removeIdEnding(message_json['object']['object'])
     emojiContent = message_json['object']['content']
-    domain = removeDomainPort(domain)
+    domain = remove_domain_port(domain)
     postFilename = locatePost(base_dir, nickname, domain, messageId)
     if not postFilename:
         if debug:

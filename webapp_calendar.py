@@ -18,7 +18,7 @@ from utils import locatePost
 from utils import load_json
 from utils import weekDayOfMonthStart
 from utils import getAltPath
-from utils import removeDomainPort
+from utils import remove_domain_port
 from utils import acct_dir
 from utils import local_actor_url
 from utils import replace_users_with_at
@@ -249,7 +249,7 @@ def htmlCalendar(person_cache: {}, cssCache: {}, translate: {},
                  text_mode_banner: str, accessKeys: {}) -> str:
     """Show the calendar for a person
     """
-    domain = removeDomainPort(domain_full)
+    domain = remove_domain_port(domain_full)
 
     monthNumber = 0
     dayNumber = None
