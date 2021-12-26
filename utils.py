@@ -2785,7 +2785,7 @@ def setOccupationName(actor_json: {}, name: str) -> bool:
     return False
 
 
-def setOccupationSkillsList(actor_json: {}, skillsList: []) -> bool:
+def set_occupation_skills_list(actor_json: {}, skills_list: []) -> bool:
     """Sets the occupation skills for an actor
     """
     if 'hasOccupation' not in actor_json:
@@ -2793,24 +2793,24 @@ def setOccupationSkillsList(actor_json: {}, skillsList: []) -> bool:
     if not isinstance(actor_json['hasOccupation'], list):
         return False
     for index in range(len(actor_json['hasOccupation'])):
-        occupationItem = actor_json['hasOccupation'][index]
-        if not isinstance(occupationItem, dict):
+        occupation_item = actor_json['hasOccupation'][index]
+        if not isinstance(occupation_item, dict):
             continue
-        if not occupationItem.get('@type'):
+        if not occupation_item.get('@type'):
             continue
-        if occupationItem['@type'] != 'Occupation':
+        if occupation_item['@type'] != 'Occupation':
             continue
-        occupationItem['skills'] = skillsList
+        occupation_item['skills'] = skills_list
         return True
     return False
 
 
-def is_account_dir(dirName: str) -> bool:
+def is_account_dir(dir_name: str) -> bool:
     """Is the given directory an account within /accounts ?
     """
-    if '@' not in dirName:
+    if '@' not in dir_name:
         return False
-    if 'inbox@' in dirName or 'news@' in dirName:
+    if 'inbox@' in dir_name or 'news@' in dir_name:
         return False
     return True
 

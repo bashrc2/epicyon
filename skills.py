@@ -18,7 +18,7 @@ from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import load_json
 from utils import getOccupationSkills
-from utils import setOccupationSkillsList
+from utils import set_occupation_skills_list
 from utils import acct_dir
 from utils import local_actor_url
 from utils import has_actor
@@ -31,7 +31,7 @@ def setSkillsFromDict(actor_json: {}, skillsDict: {}) -> []:
     skillsList = []
     for name, value in skillsDict.items():
         skillsList.append(name + ':' + str(value))
-    setOccupationSkillsList(actor_json, skillsList)
+    set_occupation_skills_list(actor_json, skillsList)
     return skillsList
 
 
