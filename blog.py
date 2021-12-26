@@ -21,7 +21,7 @@ from utils import local_actor_url
 from utils import get_actor_languages_list
 from utils import get_base_content_from_post
 from utils import get_content_from_post
-from utils import isAccountDir
+from utils import is_account_dir
 from utils import removeHtml
 from utils import get_config_param
 from utils import get_full_domain
@@ -702,7 +702,7 @@ def _noOfBlogAccounts(base_dir: str) -> int:
     ctr = 0
     for subdir, dirs, files in os.walk(base_dir + '/accounts'):
         for acct in dirs:
-            if not isAccountDir(acct):
+            if not is_account_dir(acct):
                 continue
             accountDir = os.path.join(base_dir + '/accounts', acct)
             blogsIndex = accountDir + '/tlblogs.index'
@@ -717,7 +717,7 @@ def _singleBlogAccountNickname(base_dir: str) -> str:
     """
     for subdir, dirs, files in os.walk(base_dir + '/accounts'):
         for acct in dirs:
-            if not isAccountDir(acct):
+            if not is_account_dir(acct):
                 continue
             accountDir = os.path.join(base_dir + '/accounts', acct)
             blogsIndex = accountDir + '/tlblogs.index'
@@ -757,7 +757,7 @@ def htmlBlogView(authorized: bool,
 
     for subdir, dirs, files in os.walk(base_dir + '/accounts'):
         for acct in dirs:
-            if not isAccountDir(acct):
+            if not is_account_dir(acct):
                 continue
             accountDir = os.path.join(base_dir + '/accounts', acct)
             blogsIndex = accountDir + '/tlblogs.index'

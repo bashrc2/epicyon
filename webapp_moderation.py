@@ -9,7 +9,7 @@ __module_group__ = "Moderation"
 
 import os
 from utils import is_artist
-from utils import isAccountDir
+from utils import is_account_dir
 from utils import get_full_domain
 from utils import is_editor
 from utils import load_json
@@ -300,7 +300,7 @@ def htmlModerationInfo(cssCache: {}, translate: {},
     accounts = []
     for subdir, dirs, files in os.walk(base_dir + '/accounts'):
         for acct in dirs:
-            if not isAccountDir(acct):
+            if not is_account_dir(acct):
                 continue
             accounts.append(acct)
         break

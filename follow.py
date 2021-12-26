@@ -25,7 +25,7 @@ from posts import sendSignedJson
 from posts import getPersonBox
 from utils import load_json
 from utils import save_json
-from utils import isAccountDir
+from utils import is_account_dir
 from utils import get_user_paths
 from utils import acct_dir
 from utils import has_group_type
@@ -45,7 +45,7 @@ def createInitialLastSeen(base_dir: str, http_prefix: str) -> None:
     """
     for subdir, dirs, files in os.walk(base_dir + '/accounts'):
         for acct in dirs:
-            if not isAccountDir(acct):
+            if not is_account_dir(acct):
                 continue
             accountDir = os.path.join(base_dir + '/accounts', acct)
             followingFilename = accountDir + '/following.txt'

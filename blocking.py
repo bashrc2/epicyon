@@ -16,7 +16,7 @@ from utils import has_object_string_object
 from utils import has_object_stringType
 from utils import remove_domain_port
 from utils import has_object_dict
-from utils import isAccountDir
+from utils import is_account_dir
 from utils import getCachedPostFilename
 from utils import load_json
 from utils import save_json
@@ -910,7 +910,7 @@ def setBrochMode(base_dir: str, domain_full: str, enabled: bool) -> None:
         follow_files = ('following.txt', 'followers.txt')
         for subdir, dirs, files in os.walk(base_dir + '/accounts'):
             for acct in dirs:
-                if not isAccountDir(acct):
+                if not is_account_dir(acct):
                     continue
                 accountDir = os.path.join(base_dir + '/accounts', acct)
                 for followFileType in follow_files:

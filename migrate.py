@@ -8,7 +8,7 @@ __status__ = "Production"
 __module_group__ = "Core"
 
 import os
-from utils import isAccountDir
+from utils import is_account_dir
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import acct_dir
@@ -184,7 +184,7 @@ def migrateAccounts(base_dir: str, session,
     ctr = 0
     for subdir, dirs, files in os.walk(base_dir + '/accounts'):
         for handle in dirs:
-            if not isAccountDir(handle):
+            if not is_account_dir(handle):
                 continue
             nickname = handle.split('@')[0]
             domain = handle.split('@')[1]

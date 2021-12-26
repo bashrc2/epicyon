@@ -12,7 +12,7 @@ from shutil import copyfile
 import urllib.parse
 from datetime import datetime
 from utils import get_base_content_from_post
-from utils import isAccountDir
+from utils import is_account_dir
 from utils import get_config_param
 from utils import get_full_domain
 from utils import is_editor
@@ -252,7 +252,7 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
     resultsExist = False
     for subdir, dirs, files in os.walk(base_dir + '/accounts'):
         for handle in dirs:
-            if not isAccountDir(handle):
+            if not is_account_dir(handle):
                 continue
             contactNickname = handle.split('@')[0]
             sharesFilename = base_dir + '/accounts/' + handle + \
@@ -472,7 +472,7 @@ def htmlSkillsSearch(actor: str,
         for f in files:
             if not f.endswith('.json'):
                 continue
-            if not isAccountDir(f):
+            if not is_account_dir(f):
                 continue
             actorFilename = os.path.join(subdir, f)
             actor_json = load_json(actorFilename)
@@ -507,7 +507,7 @@ def htmlSkillsSearch(actor: str,
             for f in files:
                 if not f.endswith('.json'):
                     continue
-                if not isAccountDir(f):
+                if not is_account_dir(f):
                     continue
                 actorFilename = os.path.join(subdir, f)
                 cachedActorJson = load_json(actorFilename)

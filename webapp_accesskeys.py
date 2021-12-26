@@ -8,7 +8,7 @@ __status__ = "Production"
 __module_group__ = "Accessibility"
 
 import os
-from utils import isAccountDir
+from utils import is_account_dir
 from utils import load_json
 from utils import get_config_param
 from utils import acct_dir
@@ -22,7 +22,7 @@ def loadAccessKeysForAccounts(base_dir: str, keyShortcuts: {},
     """
     for subdir, dirs, files in os.walk(base_dir + '/accounts'):
         for acct in dirs:
-            if not isAccountDir(acct):
+            if not is_account_dir(acct):
                 continue
             accountDir = os.path.join(base_dir + '/accounts', acct)
             accessKeysFilename = accountDir + '/accessKeys.json'

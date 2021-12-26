@@ -13,7 +13,7 @@ import datetime
 from utils import has_object_dict
 from utils import getStatusNumber
 from utils import load_json
-from utils import isAccountDir
+from utils import is_account_dir
 from utils import acct_dir
 from outbox import postMessageToOutbox
 
@@ -167,7 +167,7 @@ def runPostSchedule(base_dir: str, httpd, maxScheduledPosts: int):
             for account in dirs:
                 if '@' not in account:
                     continue
-                if not isAccountDir(account):
+                if not is_account_dir(account):
                     continue
                 # scheduled posts index for this account
                 scheduleIndexFilename = \

@@ -1912,7 +1912,7 @@ def noOfAccounts(base_dir: str) -> bool:
     accountCtr = 0
     for subdir, dirs, files in os.walk(base_dir + '/accounts'):
         for account in dirs:
-            if isAccountDir(account):
+            if is_account_dir(account):
                 accountCtr += 1
         break
     return accountCtr
@@ -1926,7 +1926,7 @@ def noOfActiveAccountsMonthly(base_dir: str, months: int) -> bool:
     monthSeconds = int(60*60*24*30*months)
     for subdir, dirs, files in os.walk(base_dir + '/accounts'):
         for account in dirs:
-            if not isAccountDir(account):
+            if not is_account_dir(account):
                 continue
             lastUsedFilename = \
                 base_dir + '/accounts/' + account + '/.lastUsed'
@@ -2805,7 +2805,7 @@ def setOccupationSkillsList(actor_json: {}, skillsList: []) -> bool:
     return False
 
 
-def isAccountDir(dirName: str) -> bool:
+def is_account_dir(dirName: str) -> bool:
     """Is the given directory an account within /accounts ?
     """
     if '@' not in dirName:

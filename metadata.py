@@ -8,7 +8,7 @@ __status__ = "Production"
 __module_group__ = "Metadata"
 
 import os
-from utils import isAccountDir
+from utils import is_account_dir
 from utils import load_json
 from utils import noOfAccounts
 from utils import noOfActiveAccountsMonthly
@@ -21,7 +21,7 @@ def _getStatusCount(base_dir: str) -> int:
     accountsDir = base_dir + '/accounts'
     for subdir, dirs, files in os.walk(accountsDir):
         for acct in dirs:
-            if not isAccountDir(acct):
+            if not is_account_dir(acct):
                 continue
             acct_dir = os.path.join(accountsDir, acct + '/outbox')
             for subdir2, dirs2, files2 in os.walk(acct_dir):

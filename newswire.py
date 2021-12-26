@@ -30,7 +30,7 @@ from utils import save_json
 from utils import isSuspended
 from utils import containsInvalidChars
 from utils import removeHtml
-from utils import isAccountDir
+from utils import is_account_dir
 from utils import acct_dir
 from utils import local_actor_url
 from blocking import isBlockedDomain
@@ -1093,7 +1093,7 @@ def _addBlogsToNewswire(base_dir: str, domain: str, newswire: {},
     # go through each account
     for subdir, dirs, files in os.walk(base_dir + '/accounts'):
         for handle in dirs:
-            if not isAccountDir(handle):
+            if not is_account_dir(handle):
                 continue
 
             nickname = handle.split('@')[0]

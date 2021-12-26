@@ -32,7 +32,7 @@ from utils import load_json
 from utils import save_json
 from utils import get_image_extensions
 from utils import remove_domain_port
-from utils import isAccountDir
+from utils import is_account_dir
 from utils import acct_dir
 from utils import is_float
 from utils import get_category_types
@@ -271,7 +271,7 @@ def _indicateNewShareAvailable(base_dir: str, http_prefix: str,
     """
     for subdir, dirs, files in os.walk(base_dir + '/accounts'):
         for handle in dirs:
-            if not isAccountDir(handle):
+            if not is_account_dir(handle):
                 continue
             accountDir = base_dir + '/accounts/' + handle
             if sharesFileType == 'shares':
@@ -401,7 +401,7 @@ def expireShares(base_dir: str) -> None:
     """
     for subdir, dirs, files in os.walk(base_dir + '/accounts'):
         for account in dirs:
-            if not isAccountDir(account):
+            if not is_account_dir(account):
                 continue
             nickname = account.split('@')[0]
             domain = account.split('@')[1]
@@ -1279,7 +1279,7 @@ def sharesCatalogEndpoint(base_dir: str, http_prefix: str,
 
     for subdir, dirs, files in os.walk(base_dir + '/accounts'):
         for acct in dirs:
-            if not isAccountDir(acct):
+            if not is_account_dir(acct):
                 continue
             nickname = acct.split('@')[0]
             domain = acct.split('@')[1]

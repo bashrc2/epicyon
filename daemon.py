@@ -262,7 +262,7 @@ from utils import has_object_dict
 from utils import user_agent_domain
 from utils import isLocalNetworkAddress
 from utils import permitted_dir
-from utils import isAccountDir
+from utils import is_account_dir
 from utils import getOccupationSkills
 from utils import getOccupationName
 from utils import setOccupationName
@@ -6911,7 +6911,7 @@ class PubServer(BaseHTTPRequestHandler):
         msg = ''
         for subdir, dirs, files in os.walk(base_dir + '/accounts'):
             for acct in dirs:
-                if not isAccountDir(acct):
+                if not is_account_dir(acct):
                     continue
                 nickname = acct.split('@')[0]
                 domain = acct.split('@')[1]

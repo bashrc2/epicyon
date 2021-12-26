@@ -11,7 +11,7 @@ import os
 from shutil import copyfile
 from collections import OrderedDict
 from session import getJson
-from utils import isAccountDir
+from utils import is_account_dir
 from utils import removeHtml
 from utils import getProtocolPrefixes
 from utils import load_json
@@ -356,7 +356,7 @@ def sharesTimelineJson(actor: str, pageNumber: int, itemsPerPage: int,
     allSharesJson = {}
     for subdir, dirs, files in os.walk(base_dir + '/accounts'):
         for handle in dirs:
-            if not isAccountDir(handle):
+            if not is_account_dir(handle):
                 continue
             accountDir = base_dir + '/accounts/' + handle
             sharesFilename = accountDir + '/' + sharesFileType + '.json'

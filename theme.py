@@ -8,7 +8,7 @@ __status__ = "Production"
 __module_group__ = "Web Interface"
 
 import os
-from utils import isAccountDir
+from utils import is_account_dir
 from utils import load_json
 from utils import save_json
 from utils import get_image_extensions
@@ -683,7 +683,7 @@ def _setThemeImages(base_dir: str, name: str) -> None:
 
     for subdir, dirs, files in os.walk(base_dir + '/accounts'):
         for acct in dirs:
-            if not isAccountDir(acct):
+            if not is_account_dir(acct):
                 continue
             accountDir = os.path.join(base_dir + '/accounts', acct)
 
