@@ -21,7 +21,7 @@ from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import locatePost
 from utils import getCachedPostFilename
-from utils import loadJson
+from utils import load_json
 from utils import save_json
 from utils import has_object_dict
 from utils import acct_dir
@@ -38,7 +38,7 @@ def undoBookmarksCollectionEntry(recentPostsCache: {},
                                  actor: str, domain: str, debug: bool) -> None:
     """Undoes a bookmark for a particular actor
     """
-    post_json_object = loadJson(postFilename)
+    post_json_object = load_json(postFilename)
     if not post_json_object:
         return
 
@@ -159,7 +159,7 @@ def updateBookmarksCollection(recentPostsCache: {},
                               actor: str, domain: str, debug: bool) -> None:
     """Updates the bookmarks collection within a post
     """
-    post_json_object = loadJson(postFilename)
+    post_json_object = load_json(postFilename)
     if post_json_object:
         # remove any cached version of this post so that the
         # bookmark icon is changed

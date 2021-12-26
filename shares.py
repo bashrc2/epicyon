@@ -28,7 +28,7 @@ from utils import dateSecondsToString
 from utils import get_config_param
 from utils import get_full_domain
 from utils import validNickname
-from utils import loadJson
+from utils import load_json
 from utils import save_json
 from utils import get_image_extensions
 from utils import removeDomainPort
@@ -57,7 +57,7 @@ def _loadDfcIds(base_dir: str, system_language: str,
     if not os.path.isfile(productTypesFilename):
         productTypesFilename = \
             base_dir + '/ontology/' + productType + 'Types.json'
-    productTypes = loadJson(productTypesFilename)
+    productTypes = load_json(productTypesFilename)
     if not productTypes:
         print('Unable to load ontology: ' + productTypesFilename)
         return None
@@ -131,7 +131,7 @@ def removeSharedItem(base_dir: str, nickname: str, domain: str,
               sharesFileType + '.json ' + sharesFilename)
         return
 
-    sharesJson = loadJson(sharesFilename)
+    sharesJson = load_json(sharesFilename)
     if not sharesJson:
         print('ERROR: remove shared item, ' +
               sharesFileType + '.json could not be loaded from ' +
@@ -320,7 +320,7 @@ def addShare(base_dir: str,
         acct_dir(base_dir, nickname, domain) + '/' + sharesFileType + '.json'
     sharesJson = {}
     if os.path.isfile(sharesFilename):
-        sharesJson = loadJson(sharesFilename, 1, 2)
+        sharesJson = load_json(sharesFilename, 1, 2)
 
     duration = duration.lower()
     published = int(time.time())
@@ -421,7 +421,7 @@ def _expireSharesForAccount(base_dir: str, nickname: str, domain: str,
         base_dir + '/accounts/' + handle + '/' + sharesFileType + '.json'
     if not os.path.isfile(sharesFilename):
         return
-    sharesJson = loadJson(sharesFilename, 1, 2)
+    sharesJson = load_json(sharesFilename, 1, 2)
     if not sharesJson:
         return
     curr_time = int(time.time())
@@ -496,7 +496,7 @@ def getSharesFeedForPerson(base_dir: str,
     if headerOnly:
         noOfShares = 0
         if os.path.isfile(sharesFilename):
-            sharesJson = loadJson(sharesFilename)
+            sharesJson = load_json(sharesFilename)
             if sharesJson:
                 noOfShares = len(sharesJson.items())
         idStr = local_actor_url(http_prefix, nickname, domain)
@@ -529,7 +529,7 @@ def getSharesFeedForPerson(base_dir: str,
     pageCtr = 0
     totalCtr = 0
 
-    sharesJson = loadJson(sharesFilename)
+    sharesJson = load_json(sharesFilename)
     if sharesJson:
         for itemID, item in sharesJson.items():
             pageCtr += 1
@@ -1197,7 +1197,7 @@ def sharesCatalogAccountEndpoint(base_dir: str, http_prefix: str,
         if debug:
             print(sharesFileType + '.json file not found: ' + sharesFilename)
         return endpoint
-    sharesJson = loadJson(sharesFilename, 1, 2)
+    sharesJson = load_json(sharesFilename, 1, 2)
     if not sharesJson:
         if debug:
             print('Unable to load json for ' + sharesFilename)
@@ -1291,7 +1291,7 @@ def sharesCatalogEndpoint(base_dir: str, http_prefix: str,
             if not os.path.isfile(sharesFilename):
                 continue
             print('Test 78363 ' + sharesFilename)
-            sharesJson = loadJson(sharesFilename, 1, 2)
+            sharesJson = load_json(sharesFilename, 1, 2)
             if not sharesJson:
                 continue
 
@@ -1381,7 +1381,7 @@ def generateSharedItemFederationTokens(shared_items_federated_domains: [],
         tokensFilename = \
             base_dir + '/accounts/sharedItemsFederationTokens.json'
         if os.path.isfile(tokensFilename):
-            tokensJson = loadJson(tokensFilename, 1, 2)
+            tokensJson = load_json(tokensFilename, 1, 2)
             if tokensJson is None:
                 tokensJson = {}
 
@@ -1414,7 +1414,7 @@ def updateSharedItemFederationToken(base_dir: str,
         if os.path.isfile(tokensFilename):
             if debug:
                 print('Update loading tokens for ' + tokenDomainFull)
-            tokensJson = loadJson(tokensFilename, 1, 2)
+            tokensJson = load_json(tokensFilename, 1, 2)
             if tokensJson is None:
                 tokensJson = {}
     updateRequired = False
@@ -1472,7 +1472,7 @@ def createSharedItemFederationToken(base_dir: str,
         tokensFilename = \
             base_dir + '/accounts/sharedItemsFederationTokens.json'
         if os.path.isfile(tokensFilename):
-            tokensJson = loadJson(tokensFilename, 1, 2)
+            tokensJson = load_json(tokensFilename, 1, 2)
             if tokensJson is None:
                 tokensJson = {}
     if force or not tokensJson.get(tokenDomainFull):
@@ -1522,7 +1522,7 @@ def authorizeSharedItems(shared_items_federated_domains: [],
                 print('DEBUG: shared item federation tokens file missing ' +
                       tokensFilename)
             return False
-        tokensJson = loadJson(tokensFilename, 1, 2)
+        tokensJson = load_json(tokensFilename, 1, 2)
     if not tokensJson:
         return False
     if not tokensJson.get(callingDomainFull):
@@ -1736,7 +1736,7 @@ def runFederatedSharesDaemon(base_dir: str, httpd, http_prefix: str,
         if not os.path.isfile(tokensFilename):
             time.sleep(fileCheckIntervalSec)
             continue
-        tokensJson = loadJson(tokensFilename, 1, 2)
+        tokensJson = load_json(tokensFilename, 1, 2)
         if not tokensJson:
             time.sleep(fileCheckIntervalSec)
             continue

@@ -38,7 +38,7 @@ from utils import get_config_param
 from utils import get_full_domain
 from utils import is_editor
 from utils import locatePost
-from utils import loadJson
+from utils import load_json
 from utils import getCachedPostDirectory
 from utils import getCachedPostFilename
 from utils import getProtocolPrefixes
@@ -2083,7 +2083,7 @@ def htmlIndividualPost(cssCache: {},
                            post_json_object['object']['inReplyTo'])
             if not postFilename:
                 break
-            post_json_object = loadJson(postFilename)
+            post_json_object = load_json(postFilename)
             if post_json_object:
                 postStr = \
                     individualPostAsHtml(signing_priv_key_pem,
@@ -2248,7 +2248,7 @@ def htmlEmojiReactionPicker(cssCache: {},
     reactionsFilename = base_dir + '/emoji/reactions.json'
     if not os.path.isfile(reactionsFilename):
         reactionsFilename = base_dir + '/emoji/default_reactions.json'
-    reactionsJson = loadJson(reactionsFilename)
+    reactionsJson = load_json(reactionsFilename)
     emojiPicksStr = ''
     baseUrl = '/users/' + nickname
     postId = removeIdEnding(post_json_object['id'])

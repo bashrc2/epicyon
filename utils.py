@@ -512,7 +512,7 @@ def setConfigParam(base_dir: str, variableName: str, variableValue) -> None:
     config_filename = base_dir + '/config.json'
     configJson = {}
     if os.path.isfile(config_filename):
-        configJson = loadJson(config_filename)
+        configJson = load_json(config_filename)
     configJson[variableName] = variableValue
     save_json(configJson, config_filename)
 
@@ -522,7 +522,7 @@ def get_config_param(base_dir: str, variableName: str):
     """
     _create_config(base_dir)
     config_filename = base_dir + '/config.json'
-    configJson = loadJson(config_filename)
+    configJson = load_json(config_filename)
     if configJson:
         if variableName in configJson:
             return configJson[variableName]
@@ -654,14 +654,14 @@ def removeAvatarFromCache(base_dir: str, actorStr: str) -> None:
                       'unable to delete cached avatar ' + str(avatarFilename))
 
 
-def save_json(jsonObject: {}, filename: str) -> bool:
+def save_json(json_object: {}, filename: str) -> bool:
     """Saves json to a file
     """
     tries = 0
     while tries < 5:
         try:
             with open(filename, 'w+') as fp:
-                fp.write(json.dumps(jsonObject))
+                fp.write(json.dumps(json_object))
                 return True
         except OSError:
             print('EX: save_json ' + str(tries))
@@ -670,7 +670,7 @@ def save_json(jsonObject: {}, filename: str) -> bool:
     return False
 
 
-def loadJson(filename: str, delaySec: int = 2, maxTries: int = 5) -> {}:
+def load_json(filename: str, delaySec: int = 2, maxTries: int = 5) -> {}:
     """Makes a few attempts to load a json formatted file
     """
     jsonObject = None
@@ -682,15 +682,15 @@ def loadJson(filename: str, delaySec: int = 2, maxTries: int = 5) -> {}:
                 jsonObject = json.loads(data)
                 break
         except BaseException:
-            print('EX: loadJson exception ' + str(filename))
+            print('EX: load_json exception ' + str(filename))
             if delaySec > 0:
                 time.sleep(delaySec)
             tries += 1
     return jsonObject
 
 
-def loadJsonOnionify(filename: str, domain: str, onion_domain: str,
-                     delaySec: int = 2) -> {}:
+def load_json_onionify(filename: str, domain: str, onion_domain: str,
+                       delaySec: int = 2) -> {}:
     """Makes a few attempts to load a json formatted file
     This also converts the domain name to the onion domain
     """
@@ -707,7 +707,7 @@ def loadJsonOnionify(filename: str, domain: str, onion_domain: str,
                 jsonObject = json.loads(data)
                 break
         except BaseException:
-            print('EX: loadJsonOnionify exception ' + str(filename))
+            print('EX: load_json_onionify exception ' + str(filename))
             if delaySec > 0:
                 time.sleep(delaySec)
             tries += 1
@@ -921,7 +921,7 @@ def getDisplayName(base_dir: str, actor: str, person_cache: {}) -> str:
         cachedActorFilename = \
             base_dir + '/cache/actors/' + (actor.replace('/', '#')) + '.json'
         if os.path.isfile(cachedActorFilename):
-            actor_json = loadJson(cachedActorFilename, 1)
+            actor_json = load_json(cachedActorFilename, 1)
             if actor_json:
                 if actor_json.get('name'):
                     nameFound = actor_json['name']
@@ -978,7 +978,7 @@ def getGenderFromBio(base_dir: str, actor: str, person_cache: {},
         cachedActorFilename = \
             base_dir + '/cache/actors/' + (actor.replace('/', '#')) + '.json'
         if os.path.isfile(cachedActorFilename):
-            actor_json = loadJson(cachedActorFilename, 1)
+            actor_json = load_json(cachedActorFilename, 1)
     if not actor_json:
         return defaultGender
     # is gender defined as a profile tag?
@@ -1430,7 +1430,7 @@ def canReplyTo(base_dir: str, nickname: str, domain: str,
         postFilename = locatePost(base_dir, nickname, domain, postUrl)
         if not postFilename:
             return False
-        post_json_object = loadJson(postFilename)
+        post_json_object = load_json(postFilename)
     if not post_json_object:
         return False
     published = _getPublishedDate(post_json_object)
@@ -1716,7 +1716,7 @@ def deletePost(base_dir: str, http_prefix: str,
                debug: bool, recentPostsCache: {}) -> None:
     """Recursively deletes a post and its replies and attachments
     """
-    post_json_object = loadJson(postFilename, 1)
+    post_json_object = load_json(postFilename, 1)
     if not post_json_object:
         # remove any replies
         _deletePostRemoveReplies(base_dir, nickname, domain,
@@ -1949,7 +1949,7 @@ def isPublicPostFromUrl(base_dir: str, nickname: str, domain: str,
     postFilename = locatePost(base_dir, nickname, domain, postUrl)
     if not postFilename:
         return False
-    post_json_object = loadJson(postFilename, 1)
+    post_json_object = load_json(postFilename, 1)
     if not post_json_object:
         return False
     return isPublicPost(post_json_object)
@@ -2214,7 +2214,7 @@ def undoLikesCollectionEntry(recentPostsCache: {},
     """Undoes a like for a particular actor
     """
     if not post_json_object:
-        post_json_object = loadJson(postFilename)
+        post_json_object = load_json(postFilename)
     if not post_json_object:
         return
     # remove any cached version of this post so that the
@@ -2279,7 +2279,7 @@ def undoReactionCollectionEntry(recentPostsCache: {},
     """Undoes an emoji reaction for a particular actor
     """
     if not post_json_object:
-        post_json_object = loadJson(postFilename)
+        post_json_object = load_json(postFilename)
     if not post_json_object:
         return
     # remove any cached version of this post so that the
@@ -2344,7 +2344,7 @@ def undoAnnounceCollectionEntry(recentPostsCache: {},
     collection has no relation to shared items in shares.py. It's
     shares of posts, not shares of physical objects.
     """
-    post_json_object = loadJson(postFilename)
+    post_json_object = load_json(postFilename)
     if not post_json_object:
         return
     # remove any cached version of this announce so that the announce
@@ -2412,7 +2412,7 @@ def updateAnnounceCollection(recentPostsCache: {},
     same as shared items within shares.py
     It's shares of posts, not shares of physical objects.
     """
-    post_json_object = loadJson(postFilename)
+    post_json_object = load_json(postFilename)
     if not post_json_object:
         return
     # remove any cached version of this announce so that the announce
@@ -2698,7 +2698,7 @@ def loadTranslationsFromFile(base_dir: str, language: str) -> ({}, str):
         system_language = 'en'
         translationsFile = base_dir + '/translations/' + \
             system_language + '.json'
-    return loadJson(translationsFile), system_language
+    return load_json(translationsFile), system_language
 
 
 def dmAllowedFromDomain(base_dir: str,

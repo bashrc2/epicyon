@@ -10,7 +10,7 @@ __module_group__ = "Onboarding"
 import os
 from shutil import copyfile
 from utils import removeHtml
-from utils import loadJson
+from utils import load_json
 from utils import get_config_param
 from utils import get_image_extensions
 from utils import getImageFormats
@@ -100,7 +100,7 @@ def htmlWelcomeProfile(base_dir: str, nickname: str, domain: str,
     profileForm += '</center>\n'
 
     actorFilename = acct_dir(base_dir, nickname, domain) + '.json'
-    actor_json = loadJson(actorFilename)
+    actor_json = load_json(actorFilename)
     displayNickname = actor_json['name']
     profileForm += '<div class="container">\n'
     profileForm += \

@@ -9,7 +9,7 @@ __module_group__ = "Accessibility"
 
 import os
 from utils import isAccountDir
-from utils import loadJson
+from utils import load_json
 from utils import get_config_param
 from utils import acct_dir
 from webapp_utils import htmlHeaderWithExternalStyle
@@ -29,7 +29,7 @@ def loadAccessKeysForAccounts(base_dir: str, keyShortcuts: {},
             if not os.path.isfile(accessKeysFilename):
                 continue
             nickname = acct.split('@')[0]
-            accessKeys = loadJson(accessKeysFilename)
+            accessKeys = load_json(accessKeysFilename)
             if accessKeys:
                 keyShortcuts[nickname] = accessKeysTemplate.copy()
                 for variableName, key in accessKeysTemplate.items():
@@ -49,7 +49,7 @@ def htmlAccessKeys(cssCache: {}, base_dir: str,
     accessKeysFilename = \
         acct_dir(base_dir, nickname, domain) + '/accessKeys.json'
     if os.path.isfile(accessKeysFilename):
-        accessKeysFromFile = loadJson(accessKeysFilename)
+        accessKeysFromFile = load_json(accessKeysFilename)
         if accessKeysFromFile:
             accessKeys = accessKeysFromFile
 

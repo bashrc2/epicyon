@@ -11,7 +11,7 @@ import os
 from follow import followedAccountAccepts
 from follow import followedAccountRejects
 from follow import removeFromFollowRequests
-from utils import loadJson
+from utils import load_json
 from utils import removeDomainPort
 from utils import getPortFromDomain
 from utils import get_user_paths
@@ -190,7 +190,7 @@ def manualApproveFollowRequest(session, base_dir: str,
                     followActivityfilename = \
                         requestsDir + '/' + handleOfFollowRequester + '.follow'
                     if os.path.isfile(followActivityfilename):
-                        followJson = loadJson(followActivityfilename)
+                        followJson = load_json(followActivityfilename)
                         if followJson:
                             approveNickname = approveHandle.split('@')[0]
                             approveDomain = approveHandle.split('@')[1]

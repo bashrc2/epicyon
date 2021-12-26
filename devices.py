@@ -31,7 +31,7 @@ __module_group__ = "Security"
 #    POST /api/v1/crypto/encrypted_messages/clear
 
 import os
-from utils import loadJson
+from utils import load_json
 from utils import save_json
 from utils import acct_dir
 from utils import local_actor_url
@@ -155,7 +155,7 @@ def E2EEdevicesCollection(base_dir: str, nickname: str, domain: str,
             if not dev.endswith('.json'):
                 continue
             deviceFilename = os.path.join(personDir + '/devices', dev)
-            devJson = loadJson(deviceFilename)
+            devJson = load_json(deviceFilename)
             if devJson:
                 deviceList.append(devJson)
         break

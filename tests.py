@@ -78,7 +78,7 @@ from utils import followPerson
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import copytree
-from utils import loadJson
+from utils import load_json
 from utils import save_json
 from utils import getStatusNumber
 from utils import getFollowersOfPerson
@@ -1251,7 +1251,7 @@ def testPostMessageBetweenServers(base_dir: str) -> None:
     assert os.path.isdir(newsActorDir)
     newsActorFile = newsActorDir + '.json'
     assert os.path.isfile(newsActorFile)
-    newsActorJson = loadJson(newsActorFile)
+    newsActorJson = load_json(newsActorFile)
     assert newsActorJson
     assert newsActorJson.get("id")
     # check the id of the news actor
@@ -1277,7 +1277,7 @@ def testPostMessageBetweenServers(base_dir: str) -> None:
     for name in os.listdir(inboxPath):
         filename = os.path.join(inboxPath, name)
         assert os.path.isfile(filename)
-        receivedJson = loadJson(filename, 0)
+        receivedJson = load_json(filename, 0)
         if receivedJson:
             pprint(receivedJson['object']['content'])
         assert receivedJson
@@ -1339,7 +1339,7 @@ def testPostMessageBetweenServers(base_dir: str) -> None:
             break
         time.sleep(1)
 
-    alicePostJson = loadJson(outboxPostFilename, 0)
+    alicePostJson = load_json(outboxPostFilename, 0)
     if alicePostJson:
         pprint(alicePostJson)
 
@@ -1361,7 +1361,7 @@ def testPostMessageBetweenServers(base_dir: str) -> None:
             break
         time.sleep(1)
 
-    alicePostJson = loadJson(outboxPostFilename, 0)
+    alicePostJson = load_json(outboxPostFilename, 0)
     if alicePostJson:
         pprint(alicePostJson)
 
@@ -1879,7 +1879,7 @@ def testSharedItemsFederation(base_dir: str) -> None:
 
     sharesFilename = bobDir + '/accounts/bob@' + bobDomain + '/shares.json'
     assert os.path.isfile(sharesFilename)
-    sharesJson = loadJson(sharesFilename)
+    sharesJson = load_json(sharesFilename)
     assert sharesJson
     pprint(sharesJson)
     assert len(sharesJson.items()) == 3
@@ -1906,7 +1906,7 @@ def testSharedItemsFederation(base_dir: str) -> None:
     aliceTokensFilename = \
         aliceDir + '/accounts/sharedItemsFederationTokens.json'
     assert os.path.isfile(aliceTokensFilename)
-    aliceSharedItemFederationTokens = loadJson(aliceTokensFilename)
+    aliceSharedItemFederationTokens = load_json(aliceTokensFilename)
     assert aliceSharedItemFederationTokens
     print('Alice shared item federation tokens:')
     pprint(aliceSharedItemFederationTokens)
@@ -1961,14 +1961,14 @@ def testSharedItemsFederation(base_dir: str) -> None:
         bobDir + '/accounts/sharedItemsFederationTokens.json'
     assert os.path.isfile(aliceTokensFilename)
     assert os.path.isfile(bobTokensFilename)
-    aliceTokens = loadJson(aliceTokensFilename)
+    aliceTokens = load_json(aliceTokensFilename)
     assert aliceTokens
     for hostStr, token in aliceTokens.items():
         assert ':' in hostStr
     assert aliceTokens.get(aliceAddress)
     print('Alice tokens')
     pprint(aliceTokens)
-    bobTokens = loadJson(bobTokensFilename)
+    bobTokens = load_json(bobTokensFilename)
     assert bobTokens
     for hostStr, token in bobTokens.items():
         assert ':' in hostStr
@@ -2402,7 +2402,7 @@ def testGroupFollow(base_dir: str) -> None:
     for name in os.listdir(inboxPathBob):
         filename = os.path.join(inboxPathBob, name)
         if os.path.isfile(filename):
-            receivedJson = loadJson(filename)
+            receivedJson = load_json(filename)
             assert receivedJson
             print('Received group post ' + receivedJson['id'])
             assert '/testgroup/statuses/' in receivedJson['id']
@@ -2944,7 +2944,7 @@ def testClientToServer(base_dir: str):
             statusNumber = name.split('#statuses#')[1].replace('.json', '')
             statusNumber = int(statusNumber.replace('#activity', ''))
             outboxPostFilename = outboxPath + '/' + name
-            post_json_object = loadJson(outboxPostFilename, 0)
+            post_json_object = load_json(outboxPostFilename, 0)
             if post_json_object:
                 outboxPostId = removeIdEnding(post_json_object['id'])
     assert outboxPostId
@@ -3474,7 +3474,7 @@ def _testJsonString() -> None:
         "content": messageStr
     }
     assert save_json(testJson, filename)
-    receivedJson = loadJson(filename, 0)
+    receivedJson = load_json(filename, 0)
     assert receivedJson
     assert receivedJson['content'] == messageStr
     encodedStr = json.dumps(testJson, ensure_ascii=False)
@@ -3499,7 +3499,7 @@ def _testSaveLoadJson():
             pass
     assert save_json(testJson, testFilename)
     assert os.path.isfile(testFilename)
-    testLoadJson = loadJson(testFilename)
+    testLoadJson = load_json(testFilename)
     assert(testLoadJson)
     assert testLoadJson.get('param1')
     assert testLoadJson.get('param2')
@@ -3880,7 +3880,7 @@ def _testTranslations(base_dir: str) -> None:
     # load all translations into a dict
     langDict = {}
     for lang in languagesStr:
-        langJson = loadJson('translations/' + lang + '.json')
+        langJson = load_json('translations/' + lang + '.json')
         if not langJson:
             print('Missing language file ' +
                   'translations/' + lang + '.json')
@@ -3888,7 +3888,7 @@ def _testTranslations(base_dir: str) -> None:
         langDict[lang] = langJson
 
     # load english translations
-    translationsJson = loadJson('translations/en.json')
+    translationsJson = load_json('translations/en.json')
     # test each english string exists in the other language files
     for englishStr, translatedStr in translationsJson.items():
         for lang in languagesStr:
@@ -5019,7 +5019,7 @@ def _testEmojiImages():
     print('testEmojiImages')
     emojiFilename = 'emoji/default_emoji.json'
     assert os.path.isfile(emojiFilename)
-    emojiJson = loadJson(emojiFilename)
+    emojiJson = load_json(emojiFilename)
     assert emojiJson
     for emojiName, emojiImage in emojiJson.items():
         emojiImageFilename = 'emoji/' + emojiImage + '.png'
@@ -5154,7 +5154,7 @@ def testUpdateActor(base_dir: str):
 
     # load alice actor
     print('Loading actor: ' + actorFilename)
-    actor_json = loadJson(actorFilename)
+    actor_json = load_json(actorFilename)
     assert actor_json
     if len(actor_json['attachment']) == 0:
         print("actor_json['attachment'] has no contents")
@@ -5716,7 +5716,7 @@ def _translateOntology(base_dir: str) -> None:
         filename = base_dir + '/ontology/' + oType + 'Types.json'
         if not os.path.isfile(filename):
             continue
-        ontologyJson = loadJson(filename)
+        ontologyJson = load_json(filename)
         if not ontologyJson:
             continue
         index = -1

@@ -14,7 +14,7 @@ from session import getJson
 from utils import isAccountDir
 from utils import removeHtml
 from utils import getProtocolPrefixes
-from utils import loadJson
+from utils import load_json
 from utils import getCachedPostFilename
 from utils import get_config_param
 from utils import acct_dir
@@ -362,7 +362,7 @@ def sharesTimelineJson(actor: str, pageNumber: int, itemsPerPage: int,
             sharesFilename = accountDir + '/' + sharesFileType + '.json'
             if not os.path.isfile(sharesFilename):
                 continue
-            sharesJson = loadJson(sharesFilename)
+            sharesJson = load_json(sharesFilename)
             if not sharesJson:
                 continue
             accountNickname = handle.split('@')[0]
@@ -399,7 +399,7 @@ def sharesTimelineJson(actor: str, pageNumber: int, itemsPerPage: int,
                     if federatedDomain not in shared_items_federated_domains:
                         continue
                     sharesFilename = catalogsDir + '/' + f
-                    sharesJson = loadJson(sharesFilename)
+                    sharesJson = load_json(sharesFilename)
                     if not sharesJson:
                         continue
                     ctr = 0
@@ -1514,7 +1514,7 @@ def htmlShowShare(base_dir: str, domain: str, nickname: str,
             sharesFileType + '.json'
         if not os.path.isfile(sharesFilename):
             return None
-        sharesJson = loadJson(sharesFilename)
+        sharesJson = load_json(sharesFilename)
     else:
         # federated shared item
         if sharesFileType == 'shares':
@@ -1533,7 +1533,7 @@ def htmlShowShare(base_dir: str, domain: str, nickname: str,
                 if federatedDomain not in shared_items_federated_domains:
                     continue
                 sharesFilename = catalogsDir + '/' + f
-                sharesJson = loadJson(sharesFilename)
+                sharesJson = load_json(sharesFilename)
                 if not sharesJson:
                     continue
                 if sharesJson.get(itemID):

@@ -20,7 +20,7 @@ from utils import getNicknameFromActor
 from utils import getGenderFromBio
 from utils import getDisplayName
 from utils import removeHtml
-from utils import loadJson
+from utils import load_json
 from utils import save_json
 from utils import isPGPEncrypted
 from utils import has_object_dict
@@ -362,7 +362,7 @@ def getSSMLbox(base_dir: str, path: str,
         acct_dir(base_dir, nickname, domain) + '/speaker.json'
     if not os.path.isfile(speakerFilename):
         return None
-    speakerJson = loadJson(speakerFilename)
+    speakerJson = load_json(speakerFilename)
     if not speakerJson:
         return None
     gender = None

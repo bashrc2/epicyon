@@ -29,7 +29,7 @@ from utils import getMediaFormats
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import locatePost
-from utils import loadJson
+from utils import load_json
 from utils import firstParagraphFromString
 from utils import getActorPropertyUrl
 from utils import acct_dir
@@ -785,7 +785,7 @@ def htmlEditBlog(media_instance: bool, translate: {},
         print('Edit blog: Filename not found for ' + postUrl)
         return None
 
-    post_json_object = loadJson(postFilename)
+    post_json_object = load_json(postFilename)
     if not post_json_object:
         print('Edit blog: json not loaded for ' + postFilename)
         return None

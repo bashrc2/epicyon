@@ -8,7 +8,7 @@ __status__ = "Production"
 __module_group__ = "API"
 
 import os
-from utils import loadJson
+from utils import load_json
 from utils import get_config_param
 from utils import acct_dir
 from metadata import metaDataInstance
@@ -58,7 +58,7 @@ def _getMastoApiV1Account(base_dir: str, nickname: str, domain: str) -> {}:
     accountFilename = acct_dir(base_dir, nickname, domain) + '.json'
     if not os.path.isfile(accountFilename):
         return {}
-    accountJson = loadJson(accountFilename)
+    accountJson = load_json(accountFilename)
     if not accountJson:
         return {}
     mastoAccountJson = {

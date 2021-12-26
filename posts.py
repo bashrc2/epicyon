@@ -59,7 +59,7 @@ from utils import getDomainFromActor
 from utils import deletePost
 from utils import validNickname
 from utils import locatePost
-from utils import loadJson
+from utils import load_json
 from utils import save_json
 from utils import get_config_param
 from utils import locateNewsVotes
@@ -1052,7 +1052,7 @@ def _createPostCWFromReply(base_dir: str, nickname: str, domain: str,
         replyPostFilename = \
             locatePost(base_dir, nickname, domain, inReplyTo)
         if replyPostFilename:
-            replyToJson = loadJson(replyPostFilename)
+            replyToJson = load_json(replyPostFilename)
             if replyToJson:
                 if replyToJson.get('object'):
                     if replyToJson['object'].get('sensitive'):
@@ -3447,7 +3447,7 @@ def createModeration(base_dir: str, nickname: str, domain: str, port: int,
                 postFilename = \
                     boxDir + '/' + postUrl.replace('/', '#') + '.json'
                 if os.path.isfile(postFilename):
-                    post_json_object = loadJson(postFilename)
+                    post_json_object = load_json(postFilename)
                     if post_json_object:
                         boxItems['orderedItems'].append(post_json_object)
 
@@ -3635,7 +3635,7 @@ def _passedNewswireVoting(newswire_votes_threshold: int,
     if not votesFilename:
         return True
     # load the votes file and count the votes
-    votesJson = loadJson(votesFilename, 0, 2)
+    votesJson = load_json(votesFilename, 0, 2)
     if not votesJson:
         return True
     if not positive_voting:
@@ -4450,7 +4450,7 @@ def populateRepliesJson(base_dir: str, nickname: str, domain: str,
                 if os.path.isfile(searchFilename):
                     if authorized or \
                        pubStr in open(searchFilename).read():
-                        post_json_object = loadJson(searchFilename)
+                        post_json_object = load_json(searchFilename)
                         if post_json_object:
                             if post_json_object['object'].get('cc'):
                                 pjo = post_json_object
@@ -4479,7 +4479,7 @@ def populateRepliesJson(base_dir: str, nickname: str, domain: str,
                        pubStr in open(searchFilename).read():
                         # get the json of the reply and append it to
                         # the collection
-                        post_json_object = loadJson(searchFilename)
+                        post_json_object = load_json(searchFilename)
                         if post_json_object:
                             if post_json_object['object'].get('cc'):
                                 pjo = post_json_object
@@ -4549,7 +4549,7 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
         if debug:
             print('Reading cached Announce content for ' +
                   post_json_object['object'])
-        post_json_object = loadJson(announceFilename)
+        post_json_object = load_json(announceFilename)
         if post_json_object:
             return post_json_object
     else:
@@ -5227,7 +5227,7 @@ def editedPostFilename(base_dir: str, nickname: str, domain: str,
         locatePost(base_dir, nickname, domain, lastpostId, False)
     if not lastpostFilename:
         return ''
-    lastpostJson = loadJson(lastpostFilename, 0)
+    lastpostJson = load_json(lastpostFilename, 0)
     if not lastpostJson:
         return ''
     if not lastpostJson.get('type'):
@@ -5271,7 +5271,7 @@ def getOriginalPostFromAnnounceUrl(announceUrl: str, base_dir: str,
     postFilename = locatePost(base_dir, nickname, domain, announceUrl)
     if not postFilename:
         return None, None, None
-    announcePostJson = loadJson(postFilename, 0, 1)
+    announcePostJson = load_json(postFilename, 0, 1)
     if not announcePostJson:
         return None, None, postFilename
     if not announcePostJson.get('type'):
@@ -5288,7 +5288,7 @@ def getOriginalPostFromAnnounceUrl(announceUrl: str, base_dir: str,
     origFilename = locatePost(base_dir, nickname, domain, origPostId)
     if origFilename:
         # we have the original post
-        origPostJson = loadJson(origFilename, 0, 1)
+        origPostJson = load_json(origFilename, 0, 1)
         if origPostJson:
             if has_object_dict(origPostJson):
                 if origPostJson['object'].get('attributedTo'):

@@ -297,7 +297,7 @@ from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import getStatusNumber
 from utils import urlPermitted
-from utils import loadJson
+from utils import load_json
 from utils import save_json
 from utils import isSuspended
 from utils import dangerousMarkup
@@ -528,7 +528,7 @@ class PubServer(BaseHTTPRequestHandler):
                     locatePost(self.server.base_dir, nickname,
                                self.server.domain, messageId)
                 if postFilename:
-                    post_json_object = loadJson(postFilename)
+                    post_json_object = load_json(postFilename)
                     if post_json_object:
                         populateReplies(self.server.base_dir,
                                         self.server.http_prefix,
@@ -2203,7 +2203,7 @@ class PubServer(BaseHTTPRequestHandler):
         # These don't come through via themeParams,
         # so need to be checked separately
         themeFilename = base_dir + '/theme/' + theme_name + '/theme.json'
-        themeJson = loadJson(themeFilename)
+        themeJson = load_json(themeFilename)
         if themeJson:
             for variableName, value in themeJson.items():
                 variableName = 'themeSetting_' + variableName
@@ -4631,7 +4631,7 @@ class PubServer(BaseHTTPRequestHandler):
                     locatePost(base_dir, nickname, domain,
                                newsPostUrl)
                 if postFilename:
-                    post_json_object = loadJson(postFilename)
+                    post_json_object = load_json(postFilename)
                     # update the content and title
                     post_json_object['object']['summary'] = \
                         newsPostTitle
@@ -4888,7 +4888,7 @@ class PubServer(BaseHTTPRequestHandler):
             actorFilename = \
                 acct_dir(base_dir, nickname, domain) + '.json'
             if os.path.isfile(actorFilename):
-                actor_json = loadJson(actorFilename)
+                actor_json = load_json(actorFilename)
                 if actor_json:
                     if not actor_json.get('discoverable'):
                         # discoverable in profile directory
@@ -6753,7 +6753,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._404()
             return
 
-        speakerJson = loadJson(speakerFilename)
+        speakerJson = load_json(speakerFilename)
         msg = json.dumps(speakerJson,
                          ensure_ascii=False).encode('utf-8')
         msglen = len(msg)
@@ -8180,7 +8180,7 @@ class PubServer(BaseHTTPRequestHandler):
                 locatePost(base_dir, self.postToNickname, domain, likeUrl)
         if likedPostFilename:
             recentPostsCache = self.server.recentPostsCache
-            likedPostJson = loadJson(likedPostFilename, 0, 1)
+            likedPostJson = load_json(likedPostFilename, 0, 1)
             if origFilename and origPostUrl:
                 updateLikesCollection(recentPostsCache,
                                       base_dir, likedPostFilename,
@@ -8344,7 +8344,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            domain, likeUrl)
         if likedPostFilename:
             recentPostsCache = self.server.recentPostsCache
-            likedPostJson = loadJson(likedPostFilename, 0, 1)
+            likedPostJson = load_json(likedPostFilename, 0, 1)
             if origFilename and origPostUrl:
                 undoLikesCollectionEntry(recentPostsCache,
                                          base_dir, likedPostFilename,
@@ -8513,7 +8513,7 @@ class PubServer(BaseHTTPRequestHandler):
                 locatePost(base_dir, self.postToNickname, domain, reactionUrl)
         if reactionPostFilename:
             recentPostsCache = self.server.recentPostsCache
-            reactionPostJson = loadJson(reactionPostFilename, 0, 1)
+            reactionPostJson = load_json(reactionPostFilename, 0, 1)
             if origFilename and origPostUrl:
                 updateReactionCollection(recentPostsCache,
                                          base_dir, reactionPostFilename,
@@ -8696,7 +8696,7 @@ class PubServer(BaseHTTPRequestHandler):
                 locatePost(base_dir, self.postToNickname, domain, reactionUrl)
         if reactionPostFilename:
             recentPostsCache = self.server.recentPostsCache
-            reactionPostJson = loadJson(reactionPostFilename, 0, 1)
+            reactionPostJson = load_json(reactionPostFilename, 0, 1)
             if origFilename and origPostUrl:
                 undoReactionCollectionEntry(recentPostsCache,
                                             base_dir, reactionPostFilename,
@@ -8811,7 +8811,7 @@ class PubServer(BaseHTTPRequestHandler):
             locatePost(self.server.base_dir,
                        self.postToNickname, domain, reactionUrl)
         if reactionPostFilename:
-            post_json_object = loadJson(reactionPostFilename)
+            post_json_object = load_json(reactionPostFilename)
         if not reactionPostFilename or not post_json_object:
             print('WARN: unable to locate reaction post ' + reactionUrl)
             actorAbsolute = self._get_instance_url(callingDomain) + actor
@@ -8928,7 +8928,7 @@ class PubServer(BaseHTTPRequestHandler):
             locatePost(base_dir, self.postToNickname, domain, bookmarkUrl)
         if bookmarkFilename:
             print('Regenerating html post for changed bookmark')
-            bookmarkPostJson = loadJson(bookmarkFilename, 0, 1)
+            bookmarkPostJson = load_json(bookmarkFilename, 0, 1)
             if bookmarkPostJson:
                 cachedPostFilename = \
                     getCachedPostFilename(base_dir, self.postToNickname,
@@ -9056,7 +9056,7 @@ class PubServer(BaseHTTPRequestHandler):
             locatePost(base_dir, self.postToNickname, domain, bookmarkUrl)
         if bookmarkFilename:
             print('Regenerating html post for changed unbookmark')
-            bookmarkPostJson = loadJson(bookmarkFilename, 0, 1)
+            bookmarkPostJson = load_json(bookmarkFilename, 0, 1)
             if bookmarkPostJson:
                 cachedPostFilename = \
                     getCachedPostFilename(base_dir, self.postToNickname,
@@ -9251,7 +9251,7 @@ class PubServer(BaseHTTPRequestHandler):
             locatePost(base_dir, nickname, domain, muteUrl)
         if muteFilename:
             print('mutePost: Regenerating html post for changed mute status')
-            mutePostJson = loadJson(muteFilename, 0, 1)
+            mutePostJson = load_json(muteFilename, 0, 1)
             if mutePostJson:
                 cachedPostFilename = \
                     getCachedPostFilename(base_dir, nickname,
@@ -9361,7 +9361,7 @@ class PubServer(BaseHTTPRequestHandler):
         if muteFilename:
             print('unmutePost: ' +
                   'Regenerating html post for changed unmute status')
-            mutePostJson = loadJson(muteFilename, 0, 1)
+            mutePostJson = load_json(muteFilename, 0, 1)
             if mutePostJson:
                 cachedPostFilename = \
                     getCachedPostFilename(base_dir, nickname,
@@ -9667,7 +9667,7 @@ class PubServer(BaseHTTPRequestHandler):
         if not os.path.isfile(actorFilename):
             return False
 
-        actor_json = loadJson(actorFilename)
+        actor_json = load_json(actorFilename)
         if not actor_json:
             return False
 
@@ -9773,7 +9773,7 @@ class PubServer(BaseHTTPRequestHandler):
             nickname = postSections[0]
             actorFilename = acct_dir(base_dir, nickname, domain) + '.json'
             if os.path.isfile(actorFilename):
-                actor_json = loadJson(actorFilename)
+                actor_json = load_json(actorFilename)
                 if actor_json:
                     if noOfActorSkills(actor_json) > 0:
                         if self._requestHTTP():
@@ -9968,7 +9968,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.GETbusy = False
             return True
 
-        post_json_object = loadJson(postFilename)
+        post_json_object = load_json(postFilename)
         if not post_json_object:
             self.send_response(429)
             self.end_headers()
@@ -12971,7 +12971,7 @@ class PubServer(BaseHTTPRequestHandler):
                 replyPostFilename = \
                     locatePost(base_dir, nickname, domain, inReplyToUrl)
                 if replyPostFilename:
-                    post_json_object = loadJson(replyPostFilename)
+                    post_json_object = load_json(replyPostFilename)
 
             msg = htmlNewPost(self.server.cssCache,
                               media_instance,
@@ -14163,7 +14163,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.domain_full,
                                      self.path)
             if blogFilename and nickname:
-                post_json_object = loadJson(blogFilename)
+                post_json_object = load_json(blogFilename)
                 if isBlogPost(post_json_object):
                     msg = htmlBlogPost(self.server.session,
                                        authorized,
@@ -16751,7 +16751,7 @@ class PubServer(BaseHTTPRequestHandler):
                                nickname, self.server.domain,
                                fields['postUrl'])
                 if os.path.isfile(postFilename):
-                    post_json_object = loadJson(postFilename)
+                    post_json_object = load_json(postFilename)
                     if post_json_object:
                         cachedFilename = \
                             acct_dir(self.server.base_dir,
@@ -17405,7 +17405,7 @@ class PubServer(BaseHTTPRequestHandler):
                     deviceFilename = os.path.join(personDir + '/devices', f)
                     if not os.path.isfile(deviceFilename):
                         continue
-                    contentJson = loadJson(deviceFilename)
+                    contentJson = load_json(deviceFilename)
                     if contentJson:
                         devicesList.append(contentJson)
                 break
@@ -18539,7 +18539,7 @@ def runDaemon(content_license_url: str,
     fitness_filename = base_dir + '/accounts/fitness.json'
     httpd.fitness = {}
     if os.path.isfile(fitness_filename):
-        httpd.fitness = loadJson(fitness_filename)
+        httpd.fitness = load_json(fitness_filename)
 
     # initialize authorized fetch key
     httpd.signing_priv_key_pem = None
@@ -18812,7 +18812,7 @@ def runDaemon(content_license_url: str,
     httpd.knownCrawlers = {}
     knownCrawlersFilename = base_dir + '/accounts/knownCrawlers.json'
     if os.path.isfile(knownCrawlersFilename):
-        httpd.knownCrawlers = loadJson(knownCrawlersFilename)
+        httpd.knownCrawlers = load_json(knownCrawlersFilename)
     # when was the last crawler seen?
     httpd.lastKnownCrawler = 0
 

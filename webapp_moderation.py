@@ -12,7 +12,7 @@ from utils import is_artist
 from utils import isAccountDir
 from utils import get_full_domain
 from utils import is_editor
-from utils import loadJson
+from utils import load_json
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import get_config_param
@@ -322,7 +322,7 @@ def htmlModerationInfo(cssCache: {}, translate: {},
     for acct in accounts:
         acctNickname = acct.split('@')[0]
         accountDir = os.path.join(base_dir + '/accounts', acct)
-        actor_json = loadJson(accountDir + '.json')
+        actor_json = load_json(accountDir + '.json')
         if not actor_json:
             continue
         actor = actor_json['id']

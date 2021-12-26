@@ -23,7 +23,7 @@ from utils import getStatusNumber
 from utils import followPerson
 from posts import sendSignedJson
 from posts import getPersonBox
-from utils import loadJson
+from utils import load_json
 from utils import save_json
 from utils import isAccountDir
 from utils import get_user_paths
@@ -574,7 +574,7 @@ def followApprovalRequired(base_dir: str, nicknameToFollow: str,
     actorFilename = base_dir + '/accounts/' + \
         nicknameToFollow + '@' + domainToFollow + '.json'
     if os.path.isfile(actorFilename):
-        actor = loadJson(actorFilename)
+        actor = load_json(actorFilename)
         if actor:
             if actor.get('manuallyApprovesFollowers'):
                 manuallyApproveFollows = actor['manuallyApprovesFollowers']
@@ -800,7 +800,7 @@ def followedAccountRejects(session, base_dir: str, http_prefix: str,
     followActivityfilename = \
         acct_dir(base_dir, nicknameToFollow, domainToFollow) + '/requests/' + \
         nickname + '@' + domain + '.follow'
-    followJson = loadJson(followActivityfilename)
+    followJson = load_json(followActivityfilename)
     if not followJson:
         print('No follow request json was found for ' +
               followActivityfilename)
@@ -1435,7 +1435,7 @@ def followerApprovalActive(base_dir: str, nickname: str, domain: str) -> bool:
     manuallyApprovesFollowers = False
     actorFilename = acct_dir(base_dir, nickname, domain) + '.json'
     if os.path.isfile(actorFilename):
-        actor_json = loadJson(actorFilename)
+        actor_json = load_json(actorFilename)
         if actor_json:
             if actor_json.get('manuallyApprovesFollowers'):
                 manuallyApprovesFollowers = \

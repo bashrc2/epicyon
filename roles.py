@@ -8,7 +8,7 @@ __status__ = "Production"
 __module_group__ = "Profile Metadata"
 
 import os
-from utils import loadJson
+from utils import load_json
 from utils import save_json
 from utils import getStatusNumber
 from utils import removeDomainPort
@@ -31,7 +31,7 @@ def _clearRoleStatus(base_dir: str, role: str) -> None:
         filename = os.path.join(base_dir + '/accounts/', filename)
         if '"' + role + '"' not in open(filename).read():
             continue
-        actor_json = loadJson(filename)
+        actor_json = load_json(filename)
         if not actor_json:
             continue
         rolesList = getActorRolesList(actor_json)
@@ -242,7 +242,7 @@ def setRole(base_dir: str, nickname: str, domain: str,
         "artist": "artists.txt"
     }
 
-    actor_json = loadJson(actorFilename)
+    actor_json = load_json(actorFilename)
     if actor_json:
         if not actor_json.get('hasOccupation'):
             return False

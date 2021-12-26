@@ -46,7 +46,7 @@ from utils import removeDomainPort
 from utils import getStatusNumber
 from utils import get_full_domain
 from utils import validNickname
-from utils import loadJson
+from utils import load_json
 from utils import save_json
 from utils import setConfigParam
 from utils import get_config_param
@@ -145,7 +145,7 @@ def setProfileImage(base_dir: str, http_prefix: str,
         iconFilename = iconFilenameBase + '.svg'
     profileFilename = base_dir + '/accounts/' + handle + '/' + iconFilename
 
-    personJson = loadJson(personFilename)
+    personJson = load_json(personFilename)
     if personJson:
         personJson[iconFilenameBase]['mediaType'] = mediaType
         personJson[iconFilenameBase]['url'] = \
@@ -732,7 +732,7 @@ def personUpgradeActor(base_dir: str, personJson: {},
         print('WARN: actor file not found ' + filename)
         return
     if not personJson:
-        personJson = loadJson(filename)
+        personJson = load_json(filename)
 
     # add a speaker endpoint
     if not personJson.get('tts'):
@@ -890,7 +890,7 @@ def personLookup(domain: str, path: str, base_dir: str) -> {}:
     filename = base_dir + '/accounts/' + handle + '.json'
     if not os.path.isfile(filename):
         return None
-    personJson = loadJson(filename)
+    personJson = load_json(filename)
     if not isSharedInbox:
         personUpgradeActor(base_dir, personJson, handle, filename)
     # if not personJson:
@@ -1009,7 +1009,7 @@ def setDisplayNickname(base_dir: str, nickname: str, domain: str,
     if not os.path.isfile(filename):
         return False
 
-    personJson = loadJson(filename)
+    personJson = load_json(filename)
     if not personJson:
         return False
     personJson['name'] = displayName
@@ -1027,7 +1027,7 @@ def setBio(base_dir: str, nickname: str, domain: str, bio: str) -> bool:
     if not os.path.isfile(filename):
         return False
 
-    personJson = loadJson(filename)
+    personJson = load_json(filename)
     if not personJson:
         return False
     if not personJson.get('summary'):

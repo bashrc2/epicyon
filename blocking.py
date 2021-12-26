@@ -18,7 +18,7 @@ from utils import removeDomainPort
 from utils import has_object_dict
 from utils import isAccountDir
 from utils import getCachedPostFilename
-from utils import loadJson
+from utils import load_json
 from utils import save_json
 from utils import fileLastModified
 from utils import setConfigParam
@@ -529,7 +529,7 @@ def mutePost(base_dir: str, nickname: str, domain: str, port: int,
     if not postFilename:
         print('mutePost: file not found ' + postId)
         return
-    post_json_object = loadJson(postFilename)
+    post_json_object = load_json(postFilename)
     if not post_json_object:
         print('mutePost: object not loaded ' + postId)
         return
@@ -626,7 +626,7 @@ def mutePost(base_dir: str, nickname: str, domain: str, port: int,
     if alsoUpdatePostId:
         postFilename = locatePost(base_dir, nickname, domain, alsoUpdatePostId)
         if os.path.isfile(postFilename):
-            postJsonObj = loadJson(postFilename)
+            postJsonObj = load_json(postFilename)
             cachedPostFilename = \
                 getCachedPostFilename(base_dir, nickname, domain,
                                       postJsonObj)
@@ -660,7 +660,7 @@ def unmutePost(base_dir: str, nickname: str, domain: str, port: int,
     postFilename = locatePost(base_dir, nickname, domain, postId)
     if not postFilename:
         return
-    post_json_object = loadJson(postFilename)
+    post_json_object = load_json(postFilename)
     if not post_json_object:
         return
 
@@ -740,7 +740,7 @@ def unmutePost(base_dir: str, nickname: str, domain: str, port: int,
     if alsoUpdatePostId:
         postFilename = locatePost(base_dir, nickname, domain, alsoUpdatePostId)
         if os.path.isfile(postFilename):
-            postJsonObj = loadJson(postFilename)
+            postJsonObj = load_json(postFilename)
             cachedPostFilename = \
                 getCachedPostFilename(base_dir, nickname, domain,
                                       postJsonObj)
@@ -992,7 +992,7 @@ def loadCWLists(base_dir: str, verbose: bool) -> {}:
                 continue
             listFilename = os.path.join(base_dir + '/cwlists', f)
             print('listFilename: ' + listFilename)
-            listJson = loadJson(listFilename, 0, 1)
+            listJson = load_json(listFilename, 0, 1)
             if not listJson:
                 continue
             if not listJson.get('name'):

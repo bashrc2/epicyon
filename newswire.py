@@ -25,7 +25,7 @@ from utils import has_object_dict
 from utils import firstParagraphFromString
 from utils import isPublicPost
 from utils import locatePost
-from utils import loadJson
+from utils import load_json
 from utils import save_json
 from utils import isSuspended
 from utils import containsInvalidChars
@@ -1053,14 +1053,14 @@ def _addAccountBlogsToNewswire(base_dir: str, nickname: str, domain: str,
 
                 post_json_object = None
                 if fullPostFilename:
-                    post_json_object = loadJson(fullPostFilename)
+                    post_json_object = load_json(fullPostFilename)
                 if _isNewswireBlogPost(post_json_object):
                     published = post_json_object['object']['published']
                     published = published.replace('T', ' ')
                     published = published.replace('Z', '+00:00')
                     votes = []
                     if os.path.isfile(fullPostFilename + '.votes'):
-                        votes = loadJson(fullPostFilename + '.votes')
+                        votes = load_json(fullPostFilename + '.votes')
                     content = \
                         get_base_content_from_post(post_json_object,
                                                    system_language)

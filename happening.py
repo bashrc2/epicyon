@@ -13,7 +13,7 @@ from datetime import datetime
 from datetime import timedelta
 
 from utils import isPublicPost
-from utils import loadJson
+from utils import load_json
 from utils import save_json
 from utils import locatePost
 from utils import has_object_dict
@@ -210,7 +210,7 @@ def getTodaysEvents(base_dir: str, nickname: str, domain: str,
                 recreateEventsFile = True
                 continue
 
-            post_json_object = loadJson(postFilename)
+            post_json_object = load_json(postFilename)
             if not _isHappeningPost(post_json_object):
                 continue
 
@@ -284,7 +284,7 @@ def dayEventsCheck(base_dir: str, nickname: str, domain: str,
             if not postFilename:
                 continue
 
-            post_json_object = loadJson(postFilename)
+            post_json_object = load_json(postFilename)
             if not _isHappeningPost(post_json_object):
                 continue
 
@@ -341,7 +341,7 @@ def getThisWeeksEvents(base_dir: str, nickname: str, domain: str) -> {}:
                 recreateEventsFile = True
                 continue
 
-            post_json_object = loadJson(postFilename)
+            post_json_object = load_json(postFilename)
             if not _isHappeningPost(post_json_object):
                 continue
 
@@ -406,7 +406,7 @@ def getCalendarEvents(base_dir: str, nickname: str, domain: str,
                 recreateEventsFile = True
                 continue
 
-            post_json_object = loadJson(postFilename)
+            post_json_object = load_json(postFilename)
             if not _isHappeningPost(post_json_object):
                 continue
 

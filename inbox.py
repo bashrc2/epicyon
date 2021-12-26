@@ -54,7 +54,7 @@ from utils import getNicknameFromActor
 from utils import locatePost
 from utils import deletePost
 from utils import removeModerationPostFromIndex
-from utils import loadJson
+from utils import load_json
 from utils import save_json
 from utils import undoLikesCollectionEntry
 from utils import undoReactionCollectionEntry
@@ -875,7 +875,7 @@ def _personReceiveUpdate(base_dir: str,
             return False
     else:
         if os.path.isfile(actorFilename):
-            existingPersonJson = loadJson(actorFilename)
+            existingPersonJson = load_json(actorFilename)
             if existingPersonJson:
                 if existingPersonJson['publicKey']['publicKeyPem'] != \
                    personJson['publicKey']['publicKeyPem']:
@@ -916,7 +916,7 @@ def _receiveUpdateToQuestion(recentPostsCache: {}, message_json: {},
     if not postFilename:
         return
     # load the json for the question
-    post_json_object = loadJson(postFilename, 1)
+    post_json_object = load_json(postFilename, 1)
     if not post_json_object:
         return
     if not post_json_object.get('actor'):
@@ -1059,7 +1059,7 @@ def _receiveLike(recentPostsCache: {},
                           postLikedId, likeActor,
                           handleName, domain, debug, None)
     # regenerate the html
-    likedPostJson = loadJson(postFilename, 0, 1)
+    likedPostJson = load_json(postFilename, 0, 1)
     if likedPostJson:
         if likedPostJson.get('type'):
             if likedPostJson['type'] == 'Announce' and \
@@ -1173,7 +1173,7 @@ def _receiveUndoLike(recentPostsCache: {},
     undoLikesCollectionEntry(recentPostsCache, base_dir, postFilename,
                              postLikedId, likeActor, domain, debug, None)
     # regenerate the html
-    likedPostJson = loadJson(postFilename, 0, 1)
+    likedPostJson = load_json(postFilename, 0, 1)
     if likedPostJson:
         if likedPostJson.get('type'):
             if likedPostJson['type'] == 'Announce' and \
@@ -1317,7 +1317,7 @@ def _receiveReaction(recentPostsCache: {},
                              postReactionId, reactionActor,
                              handleName, domain, debug, None, emojiContent)
     # regenerate the html
-    reactionPostJson = loadJson(postFilename, 0, 1)
+    reactionPostJson = load_json(postFilename, 0, 1)
     if reactionPostJson:
         if reactionPostJson.get('type'):
             if reactionPostJson['type'] == 'Announce' and \
@@ -1448,7 +1448,7 @@ def _receiveUndoReaction(recentPostsCache: {},
                                 postReactionId, reactionActor, domain,
                                 debug, None, emojiContent)
     # regenerate the html
-    reactionPostJson = loadJson(postFilename, 0, 1)
+    reactionPostJson = load_json(postFilename, 0, 1)
     if reactionPostJson:
         if reactionPostJson.get('type'):
             if reactionPostJson['type'] == 'Announce' and \
@@ -1576,7 +1576,7 @@ def _receiveBookmark(recentPostsCache: {},
                               message_json['object']['url'],
                               message_json['actor'], domain, debug)
     # regenerate the html
-    bookmarkedPostJson = loadJson(postFilename, 0, 1)
+    bookmarkedPostJson = load_json(postFilename, 0, 1)
     if bookmarkedPostJson:
         if debug:
             cachedPostFilename = \
@@ -1689,7 +1689,7 @@ def _receiveUndoBookmark(recentPostsCache: {},
                                  message_json['object']['url'],
                                  message_json['actor'], domain, debug)
     # regenerate the html
-    bookmarkedPostJson = loadJson(postFilename, 0, 1)
+    bookmarkedPostJson = load_json(postFilename, 0, 1)
     if bookmarkedPostJson:
         if debug:
             cachedPostFilename = \
@@ -2068,7 +2068,7 @@ def _receiveUndoAnnounce(recentPostsCache: {},
     if debug:
         print('DEBUG: announced/repeated post to be undone found in inbox')
 
-    post_json_object = loadJson(postFilename)
+    post_json_object = load_json(postFilename)
     if post_json_object:
         if not post_json_object.get('type'):
             if post_json_object['type'] != 'Announce':
@@ -2107,7 +2107,7 @@ def jsonPostAllowsComments(post_json_object: {}) -> bool:
 def _postAllowsComments(postFilename: str) -> bool:
     """Returns true if the given post allows comments/replies
     """
-    post_json_object = loadJson(postFilename)
+    post_json_object = load_json(postFilename)
     if not post_json_object:
         return False
     return jsonPostAllowsComments(post_json_object)
@@ -2367,7 +2367,7 @@ def _alreadyLiked(base_dir: str, nickname: str, domain: str,
         locatePost(base_dir, nickname, domain, postUrl)
     if not postFilename:
         return False
-    post_json_object = loadJson(postFilename, 1)
+    post_json_object = load_json(postFilename, 1)
     if not post_json_object:
         return False
     if not has_object_dict(post_json_object):
@@ -2397,7 +2397,7 @@ def _alreadyReacted(base_dir: str, nickname: str, domain: str,
         locatePost(base_dir, nickname, domain, postUrl)
     if not postFilename:
         return False
-    post_json_object = loadJson(postFilename, 1)
+    post_json_object = load_json(postFilename, 1)
     if not post_json_object:
         return False
     if not has_object_dict(post_json_object):
@@ -2608,7 +2608,7 @@ def _groupHandle(base_dir: str, handle: str) -> bool:
     actorFile = base_dir + '/accounts/' + handle + '.json'
     if not os.path.isfile(actorFile):
         return False
-    actor_json = loadJson(actorFile)
+    actor_json = load_json(actorFile)
     if not actor_json:
         return False
     return actor_json['type'] == 'Group'
@@ -4176,7 +4176,7 @@ def runInboxQueue(recentPostsCache: {}, max_recent_posts: int,
             print('Loading queue item ' + queueFilename)
 
         # Load the queue json
-        queueJson = loadJson(queueFilename, 1)
+        queueJson = load_json(queueFilename, 1)
         if not queueJson:
             print('Queue: runInboxQueue failed to load inbox queue item ' +
                   queueFilename)

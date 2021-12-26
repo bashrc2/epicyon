@@ -9,7 +9,7 @@ __module_group__ = "ActivityPub"
 
 import os
 from utils import locatePost
-from utils import loadJson
+from utils import load_json
 from utils import save_json
 from utils import has_object_dict
 
@@ -33,7 +33,7 @@ def questionUpdateVotes(base_dir: str, nickname: str, domain: str,
     questionPostFilename = locatePost(base_dir, nickname, domain, inReplyTo)
     if not questionPostFilename:
         return None, None
-    questionJson = loadJson(questionPostFilename)
+    questionJson = load_json(questionPostFilename)
     if not questionJson:
         return None, None
     if not has_object_dict(questionJson):

@@ -9,7 +9,7 @@ __module_group__ = "Metadata"
 
 import os
 from utils import isAccountDir
-from utils import loadJson
+from utils import load_json
 from utils import noOfAccounts
 from utils import noOfActiveAccountsMonthly
 
@@ -96,7 +96,7 @@ def metaDataInstance(showAccounts: bool,
     if not os.path.isfile(adminActorFilename):
         return {}
 
-    adminActor = loadJson(adminActorFilename, 0)
+    adminActor = load_json(adminActorFilename, 0)
     if not adminActor:
         print('WARN: json load exception metaDataInstance')
         return {}

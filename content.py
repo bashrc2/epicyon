@@ -15,7 +15,7 @@ from utils import dangerousSVG
 from utils import removeDomainPort
 from utils import isValidLanguage
 from utils import get_image_extensions
-from utils import loadJson
+from utils import load_json
 from utils import save_json
 from utils import fileLastModified
 from utils import getLinkPrefixes
@@ -277,7 +277,7 @@ def _saveCustomEmoji(session, base_dir: str, emojiName: str, url: str,
     emojiJsonFilename = customEmojiDir + '/emoji.json'
     emojiJson = {}
     if os.path.isfile(emojiJsonFilename):
-        emojiJson = loadJson(emojiJsonFilename, 0, 1)
+        emojiJson = load_json(emojiJsonFilename, 0, 1)
         if not emojiJson:
             emojiJson = {}
     if not emojiJson.get(emojiName):
@@ -913,12 +913,12 @@ def addHtmlTags(base_dir: str, http_prefix: str,
                     if not os.path.isfile(base_dir + '/emoji/emoji.json'):
                         copyfile(base_dir + '/emoji/default_emoji.json',
                                  base_dir + '/emoji/emoji.json')
-                emojiDict = loadJson(base_dir + '/emoji/emoji.json')
+                emojiDict = load_json(base_dir + '/emoji/emoji.json')
 
                 # append custom emoji to the dict
                 if os.path.isfile(base_dir + '/emojicustom/emoji.json'):
                     customEmojiDict = \
-                        loadJson(base_dir + '/emojicustom/emoji.json')
+                        load_json(base_dir + '/emojicustom/emoji.json')
                     if customEmojiDict:
                         emojiDict = dict(emojiDict, **customEmojiDict)
 

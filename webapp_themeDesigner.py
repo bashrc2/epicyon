@@ -8,7 +8,7 @@ __status__ = "Production"
 __module_group__ = "Web Interface"
 
 import os
-from utils import loadJson
+from utils import load_json
 from utils import get_config_param
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
@@ -175,12 +175,12 @@ def htmlThemeDesigner(cssCache: {}, base_dir: str,
     themeFilename = base_dir + '/theme/' + theme_name + '/theme.json'
     themeJson = {}
     if os.path.isfile(themeFilename):
-        themeJson = loadJson(themeFilename)
+        themeJson = load_json(themeFilename)
 
     # set custom theme parameters
     customVariablesFile = base_dir + '/accounts/theme.json'
     if os.path.isfile(customVariablesFile):
-        customThemeParams = loadJson(customVariablesFile, 0)
+        customThemeParams = load_json(customVariablesFile, 0)
         if customThemeParams:
             for variableName, value in customThemeParams.items():
                 themeJson[variableName] = value

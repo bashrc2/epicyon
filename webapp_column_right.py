@@ -15,7 +15,7 @@ from utils import getFavFilenameFromUrl
 from utils import get_base_content_from_post
 from utils import removeHtml
 from utils import locatePost
-from utils import loadJson
+from utils import load_json
 from utils import votesOnNewswireItem
 from utils import getNicknameFromActor
 from utils import is_editor
@@ -662,7 +662,7 @@ def htmlEditNewsPost(cssCache: {}, translate: {}, base_dir: str, path: str,
     postFilename = locatePost(base_dir, nickname, domain, postUrl)
     if not postFilename:
         return ''
-    post_json_object = loadJson(postFilename)
+    post_json_object = load_json(postFilename)
     if not post_json_object:
         return ''
 

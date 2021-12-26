@@ -28,7 +28,7 @@ from content import validHashTag
 from utils import get_base_content_from_post
 from utils import removeHtml
 from utils import get_full_domain
-from utils import loadJson
+from utils import load_json
 from utils import save_json
 from utils import getStatusNumber
 from utils import clearFromPostCaches
@@ -810,7 +810,7 @@ def runNewswireDaemon(base_dir: str, httpd,
             print('Newswire feeds not updated')
             if os.path.isfile(newswireStateFilename):
                 print('Loading newswire from file')
-                httpd.newswire = loadJson(newswireStateFilename)
+                httpd.newswire = load_json(newswireStateFilename)
 
         print('Merging with previous newswire')
         _mergeWithPreviousNewswire(httpd.newswire, newNewswire)

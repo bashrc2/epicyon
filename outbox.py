@@ -25,7 +25,7 @@ from utils import removeIdEnding
 from utils import getDomainFromActor
 from utils import dangerousMarkup
 from utils import is_featured_writer
-from utils import loadJson
+from utils import load_json
 from utils import save_json
 from utils import acct_dir
 from utils import local_actor_url
@@ -123,7 +123,7 @@ def _outboxPersonReceiveUpdate(recentPostsCache: {},
     if not os.path.isfile(actorFilename):
         print('actorFilename not found: ' + actorFilename)
         return
-    actor_json = loadJson(actorFilename)
+    actor_json = load_json(actorFilename)
     if not actor_json:
         return
     actorChanged = False

@@ -13,7 +13,7 @@ from utils import get_full_domain
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import locatePost
-from utils import loadJson
+from utils import load_json
 from utils import get_config_param
 from utils import getAltPath
 from utils import acct_dir
@@ -51,7 +51,7 @@ def htmlConfirmDelete(cssCache: {},
     if not postFilename:
         return None
 
-    post_json_object = loadJson(postFilename)
+    post_json_object = load_json(postFilename)
     if not post_json_object:
         return None
 
@@ -120,7 +120,7 @@ def htmlConfirmRemoveSharedItem(cssCache: {}, translate: {}, base_dir: str,
     if not os.path.isfile(sharesFile):
         print('ERROR: no ' + sharesFileType + ' file ' + sharesFile)
         return None
-    sharesJson = loadJson(sharesFile)
+    sharesJson = load_json(sharesFile)
     if not sharesJson:
         print('ERROR: unable to load ' + sharesFileType + '.json')
         return None

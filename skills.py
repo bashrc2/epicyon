@@ -16,7 +16,7 @@ from utils import hasObjectString
 from utils import get_full_domain
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
-from utils import loadJson
+from utils import load_json
 from utils import getOccupationSkills
 from utils import setOccupationSkillsList
 from utils import acct_dir
@@ -123,7 +123,7 @@ def setSkillLevel(base_dir: str, nickname: str, domain: str,
     if not os.path.isfile(actorFilename):
         return False
 
-    actor_json = loadJson(actorFilename)
+    actor_json = load_json(actorFilename)
     return setActorSkillLevel(actor_json,
                               skill, skillLevelPercent)
 
@@ -135,7 +135,7 @@ def getSkills(base_dir: str, nickname: str, domain: str) -> []:
     if not os.path.isfile(actorFilename):
         return False
 
-    actor_json = loadJson(actorFilename)
+    actor_json = load_json(actorFilename)
     if actor_json:
         if not actor_json.get('hasOccupation'):
             return None

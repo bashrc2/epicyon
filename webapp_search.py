@@ -16,7 +16,7 @@ from utils import isAccountDir
 from utils import get_config_param
 from utils import get_full_domain
 from utils import is_editor
-from utils import loadJson
+from utils import load_json
 from utils import getDomainFromActor
 from utils import getNicknameFromActor
 from utils import locatePost
@@ -76,10 +76,10 @@ def htmlSearchEmoji(cssCache: {}, translate: {},
         emojiForm += htmlFooter()
         return emojiForm
 
-    emojiJson = loadJson(emojiLookupFilename)
+    emojiJson = load_json(emojiLookupFilename)
     if emojiJson:
         if os.path.isfile(customEmojiLookupFilename):
-            customEmojiJson = loadJson(customEmojiLookupFilename)
+            customEmojiJson = load_json(customEmojiLookupFilename)
             if customEmojiJson:
                 emojiJson = dict(emojiJson, **customEmojiJson)
 
@@ -260,7 +260,7 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
             if not os.path.isfile(sharesFilename):
                 continue
 
-            sharesJson = loadJson(sharesFilename)
+            sharesJson = load_json(sharesFilename)
             if not sharesJson:
                 continue
 
@@ -297,7 +297,7 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
                 if federatedDomain not in shared_items_federated_domains:
                     continue
                 sharesFilename = catalogsDir + '/' + f
-                sharesJson = loadJson(sharesFilename)
+                sharesJson = load_json(sharesFilename)
                 if not sharesJson:
                     continue
 
@@ -475,7 +475,7 @@ def htmlSkillsSearch(actor: str,
             if not isAccountDir(f):
                 continue
             actorFilename = os.path.join(subdir, f)
-            actor_json = loadJson(actorFilename)
+            actor_json = load_json(actorFilename)
             if actor_json:
                 if actor_json.get('id') and \
                    noOfActorSkills(actor_json) > 0 and \
@@ -510,7 +510,7 @@ def htmlSkillsSearch(actor: str,
                 if not isAccountDir(f):
                     continue
                 actorFilename = os.path.join(subdir, f)
-                cachedActorJson = loadJson(actorFilename)
+                cachedActorJson = load_json(actorFilename)
                 if cachedActorJson:
                     if cachedActorJson.get('actor'):
                         actor_json = cachedActorJson['actor']
@@ -666,7 +666,7 @@ def htmlHistorySearch(cssCache: {}, translate: {}, base_dir: str,
         if not postFilename:
             index += 1
             continue
-        post_json_object = loadJson(postFilename)
+        post_json_object = load_json(postFilename)
         if not post_json_object:
             index += 1
             continue
@@ -835,7 +835,7 @@ def htmlHashtagSearch(cssCache: {},
         if not postFilename:
             index += 1
             continue
-        post_json_object = loadJson(postFilename)
+        post_json_object = load_json(postFilename)
         if not post_json_object:
             index += 1
             continue
@@ -962,7 +962,7 @@ def rssHashtagSearch(nickname: str, domain: str, port: int,
             if index >= maxFeedLength:
                 break
             continue
-        post_json_object = loadJson(postFilename)
+        post_json_object = load_json(postFilename)
         if post_json_object:
             if not isPublicPost(post_json_object):
                 index += 1

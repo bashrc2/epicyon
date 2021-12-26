@@ -13,8 +13,8 @@ from session import getJson
 from cache import storeWebfingerInCache
 from cache import getWebfingerFromCache
 from utils import get_full_domain
-from utils import loadJson
-from utils import loadJsonOnionify
+from utils import load_json
+from utils import load_json_onionify
 from utils import save_json
 from utils import getProtocolPrefixes
 from utils import removeDomainPort
@@ -270,10 +270,10 @@ def webfingerLookup(path: str, base_dir: str,
             print('DEBUG: WEBFINGER filename not found ' + filename)
         return None
     if not onionify:
-        wfJson = loadJson(filename)
+        wfJson = load_json(filename)
     else:
         print('Webfinger request for onionified ' + handle)
-        wfJson = loadJsonOnionify(filename, domain, onion_domain)
+        wfJson = load_json_onionify(filename, domain, onion_domain)
     if not wfJson:
         wfJson = {"nickname": "unknown"}
     return wfJson
@@ -435,14 +435,14 @@ def webfingerUpdate(base_dir: str, nickname: str, domain: str,
             handle = handle.replace(onion_domain, domain)
             onionify = True
     if not onionify:
-        wfJson = loadJson(filename)
+        wfJson = load_json(filename)
     else:
-        wfJson = loadJsonOnionify(filename, domain, onion_domain)
+        wfJson = load_json_onionify(filename, domain, onion_domain)
     if not wfJson:
         return
 
     actorFilename = base_dir + '/accounts/' + handle + '.json'
-    actor_json = loadJson(actorFilename)
+    actor_json = load_json(actorFilename)
     if not actor_json:
         return
 

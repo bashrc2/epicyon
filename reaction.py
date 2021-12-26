@@ -26,7 +26,7 @@ from utils import locatePost
 from utils import undoReactionCollectionEntry
 from utils import hasGroupType
 from utils import local_actor_url
-from utils import loadJson
+from utils import load_json
 from utils import save_json
 from utils import removePostFromCache
 from utils import getCachedPostFilename
@@ -448,7 +448,7 @@ def updateReactionCollection(recentPostsCache: {},
     """Updates the reactions collection within a post
     """
     if not post_json_object:
-        post_json_object = loadJson(postFilename)
+        post_json_object = load_json(postFilename)
     if not post_json_object:
         return
 

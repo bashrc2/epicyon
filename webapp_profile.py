@@ -22,7 +22,7 @@ from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import isSystemAccount
 from utils import removeHtml
-from utils import loadJson
+from utils import load_json
 from utils import get_config_param
 from utils import getImageFormats
 from utils import acct_dir
@@ -2126,7 +2126,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, base_dir: str, path: str,
     ssbAddress = blogAddress = toxAddress = jamiAddress = ''
     cwtchAddress = briarAddress = manuallyApprovesFollowers = ''
 
-    actor_json = loadJson(actorFilename)
+    actor_json = load_json(actorFilename)
     if actor_json:
         if actor_json.get('movedTo'):
             movedTo = actor_json['movedTo']

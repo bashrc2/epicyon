@@ -12,7 +12,7 @@ import time
 import datetime
 from utils import has_object_dict
 from utils import getStatusNumber
-from utils import loadJson
+from utils import load_json
 from utils import isAccountDir
 from utils import acct_dir
 from outbox import postMessageToOutbox
@@ -73,7 +73,7 @@ def _updatePostSchedule(base_dir: str, handle: str, httpd,
                 indexLines.remove(line)
                 continue
             # load post
-            post_json_object = loadJson(postFilename)
+            post_json_object = load_json(postFilename)
             if not post_json_object:
                 print('WARN: schedule json not loaded')
                 indexLines.remove(line)

@@ -15,7 +15,7 @@ from utils import get_config_param
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import locatePost
-from utils import loadJson
+from utils import load_json
 from utils import weekDayOfMonthStart
 from utils import getAltPath
 from utils import removeDomainPort
@@ -47,7 +47,7 @@ def htmlCalendarDeleteConfirm(cssCache: {}, translate: {}, base_dir: str,
     if not postFilename:
         return None
 
-    post_json_object = loadJson(postFilename)
+    post_json_object = load_json(postFilename)
     if not post_json_object:
         return None
 

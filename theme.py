@@ -9,7 +9,7 @@ __module_group__ = "Web Interface"
 
 import os
 from utils import isAccountDir
-from utils import loadJson
+from utils import load_json
 from utils import save_json
 from utils import get_image_extensions
 from utils import copytree
@@ -167,7 +167,7 @@ def _setThemeInConfig(base_dir: str, name: str) -> bool:
     config_filename = base_dir + '/config.json'
     if not os.path.isfile(config_filename):
         return False
-    configJson = loadJson(config_filename, 0)
+    configJson = load_json(config_filename, 0)
     if not configJson:
         return False
     configJson['theme'] = name
@@ -180,7 +180,7 @@ def _setNewswirePublishAsIcon(base_dir: str, useIcon: bool) -> bool:
     config_filename = base_dir + '/config.json'
     if not os.path.isfile(config_filename):
         return False
-    configJson = loadJson(config_filename, 0)
+    configJson = load_json(config_filename, 0)
     if not configJson:
         return False
     configJson['show_publish_as_icon'] = useIcon
@@ -194,7 +194,7 @@ def _setIconsAsButtons(base_dir: str, useButtons: bool) -> bool:
     config_filename = base_dir + '/config.json'
     if not os.path.isfile(config_filename):
         return False
-    configJson = loadJson(config_filename, 0)
+    configJson = load_json(config_filename, 0)
     if not configJson:
         return False
     configJson['icons_as_buttons'] = useButtons
@@ -207,7 +207,7 @@ def _setRssIconAtTop(base_dir: str, atTop: bool) -> bool:
     config_filename = base_dir + '/config.json'
     if not os.path.isfile(config_filename):
         return False
-    configJson = loadJson(config_filename, 0)
+    configJson = load_json(config_filename, 0)
     if not configJson:
         return False
     configJson['rss_icon_at_top'] = atTop
@@ -221,7 +221,7 @@ def _setPublishButtonAtTop(base_dir: str, atTop: bool) -> bool:
     config_filename = base_dir + '/config.json'
     if not os.path.isfile(config_filename):
         return False
-    configJson = loadJson(config_filename, 0)
+    configJson = load_json(config_filename, 0)
     if not configJson:
         return False
     configJson['publish_button_at_top'] = atTop
@@ -235,7 +235,7 @@ def _setFullWidthTimelineButtonHeader(base_dir: str, fullWidth: bool) -> bool:
     config_filename = base_dir + '/config.json'
     if not os.path.isfile(config_filename):
         return False
-    configJson = loadJson(config_filename, 0)
+    configJson = load_json(config_filename, 0)
     if not configJson:
         return False
     configJson['full_width_tl_button_header'] = fullWidth
@@ -247,7 +247,7 @@ def getTheme(base_dir: str) -> str:
     """
     config_filename = base_dir + '/config.json'
     if os.path.isfile(config_filename):
-        configJson = loadJson(config_filename, 0)
+        configJson = load_json(config_filename, 0)
         if configJson:
             if configJson.get('theme'):
                 return configJson['theme']
@@ -520,14 +520,14 @@ def _readVariablesFile(base_dir: str, theme_name: str,
                        allow_local_network_access: bool) -> None:
     """Reads variables from a file in the theme directory
     """
-    themeParams = loadJson(variablesFile, 0)
+    themeParams = load_json(variablesFile, 0)
     if not themeParams:
         return
 
     # set custom theme parameters
     customVariablesFile = base_dir + '/accounts/theme.json'
     if os.path.isfile(customVariablesFile):
-        customThemeParams = loadJson(customVariablesFile, 0)
+        customThemeParams = load_json(customVariablesFile, 0)
         if customThemeParams:
             for variableName, value in customThemeParams.items():
                 themeParams[variableName] = value

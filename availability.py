@@ -16,7 +16,7 @@ from utils import hasObjectString
 from utils import get_full_domain
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
-from utils import loadJson
+from utils import load_json
 from utils import save_json
 from utils import acct_dir
 from utils import local_actor_url
@@ -33,7 +33,7 @@ def setAvailability(base_dir: str, nickname: str, domain: str,
     actorFilename = acct_dir(base_dir, nickname, domain) + '.json'
     if not os.path.isfile(actorFilename):
         return False
-    actor_json = loadJson(actorFilename)
+    actor_json = load_json(actorFilename)
     if actor_json:
         actor_json['availability'] = status
         save_json(actor_json, actorFilename)
@@ -46,7 +46,7 @@ def getAvailability(base_dir: str, nickname: str, domain: str) -> str:
     actorFilename = acct_dir(base_dir, nickname, domain) + '.json'
     if not os.path.isfile(actorFilename):
         return False
-    actor_json = loadJson(actorFilename)
+    actor_json = load_json(actorFilename)
     if actor_json:
         if not actor_json.get('availability'):
             return None
