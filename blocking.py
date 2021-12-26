@@ -520,18 +520,18 @@ def outboxUndoBlock(base_dir: str, http_prefix: str,
 
 
 def mutePost(base_dir: str, nickname: str, domain: str, port: int,
-             http_prefix: str, postId: str, recentPostsCache: {},
+             http_prefix: str, post_id: str, recentPostsCache: {},
              debug: bool) -> None:
     """ Mutes the given post
     """
-    print('mutePost: postId ' + postId)
-    postFilename = locatePost(base_dir, nickname, domain, postId)
+    print('mutePost: post_id ' + post_id)
+    postFilename = locatePost(base_dir, nickname, domain, post_id)
     if not postFilename:
-        print('mutePost: file not found ' + postId)
+        print('mutePost: file not found ' + post_id)
         return
     post_json_object = load_json(postFilename)
     if not post_json_object:
-        print('mutePost: object not loaded ' + postId)
+        print('mutePost: object not loaded ' + post_id)
         return
     print('mutePost: ' + str(post_json_object))
 
@@ -553,10 +553,10 @@ def mutePost(base_dir: str, nickname: str, domain: str, port: int,
     # does this post have ignores on it from differenent actors?
     if not postJsonObj.get('ignores'):
         if debug:
-            print('DEBUG: Adding initial mute to ' + postId)
+            print('DEBUG: Adding initial mute to ' + post_id)
         ignoresJson = {
             "@context": "https://www.w3.org/ns/activitystreams",
-            'id': postId,
+            'id': post_id,
             'type': 'Collection',
             "totalItems": 1,
             'items': [{
@@ -610,18 +610,18 @@ def mutePost(base_dir: str, nickname: str, domain: str, port: int,
 
     # if the post is in the recent posts cache then mark it as muted
     if recentPostsCache.get('index'):
-        postId = \
+        post_id = \
             removeIdEnding(post_json_object['id']).replace('/', '#')
-        if postId in recentPostsCache['index']:
-            print('MUTE: ' + postId + ' is in recent posts cache')
+        if post_id in recentPostsCache['index']:
+            print('MUTE: ' + post_id + ' is in recent posts cache')
         if recentPostsCache.get('json'):
-            recentPostsCache['json'][postId] = json.dumps(post_json_object)
-            print('MUTE: ' + postId +
+            recentPostsCache['json'][post_id] = json.dumps(post_json_object)
+            print('MUTE: ' + post_id +
                   ' marked as muted in recent posts memory cache')
         if recentPostsCache.get('html'):
-            if recentPostsCache['html'].get(postId):
-                del recentPostsCache['html'][postId]
-                print('MUTE: ' + postId + ' removed cached html')
+            if recentPostsCache['html'].get(post_id):
+                del recentPostsCache['html'][post_id]
+                print('MUTE: ' + post_id + ' removed cached html')
 
     if alsoUpdatePostId:
         postFilename = locatePost(base_dir, nickname, domain, alsoUpdatePostId)
@@ -653,11 +653,11 @@ def mutePost(base_dir: str, nickname: str, domain: str, port: int,
 
 
 def unmutePost(base_dir: str, nickname: str, domain: str, port: int,
-               http_prefix: str, postId: str, recentPostsCache: {},
+               http_prefix: str, post_id: str, recentPostsCache: {},
                debug: bool) -> None:
     """ Unmutes the given post
     """
-    postFilename = locatePost(base_dir, nickname, domain, postId)
+    postFilename = locatePost(base_dir, nickname, domain, post_id)
     if not postFilename:
         return
     post_json_object = load_json(postFilename)
@@ -725,18 +725,18 @@ def unmutePost(base_dir: str, nickname: str, domain: str, port: int,
 
     # if the post is in the recent posts cache then mark it as unmuted
     if recentPostsCache.get('index'):
-        postId = \
+        post_id = \
             removeIdEnding(post_json_object['id']).replace('/', '#')
-        if postId in recentPostsCache['index']:
-            print('UNMUTE: ' + postId + ' is in recent posts cache')
+        if post_id in recentPostsCache['index']:
+            print('UNMUTE: ' + post_id + ' is in recent posts cache')
         if recentPostsCache.get('json'):
-            recentPostsCache['json'][postId] = json.dumps(post_json_object)
-            print('UNMUTE: ' + postId +
+            recentPostsCache['json'][post_id] = json.dumps(post_json_object)
+            print('UNMUTE: ' + post_id +
                   ' marked as unmuted in recent posts cache')
         if recentPostsCache.get('html'):
-            if recentPostsCache['html'].get(postId):
-                del recentPostsCache['html'][postId]
-                print('UNMUTE: ' + postId + ' removed cached html')
+            if recentPostsCache['html'].get(post_id):
+                del recentPostsCache['html'][post_id]
+                print('UNMUTE: ' + post_id + ' removed cached html')
     if alsoUpdatePostId:
         postFilename = locatePost(base_dir, nickname, domain, alsoUpdatePostId)
         if os.path.isfile(postFilename):

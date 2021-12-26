@@ -41,13 +41,13 @@ from cache import getPersonFromCache
 
 def _noOfBlogReplies(base_dir: str, http_prefix: str, translate: {},
                      nickname: str, domain: str, domain_full: str,
-                     postId: str, depth=0) -> int:
+                     post_id: str, depth=0) -> int:
     """Returns the number of replies on the post
     This is recursive, so can handle replies to replies
     """
     if depth > 4:
         return 0
-    if not postId:
+    if not post_id:
         return 0
 
     tryPostBox = ('tlblogs', 'inbox', 'outbox')
@@ -55,7 +55,7 @@ def _noOfBlogReplies(base_dir: str, http_prefix: str, translate: {},
     for postBox in tryPostBox:
         postFilename = \
             acct_dir(base_dir, nickname, domain) + '/' + postBox + '/' + \
-            postId.replace('/', '#') + '.replies'
+            post_id.replace('/', '#') + '.replies'
         if os.path.isfile(postFilename):
             boxFound = True
             break
@@ -64,7 +64,7 @@ def _noOfBlogReplies(base_dir: str, http_prefix: str, translate: {},
         for postBox in tryPostBox:
             postFilename = \
                 acct_dir(base_dir, nickname, domain) + '/' + postBox + '/' + \
-                postId.replace('/', '#')
+                post_id.replace('/', '#')
             if os.path.isfile(postFilename):
                 return 1
         return 0
@@ -111,12 +111,12 @@ def _noOfBlogReplies(base_dir: str, http_prefix: str, translate: {},
 
 def _getBlogReplies(base_dir: str, http_prefix: str, translate: {},
                     nickname: str, domain: str, domain_full: str,
-                    postId: str, depth=0) -> str:
+                    post_id: str, depth=0) -> str:
     """Returns a string containing html blog posts
     """
     if depth > 4:
         return ''
-    if not postId:
+    if not post_id:
         return ''
 
     tryPostBox = ('tlblogs', 'inbox', 'outbox')
@@ -124,7 +124,7 @@ def _getBlogReplies(base_dir: str, http_prefix: str, translate: {},
     for postBox in tryPostBox:
         postFilename = \
             acct_dir(base_dir, nickname, domain) + '/' + postBox + '/' + \
-            postId.replace('/', '#') + '.replies'
+            post_id.replace('/', '#') + '.replies'
         if os.path.isfile(postFilename):
             boxFound = True
             break
@@ -133,11 +133,11 @@ def _getBlogReplies(base_dir: str, http_prefix: str, translate: {},
         for postBox in tryPostBox:
             postFilename = \
                 acct_dir(base_dir, nickname, domain) + '/' + postBox + '/' + \
-                postId.replace('/', '#') + '.json'
+                post_id.replace('/', '#') + '.json'
             if os.path.isfile(postFilename):
                 postFilename = acct_dir(base_dir, nickname, domain) + \
                     '/postcache/' + \
-                    postId.replace('/', '#') + '.html'
+                    post_id.replace('/', '#') + '.html'
                 if os.path.isfile(postFilename):
                     try:
                         with open(postFilename, 'r') as postFile:

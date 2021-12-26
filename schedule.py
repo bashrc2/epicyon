@@ -42,8 +42,8 @@ def _updatePostSchedule(base_dir: str, handle: str, httpd,
             dateStr = line.split(' ')[0]
             if 'T' not in dateStr:
                 continue
-            postId = line.split(' ', 1)[1].replace('\n', '').replace('\r', '')
-            postFilename = scheduleDir + postId + '.json'
+            post_id = line.split(' ', 1)[1].replace('\n', '').replace('\r', '')
+            postFilename = scheduleDir + post_id + '.json'
             if deleteSchedulePost:
                 # delete extraneous scheduled posts
                 if os.path.isfile(postFilename):
@@ -89,7 +89,7 @@ def _updatePostSchedule(base_dir: str, handle: str, httpd,
                 if post_json_object['object'].get('published'):
                     post_json_object['published'] = published
 
-            print('Sending scheduled post ' + postId)
+            print('Sending scheduled post ' + post_id)
 
             if nickname:
                 httpd.postToNickname = nickname
@@ -143,7 +143,7 @@ def _updatePostSchedule(base_dir: str, handle: str, httpd,
                                                       '/outbox/')
             os.rename(postFilename, outboxPostFilename)
 
-            print('Scheduled post sent ' + postId)
+            print('Scheduled post sent ' + post_id)
 
             indexLines.remove(line)
             if len(indexLines) > maxScheduledPosts:

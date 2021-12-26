@@ -614,12 +614,12 @@ def removeIdEnding(idStr: str) -> str:
     return idStr
 
 
-def removeHashFromPostId(postId: str) -> str:
+def removeHashFromPostId(post_id: str) -> str:
     """Removes any has from a post id
     """
-    if '#' not in postId:
-        return postId
-    return postId.split('#')[0]
+    if '#' not in post_id:
+        return post_id
+    return post_id.split('#')[0]
 
 
 def getProtocolPrefixes() -> []:
@@ -1294,11 +1294,11 @@ def locateNewsArrival(base_dir: str, domain: str,
 
 
 def clearFromPostCaches(base_dir: str, recentPostsCache: {},
-                        postId: str) -> None:
+                        post_id: str) -> None:
     """Clears cached html for the given post, so that edits
     to news will appear
     """
-    filename = '/postcache/' + postId + '.html'
+    filename = '/postcache/' + post_id + '.html'
     for subdir, dirs, files in os.walk(base_dir + '/accounts'):
         for acct in dirs:
             if '@' not in acct:
@@ -1315,14 +1315,14 @@ def clearFromPostCaches(base_dir: str, recentPostsCache: {},
                           str(postFilename))
             # if the post is in the recent posts cache then remove it
             if recentPostsCache.get('index'):
-                if postId in recentPostsCache['index']:
-                    recentPostsCache['index'].remove(postId)
+                if post_id in recentPostsCache['index']:
+                    recentPostsCache['index'].remove(post_id)
             if recentPostsCache.get('json'):
-                if recentPostsCache['json'].get(postId):
-                    del recentPostsCache['json'][postId]
+                if recentPostsCache['json'].get(post_id):
+                    del recentPostsCache['json'][post_id]
             if recentPostsCache.get('html'):
-                if recentPostsCache['html'].get(postId):
-                    del recentPostsCache['html'][postId]
+                if recentPostsCache['html'].get(post_id):
+                    del recentPostsCache['html'][post_id]
         break
 
 
@@ -1489,20 +1489,20 @@ def removeModerationPostFromIndex(base_dir: str, postUrl: str,
                                   debug: bool) -> None:
     """Removes a url from the moderation index
     """
-    moderationIndexFile = base_dir + '/accounts/moderation.txt'
-    if not os.path.isfile(moderationIndexFile):
+    moderation_index_file = base_dir + '/accounts/moderation.txt'
+    if not os.path.isfile(moderation_index_file):
         return
-    postId = removeIdEnding(postUrl)
-    if postId in open(moderationIndexFile).read():
-        with open(moderationIndexFile, 'r') as f:
+    post_id = removeIdEnding(postUrl)
+    if post_id in open(moderation_index_file).read():
+        with open(moderation_index_file, 'r') as f:
             lines = f.readlines()
-            with open(moderationIndexFile, 'w+') as f:
+            with open(moderation_index_file, 'w+') as f:
                 for line in lines:
-                    if line.strip("\n").strip("\r") != postId:
+                    if line.strip("\n").strip("\r") != post_id:
                         f.write(line)
                     else:
                         if debug:
-                            print('DEBUG: removed ' + postId +
+                            print('DEBUG: removed ' + post_id +
                                   ' from moderation index')
 
 
@@ -1579,24 +1579,24 @@ def removePostFromCache(post_json_object: {}, recentPostsCache: {}) -> None:
     if not recentPostsCache.get('index'):
         return
 
-    postId = post_json_object['id']
-    if '#' in postId:
-        postId = postId.split('#', 1)[0]
-    postId = removeIdEnding(postId).replace('/', '#')
-    if postId not in recentPostsCache['index']:
+    post_id = post_json_object['id']
+    if '#' in post_id:
+        post_id = post_id.split('#', 1)[0]
+    post_id = removeIdEnding(post_id).replace('/', '#')
+    if post_id not in recentPostsCache['index']:
         return
 
     if recentPostsCache.get('index'):
-        if postId in recentPostsCache['index']:
-            recentPostsCache['index'].remove(postId)
+        if post_id in recentPostsCache['index']:
+            recentPostsCache['index'].remove(post_id)
 
     if recentPostsCache.get('json'):
-        if recentPostsCache['json'].get(postId):
-            del recentPostsCache['json'][postId]
+        if recentPostsCache['json'].get(post_id):
+            del recentPostsCache['json'][post_id]
 
     if recentPostsCache.get('html'):
-        if recentPostsCache['html'].get(postId):
-            del recentPostsCache['html'][postId]
+        if recentPostsCache['html'].get(post_id):
+            del recentPostsCache['html'][post_id]
 
 
 def _deleteCachedHtml(base_dir: str, nickname: str, domain: str,
@@ -1632,7 +1632,7 @@ def _deleteHashtagsOnPost(base_dir: str, post_json_object: {}) -> None:
         return
 
     # get the id of the post
-    postId = removeIdEnding(post_json_object['object']['id'])
+    post_id = removeIdEnding(post_json_object['object']['id'])
     for tag in post_json_object['object']['tag']:
         if not tag.get('type'):
             continue
@@ -1644,7 +1644,7 @@ def _deleteHashtagsOnPost(base_dir: str, post_json_object: {}) -> None:
         tagIndexFilename = base_dir + '/tags/' + tag['name'][1:] + '.txt'
         if not os.path.isfile(tagIndexFilename):
             continue
-        # remove postId from the tag index file
+        # remove post_id from the tag index file
         lines = None
         with open(tagIndexFilename, 'r') as f:
             lines = f.readlines()
@@ -1652,7 +1652,7 @@ def _deleteHashtagsOnPost(base_dir: str, post_json_object: {}) -> None:
             continue
         newlines = ''
         for fileLine in lines:
-            if postId in fileLine:
+            if post_id in fileLine:
                 # skip over the deleted post
                 continue
             newlines += fileLine
@@ -1682,16 +1682,16 @@ def _deleteConversationPost(base_dir: str, nickname: str, domain: str,
     conversationDir = acct_dir(base_dir, nickname, domain) + '/conversation'
     conversationId = post_json_object['object']['conversation']
     conversationId = conversationId.replace('/', '#')
-    postId = post_json_object['object']['id']
+    post_id = post_json_object['object']['id']
     conversationFilename = conversationDir + '/' + conversationId
     if not os.path.isfile(conversationFilename):
         return False
     conversationStr = ''
     with open(conversationFilename, 'r') as fp:
         conversationStr = fp.read()
-    if postId + '\n' not in conversationStr:
+    if post_id + '\n' not in conversationStr:
         return False
-    conversationStr = conversationStr.replace(postId + '\n', '')
+    conversationStr = conversationStr.replace(post_id + '\n', '')
     if conversationStr:
         with open(conversationFilename, 'w+') as fp:
             fp.write(conversationStr)
@@ -1771,8 +1771,8 @@ def deletePost(base_dir: str, http_prefix: str,
         if has_object_dict(post_json_object):
             if post_json_object['object'].get('moderationStatus'):
                 if post_json_object.get('id'):
-                    postId = removeIdEnding(post_json_object['id'])
-                    removeModerationPostFromIndex(base_dir, postId, debug)
+                    post_id = removeIdEnding(post_json_object['id'])
+                    removeModerationPostFromIndex(base_dir, post_id, debug)
 
     # remove any hashtags index entries
     if hasObject:
@@ -2013,31 +2013,31 @@ def updateRecentPostsCache(recentPostsCache: {}, max_recent_posts: int,
     """
     if not post_json_object.get('id'):
         return
-    postId = post_json_object['id']
-    if '#' in postId:
-        postId = postId.split('#', 1)[0]
-    postId = removeIdEnding(postId).replace('/', '#')
+    post_id = post_json_object['id']
+    if '#' in post_id:
+        post_id = post_id.split('#', 1)[0]
+    post_id = removeIdEnding(post_id).replace('/', '#')
     if recentPostsCache.get('index'):
-        if postId in recentPostsCache['index']:
+        if post_id in recentPostsCache['index']:
             return
-        recentPostsCache['index'].append(postId)
+        recentPostsCache['index'].append(post_id)
         post_json_object['muted'] = False
-        recentPostsCache['json'][postId] = json.dumps(post_json_object)
-        recentPostsCache['html'][postId] = htmlStr
+        recentPostsCache['json'][post_id] = json.dumps(post_json_object)
+        recentPostsCache['html'][post_id] = htmlStr
 
         while len(recentPostsCache['html'].items()) > max_recent_posts:
-            postId = recentPostsCache['index'][0]
+            post_id = recentPostsCache['index'][0]
             recentPostsCache['index'].pop(0)
-            if recentPostsCache['json'].get(postId):
-                del recentPostsCache['json'][postId]
-            if recentPostsCache['html'].get(postId):
-                del recentPostsCache['html'][postId]
+            if recentPostsCache['json'].get(post_id):
+                del recentPostsCache['json'][post_id]
+            if recentPostsCache['html'].get(post_id):
+                del recentPostsCache['html'][post_id]
     else:
-        recentPostsCache['index'] = [postId]
+        recentPostsCache['index'] = [post_id]
         recentPostsCache['json'] = {}
         recentPostsCache['html'] = {}
-        recentPostsCache['json'][postId] = json.dumps(post_json_object)
-        recentPostsCache['html'][postId] = htmlStr
+        recentPostsCache['json'][post_id] = json.dumps(post_json_object)
+        recentPostsCache['html'][post_id] = htmlStr
 
 
 def fileLastModified(filename: str) -> str:
@@ -2555,11 +2555,11 @@ def camelCaseSplit(text: str) -> str:
 
 
 def rejectPostId(base_dir: str, nickname: str, domain: str,
-                 postId: str, recentPostsCache: {}) -> None:
+                 post_id: str, recentPostsCache: {}) -> None:
     """ Marks the given post as rejected,
     for example an announce which is too old
     """
-    postFilename = locatePost(base_dir, nickname, domain, postId)
+    postFilename = locatePost(base_dir, nickname, domain, post_id)
     if not postFilename:
         return
 

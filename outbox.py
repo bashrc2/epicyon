@@ -351,13 +351,13 @@ def postMessageToOutbox(session, translate: {},
                   ' is not a permitted activity type')
         return False
     if message_json.get('id'):
-        postId = removeIdEnding(message_json['id'])
+        post_id = removeIdEnding(message_json['id'])
         if debug:
             print('DEBUG: id attribute exists within POST to outbox')
     else:
         if debug:
             print('DEBUG: No id attribute within POST to outbox')
-        postId = None
+        post_id = None
     if debug:
         print('DEBUG: savePostToBox')
     if message_json['type'] != 'Upgrade':
@@ -373,7 +373,7 @@ def postMessageToOutbox(session, translate: {},
         savedFilename = \
             savePostToBox(base_dir,
                           http_prefix,
-                          postId,
+                          post_id,
                           postToNickname, domain_full,
                           message_json, outboxName)
         if not savedFilename:

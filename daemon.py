@@ -10124,15 +10124,15 @@ class PubServer(BaseHTTPRequestHandler):
         likedBy = None
         reactBy = None
         reactEmoji = None
-        postId = path.split('?notifypost=')[1].strip()
-        postId = postId.replace('-', '/')
+        post_id = path.split('?notifypost=')[1].strip()
+        post_id = post_id.replace('-', '/')
         path = path.split('?notifypost=')[0]
         nickname = path.split('/users/')[1]
         if '/' in nickname:
             return False
         replies = False
 
-        postFilename = locatePost(base_dir, nickname, domain, postId, replies)
+        postFilename = locatePost(base_dir, nickname, domain, post_id, replies)
         if not postFilename:
             return False
 
@@ -12876,9 +12876,9 @@ class PubServer(BaseHTTPRequestHandler):
                             GETstartTime) -> bool:
         """Confirm whether to delete a calendar event
         """
-        postId = path.split('?eventid=')[1]
-        if '?' in postId:
-            postId = postId.split('?')[0]
+        post_id = path.split('?eventid=')[1]
+        if '?' in post_id:
+            post_id = post_id.split('?')[0]
         postTime = path.split('?time=')[1]
         if '?' in postTime:
             postTime = postTime.split('?')[0]
@@ -12897,7 +12897,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         base_dir, path,
                                         http_prefix,
                                         domain_full,
-                                        postId, postTime,
+                                        post_id, postTime,
                                         postYear, postMonth, postDay,
                                         calling_domain)
         if not msg:
@@ -13184,11 +13184,11 @@ class PubServer(BaseHTTPRequestHandler):
                 postActor = path.split('?actor=')[1]
                 if '?' in postActor:
                     postActor = postActor.split('?')[0]
-            postId = path.split('/editnewspost=')[1]
-            if '?' in postId:
-                postId = postId.split('?')[0]
+            post_id = path.split('/editnewspost=')[1]
+            if '?' in post_id:
+                post_id = post_id.split('?')[0]
             postUrl = local_actor_url(http_prefix, postActor, domain_full) + \
-                '/statuses/' + postId
+                '/statuses/' + post_id
             path = path.split('/editnewspost=')[0]
             msg = htmlEditNewsPost(self.server.cssCache,
                                    translate, base_dir,
@@ -13969,17 +13969,17 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.system_language)
             message_json = {}
             if pinnedPostJson:
-                postId = removeIdEnding(pinnedPostJson['id'])
+                post_id = removeIdEnding(pinnedPostJson['id'])
                 message_json = \
                     outboxMessageCreateWrap(self.server.http_prefix,
                                             nickname,
                                             self.server.domain,
                                             self.server.port,
                                             pinnedPostJson)
-                message_json['id'] = postId + '/activity'
-                message_json['object']['id'] = postId
-                message_json['object']['url'] = replace_users_with_at(postId)
-                message_json['object']['atomUri'] = postId
+                message_json['id'] = post_id + '/activity'
+                message_json['object']['id'] = post_id
+                message_json['object']['url'] = replace_users_with_at(post_id)
+                message_json['object']['atomUri'] = post_id
             msg = json.dumps(message_json,
                              ensure_ascii=False).encode('utf-8')
             msglen = len(msg)

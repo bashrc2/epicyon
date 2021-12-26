@@ -475,9 +475,9 @@ def _getEditIconHtml(base_dir: str, nickname: str, domain_full: str,
         (is_editor(base_dir, nickname) and
          actor.endswith('/' + domain_full + '/users/news'))):
 
-        postId = removeIdEnding(post_json_object['object']['id'])
+        post_id = removeIdEnding(post_json_object['object']['id'])
 
-        if '/statuses/' not in postId:
+        if '/statuses/' not in post_id:
             return editStr
 
         if isBlogPost(post_json_object):
@@ -490,7 +490,7 @@ def _getEditIconHtml(base_dir: str, nickname: str, domain_full: str,
                     '<a class="imageAnchor" href="/users/' + \
                     nickname + \
                     '/tlblogs?editblogpost=' + \
-                    postId.split('/statuses/')[1] + \
+                    post_id.split('/statuses/')[1] + \
                     ';actor=' + actorNickname + \
                     '" title="' + editBlogPostStr + '">' + \
                     '<img loading="lazy" title="' + \
@@ -501,7 +501,7 @@ def _getEditIconHtml(base_dir: str, nickname: str, domain_full: str,
                     '        ' + \
                     '<a class="imageAnchor" href="/users/' + \
                     nickname + '/editnewspost=' + \
-                    postId.split('/statuses/')[1] + \
+                    post_id.split('/statuses/')[1] + \
                     '?actor=' + actorNickname + \
                     '" title="' + editBlogPostStr + '">' + \
                     '<img loading="lazy" title="' + \
@@ -515,7 +515,7 @@ def _getEditIconHtml(base_dir: str, nickname: str, domain_full: str,
                 '        ' + \
                 '<a class="imageAnchor" href="/users/' + nickname + \
                 '/tlblogs?editeventpost=' + \
-                postId.split('/statuses/')[1] + \
+                post_id.split('/statuses/')[1] + \
                 '?actor=' + actorNickname + \
                 '" title="' + editEventStr + '">' + \
                 '<img loading="lazy" title="' + \
@@ -916,13 +916,13 @@ def _announceUnattributedHtml(translate: {},
     announcesStr = 'announces'
     if translate.get(announcesStr):
         announcesStr = translate[announcesStr]
-    postId = removeIdEnding(post_json_object['object']['id'])
+    post_id = removeIdEnding(post_json_object['object']['id'])
     return '    <img loading="lazy" title="' + \
         announcesStr + '" alt="' + \
         announcesStr + '" src="/icons' + \
         '/repeat_inactive.png" ' + \
         'class="announceOrReply"/>\n' + \
-        '      <a href="' + postId + \
+        '      <a href="' + post_id + \
         '" class="announceOrReply">@unattributed</a>\n'
 
 
@@ -934,13 +934,13 @@ def _announceWithDisplayNameHtml(translate: {},
     announcesStr = 'announces'
     if translate.get(announcesStr):
         announcesStr = translate[announcesStr]
-    postId = removeIdEnding(post_json_object['object']['id'])
+    post_id = removeIdEnding(post_json_object['object']['id'])
     return '          <img loading="lazy" title="' + \
         announcesStr + '" alt="' + \
         announcesStr + '" src="/' + \
         'icons/repeat_inactive.png" ' + \
         'class="announceOrReply"/>\n' + \
-        '        <a href="' + postId + '" ' + \
+        '        <a href="' + post_id + '" ' + \
         'class="announceOrReply">' + announceDisplayName + '</a>\n'
 
 
@@ -2251,13 +2251,13 @@ def htmlEmojiReactionPicker(cssCache: {},
     reactionsJson = load_json(reactionsFilename)
     emojiPicksStr = ''
     baseUrl = '/users/' + nickname
-    postId = removeIdEnding(post_json_object['id'])
+    post_id = removeIdEnding(post_json_object['id'])
     for category, item in reactionsJson.items():
         emojiPicksStr += '<div class="container">\n'
         for emojiContent in item:
             emojiContentEncoded = urllib.parse.quote_plus(emojiContent)
             emojiUrl = \
-                baseUrl + '?react=' + postId + \
+                baseUrl + '?react=' + post_id + \
                 '?actor=' + post_json_object['actor'] + \
                 '?tl=' + boxName + \
                 '?page=' + str(pageNumber) + \

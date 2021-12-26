@@ -905,7 +905,7 @@ def deleteAllPosts(base_dir: str,
             print('ERROR: deleteAllPosts ' + str(ex))
 
 
-def savePostToBox(base_dir: str, http_prefix: str, postId: str,
+def savePostToBox(base_dir: str, http_prefix: str, post_id: str,
                   nickname: str, domain: str, post_json_object: {},
                   boxname: str) -> str:
     """Saves the give json to the give box
@@ -918,18 +918,18 @@ def savePostToBox(base_dir: str, http_prefix: str, postId: str,
     originalDomain = domain
     domain = remove_domain_port(domain)
 
-    if not postId:
+    if not post_id:
         statusNumber, published = getStatusNumber()
-        postId = \
+        post_id = \
             local_actor_url(http_prefix, nickname, originalDomain) + \
             '/statuses/' + statusNumber
-        post_json_object['id'] = postId + '/activity'
+        post_json_object['id'] = post_id + '/activity'
     if has_object_dict(post_json_object):
-        post_json_object['object']['id'] = postId
-        post_json_object['object']['atomUri'] = postId
+        post_json_object['object']['id'] = post_id
+        post_json_object['object']['atomUri'] = post_id
 
     boxDir = createPersonDir(nickname, domain, base_dir, boxname)
-    filename = boxDir + '/' + postId.replace('/', '#') + '.json'
+    filename = boxDir + '/' + post_id.replace('/', '#') + '.json'
 
     save_json(post_json_object, filename)
     return filename
@@ -969,14 +969,14 @@ def _updateHashtagsIndex(base_dir: str, tag: {}, newPostId: str) -> None:
 
 
 def _addSchedulePost(base_dir: str, nickname: str, domain: str,
-                     eventDateStr: str, postId: str) -> None:
+                     eventDateStr: str, post_id: str) -> None:
     """Adds a scheduled post to the index
     """
     handle = nickname + '@' + domain
     scheduleIndexFilename = \
         base_dir + '/accounts/' + handle + '/schedule.index'
 
-    indexStr = eventDateStr + ' ' + postId.replace('/', '#')
+    indexStr = eventDateStr + ' ' + post_id.replace('/', '#')
     if os.path.isfile(scheduleIndexFilename):
         if indexStr not in open(scheduleIndexFilename).read():
             try:
@@ -2093,8 +2093,8 @@ def createDirectMessagePost(base_dir: str,
     message_json['cc'] = []
     message_json['object']['cc'] = []
     if schedulePost:
-        postId = removeIdEnding(message_json['object']['id'])
-        savePostToBox(base_dir, http_prefix, postId,
+        post_id = removeIdEnding(message_json['object']['id'])
+        savePostToBox(base_dir, http_prefix, post_id,
                       nickname, domain, message_json, 'scheduled')
     return message_json
 
@@ -3969,8 +3969,8 @@ def archivePostsForPerson(http_prefix: str, nickname: str, domain: str,
         # get the existing index entries as a string
         newIndex = ''
         with open(indexFilename, 'r') as indexFile:
-            for postId in indexFile:
-                newIndex += postId
+            for post_id in indexFile:
+                newIndex += post_id
                 indexCtr += 1
                 if indexCtr >= maxPostsInBox:
                     break
@@ -4535,9 +4535,9 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
     if not os.path.isdir(announceCacheDir):
         os.mkdir(announceCacheDir)
 
-    postId = None
+    post_id = None
     if post_json_object.get('id'):
-        postId = removeIdEnding(post_json_object['id'])
+        post_id = removeIdEnding(post_json_object['id'])
     announceFilename = \
         announceCacheDir + '/' + \
         post_json_object['object'].replace('/', '#') + '.json'
@@ -4611,17 +4611,17 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
             print('WARN: announce json is not a dict - ' +
                   post_json_object['object'])
             _rejectAnnounce(announceFilename,
-                            base_dir, nickname, domain, postId,
+                            base_dir, nickname, domain, post_id,
                             recentPostsCache)
             return None
         if not announcedJson.get('id'):
             _rejectAnnounce(announceFilename,
-                            base_dir, nickname, domain, postId,
+                            base_dir, nickname, domain, post_id,
                             recentPostsCache)
             return None
         if not announcedJson.get('type'):
             _rejectAnnounce(announceFilename,
-                            base_dir, nickname, domain, postId,
+                            base_dir, nickname, domain, post_id,
                             recentPostsCache)
             return None
         if announcedJson['type'] == 'Video':
@@ -4633,12 +4633,12 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
                 announcedJson = convertedJson
         if '/statuses/' not in announcedJson['id']:
             _rejectAnnounce(announceFilename,
-                            base_dir, nickname, domain, postId,
+                            base_dir, nickname, domain, post_id,
                             recentPostsCache)
             return None
         if not has_users_path(announcedJson['id']):
             _rejectAnnounce(announceFilename,
-                            base_dir, nickname, domain, postId,
+                            base_dir, nickname, domain, post_id,
                             recentPostsCache)
             return None
         if announcedJson['type'] != 'Note' and \
@@ -4646,22 +4646,22 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
            announcedJson['type'] != 'Article':
             # You can only announce Note or Article types
             _rejectAnnounce(announceFilename,
-                            base_dir, nickname, domain, postId,
+                            base_dir, nickname, domain, post_id,
                             recentPostsCache)
             return None
         if not announcedJson.get('content'):
             _rejectAnnounce(announceFilename,
-                            base_dir, nickname, domain, postId,
+                            base_dir, nickname, domain, post_id,
                             recentPostsCache)
             return None
         if not announcedJson.get('published'):
             _rejectAnnounce(announceFilename,
-                            base_dir, nickname, domain, postId,
+                            base_dir, nickname, domain, post_id,
                             recentPostsCache)
             return None
         if not valid_post_date(announcedJson['published'], 90, debug):
             _rejectAnnounce(announceFilename,
-                            base_dir, nickname, domain, postId,
+                            base_dir, nickname, domain, post_id,
                             recentPostsCache)
             return None
         if not understoodPostLanguage(base_dir, nickname, domain,
@@ -4673,19 +4673,19 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
         contentStr = announcedJson['content']
         if dangerousMarkup(contentStr, allow_local_network_access):
             _rejectAnnounce(announceFilename,
-                            base_dir, nickname, domain, postId,
+                            base_dir, nickname, domain, post_id,
                             recentPostsCache)
             return None
 
         if isFiltered(base_dir, nickname, domain, contentStr):
             _rejectAnnounce(announceFilename,
-                            base_dir, nickname, domain, postId,
+                            base_dir, nickname, domain, post_id,
                             recentPostsCache)
             return None
 
         if invalid_ciphertext(contentStr):
             _rejectAnnounce(announceFilename,
-                            base_dir, nickname, domain, postId,
+                            base_dir, nickname, domain, post_id,
                             recentPostsCache)
             print('WARN: Invalid ciphertext within announce ' +
                   str(announcedJson))
@@ -4711,7 +4711,7 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
         if announcedJson['type'] != 'Create':
             # Create wrap failed
             _rejectAnnounce(announceFilename,
-                            base_dir, nickname, domain, postId,
+                            base_dir, nickname, domain, post_id,
                             recentPostsCache)
             return None
 
@@ -4730,7 +4730,7 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
             if isBlocked(base_dir, nickname, domain,
                          attributedNickname, attributedDomain):
                 _rejectAnnounce(announceFilename,
-                                base_dir, nickname, domain, postId,
+                                base_dir, nickname, domain, post_id,
                                 recentPostsCache)
                 return None
         post_json_object = announcedJson
@@ -4742,7 +4742,7 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
     return None
 
 
-def isMuted(base_dir: str, nickname: str, domain: str, postId: str,
+def isMuted(base_dir: str, nickname: str, domain: str, post_id: str,
             conversationId: str) -> bool:
     """Returns true if the given post is muted
     """
@@ -4752,7 +4752,7 @@ def isMuted(base_dir: str, nickname: str, domain: str, postId: str,
             conversationId.replace('/', '#') + '.muted'
         if os.path.isfile(convMutedFilename):
             return True
-    postFilename = locatePost(base_dir, nickname, domain, postId)
+    postFilename = locatePost(base_dir, nickname, domain, post_id)
     if not postFilename:
         return False
     if os.path.isfile(postFilename + '.muted'):
@@ -5211,20 +5211,20 @@ def editedPostFilename(base_dir: str, nickname: str, domain: str,
         actor.replace('/', '#')
     if not os.path.isfile(actorFilename):
         return ''
-    postId = removeIdEnding(post_json_object['object']['id'])
-    lastpostId = None
+    post_id = removeIdEnding(post_json_object['object']['id'])
+    lastpost_id = None
     try:
         with open(actorFilename, 'r') as fp:
-            lastpostId = fp.read()
+            lastpost_id = fp.read()
     except OSError:
         print('EX: editedPostFilename unable to read ' + actorFilename)
         return ''
-    if not lastpostId:
+    if not lastpost_id:
         return ''
-    if lastpostId == postId:
+    if lastpost_id == post_id:
         return ''
     lastpostFilename = \
-        locatePost(base_dir, nickname, domain, lastpostId, False)
+        locatePost(base_dir, nickname, domain, lastpost_id, False)
     if not lastpostFilename:
         return ''
     lastpostJson = load_json(lastpostFilename, 0)
@@ -5254,11 +5254,11 @@ def editedPostFilename(base_dir: str, nickname: str, domain: str,
     if timeDiffSeconds > maxTimeDiffSeconds:
         return ''
     if debug:
-        print(postId + ' might be an edit of ' + lastpostId)
+        print(post_id + ' might be an edit of ' + lastpost_id)
     if wordsSimilarity(lastpostJson['object']['content'],
                        post_json_object['object']['content'], 10) < 70:
         return ''
-    print(postId + ' is an edit of ' + lastpostId)
+    print(post_id + ' is an edit of ' + lastpost_id)
     return lastpostFilename
 
 

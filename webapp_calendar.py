@@ -33,7 +33,7 @@ from webapp_utils import htmlKeyboardNavigation
 
 def htmlCalendarDeleteConfirm(cssCache: {}, translate: {}, base_dir: str,
                               path: str, http_prefix: str,
-                              domain_full: str, postId: str, postTime: str,
+                              domain_full: str, post_id: str, postTime: str,
                               year: int, monthNumber: int,
                               dayNumber: int, calling_domain: str) -> str:
     """Shows a screen asking to confirm the deletion of a calendar event
@@ -41,7 +41,7 @@ def htmlCalendarDeleteConfirm(cssCache: {}, translate: {}, base_dir: str,
     nickname = getNicknameFromActor(path)
     actor = local_actor_url(http_prefix, nickname, domain_full)
     domain, port = getDomainFromActor(actor)
-    messageId = actor + '/statuses/' + postId
+    messageId = actor + '/statuses/' + post_id
 
     postFilename = locatePost(base_dir, nickname, domain, messageId)
     if not postFilename:
@@ -137,15 +137,15 @@ def _htmlCalendarDay(person_cache: {}, cssCache: {}, translate: {},
             eventTime = None
             eventDescription = None
             eventPlace = None
-            postId = None
+            post_id = None
             senderName = ''
             senderActor = None
             eventIsPublic = False
             # get the time place and description
             for ev in eventPost:
                 if ev['type'] == 'Event':
-                    if ev.get('postId'):
-                        postId = ev['postId']
+                    if ev.get('post_id'):
+                        post_id = ev['post_id']
                     if ev.get('startTime'):
                         eventDate = \
                             datetime.strptime(ev['startTime'],
@@ -184,11 +184,13 @@ def _htmlCalendarDay(person_cache: {}, cssCache: {}, translate: {},
                         translate['Reminder'] + ': ' + eventDescription
 
             deleteButtonStr = ''
-            if postId:
+            if post_id:
                 deleteButtonStr = \
                     '<td class="calendar__day__icons"><a href="' + calActor + \
-                    '/eventdelete?eventid=' + postId + '?year=' + str(year) + \
-                    '?month=' + str(monthNumber) + '?day=' + str(dayNumber) + \
+                    '/eventdelete?eventid=' + post_id + \
+                    '?year=' + str(year) + \
+                    '?month=' + str(monthNumber) + \
+                    '?day=' + str(dayNumber) + \
                     '?time=' + eventTime + \
                     '">\n<img class="calendardayicon" loading="lazy" alt="' + \
                     translate['Delete this event'] + ' |" title="' + \

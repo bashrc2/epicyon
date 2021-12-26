@@ -4232,7 +4232,8 @@ def _testReplyToPublicPost(base_dir: str) -> None:
     domain = 'other.site'
     port = 443
     http_prefix = 'https'
-    postId = http_prefix + '://rat.site/users/ninjarodent/statuses/63746173435'
+    post_id = \
+        http_prefix + '://rat.site/users/ninjarodent/statuses/63746173435'
     content = "@ninjarodent@rat.site This is a test."
     followersOnly = False
     saveToFile = False
@@ -4242,7 +4243,7 @@ def _testReplyToPublicPost(base_dir: str) -> None:
     mediaType = None
     imageDescription = 'Some description'
     city = 'London, England'
-    testInReplyTo = postId
+    testInReplyTo = post_id
     testInReplyToAtomUri = None
     testSubject = None
     testSchedulePost = False

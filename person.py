@@ -1109,10 +1109,10 @@ def suspendAccount(base_dir: str, nickname: str, domain: str) -> None:
 
 
 def canRemovePost(base_dir: str, nickname: str,
-                  domain: str, port: int, postId: str) -> bool:
+                  domain: str, port: int, post_id: str) -> bool:
     """Returns true if the given post can be removed
     """
-    if '/statuses/' not in postId:
+    if '/statuses/' not in post_id:
         return False
 
     domain_full = get_full_domain(domain, port)
@@ -1121,7 +1121,7 @@ def canRemovePost(base_dir: str, nickname: str,
     adminNickname = get_config_param(base_dir, 'admin')
     if not adminNickname:
         return False
-    if domain_full + '/users/' + adminNickname + '/' in postId:
+    if domain_full + '/users/' + adminNickname + '/' in post_id:
         return False
 
     # is the post by a moderator?
@@ -1130,7 +1130,8 @@ def canRemovePost(base_dir: str, nickname: str,
         with open(moderatorsFile, 'r') as f:
             lines = f.readlines()
         for moderator in lines:
-            if domain_full + '/users/' + moderator.strip('\n') + '/' in postId:
+            if domain_full + '/users/' + \
+               moderator.strip('\n') + '/' in post_id:
                 return False
     return True
 

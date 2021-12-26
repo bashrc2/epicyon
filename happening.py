@@ -45,7 +45,7 @@ def _removeEventFromTimeline(eventId: str, tlEventsFilename: str) -> None:
             print('EX: ERROR: unable to save events timeline')
 
 
-def saveEventPost(base_dir: str, handle: str, postId: str,
+def saveEventPost(base_dir: str, handle: str, post_id: str,
                   eventJson: {}) -> bool:
     """Saves an event to the calendar and/or the events timeline
     If an event has extra fields, as per Mobilizon,
@@ -125,14 +125,14 @@ def saveEventPost(base_dir: str, handle: str, postId: str,
 
     # Does this event post already exist within the calendar month?
     if os.path.isfile(calendarFilename):
-        if postId in open(calendarFilename).read():
+        if post_id in open(calendarFilename).read():
             # Event post already exists
             return False
 
     # append the post Id to the file for the calendar month
     try:
         with open(calendarFilename, 'a+') as calendarFile:
-            calendarFile.write(postId + '\n')
+            calendarFile.write(post_id + '\n')
     except OSError:
         print('EX: unable to append ' + calendarFilename)
 
@@ -203,9 +203,9 @@ def getTodaysEvents(base_dir: str, nickname: str, domain: str,
     calendarPostIds = []
     recreateEventsFile = False
     with open(calendarFilename, 'r') as eventsFile:
-        for postId in eventsFile:
-            postId = postId.replace('\n', '').replace('\r', '')
-            postFilename = locatePost(base_dir, nickname, domain, postId)
+        for post_id in eventsFile:
+            post_id = post_id.replace('\n', '').replace('\r', '')
+            postFilename = locatePost(base_dir, nickname, domain, post_id)
             if not postFilename:
                 recreateEventsFile = True
                 continue
@@ -233,11 +233,11 @@ def getTodaysEvents(base_dir: str, nickname: str, domain: str,
                        int(eventTime.strftime("%m")) == monthNumber and \
                        int(eventTime.strftime("%d")) == dayNumber:
                         dayOfMonth = str(int(eventTime.strftime("%d")))
-                        if '#statuses#' in postId:
+                        if '#statuses#' in post_id:
                             # link to the id so that the event can be
                             # easily deleted
-                            tag['postId'] = postId.split('#statuses#')[1]
-                            tag['sender'] = postId.split('#statuses#')[0]
+                            tag['post_id'] = post_id.split('#statuses#')[1]
+                            tag['sender'] = post_id.split('#statuses#')[0]
                             tag['sender'] = tag['sender'].replace('#', '/')
                             tag['public'] = publicEvent
                         postEvent.append(tag)
@@ -245,7 +245,7 @@ def getTodaysEvents(base_dir: str, nickname: str, domain: str,
                     # tag is a place
                     postEvent.append(tag)
             if postEvent and dayOfMonth:
-                calendarPostIds.append(postId)
+                calendarPostIds.append(post_id)
                 if not events.get(dayOfMonth):
                     events[dayOfMonth] = []
                 events[dayOfMonth].append(postEvent)
@@ -254,8 +254,8 @@ def getTodaysEvents(base_dir: str, nickname: str, domain: str,
     if recreateEventsFile:
         try:
             with open(calendarFilename, 'w+') as calendarFile:
-                for postId in calendarPostIds:
-                    calendarFile.write(postId + '\n')
+                for post_id in calendarPostIds:
+                    calendarFile.write(post_id + '\n')
         except OSError:
             print('EX: unable to write ' + calendarFilename)
 
@@ -278,9 +278,9 @@ def dayEventsCheck(base_dir: str, nickname: str, domain: str,
 
     eventsExist = False
     with open(calendarFilename, 'r') as eventsFile:
-        for postId in eventsFile:
-            postId = postId.replace('\n', '').replace('\r', '')
-            postFilename = locatePost(base_dir, nickname, domain, postId)
+        for post_id in eventsFile:
+            post_id = post_id.replace('\n', '').replace('\r', '')
+            postFilename = locatePost(base_dir, nickname, domain, post_id)
             if not postFilename:
                 continue
 
@@ -334,9 +334,9 @@ def getThisWeeksEvents(base_dir: str, nickname: str, domain: str) -> {}:
     calendarPostIds = []
     recreateEventsFile = False
     with open(calendarFilename, 'r') as eventsFile:
-        for postId in eventsFile:
-            postId = postId.replace('\n', '').replace('\r', '')
-            postFilename = locatePost(base_dir, nickname, domain, postId)
+        for post_id in eventsFile:
+            post_id = post_id.replace('\n', '').replace('\r', '')
+            postFilename = locatePost(base_dir, nickname, domain, post_id)
             if not postFilename:
                 recreateEventsFile = True
                 continue
@@ -365,7 +365,7 @@ def getThisWeeksEvents(base_dir: str, nickname: str, domain: str) -> {}:
                     # tag is a place
                     postEvent.append(tag)
             if postEvent and weekDayIndex:
-                calendarPostIds.append(postId)
+                calendarPostIds.append(post_id)
                 if not events.get(weekDayIndex):
                     events[weekDayIndex] = []
                 events[weekDayIndex].append(postEvent)
@@ -374,8 +374,8 @@ def getThisWeeksEvents(base_dir: str, nickname: str, domain: str) -> {}:
     if recreateEventsFile:
         try:
             with open(calendarFilename, 'w+') as calendarFile:
-                for postId in calendarPostIds:
-                    calendarFile.write(postId + '\n')
+                for post_id in calendarPostIds:
+                    calendarFile.write(post_id + '\n')
         except OSError:
             print('EX: unable to write ' + calendarFilename)
 
@@ -399,9 +399,9 @@ def getCalendarEvents(base_dir: str, nickname: str, domain: str,
     calendarPostIds = []
     recreateEventsFile = False
     with open(calendarFilename, 'r') as eventsFile:
-        for postId in eventsFile:
-            postId = postId.replace('\n', '').replace('\r', '')
-            postFilename = locatePost(base_dir, nickname, domain, postId)
+        for post_id in eventsFile:
+            post_id = post_id.replace('\n', '').replace('\r', '')
+            postFilename = locatePost(base_dir, nickname, domain, post_id)
             if not postFilename:
                 recreateEventsFile = True
                 continue
@@ -432,7 +432,7 @@ def getCalendarEvents(base_dir: str, nickname: str, domain: str,
                     postEvent.append(tag)
 
             if postEvent and dayOfMonth:
-                calendarPostIds.append(postId)
+                calendarPostIds.append(post_id)
                 if not events.get(dayOfMonth):
                     events[dayOfMonth] = []
                 events[dayOfMonth].append(postEvent)
@@ -441,8 +441,8 @@ def getCalendarEvents(base_dir: str, nickname: str, domain: str,
     if recreateEventsFile:
         try:
             with open(calendarFilename, 'w+') as calendarFile:
-                for postId in calendarPostIds:
-                    calendarFile.write(postId + '\n')
+                for post_id in calendarPostIds:
+                    calendarFile.write(post_id + '\n')
         except OSError:
             print('EX: unable to write ' + calendarFilename)
 

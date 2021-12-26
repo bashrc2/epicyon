@@ -132,15 +132,15 @@ def _storeLastPostId(base_dir: str, nickname: str, domain: str,
     It would be great if edited posts contained a back reference id to the
     source but we don't live in that ideal world.
     """
-    actor = postId = None
+    actor = post_id = None
     if has_object_dict(post_json_object):
         if post_json_object['object'].get('attributedTo'):
             if isinstance(post_json_object['object']['attributedTo'], str):
                 actor = post_json_object['object']['attributedTo']
-                postId = removeIdEnding(post_json_object['object']['id'])
+                post_id = removeIdEnding(post_json_object['object']['id'])
     if not actor:
         actor = post_json_object['actor']
-        postId = removeIdEnding(post_json_object['id'])
+        post_id = removeIdEnding(post_json_object['id'])
     if not actor:
         return
     lastpostDir = acct_dir(base_dir, nickname, domain) + '/lastpost'
@@ -149,7 +149,7 @@ def _storeLastPostId(base_dir: str, nickname: str, domain: str,
     actorFilename = lastpostDir + '/' + actor.replace('/', '#')
     try:
         with open(actorFilename, 'w+') as fp:
-            fp.write(postId)
+            fp.write(post_id)
     except OSError:
         print('EX: Unable to write last post id to ' + actorFilename)
 
@@ -535,16 +535,17 @@ def savePostToInboxQueue(base_dir: str, http_prefix: str,
 
     curr_time = datetime.datetime.utcnow()
 
-    postId = None
+    post_id = None
     if post_json_object.get('id'):
-        postId = removeIdEnding(post_json_object['id'])
+        post_id = removeIdEnding(post_json_object['id'])
         published = curr_time.strftime("%Y-%m-%dT%H:%M:%SZ")
-    if not postId:
+    if not post_id:
         statusNumber, published = getStatusNumber()
         if actor:
-            postId = actor + '/statuses/' + statusNumber
+            post_id = actor + '/statuses/' + statusNumber
         else:
-            postId = local_actor_url(http_prefix, nickname, originalDomain) + \
+            post_id = \
+                local_actor_url(http_prefix, nickname, originalDomain) + \
                 '/statuses/' + statusNumber
 
     # NOTE: don't change post_json_object['id'] before signature check
@@ -553,8 +554,8 @@ def savePostToInboxQueue(base_dir: str, http_prefix: str,
 
     handle = nickname + '@' + domain
     destination = base_dir + '/accounts/' + \
-        handle + '/inbox/' + postId.replace('/', '#') + '.json'
-    filename = inbox_queueDir + '/' + postId.replace('/', '#') + '.json'
+        handle + '/inbox/' + post_id.replace('/', '#') + '.json'
+    filename = inbox_queueDir + '/' + post_id.replace('/', '#') + '.json'
 
     sharedInboxItem = False
     if nickname == 'inbox':
@@ -572,7 +573,7 @@ def savePostToInboxQueue(base_dir: str, http_prefix: str,
 
     newQueueItem = {
         'originalId': originalPostId,
-        'id': postId,
+        'id': post_id,
         'actor': actor,
         'nickname': nickname,
         'domain': domain,
@@ -2662,14 +2663,14 @@ def _sendToGroupMembers(session, base_dir: str, handle: str, port: int,
     savePostToBox(base_dir, http_prefix, None,
                   nickname, domain, post_json_object, 'outbox')
 
-    postId = removeIdEnding(post_json_object['object']['id'])
+    post_id = removeIdEnding(post_json_object['object']['id'])
     if debug:
-        print('Group announce: ' + postId)
+        print('Group announce: ' + post_id)
     announceJson = \
         createAnnounce(session, base_dir, federation_list,
                        nickname, domain, port,
                        groupActor + '/followers', cc,
-                       http_prefix, postId, False, False,
+                       http_prefix, post_id, False, False,
                        send_threads, postLog,
                        person_cache, cached_webfingers,
                        debug, __version__, signing_priv_key_pem)
@@ -2710,7 +2711,7 @@ def _inboxUpdateCalendar(base_dir: str, handle: str,
                                    actorNickname, actorDomain):
         return
 
-    postId = removeIdEnding(post_json_object['id']).replace('/', '#')
+    post_id = removeIdEnding(post_json_object['id']).replace('/', '#')
 
     # look for events within the tags list
     for tagDict in post_json_object['object']['tag']:
@@ -2720,7 +2721,7 @@ def _inboxUpdateCalendar(base_dir: str, handle: str,
             continue
         if not tagDict.get('startTime'):
             continue
-        saveEventPost(base_dir, handle, postId, tagDict)
+        saveEventPost(base_dir, handle, post_id, tagDict)
 
 
 def inboxUpdateIndex(boxname: str, base_dir: str, handle: str,
@@ -3145,11 +3146,11 @@ def _lowFrequencyPostNotification(base_dir: str, http_prefix: str,
     fromDomainFull = get_full_domain(fromDomain, fromPort)
     if notifyWhenPersonPosts(base_dir, nickname, domain,
                              fromNickname, fromDomainFull):
-        postId = removeIdEnding(jsonObj['id'])
+        post_id = removeIdEnding(jsonObj['id'])
         domFull = get_full_domain(domain, port)
         postLink = \
             local_actor_url(http_prefix, nickname, domFull) + \
-            '?notifypost=' + postId.replace('/', '-')
+            '?notifypost=' + post_id.replace('/', '-')
         _notifyPostArrival(base_dir, handle, postLink)
 
 

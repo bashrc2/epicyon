@@ -260,7 +260,7 @@ def _removeEmojiFromText(sayText: str) -> str:
 def _speakerEndpointJson(displayName: str, summary: str,
                          content: str, sayContent: str,
                          imageDescription: str,
-                         links: [], gender: str, postId: str,
+                         links: [], gender: str, post_id: str,
                          postDM: bool, postReply: bool,
                          followRequestsExist: bool,
                          followRequestsList: [],
@@ -277,7 +277,7 @@ def _speakerEndpointJson(displayName: str, summary: str,
         "published": published,
         "imageDescription": imageDescription,
         "detectedLinks": links,
-        "id": postId,
+        "id": post_id,
         "direct": isDirect,
         "replyToYou": replyToYou,
         "notify": {
@@ -489,9 +489,9 @@ def _postToSpeakerJson(base_dir: str, http_prefix: str,
             content = \
                 translate['announces'] + ' ' + \
                 announcedHandle + '. ' + content
-    postId = None
+    post_id = None
     if post_json_object['object'].get('id'):
-        postId = removeIdEnding(post_json_object['object']['id'])
+        post_id = removeIdEnding(post_json_object['object']['id'])
 
     followRequestsExist = False
     followRequestsList = []
@@ -525,7 +525,7 @@ def _postToSpeakerJson(base_dir: str, http_prefix: str,
 
     return _speakerEndpointJson(speakerName, summary,
                                 content, sayContent, imageDescription,
-                                detectedLinks, gender, postId,
+                                detectedLinks, gender, post_id,
                                 postDM, postReply,
                                 followRequestsExist,
                                 followRequestsList,

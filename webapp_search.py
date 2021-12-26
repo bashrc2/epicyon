@@ -818,20 +818,20 @@ def htmlHashtagSearch(cssCache: {},
             '"></a>\n  </center>\n'
     index = startIndex
     while index <= endIndex:
-        postId = lines[index].strip('\n').strip('\r')
-        if '  ' not in postId:
-            nickname = getNicknameFromActor(postId)
+        post_id = lines[index].strip('\n').strip('\r')
+        if '  ' not in post_id:
+            nickname = getNicknameFromActor(post_id)
             if not nickname:
                 index += 1
                 continue
         else:
-            postFields = postId.split('  ')
+            postFields = post_id.split('  ')
             if len(postFields) != 3:
                 index += 1
                 continue
             nickname = postFields[1]
-            postId = postFields[2]
-        postFilename = locatePost(base_dir, nickname, domain, postId)
+            post_id = postFields[2]
+        postFilename = locatePost(base_dir, nickname, domain, post_id)
         if not postFilename:
             index += 1
             continue
@@ -939,24 +939,24 @@ def rssHashtagSearch(nickname: str, domain: str, port: int,
     hashtagFeed = \
         rss2TagHeader(hashtag, http_prefix, domain_full)
     for index in range(len(lines)):
-        postId = lines[index].strip('\n').strip('\r')
-        if '  ' not in postId:
-            nickname = getNicknameFromActor(postId)
+        post_id = lines[index].strip('\n').strip('\r')
+        if '  ' not in post_id:
+            nickname = getNicknameFromActor(post_id)
             if not nickname:
                 index += 1
                 if index >= maxFeedLength:
                     break
                 continue
         else:
-            postFields = postId.split('  ')
+            postFields = post_id.split('  ')
             if len(postFields) != 3:
                 index += 1
                 if index >= maxFeedLength:
                     break
                 continue
             nickname = postFields[1]
-            postId = postFields[2]
-        postFilename = locatePost(base_dir, nickname, domain, postId)
+            post_id = postFields[2]
+        postFilename = locatePost(base_dir, nickname, domain, post_id)
         if not postFilename:
             index += 1
             if index >= maxFeedLength:

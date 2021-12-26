@@ -38,20 +38,20 @@ from inbox import storeHashTags
 from session import createSession
 
 
-def _updateFeedsOutboxIndex(base_dir: str, domain: str, postId: str) -> None:
+def _updateFeedsOutboxIndex(base_dir: str, domain: str, post_id: str) -> None:
     """Updates the index used for imported RSS feeds
     """
     basePath = base_dir + '/accounts/news@' + domain
     indexFilename = basePath + '/outbox.index'
 
     if os.path.isfile(indexFilename):
-        if postId not in open(indexFilename).read():
+        if post_id not in open(indexFilename).read():
             try:
                 with open(indexFilename, 'r+') as feedsFile:
                     content = feedsFile.read()
-                    if postId + '\n' not in content:
+                    if post_id + '\n' not in content:
                         feedsFile.seek(0, 0)
-                        feedsFile.write(postId + '\n' + content)
+                        feedsFile.write(post_id + '\n' + content)
                         print('DEBUG: feeds post added to index')
             except Exception as ex:
                 print('WARN: Failed to write entry to feeds posts index ' +
@@ -59,7 +59,7 @@ def _updateFeedsOutboxIndex(base_dir: str, domain: str, postId: str) -> None:
     else:
         try:
             with open(indexFilename, 'w+') as feedsFile:
-                feedsFile.write(postId + '\n')
+                feedsFile.write(post_id + '\n')
         except OSError:
             print('EX: unable to write ' + indexFilename)
 
@@ -440,7 +440,7 @@ def _newswireHashtagProcessing(session, base_dir: str, post_json_object: {},
 
 
 def _createNewsMirror(base_dir: str, domain: str,
-                      postIdNumber: str, url: str,
+                      post_idNumber: str, url: str,
                       max_mirrored_articles: int) -> bool:
     """Creates a local mirror of a news article
     """
@@ -472,14 +472,14 @@ def _createNewsMirror(base_dir: str, domain: str,
                     # escape valve
                     break
 
-                postId = indexFile.readline()
-                if not postId:
+                post_id = indexFile.readline()
+                if not post_id:
                     continue
-                postId = postId.strip()
-                mirrorArticleDir = mirrorDir + '/' + postId
+                post_id = post_id.strip()
+                mirrorArticleDir = mirrorDir + '/' + post_id
                 if os.path.isdir(mirrorArticleDir):
                     rmtree(mirrorArticleDir, ignore_errors=False, onerror=None)
-                    removals.append(postId)
+                    removals.append(post_id)
                     noOfDirs -= 1
 
         # remove the corresponding index entries
@@ -496,7 +496,7 @@ def _createNewsMirror(base_dir: str, domain: str,
             except OSError:
                 print('EX: unable to write ' + mirrorIndexFilename)
 
-    mirrorArticleDir = mirrorDir + '/' + postIdNumber
+    mirrorArticleDir = mirrorDir + '/' + post_idNumber
     if os.path.isdir(mirrorArticleDir):
         # already mirrored
         return True
@@ -521,13 +521,13 @@ def _createNewsMirror(base_dir: str, domain: str,
     if os.path.isfile(mirrorIndexFilename):
         try:
             with open(mirrorIndexFilename, 'a+') as indexFile:
-                indexFile.write(postIdNumber + '\n')
+                indexFile.write(post_idNumber + '\n')
         except OSError:
             print('EX: unable to append ' + mirrorIndexFilename)
     else:
         try:
             with open(mirrorIndexFilename, 'w+') as indexFile:
-                indexFile.write(postIdNumber + '\n')
+                indexFile.write(post_idNumber + '\n')
         except OSError:
             print('EX: unable to write ' + mirrorIndexFilename)
 
@@ -676,7 +676,7 @@ def _convertRSStoActivityPub(base_dir: str, http_prefix: str,
 
         hashtags = item[6]
 
-        postId = newPostId.replace('/', '#')
+        post_id = newPostId.replace('/', '#')
 
         moderated = item[5]
 
@@ -730,9 +730,9 @@ def _convertRSStoActivityPub(base_dir: str, http_prefix: str,
                           http_prefix, domain_full,
                           blog, translate)
 
-            clearFromPostCaches(base_dir, recentPostsCache, postId)
+            clearFromPostCaches(base_dir, recentPostsCache, post_id)
             if save_json(blog, filename):
-                _updateFeedsOutboxIndex(base_dir, domain, postId + '.json')
+                _updateFeedsOutboxIndex(base_dir, domain, post_id + '.json')
 
                 # Save a file containing the time when the post arrived
                 # this can then later be used to construct the news timeline

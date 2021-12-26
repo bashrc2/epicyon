@@ -39,19 +39,19 @@ def updateConversation(base_dir: str, nickname: str, domain: str,
         _getConversationFilename(base_dir, nickname, domain, post_json_object)
     if not conversationFilename:
         return False
-    postId = removeIdEnding(post_json_object['object']['id'])
+    post_id = removeIdEnding(post_json_object['object']['id'])
     if not os.path.isfile(conversationFilename):
         try:
             with open(conversationFilename, 'w+') as fp:
-                fp.write(postId + '\n')
+                fp.write(post_id + '\n')
                 return True
         except OSError:
             print('EX: updateConversation ' +
                   'unable to write to ' + conversationFilename)
-    elif postId + '\n' not in open(conversationFilename).read():
+    elif post_id + '\n' not in open(conversationFilename).read():
         try:
             with open(conversationFilename, 'a+') as fp:
-                fp.write(postId + '\n')
+                fp.write(post_id + '\n')
                 return True
         except OSError:
             print('EX: updateConversation 2 ' +

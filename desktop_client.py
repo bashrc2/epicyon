@@ -152,7 +152,7 @@ def _createDesktopConfig(actor: str) -> None:
         os.mkdir(readPostsDir)
 
 
-def _markPostAsRead(actor: str, postId: str, postCategory: str) -> None:
+def _markPostAsRead(actor: str, post_id: str, postCategory: str) -> None:
     """Marks the given post as read by the given actor
     """
     homeDir = str(Path.home())
@@ -165,24 +165,24 @@ def _markPostAsRead(actor: str, postId: str, postCategory: str) -> None:
     readPostsDir = homeDir + '/.config/epicyon/' + handle
     readPostsFilename = readPostsDir + '/' + postCategory + '.txt'
     if os.path.isfile(readPostsFilename):
-        if postId in open(readPostsFilename).read():
+        if post_id in open(readPostsFilename).read():
             return
         try:
             # prepend to read posts file
-            postId += '\n'
+            post_id += '\n'
             with open(readPostsFilename, 'r+') as readFile:
                 content = readFile.read()
-                if postId not in content:
+                if post_id not in content:
                     readFile.seek(0, 0)
-                    readFile.write(postId + content)
+                    readFile.write(post_id + content)
         except Exception as ex:
             print('WARN: Failed to mark post as read' + str(ex))
     else:
         with open(readPostsFilename, 'w+') as readFile:
-            readFile.write(postId + '\n')
+            readFile.write(post_id + '\n')
 
 
-def _hasReadPost(actor: str, postId: str, postCategory: str) -> bool:
+def _hasReadPost(actor: str, post_id: str, postCategory: str) -> bool:
     """Returns true if the given post has been read by the actor
     """
     homeDir = str(Path.home())
@@ -195,7 +195,7 @@ def _hasReadPost(actor: str, postId: str, postCategory: str) -> bool:
     readPostsDir = homeDir + '/.config/epicyon/' + handle
     readPostsFilename = readPostsDir + '/' + postCategory + '.txt'
     if os.path.isfile(readPostsFilename):
-        if postId in open(readPostsFilename).read():
+        if post_id in open(readPostsFilename).read():
             return True
     return False
 
@@ -412,7 +412,7 @@ def _sayCommand(content: str, sayStr: str, screenreader: str,
                   system_language, espeak)
 
 
-def _desktopReplyToPost(session, postId: str,
+def _desktopReplyToPost(session, post_id: str,
                         base_dir: str, nickname: str, password: str,
                         domain: str, port: int, http_prefix: str,
                         cached_webfingers: {}, person_cache: {},
@@ -424,10 +424,10 @@ def _desktopReplyToPost(session, postId: str,
                         signing_priv_key_pem: str) -> None:
     """Use the desktop client to send a reply to the most recent post
     """
-    if '://' not in postId:
+    if '://' not in post_id:
         return
-    toNickname = getNicknameFromActor(postId)
-    toDomain, toPort = getDomainFromActor(postId)
+    toNickname = getNicknameFromActor(post_id)
+    toDomain, toPort = getDomainFromActor(post_id)
     sayStr = 'Replying to ' + toNickname + '@' + toDomain
     _sayCommand(sayStr, sayStr,
                 screenreader, system_language, espeak)
@@ -476,7 +476,7 @@ def _desktopReplyToPost(session, postId: str,
                          cached_webfingers, person_cache, isArticle,
                          system_language, low_bandwidth,
                          content_license_url,
-                         debug, postId, postId,
+                         debug, post_id, post_id,
                          conversationId, subject) == 0:
         sayStr = 'Reply sent'
     else:
@@ -1720,7 +1720,7 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
             elif commandStr == 'reply' or commandStr == 'r':
                 if post_json_object:
                     if post_json_object.get('id'):
-                        postId = post_json_object['id']
+                        post_id = post_json_object['id']
                         subject = None
                         if post_json_object['object'].get('summary'):
                             subject = post_json_object['object']['summary']
@@ -1729,7 +1729,7 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                             conversationId = \
                                 post_json_object['object']['conversation']
                         sessionReply = createSession(proxy_type)
-                        _desktopReplyToPost(sessionReply, postId,
+                        _desktopReplyToPost(sessionReply, post_id,
                                             base_dir, nickname, password,
                                             domain, port, http_prefix,
                                             cached_webfingers, person_cache,
@@ -2084,7 +2084,7 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                         _desktopGetBoxPostObject(boxJson, currIndex)
                 if post_json_object:
                     if post_json_object.get('id'):
-                        postId = post_json_object['id']
+                        post_id = post_json_object['id']
                         announceActor = \
                             post_json_object['object']['attributedTo']
                         sayStr = 'Announcing post by ' + \
@@ -2096,7 +2096,7 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                         sendAnnounceViaServer(base_dir, sessionAnnounce,
                                               nickname, password,
                                               domain, port,
-                                              http_prefix, postId,
+                                              http_prefix, post_id,
                                               cached_webfingers, person_cache,
                                               True, __version__,
                                               signing_priv_key_pem)
@@ -2117,7 +2117,7 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                         _desktopGetBoxPostObject(boxJson, currIndex)
                 if post_json_object:
                     if post_json_object.get('id'):
-                        postId = post_json_object['id']
+                        post_id = post_json_object['id']
                         announceActor = \
                             post_json_object['object']['attributedTo']
                         sayStr = 'Undoing announce post by ' + \
@@ -2130,7 +2130,7 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                                                   post_json_object,
                                                   nickname, password,
                                                   domain, port,
-                                                  http_prefix, postId,
+                                                  http_prefix, post_id,
                                                   cached_webfingers,
                                                   person_cache,
                                                   True, __version__,
