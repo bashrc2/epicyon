@@ -14,7 +14,7 @@ from utils import getDisplayName
 from utils import isGroupAccount
 from utils import has_object_dict
 from utils import getOccupationName
-from utils import getLockedAccount
+from utils import get_locked_account
 from utils import getFullDomain
 from utils import isArtist
 from utils import isDormant
@@ -185,7 +185,7 @@ def htmlProfileAfterSearch(cssCache: {},
     if profile_json.get('name'):
         displayName = profile_json['name']
 
-    lockedAccount = getLockedAccount(profile_json)
+    lockedAccount = get_locked_account(profile_json)
     if lockedAccount:
         displayName += '🔒'
     movedTo = ''

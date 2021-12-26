@@ -270,7 +270,7 @@ from utils import loadTranslationsFromFile
 from utils import getLocalNetworkAddresses
 from utils import decodedHost
 from utils import isPublicPost
-from utils import getLockedAccount
+from utils import get_locked_account
 from utils import hasUsersPath
 from utils import getFullDomain
 from utils import removeHtml
@@ -7116,7 +7116,7 @@ class PubServer(BaseHTTPRequestHandler):
                         movedTo = movedTo.split('"')[1]
                 if actor_json['type'] == 'Group':
                     isGroup = True
-                lockedAccount = getLockedAccount(actor_json)
+                lockedAccount = get_locked_account(actor_json)
                 donateUrl = getDonationUrl(actor_json)
                 websiteUrl = getWebsite(actor_json, self.server.translate)
                 xmppAddress = getXmppAddress(actor_json)

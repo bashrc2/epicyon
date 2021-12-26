@@ -157,7 +157,7 @@ def get_sha_512(msg: str):
     return digest.finalize()
 
 
-def _localNetworkHost(host: str) -> bool:
+def _local_network_host(host: str) -> bool:
     """Returns true if the given host is on the local network
     """
     if host.startswith('localhost') or \
@@ -174,14 +174,14 @@ def decodedHost(host: str) -> str:
     """
     if ':' not in host:
         # eg. mydomain:8000
-        if not _localNetworkHost(host):
+        if not _local_network_host(host):
             if not host.endswith('.onion'):
                 if not host.endswith('.i2p'):
                     return idna.decode(host)
     return host
 
 
-def getLockedAccount(actor_json: {}) -> bool:
+def get_locked_account(actor_json: {}) -> bool:
     """Returns whether the given account requires follower approval
     """
     if not actor_json.get('manuallyApprovesFollowers'):
