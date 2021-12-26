@@ -12,7 +12,7 @@ import time
 from shutil import copyfile
 from utils import isArtist
 from utils import dangerousMarkup
-from utils import getConfigParam
+from utils import get_config_param
 from utils import get_full_domain
 from utils import is_editor
 from utils import removeIdEnding
@@ -58,11 +58,11 @@ def _getHelpForTimeline(base_dir: str, boxName: str) -> str:
     helpFilename = base_dir + '/accounts/help_' + boxName + '.md'
     if not os.path.isfile(helpFilename):
         language = \
-            getConfigParam(base_dir, 'language')
+            get_config_param(base_dir, 'language')
         if not language:
             language = 'en'
         theme_name = \
-            getConfigParam(base_dir, 'theme')
+            get_config_param(base_dir, 'theme')
         defaultFilename = None
         if theme_name:
             defaultFilename = \
@@ -83,7 +83,7 @@ def _getHelpForTimeline(base_dir: str, boxName: str) -> str:
     # show help text
     if os.path.isfile(helpFilename):
         instanceTitle = \
-            getConfigParam(base_dir, 'instanceTitle')
+            get_config_param(base_dir, 'instanceTitle')
         if not instanceTitle:
             instanceTitle = 'Epicyon'
         with open(helpFilename, 'r') as helpFile:
@@ -674,7 +674,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             '</span></button></a>'
 
     instanceTitle = \
-        getConfigParam(base_dir, 'instanceTitle')
+        get_config_param(base_dir, 'instanceTitle')
     tlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
 
     _logTimelineTiming(enableTimingLog, timelineStartTime, boxName, '4')
@@ -1055,7 +1055,7 @@ def _htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
                            shared_items_federated_domains, sharesFileType)
     domain_full = get_full_domain(domain, port)
     actor = local_actor_url(http_prefix, nickname, domain_full)
-    adminNickname = getConfigParam(base_dir, 'admin')
+    adminNickname = get_config_param(base_dir, 'admin')
     adminActor = ''
     if adminNickname:
         adminActor = \

@@ -11,7 +11,7 @@ import os
 from shutil import copyfile
 from utils import removeHtml
 from utils import loadJson
-from utils import getConfigParam
+from utils import get_config_param
 from utils import getImageExtensions
 from utils import getImageFormats
 from utils import acct_dir
@@ -52,7 +52,7 @@ def htmlWelcomeProfile(base_dir: str, nickname: str, domain: str,
         copyfile(defaultFilename, profileFilename)
 
     instanceTitle = \
-        getConfigParam(base_dir, 'instanceTitle')
+        get_config_param(base_dir, 'instanceTitle')
     if not instanceTitle:
         instanceTitle = 'Epicyon'
 

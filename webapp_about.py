@@ -9,7 +9,7 @@ __module_group__ = "Web Interface"
 
 import os
 from shutil import copyfile
-from utils import getConfigParam
+from utils import get_config_param
 from webapp_utils import htmlHeaderWithWebsiteMarkup
 from webapp_utils import htmlFooter
 from markdown import markdownToHtml
@@ -20,7 +20,7 @@ def htmlAbout(cssCache: {}, base_dir: str, http_prefix: str,
               system_language: str) -> str:
     """Show the about screen
     """
-    adminNickname = getConfigParam(base_dir, 'admin')
+    adminNickname = get_config_param(base_dir, 'admin')
     if not os.path.isfile(base_dir + '/accounts/about.md'):
         copyfile(base_dir + '/default_about.md',
                  base_dir + '/accounts/about.md')
@@ -41,7 +41,7 @@ def htmlAbout(cssCache: {}, base_dir: str, http_prefix: str,
         cssFilename = base_dir + '/epicyon.css'
 
     instanceTitle = \
-        getConfigParam(base_dir, 'instanceTitle')
+        get_config_param(base_dir, 'instanceTitle')
     aboutForm = \
         htmlHeaderWithWebsiteMarkup(cssFilename, instanceTitle,
                                     http_prefix, domain_full,

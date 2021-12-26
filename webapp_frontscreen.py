@@ -10,7 +10,7 @@ __module_group__ = "Timeline"
 import os
 from utils import isSystemAccount
 from utils import getDomainFromActor
-from utils import getConfigParam
+from utils import get_config_param
 from person import personBoxJson
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
@@ -206,7 +206,7 @@ def htmlFrontScreen(signing_priv_key_pem: str,
         '</table>\n'
 
     instanceTitle = \
-        getConfigParam(base_dir, 'instanceTitle')
+        get_config_param(base_dir, 'instanceTitle')
     profileStr = \
         htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None) + \
         profileStr + profileFooterStr + htmlFooter()

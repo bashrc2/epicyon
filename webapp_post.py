@@ -34,7 +34,7 @@ from utils import isPGPEncrypted
 from utils import isDM
 from utils import rejectPostId
 from utils import isRecentPost
-from utils import getConfigParam
+from utils import get_config_param
 from utils import get_full_domain
 from utils import is_editor
 from utils import locatePost
@@ -2146,7 +2146,7 @@ def htmlIndividualPost(cssCache: {},
         cssFilename = base_dir + '/epicyon.css'
 
     instanceTitle = \
-        getConfigParam(base_dir, 'instanceTitle')
+        get_config_param(base_dir, 'instanceTitle')
     metadataStr = _htmlPostMetadataOpenGraph(domain, originalPostJson)
     headerStr = htmlHeaderWithExternalStyle(cssFilename,
                                             instanceTitle, metadataStr)
@@ -2197,7 +2197,7 @@ def htmlPostReplies(cssCache: {},
     if os.path.isfile(base_dir + '/epicyon.css'):
         cssFilename = base_dir + '/epicyon.css'
 
-    instanceTitle = getConfigParam(base_dir, 'instanceTitle')
+    instanceTitle = get_config_param(base_dir, 'instanceTitle')
     metadata = ''
     headerStr = \
         htmlHeaderWithExternalStyle(cssFilename, instanceTitle, metadata)
@@ -2275,7 +2275,7 @@ def htmlEmojiReactionPicker(cssCache: {},
     bannerFile, _ = \
         getBannerFile(base_dir, nickname, domain, theme_name)
 
-    instanceTitle = getConfigParam(base_dir, 'instanceTitle')
+    instanceTitle = get_config_param(base_dir, 'instanceTitle')
     metadata = ''
     headerStr = \
         htmlHeaderWithExternalStyle(cssFilename, instanceTitle, metadata)

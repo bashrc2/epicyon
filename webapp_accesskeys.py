@@ -10,7 +10,7 @@ __module_group__ = "Accessibility"
 import os
 from utils import isAccountDir
 from utils import loadJson
-from utils import getConfigParam
+from utils import get_config_param
 from utils import acct_dir
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
@@ -59,7 +59,7 @@ def htmlAccessKeys(cssCache: {}, base_dir: str,
         cssFilename = base_dir + '/epicyon.css'
 
     instanceTitle = \
-        getConfigParam(base_dir, 'instanceTitle')
+        get_config_param(base_dir, 'instanceTitle')
     accessKeysForm = \
         htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     accessKeysForm += '<div class="container">\n'

@@ -9,7 +9,7 @@ __module_group__ = "Onboarding"
 
 import os
 from shutil import copyfile
-from utils import getConfigParam
+from utils import get_config_param
 from utils import removeHtml
 from utils import acct_dir
 from webapp_utils import htmlHeaderWithExternalStyle
@@ -71,7 +71,7 @@ def htmlWelcomeScreen(base_dir: str, nickname: str,
         copyfile(defaultFilename, welcomeFilename)
 
     instanceTitle = \
-        getConfigParam(base_dir, 'instanceTitle')
+        get_config_param(base_dir, 'instanceTitle')
     if not instanceTitle:
         instanceTitle = 'Epicyon'
 

@@ -13,7 +13,7 @@ import urllib.parse
 from datetime import datetime
 from utils import get_base_content_from_post
 from utils import isAccountDir
-from utils import getConfigParam
+from utils import get_config_param
 from utils import get_full_domain
 from utils import is_editor
 from utils import loadJson
@@ -63,7 +63,7 @@ def htmlSearchEmoji(cssCache: {}, translate: {},
 
     # create header
     instanceTitle = \
-        getConfigParam(base_dir, 'instanceTitle')
+        get_config_param(base_dir, 'instanceTitle')
     emojiForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     emojiForm += '<center><h1>' + \
         translate['Emoji Search'] + \
@@ -239,7 +239,7 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
         cssFilename = base_dir + '/epicyon.css'
 
     instanceTitle = \
-        getConfigParam(base_dir, 'instanceTitle')
+        get_config_param(base_dir, 'instanceTitle')
     sharedItemsForm = \
         htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     if sharesFileType == 'shares':
@@ -346,7 +346,7 @@ def htmlSearchEmojiTextEntry(cssCache: {}, translate: {},
         cssFilename = base_dir + '/follow.css'
 
     instanceTitle = \
-        getConfigParam(base_dir, 'instanceTitle')
+        get_config_param(base_dir, 'instanceTitle')
     emojiStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     emojiStr += '<div class="follow">\n'
     emojiStr += '  <div class="followAvatar">\n'
@@ -385,7 +385,7 @@ def htmlSearch(cssCache: {}, translate: {},
     if os.path.isfile(base_dir + '/search.css'):
         cssFilename = base_dir + '/search.css'
 
-    instanceTitle = getConfigParam(base_dir, 'instanceTitle')
+    instanceTitle = get_config_param(base_dir, 'instanceTitle')
     followStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
 
     # show a banner above the search box
@@ -547,7 +547,7 @@ def htmlSkillsSearch(actor: str,
         cssFilename = base_dir + '/epicyon.css'
 
     instanceTitle = \
-        getConfigParam(base_dir, 'instanceTitle')
+        get_config_param(base_dir, 'instanceTitle')
     skillSearchForm = \
         htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     skillSearchForm += \
@@ -624,7 +624,7 @@ def htmlHistorySearch(cssCache: {}, translate: {}, base_dir: str,
         cssFilename = base_dir + '/epicyon.css'
 
     instanceTitle = \
-        getConfigParam(base_dir, 'instanceTitle')
+        get_config_param(base_dir, 'instanceTitle')
     historySearchForm = \
         htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
 
@@ -766,7 +766,7 @@ def htmlHashtagSearch(cssCache: {},
 
     # add the page title
     instanceTitle = \
-        getConfigParam(base_dir, 'instanceTitle')
+        get_config_param(base_dir, 'instanceTitle')
     hashtagSearchForm = \
         htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     if nickname:

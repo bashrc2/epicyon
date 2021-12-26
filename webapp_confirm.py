@@ -14,7 +14,7 @@ from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import locatePost
 from utils import loadJson
-from utils import getConfigParam
+from utils import get_config_param
 from utils import getAltPath
 from utils import acct_dir
 from webapp_utils import setCustomBackground
@@ -61,7 +61,7 @@ def htmlConfirmDelete(cssCache: {},
         cssFilename = base_dir + '/epicyon.css'
 
     instanceTitle = \
-        getConfigParam(base_dir, 'instanceTitle')
+        get_config_param(base_dir, 'instanceTitle')
     deletePostStr = \
         htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     deletePostStr += \
@@ -138,7 +138,7 @@ def htmlConfirmRemoveSharedItem(cssCache: {}, translate: {}, base_dir: str,
     if os.path.isfile(base_dir + '/follow.css'):
         cssFilename = base_dir + '/follow.css'
 
-    instanceTitle = getConfigParam(base_dir, 'instanceTitle')
+    instanceTitle = get_config_param(base_dir, 'instanceTitle')
     sharesStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     sharesStr += '<div class="follow">\n'
     sharesStr += '  <div class="followAvatar">\n'
@@ -191,7 +191,7 @@ def htmlConfirmFollow(cssCache: {}, translate: {}, base_dir: str,
     if os.path.isfile(base_dir + '/follow.css'):
         cssFilename = base_dir + '/follow.css'
 
-    instanceTitle = getConfigParam(base_dir, 'instanceTitle')
+    instanceTitle = get_config_param(base_dir, 'instanceTitle')
     followStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     followStr += '<div class="follow">\n'
     followStr += '  <div class="followAvatar">\n'
@@ -236,7 +236,7 @@ def htmlConfirmUnfollow(cssCache: {}, translate: {}, base_dir: str,
     if os.path.isfile(base_dir + '/follow.css'):
         cssFilename = base_dir + '/follow.css'
 
-    instanceTitle = getConfigParam(base_dir, 'instanceTitle')
+    instanceTitle = get_config_param(base_dir, 'instanceTitle')
     followStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     followStr += '<div class="follow">\n'
     followStr += '  <div class="followAvatar">\n'
@@ -279,7 +279,7 @@ def htmlConfirmUnblock(cssCache: {}, translate: {}, base_dir: str,
     if os.path.isfile(base_dir + '/follow.css'):
         cssFilename = base_dir + '/follow.css'
 
-    instanceTitle = getConfigParam(base_dir, 'instanceTitle')
+    instanceTitle = get_config_param(base_dir, 'instanceTitle')
     blockStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     blockStr += '<div class="block">\n'
     blockStr += '  <div class="blockAvatar">\n'

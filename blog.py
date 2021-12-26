@@ -23,7 +23,7 @@ from utils import get_base_content_from_post
 from utils import get_content_from_post
 from utils import isAccountDir
 from utils import removeHtml
-from utils import getConfigParam
+from utils import get_config_param
 from utils import get_full_domain
 from utils import getMediaFormats
 from utils import getNicknameFromActor
@@ -457,7 +457,7 @@ def htmlBlogPost(session, authorized: bool,
     if os.path.isfile(base_dir + '/blog.css'):
         cssFilename = base_dir + '/blog.css'
     instanceTitle = \
-        getConfigParam(base_dir, 'instanceTitle')
+        get_config_param(base_dir, 'instanceTitle')
     published = post_json_object['object']['published']
     modified = published
     if post_json_object['object'].get('updated'):
@@ -521,7 +521,7 @@ def htmlBlogPage(authorized: bool, session,
     if os.path.isfile(base_dir + '/epicyon.css'):
         cssFilename = base_dir + '/epicyon.css'
     instanceTitle = \
-        getConfigParam(base_dir, 'instanceTitle')
+        get_config_param(base_dir, 'instanceTitle')
     blogStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     _htmlBlogRemoveCwButton(blogStr, translate)
 
@@ -741,7 +741,7 @@ def htmlBlogView(authorized: bool,
     if os.path.isfile(base_dir + '/epicyon.css'):
         cssFilename = base_dir + '/epicyon.css'
     instanceTitle = \
-        getConfigParam(base_dir, 'instanceTitle')
+        get_config_param(base_dir, 'instanceTitle')
     blogStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
 
     if _noOfBlogAccounts(base_dir) <= 1:
@@ -847,7 +847,7 @@ def htmlEditBlog(media_instance: bool, translate: {},
     dateAndLocation += '</div>'
 
     instanceTitle = \
-        getConfigParam(base_dir, 'instanceTitle')
+        get_config_param(base_dir, 'instanceTitle')
     editBlogForm = \
         htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
 

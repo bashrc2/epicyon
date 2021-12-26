@@ -35,7 +35,7 @@ from utils import getPortFromDomain
 from utils import has_object_dict
 from utils import dmAllowedFromDomain
 from utils import isRecentPost
-from utils import getConfigParam
+from utils import get_config_param
 from utils import has_users_path
 from utils import valid_post_date
 from utils import get_full_domain
@@ -303,8 +303,8 @@ def _inboxStorePostToHtmlCache(recentPostsCache: {}, max_recent_posts: int,
         boxname = 'inbox'
 
     notDM = not isDM(post_json_object)
-    yt_replace_domain = getConfigParam(base_dir, 'youtubedomain')
-    twitter_replacement_domain = getConfigParam(base_dir, 'twitterdomain')
+    yt_replace_domain = get_config_param(base_dir, 'youtubedomain')
+    twitter_replacement_domain = get_config_param(base_dir, 'twitterdomain')
     individualPostAsHtml(signing_priv_key_pem,
                          True, recentPostsCache, max_recent_posts,
                          translate, pageNumber,
@@ -2631,7 +2631,7 @@ def _sendToGroupMembers(session, base_dir: str, handle: str, port: int,
     sharedItemFederationTokens = {}
     shared_items_federated_domains = []
     shared_items_federated_domainsStr = \
-        getConfigParam(base_dir, 'shared_items_federated_domains')
+        get_config_param(base_dir, 'shared_items_federated_domains')
     if shared_items_federated_domainsStr:
         siFederatedDomainsList = \
             shared_items_federated_domainsStr.split(',')
@@ -4207,7 +4207,7 @@ def runInboxQueue(recentPostsCache: {}, max_recent_posts: int,
                 'accounts': {}
             }
             # also check if the json signature enforcement has changed
-            verifyAllSigs = getConfigParam(base_dir, "verify_all_signatures")
+            verifyAllSigs = get_config_param(base_dir, "verify_all_signatures")
             if verifyAllSigs is not None:
                 verify_all_signatures = verifyAllSigs
             # change the last time that this was done
@@ -4489,8 +4489,8 @@ def runInboxQueue(recentPostsCache: {}, max_recent_posts: int,
             if not os.path.isfile(sharedInboxPostFilename):
                 saveJson(queueJson['post'], sharedInboxPostFilename)
 
-        lists_enabled = getConfigParam(base_dir, "lists_enabled")
-        content_license_url = getConfigParam(base_dir, "content_license_url")
+        lists_enabled = get_config_param(base_dir, "lists_enabled")
+        content_license_url = get_config_param(base_dir, "content_license_url")
 
         # for posts addressed to specific accounts
         for handle, capsId in recipientsDict.items():

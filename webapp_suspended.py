@@ -8,7 +8,7 @@ __status__ = "Production"
 __module_group__ = "Web Interface"
 
 import os
-from utils import getConfigParam
+from utils import get_config_param
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 
@@ -22,7 +22,7 @@ def htmlSuspended(cssCache: {}, base_dir: str) -> str:
         cssFilename = base_dir + '/suspended.css'
 
     instanceTitle = \
-        getConfigParam(base_dir, 'instanceTitle')
+        get_config_param(base_dir, 'instanceTitle')
     suspendedForm = \
         htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     suspendedForm += \

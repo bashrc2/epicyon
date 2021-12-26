@@ -13,7 +13,7 @@ from utils import isPublicPostFromUrl
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import getMediaFormats
-from utils import getConfigParam
+from utils import get_config_param
 from utils import acct_dir
 from utils import getCurrencies
 from utils import getCategoryTypes
@@ -489,7 +489,7 @@ def htmlNewPost(cssCache: {}, media_instance: bool, translate: {},
         for symbol, currName in currencies.items():
             currencyList.append(currName + ' ' + symbol)
         currencyList.sort()
-        defaultCurrency = getConfigParam(base_dir, 'defaultCurrency')
+        defaultCurrency = get_config_param(base_dir, 'defaultCurrency')
         if not defaultCurrency:
             defaultCurrency = "EUR"
         for currName in currencyList:
@@ -554,7 +554,7 @@ def htmlNewPost(cssCache: {}, media_instance: bool, translate: {},
         for symbol, currName in currencies.items():
             currencyList.append(currName + ' ' + symbol)
         currencyList.sort()
-        defaultCurrency = getConfigParam(base_dir, 'defaultCurrency')
+        defaultCurrency = get_config_param(base_dir, 'defaultCurrency')
         if not defaultCurrency:
             defaultCurrency = "EUR"
         for currName in currencyList:
@@ -636,7 +636,7 @@ def htmlNewPost(cssCache: {}, media_instance: bool, translate: {},
             editTextField(translate['Location'], 'location', '')
         dateAndLocation += '</div>\n'
 
-    instanceTitle = getConfigParam(base_dir, 'instanceTitle')
+    instanceTitle = get_config_param(base_dir, 'instanceTitle')
     newPostForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
 
     newPostForm += \

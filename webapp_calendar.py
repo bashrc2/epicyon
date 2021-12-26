@@ -11,7 +11,7 @@ import os
 from datetime import datetime
 from datetime import date
 from utils import getDisplayName
-from utils import getConfigParam
+from utils import get_config_param
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import locatePost
@@ -57,7 +57,7 @@ def htmlCalendarDeleteConfirm(cssCache: {}, translate: {}, base_dir: str,
         cssFilename = base_dir + '/epicyon.css'
 
     instanceTitle = \
-        getConfigParam(base_dir, 'instanceTitle')
+        get_config_param(base_dir, 'instanceTitle')
     deletePostStr = \
         htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     deletePostStr += \
@@ -119,7 +119,7 @@ def _htmlCalendarDay(person_cache: {}, cssCache: {}, translate: {},
     if '/users/' in actor:
         calActor = '/users/' + actor.split('/users/')[1]
 
-    instanceTitle = getConfigParam(base_dir, 'instanceTitle')
+    instanceTitle = get_config_param(base_dir, 'instanceTitle')
     calendarStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     calendarStr += '<main><table class="calendar">\n'
     calendarStr += '<caption class="calendar__banner--month">\n'
@@ -339,7 +339,7 @@ def htmlCalendar(person_cache: {}, cssCache: {}, translate: {},
         calActor = '/users/' + actor.split('/users/')[1]
 
     instanceTitle = \
-        getConfigParam(base_dir, 'instanceTitle')
+        get_config_param(base_dir, 'instanceTitle')
     headerStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
 
     # the main graphical calendar as a table

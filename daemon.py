@@ -284,7 +284,7 @@ from utils import clearFromPostCaches
 from utils import containsInvalidChars
 from utils import isSystemAccount
 from utils import setConfigParam
-from utils import getConfigParam
+from utils import get_config_param
 from utils import removeIdEnding
 from utils import undoLikesCollectionEntry
 from utils import deletePost
@@ -2484,7 +2484,7 @@ class PubServer(BaseHTTPRequestHandler):
         # person options screen, permission to post to newswire
         # See htmlPersonOptions
         if '&submitPostToNews=' in optionsConfirmParams:
-            adminNickname = getConfigParam(self.server.base_dir, 'admin')
+            adminNickname = get_config_param(self.server.base_dir, 'admin')
             if (chooserNickname != optionsNickname and
                 (chooserNickname == adminNickname or
                  (isModerator(self.server.base_dir, chooserNickname) and
@@ -2529,7 +2529,7 @@ class PubServer(BaseHTTPRequestHandler):
         # person options screen, permission to post to featured articles
         # See htmlPersonOptions
         if '&submitPostToFeatures=' in optionsConfirmParams:
-            adminNickname = getConfigParam(self.server.base_dir, 'admin')
+            adminNickname = get_config_param(self.server.base_dir, 'admin')
             if (chooserNickname != optionsNickname and
                 (chooserNickname == adminNickname or
                  (isModerator(self.server.base_dir, chooserNickname) and
@@ -2575,7 +2575,7 @@ class PubServer(BaseHTTPRequestHandler):
         # person options screen, permission to post to newswire
         # See htmlPersonOptions
         if '&submitModNewsPosts=' in optionsConfirmParams:
-            adminNickname = getConfigParam(self.server.base_dir, 'admin')
+            adminNickname = get_config_param(self.server.base_dir, 'admin')
             if (chooserNickname != optionsNickname and
                 (chooserNickname == adminNickname or
                  (isModerator(self.server.base_dir, chooserNickname) and
@@ -2698,7 +2698,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.server.keyShortcuts.get(nickname):
                     accessKeys = self.server.keyShortcuts[nickname]
 
-            customSubmitText = getConfigParam(base_dir, 'customSubmitText')
+            customSubmitText = get_config_param(base_dir, 'customSubmitText')
             conversationId = None
             msg = htmlNewPost(self.server.cssCache,
                               False, self.server.translate,
@@ -2833,7 +2833,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.server.keyShortcuts.get(nickname):
                     accessKeys = self.server.keyShortcuts[nickname]
 
-            customSubmitText = getConfigParam(base_dir, 'customSubmitText')
+            customSubmitText = get_config_param(base_dir, 'customSubmitText')
             conversationId = None
             msg = htmlNewPost(self.server.cssCache,
                               False, self.server.translate,
@@ -3862,7 +3862,7 @@ class PubServer(BaseHTTPRequestHandler):
             shareActor = removeShareConfirmParams.split('actor=')[1]
             if '&' in shareActor:
                 shareActor = shareActor.split('&')[0]
-            adminNickname = getConfigParam(base_dir, 'admin')
+            adminNickname = get_config_param(base_dir, 'admin')
             adminActor = \
                 local_actor_url(http_prefix, adminNickname, domain_full)
             actor = originPathStr
@@ -3929,7 +3929,7 @@ class PubServer(BaseHTTPRequestHandler):
             shareActor = removeShareConfirmParams.split('actor=')[1]
             if '&' in shareActor:
                 shareActor = shareActor.split('&')[0]
-            adminNickname = getConfigParam(base_dir, 'admin')
+            adminNickname = get_config_param(base_dir, 'admin')
             adminActor = \
                 local_actor_url(http_prefix, adminNickname, domain_full)
             actor = originPathStr
@@ -4154,7 +4154,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   linksFilename)
 
             adminNickname = \
-                getConfigParam(base_dir, 'admin')
+                get_config_param(base_dir, 'admin')
             if nickname == adminNickname:
                 if fields.get('editedAbout'):
                     aboutStr = fields['editedAbout']
@@ -4733,7 +4733,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.POSTbusy = False
                 return
 
-            adminNickname = getConfigParam(self.server.base_dir, 'admin')
+            adminNickname = get_config_param(self.server.base_dir, 'admin')
 
             # get the various avatar, banner and background images
             actorChanged = True
@@ -5024,20 +5024,20 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.iconsCache = {}
                             self.server.fontsCache = {}
                             self.server.show_publish_as_icon = \
-                                getConfigParam(self.server.base_dir,
-                                               'show_publish_as_icon')
+                                get_config_param(self.server.base_dir,
+                                                 'show_publish_as_icon')
                             self.server.full_width_tl_button_header = \
-                                getConfigParam(self.server.base_dir,
-                                               'full_width_tl_button_header')
+                                get_config_param(self.server.base_dir,
+                                                 'full_width_tl_button_header')
                             self.server.icons_as_buttons = \
-                                getConfigParam(self.server.base_dir,
-                                               'icons_as_buttons')
+                                get_config_param(self.server.base_dir,
+                                                 'icons_as_buttons')
                             self.server.rss_icon_at_top = \
-                                getConfigParam(self.server.base_dir,
-                                               'rss_icon_at_top')
+                                get_config_param(self.server.base_dir,
+                                                 'rss_icon_at_top')
                             self.server.publish_button_at_top = \
-                                getConfigParam(self.server.base_dir,
-                                               'publish_button_at_top')
+                                get_config_param(self.server.base_dir,
+                                                 'publish_button_at_top')
                             setNewsAvatar(base_dir,
                                           fields['themeDropdown'],
                                           http_prefix,
@@ -5131,7 +5131,7 @@ class PubServer(BaseHTTPRequestHandler):
                         # change instance title
                         if fields.get('instanceTitle'):
                             currInstanceTitle = \
-                                getConfigParam(base_dir, 'instanceTitle')
+                                get_config_param(base_dir, 'instanceTitle')
                             if fields['instanceTitle'] != currInstanceTitle:
                                 setConfigParam(base_dir, 'instanceTitle',
                                                fields['instanceTitle'])
@@ -5181,7 +5181,7 @@ class PubServer(BaseHTTPRequestHandler):
 
                         # change custom post submit button text
                         currCustomSubmitText = \
-                            getConfigParam(base_dir, 'customSubmitText')
+                            get_config_param(base_dir, 'customSubmitText')
                         if fields.get('customSubmitText'):
                             if fields['customSubmitText'] != \
                                currCustomSubmitText:
@@ -5196,8 +5196,8 @@ class PubServer(BaseHTTPRequestHandler):
 
                         # libretranslate URL
                         currLibretranslateUrl = \
-                            getConfigParam(base_dir,
-                                           'libretranslateUrl')
+                            get_config_param(base_dir,
+                                             'libretranslateUrl')
                         if fields.get('libretranslateUrl'):
                             if fields['libretranslateUrl'] != \
                                currLibretranslateUrl:
@@ -5214,8 +5214,8 @@ class PubServer(BaseHTTPRequestHandler):
 
                         # libretranslate API Key
                         currLibretranslateApiKey = \
-                            getConfigParam(base_dir,
-                                           'libretranslateApiKey')
+                            get_config_param(base_dir,
+                                             'libretranslateApiKey')
                         if fields.get('libretranslateApiKey'):
                             if fields['libretranslateApiKey'] != \
                                currLibretranslateApiKey:
@@ -5248,8 +5248,8 @@ class PubServer(BaseHTTPRequestHandler):
 
                         # change instance short description
                         currInstanceDescriptionShort = \
-                            getConfigParam(base_dir,
-                                           'instanceDescriptionShort')
+                            get_config_param(base_dir,
+                                             'instanceDescriptionShort')
                         if fields.get('instanceDescriptionShort'):
                             if fields['instanceDescriptionShort'] != \
                                currInstanceDescriptionShort:
@@ -5264,7 +5264,7 @@ class PubServer(BaseHTTPRequestHandler):
 
                         # change instance description
                         currInstanceDescription = \
-                            getConfigParam(base_dir, 'instanceDescription')
+                            get_config_param(base_dir, 'instanceDescription')
                         if fields.get('instanceDescription'):
                             if fields['instanceDescription'] != \
                                currInstanceDescription:
@@ -5546,7 +5546,7 @@ class PubServer(BaseHTTPRequestHandler):
                             redirectPath = 'previewAvatar'
 
                     adminNickname = \
-                        getConfigParam(base_dir, 'admin')
+                        get_config_param(base_dir, 'admin')
 
                     if adminNickname:
                         # whether to require jsonld signatures
@@ -5585,7 +5585,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 if fields['broch_mode'] == 'on':
                                     broch_mode = True
                             currBrochMode = \
-                                getConfigParam(base_dir, "broch_mode")
+                                get_config_param(base_dir, "broch_mode")
                             if broch_mode != currBrochMode:
                                 setBrochMode(self.server.base_dir,
                                              self.server.domain_full,
@@ -5598,8 +5598,8 @@ class PubServer(BaseHTTPRequestHandler):
                             fed_domains_variable = \
                                 "shared_items_federated_domains"
                             fed_domains_str = \
-                                getConfigParam(base_dir,
-                                               fed_domains_variable)
+                                get_config_param(base_dir,
+                                                 fed_domains_variable)
                             if not fed_domains_str:
                                 fed_domains_str = ''
                             sharedItemsFormStr = ''
@@ -5964,21 +5964,21 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.iconsCache = {}
                                 self.server.fontsCache = {}
                                 self.server.show_publish_as_icon = \
-                                    getConfigParam(base_dir,
-                                                   'show_publish_as_icon')
+                                    get_config_param(base_dir,
+                                                     'show_publish_as_icon')
                                 self.server.full_width_tl_button_header = \
-                                    getConfigParam(base_dir,
-                                                   'fullWidthTimeline' +
-                                                   'ButtonHeader')
+                                    get_config_param(base_dir,
+                                                     'fullWidthTimeline' +
+                                                     'ButtonHeader')
                                 self.server.icons_as_buttons = \
-                                    getConfigParam(base_dir,
-                                                   'icons_as_buttons')
+                                    get_config_param(base_dir,
+                                                     'icons_as_buttons')
                                 self.server.rss_icon_at_top = \
-                                    getConfigParam(base_dir,
-                                                   'rss_icon_at_top')
+                                    get_config_param(base_dir,
+                                                     'rss_icon_at_top')
                                 self.server.publish_button_at_top = \
-                                    getConfigParam(base_dir,
-                                                   'publish_button_at_top')
+                                    get_config_param(base_dir,
+                                                     'publish_button_at_top')
 
                     # only receive DMs from accounts you follow
                     followDMsFilename = \
@@ -6212,7 +6212,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if path.startswith('/users/' + adminNickname + '/') or \
                        isArtist(base_dir, nickname):
                         currLowBandwidth = \
-                            getConfigParam(base_dir, 'low_bandwidth')
+                            get_config_param(base_dir, 'low_bandwidth')
                         low_bandwidth = False
                         if fields.get('low_bandwidth'):
                             if fields['low_bandwidth'] == 'on':
@@ -6682,7 +6682,7 @@ class PubServer(BaseHTTPRequestHandler):
                 favType = 'image/avif'
                 favFilename = favFilename.split('.')[0] + '.avif'
         if not self.server.theme_name:
-            self.theme_name = getConfigParam(base_dir, 'theme')
+            self.theme_name = get_config_param(base_dir, 'theme')
         if not self.server.theme_name:
             self.server.theme_name = 'default'
         # custom favicon
@@ -12964,7 +12964,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self.server.keyShortcuts.get(nickname):
                 accessKeys = self.server.keyShortcuts[nickname]
 
-            customSubmitText = getConfigParam(base_dir, 'customSubmitText')
+            customSubmitText = get_config_param(base_dir, 'customSubmitText')
 
             post_json_object = None
             if inReplyToUrl:
@@ -16552,7 +16552,7 @@ class PubServer(BaseHTTPRequestHandler):
                     return -1
                 submitText = self.server.translate['Submit']
                 customSubmitText = \
-                    getConfigParam(self.server.base_dir, 'customSubmitText')
+                    get_config_param(self.server.base_dir, 'customSubmitText')
                 if customSubmitText:
                     submitText = customSubmitText
                 if fields.get('submitPost'):
@@ -17965,8 +17965,9 @@ class PubServer(BaseHTTPRequestHandler):
             if self.server.debug:
                 print('SharesCatalog header: ' + self.headers['SharesCatalog'])
             if not self.server.shared_items_federated_domains:
-                siDomainsStr = getConfigParam(self.server.base_dir,
-                                              'shared_items_federated_domains')
+                siDomainsStr = \
+                    get_config_param(self.server.base_dir,
+                                     'shared_items_federated_domains')
                 if siDomainsStr:
                     if self.server.debug:
                         print('Loading shared items federated domains list')
@@ -18818,11 +18819,11 @@ def runDaemon(content_license_url: str,
     if lists_enabled:
         httpd.lists_enabled = lists_enabled
     else:
-        httpd.lists_enabled = getConfigParam(base_dir, "lists_enabled")
+        httpd.lists_enabled = get_config_param(base_dir, "lists_enabled")
     httpd.cw_lists = loadCWLists(base_dir, True)
 
     # set the avatar for the news account
-    httpd.theme_name = getConfigParam(base_dir, 'theme')
+    httpd.theme_name = get_config_param(base_dir, 'theme')
     if not httpd.theme_name:
         httpd.theme_name = 'default'
     if isNewsThemeName(base_dir, httpd.theme_name):

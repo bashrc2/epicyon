@@ -11,7 +11,7 @@ import os
 import time
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
-from utils import getConfigParam
+from utils import get_config_param
 from utils import saveJson
 
 
@@ -75,7 +75,7 @@ def htmlWatchPointsGraph(base_dir: str, fitness: {}, fitnessId: str,
         cssFilename = base_dir + '/graph.css'
 
     instanceTitle = \
-        getConfigParam(base_dir, 'instanceTitle')
+        get_config_param(base_dir, 'instanceTitle')
     htmlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     htmlStr += \
         '<table class="graph">\n' + \

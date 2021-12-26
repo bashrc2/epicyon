@@ -16,7 +16,7 @@ from utils import removeHtml
 from utils import getProtocolPrefixes
 from utils import loadJson
 from utils import getCachedPostFilename
-from utils import getConfigParam
+from utils import get_config_param
 from utils import acct_dir
 from utils import getNicknameFromActor
 from utils import isfloat
@@ -54,7 +54,7 @@ def htmlFollowingList(cssCache: {}, base_dir: str,
                 cssFilename = base_dir + '/epicyon.css'
 
             instanceTitle = \
-                getConfigParam(base_dir, 'instanceTitle')
+                get_config_param(base_dir, 'instanceTitle')
             followingListHtml = \
                 htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
             for followingAddress in followingList:
@@ -76,7 +76,7 @@ def htmlHashtagBlocked(cssCache: {}, base_dir: str, translate: {}) -> str:
         cssFilename = base_dir + '/suspended.css'
 
     instanceTitle = \
-        getConfigParam(base_dir, 'instanceTitle')
+        get_config_param(base_dir, 'instanceTitle')
     blockedHashtagForm = \
         htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     blockedHashtagForm += '<div><center>\n'
@@ -1202,7 +1202,7 @@ def getPostAttachmentsAsHtml(post_json_object: {}, boxName: str, translate: {},
 def htmlPostSeparator(base_dir: str, column: str) -> str:
     """Returns the html for a timeline post separator image
     """
-    theme = getConfigParam(base_dir, 'theme')
+    theme = get_config_param(base_dir, 'theme')
     filename = 'separator.png'
     separatorClass = "postSeparatorImage"
     if column:
@@ -1472,7 +1472,7 @@ def htmlSearchResultShare(base_dir: str, sharedItem: {}, translate: {},
     elif isModerator(base_dir, nickname):
         showRemoveButton = True
     else:
-        adminNickname = getConfigParam(base_dir, 'admin')
+        adminNickname = get_config_param(base_dir, 'admin')
         if adminNickname:
             if actor.endswith('/users/' + adminNickname):
                 showRemoveButton = True
@@ -1568,7 +1568,7 @@ def htmlShowShare(base_dir: str, domain: str, nickname: str,
     if os.path.isfile(base_dir + '/epicyon.css'):
         cssFilename = base_dir + '/epicyon.css'
     instanceTitle = \
-        getConfigParam(base_dir, 'instanceTitle')
+        get_config_param(base_dir, 'instanceTitle')
 
     return htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None) + \
         shareStr + htmlFooter()

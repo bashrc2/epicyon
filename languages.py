@@ -13,7 +13,7 @@ from urllib import request, parse
 from utils import get_actor_languages_list
 from utils import removeHtml
 from utils import has_object_dict
-from utils import getConfigParam
+from utils import get_config_param
 from utils import local_actor_url
 from cache import getPersonFromCache
 
@@ -118,9 +118,10 @@ def understoodPostLanguage(base_dir: str, nickname: str, domain: str,
         if msgObject['contentMap'].get(lang):
             return True
     # is the language for this post supported by libretranslate?
-    libretranslateUrl = getConfigParam(base_dir, "libretranslateUrl")
+    libretranslateUrl = get_config_param(base_dir, "libretranslateUrl")
     if libretranslateUrl:
-        libretranslateApiKey = getConfigParam(base_dir, "libretranslateApiKey")
+        libretranslateApiKey = \
+            get_config_param(base_dir, "libretranslateApiKey")
         lang_list = \
             libretranslateLanguages(libretranslateUrl, libretranslateApiKey)
         for lang in lang_list:
@@ -287,10 +288,10 @@ def autoTranslatePost(base_dir: str, post_json_object: {},
         return ''
 
     # is the language for this post supported by libretranslate?
-    libretranslateUrl = getConfigParam(base_dir, "libretranslateUrl")
+    libretranslateUrl = get_config_param(base_dir, "libretranslateUrl")
     if not libretranslateUrl:
         return ''
-    libretranslateApiKey = getConfigParam(base_dir, "libretranslateApiKey")
+    libretranslateApiKey = get_config_param(base_dir, "libretranslateApiKey")
     lang_list = \
         libretranslateLanguages(libretranslateUrl, libretranslateApiKey)
     for lang in lang_list:

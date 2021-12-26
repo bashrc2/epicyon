@@ -9,7 +9,7 @@ __module_group__ = "Web Interface"
 
 import os
 from shutil import copyfile
-from utils import getConfigParam
+from utils import get_config_param
 from utils import local_actor_url
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
@@ -20,7 +20,7 @@ def htmlTermsOfService(cssCache: {}, base_dir: str,
                        http_prefix: str, domain_full: str) -> str:
     """Show the terms of service screen
     """
-    adminNickname = getConfigParam(base_dir, 'admin')
+    adminNickname = get_config_param(base_dir, 'admin')
     if not os.path.isfile(base_dir + '/accounts/tos.md'):
         copyfile(base_dir + '/default_tos.md',
                  base_dir + '/accounts/tos.md')
@@ -41,7 +41,7 @@ def htmlTermsOfService(cssCache: {}, base_dir: str,
         cssFilename = base_dir + '/epicyon.css'
 
     instanceTitle = \
-        getConfigParam(base_dir, 'instanceTitle')
+        get_config_param(base_dir, 'instanceTitle')
     TOSForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     TOSForm += '<div class="container">' + TOSText + '</div>\n'
     if adminNickname:

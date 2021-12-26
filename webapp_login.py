@@ -10,7 +10,7 @@ __module_group__ = "Web Interface"
 import os
 import time
 from shutil import copyfile
-from utils import getConfigParam
+from utils import get_config_param
 from utils import noOfAccounts
 from utils import getNicknameValidationPattern
 from webapp_utils import setCustomBackground
@@ -119,8 +119,8 @@ def htmlLogin(cssCache: {}, translate: {},
 
     # show the register button
     registerButtonStr = ''
-    if getConfigParam(base_dir, 'registration') == 'open':
-        if int(getConfigParam(base_dir, 'registrationsRemaining')) > 0:
+    if get_config_param(base_dir, 'registration') == 'open':
+        if int(get_config_param(base_dir, 'registrationsRemaining')) > 0:
             if accounts > 0:
                 idx = 'Welcome. Please login or register a new account.'
                 loginText = \
@@ -149,14 +149,14 @@ def htmlLogin(cssCache: {}, translate: {},
         autocompletePasswordStr = 'autocomplete="off" value=""'
 
     instanceTitle = \
-        getConfigParam(base_dir, 'instanceTitle')
+        get_config_param(base_dir, 'instanceTitle')
     loginForm = \
         htmlHeaderWithWebsiteMarkup(cssFilename, instanceTitle,
                                     http_prefix, domain,
                                     system_language)
 
     nicknamePattern = getNicknameValidationPattern()
-    instanceTitle = getConfigParam(base_dir, 'instanceTitle')
+    instanceTitle = get_config_param(base_dir, 'instanceTitle')
     loginForm += \
         '<br>\n' + \
         '<form method="POST" action="/login">\n' + \

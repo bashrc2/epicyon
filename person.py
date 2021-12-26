@@ -49,7 +49,7 @@ from utils import validNickname
 from utils import loadJson
 from utils import saveJson
 from utils import setConfigParam
-from utils import getConfigParam
+from utils import get_config_param
 from utils import refresh_newswire
 from utils import getProtocolPrefixes
 from utils import has_users_path
@@ -605,7 +605,7 @@ def createPerson(base_dir: str, nickname: str, domain: str, port: int,
     # remaining registrations counter
     if nickname != 'news':
         remainingConfigExists = \
-            getConfigParam(base_dir, 'registrationsRemaining')
+            get_config_param(base_dir, 'registrationsRemaining')
         if remainingConfigExists:
             registrationsRemaining = int(remainingConfigExists)
             if registrationsRemaining <= 0:
@@ -625,7 +625,7 @@ def createPerson(base_dir: str, nickname: str, domain: str, port: int,
                                                        manual_follower,
                                                        group_account,
                                                        password)
-    if not getConfigParam(base_dir, 'admin'):
+    if not get_config_param(base_dir, 'admin'):
         if nickname != 'news':
             # print(nickname+' becomes the instance admin and a moderator')
             setConfigParam(base_dir, 'admin', nickname)
@@ -668,7 +668,7 @@ def createPerson(base_dir: str, nickname: str, domain: str, port: int,
         except OSError:
             print('EX: unable to write ' + notifyReactionsFilename)
 
-    theme = getConfigParam(base_dir, 'theme')
+    theme = get_config_param(base_dir, 'theme')
     if not theme:
         theme = 'default'
 
@@ -822,7 +822,7 @@ def personUpgradeActor(base_dir: str, personJson: {},
     # roles are configured
     rolesList = getActorRolesList(personJson)
     if not rolesList:
-        adminName = getConfigParam(base_dir, 'admin')
+        adminName = get_config_param(base_dir, 'admin')
         if personJson['id'].endswith('/users/' + adminName):
             rolesList = ["admin", "moderator", "editor"]
             setRolesFromList(personJson, rolesList)
@@ -1060,7 +1060,7 @@ def suspendAccount(base_dir: str, nickname: str, domain: str) -> None:
     """Suspends the given account
     """
     # Don't suspend the admin
-    adminNickname = getConfigParam(base_dir, 'admin')
+    adminNickname = get_config_param(base_dir, 'admin')
     if not adminNickname:
         return
     if nickname == adminNickname:
@@ -1118,7 +1118,7 @@ def canRemovePost(base_dir: str, nickname: str,
     domain_full = get_full_domain(domain, port)
 
     # is the post by the admin?
-    adminNickname = getConfigParam(base_dir, 'admin')
+    adminNickname = get_config_param(base_dir, 'admin')
     if not adminNickname:
         return False
     if domain_full + '/users/' + adminNickname + '/' in postId:
@@ -1176,7 +1176,7 @@ def removeAccount(base_dir: str, nickname: str,
     """Removes an account
     """
     # Don't remove the admin
-    adminNickname = getConfigParam(base_dir, 'admin')
+    adminNickname = get_config_param(base_dir, 'admin')
     if not adminNickname:
         return False
     if nickname == adminNickname:

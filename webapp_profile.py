@@ -23,7 +23,7 @@ from utils import getDomainFromActor
 from utils import isSystemAccount
 from utils import removeHtml
 from utils import loadJson
-from utils import getConfigParam
+from utils import get_config_param
 from utils import getImageFormats
 from utils import acct_dir
 from utils import getSupportedLanguages
@@ -356,7 +356,7 @@ def htmlProfileAfterSearch(cssCache: {},
                 break
 
     instanceTitle = \
-        getConfigParam(base_dir, 'instanceTitle')
+        get_config_param(base_dir, 'instanceTitle')
     return htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None) + \
         profileStr + htmlFooter()
 
@@ -1016,7 +1016,7 @@ def htmlProfile(signing_priv_key_pem: str,
     profileStr += '</div>'
 
     instanceTitle = \
-        getConfigParam(base_dir, 'instanceTitle')
+        get_config_param(base_dir, 'instanceTitle')
     profileStr = \
         htmlHeaderWithPersonMarkup(cssFilename, instanceTitle,
                                    profile_json, city,
@@ -1242,7 +1242,7 @@ def _htmlThemesDropdown(base_dir: str, translate: {}) -> str:
         themesDropdown += \
             editCheckBox(translate['Remove the custom font'],
                          'removeCustomFont', False)
-    theme_name = getConfigParam(base_dir, 'theme')
+    theme_name = get_config_param(base_dir, 'theme')
     themesDropdown = \
         themesDropdown.replace('<option value="' + theme_name + '">',
                                '<option value="' + theme_name +
@@ -1257,7 +1257,7 @@ def _htmlEditProfileGraphicDesign(base_dir: str, translate: {}) -> str:
 
     graphicsStr = beginEditSection(translate['Graphic Design'])
 
-    low_bandwidth = getConfigParam(base_dir, 'low_bandwidth')
+    low_bandwidth = get_config_param(base_dir, 'low_bandwidth')
     if not low_bandwidth:
         low_bandwidth = False
     graphicsStr += _htmlThemesDropdown(base_dir, translate)
@@ -1290,7 +1290,7 @@ def _htmlEditProfileTwitter(base_dir: str, translate: {},
     twitterStr += \
         editCheckBox(translate['Remove Twitter posts'],
                      'removeTwitter', removeTwitter)
-    twitter_replacement_domain = getConfigParam(base_dir, "twitterdomain")
+    twitter_replacement_domain = get_config_param(base_dir, "twitterdomain")
     if not twitter_replacement_domain:
         twitter_replacement_domain = ''
     twitterStr += \
@@ -1311,15 +1311,15 @@ def _htmlEditProfileInstance(base_dir: str, translate: {},
 
     # Instance details section
     instanceDescription = \
-        getConfigParam(base_dir, 'instanceDescription')
+        get_config_param(base_dir, 'instanceDescription')
     customSubmitText = \
-        getConfigParam(base_dir, 'customSubmitText')
+        get_config_param(base_dir, 'customSubmitText')
     instanceDescriptionShort = \
-        getConfigParam(base_dir, 'instanceDescriptionShort')
+        get_config_param(base_dir, 'instanceDescriptionShort')
     instanceTitle = \
-        getConfigParam(base_dir, 'instanceTitle')
+        get_config_param(base_dir, 'instanceTitle')
     content_license_url = \
-        getConfigParam(base_dir, 'content_license_url')
+        get_config_param(base_dir, 'content_license_url')
     if not content_license_url:
         content_license_url = 'https://creativecommons.org/licenses/by/4.0'
 
@@ -1355,7 +1355,7 @@ def _htmlEditProfileInstance(base_dir: str, translate: {},
 
     nodeInfoStr = \
         translate['Show numbers of accounts within instance metadata']
-    if getConfigParam(base_dir, "show_node_info_accounts"):
+    if get_config_param(base_dir, "show_node_info_accounts"):
         instanceStr += \
             editCheckBox(nodeInfoStr, 'show_node_info_accounts', True)
     else:
@@ -1364,14 +1364,14 @@ def _htmlEditProfileInstance(base_dir: str, translate: {},
 
     nodeInfoStr = \
         translate['Show version number within instance metadata']
-    if getConfigParam(base_dir, "show_node_info_version"):
+    if get_config_param(base_dir, "show_node_info_version"):
         instanceStr += \
             editCheckBox(nodeInfoStr, 'show_node_info_version', True)
     else:
         instanceStr += \
             editCheckBox(nodeInfoStr, 'show_node_info_version', False)
 
-    if getConfigParam(base_dir, "verify_all_signatures"):
+    if get_config_param(base_dir, "verify_all_signatures"):
         instanceStr += \
             editCheckBox(translate['Verify all signatures'],
                          'verifyallsignatures', True)
@@ -1381,7 +1381,7 @@ def _htmlEditProfileInstance(base_dir: str, translate: {},
                          'verifyallsignatures', False)
 
     instanceStr += translate['Enabling broch mode'] + '<br>\n'
-    if getConfigParam(base_dir, "broch_mode"):
+    if get_config_param(base_dir, "broch_mode"):
         instanceStr += \
             editCheckBox(translate['Broch mode'], 'broch_mode', True)
     else:
@@ -1467,7 +1467,7 @@ def _htmlEditProfileInstance(base_dir: str, translate: {},
                      peertube_instancesStr, 200, '', False)
     peertubeStr += \
         '      <br>\n'
-    yt_replace_domain = getConfigParam(base_dir, "youtubedomain")
+    yt_replace_domain = get_config_param(base_dir, "youtubedomain")
     if not yt_replace_domain:
         yt_replace_domain = ''
     peertubeStr += \
@@ -1475,8 +1475,8 @@ def _htmlEditProfileInstance(base_dir: str, translate: {},
                       'ytdomain', yt_replace_domain)
     peertubeStr += endEditSection()
 
-    libretranslateUrl = getConfigParam(base_dir, 'libretranslateUrl')
-    libretranslateApiKey = getConfigParam(base_dir, 'libretranslateApiKey')
+    libretranslateUrl = get_config_param(base_dir, 'libretranslateUrl')
+    libretranslateApiKey = get_config_param(base_dir, 'libretranslateApiKey')
     libretranslateStr = \
         _htmlEditProfileLibreTranslate(translate,
                                        libretranslateUrl,
@@ -1581,7 +1581,7 @@ def _htmlEditProfileSharedItems(base_dir: str, nickname: str, domain: str,
     """
     sharedItemsStr = ''
     shared_items_federated_domainsStr = \
-        getConfigParam(base_dir, 'shared_items_federated_domains')
+        get_config_param(base_dir, 'shared_items_federated_domains')
     if shared_items_federated_domainsStr:
         shared_items_federated_domainsList = \
             shared_items_federated_domainsStr.split(',')
@@ -2178,19 +2178,19 @@ def htmlEditProfile(cssCache: {}, translate: {}, base_dir: str, path: str,
     if os.path.isfile(accountDir + '/.hideReactionButton'):
         hideReactionButton = 'checked'
 
-    media_instance = getConfigParam(base_dir, "media_instance")
+    media_instance = get_config_param(base_dir, "media_instance")
     if media_instance:
         if media_instance is True:
             media_instanceStr = 'checked'
             blogs_instanceStr = news_instanceStr = ''
 
-    news_instance = getConfigParam(base_dir, "news_instance")
+    news_instance = get_config_param(base_dir, "news_instance")
     if news_instance:
         if news_instance is True:
             news_instanceStr = 'checked'
             blogs_instanceStr = media_instanceStr = ''
 
-    blogs_instance = getConfigParam(base_dir, "blogs_instance")
+    blogs_instance = get_config_param(base_dir, "blogs_instance")
     if blogs_instance:
         if blogs_instance is True:
             blogs_instanceStr = 'checked'
@@ -2208,7 +2208,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, base_dir: str, path: str,
     graphicsStr = ''
     sharesFederationStr = ''
 
-    adminNickname = getConfigParam(base_dir, 'admin')
+    adminNickname = get_config_param(base_dir, 'admin')
 
     if isArtist(base_dir, nickname) or \
        path.startswith('/users/' + str(adminNickname) + '/'):
@@ -2232,7 +2232,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, base_dir: str, path: str,
                                          news_instanceStr)
             systemMonitorStr = _htmlSystemMonitor(nickname, translate)
 
-    instanceTitle = getConfigParam(base_dir, 'instanceTitle')
+    instanceTitle = get_config_param(base_dir, 'instanceTitle')
     editProfileForm = \
         htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
 

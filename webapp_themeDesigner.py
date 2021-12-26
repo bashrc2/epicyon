@@ -9,7 +9,7 @@ __module_group__ = "Web Interface"
 
 import os
 from utils import loadJson
-from utils import getConfigParam
+from utils import get_config_param
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from webapp_utils import getBannerFile
@@ -191,7 +191,7 @@ def htmlThemeDesigner(cssCache: {}, base_dir: str,
         cssFilename = base_dir + '/epicyon.css'
 
     instanceTitle = \
-        getConfigParam(base_dir, 'instanceTitle')
+        get_config_param(base_dir, 'instanceTitle')
     themeForm = \
         htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     bannerFile, bannerFilename = \

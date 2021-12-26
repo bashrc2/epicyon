@@ -8,7 +8,7 @@ __status__ = "Production"
 __module_group__ = "Web Interface Columns"
 
 import os
-from utils import getConfigParam
+from utils import get_config_param
 from utils import getNicknameFromActor
 from utils import is_editor
 from utils import isArtist
@@ -377,7 +377,7 @@ def htmlLinksMobile(cssCache: {}, base_dir: str,
     domain = removeDomainPort(domain_full)
 
     instanceTitle = \
-        getConfigParam(base_dir, 'instanceTitle')
+        get_config_param(base_dir, 'instanceTitle')
     htmlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     bannerFile, bannerFilename = \
         getBannerFile(base_dir, nickname, domain, theme)
@@ -441,7 +441,7 @@ def htmlEditLinks(cssCache: {}, translate: {}, base_dir: str, path: str,
         getBannerFile(base_dir, nickname, domain, theme)
 
     instanceTitle = \
-        getConfigParam(base_dir, 'instanceTitle')
+        get_config_param(base_dir, 'instanceTitle')
     editLinksForm = \
         htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
 
@@ -495,7 +495,7 @@ def htmlEditLinks(cssCache: {}, translate: {}, base_dir: str, path: str,
         '</div>'
 
     # the admin can edit terms of service and about text
-    adminNickname = getConfigParam(base_dir, 'admin')
+    adminNickname = get_config_param(base_dir, 'admin')
     if adminNickname:
         if nickname == adminNickname:
             aboutFilename = base_dir + '/accounts/about.md'

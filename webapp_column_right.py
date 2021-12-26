@@ -19,7 +19,7 @@ from utils import loadJson
 from utils import votesOnNewswireItem
 from utils import getNicknameFromActor
 from utils import is_editor
-from utils import getConfigParam
+from utils import get_config_param
 from utils import removeDomainPort
 from utils import acct_dir
 from posts import isModerator
@@ -364,7 +364,7 @@ def htmlCitations(base_dir: str, nickname: str, domain: str,
         cssFilename = base_dir + '/epicyon.css'
 
     instanceTitle = \
-        getConfigParam(base_dir, 'instanceTitle')
+        get_config_param(base_dir, 'instanceTitle')
     htmlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
 
     # top banner
@@ -479,7 +479,7 @@ def htmlNewswireMobile(cssCache: {}, base_dir: str, nickname: str,
     showPublishButton = editor
 
     instanceTitle = \
-        getConfigParam(base_dir, 'instanceTitle')
+        get_config_param(base_dir, 'instanceTitle')
     htmlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
 
     bannerFile, bannerFilename = \
@@ -546,7 +546,7 @@ def htmlEditNewswire(cssCache: {}, translate: {}, base_dir: str, path: str,
         getBannerFile(base_dir, nickname, domain, theme)
 
     instanceTitle = \
-        getConfigParam(base_dir, 'instanceTitle')
+        get_config_param(base_dir, 'instanceTitle')
     editNewswireForm = \
         htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
 
@@ -671,7 +671,7 @@ def htmlEditNewsPost(cssCache: {}, translate: {}, base_dir: str, path: str,
         cssFilename = base_dir + '/links.css'
 
     instanceTitle = \
-        getConfigParam(base_dir, 'instanceTitle')
+        get_config_param(base_dir, 'instanceTitle')
     editNewsPostForm = \
         htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     editNewsPostForm += \

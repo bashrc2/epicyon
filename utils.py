@@ -292,7 +292,7 @@ def is_editor(base_dir: str, nickname: str) -> bool:
     editorsFile = base_dir + '/accounts/editors.txt'
 
     if not os.path.isfile(editorsFile):
-        adminName = getConfigParam(base_dir, 'admin')
+        adminName = get_config_param(base_dir, 'admin')
         if not adminName:
             return False
         if adminName == nickname:
@@ -302,7 +302,7 @@ def is_editor(base_dir: str, nickname: str) -> bool:
     with open(editorsFile, 'r') as f:
         lines = f.readlines()
         if len(lines) == 0:
-            adminName = getConfigParam(base_dir, 'admin')
+            adminName = get_config_param(base_dir, 'admin')
             if not adminName:
                 return False
             if adminName == nickname:
@@ -320,7 +320,7 @@ def isArtist(base_dir: str, nickname: str) -> bool:
     artistsFile = base_dir + '/accounts/artists.txt'
 
     if not os.path.isfile(artistsFile):
-        adminName = getConfigParam(base_dir, 'admin')
+        adminName = get_config_param(base_dir, 'admin')
         if not adminName:
             return False
         if adminName == nickname:
@@ -330,7 +330,7 @@ def isArtist(base_dir: str, nickname: str) -> bool:
     with open(artistsFile, 'r') as f:
         lines = f.readlines()
         if len(lines) == 0:
-            adminName = getConfigParam(base_dir, 'admin')
+            adminName = get_config_param(base_dir, 'admin')
             if not adminName:
                 return False
             if adminName == nickname:
@@ -516,7 +516,7 @@ def setConfigParam(base_dir: str, variableName: str, variableValue) -> None:
     saveJson(configJson, configFilename)
 
 
-def getConfigParam(base_dir: str, variableName: str):
+def get_config_param(base_dir: str, variableName: str):
     """Gets a configuration value
     """
     _createConfig(base_dir)
@@ -531,7 +531,7 @@ def getConfigParam(base_dir: str, variableName: str):
 def isSuspended(base_dir: str, nickname: str) -> bool:
     """Returns true if the given nickname is suspended
     """
-    adminNickname = getConfigParam(base_dir, 'admin')
+    adminNickname = get_config_param(base_dir, 'admin')
     if not adminNickname:
         return False
     if nickname == adminNickname:

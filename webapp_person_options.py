@@ -13,7 +13,7 @@ from petnames import getPetName
 from person import isPersonSnoozed
 from posts import isModerator
 from utils import get_full_domain
-from utils import getConfigParam
+from utils import get_config_param
 from utils import is_dormant
 from utils import removeHtml
 from utils import getDomainFromActor
@@ -129,7 +129,7 @@ def htmlPersonOptions(defaultTimeline: str,
             translate['Donate'] + '</button></a>\n'
 
     instanceTitle = \
-        getConfigParam(base_dir, 'instanceTitle')
+        get_config_param(base_dir, 'instanceTitle')
     optionsStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     optionsStr += htmlKeyboardNavigation(text_mode_banner, {}, {})
     optionsStr += '<br><br>\n'
@@ -289,7 +289,7 @@ def htmlPersonOptions(defaultTimeline: str,
             # checkbox for permission to post to newswire
             newswirePostsPermitted = False
             if optionsDomainFull == domain_full:
-                adminNickname = getConfigParam(base_dir, 'admin')
+                adminNickname = get_config_param(base_dir, 'admin')
                 if (nickname == adminNickname or
                     (isModerator(base_dir, nickname) and
                      not isModerator(base_dir, optionsNickname))):
@@ -330,7 +330,7 @@ def htmlPersonOptions(defaultTimeline: str,
 
             # checkbox for permission to post to featured articles
             if news_instance and optionsDomainFull == domain_full:
-                adminNickname = getConfigParam(base_dir, 'admin')
+                adminNickname = get_config_param(base_dir, 'admin')
                 if (nickname == adminNickname or
                     (isModerator(base_dir, nickname) and
                      not isModerator(base_dir, optionsNickname))):

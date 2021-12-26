@@ -15,7 +15,7 @@ from utils import is_editor
 from utils import loadJson
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
-from utils import getConfigParam
+from utils import get_config_param
 from utils import local_actor_url
 from posts import downloadFollowCollection
 from posts import getPublicPostInfo
@@ -100,7 +100,7 @@ def htmlAccountInfo(cssCache: {}, translate: {},
         cssFilename = base_dir + '/epicyon.css'
 
     instanceTitle = \
-        getConfigParam(base_dir, 'instanceTitle')
+        get_config_param(base_dir, 'instanceTitle')
     infoForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
 
     searchNickname = getNicknameFromActor(searchHandle)
@@ -287,7 +287,7 @@ def htmlModerationInfo(cssCache: {}, translate: {},
         cssFilename = base_dir + '/epicyon.css'
 
     instanceTitle = \
-        getConfigParam(base_dir, 'instanceTitle')
+        get_config_param(base_dir, 'instanceTitle')
     infoForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
 
     infoForm += \

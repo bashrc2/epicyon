@@ -61,7 +61,7 @@ from utils import validNickname
 from utils import locatePost
 from utils import loadJson
 from utils import saveJson
-from utils import getConfigParam
+from utils import get_config_param
 from utils import locateNewsVotes
 from utils import locateNewsArrival
 from utils import votesOnNewswireItem
@@ -96,7 +96,7 @@ def isModerator(base_dir: str, nickname: str) -> bool:
     moderatorsFile = base_dir + '/accounts/moderators.txt'
 
     if not os.path.isfile(moderatorsFile):
-        adminName = getConfigParam(base_dir, 'admin')
+        adminName = get_config_param(base_dir, 'admin')
         if not adminName:
             return False
         if adminName == nickname:
@@ -106,7 +106,7 @@ def isModerator(base_dir: str, nickname: str) -> bool:
     with open(moderatorsFile, 'r') as f:
         lines = f.readlines()
         if len(lines) == 0:
-            adminName = getConfigParam(base_dir, 'admin')
+            adminName = get_config_param(base_dir, 'admin')
             if not adminName:
                 return False
             if adminName == nickname:
@@ -2153,7 +2153,7 @@ def createReportPost(base_dir: str,
                             moderatorsList.append(moderatorActor)
     if len(moderatorsList) == 0:
         # if there are no moderators then the admin becomes the moderator
-        adminNickname = getConfigParam(base_dir, 'admin')
+        adminNickname = get_config_param(base_dir, 'admin')
         if adminNickname:
             localActor = \
                 local_actor_url(http_prefix, adminNickname, domain_full)

@@ -25,7 +25,7 @@ from session import createSession
 from utils import hasObjectStringType
 from utils import dateStringToSeconds
 from utils import dateSecondsToString
-from utils import getConfigParam
+from utils import get_config_param
 from utils import get_full_domain
 from utils import validNickname
 from utils import loadJson
@@ -1711,7 +1711,7 @@ def runFederatedSharesDaemon(base_dir: str, httpd, http_prefix: str,
     _generateNextSharesTokenUpdate(base_dir, minDays, maxDays)
     while True:
         shared_items_federated_domainsStr = \
-            getConfigParam(base_dir, 'shared_items_federated_domains')
+            get_config_param(base_dir, 'shared_items_federated_domains')
         if not shared_items_federated_domainsStr:
             time.sleep(fileCheckIntervalSec)
             continue

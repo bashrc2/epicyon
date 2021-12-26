@@ -10,7 +10,7 @@ __module_group__ = "Web Interface"
 import os
 from datetime import datetime
 from utils import getNicknameFromActor
-from utils import getConfigParam
+from utils import get_config_param
 from categories import getHashtagCategories
 from categories import getHashtagCategory
 from webapp_utils import setCustomBackground
@@ -208,7 +208,7 @@ def htmlSearchHashtagCategory(cssCache: {}, translate: {},
         cssFilename = base_dir + '/search.css'
 
     instanceTitle = \
-        getConfigParam(base_dir, 'instanceTitle')
+        get_config_param(base_dir, 'instanceTitle')
     htmlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
 
     # show a banner above the search box

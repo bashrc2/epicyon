@@ -9,7 +9,7 @@ __module_group__ = "API"
 
 import os
 from utils import loadJson
-from utils import getConfigParam
+from utils import get_config_param
 from utils import acct_dir
 from metadata import metaDataInstance
 
@@ -196,17 +196,16 @@ def mastoApiV1Response(path: str, callingDomain: str,
         sendJsonStr = \
             'masto API custom emojis sent ' + path + callingInfo
 
-    adminNickname = getConfigParam(base_dir, 'admin')
+    adminNickname = get_config_param(base_dir, 'admin')
     if adminNickname and path == '/api/v1/instance':
         instanceDescriptionShort = \
-            getConfigParam(base_dir,
-                           'instanceDescriptionShort')
+            get_config_param(base_dir, 'instanceDescriptionShort')
         if not instanceDescriptionShort:
             instanceDescriptionShort = \
                 translate['Yet another Epicyon Instance']
-        instanceDescription = getConfigParam(base_dir,
-                                             'instanceDescription')
-        instanceTitle = getConfigParam(base_dir, 'instanceTitle')
+        instanceDescription = \
+            get_config_param(base_dir, 'instanceDescription')
+        instanceTitle = get_config_param(base_dir, 'instanceTitle')
 
         if callingDomain.endswith('.onion') and onion_domain:
             domain_full = onion_domain
