@@ -62,7 +62,7 @@ from utils import get_actor_languages_list
 from utils import get_category_types
 from utils import get_supported_languages
 from utils import setConfigParam
-from utils import isGroupActor
+from utils import is_group_actor
 from utils import dateStringToSeconds
 from utils import dateSecondsToString
 from utils import validPassword
@@ -1556,7 +1556,7 @@ def testFollowBetweenServers(base_dir: str) -> None:
     assert 'bob@' + bobDomain in open(aliceDir + '/accounts/alice@' +
                                       aliceDomain +
                                       '/followingCalendar.txt').read()
-    assert not isGroupActor(aliceDir, bobActor, alicePersonCache)
+    assert not is_group_actor(aliceDir, bobActor, alicePersonCache)
     assert not is_group_account(aliceDir, 'alice', aliceDomain)
 
     print('\n\n*********************************************************')
@@ -1773,7 +1773,7 @@ def testSharedItemsFederation(base_dir: str) -> None:
     assert 'bob@' + bobDomain in open(aliceDir + '/accounts/alice@' +
                                       aliceDomain +
                                       '/followingCalendar.txt').read()
-    assert not isGroupActor(aliceDir, bobActor, alicePersonCache)
+    assert not is_group_actor(aliceDir, bobActor, alicePersonCache)
     assert not is_group_account(bobDir, 'bob', bobDomain)
 
     print('\n\n*********************************************************')
@@ -2230,7 +2230,7 @@ def testGroupFollow(base_dir: str) -> None:
     if '!testgroup' not in followingStr:
         print('Alice following.txt does not contain !testgroup@' +
               testgroupDomain + ':' + str(testgroupPort))
-    assert isGroupActor(aliceDir, testgroupActor, alicePersonCache)
+    assert is_group_actor(aliceDir, testgroupActor, alicePersonCache)
     assert not is_group_account(aliceDir, 'alice', aliceDomain)
     assert is_group_account(testgroupDir, 'testgroup', testgroupDomain)
     assert '!testgroup' in followingStr
@@ -2306,7 +2306,7 @@ def testGroupFollow(base_dir: str) -> None:
     if '!testgroup' not in followingStr:
         print('Bob following.txt does not contain !testgroup@' +
               testgroupDomain + ':' + str(testgroupPort))
-    assert isGroupActor(bobDir, testgroupActor, bobPersonCache)
+    assert is_group_actor(bobDir, testgroupActor, bobPersonCache)
     assert '!testgroup' in followingStr
     assert testgroupHandle in open(bobFollowingFilename).read()
     assert testgroupHandle in open(bobFollowingCalendarFilename).read()

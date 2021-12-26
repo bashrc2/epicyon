@@ -3001,11 +3001,11 @@ def hasGroupType(base_dir: str, actor: str, person_cache: {},
                 print('grpPath ' + grpPath + ' in ' + actor)
             return True
     # is there a cached actor which can be examined for Group type?
-    return isGroupActor(base_dir, actor, person_cache, debug)
+    return is_group_actor(base_dir, actor, person_cache, debug)
 
 
-def isGroupActor(base_dir: str, actor: str, person_cache: {},
-                 debug: bool = False) -> bool:
+def is_group_actor(base_dir: str, actor: str, person_cache: {},
+                   debug: bool = False) -> bool:
     """Is the given actor a group?
     """
     if person_cache:
@@ -3019,15 +3019,15 @@ def isGroupActor(base_dir: str, actor: str, person_cache: {},
                 return False
     if debug:
         print('Actor ' + actor + ' not in cache')
-    cachedActorFilename = \
+    cached_actor_filename = \
         base_dir + '/cache/actors/' + (actor.replace('/', '#')) + '.json'
-    if not os.path.isfile(cachedActorFilename):
+    if not os.path.isfile(cached_actor_filename):
         if debug:
-            print('Cached actor file not found ' + cachedActorFilename)
+            print('Cached actor file not found ' + cached_actor_filename)
         return False
-    if '"type": "Group"' in open(cachedActorFilename).read():
+    if '"type": "Group"' in open(cached_actor_filename).read():
         if debug:
-            print('Group type found in ' + cachedActorFilename)
+            print('Group type found in ' + cached_actor_filename)
         return True
     return False
 
