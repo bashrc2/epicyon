@@ -126,18 +126,18 @@ def is_featured_writer(base_dir: str, nickname: str, domain: str) -> bool:
     """Is the given account a featured writer, appearing in the features
     timeline on news instances?
     """
-    featuresBlockedFilename = \
+    features_blocked_filename = \
         acct_dir(base_dir, nickname, domain) + '/.nofeatures'
-    return not os.path.isfile(featuresBlockedFilename)
+    return not os.path.isfile(features_blocked_filename)
 
 
-def refreshNewswire(base_dir: str):
+def refresh_newswire(base_dir: str):
     """Causes the newswire to be updates after a change to user accounts
     """
-    refreshNewswireFilename = base_dir + '/accounts/.refresh_newswire'
-    if os.path.isfile(refreshNewswireFilename):
+    refresh_newswireFilename = base_dir + '/accounts/.refresh_newswire'
+    if os.path.isfile(refresh_newswireFilename):
         return
-    with open(refreshNewswireFilename, 'w+') as refreshFile:
+    with open(refresh_newswireFilename, 'w+') as refreshFile:
         refreshFile.write('\n')
 
 

@@ -50,7 +50,7 @@ from utils import loadJson
 from utils import saveJson
 from utils import setConfigParam
 from utils import getConfigParam
-from utils import refreshNewswire
+from utils import refresh_newswire
 from utils import getProtocolPrefixes
 from utils import hasUsersPath
 from utils import getImageExtensions
@@ -1238,7 +1238,7 @@ def removeAccount(base_dir: str, nickname: str,
         shutil.rmtree(base_dir + '/sharefilesdeactivated/' + nickname,
                       ignore_errors=False, onerror=None)
 
-    refreshNewswire(base_dir)
+    refresh_newswire(base_dir)
 
     return True
 
@@ -1270,7 +1270,7 @@ def deactivateAccount(base_dir: str, nickname: str, domain: str) -> bool:
         shutil.move(base_dir + '/sharefiles/' + nickname,
                     deactivatedSharefilesDir + '/' + nickname)
 
-    refreshNewswire(base_dir)
+    refresh_newswire(base_dir)
 
     return os.path.isdir(deactivatedDir + '/' + nickname + '@' + domain)
 
@@ -1298,7 +1298,7 @@ def activateAccount(base_dir: str, nickname: str, domain: str) -> None:
             shutil.move(deactivatedSharefilesDir + '/' + nickname,
                         base_dir + '/sharefiles/' + nickname)
 
-    refreshNewswire(base_dir)
+    refresh_newswire(base_dir)
 
 
 def isPersonSnoozed(base_dir: str, nickname: str, domain: str,

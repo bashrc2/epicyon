@@ -301,7 +301,7 @@ from utils import loadJson
 from utils import saveJson
 from utils import isSuspended
 from utils import dangerousMarkup
-from utils import refreshNewswire
+from utils import refresh_newswire
 from utils import isImageFile
 from utils import hasGroupType
 from manualapprove import manualDenyFollowRequestThread
@@ -2502,7 +2502,7 @@ class PubServer(BaseHTTPRequestHandler):
                         except OSError:
                             print('EX: _personOptions unable to delete ' +
                                   newswireBlockedFilename)
-                        refreshNewswire(self.server.base_dir)
+                        refresh_newswire(self.server.base_dir)
                 else:
                     if os.path.isdir(accountDir):
                         nwFilename = newswireBlockedFilename
@@ -2515,7 +2515,7 @@ class PubServer(BaseHTTPRequestHandler):
                             print('EX: unable to write ' + nwFilename +
                                   ' ' + str(ex))
                         if nwWritten:
-                            refreshNewswire(self.server.base_dir)
+                            refresh_newswire(self.server.base_dir)
             usersPathStr = \
                 usersPath + '/' + self.server.defaultTimeline + \
                 '?page=' + str(pageNumber)
@@ -2548,7 +2548,7 @@ class PubServer(BaseHTTPRequestHandler):
                         except OSError:
                             print('EX: _personOptions unable to delete ' +
                                   featuresBlockedFilename)
-                        refreshNewswire(self.server.base_dir)
+                        refresh_newswire(self.server.base_dir)
                 else:
                     if os.path.isdir(accountDir):
                         featFilename = featuresBlockedFilename
@@ -2561,7 +2561,7 @@ class PubServer(BaseHTTPRequestHandler):
                             print('EX: unable to write ' + featFilename +
                                   ' ' + str(ex))
                         if featWritten:
-                            refreshNewswire(self.server.base_dir)
+                            refresh_newswire(self.server.base_dir)
             usersPathStr = \
                 usersPath + '/' + self.server.defaultTimeline + \
                 '?page=' + str(pageNumber)
@@ -16729,7 +16729,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if self._postToOutbox(message_json,
                                           self.server.project_version,
                                           nickname):
-                        refreshNewswire(self.server.base_dir)
+                        refresh_newswire(self.server.base_dir)
                         populateReplies(self.server.base_dir,
                                         self.server.http_prefix,
                                         self.server.domain_full,
