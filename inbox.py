@@ -36,7 +36,7 @@ from utils import has_object_dict
 from utils import dmAllowedFromDomain
 from utils import isRecentPost
 from utils import getConfigParam
-from utils import hasUsersPath
+from utils import has_users_path
 from utils import validPostDate
 from utils import getFullDomain
 from utils import removeIdEnding
@@ -746,7 +746,7 @@ def _receiveUndoFollow(session, base_dir: str, http_prefix: str,
         if debug:
             print('DEBUG: follow request has no actor within object')
         return False
-    if not hasUsersPath(message_json['object']['actor']):
+    if not has_users_path(message_json['object']['actor']):
         if debug:
             print('DEBUG: "users" or "profile" missing ' +
                   'from actor within object')
@@ -807,7 +807,7 @@ def _receiveUndo(session, base_dir: str, http_prefix: str,
         print('DEBUG: Undo activity received')
     if not hasActor(message_json, debug):
         return False
-    if not hasUsersPath(message_json['actor']):
+    if not has_users_path(message_json['actor']):
         if debug:
             print('DEBUG: "users" or "profile" missing from actor')
         return False
@@ -953,7 +953,7 @@ def _receiveUpdate(recentPostsCache: {}, session, base_dir: str,
         return False
     if not hasObjectStringType(message_json, debug):
         return False
-    if not hasUsersPath(message_json['actor']):
+    if not has_users_path(message_json['actor']):
         if debug:
             print('DEBUG: "users" or "profile" missing from actor in ' +
                   message_json['type'])
@@ -1021,7 +1021,7 @@ def _receiveLike(recentPostsCache: {},
         if debug:
             print('DEBUG: ' + message_json['type'] + ' has no "to" list')
         return False
-    if not hasUsersPath(message_json['actor']):
+    if not has_users_path(message_json['actor']):
         if debug:
             print('DEBUG: "users" or "profile" missing from actor in ' +
                   message_json['type'])
@@ -1143,7 +1143,7 @@ def _receiveUndoLike(recentPostsCache: {},
         return False
     if not hasObjectStringObject(message_json, debug):
         return False
-    if not hasUsersPath(message_json['actor']):
+    if not has_users_path(message_json['actor']):
         if debug:
             print('DEBUG: "users" or "profile" missing from actor in ' +
                   message_json['type'] + ' like')
@@ -1267,7 +1267,7 @@ def _receiveReaction(recentPostsCache: {},
         print('_receiveReaction: Invalid emoji reaction: "' +
               message_json['content'] + '" from ' + message_json['actor'])
         return False
-    if not hasUsersPath(message_json['actor']):
+    if not has_users_path(message_json['actor']):
         if debug:
             print('DEBUG: "users" or "profile" missing from actor in ' +
                   message_json['type'])
@@ -1412,7 +1412,7 @@ def _receiveUndoReaction(recentPostsCache: {},
         if debug:
             print('DEBUG: ' + message_json['type'] + ' content is not string')
         return False
-    if not hasUsersPath(message_json['actor']):
+    if not has_users_path(message_json['actor']):
         if debug:
             print('DEBUG: "users" or "profile" missing from actor in ' +
                   message_json['type'] + ' reaction')
@@ -1753,7 +1753,7 @@ def _receiveDelete(session, handle: str, isGroup: bool, base_dir: str,
         if debug:
             print('DEBUG: ' + message_json['type'] + ' has no "to" list')
         return False
-    if not hasUsersPath(message_json['actor']):
+    if not has_users_path(message_json['actor']):
         if debug:
             print('DEBUG: ' +
                   '"users" or "profile" missing from actor in ' +
@@ -1835,7 +1835,7 @@ def _receiveAnnounce(recentPostsCache: {},
         if debug:
             print('DEBUG: ' + message_json['type'] + ' has no "to" list')
         return False
-    if not hasUsersPath(message_json['actor']):
+    if not has_users_path(message_json['actor']):
         if debug:
             print('DEBUG: ' +
                   '"users" or "profile" missing from actor in ' +
@@ -1845,7 +1845,7 @@ def _receiveAnnounce(recentPostsCache: {},
         if debug:
             print('DEBUG: self-boost rejected')
         return False
-    if not hasUsersPath(message_json['object']):
+    if not has_users_path(message_json['object']):
         if debug:
             print('DEBUG: ' +
                   '"users", "channel" or "profile" missing in ' +
@@ -1984,7 +1984,7 @@ def _receiveAnnounce(recentPostsCache: {},
                     if isinstance(attrib, str):
                         lookupActor = attrib
         if lookupActor:
-            if hasUsersPath(lookupActor):
+            if has_users_path(lookupActor):
                 if '/statuses/' in lookupActor:
                     lookupActor = lookupActor.split('/statuses/')[0]
 
@@ -2048,7 +2048,7 @@ def _receiveUndoAnnounce(recentPostsCache: {},
         return False
     if message_json['object']['type'] != 'Announce':
         return False
-    if not hasUsersPath(message_json['actor']):
+    if not has_users_path(message_json['actor']):
         if debug:
             print('DEBUG: "users" or "profile" missing from actor in ' +
                   message_json['type'] + ' announce')
@@ -2318,7 +2318,7 @@ def _obtainAvatarForReplyPost(session, base_dir: str, http_prefix: str,
     if not isinstance(lookupActor, str):
         return
 
-    if not hasUsersPath(lookupActor):
+    if not has_users_path(lookupActor):
         return
 
     if '/statuses/' in lookupActor:
@@ -3868,7 +3868,7 @@ def _receiveFollowRequest(session, base_dir: str, http_prefix: str,
     print('Receiving follow request')
     if not hasActor(message_json, debug):
         return False
-    if not hasUsersPath(message_json['actor']):
+    if not has_users_path(message_json['actor']):
         if debug:
             print('DEBUG: users/profile/accounts/channel missing from actor')
         return False
@@ -3890,7 +3890,7 @@ def _receiveFollowRequest(session, base_dir: str, http_prefix: str,
                   'nickname. Assuming single user instance.')
     if not message_json.get('to'):
         message_json['to'] = message_json['object']
-    if not hasUsersPath(message_json['object']):
+    if not has_users_path(message_json['object']):
         if debug:
             print('DEBUG: users/profile/channel/accounts ' +
                   'not found within object')

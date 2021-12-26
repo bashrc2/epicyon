@@ -14,7 +14,7 @@ import os
 import secrets
 import datetime
 from utils import isSystemAccount
-from utils import hasUsersPath
+from utils import has_users_path
 
 
 def _hashPassword(password: str) -> str:
@@ -92,7 +92,7 @@ def authorizeBasic(base_dir: str, path: str, authHeader: str,
             print('DEBUG: basic auth - Authorisation header does not ' +
                   'contain a space character')
         return False
-    if not hasUsersPath(path):
+    if not has_users_path(path):
         if debug:
             print('DEBUG: basic auth - ' +
                   'path for Authorization does not contain a user')

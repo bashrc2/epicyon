@@ -11,7 +11,7 @@ import os
 from datetime import datetime
 from utils import hasObjectString
 from utils import removeDomainPort
-from utils import hasUsersPath
+from utils import has_users_path
 from utils import getFullDomain
 from utils import removeIdEnding
 from utils import getNicknameFromActor
@@ -143,7 +143,7 @@ def outboxDelete(base_dir: str, http_prefix: str,
         if debug:
             print('DEBUG: c2s delete object is not a status')
         return
-    if not hasUsersPath(messageId):
+    if not has_users_path(messageId):
         if debug:
             print('DEBUG: c2s delete object has no nickname')
         return

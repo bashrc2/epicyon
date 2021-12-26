@@ -191,7 +191,7 @@ def get_locked_account(actor_json: {}) -> bool:
     return False
 
 
-def hasUsersPath(pathStr: str) -> bool:
+def has_users_path(pathStr: str) -> bool:
     """Whether there is a /users/ path (or equivalent) in the given string
     """
     usersList = getUserPaths()

@@ -14,7 +14,7 @@ from utils import hasObjectStringObject
 from utils import hasObjectStringType
 from utils import removeDomainPort
 from utils import has_object_dict
-from utils import hasUsersPath
+from utils import has_users_path
 from utils import getFullDomain
 from utils import removeIdEnding
 from utils import urlPermitted
@@ -108,7 +108,7 @@ def _like(recentPostsCache: {},
         likedPostDomain, likedPostPort = getDomainFromActor(actorLiked)
         group_account = hasGroupType(base_dir, actorLiked, person_cache)
     else:
-        if hasUsersPath(objectUrl):
+        if has_users_path(objectUrl):
             likedPostNickname = getNicknameFromActor(objectUrl)
             likedPostDomain, likedPostPort = getDomainFromActor(objectUrl)
             if '/' + str(likedPostNickname) + '/' in objectUrl:

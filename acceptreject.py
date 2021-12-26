@@ -9,7 +9,7 @@ __module_group__ = "ActivityPub"
 
 import os
 from utils import hasObjectStringObject
-from utils import hasUsersPath
+from utils import has_users_path
 from utils import getFullDomain
 from utils import urlPermitted
 from utils import getDomainFromActor
@@ -196,7 +196,7 @@ def receiveAcceptReject(session, base_dir: str,
         return False
     if not hasActor(message_json, debug):
         return False
-    if not hasUsersPath(message_json['actor']):
+    if not has_users_path(message_json['actor']):
         if debug:
             print('DEBUG: "users" or "profile" missing from actor in ' +
                   message_json['type'] + '. Assuming single user instance.')

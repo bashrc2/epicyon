@@ -52,7 +52,7 @@ from utils import setConfigParam
 from utils import getConfigParam
 from utils import refresh_newswire
 from utils import getProtocolPrefixes
-from utils import hasUsersPath
+from utils import has_users_path
 from utils import getImageExtensions
 from utils import isImageFile
 from utils import acct_dir
@@ -1450,7 +1450,7 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
             group_account = True
         # format: https://domain/@nick
         originalHandle = handle
-        if not hasUsersPath(originalHandle):
+        if not has_users_path(originalHandle):
             if not quiet or debug:
                 print('getActorJson: Expected actor format: ' +
                       'https://domain/@nick or https://domain' +
@@ -1556,7 +1556,7 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
             if not quiet or debug:
                 print('getActorJson wfRequest error: ' +
                       str(wfRequest['errors']))
-            if hasUsersPath(handle):
+            if has_users_path(handle):
                 personUrl = originalActor
             else:
                 if debug:

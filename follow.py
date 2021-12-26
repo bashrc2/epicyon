@@ -12,7 +12,7 @@ import os
 from utils import hasObjectStringObject
 from utils import hasObjectStringType
 from utils import removeDomainPort
-from utils import hasUsersPath
+from utils import has_users_path
 from utils import getFullDomain
 from utils import getFollowersList
 from utils import validNickname
@@ -409,7 +409,7 @@ def _getNoOfFollows(base_dir: str, nickname: str, domain: str,
                 ctr += 1
             elif ((line.startswith('http') or
                    line.startswith('hyper')) and
-                  hasUsersPath(line)):
+                  has_users_path(line)):
                 ctr += 1
     return ctr
 
@@ -536,7 +536,7 @@ def getFollowingFeed(base_dir: str, domain: str, port: int, path: str,
                     following['orderedItems'].append(url)
             elif ((line.startswith('http') or
                    line.startswith('hyper')) and
-                  hasUsersPath(line)):
+                  has_users_path(line)):
                 # https://domain/users/nickname
                 pageCtr += 1
                 totalCtr += 1

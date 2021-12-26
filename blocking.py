@@ -22,7 +22,7 @@ from utils import loadJson
 from utils import saveJson
 from utils import fileLastModified
 from utils import setConfigParam
-from utils import hasUsersPath
+from utils import has_users_path
 from utils import getFullDomain
 from utils import removeIdEnding
 from utils import isEvil
@@ -437,7 +437,7 @@ def outboxBlock(base_dir: str, http_prefix: str,
         if debug:
             print('DEBUG: c2s block object is not a status')
         return False
-    if not hasUsersPath(messageId):
+    if not has_users_path(messageId):
         if debug:
             print('DEBUG: c2s block object has no nickname')
         return False
@@ -493,7 +493,7 @@ def outboxUndoBlock(base_dir: str, http_prefix: str,
         if debug:
             print('DEBUG: c2s undo block object is not a status')
         return
-    if not hasUsersPath(messageId):
+    if not has_users_path(messageId):
         if debug:
             print('DEBUG: c2s undo block object has no nickname')
         return
@@ -793,7 +793,7 @@ def outboxMute(base_dir: str, http_prefix: str,
         if debug:
             print('DEBUG: c2s mute object is not a status')
         return
-    if not hasUsersPath(messageId):
+    if not has_users_path(messageId):
         if debug:
             print('DEBUG: c2s mute object has no nickname')
         return
@@ -848,7 +848,7 @@ def outboxUndoMute(base_dir: str, http_prefix: str,
         if debug:
             print('DEBUG: c2s undo mute object is not a status')
         return
-    if not hasUsersPath(messageId):
+    if not has_users_path(messageId):
         if debug:
             print('DEBUG: c2s undo mute object has no nickname')
         return

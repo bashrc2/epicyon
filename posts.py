@@ -46,7 +46,7 @@ from utils import rejectPostId
 from utils import removeInvalidChars
 from utils import fileLastModified
 from utils import isPublicPost
-from utils import hasUsersPath
+from utils import has_users_path
 from utils import validPostDate
 from utils import getFullDomain
 from utils import getFollowersList
@@ -216,7 +216,7 @@ def getUserUrl(wfRequest: {}, sourceId: int, debug: bool) -> str:
         if link['type'] != 'application/activity+json':
             continue
         if '/@' not in link['href']:
-            if debug and not hasUsersPath(link['href']):
+            if debug and not has_users_path(link['href']):
                 print('getUserUrl webfinger activity+json ' +
                       'contains single user instance actor ' +
                       str(sourceId) + ' ' + str(link))
@@ -4636,7 +4636,7 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
                             base_dir, nickname, domain, postId,
                             recentPostsCache)
             return None
-        if not hasUsersPath(announcedJson['id']):
+        if not has_users_path(announcedJson['id']):
             _rejectAnnounce(announceFilename,
                             base_dir, nickname, domain, postId,
                             recentPostsCache)
@@ -5299,7 +5299,7 @@ def getOriginalPostFromAnnounceUrl(announceUrl: str, base_dir: str,
                     url = origPostId
     else:
         # we don't have the original post
-        if hasUsersPath(origPostId):
+        if has_users_path(origPostId):
             # get the actor from the original post url
             origNick = getNicknameFromActor(origPostId)
             origDomain, origPort = getDomainFromActor(origPostId)

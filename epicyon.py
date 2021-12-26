@@ -67,7 +67,7 @@ from auth import storeBasicCredentials
 from auth import createPassword
 from utils import removeDomainPort
 from utils import getPortFromDomain
-from utils import hasUsersPath
+from utils import has_users_path
 from utils import getFullDomain
 from utils import setConfigParam
 from utils import getConfigParam
@@ -2129,7 +2129,7 @@ if args.followers:
         for prefix in prefixes:
             args.followers = args.followers.replace(prefix, '')
         args.followers = args.followers.replace('/@', '/users/')
-        if not hasUsersPath(args.followers):
+        if not has_users_path(args.followers):
             print('Expected actor format: ' +
                   'https://domain/@nick or https://domain/users/nick')
             sys.exit()
@@ -2212,7 +2212,7 @@ if args.followers:
     personUrl = None
     if wfRequest.get('errors'):
         print('wfRequest error: ' + str(wfRequest['errors']))
-        if hasUsersPath(args.followers):
+        if has_users_path(args.followers):
             personUrl = originalActor
         else:
             sys.exit()

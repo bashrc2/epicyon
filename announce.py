@@ -11,7 +11,7 @@ from utils import hasObjectStringObject
 from utils import hasGroupType
 from utils import removeDomainPort
 from utils import removeIdEnding
-from utils import hasUsersPath
+from utils import has_users_path
 from utils import getFullDomain
 from utils import getStatusNumber
 from utils import createOutboxDir
@@ -164,7 +164,7 @@ def createAnnounce(session, base_dir: str, federation_list: [],
     announceDomain = None
     announcePort = None
     group_account = False
-    if hasUsersPath(objectUrl):
+    if has_users_path(objectUrl):
         announceNickname = getNicknameFromActor(objectUrl)
         announceDomain, announcePort = getDomainFromActor(objectUrl)
         if '/' + str(announceNickname) + '/' in objectUrl:

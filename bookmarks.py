@@ -12,7 +12,7 @@ from pprint import pprint
 from webfinger import webfingerHandle
 from auth import createBasicAuthHeader
 from utils import removeDomainPort
-from utils import hasUsersPath
+from utils import has_users_path
 from utils import getFullDomain
 from utils import removeIdEnding
 from utils import removePostFromCache
@@ -286,7 +286,7 @@ def bookmark(recentPostsCache: {},
         bookmarkedPostNickname = getNicknameFromActor(acBm)
         bookmarkedPostDomain, bookmarkedPostPort = getDomainFromActor(acBm)
     else:
-        if hasUsersPath(objectUrl):
+        if has_users_path(objectUrl):
             ou = objectUrl
             bookmarkedPostNickname = getNicknameFromActor(ou)
             bookmarkedPostDomain, bookmarkedPostPort = getDomainFromActor(ou)
@@ -350,7 +350,7 @@ def undoBookmark(recentPostsCache: {},
         bookmarkedPostNickname = getNicknameFromActor(acBm)
         bookmarkedPostDomain, bookmarkedPostPort = getDomainFromActor(acBm)
     else:
-        if hasUsersPath(objectUrl):
+        if has_users_path(objectUrl):
             ou = objectUrl
             bookmarkedPostNickname = getNicknameFromActor(ou)
             bookmarkedPostDomain, bookmarkedPostPort = getDomainFromActor(ou)

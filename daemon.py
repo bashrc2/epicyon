@@ -271,7 +271,7 @@ from utils import getLocalNetworkAddresses
 from utils import decodedHost
 from utils import isPublicPost
 from utils import get_locked_account
-from utils import hasUsersPath
+from utils import has_users_path
 from utils import getFullDomain
 from utils import removeHtml
 from utils import isEditor
@@ -3489,7 +3489,7 @@ class PubServer(BaseHTTPRequestHandler):
                     return
             elif ('@' in searchStr or
                   ('://' in searchStr and
-                   hasUsersPath(searchStr))):
+                   has_users_path(searchStr))):
                 if searchStr.endswith(':') or \
                    searchStr.endswith(';') or \
                    searchStr.endswith('.'):
@@ -3508,7 +3508,7 @@ class PubServer(BaseHTTPRequestHandler):
 
                 # are we already following the searched for handle?
                 if isFollowingActor(base_dir, nickname, domain, searchStr):
-                    if not hasUsersPath(searchStr):
+                    if not has_users_path(searchStr):
                         searchNickname = getNicknameFromActor(searchStr)
                         searchDomain, searchPort = \
                             getDomainFromActor(searchStr)
@@ -14807,7 +14807,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         if '/ontologies/' in self.path or \
            '/data/' in self.path:
-            if not hasUsersPath(self.path):
+            if not has_users_path(self.path):
                 self._getOntology(callingDomain,
                                   self.path, self.server.base_dir,
                                   GETstartTime)
