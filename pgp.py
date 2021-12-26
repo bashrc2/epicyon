@@ -16,7 +16,7 @@ from utils import isPGPEncrypted
 from utils import get_full_domain
 from utils import getStatusNumber
 from utils import local_actor_url
-from utils import replaceUsersWithAt
+from utils import replace_users_with_at
 from webfinger import webfingerHandle
 from posts import getPersonBox
 from auth import createBasicAuthHeader
@@ -501,7 +501,7 @@ def pgpPublicKeyUpload(base_dir: str, session,
         print('Actor for ' + handle + ' obtained')
 
     actor = local_actor_url(http_prefix, nickname, domain_full)
-    handle = replaceUsersWithAt(actor)
+    handle = replace_users_with_at(actor)
 
     # check that this looks like the correct actor
     if not actor_json.get('id'):

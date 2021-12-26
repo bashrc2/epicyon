@@ -36,7 +36,7 @@ from utils import get_user_paths
 from utils import invalidCiphertext
 from utils import has_object_stringType
 from utils import removeIdEnding
-from utils import replaceUsersWithAt
+from utils import replace_users_with_at
 from utils import hasGroupType
 from utils import get_base_content_from_post
 from utils import removeDomainPort
@@ -1694,7 +1694,7 @@ def getPinnedPostAsJson(base_dir: str, http_prefix: str,
                 'tag': [],
                 'to': ['https://www.w3.org/ns/activitystreams#Public'],
                 'type': 'Note',
-                'url': replaceUsersWithAt(actor) + '/pinned'
+                'url': replace_users_with_at(actor) + '/pinned'
             }
     return pinnedPostJson
 
@@ -4860,7 +4860,7 @@ def sendMuteViaServer(base_dir: str, session,
     fromDomainFull = get_full_domain(fromDomain, fromPort)
 
     actor = local_actor_url(http_prefix, fromNickname, fromDomainFull)
-    handle = replaceUsersWithAt(actor)
+    handle = replace_users_with_at(actor)
 
     newMuteJson = {
         "@context": "https://www.w3.org/ns/activitystreams",
@@ -4940,7 +4940,7 @@ def sendUndoMuteViaServer(base_dir: str, session,
     fromDomainFull = get_full_domain(fromDomain, fromPort)
 
     actor = local_actor_url(http_prefix, fromNickname, fromDomainFull)
-    handle = replaceUsersWithAt(actor)
+    handle = replace_users_with_at(actor)
 
     undoMuteJson = {
         "@context": "https://www.w3.org/ns/activitystreams",

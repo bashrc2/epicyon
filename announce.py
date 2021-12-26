@@ -23,7 +23,7 @@ from utils import save_json
 from utils import undoAnnounceCollectionEntry
 from utils import updateAnnounceCollection
 from utils import local_actor_url
-from utils import replaceUsersWithAt
+from utils import replace_users_with_at
 from utils import has_actor
 from utils import has_object_stringType
 from posts import sendSignedJson
@@ -318,7 +318,7 @@ def sendUndoAnnounceViaServer(base_dir: str, session,
     domain_full = get_full_domain(domain, port)
 
     actor = local_actor_url(http_prefix, nickname, domain_full)
-    handle = replaceUsersWithAt(actor)
+    handle = replace_users_with_at(actor)
 
     statusNumber, published = getStatusNumber()
     unAnnounceJson = {

@@ -40,7 +40,7 @@ from roles import getActorRolesList
 from media import processMetaData
 from utils import removeHtml
 from utils import containsInvalidChars
-from utils import replaceUsersWithAt
+from utils import replace_users_with_at
 from utils import removeLineEndings
 from utils import removeDomainPort
 from utils import getStatusNumber
@@ -852,7 +852,7 @@ def personUpgradeActor(base_dir: str, personJson: {},
         # update domain/@nickname in actors cache
         actorCacheFilename = \
             base_dir + '/accounts/cache/actors/' + \
-            replaceUsersWithAt(personJson['id']).replace('/', '#') + \
+            replace_users_with_at(personJson['id']).replace('/', '#') + \
             '.json'
         if os.path.isfile(actorCacheFilename):
             save_json(personJson, actorCacheFilename)

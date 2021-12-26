@@ -249,7 +249,7 @@ from utils import has_actor
 from utils import setReplyIntervalHours
 from utils import canReplyTo
 from utils import isDM
-from utils import replaceUsersWithAt
+from utils import replace_users_with_at
 from utils import local_actor_url
 from utils import isfloat
 from utils import validPassword
@@ -13977,7 +13977,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             pinnedPostJson)
                 message_json['id'] = postId + '/activity'
                 message_json['object']['id'] = postId
-                message_json['object']['url'] = replaceUsersWithAt(postId)
+                message_json['object']['url'] = replace_users_with_at(postId)
                 message_json['object']['atomUri'] = postId
             msg = json.dumps(message_json,
                              ensure_ascii=False).encode('utf-8')

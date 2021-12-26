@@ -3148,7 +3148,7 @@ def getSharesFilesList() -> []:
     return ('shares', 'wanted')
 
 
-def replaceUsersWithAt(actor: str) -> str:
+def replace_users_with_at(actor: str) -> str:
     """ https://domain/users/nick becomes https://domain/@nick
     """
     u_paths = get_user_paths()
