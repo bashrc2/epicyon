@@ -24,7 +24,7 @@ from utils import getFullDomain
 from utils import removeIdEnding
 from utils import getDomainFromActor
 from utils import dangerousMarkup
-from utils import isFeaturedWriter
+from utils import is_featured_writer
 from utils import loadJson
 from utils import saveJson
 from utils import acct_dir
@@ -383,7 +383,7 @@ def postMessageToOutbox(session, translate: {},
         # save all instance blogs to the news actor
         if postToNickname != 'news' and outboxName == 'tlblogs':
             if '/' in savedFilename:
-                if isFeaturedWriter(base_dir, postToNickname, domain):
+                if is_featured_writer(base_dir, postToNickname, domain):
                     savedPostId = savedFilename.split('/')[-1]
                     blogsDir = \
                         base_dir + '/accounts/news@' + domain + '/tlblogs'

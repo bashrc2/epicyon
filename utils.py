@@ -122,7 +122,7 @@ def acct_dir(base_dir: str, nickname: str, domain: str) -> str:
     return base_dir + '/accounts/' + nickname + '@' + domain
 
 
-def isFeaturedWriter(base_dir: str, nickname: str, domain: str) -> bool:
+def is_featured_writer(base_dir: str, nickname: str, domain: str) -> bool:
     """Is the given account a featured writer, appearing in the features
     timeline on news instances?
     """

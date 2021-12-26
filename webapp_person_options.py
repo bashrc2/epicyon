@@ -18,7 +18,7 @@ from utils import isDormant
 from utils import removeHtml
 from utils import getDomainFromActor
 from utils import getNicknameFromActor
-from utils import isFeaturedWriter
+from utils import is_featured_writer
 from utils import acct_dir
 from blocking import isBlocked
 from follow import isFollowerOfPerson
@@ -342,8 +342,8 @@ def htmlPersonOptions(defaultTimeline: str,
                         '\n    <button type="submit" class="buttonsmall" ' + \
                         'name="submitPostToFeatures">' + \
                         translate['Submit'] + '</button><br>\n'
-                    if not isFeaturedWriter(base_dir, optionsNickname,
-                                            optionsDomain):
+                    if not is_featured_writer(base_dir, optionsNickname,
+                                              optionsDomain):
                         checkboxStr = checkboxStr.replace(' checked>', '>')
                     optionsStr += checkboxStr
 
