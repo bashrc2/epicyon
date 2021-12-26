@@ -24,20 +24,20 @@ def getDonationUrl(actor_json: {}) -> str:
     if not actor_json.get('attachment'):
         return ''
     donationType = _getDonationTypes()
-    for propertyValue in actor_json['attachment']:
-        if not propertyValue.get('name'):
+    for property_value in actor_json['attachment']:
+        if not property_value.get('name'):
             continue
-        if propertyValue['name'].lower() not in donationType:
+        if property_value['name'].lower() not in donationType:
             continue
-        if not propertyValue.get('type'):
+        if not property_value.get('type'):
             continue
-        if not propertyValue.get('value'):
+        if not property_value.get('value'):
             continue
-        if propertyValue['type'] != 'PropertyValue':
+        if property_value['type'] != 'PropertyValue':
             continue
-        if '<a href="' not in propertyValue['value']:
+        if '<a href="' not in property_value['value']:
             continue
-        donateUrl = propertyValue['value'].split('<a href="')[1]
+        donateUrl = property_value['value'].split('<a href="')[1]
         if '"' in donateUrl:
             return donateUrl.split('"')[0]
     return ''
@@ -50,18 +50,18 @@ def getWebsite(actor_json: {}, translate: {}) -> str:
         return ''
     matchStrings = _getWebsiteStrings()
     matchStrings.append(translate['Website'].lower())
-    for propertyValue in actor_json['attachment']:
-        if not propertyValue.get('name'):
+    for property_value in actor_json['attachment']:
+        if not property_value.get('name'):
             continue
-        if propertyValue['name'].lower() not in matchStrings:
+        if property_value['name'].lower() not in matchStrings:
             continue
-        if not propertyValue.get('type'):
+        if not property_value.get('type'):
             continue
-        if not propertyValue.get('value'):
+        if not property_value.get('value'):
             continue
-        if propertyValue['type'] != 'PropertyValue':
+        if property_value['type'] != 'PropertyValue':
             continue
-        return propertyValue['value']
+        return property_value['value']
     return ''
 
 
@@ -91,14 +91,14 @@ def setDonationUrl(actor_json: {}, donateUrl: str) -> None:
 
     # remove any existing value
     propertyFound = None
-    for propertyValue in actor_json['attachment']:
-        if not propertyValue.get('name'):
+    for property_value in actor_json['attachment']:
+        if not property_value.get('name'):
             continue
-        if not propertyValue.get('type'):
+        if not property_value.get('type'):
             continue
-        if not propertyValue['name'].lower() != donateName:
+        if not property_value['name'].lower() != donateName:
             continue
-        propertyFound = propertyValue
+        propertyFound = property_value
         break
     if propertyFound:
         actor_json['attachment'].remove(propertyFound)
@@ -110,16 +110,16 @@ def setDonationUrl(actor_json: {}, donateUrl: str) -> None:
         '" rel="me nofollow noopener noreferrer" target="_blank">' + \
         donateUrl + '</a>'
 
-    for propertyValue in actor_json['attachment']:
-        if not propertyValue.get('name'):
+    for property_value in actor_json['attachment']:
+        if not property_value.get('name'):
             continue
-        if not propertyValue.get('type'):
+        if not property_value.get('type'):
             continue
-        if propertyValue['name'].lower() != donateName:
+        if property_value['name'].lower() != donateName:
             continue
-        if propertyValue['type'] != 'PropertyValue':
+        if property_value['type'] != 'PropertyValue':
             continue
-        propertyValue['value'] = donateValue
+        property_value['value'] = donateValue
         return
 
     newDonate = {
@@ -152,14 +152,14 @@ def setWebsite(actor_json: {}, websiteUrl: str, translate: {}) -> None:
 
     # remove any existing value
     propertyFound = None
-    for propertyValue in actor_json['attachment']:
-        if not propertyValue.get('name'):
+    for property_value in actor_json['attachment']:
+        if not property_value.get('name'):
             continue
-        if not propertyValue.get('type'):
+        if not property_value.get('type'):
             continue
-        if propertyValue['name'].lower() not in matchStrings:
+        if property_value['name'].lower() not in matchStrings:
             continue
-        propertyFound = propertyValue
+        propertyFound = property_value
         break
     if propertyFound:
         actor_json['attachment'].remove(propertyFound)

@@ -180,14 +180,14 @@ def _setActorPropertyUrl(actor_json: {}, propertyName: str, url: str) -> None:
 
     # remove any existing value
     propertyFound = None
-    for propertyValue in actor_json['attachment']:
-        if not propertyValue.get('name'):
+    for property_value in actor_json['attachment']:
+        if not property_value.get('name'):
             continue
-        if not propertyValue.get('type'):
+        if not property_value.get('type'):
             continue
-        if not propertyValue['name'].lower().startswith(propertyNameLower):
+        if not property_value['name'].lower().startswith(propertyNameLower):
             continue
-        propertyFound = propertyValue
+        propertyFound = property_value
         break
     if propertyFound:
         actor_json['attachment'].remove(propertyFound)
@@ -207,16 +207,16 @@ def _setActorPropertyUrl(actor_json: {}, propertyName: str, url: str) -> None:
     if ',' in url:
         return
 
-    for propertyValue in actor_json['attachment']:
-        if not propertyValue.get('name'):
+    for property_value in actor_json['attachment']:
+        if not property_value.get('name'):
             continue
-        if not propertyValue.get('type'):
+        if not property_value.get('type'):
             continue
-        if not propertyValue['name'].lower().startswith(propertyNameLower):
+        if not property_value['name'].lower().startswith(propertyNameLower):
             continue
-        if propertyValue['type'] != 'PropertyValue':
+        if property_value['type'] != 'PropertyValue':
             continue
-        propertyValue['value'] = url
+        property_value['value'] = url
         return
 
     newAddress = {

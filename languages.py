@@ -67,14 +67,14 @@ def setActorLanguages(base_dir: str, actor_json: {},
 
     # remove any existing value
     propertyFound = None
-    for propertyValue in actor_json['attachment']:
-        if not propertyValue.get('name'):
+    for property_value in actor_json['attachment']:
+        if not property_value.get('name'):
             continue
-        if not propertyValue.get('type'):
+        if not property_value.get('type'):
             continue
-        if not propertyValue['name'].lower().startswith('languages'):
+        if not property_value['name'].lower().startswith('languages'):
             continue
-        propertyFound = propertyValue
+        propertyFound = property_value
         break
     if propertyFound:
         actor_json['attachment'].remove(propertyFound)

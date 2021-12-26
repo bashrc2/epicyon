@@ -5160,10 +5160,10 @@ def testUpdateActor(base_dir: str):
         print("actor_json['attachment'] has no contents")
     assert len(actor_json['attachment']) > 0
     propertyFound = False
-    for propertyValue in actor_json['attachment']:
-        if propertyValue['name'] == 'PGP':
+    for property_value in actor_json['attachment']:
+        if property_value['name'] == 'PGP':
             print('PGP property set within attachment')
-            assert pubKey in propertyValue['value']
+            assert pubKey in property_value['value']
             propertyFound = True
     assert propertyFound
 

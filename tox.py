@@ -13,31 +13,31 @@ def getToxAddress(actor_json: {}) -> str:
     """
     if not actor_json.get('attachment'):
         return ''
-    for propertyValue in actor_json['attachment']:
-        if not propertyValue.get('name'):
+    for property_value in actor_json['attachment']:
+        if not property_value.get('name'):
             continue
-        if not propertyValue['name'].lower().startswith('tox'):
+        if not property_value['name'].lower().startswith('tox'):
             continue
-        if not propertyValue.get('type'):
+        if not property_value.get('type'):
             continue
-        if not propertyValue.get('value'):
+        if not property_value.get('value'):
             continue
-        if propertyValue['type'] != 'PropertyValue':
+        if property_value['type'] != 'PropertyValue':
             continue
-        propertyValue['value'] = propertyValue['value'].strip()
-        if len(propertyValue['value']) != 76:
+        property_value['value'] = property_value['value'].strip()
+        if len(property_value['value']) != 76:
             continue
-        if propertyValue['value'].upper() != propertyValue['value']:
+        if property_value['value'].upper() != property_value['value']:
             continue
-        if '"' in propertyValue['value']:
+        if '"' in property_value['value']:
             continue
-        if ' ' in propertyValue['value']:
+        if ' ' in property_value['value']:
             continue
-        if ',' in propertyValue['value']:
+        if ',' in property_value['value']:
             continue
-        if '.' in propertyValue['value']:
+        if '.' in property_value['value']:
             continue
-        return propertyValue['value']
+        return property_value['value']
     return ''
 
 
@@ -66,30 +66,30 @@ def setToxAddress(actor_json: {}, toxAddress: str) -> None:
 
     # remove any existing value
     propertyFound = None
-    for propertyValue in actor_json['attachment']:
-        if not propertyValue.get('name'):
+    for property_value in actor_json['attachment']:
+        if not property_value.get('name'):
             continue
-        if not propertyValue.get('type'):
+        if not property_value.get('type'):
             continue
-        if not propertyValue['name'].lower().startswith('tox'):
+        if not property_value['name'].lower().startswith('tox'):
             continue
-        propertyFound = propertyValue
+        propertyFound = property_value
         break
     if propertyFound:
         actor_json['attachment'].remove(propertyFound)
     if notToxAddress:
         return
 
-    for propertyValue in actor_json['attachment']:
-        if not propertyValue.get('name'):
+    for property_value in actor_json['attachment']:
+        if not property_value.get('name'):
             continue
-        if not propertyValue.get('type'):
+        if not property_value.get('type'):
             continue
-        if not propertyValue['name'].lower().startswith('tox'):
+        if not property_value['name'].lower().startswith('tox'):
             continue
-        if propertyValue['type'] != 'PropertyValue':
+        if property_value['type'] != 'PropertyValue':
             continue
-        propertyValue['value'] = toxAddress
+        property_value['value'] = toxAddress
         return
 
     newToxAddress = {

@@ -13,18 +13,18 @@ def getEnigmaPubKey(actor_json: {}) -> str:
     """
     if not actor_json.get('attachment'):
         return ''
-    for propertyValue in actor_json['attachment']:
-        if not propertyValue.get('name'):
+    for property_value in actor_json['attachment']:
+        if not property_value.get('name'):
             continue
-        if not propertyValue['name'].lower().startswith('enigma'):
+        if not property_value['name'].lower().startswith('enigma'):
             continue
-        if not propertyValue.get('type'):
+        if not property_value.get('type'):
             continue
-        if not propertyValue.get('value'):
+        if not property_value.get('value'):
             continue
-        if propertyValue['type'] != 'PropertyValue':
+        if property_value['type'] != 'PropertyValue':
             continue
-        return propertyValue['value']
+        return property_value['value']
     return ''
 
 
@@ -40,30 +40,30 @@ def setEnigmaPubKey(actor_json: {}, enigmaPubKey: str) -> None:
 
     # remove any existing value
     propertyFound = None
-    for propertyValue in actor_json['attachment']:
-        if not propertyValue.get('name'):
+    for property_value in actor_json['attachment']:
+        if not property_value.get('name'):
             continue
-        if not propertyValue.get('type'):
+        if not property_value.get('type'):
             continue
-        if not propertyValue['name'].lower().startswith('enigma'):
+        if not property_value['name'].lower().startswith('enigma'):
             continue
-        propertyFound = propertyValue
+        propertyFound = property_value
         break
     if propertyFound:
-        actor_json['attachment'].remove(propertyValue)
+        actor_json['attachment'].remove(property_value)
     if removeKey:
         return
 
-    for propertyValue in actor_json['attachment']:
-        if not propertyValue.get('name'):
+    for property_value in actor_json['attachment']:
+        if not property_value.get('name'):
             continue
-        if not propertyValue.get('type'):
+        if not property_value.get('type'):
             continue
-        if not propertyValue['name'].lower().startswith('enigma'):
+        if not property_value['name'].lower().startswith('enigma'):
             continue
-        if propertyValue['type'] != 'PropertyValue':
+        if property_value['type'] != 'PropertyValue':
             continue
-        propertyValue['value'] = enigmaPubKey
+        property_value['value'] = enigmaPubKey
         return
 
     newenigmaPubKey = {

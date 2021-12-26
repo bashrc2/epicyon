@@ -39,23 +39,23 @@ def get_actor_languages_list(actor_json: {}) -> []:
     """
     if not actor_json.get('attachment'):
         return []
-    for propertyValue in actor_json['attachment']:
-        if not propertyValue.get('name'):
+    for property_value in actor_json['attachment']:
+        if not property_value.get('name'):
             continue
-        if not propertyValue['name'].lower().startswith('languages'):
+        if not property_value['name'].lower().startswith('languages'):
             continue
-        if not propertyValue.get('type'):
+        if not property_value.get('type'):
             continue
-        if not propertyValue.get('value'):
+        if not property_value.get('value'):
             continue
-        if propertyValue['type'] != 'PropertyValue':
+        if property_value['type'] != 'PropertyValue':
             continue
-        if isinstance(propertyValue['value'], list):
-            langList = propertyValue['value']
+        if isinstance(property_value['value'], list):
+            langList = property_value['value']
             langList.sort()
             return langList
-        elif isinstance(propertyValue['value'], str):
-            langStr = propertyValue['value']
+        elif isinstance(property_value['value'], str):
+            langStr = property_value['value']
             langListTemp = []
             if ',' in langStr:
                 langListTemp = langStr.split(',')
@@ -2874,33 +2874,33 @@ def getActorPropertyUrl(actor_json: {}, propertyName: str) -> str:
     if not actor_json.get('attachment'):
         return ''
     propertyName = propertyName.lower()
-    for propertyValue in actor_json['attachment']:
-        if not propertyValue.get('name'):
+    for property_value in actor_json['attachment']:
+        if not property_value.get('name'):
             continue
-        if not propertyValue['name'].lower().startswith(propertyName):
+        if not property_value['name'].lower().startswith(propertyName):
             continue
-        if not propertyValue.get('type'):
+        if not property_value.get('type'):
             continue
-        if not propertyValue.get('value'):
+        if not property_value.get('value'):
             continue
-        if propertyValue['type'] != 'PropertyValue':
+        if property_value['type'] != 'PropertyValue':
             continue
-        propertyValue['value'] = propertyValue['value'].strip()
+        property_value['value'] = property_value['value'].strip()
         prefixes = getProtocolPrefixes()
         prefixFound = False
         for prefix in prefixes:
-            if propertyValue['value'].startswith(prefix):
+            if property_value['value'].startswith(prefix):
                 prefixFound = True
                 break
         if not prefixFound:
             continue
-        if '.' not in propertyValue['value']:
+        if '.' not in property_value['value']:
             continue
-        if ' ' in propertyValue['value']:
+        if ' ' in property_value['value']:
             continue
-        if ',' in propertyValue['value']:
+        if ',' in property_value['value']:
             continue
-        return propertyValue['value']
+        return property_value['value']
     return ''
 
 
