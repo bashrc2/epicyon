@@ -279,9 +279,9 @@ def is_dormant(base_dir: str, nickname: str, domain: str, actor: str,
         curr_time = datetime.datetime.utcnow()
         curr_days_since_epoch = \
             (curr_time - datetime.datetime(1970, 1, 1)).days
-        timeDiffMonths = \
+        time_diff_months = \
             int((curr_days_since_epoch - days_since_epoch) / 30)
-        if timeDiffMonths >= dormant_months:
+        if time_diff_months >= dormant_months:
             return True
     return False
 
