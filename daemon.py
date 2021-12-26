@@ -277,7 +277,7 @@ from utils import removeHtml
 from utils import is_editor
 from utils import is_artist
 from utils import get_image_extensions
-from utils import mediaFileMimeType
+from utils import media_file_mime_type
 from utils import getCSS
 from utils import firstParagraphFromString
 from utils import clearFromPostCaches
@@ -7219,7 +7219,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._304()
                     return
 
-                mediaFileType = mediaFileMimeType(mediaFilename)
+                mediaFileType = media_file_mime_type(mediaFilename)
 
                 t = os.path.getmtime(mediaFilename)
                 lastModifiedTime = datetime.datetime.fromtimestamp(t)
@@ -7349,7 +7349,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
         if self.server.iconsCache.get(mediaStr):
             mediaBinary = self.server.iconsCache[mediaStr]
-            mimeTypeStr = mediaFileMimeType(mediaFilename)
+            mimeTypeStr = media_file_mime_type(mediaFilename)
             self._set_headers_etag(mediaFilename,
                                    mimeTypeStr,
                                    mediaBinary, None,
@@ -7368,7 +7368,7 @@ class PubServer(BaseHTTPRequestHandler):
                 except OSError:
                     print('EX: unable to read icon image ' + mediaFilename)
                 if mediaBinary:
-                    mimeType = mediaFileMimeType(mediaFilename)
+                    mimeType = media_file_mime_type(mediaFilename)
                     self._set_headers_etag(mediaFilename,
                                            mimeType,
                                            mediaBinary, None,
@@ -7415,7 +7415,7 @@ class PubServer(BaseHTTPRequestHandler):
             except OSError:
                 print('EX: unable to read help image ' + mediaFilename)
             if mediaBinary:
-                mimeType = mediaFileMimeType(mediaFilename)
+                mimeType = media_file_mime_type(mediaFilename)
                 self._set_headers_etag(mediaFilename,
                                        mimeType,
                                        mediaBinary, None,
@@ -7437,7 +7437,7 @@ class PubServer(BaseHTTPRequestHandler):
         print('showCachedFavicon: ' + favFilename)
         if self.server.favicons_cache.get(favFile):
             mediaBinary = self.server.favicons_cache[favFile]
-            mimeType = mediaFileMimeType(favFilename)
+            mimeType = media_file_mime_type(favFilename)
             self._set_headers_etag(favFilename,
                                    mimeType,
                                    mediaBinary, None,
@@ -7462,7 +7462,7 @@ class PubServer(BaseHTTPRequestHandler):
         except OSError:
             print('EX: unable to read cached favicon ' + favFilename)
         if mediaBinary:
-            mimeType = mediaFileMimeType(favFilename)
+            mimeType = media_file_mime_type(favFilename)
             self._set_headers_etag(favFilename,
                                    mimeType,
                                    mediaBinary, None,
@@ -7493,7 +7493,7 @@ class PubServer(BaseHTTPRequestHandler):
             except OSError:
                 print('EX: unable to read cached avatar ' + mediaFilename)
             if mediaBinary:
-                mimeType = mediaFileMimeType(mediaFilename)
+                mimeType = media_file_mime_type(mediaFilename)
                 self._set_headers_etag(mediaFilename,
                                        mimeType,
                                        mediaBinary, None,
@@ -12543,7 +12543,7 @@ class PubServer(BaseHTTPRequestHandler):
                     time.sleep(1)
                     tries += 1
             if mediaBinary:
-                mimeType = mediaFileMimeType(qrFilename)
+                mimeType = media_file_mime_type(qrFilename)
                 self._set_headers_etag(qrFilename, mimeType,
                                        mediaBinary, None,
                                        self.server.domain_full,
@@ -12588,7 +12588,7 @@ class PubServer(BaseHTTPRequestHandler):
                     time.sleep(1)
                     tries += 1
             if mediaBinary:
-                mimeType = mediaFileMimeType(bannerFilename)
+                mimeType = media_file_mime_type(bannerFilename)
                 self._set_headers_etag(bannerFilename, mimeType,
                                        mediaBinary, None,
                                        self.server.domain_full,
@@ -12632,7 +12632,7 @@ class PubServer(BaseHTTPRequestHandler):
                     time.sleep(1)
                     tries += 1
             if mediaBinary:
-                mimeType = mediaFileMimeType(bannerFilename)
+                mimeType = media_file_mime_type(bannerFilename)
                 self._set_headers_etag(bannerFilename, mimeType,
                                        mediaBinary, None,
                                        self.server.domain_full,
@@ -14626,7 +14626,7 @@ class PubServer(BaseHTTPRequestHandler):
                         time.sleep(1)
                         tries += 1
                 if mediaBinary:
-                    mimeType = mediaFileMimeType(mediaFilename)
+                    mimeType = media_file_mime_type(mediaFilename)
                     self._set_headers_etag(mediaFilename, mimeType,
                                            mediaBinary, cookie,
                                            self.server.domain_full,
@@ -14668,7 +14668,7 @@ class PubServer(BaseHTTPRequestHandler):
                         time.sleep(1)
                         tries += 1
                 if mediaBinary:
-                    mimeType = mediaFileMimeType(screenFilename)
+                    mimeType = media_file_mime_type(screenFilename)
                     self._set_headers_etag(screenFilename, mimeType,
                                            mediaBinary, cookie,
                                            self.server.domain_full,
@@ -14710,7 +14710,7 @@ class PubServer(BaseHTTPRequestHandler):
                         time.sleep(1)
                         tries += 1
                 if mediaBinary:
-                    mimeTypeStr = mediaFileMimeType(iconFilename)
+                    mimeTypeStr = media_file_mime_type(iconFilename)
                     self._set_headers_etag(iconFilename,
                                            mimeTypeStr,
                                            mediaBinary, cookie,
@@ -16431,7 +16431,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 print('EX: do_HEAD unable to write ' +
                                       mediaTagFilename)
 
-        mediaFileType = mediaFileMimeType(checkPath)
+        mediaFileType = media_file_mime_type(checkPath)
         self._set_headers_head(mediaFileType, fileLength,
                                etag, calling_domain, False)
 

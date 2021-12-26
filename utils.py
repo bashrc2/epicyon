@@ -2484,7 +2484,7 @@ def weekDayOfMonthStart(monthNumber: int, year: int) -> int:
     return int(firstDayOfMonth.strftime("%w")) + 1
 
 
-def mediaFileMimeType(filename: str) -> str:
+def media_file_mime_type(filename: str) -> str:
     """Given a media filename return its mime type
     """
     if '.' not in filename:
@@ -2511,7 +2511,7 @@ def mediaFileMimeType(filename: str) -> str:
     return extensions[fileExt]
 
 
-def is_recent_post(post_json_object: {}, maxDays: int) -> bool:
+def is_recent_post(post_json_object: {}, max_days: int) -> bool:
     """ Is the given post recent?
     """
     if not has_object_dict(post_json_object):
@@ -2522,20 +2522,20 @@ def is_recent_post(post_json_object: {}, maxDays: int) -> bool:
         return False
     curr_time = datetime.datetime.utcnow()
     days_since_epoch = (curr_time - datetime.datetime(1970, 1, 1)).days
-    recently = days_since_epoch - maxDays
+    recently = days_since_epoch - max_days
 
-    publishedDateStr = post_json_object['object']['published']
+    published_date_str = post_json_object['object']['published']
     try:
-        publishedDate = \
-            datetime.datetime.strptime(publishedDateStr,
+        published_date = \
+            datetime.datetime.strptime(published_date_str,
                                        "%Y-%m-%dT%H:%M:%SZ")
     except BaseException:
         print('EX: is_recent_post unrecognized published date ' +
-              str(publishedDateStr))
+              str(published_date_str))
         return False
 
     publishedDaysSinceEpoch = \
-        (publishedDate - datetime.datetime(1970, 1, 1)).days
+        (published_date - datetime.datetime(1970, 1, 1)).days
     if publishedDaysSinceEpoch < recently:
         return False
     return True
