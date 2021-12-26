@@ -351,7 +351,7 @@ def getDefaultPersonContext() -> str:
 def _createPersonBase(base_dir: str, nickname: str, domain: str, port: int,
                       http_prefix: str, saveToFile: bool,
                       manual_follower_approval: bool,
-                      groupAccount: bool,
+                      group_account: bool,
                       password: str) -> (str, str, {}, {}):
     """Returns the private key, public key, actor and webfinger endpoint
     """
@@ -359,7 +359,7 @@ def _createPersonBase(base_dir: str, nickname: str, domain: str, port: int,
     webfingerEndpoint = \
         createWebfingerEndpoint(nickname, domain, port,
                                 http_prefix, publicKeyPem,
-                                groupAccount)
+                                group_account)
     if saveToFile:
         storeWebfingerEndpoint(nickname, domain, port,
                                base_dir, webfingerEndpoint)
@@ -369,7 +369,7 @@ def _createPersonBase(base_dir: str, nickname: str, domain: str, port: int,
     domain = getFullDomain(domain, port)
 
     personType = 'Person'
-    if groupAccount:
+    if group_account:
         personType = 'Group'
     # Enable follower approval by default
     approveFollowers = manual_follower_approval
@@ -595,7 +595,7 @@ def createPerson(base_dir: str, nickname: str, domain: str, port: int,
                  http_prefix: str, saveToFile: bool,
                  manual_follower_approval: bool,
                  password: str,
-                 groupAccount: bool = False) -> (str, str, {}, {}):
+                 group_account: bool = False) -> (str, str, {}, {}):
     """Returns the private key, public key, actor and webfinger endpoint
     """
     if not validNickname(domain, nickname):
@@ -623,7 +623,7 @@ def createPerson(base_dir: str, nickname: str, domain: str, port: int,
                                                        http_prefix,
                                                        saveToFile,
                                                        manual_follower,
-                                                       groupAccount,
+                                                       group_account,
                                                        password)
     if not getConfigParam(base_dir, 'admin'):
         if nickname != 'news':
@@ -1436,7 +1436,7 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
     if debug:
         print('getActorJson for ' + handle)
     originalActor = handle
-    groupAccount = False
+    group_account = False
 
     # try to determine the users path
     detectedUsersPath = _detectUsersPath(handle)
@@ -1446,7 +1446,7 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
        handle.startswith('hyper'):
         groupPaths = getGroupPaths()
         if detectedUsersPath in groupPaths:
-            groupAccount = True
+            group_account = True
         # format: https://domain/@nick
         originalHandle = handle
         if not hasUsersPath(originalHandle):
@@ -1488,7 +1488,7 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
         elif handle.startswith('!'):
             # handle for a group
             handle = handle[1:]
-            groupAccount = True
+            group_account = True
         if '@' not in handle:
             if not quiet:
                 print('getActorJsonSyntax: --actor nickname@domain')
@@ -1528,7 +1528,7 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
         if debug:
             print(originalActor + ' is an instance actor')
         personUrl = originalActor
-    elif '://' in originalActor and groupAccount:
+    elif '://' in originalActor and group_account:
         if debug:
             print(originalActor + ' is a group actor')
         personUrl = originalActor
@@ -1537,7 +1537,7 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
         wfRequest = webfingerHandle(session, handle,
                                     http_prefix, cached_webfingers,
                                     hostDomain, __version__, debug,
-                                    groupAccount, signing_priv_key_pem)
+                                    group_account, signing_priv_key_pem)
         if not wfRequest:
             if not quiet:
                 print('getActorJson Unable to webfinger ' + handle)
@@ -1572,7 +1572,7 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
         paths = getUserPaths()
         for userPath in paths:
             personUrl = personUrl.replace(userPath, '/actor/')
-    if not personUrl and groupAccount:
+    if not personUrl and group_account:
         personUrl = http_prefix + '://' + domain + '/c/' + nickname
     if not personUrl:
         # try single user instance

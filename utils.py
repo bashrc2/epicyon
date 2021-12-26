@@ -1131,7 +1131,7 @@ def _setDefaultPetName(base_dir: str, nickname: str, domain: str,
 def followPerson(base_dir: str, nickname: str, domain: str,
                  followNickname: str, followDomain: str,
                  federation_list: [], debug: bool,
-                 groupAccount: bool,
+                 group_account: bool,
                  followFile: str = 'following.txt') -> bool:
     """Adds a person to the follow list
     """
@@ -1161,7 +1161,7 @@ def followPerson(base_dir: str, nickname: str, domain: str,
     else:
         handleToFollow = followNickname + '@' + followDomain
 
-    if groupAccount:
+    if group_account:
         handleToFollow = '!' + handleToFollow
 
     # was this person previously unfollowed?
@@ -1181,7 +1181,7 @@ def followPerson(base_dir: str, nickname: str, domain: str,
     if not os.path.isdir(base_dir + '/accounts'):
         os.mkdir(base_dir + '/accounts')
     handleToFollow = followNickname + '@' + followDomain
-    if groupAccount:
+    if group_account:
         handleToFollow = '!' + handleToFollow
     filename = base_dir + '/accounts/' + handle + '/' + followFile
     if os.path.isfile(filename):

@@ -26,7 +26,7 @@ from utils import localActorUrl
 def _parseHandle(handle: str) -> (str, str, bool):
     """Parses a handle and returns nickname and domain
     """
-    groupAccount = False
+    group_account = False
     if '.' not in handle:
         return None, None, False
     prefixes = getProtocolPrefixes()
@@ -43,9 +43,9 @@ def _parseHandle(handle: str) -> (str, str, bool):
     if '@' in handle:
         if handle.startswith('!'):
             handle = handle[1:]
-            groupAccount = True
+            group_account = True
         nickname, domain = handle.split('@')
-        return nickname, domain, groupAccount
+        return nickname, domain, group_account
 
     # try for different /users/ paths
     usersPaths = getUserPaths()
@@ -53,9 +53,9 @@ def _parseHandle(handle: str) -> (str, str, bool):
     for possibleUsersPath in usersPaths:
         if possibleUsersPath in handle:
             if possibleUsersPath in groupPaths:
-                groupAccount = True
+                group_account = True
             domain, nickname = handleStr.split(possibleUsersPath)
-            return nickname, domain, groupAccount
+            return nickname, domain, group_account
 
     return None, None, False
 
@@ -63,7 +63,7 @@ def _parseHandle(handle: str) -> (str, str, bool):
 def webfingerHandle(session, handle: str, http_prefix: str,
                     cached_webfingers: {},
                     fromDomain: str, project_version: str,
-                    debug: bool, groupAccount: bool,
+                    debug: bool, group_account: bool,
                     signing_priv_key_pem: str) -> {}:
     """Gets webfinger result for the given ActivityPub handle
     """
@@ -132,7 +132,7 @@ def storeWebfingerEndpoint(nickname: str, domain: str, port: int,
 
 def createWebfingerEndpoint(nickname: str, domain: str, port: int,
                             http_prefix: str, publicKeyPem: str,
-                            groupAccount: bool) -> {}:
+                            group_account: bool) -> {}:
     """Creates a webfinger endpoint for a user
     """
     originalDomain = domain

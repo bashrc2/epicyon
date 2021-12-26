@@ -106,14 +106,14 @@ def _updateMovedHandle(base_dir: str, nickname: str, domain: str,
     if movedToPort:
         if movedToPort != 80 and movedToPort != 443:
             movedToDomainFull = movedToDomain + ':' + str(movedToPort)
-    groupAccount = hasGroupType(base_dir, movedToUrl, None)
+    group_account = hasGroupType(base_dir, movedToUrl, None)
     if isBlocked(base_dir, nickname, domain,
                  movedToNickname, movedToDomain):
         # someone that you follow has moved to a blocked domain
         # so just unfollow them
         unfollowAccount(base_dir, nickname, domain,
                         movedToNickname, movedToDomainFull,
-                        debug, groupAccount, 'following.txt')
+                        debug, group_account, 'following.txt')
         return ctr
 
     followingFilename = acctDir(base_dir, nickname, domain) + '/following.txt'
@@ -139,7 +139,7 @@ def _updateMovedHandle(base_dir: str, nickname: str, domain: str,
                         unfollowAccount(base_dir, nickname, domain,
                                         handleNickname,
                                         handleDomain,
-                                        debug, groupAccount, 'following.txt')
+                                        debug, group_account, 'following.txt')
                         ctr += 1
                         print('Unfollowed ' + handle + ' who has moved to ' +
                               movedToHandle)

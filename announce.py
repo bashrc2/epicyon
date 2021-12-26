@@ -163,7 +163,7 @@ def createAnnounce(session, base_dir: str, federation_list: [],
     announceNickname = None
     announceDomain = None
     announcePort = None
-    groupAccount = False
+    group_account = False
     if hasUsersPath(objectUrl):
         announceNickname = getNicknameFromActor(objectUrl)
         announceDomain, announcePort = getDomainFromActor(objectUrl)
@@ -172,7 +172,7 @@ def createAnnounce(session, base_dir: str, federation_list: [],
                 objectUrl.split('/' + announceNickname + '/')[0] + \
                 '/' + announceNickname
             if hasGroupType(base_dir, announceActor, person_cache):
-                groupAccount = True
+                group_account = True
 
     if announceNickname and announceDomain:
         sendSignedJson(newAnnounce, session, base_dir,
@@ -180,7 +180,7 @@ def createAnnounce(session, base_dir: str, federation_list: [],
                        announceNickname, announceDomain, announcePort, None,
                        http_prefix, True, client_to_server, federation_list,
                        send_threads, postLog, cached_webfingers, person_cache,
-                       debug, project_version, None, groupAccount,
+                       debug, project_version, None, group_account,
                        signing_priv_key_pem, 639633)
 
     return newAnnounce

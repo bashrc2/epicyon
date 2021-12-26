@@ -102,11 +102,11 @@ def _like(recentPostsCache: {},
     likedPostNickname = None
     likedPostDomain = None
     likedPostPort = None
-    groupAccount = False
+    group_account = False
     if actorLiked:
         likedPostNickname = getNicknameFromActor(actorLiked)
         likedPostDomain, likedPostPort = getDomainFromActor(actorLiked)
-        groupAccount = hasGroupType(base_dir, actorLiked, person_cache)
+        group_account = hasGroupType(base_dir, actorLiked, person_cache)
     else:
         if hasUsersPath(objectUrl):
             likedPostNickname = getNicknameFromActor(objectUrl)
@@ -115,7 +115,8 @@ def _like(recentPostsCache: {},
                 actorLiked = \
                     objectUrl.split('/' + likedPostNickname + '/')[0] + \
                     '/' + likedPostNickname
-                groupAccount = hasGroupType(base_dir, actorLiked, person_cache)
+                group_account = \
+                    hasGroupType(base_dir, actorLiked, person_cache)
 
     if likedPostNickname:
         postFilename = locatePost(base_dir, nickname, domain, objectUrl)
@@ -137,7 +138,7 @@ def _like(recentPostsCache: {},
                        'https://www.w3.org/ns/activitystreams#Public',
                        http_prefix, True, client_to_server, federation_list,
                        send_threads, postLog, cached_webfingers, person_cache,
-                       debug, project_version, None, groupAccount,
+                       debug, project_version, None, group_account,
                        signing_priv_key_pem, 7367374)
 
     return newLikeJson

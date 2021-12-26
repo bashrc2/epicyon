@@ -776,12 +776,12 @@ def _receiveUndoFollow(session, base_dir: str, http_prefix: str,
         getDomainFromActor(message_json['object']['object'])
     domainFollowingFull = getFullDomain(domainFollowing, portFollowing)
 
-    groupAccount = \
+    group_account = \
         hasGroupType(base_dir, message_json['object']['actor'], None)
     if unfollowerOfAccount(base_dir,
                            nicknameFollowing, domainFollowingFull,
                            nicknameFollower, domainFollowerFull,
-                           debug, groupAccount):
+                           debug, group_account):
         print(nicknameFollowing + '@' + domainFollowingFull + ': '
               'Follower ' + nicknameFollower + '@' + domainFollowerFull +
               ' was removed')
@@ -2823,10 +2823,10 @@ def _bounceDM(senderPostId: str, session, http_prefix: str,
     lastBounceMessage[0] = currTime
 
     senderNickname = sendingHandle.split('@')[0]
-    groupAccount = False
+    group_account = False
     if sendingHandle.startswith('!'):
         sendingHandle = sendingHandle[1:]
-        groupAccount = True
+        group_account = True
     senderDomain = sendingHandle.split('@')[1]
     senderPort = port
     if ':' in senderDomain:
@@ -2875,7 +2875,7 @@ def _bounceDM(senderPostId: str, session, http_prefix: str,
                    senderNickname, senderDomain, senderPort, cc,
                    http_prefix, False, False, federation_list,
                    send_threads, postLog, cached_webfingers,
-                   person_cache, debug, __version__, None, groupAccount,
+                   person_cache, debug, __version__, None, group_account,
                    signing_priv_key_pem, 7238634)
     return True
 
@@ -3984,9 +3984,9 @@ def _receiveFollowRequest(session, base_dir: str, http_prefix: str,
                 print('Unable to obtain following actor: ' +
                       message_json['actor'])
 
-        groupAccount = \
+        group_account = \
             hasGroupType(base_dir, message_json['actor'], person_cache)
-        if groupAccount and isGroupAccount(base_dir, nickname, domain):
+        if group_account and isGroupAccount(base_dir, nickname, domain):
             print('Group cannot follow a group')
             return False
 
@@ -3995,7 +3995,7 @@ def _receiveFollowRequest(session, base_dir: str, http_prefix: str,
                                   nicknameToFollow, domainToFollow, port,
                                   nickname, domain, fromPort,
                                   message_json, debug, message_json['actor'],
-                                  groupAccount)
+                                  group_account)
     else:
         print('Follow request does not require approval ' + approveHandle)
         # update the followers
@@ -4026,13 +4026,13 @@ def _receiveFollowRequest(session, base_dir: str, http_prefix: str,
                   followersFilename + ' adding ' + approveHandle)
             if os.path.isfile(followersFilename):
                 if approveHandle not in open(followersFilename).read():
-                    groupAccount = \
+                    group_account = \
                         hasGroupType(base_dir,
                                      message_json['actor'], person_cache)
                     if debug:
                         print(approveHandle + ' / ' + message_json['actor'] +
-                              ' is Group: ' + str(groupAccount))
-                    if groupAccount and \
+                              ' is Group: ' + str(group_account))
+                    if group_account and \
                        isGroupAccount(base_dir, nickname, domain):
                         print('Group cannot follow a group')
                         return False
@@ -4041,7 +4041,7 @@ def _receiveFollowRequest(session, base_dir: str, http_prefix: str,
                             content = followersFile.read()
                             if approveHandle + '\n' not in content:
                                 followersFile.seek(0, 0)
-                                if not groupAccount:
+                                if not group_account:
                                     followersFile.write(approveHandle +
                                                         '\n' + content)
                                 else:

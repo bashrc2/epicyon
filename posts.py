@@ -2615,7 +2615,7 @@ def sendSignedJson(post_json_object: {}, session, base_dir: str,
                    federation_list: [],
                    send_threads: [], postLog: [], cached_webfingers: {},
                    person_cache: {}, debug: bool, project_version: str,
-                   sharedItemsToken: str, groupAccount: bool,
+                   sharedItemsToken: str, group_account: bool,
                    signing_priv_key_pem: str,
                    sourceId: int) -> int:
     """Sends a signed json object to an inbox/outbox
@@ -2654,7 +2654,7 @@ def sendSignedJson(post_json_object: {}, session, base_dir: str,
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, http_prefix,
                                 cached_webfingers,
-                                domain, project_version, debug, groupAccount,
+                                domain, project_version, debug, group_account,
                                 signing_priv_key_pem)
     if not wfRequest:
         if debug:
@@ -2998,7 +2998,7 @@ def _sendToNamedAddresses(session, base_dir: str,
             if sharedItemFederationTokens.get(fromDomainFull):
                 sharedItemsToken = sharedItemFederationTokens[fromDomainFull]
 
-        groupAccount = hasGroupType(base_dir, address, person_cache)
+        group_account = hasGroupType(base_dir, address, person_cache)
 
         sendSignedJson(post_json_object, session, base_dir,
                        nickname, fromDomain, port,
@@ -3007,7 +3007,7 @@ def _sendToNamedAddresses(session, base_dir: str,
                        federation_list,
                        send_threads, postLog, cached_webfingers,
                        person_cache, debug, project_version,
-                       sharedItemsToken, groupAccount,
+                       sharedItemsToken, group_account,
                        signing_priv_key_pem, 34436782)
 
 
@@ -3190,9 +3190,9 @@ def sendToFollowers(session, base_dir: str,
         if withSharedInbox:
             toNickname = followerHandles[index].split('@')[0]
 
-            groupAccount = False
+            group_account = False
             if toNickname.startswith('!'):
-                groupAccount = True
+                group_account = True
                 toNickname = toNickname[1:]
 
             # if there are more than one followers on the domain
@@ -3217,7 +3217,7 @@ def sendToFollowers(session, base_dir: str,
                            federation_list,
                            send_threads, postLog, cached_webfingers,
                            person_cache, debug, project_version,
-                           sharedItemsToken, groupAccount,
+                           sharedItemsToken, group_account,
                            signing_priv_key_pem, 639342)
         else:
             # send to individual followers without using a shared inbox
@@ -3225,9 +3225,9 @@ def sendToFollowers(session, base_dir: str,
                 print('Sending post to followers ' + handle)
                 toNickname = handle.split('@')[0]
 
-                groupAccount = False
+                group_account = False
                 if toNickname.startswith('!'):
-                    groupAccount = True
+                    group_account = True
                     toNickname = toNickname[1:]
 
                 if post_json_object['type'] != 'Update':
@@ -3246,7 +3246,7 @@ def sendToFollowers(session, base_dir: str,
                                federation_list,
                                send_threads, postLog, cached_webfingers,
                                person_cache, debug, project_version,
-                               sharedItemsToken, groupAccount,
+                               sharedItemsToken, group_account,
                                signing_priv_key_pem, 634219)
 
         time.sleep(4)
@@ -4082,16 +4082,16 @@ def getPublicPostsOfPerson(base_dir: str, nickname: str, domain: str,
     person_cache = {}
     cached_webfingers = {}
     federation_list = []
-    groupAccount = False
+    group_account = False
     if nickname.startswith('!'):
         nickname = nickname[1:]
-        groupAccount = True
+        group_account = True
     domainFull = getFullDomain(domain, port)
     handle = http_prefix + "://" + domainFull + "/@" + nickname
 
     wfRequest = \
         webfingerHandle(session, handle, http_prefix, cached_webfingers,
-                        originDomain, project_version, debug, groupAccount,
+                        originDomain, project_version, debug, group_account,
                         signing_priv_key_pem)
     if not wfRequest:
         if debug:

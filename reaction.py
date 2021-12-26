@@ -99,12 +99,12 @@ def _reaction(recentPostsCache: {},
     reactionPostNickname = None
     reactionPostDomain = None
     reactionPostPort = None
-    groupAccount = False
+    group_account = False
     if actorReaction:
         reactionPostNickname = getNicknameFromActor(actorReaction)
         reactionPostDomain, reactionPostPort = \
             getDomainFromActor(actorReaction)
-        groupAccount = hasGroupType(base_dir, actorReaction, person_cache)
+        group_account = hasGroupType(base_dir, actorReaction, person_cache)
     else:
         if hasUsersPath(objectUrl):
             reactionPostNickname = getNicknameFromActor(objectUrl)
@@ -114,7 +114,7 @@ def _reaction(recentPostsCache: {},
                 actorReaction = \
                     objectUrl.split('/' + reactionPostNickname + '/')[0] + \
                     '/' + reactionPostNickname
-                groupAccount = \
+                group_account = \
                     hasGroupType(base_dir, actorReaction, person_cache)
 
     if reactionPostNickname:
@@ -139,7 +139,7 @@ def _reaction(recentPostsCache: {},
                        'https://www.w3.org/ns/activitystreams#Public',
                        http_prefix, True, client_to_server, federation_list,
                        send_threads, postLog, cached_webfingers, person_cache,
-                       debug, project_version, None, groupAccount,
+                       debug, project_version, None, group_account,
                        signing_priv_key_pem, 7165392)
 
     return newReactionJson

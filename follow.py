@@ -209,12 +209,12 @@ def getMutualsOfPerson(base_dir: str,
 def followerOfPerson(base_dir: str, nickname: str, domain: str,
                      followerNickname: str, followerDomain: str,
                      federation_list: [], debug: bool,
-                     groupAccount: bool) -> bool:
+                     group_account: bool) -> bool:
     """Adds a follower of the given person
     """
     return followPerson(base_dir, nickname, domain,
                         followerNickname, followerDomain,
-                        federation_list, debug, groupAccount, 'followers.txt')
+                        federation_list, debug, group_account, 'followers.txt')
 
 
 def getFollowerDomains(base_dir: str, nickname: str, domain: str) -> []:
@@ -283,14 +283,14 @@ def isFollowerOfPerson(base_dir: str, nickname: str, domain: str,
 
 def unfollowAccount(base_dir: str, nickname: str, domain: str,
                     followNickname: str, followDomain: str,
-                    debug: bool, groupAccount: bool,
+                    debug: bool, group_account: bool,
                     followFile: str = 'following.txt') -> bool:
     """Removes a person to the follow list
     """
     domain = removeDomainPort(domain)
     handle = nickname + '@' + domain
     handleToUnfollow = followNickname + '@' + followDomain
-    if groupAccount:
+    if group_account:
         handleToUnfollow = '!' + handleToUnfollow
     if not os.path.isdir(base_dir + '/accounts'):
         os.mkdir(base_dir + '/accounts')
@@ -348,12 +348,12 @@ def unfollowAccount(base_dir: str, nickname: str, domain: str,
 
 def unfollowerOfAccount(base_dir: str, nickname: str, domain: str,
                         followerNickname: str, followerDomain: str,
-                        debug: bool, groupAccount: bool) -> bool:
+                        debug: bool, group_account: bool) -> bool:
     """Remove a follower of a person
     """
     return unfollowAccount(base_dir, nickname, domain,
                            followerNickname, followerDomain,
-                           debug, groupAccount, 'followers.txt')
+                           debug, group_account, 'followers.txt')
 
 
 def clearFollows(base_dir: str, nickname: str, domain: str,
@@ -624,7 +624,7 @@ def storeFollowRequest(base_dir: str,
                        nickname: str, domain: str, fromPort: int,
                        followJson: {},
                        debug: bool, personUrl: str,
-                       groupAccount: bool) -> bool:
+                       group_account: bool) -> bool:
     """Stores the follow request for later use
     """
     accountsDir = base_dir + '/accounts/' + \
@@ -635,7 +635,7 @@ def storeFollowRequest(base_dir: str,
     domainFull = getFullDomain(domain, fromPort)
     approveHandle = getFullDomain(nickname + '@' + domain, fromPort)
 
-    if groupAccount:
+    if group_account:
         approveHandle = '!' + approveHandle
 
     followersFilename = accountsDir + '/followers.txt'
@@ -683,7 +683,7 @@ def storeFollowRequest(base_dir: str,
     approveHandleStored = approveHandle
     if '/users/' not in personUrl:
         approveHandleStored = personUrl
-        if groupAccount:
+        if group_account:
             approveHandle = '!' + approveHandle
 
     if os.path.isfile(approveFollowsFilename):
@@ -759,11 +759,11 @@ def followedAccountAccepts(session, base_dir: str, http_prefix: str,
                 print('EX: followedAccountAccepts unable to delete ' +
                       followActivityfilename)
 
-    groupAccount = False
+    group_account = False
     if followJson:
         if followJson.get('actor'):
             if hasGroupType(base_dir, followJson['actor'], person_cache):
-                groupAccount = True
+                group_account = True
 
     return sendSignedJson(acceptJson, session, base_dir,
                           nicknameToFollow, domainToFollow, port,
@@ -772,7 +772,7 @@ def followedAccountAccepts(session, base_dir: str, http_prefix: str,
                           federation_list,
                           send_threads, postLog, cached_webfingers,
                           person_cache, debug, project_version, None,
-                          groupAccount, signing_priv_key_pem,
+                          group_account, signing_priv_key_pem,
                           7856837)
 
 
@@ -820,9 +820,9 @@ def followedAccountRejects(session, base_dir: str, http_prefix: str,
               nickname + '@' + domain + ' port ' + str(fromPort))
     client_to_server = False
     denyHandle = getFullDomain(nickname + '@' + domain, fromPort)
-    groupAccount = False
+    group_account = False
     if hasGroupType(base_dir, personUrl, person_cache):
-        groupAccount = True
+        group_account = True
     # remove from the follow requests file
     removeFromFollowRequests(base_dir, nicknameToFollow, domainToFollow,
                              denyHandle, debug)
@@ -840,7 +840,7 @@ def followedAccountRejects(session, base_dir: str, http_prefix: str,
                           federation_list,
                           send_threads, postLog, cached_webfingers,
                           person_cache, debug, project_version, None,
-                          groupAccount, signing_priv_key_pem,
+                          group_account, signing_priv_key_pem,
                           6393063)
 
 
@@ -869,12 +869,12 @@ def sendFollowRequest(session, base_dir: str,
 
     statusNumber, published = getStatusNumber()
 
-    groupAccount = False
+    group_account = False
     if followNickname:
         followedId = followedActor
         followHandle = followNickname + '@' + requestDomain
-        groupAccount = hasGroupType(base_dir, followedActor, person_cache)
-        if groupAccount:
+        group_account = hasGroupType(base_dir, followedActor, person_cache)
+        if group_account:
             followHandle = '!' + followHandle
             print('Follow request being sent to group account')
     else:
@@ -911,7 +911,7 @@ def sendFollowRequest(session, base_dir: str,
         'actor': followActor,
         'object': followedId
     }
-    if groupAccount:
+    if group_account:
         newFollowJson['to'] = followedId
         print('Follow request: ' + str(newFollowJson))
 
@@ -931,7 +931,7 @@ def sendFollowRequest(session, base_dir: str,
                    http_prefix, True, client_to_server,
                    federation_list,
                    send_threads, postLog, cached_webfingers, person_cache,
-                   debug, project_version, None, groupAccount,
+                   debug, project_version, None, group_account,
                    signing_priv_key_pem, 8234389)
 
     return newFollowJson
@@ -1414,11 +1414,11 @@ def outboxUndoFollow(base_dir: str, message_json: {}, debug: bool) -> None:
         getDomainFromActor(message_json['object']['object'])
     domainFollowingFull = getFullDomain(domainFollowing, portFollowing)
 
-    groupAccount = \
+    group_account = \
         hasGroupType(base_dir, message_json['object']['object'], None)
     if unfollowAccount(base_dir, nicknameFollower, domainFollowerFull,
                        nicknameFollowing, domainFollowingFull,
-                       debug, groupAccount):
+                       debug, group_account):
         if debug:
             print('DEBUG: ' + nicknameFollower + ' unfollowed ' +
                   nicknameFollowing + '@' + domainFollowingFull)

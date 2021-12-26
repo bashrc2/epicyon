@@ -2954,13 +2954,13 @@ class PubServer(BaseHTTPRequestHandler):
                 }
                 pathUsersSection = path.split('/users/')[1]
                 self.postToNickname = pathUsersSection.split('/')[0]
-                groupAccount = hasGroupType(self.server.base_dir,
-                                            followingActor,
-                                            self.server.person_cache)
+                group_account = hasGroupType(self.server.base_dir,
+                                             followingActor,
+                                             self.server.person_cache)
                 unfollowAccount(self.server.base_dir, self.postToNickname,
                                 self.server.domain,
                                 followingNickname, followingDomainFull,
-                                self.server.debug, groupAccount)
+                                self.server.debug, group_account)
                 self._postToOutboxThread(unfollowJson)
 
         if callingDomain.endswith('.onion') and onion_domain:
