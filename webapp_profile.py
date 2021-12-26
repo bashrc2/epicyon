@@ -11,7 +11,7 @@ import os
 from pprint import pprint
 from webfinger import webfingerHandle
 from utils import getDisplayName
-from utils import isGroupAccount
+from utils import is_group_account
 from utils import has_object_dict
 from utils import getOccupationName
 from utils import get_locked_account
@@ -859,7 +859,7 @@ def htmlProfile(signing_priv_key_pem: str,
     deft = defaultTimeline
     isGroup = False
     followersStr = translate['Followers']
-    if isGroupAccount(base_dir, nickname, domain):
+    if is_group_account(base_dir, nickname, domain):
         isGroup = True
         followersStr = translate['Members']
     menuTimeline = \
@@ -2406,8 +2406,8 @@ def _individualFollowAsHtml(signing_priv_key_pem: str,
             elif b == 'unfollow':
                 unfollowStr = 'Unfollow'
                 if isGroup or \
-                   isGroupAccount(base_dir,
-                                  followUrlNickname, followUrlDomain):
+                   is_group_account(base_dir,
+                                    followUrlNickname, followUrlDomain):
                     unfollowStr = 'Leave'
                 buttonsStr += \
                     '<a href="/users/' + actorNickname + \

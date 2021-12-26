@@ -3032,13 +3032,13 @@ def isGroupActor(base_dir: str, actor: str, person_cache: {},
     return False
 
 
-def isGroupAccount(base_dir: str, nickname: str, domain: str) -> bool:
+def is_group_account(base_dir: str, nickname: str, domain: str) -> bool:
     """Returns true if the given account is a group
     """
-    accountFilename = acct_dir(base_dir, nickname, domain) + '.json'
-    if not os.path.isfile(accountFilename):
+    account_filename = acct_dir(base_dir, nickname, domain) + '.json'
+    if not os.path.isfile(account_filename):
         return False
-    if '"type": "Group"' in open(accountFilename).read():
+    if '"type": "Group"' in open(account_filename).read():
         return True
     return False
 

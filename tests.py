@@ -57,7 +57,7 @@ from siteactive import siteIsActive
 from utils import get_sha_256
 from utils import dangerousSVG
 from utils import canReplyTo
-from utils import isGroupAccount
+from utils import is_group_account
 from utils import get_actor_languages_list
 from utils import get_category_types
 from utils import get_supported_languages
@@ -1557,7 +1557,7 @@ def testFollowBetweenServers(base_dir: str) -> None:
                                       aliceDomain +
                                       '/followingCalendar.txt').read()
     assert not isGroupActor(aliceDir, bobActor, alicePersonCache)
-    assert not isGroupAccount(aliceDir, 'alice', aliceDomain)
+    assert not is_group_account(aliceDir, 'alice', aliceDomain)
 
     print('\n\n*********************************************************')
     print('Alice sends a message to Bob')
@@ -1774,7 +1774,7 @@ def testSharedItemsFederation(base_dir: str) -> None:
                                       aliceDomain +
                                       '/followingCalendar.txt').read()
     assert not isGroupActor(aliceDir, bobActor, alicePersonCache)
-    assert not isGroupAccount(bobDir, 'bob', bobDomain)
+    assert not is_group_account(bobDir, 'bob', bobDomain)
 
     print('\n\n*********************************************************')
     print('Bob publishes some shared items')
@@ -2231,8 +2231,8 @@ def testGroupFollow(base_dir: str) -> None:
         print('Alice following.txt does not contain !testgroup@' +
               testgroupDomain + ':' + str(testgroupPort))
     assert isGroupActor(aliceDir, testgroupActor, alicePersonCache)
-    assert not isGroupAccount(aliceDir, 'alice', aliceDomain)
-    assert isGroupAccount(testgroupDir, 'testgroup', testgroupDomain)
+    assert not is_group_account(aliceDir, 'alice', aliceDomain)
+    assert is_group_account(testgroupDir, 'testgroup', testgroupDomain)
     assert '!testgroup' in followingStr
     assert testgroupHandle in open(aliceFollowingFilename).read()
     assert testgroupHandle in open(aliceFollowingCalendarFilename).read()

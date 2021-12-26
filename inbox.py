@@ -18,7 +18,7 @@ from like import updateLikesCollection
 from reaction import updateReactionCollection
 from reaction import validEmojiContent
 from utils import domainPermitted
-from utils import isGroupAccount
+from utils import is_group_account
 from utils import isSystemAccount
 from utils import invalidCiphertext
 from utils import removeHtml
@@ -3986,7 +3986,7 @@ def _receiveFollowRequest(session, base_dir: str, http_prefix: str,
 
         group_account = \
             hasGroupType(base_dir, message_json['actor'], person_cache)
-        if group_account and isGroupAccount(base_dir, nickname, domain):
+        if group_account and is_group_account(base_dir, nickname, domain):
             print('Group cannot follow a group')
             return False
 
@@ -4033,7 +4033,7 @@ def _receiveFollowRequest(session, base_dir: str, http_prefix: str,
                         print(approveHandle + ' / ' + message_json['actor'] +
                               ' is Group: ' + str(group_account))
                     if group_account and \
-                       isGroupAccount(base_dir, nickname, domain):
+                       is_group_account(base_dir, nickname, domain):
                         print('Group cannot follow a group')
                         return False
                     try:
