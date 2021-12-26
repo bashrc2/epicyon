@@ -1970,12 +1970,12 @@ def _htmlEditProfileOptions(isAdmin: bool,
 def _getSupportedLanguagesSorted(base_dir: str) -> str:
     """Returns a list of supported languages
     """
-    langList = getSupportedLanguages(base_dir)
-    if not langList:
+    lang_list = getSupportedLanguages(base_dir)
+    if not lang_list:
         return ''
-    langList.sort()
+    lang_list.sort()
     languagesStr = ''
-    for lang in langList:
+    for lang in lang_list:
         if languagesStr:
             languagesStr += ' / ' + lang
         else:

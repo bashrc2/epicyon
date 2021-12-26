@@ -51,29 +51,29 @@ def get_actor_languages_list(actor_json: {}) -> []:
         if property_value['type'] != 'PropertyValue':
             continue
         if isinstance(property_value['value'], list):
-            langList = property_value['value']
-            langList.sort()
-            return langList
+            lang_list = property_value['value']
+            lang_list.sort()
+            return lang_list
         elif isinstance(property_value['value'], str):
             langStr = property_value['value']
-            langListTemp = []
+            lang_listTemp = []
             if ',' in langStr:
-                langListTemp = langStr.split(',')
+                lang_listTemp = langStr.split(',')
             elif ';' in langStr:
-                langListTemp = langStr.split(';')
+                lang_listTemp = langStr.split(';')
             elif '/' in langStr:
-                langListTemp = langStr.split('/')
+                lang_listTemp = langStr.split('/')
             elif '+' in langStr:
-                langListTemp = langStr.split('+')
+                lang_listTemp = langStr.split('+')
             elif ' ' in langStr:
-                langListTemp = langStr.split(' ')
-            langList = []
-            for lang in langListTemp:
+                lang_listTemp = langStr.split(' ')
+            lang_list = []
+            for lang in lang_listTemp:
                 lang = lang.strip()
-                if lang not in langList:
-                    langList.append(lang)
-            langList.sort()
-            return langList
+                if lang not in lang_list:
+                    lang_list.append(lang)
+            lang_list.sort()
+            return lang_list
     return []
 
 

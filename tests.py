@@ -5595,10 +5595,10 @@ def _testSetActorLanguages():
     assert actor_json['attachment'][0]['type'] == 'PropertyValue'
     assert isinstance(actor_json['attachment'][0]['value'], str)
     assert ',' in actor_json['attachment'][0]['value']
-    langList = get_actor_languages_list(actor_json)
-    assert 'en' in langList
-    assert 'fr' in langList
-    assert 'es' in langList
+    lang_list = get_actor_languages_list(actor_json)
+    assert 'en' in lang_list
+    assert 'fr' in lang_list
+    assert 'es' in lang_list
     languagesStr = getActorLanguages(actor_json)
     assert languagesStr == 'en / es / fr'
 

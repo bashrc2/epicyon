@@ -21,11 +21,11 @@ from cache import getPersonFromCache
 def getActorLanguages(actor_json: {}) -> str:
     """Returns a string containing languages used by the given actor
     """
-    langList = get_actor_languages_list(actor_json)
-    if not langList:
+    lang_list = get_actor_languages_list(actor_json)
+    if not lang_list:
         return ''
     languagesStr = ''
-    for lang in langList:
+    for lang in lang_list:
         if languagesStr:
             languagesStr += ' / ' + lang
         else:
@@ -48,22 +48,22 @@ def setActorLanguages(base_dir: str, actor_json: {},
         separator = '+'
     elif ' ' in languagesStr:
         separator = ' '
-    langList = languagesStr.lower().split(separator)
-    langList2 = ''
-    for lang in langList:
+    lang_list = languagesStr.lower().split(separator)
+    lang_list2 = ''
+    for lang in lang_list:
         lang = lang.strip()
         if base_dir:
             languageFilename = base_dir + '/translations/' + lang + '.json'
             if os.path.isfile(languageFilename):
-                if langList2:
-                    langList2 += ', ' + lang.strip()
+                if lang_list2:
+                    lang_list2 += ', ' + lang.strip()
                 else:
-                    langList2 += lang.strip()
+                    lang_list2 += lang.strip()
         else:
-            if langList2:
-                langList2 += ', ' + lang.strip()
+            if lang_list2:
+                lang_list2 += ', ' + lang.strip()
             else:
-                langList2 += lang.strip()
+                lang_list2 += lang.strip()
 
     # remove any existing value
     propertyFound = None
@@ -79,13 +79,13 @@ def setActorLanguages(base_dir: str, actor_json: {},
     if propertyFound:
         actor_json['attachment'].remove(propertyFound)
 
-    if not langList2:
+    if not lang_list2:
         return
 
     newLanguages = {
         "name": "Languages",
         "type": "PropertyValue",
-        "value": langList2
+        "value": lang_list2
     }
     actor_json['attachment'].append(newLanguages)
 
@@ -121,9 +121,9 @@ def understoodPostLanguage(base_dir: str, nickname: str, domain: str,
     libretranslateUrl = getConfigParam(base_dir, "libretranslateUrl")
     if libretranslateUrl:
         libretranslateApiKey = getConfigParam(base_dir, "libretranslateApiKey")
-        langList = \
+        lang_list = \
             libretranslateLanguages(libretranslateUrl, libretranslateApiKey)
-        for lang in langList:
+        for lang in lang_list:
             if msgObject['contentMap'].get(lang):
                 return True
     return False
@@ -159,7 +159,7 @@ def libretranslateLanguages(url: str, apiKey: str = None) -> []:
     if not isinstance(result, list):
         return []
 
-    langList = []
+    lang_list = []
     for lang in result:
         if not isinstance(lang, dict):
             continue
@@ -168,9 +168,9 @@ def libretranslateLanguages(url: str, apiKey: str = None) -> []:
         langCode = lang['code']
         if len(langCode) != 2:
             continue
-        langList.append(langCode)
-    langList.sort()
-    return langList
+        lang_list.append(langCode)
+    lang_list.sort()
+    return lang_list
 
 
 def getLinksFromContent(content: str) -> {}:
@@ -291,9 +291,9 @@ def autoTranslatePost(base_dir: str, post_json_object: {},
     if not libretranslateUrl:
         return ''
     libretranslateApiKey = getConfigParam(base_dir, "libretranslateApiKey")
-    langList = \
+    lang_list = \
         libretranslateLanguages(libretranslateUrl, libretranslateApiKey)
-    for lang in langList:
+    for lang in lang_list:
         if msgObject['contentMap'].get(lang):
             content = msgObject['contentMap'][lang]
             translatedText = \
