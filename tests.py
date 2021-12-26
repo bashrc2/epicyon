@@ -5248,10 +5248,10 @@ def _testSpoofGeolocation() -> None:
     assert not pointInNogo(testSquare, -5, -5)
     assert not pointInNogo(testSquare, -5, 5)
     nogoList = []
-    currTime = datetime.datetime.utcnow()
+    curr_time = datetime.datetime.utcnow()
     decoySeed = 7634681
     cityRadius = 0.1
-    coords = spoofGeolocation('', 'los angeles', currTime,
+    coords = spoofGeolocation('', 'los angeles', curr_time,
                               decoySeed, citiesList, nogoList)
     assert coords[0] >= 34.0536909 - cityRadius
     assert coords[0] <= 34.0536909 + cityRadius
@@ -5263,7 +5263,7 @@ def _testSpoofGeolocation() -> None:
     assert len(coords[5]) > 4
     assert coords[6] > 0
     nogoList = []
-    coords = spoofGeolocation('', 'unknown', currTime,
+    coords = spoofGeolocation('', 'unknown', curr_time,
                               decoySeed, citiesList, nogoList)
     assert coords[0] >= 51.8744 - cityRadius
     assert coords[0] <= 51.8744 + cityRadius
@@ -5292,8 +5292,8 @@ def _testSpoofGeolocation() -> None:
         if hour < 10:
             hourStr = '0' + hourStr
         dateTimeStr = "2021-05-" + str(dayNumber) + " " + hourStr + ":14"
-        currTime = datetime.datetime.strptime(dateTimeStr, "%Y-%m-%d %H:%M")
-        coords = spoofGeolocation('', 'new york, usa', currTime,
+        curr_time = datetime.datetime.strptime(dateTimeStr, "%Y-%m-%d %H:%M")
+        coords = spoofGeolocation('', 'new york, usa', curr_time,
                                   decoySeed, citiesList, nogoList)
         longitude = coords[1]
         if coords[3] == 'W':
@@ -5329,8 +5329,8 @@ def _testSpoofGeolocation() -> None:
         if hour < 10:
             hourStr = '0' + hourStr
         dateTimeStr = "2021-05-" + str(dayNumber) + " " + hourStr + ":14"
-        currTime = datetime.datetime.strptime(dateTimeStr, "%Y-%m-%d %H:%M")
-        coords = spoofGeolocation('', 'london, england', currTime,
+        curr_time = datetime.datetime.strptime(dateTimeStr, "%Y-%m-%d %H:%M")
+        coords = spoofGeolocation('', 'london, england', curr_time,
                                   decoySeed, citiesList, nogoList)
         longitude = coords[1]
         if coords[3] == 'W':
@@ -5379,8 +5379,8 @@ def _testSpoofGeolocation() -> None:
         if hour < 10:
             hourStr = '0' + hourStr
         dateTimeStr = "2021-05-" + str(dayNumber) + " " + hourStr + ":14"
-        currTime = datetime.datetime.strptime(dateTimeStr, "%Y-%m-%d %H:%M")
-        coords = spoofGeolocation('', 'SAN FRANCISCO, USA', currTime,
+        curr_time = datetime.datetime.strptime(dateTimeStr, "%Y-%m-%d %H:%M")
+        coords = spoofGeolocation('', 'SAN FRANCISCO, USA', curr_time,
                                   decoySeed, citiesList, nogoList)
         longitude = coords[1]
         if coords[3] == 'W':
@@ -5433,8 +5433,8 @@ def _testSpoofGeolocation() -> None:
         if hour < 10:
             hourStr = '0' + hourStr
         dateTimeStr = "2021-05-" + str(dayNumber) + " " + hourStr + ":14"
-        currTime = datetime.datetime.strptime(dateTimeStr, "%Y-%m-%d %H:%M")
-        coords = spoofGeolocation('', 'SEATTLE, USA', currTime,
+        curr_time = datetime.datetime.strptime(dateTimeStr, "%Y-%m-%d %H:%M")
+        coords = spoofGeolocation('', 'SEATTLE, USA', curr_time,
                                   decoySeed, citiesList, nogoList)
         longitude = coords[1]
         if coords[3] == 'W':

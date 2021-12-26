@@ -59,10 +59,10 @@ def storePersonInCache(base_dir: str, personUrl: str,
         # This is not an actor or person account
         return
 
-    currTime = datetime.datetime.utcnow()
+    curr_time = datetime.datetime.utcnow()
     person_cache[personUrl] = {
         "actor": personJson,
-        "timestamp": currTime.strftime("%Y-%m-%dT%H:%M:%SZ")
+        "timestamp": curr_time.strftime("%Y-%m-%dT%H:%M:%SZ")
     }
     if not base_dir:
         return
@@ -98,9 +98,9 @@ def getPersonFromCache(base_dir: str, personUrl: str, person_cache: {},
     if person_cache.get(personUrl):
         if not loadedFromFile:
             # update the timestamp for the last time the actor was retrieved
-            currTime = datetime.datetime.utcnow()
-            currTimeStr = currTime.strftime("%Y-%m-%dT%H:%M:%SZ")
-            person_cache[personUrl]['timestamp'] = currTimeStr
+            curr_time = datetime.datetime.utcnow()
+            curr_timeStr = curr_time.strftime("%Y-%m-%dT%H:%M:%SZ")
+            person_cache[personUrl]['timestamp'] = curr_timeStr
         return person_cache[personUrl]['actor']
     return None
 
@@ -108,12 +108,12 @@ def getPersonFromCache(base_dir: str, personUrl: str, person_cache: {},
 def expirePersonCache(person_cache: {}):
     """Expires old entries from the cache in memory
     """
-    currTime = datetime.datetime.utcnow()
+    curr_time = datetime.datetime.utcnow()
     removals = []
     for personUrl, cacheJson in person_cache.items():
         cacheTime = datetime.datetime.strptime(cacheJson['timestamp'],
                                                "%Y-%m-%dT%H:%M:%SZ")
-        daysSinceCached = (currTime - cacheTime).days
+        daysSinceCached = (curr_time - cacheTime).days
         if daysSinceCached > 2:
             removals.append(personUrl)
     if len(removals) > 0:

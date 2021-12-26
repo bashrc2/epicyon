@@ -131,13 +131,13 @@ def _spoofMetaData(base_dir: str, nickname: str, domain: str,
 
     if os.path.isfile('/usr/bin/exiftool'):
         print('Spoofing metadata in ' + outputFilename + ' using exiftool')
-        currTimeAdjusted = \
+        curr_timeAdjusted = \
             datetime.datetime.utcnow() - \
             datetime.timedelta(minutes=randint(2, 120))
-        published = currTimeAdjusted.strftime("%Y:%m:%d %H:%M:%S+00:00")
+        published = curr_timeAdjusted.strftime("%Y:%m:%d %H:%M:%S+00:00")
         (latitude, longitude, latitudeRef, longitudeRef,
          camMake, camModel, camSerialNumber) = \
-            spoofGeolocation(base_dir, spoofCity, currTimeAdjusted,
+            spoofGeolocation(base_dir, spoofCity, curr_timeAdjusted,
                              decoySeed, None, None)
         if os.system('exiftool -artist=@"' + nickname + '@' + domain + '" ' +
                      '-Make="' + camMake + '" ' +
@@ -236,8 +236,8 @@ def createMediaDirs(base_dir: str, mediaPath: str) -> None:
 
 
 def getMediaPath() -> str:
-    currTime = datetime.datetime.utcnow()
-    weeksSinceEpoch = int((currTime - datetime.datetime(1970, 1, 1)).days / 7)
+    curr_time = datetime.datetime.utcnow()
+    weeksSinceEpoch = int((curr_time - datetime.datetime(1970, 1, 1)).days / 7)
     return 'media/' + str(weeksSinceEpoch)
 
 
@@ -371,8 +371,8 @@ def archiveMedia(base_dir: str, archive_directory: str, maxWeeks: int) -> None:
     if maxWeeks == 0:
         return
 
-    currTime = datetime.datetime.utcnow()
-    weeksSinceEpoch = int((currTime - datetime.datetime(1970, 1, 1)).days/7)
+    curr_time = datetime.datetime.utcnow()
+    weeksSinceEpoch = int((curr_time - datetime.datetime(1970, 1, 1)).days/7)
     minWeek = weeksSinceEpoch - maxWeeks
 
     if archive_directory:

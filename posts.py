@@ -1925,9 +1925,9 @@ def createQuestionPost(base_dir: str,
     message_json['object']['type'] = 'Question'
     message_json['object']['oneOf'] = []
     message_json['object']['votersCount'] = 0
-    currTime = datetime.datetime.utcnow()
+    curr_time = datetime.datetime.utcnow()
     daysSinceEpoch = \
-        int((currTime - datetime.datetime(1970, 1, 1)).days + durationDays)
+        int((curr_time - datetime.datetime(1970, 1, 1)).days + durationDays)
     endTime = datetime.datetime(1970, 1, 1) + \
         datetime.timedelta(daysSinceEpoch)
     message_json['object']['endTime'] = endTime.strftime("%Y-%m-%dT%H:%M:%SZ")

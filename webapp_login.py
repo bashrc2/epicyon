@@ -28,8 +28,8 @@ def htmlGetLoginCredentials(loginParams: str,
     if not loginParams.startswith('username='):
         return None, None, None
     # minimum time between login attempts
-    currTime = int(time.time())
-    if currTime < last_login_time+10:
+    curr_time = int(time.time())
+    if curr_time < last_login_time+10:
         return None, None, None
     if '&' not in loginParams:
         return None, None, None

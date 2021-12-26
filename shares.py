@@ -424,10 +424,10 @@ def _expireSharesForAccount(base_dir: str, nickname: str, domain: str,
     sharesJson = loadJson(sharesFilename, 1, 2)
     if not sharesJson:
         return
-    currTime = int(time.time())
+    curr_time = int(time.time())
     deleteItemID = []
     for itemID, item in sharesJson.items():
-        if currTime > item['expire']:
+        if curr_time > item['expire']:
             deleteItemID.append(itemID)
     if not deleteItemID:
         return
@@ -1639,10 +1639,10 @@ def _generateNextSharesTokenUpdate(base_dir: str,
             if nextUpdateStr:
                 if nextUpdateStr.isdigit():
                     nextUpdateSec = int(nextUpdateStr)
-    currTime = int(time.time())
+    curr_time = int(time.time())
     updated = False
     if nextUpdateSec:
-        if currTime > nextUpdateSec:
+        if curr_time > nextUpdateSec:
             nextUpdateDays = randint(minDays, maxDays)
             nextUpdateInterval = int(60 * 60 * 24 * nextUpdateDays)
             nextUpdateSec += nextUpdateInterval
@@ -1650,7 +1650,7 @@ def _generateNextSharesTokenUpdate(base_dir: str,
     else:
         nextUpdateDays = randint(minDays, maxDays)
         nextUpdateInterval = int(60 * 60 * 24 * nextUpdateDays)
-        nextUpdateSec = currTime + nextUpdateInterval
+        nextUpdateSec = curr_time + nextUpdateInterval
         updated = True
     if updated:
         with open(tokenUpdateFilename, 'w+') as fp:
@@ -1685,8 +1685,8 @@ def _regenerateSharesToken(base_dir: str, domain_full: str,
                 nextUpdateSec = int(nextUpdateStr)
     if not nextUpdateSec:
         return
-    currTime = int(time.time())
-    if currTime <= nextUpdateSec:
+    curr_time = int(time.time())
+    if curr_time <= nextUpdateSec:
         return
     createSharedItemFederationToken(base_dir, domain_full, True, None)
     _generateNextSharesTokenUpdate(base_dir, minDays, maxDays)
@@ -1768,7 +1768,7 @@ def _dfcToSharesFormat(catalogJson: {},
             _loadDfcIds(base_dir, system_language, productType,
                         http_prefix, domain_full)
 
-    currTime = int(time.time())
+    curr_time = int(time.time())
     for item in catalogJson['DFC:supplies']:
         if not item.get('@id') or \
            not item.get('@type') or \
@@ -1793,7 +1793,7 @@ def _dfcToSharesFormat(catalogJson: {},
         expiryTimeSec = dateStringToSeconds(item['DFC:expiryDate'])
         if not expiryTimeSec:
             continue
-        if expiryTimeSec < currTime:
+        if expiryTimeSec < curr_time:
             # has expired
             continue
 

@@ -162,12 +162,12 @@ def signPostHeadersNew(dateStr: str, privateKeyPem: str,
 
     timeFormat = "%a, %d %b %Y %H:%M:%S %Z"
     if not dateStr:
-        currTime = gmtime()
-        dateStr = strftime(timeFormat, currTime)
+        curr_time = gmtime()
+        dateStr = strftime(timeFormat, curr_time)
     else:
-        currTime = datetime.datetime.strptime(dateStr, timeFormat)
+        curr_time = datetime.datetime.strptime(dateStr, timeFormat)
     secondsSinceEpoch = \
-        int((currTime - datetime.datetime(1970, 1, 1)).total_seconds())
+        int((curr_time - datetime.datetime(1970, 1, 1)).total_seconds())
     keyID = local_actor_url(http_prefix, nickname, domain) + '#main-key'
     if not messageBodyJsonStr:
         headers = {

@@ -28,8 +28,8 @@ def _updatePostSchedule(base_dir: str, handle: str, httpd,
         return
 
     # get the current time as an int
-    currTime = datetime.datetime.utcnow()
-    daysSinceEpoch = (currTime - datetime.datetime(1970, 1, 1)).days
+    curr_time = datetime.datetime.utcnow()
+    daysSinceEpoch = (curr_time - datetime.datetime(1970, 1, 1)).days
 
     scheduleDir = base_dir + '/accounts/' + handle + '/scheduled/'
     indexLines = []
@@ -64,9 +64,9 @@ def _updatePostSchedule(base_dir: str, handle: str, httpd,
             if daysSinceEpoch < postDaysSinceEpoch:
                 continue
             if daysSinceEpoch == postDaysSinceEpoch:
-                if currTime.time().hour < postTime.time().hour:
+                if curr_time.time().hour < postTime.time().hour:
                     continue
-                if currTime.time().minute < postTime.time().minute:
+                if curr_time.time().minute < postTime.time().minute:
                     continue
             if not os.path.isfile(postFilename):
                 print('WARN: schedule missing postFilename=' + postFilename)

@@ -1366,7 +1366,7 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
     _sayCommand(sayStr, sayStr, screenreader,
                 system_language, espeak)
 
-    currTimeline = 'inbox'
+    curr_timeline = 'inbox'
     pageNumber = 1
 
     post_json_object = {}
@@ -1445,7 +1445,7 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
         boxJson = c2sBoxJson(base_dir, session,
                              nickname, password,
                              domain, port, http_prefix,
-                             currTimeline, pageNumber,
+                             curr_timeline, pageNumber,
                              debug, signing_priv_key_pem)
 
         followRequestsJson = \
@@ -1457,7 +1457,7 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                                        debug, __version__,
                                        signing_priv_key_pem)
 
-        if not (currTimeline == 'inbox' and pageNumber == 1):
+        if not (curr_timeline == 'inbox' and pageNumber == 1):
             # monitor the inbox to generate notifications
             inboxJson = c2sBoxJson(base_dir, session,
                                    nickname, password,
@@ -1492,7 +1492,7 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
             if timelineFirstId != prevTimelineFirstId:
                 _desktopClearScreen()
                 _desktopShowBox(indent, followRequestsJson,
-                                yourActor, currTimeline, boxJson,
+                                yourActor, curr_timeline, boxJson,
                                 translate,
                                 None, system_language, espeak,
                                 pageNumber,
@@ -1535,15 +1535,15 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
             elif commandStr.startswith('show dm'):
                 pageNumber = 1
                 prevTimelineFirstId = ''
-                currTimeline = 'dm'
+                curr_timeline = 'dm'
                 boxJson = c2sBoxJson(base_dir, session,
                                      nickname, password,
                                      domain, port, http_prefix,
-                                     currTimeline, pageNumber,
+                                     curr_timeline, pageNumber,
                                      debug, signing_priv_key_pem)
                 if boxJson:
                     _desktopShowBox(indent, followRequestsJson,
-                                    yourActor, currTimeline, boxJson,
+                                    yourActor, curr_timeline, boxJson,
                                     translate,
                                     screenreader, system_language, espeak,
                                     pageNumber,
@@ -1552,15 +1552,15 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
             elif commandStr.startswith('show rep'):
                 pageNumber = 1
                 prevTimelineFirstId = ''
-                currTimeline = 'tlreplies'
+                curr_timeline = 'tlreplies'
                 boxJson = c2sBoxJson(base_dir, session,
                                      nickname, password,
                                      domain, port, http_prefix,
-                                     currTimeline, pageNumber,
+                                     curr_timeline, pageNumber,
                                      debug, signing_priv_key_pem)
                 if boxJson:
                     _desktopShowBox(indent, followRequestsJson,
-                                    yourActor, currTimeline, boxJson,
+                                    yourActor, curr_timeline, boxJson,
                                     translate,
                                     screenreader, system_language, espeak,
                                     pageNumber,
@@ -1570,15 +1570,15 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
             elif commandStr.startswith('show b'):
                 pageNumber = 1
                 prevTimelineFirstId = ''
-                currTimeline = 'tlbookmarks'
+                curr_timeline = 'tlbookmarks'
                 boxJson = c2sBoxJson(base_dir, session,
                                      nickname, password,
                                      domain, port, http_prefix,
-                                     currTimeline, pageNumber,
+                                     curr_timeline, pageNumber,
                                      debug, signing_priv_key_pem)
                 if boxJson:
                     _desktopShowBox(indent, followRequestsJson,
-                                    yourActor, currTimeline, boxJson,
+                                    yourActor, curr_timeline, boxJson,
                                     translate,
                                     screenreader, system_language, espeak,
                                     pageNumber,
@@ -1589,15 +1589,15 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                   commandStr.startswith('show out')):
                 pageNumber = 1
                 prevTimelineFirstId = ''
-                currTimeline = 'outbox'
+                curr_timeline = 'outbox'
                 boxJson = c2sBoxJson(base_dir, session,
                                      nickname, password,
                                      domain, port, http_prefix,
-                                     currTimeline, pageNumber,
+                                     curr_timeline, pageNumber,
                                      debug, signing_priv_key_pem)
                 if boxJson:
                     _desktopShowBox(indent, followRequestsJson,
-                                    yourActor, currTimeline, boxJson,
+                                    yourActor, curr_timeline, boxJson,
                                     translate,
                                     screenreader, system_language, espeak,
                                     pageNumber,
@@ -1606,7 +1606,7 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                   commandStr == 'clear'):
                 pageNumber = 1
                 prevTimelineFirstId = ''
-                currTimeline = 'inbox'
+                curr_timeline = 'inbox'
                 refreshTimeline = True
             elif commandStr.startswith('next'):
                 pageNumber += 1
@@ -1620,11 +1620,11 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                 boxJson = c2sBoxJson(base_dir, session,
                                      nickname, password,
                                      domain, port, http_prefix,
-                                     currTimeline, pageNumber,
+                                     curr_timeline, pageNumber,
                                      debug, signing_priv_key_pem)
                 if boxJson:
                     _desktopShowBox(indent, followRequestsJson,
-                                    yourActor, currTimeline, boxJson,
+                                    yourActor, curr_timeline, boxJson,
                                     translate,
                                     screenreader, system_language, espeak,
                                     pageNumber,
@@ -1640,7 +1640,7 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                     postIndex = int(postIndexStr)
                     post_json_object = \
                         _readLocalBoxPost(session, nickname, domain,
-                                          http_prefix, base_dir, currTimeline,
+                                          http_prefix, base_dir, curr_timeline,
                                           pageNumber, postIndex, boxJson,
                                           system_language, screenreader,
                                           espeak, translate, yourActor,
@@ -1663,7 +1663,7 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                         actor_json = \
                             _desktopShowProfile(session, nickname, domain,
                                                 http_prefix, base_dir,
-                                                currTimeline,
+                                                curr_timeline,
                                                 pageNumber, postIndex,
                                                 boxJson,
                                                 system_language, screenreader,
@@ -1681,7 +1681,7 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                     _desktopShowBanner()
                     _desktopShowProfileFromHandle(session, nickname, domain,
                                                   http_prefix, base_dir,
-                                                  currTimeline,
+                                                  curr_timeline,
                                                   profileHandle,
                                                   system_language,
                                                   screenreader,
@@ -1703,7 +1703,7 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                     actor_json = \
                         _desktopShowProfile(session, nickname, domain,
                                             http_prefix, base_dir,
-                                            currTimeline,
+                                            curr_timeline,
                                             pageNumber, postIndex,
                                             boxJson,
                                             system_language, screenreader,
@@ -2511,7 +2511,7 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
             if refreshTimeline:
                 if boxJson:
                     _desktopShowBox(indent, followRequestsJson,
-                                    yourActor, currTimeline, boxJson,
+                                    yourActor, curr_timeline, boxJson,
                                     translate,
                                     screenreader, system_language,
                                     espeak, pageNumber,

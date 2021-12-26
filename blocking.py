@@ -272,11 +272,11 @@ def updateBlockedCache(base_dir: str,
                        blockedCacheUpdateSecs: int) -> int:
     """Updates the cache of globally blocked domains held in memory
     """
-    currTime = int(time.time())
-    if blockedCacheLastUpdated > currTime:
+    curr_time = int(time.time())
+    if blockedCacheLastUpdated > curr_time:
         print('WARN: Cache updated in the future')
         blockedCacheLastUpdated = 0
-    secondsSinceLastUpdate = currTime - blockedCacheLastUpdated
+    secondsSinceLastUpdate = curr_time - blockedCacheLastUpdated
     if secondsSinceLastUpdate < blockedCacheUpdateSecs:
         return blockedCacheLastUpdated
     globalBlockingFilename = base_dir + '/accounts/blocking.txt'
@@ -293,7 +293,7 @@ def updateBlockedCache(base_dir: str,
             blockedCache += blockedLines
     except OSError as ex:
         print('EX: unable to read ' + globalBlockingFilename + ' ' + str(ex))
-    return currTime
+    return curr_time
 
 
 def _getShortDomain(domain: str) -> str:
@@ -963,8 +963,8 @@ def broch_modeLapses(base_dir: str, lapseDays: int) -> bool:
         return False
     if not modifiedDate:
         return False
-    currTime = datetime.datetime.utcnow()
-    daysSinceBroch = (currTime - modifiedDate).days
+    curr_time = datetime.datetime.utcnow()
+    daysSinceBroch = (curr_time - modifiedDate).days
     if daysSinceBroch >= lapseDays:
         removed = False
         try:

@@ -65,8 +65,8 @@ def htmlHashTagSwarm(base_dir: str, actor: str, translate: {}) -> str:
     """Returns a tag swarm of today's hashtags
     """
     maxTagLength = 42
-    currTime = datetime.utcnow()
-    daysSinceEpoch = (currTime - datetime(1970, 1, 1)).days
+    curr_time = datetime.utcnow()
+    daysSinceEpoch = (curr_time - datetime(1970, 1, 1)).days
     daysSinceEpochStr = str(daysSinceEpoch) + ' '
     daysSinceEpochStr2 = str(daysSinceEpoch - 1) + ' '
     recently = daysSinceEpoch - 1

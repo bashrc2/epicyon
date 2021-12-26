@@ -88,7 +88,7 @@ def _getDecoyCamera(decoySeed: int) -> (str, str, int):
     return cameras[index][0], cameras[index][1], serialNumber
 
 
-def _getCityPulse(currTimeOfDay, decoySeed: int) -> (float, float):
+def _getCityPulse(curr_timeOfDay, decoySeed: int) -> (float, float):
     """This simulates expected average patterns of movement in a city.
     Jane or Joe average lives and works in the city, commuting in
     and out of the central district for work. They have a unique
@@ -101,11 +101,11 @@ def _getCityPulse(currTimeOfDay, decoySeed: int) -> (float, float):
     variance = 3
     busyStates = (PERSON_WORK, PERSON_SHOP, PERSON_PLAY, PERSON_PARTY)
     dataDecoyState = PERSON_SLEEP
-    weekday = currTimeOfDay.weekday()
+    weekday = curr_timeOfDay.weekday()
     minHour = 7 + randint(0, variance)
     maxHour = 17 + randint(0, variance)
-    if currTimeOfDay.hour > minHour:
-        if currTimeOfDay.hour <= maxHour:
+    if curr_timeOfDay.hour > minHour:
+        if curr_timeOfDay.hour <= maxHour:
             if weekday < 5:
                 dataDecoyState = PERSON_WORK
             elif weekday == 5:
@@ -177,7 +177,7 @@ def parseNogoString(nogoLine: str) -> []:
 
 
 def spoofGeolocation(base_dir: str,
-                     city: str, currTime, decoySeed: int,
+                     city: str, curr_time, decoySeed: int,
                      citiesList: [],
                      nogoList: []) -> (float, float, str, str,
                                        str, str, int):
@@ -255,7 +255,7 @@ def spoofGeolocation(base_dir: str,
             approxTimeZone = int(longitude / 15.0)
             if longdirection == 'E':
                 approxTimeZone = -approxTimeZone
-            currTimeAdjusted = currTime - \
+            curr_timeAdjusted = curr_time - \
                 datetime.timedelta(hours=approxTimeZone)
             camMake, camModel, camSerialNumber = \
                 _getDecoyCamera(decoySeed)
@@ -264,7 +264,7 @@ def spoofGeolocation(base_dir: str,
             while not validCoord:
                 # patterns of activity change in the city over time
                 (distanceFromCityCenter, angleRadians) = \
-                    _getCityPulse(currTimeAdjusted, decoySeed + seedOffset)
+                    _getCityPulse(curr_timeAdjusted, decoySeed + seedOffset)
                 # The city radius value is in longitude and the reference
                 # is Manchester. Adjust for the radius of the chosen city.
                 if areaKm2 > 1:

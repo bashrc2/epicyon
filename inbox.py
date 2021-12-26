@@ -533,12 +533,12 @@ def savePostToInboxQueue(base_dir: str, http_prefix: str,
             return None
         originalPostId = removeIdEnding(post_json_object['id'])
 
-    currTime = datetime.datetime.utcnow()
+    curr_time = datetime.datetime.utcnow()
 
     postId = None
     if post_json_object.get('id'):
         postId = removeIdEnding(post_json_object['id'])
-        published = currTime.strftime("%Y-%m-%dT%H:%M:%SZ")
+        published = curr_time.strftime("%Y-%m-%dT%H:%M:%SZ")
     if not postId:
         statusNumber, published = getStatusNumber()
         if actor:
@@ -2780,8 +2780,8 @@ def _updateLastSeen(base_dir: str, handle: str, actor: str) -> None:
     if not os.path.isdir(lastSeenPath):
         os.mkdir(lastSeenPath)
     lastSeenFilename = lastSeenPath + '/' + actor.replace('/', '#') + '.txt'
-    currTime = datetime.datetime.utcnow()
-    daysSinceEpoch = (currTime - datetime.datetime(1970, 1, 1)).days
+    curr_time = datetime.datetime.utcnow()
+    daysSinceEpoch = (curr_time - datetime.datetime(1970, 1, 1)).days
     # has the value changed?
     if os.path.isfile(lastSeenFilename):
         with open(lastSeenFilename, 'r') as lastSeenFile:
@@ -2815,12 +2815,12 @@ def _bounceDM(senderPostId: str, session, http_prefix: str,
     # Don't send out bounce messages too frequently.
     # Otherwise an adversary could try to DoS your instance
     # by continuously sending DMs to you
-    currTime = int(time.time())
-    if currTime - lastBounceMessage[0] < 60:
+    curr_time = int(time.time())
+    if curr_time - lastBounceMessage[0] < 60:
         return False
 
     # record the last time that a bounce was generated
-    lastBounceMessage[0] = currTime
+    lastBounceMessage[0] = curr_time
 
     senderNickname = sendingHandle.split('@')[0]
     group_account = False
@@ -4152,15 +4152,15 @@ def runInboxQueue(recentPostsCache: {}, max_recent_posts: int,
                 _restoreQueueItems(base_dir, queue)
             continue
 
-        currTime = int(time.time())
+        curr_time = int(time.time())
 
         # recreate the session periodically
-        if not session or currTime - session_last_update > 21600:
+        if not session or curr_time - session_last_update > 21600:
             print('Regenerating inbox queue session at 6hr interval')
             session = createSession(proxy_type)
             if not session:
                 continue
-            session_last_update = currTime
+            session_last_update = curr_time
 
         # oldest item first
         queue.sort()
@@ -4193,14 +4193,14 @@ def runInboxQueue(recentPostsCache: {}, max_recent_posts: int,
             continue
 
         # clear the daily quotas for maximum numbers of received posts
-        if currTime - quotasLastUpdateDaily > 60 * 60 * 24:
+        if curr_time - quotasLastUpdateDaily > 60 * 60 * 24:
             quotasDaily = {
                 'domains': {},
                 'accounts': {}
             }
-            quotasLastUpdateDaily = currTime
+            quotasLastUpdateDaily = curr_time
 
-        if currTime - quotasLastUpdatePerMin > 60:
+        if curr_time - quotasLastUpdatePerMin > 60:
             # clear the per minute quotas for maximum numbers of received posts
             quotasPerMin = {
                 'domains': {},
@@ -4211,7 +4211,7 @@ def runInboxQueue(recentPostsCache: {}, max_recent_posts: int,
             if verifyAllSigs is not None:
                 verify_all_signatures = verifyAllSigs
             # change the last time that this was done
-            quotasLastUpdatePerMin = currTime
+            quotasLastUpdatePerMin = curr_time
 
         if _inboxQuotaExceeded(queue, queueFilename,
                                queueJson, quotasDaily, quotasPerMin,

@@ -83,7 +83,7 @@ def removeDormantThreads(base_dir: str, threadsList: [], debug: bool,
 
     timeoutSecs = int(timeoutMins * 60)
     dormantThreads = []
-    currTime = datetime.datetime.utcnow()
+    curr_time = datetime.datetime.utcnow()
     changed = False
 
     # which threads are dormant?
@@ -93,19 +93,19 @@ def removeDormantThreads(base_dir: str, threadsList: [], debug: bool,
 
         if th.isStarted:
             if not th.is_alive():
-                if (currTime - th.startTime).total_seconds() > 10:
+                if (curr_time - th.startTime).total_seconds() > 10:
                     if debug:
                         print('DEBUG: ' +
                               'thread is not alive ten seconds after start')
                     removeThread = True
             # timeout for started threads
-            if (currTime - th.startTime).total_seconds() > timeoutSecs:
+            if (curr_time - th.startTime).total_seconds() > timeoutSecs:
                 if debug:
                     print('DEBUG: started thread timed out')
                 removeThread = True
         else:
             # timeout for threads which havn't been started
-            if (currTime - th.startTime).total_seconds() > timeoutSecs:
+            if (curr_time - th.startTime).total_seconds() > timeoutSecs:
                 if debug:
                     print('DEBUG: unstarted thread timed out')
                 removeThread = True
@@ -146,7 +146,7 @@ def removeDormantThreads(base_dir: str, threadsList: [], debug: bool,
         sendLogFilename = base_dir + '/send.csv'
         try:
             with open(sendLogFilename, 'a+') as logFile:
-                logFile.write(currTime.strftime("%Y-%m-%dT%H:%M:%SZ") +
+                logFile.write(curr_time.strftime("%Y-%m-%dT%H:%M:%SZ") +
                               ',' + str(noOfActiveThreads) +
                               ',' + str(len(threadsList)) + '\n')
         except OSError:

@@ -410,28 +410,28 @@ class PubServer(BaseHTTPRequestHandler):
         if not uaStr:
             return
 
-        currTime = int(time.time())
+        curr_time = int(time.time())
         if self.server.knownCrawlers.get(uaStr):
             self.server.knownCrawlers[uaStr]['hits'] += 1
-            self.server.knownCrawlers[uaStr]['lastseen'] = currTime
+            self.server.knownCrawlers[uaStr]['lastseen'] = curr_time
         else:
             self.server.knownCrawlers[uaStr] = {
-                "lastseen": currTime,
+                "lastseen": curr_time,
                 "hits": 1
             }
 
-        if currTime - self.server.lastKnownCrawler >= 30:
+        if curr_time - self.server.lastKnownCrawler >= 30:
             # remove any old observations
             removeCrawlers = []
             for ua, item in self.server.knownCrawlers.items():
-                if currTime - item['lastseen'] >= 60 * 60 * 24 * 30:
+                if curr_time - item['lastseen'] >= 60 * 60 * 24 * 30:
                     removeCrawlers.append(ua)
             for ua in removeCrawlers:
                 del self.server.knownCrawlers[ua]
             # save the list of crawlers
             saveJson(self.server.knownCrawlers,
                      self.server.base_dir + '/accounts/knownCrawlers.json')
-        self.server.lastKnownCrawler = currTime
+        self.server.lastKnownCrawler = curr_time
 
     def _get_instance_url(self, callingDomain: str) -> str:
         """Returns the URL for this instance
@@ -13039,10 +13039,10 @@ class PubServer(BaseHTTPRequestHandler):
         if not isModerator(base_dir, nickname):
             return False
         crawlersList = []
-        currTime = int(time.time())
+        curr_time = int(time.time())
         recentCrawlers = 60 * 60 * 24 * 30
         for uaStr, item in knownCrawlers.items():
-            if item['lastseen'] - currTime < recentCrawlers:
+            if item['lastseen'] - curr_time < recentCrawlers:
                 hitsStr = str(item['hits']).zfill(8)
                 crawlersList.append(hitsStr + ' ' + uaStr)
         crawlersList.sort(reverse=True)
@@ -14879,16 +14879,16 @@ class PubServer(BaseHTTPRequestHandler):
         # This busy state helps to avoid flooding
         # Resources which are expected to be called from a web page
         # should be above this
-        currTimeGET = int(time.time() * 1000)
+        curr_timeGET = int(time.time() * 1000)
         if self.server.GETbusy:
-            if currTimeGET - self.server.lastGET < 500:
+            if curr_timeGET - self.server.lastGET < 500:
                 if self.server.debug:
                     print('DEBUG: GET Busy')
                 self.send_response(429)
                 self.end_headers()
                 return
         self.server.GETbusy = True
-        self.server.lastGET = currTimeGET
+        self.server.lastGET = curr_timeGET
 
         # returns after this point should set GETbusy to False
 
@@ -17510,14 +17510,14 @@ class PubServer(BaseHTTPRequestHandler):
                     self._400()
                     return
 
-        currTimePOST = int(time.time() * 1000)
+        curr_timePOST = int(time.time() * 1000)
         if self.server.POSTbusy:
-            if currTimePOST - self.server.lastPOST < 500:
+            if curr_timePOST - self.server.lastPOST < 500:
                 self.send_response(429)
                 self.end_headers()
                 return
         self.server.POSTbusy = True
-        self.server.lastPOST = currTimePOST
+        self.server.lastPOST = curr_timePOST
 
         uaStr = self._getUserAgent()
 

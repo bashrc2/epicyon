@@ -260,26 +260,26 @@ def is_dormant(base_dir: str, nickname: str, domain: str, actor: str,
     """Is the given followed actor dormant, from the standpoint
     of the given account
     """
-    lastSeenFilename = acct_dir(base_dir, nickname, domain) + \
+    last_seen_filename = acct_dir(base_dir, nickname, domain) + \
         '/lastseen/' + actor.replace('/', '#') + '.txt'
 
-    if not os.path.isfile(lastSeenFilename):
+    if not os.path.isfile(last_seen_filename):
         return False
 
-    daysSinceEpochStr = None
+    days_since_epoch_str = None
     try:
-        with open(lastSeenFilename, 'r') as lastSeenFile:
-            daysSinceEpochStr = lastSeenFile.read()
+        with open(last_seen_filename, 'r') as last_seen_file:
+            days_since_epoch_str = last_seen_file.read()
     except OSError:
-        print('EX: failed to read last seen ' + lastSeenFilename)
+        print('EX: failed to read last seen ' + last_seen_filename)
         return False
 
-    if daysSinceEpochStr:
-        daysSinceEpoch = int(daysSinceEpochStr)
-        currTime = datetime.datetime.utcnow()
-        currDaysSinceEpoch = (currTime - datetime.datetime(1970, 1, 1)).days
+    if days_since_epoch_str:
+        days_since_epoch = int(days_since_epoch_str)
+        curr_time = datetime.datetime.utcnow()
+        currDaysSinceEpoch = (curr_time - datetime.datetime(1970, 1, 1)).days
         timeDiffMonths = \
-            int((currDaysSinceEpoch - daysSinceEpoch) / 30)
+            int((currDaysSinceEpoch - days_since_epoch) / 30)
         if timeDiffMonths >= dormant_months:
             return True
     return False
@@ -716,25 +716,25 @@ def getStatusNumber(publishedStr: str = None) -> (str, str):
     """Returns the status number and published date
     """
     if not publishedStr:
-        currTime = datetime.datetime.utcnow()
+        curr_time = datetime.datetime.utcnow()
     else:
-        currTime = \
+        curr_time = \
             datetime.datetime.strptime(publishedStr, '%Y-%m-%dT%H:%M:%SZ')
-    daysSinceEpoch = (currTime - datetime.datetime(1970, 1, 1)).days
+    days_since_epoch = (curr_time - datetime.datetime(1970, 1, 1)).days
     # status is the number of seconds since epoch
     statusNumber = \
-        str(((daysSinceEpoch * 24 * 60 * 60) +
-             (currTime.hour * 60 * 60) +
-             (currTime.minute * 60) +
-             currTime.second) * 1000 +
-            int(currTime.microsecond / 1000))
+        str(((days_since_epoch * 24 * 60 * 60) +
+             (curr_time.hour * 60 * 60) +
+             (curr_time.minute * 60) +
+             curr_time.second) * 1000 +
+            int(curr_time.microsecond / 1000))
     # See https://github.com/tootsuite/mastodon/blob/
     # 995f8b389a66ab76ec92d9a240de376f1fc13a38/lib/mastodon/snowflake.rb
     # use the leftover microseconds as the sequence number
-    sequenceId = currTime.microsecond % 1000
+    sequenceId = curr_time.microsecond % 1000
     # shift by 16bits "sequence data"
     statusNumber = str((int(statusNumber) << 16) + sequenceId)
-    published = currTime.strftime("%Y-%m-%dT%H:%M:%SZ")
+    published = curr_time.strftime("%Y-%m-%dT%H:%M:%SZ")
     return statusNumber, published
 
 
@@ -1920,7 +1920,7 @@ def noOfActiveAccountsMonthly(base_dir: str, months: int) -> bool:
     """Returns the number of accounts on the system this month
     """
     accountCtr = 0
-    currTime = int(time.time())
+    curr_time = int(time.time())
     monthSeconds = int(60*60*24*30*months)
     for subdir, dirs, files in os.walk(base_dir + '/accounts'):
         for account in dirs:
@@ -1933,7 +1933,7 @@ def noOfActiveAccountsMonthly(base_dir: str, months: int) -> bool:
             with open(lastUsedFilename, 'r') as lastUsedFile:
                 lastUsed = lastUsedFile.read()
                 if lastUsed.isdigit():
-                    timeDiff = (currTime - int(lastUsed))
+                    timeDiff = (curr_time - int(lastUsed))
                     if timeDiff < monthSeconds:
                         accountCtr += 1
         break
@@ -2518,9 +2518,9 @@ def isRecentPost(post_json_object: {}, maxDays: int) -> bool:
         return False
     if not isinstance(post_json_object['object']['published'], str):
         return False
-    currTime = datetime.datetime.utcnow()
-    daysSinceEpoch = (currTime - datetime.datetime(1970, 1, 1)).days
-    recently = daysSinceEpoch - maxDays
+    curr_time = datetime.datetime.utcnow()
+    days_since_epoch = (curr_time - datetime.datetime(1970, 1, 1)).days
+    recently = days_since_epoch - maxDays
 
     publishedDateStr = post_json_object['object']['published']
     try:

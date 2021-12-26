@@ -42,8 +42,8 @@ def getHashtagCategories(base_dir: str,
     hashtagCategories = {}
 
     if recent:
-        currTime = datetime.datetime.utcnow()
-        daysSinceEpoch = (currTime - datetime.datetime(1970, 1, 1)).days
+        curr_time = datetime.datetime.utcnow()
+        daysSinceEpoch = (curr_time - datetime.datetime(1970, 1, 1)).days
         recently = daysSinceEpoch - 1
 
     for subdir, dirs, files in os.walk(base_dir + '/tags'):

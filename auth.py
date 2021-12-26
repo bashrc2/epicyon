@@ -275,13 +275,13 @@ def recordLoginFailure(base_dir: str, ipAddress: str,
     writeType = 'a+'
     if not os.path.isfile(failureLog):
         writeType = 'w+'
-    currTime = datetime.datetime.utcnow()
-    currTimeStr = currTime.strftime("%Y-%m-%d %H:%M:%SZ")
+    curr_time = datetime.datetime.utcnow()
+    curr_timeStr = curr_time.strftime("%Y-%m-%d %H:%M:%SZ")
     try:
         with open(failureLog, writeType) as fp:
             # here we use a similar format to an ssh log, so that
             # systems such as fail2ban can parse it
-            fp.write(currTimeStr + ' ' +
+            fp.write(curr_timeStr + ' ' +
                      'ip-127-0-0-1 sshd[20710]: ' +
                      'Disconnecting invalid user epicyon ' +
                      ipAddress + ' port 443: ' +

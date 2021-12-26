@@ -1321,9 +1321,9 @@ def isPersonSnoozed(base_dir: str, nickname: str, domain: str,
                 # is there a time appended?
                 if snoozedTimeStr.isdigit():
                     snoozedTime = int(snoozedTimeStr)
-                    currTime = int(time.time())
+                    curr_time = int(time.time())
                     # has the snooze timed out?
-                    if int(currTime - snoozedTime) > 60 * 60 * 24:
+                    if int(curr_time - snoozedTime) > 60 * 60 * 24:
                         replaceStr = line
                 else:
                     replaceStr = line

@@ -655,8 +655,8 @@ def _convertRSStoActivityPub(base_dir: str, http_prefix: str,
         blog['news'] = True
 
         # note the time of arrival
-        currTime = datetime.datetime.utcnow()
-        blog['object']['arrived'] = currTime.strftime("%Y-%m-%dT%H:%M:%SZ")
+        curr_time = datetime.datetime.utcnow()
+        blog['object']['arrived'] = curr_time.strftime("%Y-%m-%dT%H:%M:%SZ")
 
         # change the id, based upon the published time
         blog['object']['replies']['id'] = idStr
