@@ -164,90 +164,90 @@ def _copyThemeHelpFiles(base_dir: str, theme_name: str,
 def _setThemeInConfig(base_dir: str, name: str) -> bool:
     """Sets the theme with the given name within config.json
     """
-    configFilename = base_dir + '/config.json'
-    if not os.path.isfile(configFilename):
+    config_filename = base_dir + '/config.json'
+    if not os.path.isfile(config_filename):
         return False
-    configJson = loadJson(configFilename, 0)
+    configJson = loadJson(config_filename, 0)
     if not configJson:
         return False
     configJson['theme'] = name
-    return saveJson(configJson, configFilename)
+    return saveJson(configJson, config_filename)
 
 
 def _setNewswirePublishAsIcon(base_dir: str, useIcon: bool) -> bool:
     """Shows the newswire publish action as an icon or a button
     """
-    configFilename = base_dir + '/config.json'
-    if not os.path.isfile(configFilename):
+    config_filename = base_dir + '/config.json'
+    if not os.path.isfile(config_filename):
         return False
-    configJson = loadJson(configFilename, 0)
+    configJson = loadJson(config_filename, 0)
     if not configJson:
         return False
     configJson['show_publish_as_icon'] = useIcon
-    return saveJson(configJson, configFilename)
+    return saveJson(configJson, config_filename)
 
 
 def _setIconsAsButtons(base_dir: str, useButtons: bool) -> bool:
     """Whether to show icons in the header (inbox, outbox, etc)
     as buttons
     """
-    configFilename = base_dir + '/config.json'
-    if not os.path.isfile(configFilename):
+    config_filename = base_dir + '/config.json'
+    if not os.path.isfile(config_filename):
         return False
-    configJson = loadJson(configFilename, 0)
+    configJson = loadJson(config_filename, 0)
     if not configJson:
         return False
     configJson['icons_as_buttons'] = useButtons
-    return saveJson(configJson, configFilename)
+    return saveJson(configJson, config_filename)
 
 
 def _setRssIconAtTop(base_dir: str, atTop: bool) -> bool:
     """Whether to show RSS icon at the top of the timeline
     """
-    configFilename = base_dir + '/config.json'
-    if not os.path.isfile(configFilename):
+    config_filename = base_dir + '/config.json'
+    if not os.path.isfile(config_filename):
         return False
-    configJson = loadJson(configFilename, 0)
+    configJson = loadJson(config_filename, 0)
     if not configJson:
         return False
     configJson['rss_icon_at_top'] = atTop
-    return saveJson(configJson, configFilename)
+    return saveJson(configJson, config_filename)
 
 
 def _setPublishButtonAtTop(base_dir: str, atTop: bool) -> bool:
     """Whether to show the publish button above the title image
     in the newswire column
     """
-    configFilename = base_dir + '/config.json'
-    if not os.path.isfile(configFilename):
+    config_filename = base_dir + '/config.json'
+    if not os.path.isfile(config_filename):
         return False
-    configJson = loadJson(configFilename, 0)
+    configJson = loadJson(config_filename, 0)
     if not configJson:
         return False
     configJson['publish_button_at_top'] = atTop
-    return saveJson(configJson, configFilename)
+    return saveJson(configJson, config_filename)
 
 
 def _setFullWidthTimelineButtonHeader(base_dir: str, fullWidth: bool) -> bool:
     """Shows the timeline button header containing inbox, outbox,
     calendar, etc as full width
     """
-    configFilename = base_dir + '/config.json'
-    if not os.path.isfile(configFilename):
+    config_filename = base_dir + '/config.json'
+    if not os.path.isfile(config_filename):
         return False
-    configJson = loadJson(configFilename, 0)
+    configJson = loadJson(config_filename, 0)
     if not configJson:
         return False
     configJson['full_width_tl_button_header'] = fullWidth
-    return saveJson(configJson, configFilename)
+    return saveJson(configJson, config_filename)
 
 
 def getTheme(base_dir: str) -> str:
     """Gets the current theme name from config.json
     """
-    configFilename = base_dir + '/config.json'
-    if os.path.isfile(configFilename):
-        configJson = loadJson(configFilename, 0)
+    config_filename = base_dir + '/config.json'
+    if os.path.isfile(config_filename):
+        configJson = loadJson(config_filename, 0)
         if configJson:
             if configJson.get('theme'):
                 return configJson['theme']

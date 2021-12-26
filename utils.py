@@ -494,35 +494,35 @@ def isSystemAccount(nickname: str) -> bool:
     return False
 
 
-def _createConfig(base_dir: str) -> None:
+def _create_config(base_dir: str) -> None:
     """Creates a configuration file
     """
-    configFilename = base_dir + '/config.json'
-    if os.path.isfile(configFilename):
+    config_filename = base_dir + '/config.json'
+    if os.path.isfile(config_filename):
         return
-    configJson = {
+    config_json = {
     }
-    saveJson(configJson, configFilename)
+    saveJson(config_json, config_filename)
 
 
 def setConfigParam(base_dir: str, variableName: str, variableValue) -> None:
     """Sets a configuration value
     """
-    _createConfig(base_dir)
-    configFilename = base_dir + '/config.json'
+    _create_config(base_dir)
+    config_filename = base_dir + '/config.json'
     configJson = {}
-    if os.path.isfile(configFilename):
-        configJson = loadJson(configFilename)
+    if os.path.isfile(config_filename):
+        configJson = loadJson(config_filename)
     configJson[variableName] = variableValue
-    saveJson(configJson, configFilename)
+    saveJson(configJson, config_filename)
 
 
 def get_config_param(base_dir: str, variableName: str):
     """Gets a configuration value
     """
-    _createConfig(base_dir)
-    configFilename = base_dir + '/config.json'
-    configJson = loadJson(configFilename)
+    _create_config(base_dir)
+    config_filename = base_dir + '/config.json'
+    configJson = loadJson(config_filename)
     if configJson:
         if variableName in configJson:
             return configJson[variableName]
