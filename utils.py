@@ -78,7 +78,7 @@ def get_actor_languages_list(actor_json: {}) -> []:
 
 
 def get_content_from_post(post_json_object: {}, system_language: str,
-                          languagesUnderstood: []) -> str:
+                          languages_understood: []) -> str:
     """Returns the content from the post in the given language
     including searching for a matching entry within contentMap
     """
@@ -97,7 +97,7 @@ def get_content_from_post(post_json_object: {}, system_language: str,
             else:
                 # is there a contentMap entry for one of
                 # the understood languages?
-                for lang in languagesUnderstood:
+                for lang in languages_understood:
                     if thisPostJson['contentMap'].get(lang):
                         return thisPostJson['contentMap'][lang]
     else:

@@ -111,10 +111,10 @@ def understoodPostLanguage(base_dir: str, nickname: str, domain: str,
     if not actor_json:
         print('WARN: unable to load actor to check languages ' + personUrl)
         return False
-    languagesUnderstood = get_actor_languages_list(actor_json)
-    if not languagesUnderstood:
+    languages_understood = get_actor_languages_list(actor_json)
+    if not languages_understood:
         return True
-    for lang in languagesUnderstood:
+    for lang in languages_understood:
         if msgObject['contentMap'].get(lang):
             return True
     # is the language for this post supported by libretranslate?

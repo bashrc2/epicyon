@@ -268,11 +268,11 @@ def _htmlBlogPostContent(debug: bool, session, authorized: bool,
     personUrl = local_actor_url(http_prefix, nickname, domain_full)
     actor_json = \
         getPersonFromCache(base_dir, personUrl, person_cache, False)
-    languagesUnderstood = []
+    languages_understood = []
     if actor_json:
-        languagesUnderstood = get_actor_languages_list(actor_json)
+        languages_understood = get_actor_languages_list(actor_json)
     jsonContent = get_content_from_post(post_json_object, system_language,
-                                        languagesUnderstood)
+                                        languages_understood)
     if jsonContent:
         contentStr = addEmbeddedElements(translate, jsonContent,
                                          peertube_instances)

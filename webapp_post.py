@@ -1852,11 +1852,11 @@ def individualPostAsHtml(signing_priv_key_pem: str,
     personUrl = local_actor_url(http_prefix, nickname, domain_full)
     actor_json = \
         getPersonFromCache(base_dir, personUrl, person_cache, False)
-    languagesUnderstood = []
+    languages_understood = []
     if actor_json:
-        languagesUnderstood = get_actor_languages_list(actor_json)
+        languages_understood = get_actor_languages_list(actor_json)
     contentStr = get_content_from_post(post_json_object, system_language,
-                                       languagesUnderstood)
+                                       languages_understood)
     if not contentStr:
         contentStr = \
             autoTranslatePost(base_dir, post_json_object,
