@@ -39,7 +39,7 @@ from utils import get_full_domain
 from utils import is_editor
 from utils import locate_post
 from utils import load_json
-from utils import getCachedPostDirectory
+from utils import get_cached_post_directory
 from utils import get_cached_post_filename
 from utils import getProtocolPrefixes
 from utils import isNewsPost
@@ -250,7 +250,7 @@ def _saveIndividualPostAsHtmlToCache(base_dir: str,
     refresh of the timeline
     """
     htmlPostCacheDir = \
-        getCachedPostDirectory(base_dir, nickname, domain)
+        get_cached_post_directory(base_dir, nickname, domain)
     cachedPostFilename = \
         get_cached_post_filename(base_dir, nickname, domain, post_json_object)
 

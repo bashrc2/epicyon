@@ -1762,12 +1762,12 @@ def deletePost(base_dir: str, http_prefix: str,
     # remove cached html version of the post
     _deleteCachedHtml(base_dir, nickname, domain, post_json_object)
 
-    hasObject = False
+    has_object = False
     if post_json_object.get('object'):
-        hasObject = True
+        has_object = True
 
     # remove from moderation index file
-    if hasObject:
+    if has_object:
         if has_object_dict(post_json_object):
             if post_json_object['object'].get('moderationStatus'):
                 if post_json_object.get('id'):
@@ -1775,7 +1775,7 @@ def deletePost(base_dir: str, http_prefix: str,
                     removeModerationPostFromIndex(base_dir, post_id, debug)
 
     # remove any hashtags index entries
-    if hasObject:
+    if has_object:
         _deleteHashtagsOnPost(base_dir, post_json_object)
 
     # remove any replies
@@ -1984,18 +1984,19 @@ def copytree(src: str, dst: str, symlinks: str = False, ignore: bool = None):
             shutil.copy2(s, d)
 
 
-def getCachedPostDirectory(base_dir: str, nickname: str, domain: str) -> str:
+def get_cached_post_directory(base_dir: str,
+                              nickname: str, domain: str) -> str:
     """Returns the directory where the html post cache exists
     """
-    htmlPostCacheDir = acct_dir(base_dir, nickname, domain) + '/postcache'
-    return htmlPostCacheDir
+    html_post_cache_dir = acct_dir(base_dir, nickname, domain) + '/postcache'
+    return html_post_cache_dir
 
 
 def get_cached_post_filename(base_dir: str, nickname: str, domain: str,
                              post_json_object: {}) -> str:
     """Returns the html cache filename for the given post
     """
-    cachedPostDir = getCachedPostDirectory(base_dir, nickname, domain)
+    cachedPostDir = get_cached_post_directory(base_dir, nickname, domain)
     if not os.path.isdir(cachedPostDir):
         # print('ERROR: invalid html cache directory ' + cachedPostDir)
         return None
