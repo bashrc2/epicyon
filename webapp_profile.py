@@ -13,7 +13,7 @@ from webfinger import webfingerHandle
 from utils import getDisplayName
 from utils import is_group_account
 from utils import has_object_dict
-from utils import getOccupationName
+from utils import get_occupation_name
 from utils import get_locked_account
 from utils import get_full_domain
 from utils import is_artist
@@ -824,7 +824,7 @@ def htmlProfile(signing_priv_key_pem: str,
             joinedDate = profile_json['published']
     occupationName = None
     if profile_json.get('hasOccupation'):
-        occupationName = getOccupationName(profile_json)
+        occupationName = get_occupation_name(profile_json)
 
     avatarUrl = profile_json['icon']['url']
     # use alternate path for local avatars to avoid any caching issues
@@ -2008,7 +2008,7 @@ def _htmlEditProfileMain(base_dir: str, displayNickname: str, bioStr: str,
 
     occupationName = ''
     if actor_json.get('hasOccupation'):
-        occupationName = getOccupationName(actor_json)
+        occupationName = get_occupation_name(actor_json)
 
     editProfileForm += \
         editTextField(translate['Occupation'], 'occupationName',

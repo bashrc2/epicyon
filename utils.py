@@ -2743,24 +2743,24 @@ def getOccupationSkills(actor_json: {}) -> []:
     return []
 
 
-def getOccupationName(actor_json: {}) -> str:
+def get_occupation_name(actor_json: {}) -> str:
     """Returns the occupation name an actor
     """
     if not actor_json.get('hasOccupation'):
         return ""
     if not isinstance(actor_json['hasOccupation'], list):
         return ""
-    for occupationItem in actor_json['hasOccupation']:
-        if not isinstance(occupationItem, dict):
+    for occupation_item in actor_json['hasOccupation']:
+        if not isinstance(occupation_item, dict):
             continue
-        if not occupationItem.get('@type'):
+        if not occupation_item.get('@type'):
             continue
-        if occupationItem['@type'] != 'Occupation':
+        if occupation_item['@type'] != 'Occupation':
             continue
-        if not occupationItem.get('name'):
+        if not occupation_item.get('name'):
             continue
-        if isinstance(occupationItem['name'], str):
-            return occupationItem['name']
+        if isinstance(occupation_item['name'], str):
+            return occupation_item['name']
         break
     return ""
 

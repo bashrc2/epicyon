@@ -264,7 +264,7 @@ from utils import isLocalNetworkAddress
 from utils import permitted_dir
 from utils import is_account_dir
 from utils import getOccupationSkills
-from utils import getOccupationName
+from utils import get_occupation_name
 from utils import set_occupation_name
 from utils import loadTranslationsFromFile
 from utils import getLocalNetworkAddresses
@@ -5473,7 +5473,7 @@ class PubServer(BaseHTTPRequestHandler):
                             actorChanged = True
 
                     # Other accounts (alsoKnownAs)
-                    occupationName = getOccupationName(actor_json)
+                    occupationName = get_occupation_name(actor_json)
                     if fields.get('occupationName'):
                         fields['occupationName'] = \
                             removeHtml(fields['occupationName'])
