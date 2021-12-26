@@ -255,8 +255,8 @@ def get_full_domain(domain: str, port: int) -> str:
     return domain + ':' + str(port)
 
 
-def isDormant(base_dir: str, nickname: str, domain: str, actor: str,
-              dormant_months: int) -> bool:
+def is_dormant(base_dir: str, nickname: str, domain: str, actor: str,
+               dormant_months: int) -> bool:
     """Is the given followed actor dormant, from the standpoint
     of the given account
     """

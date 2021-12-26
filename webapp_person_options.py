@@ -14,7 +14,7 @@ from person import isPersonSnoozed
 from posts import isModerator
 from utils import get_full_domain
 from utils import getConfigParam
-from utils import isDormant
+from utils import is_dormant
 from utils import removeHtml
 from utils import getDomainFromActor
 from utils import getNicknameFromActor
@@ -93,8 +93,8 @@ def htmlPersonOptions(defaultTimeline: str,
             if isGroup:
                 followStr = 'Leave'
             dormant = \
-                isDormant(base_dir, nickname, domain, optionsActor,
-                          dormant_months)
+                is_dormant(base_dir, nickname, domain, optionsActor,
+                           dormant_months)
 
         optionsNickname = getNicknameFromActor(optionsActor)
         optionsDomainFull = get_full_domain(optionsDomain, optionsPort)

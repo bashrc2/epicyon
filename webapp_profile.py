@@ -17,7 +17,7 @@ from utils import getOccupationName
 from utils import get_locked_account
 from utils import get_full_domain
 from utils import isArtist
-from utils import isDormant
+from utils import is_dormant
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import isSystemAccount
@@ -1129,8 +1129,8 @@ def _htmlProfileFollowing(translate: {}, base_dir: str, http_prefix: str,
         dormant = False
         if authorized and feedName == 'following':
             dormant = \
-                isDormant(base_dir, nickname, domain, followingActor,
-                          dormant_months)
+                is_dormant(base_dir, nickname, domain, followingActor,
+                           dormant_months)
 
         profileStr += \
             _individualFollowAsHtml(signing_priv_key_pem,
