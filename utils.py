@@ -396,7 +396,7 @@ def getImageExtensionFromMimeType(contentType: str) -> str:
     return 'png'
 
 
-def getMediaExtensions() -> []:
+def get_media_extensions() -> []:
     """Returns a list of the possible media file extensions
     """
     return get_image_extensions() + \
@@ -430,7 +430,7 @@ def getMediaFormats() -> str:
     """Returns a string of permissable media formats
     used when selecting an attachment for a new post
     """
-    mediaExt = getMediaExtensions()
+    mediaExt = get_media_extensions()
 
     mediaFormats = ''
     for ext in mediaExt:

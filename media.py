@@ -20,7 +20,7 @@ from utils import get_full_domain
 from utils import get_image_extensions
 from utils import get_video_extensions
 from utils import get_audio_extensions
-from utils import getMediaExtensions
+from utils import get_media_extensions
 from utils import has_object_dict
 from utils import acct_dir
 from shutil import copyfile
@@ -220,7 +220,7 @@ def _isMedia(imageFilename: str) -> bool:
     if not os.path.isfile(imageFilename):
         print('WARN: Media file does not exist ' + imageFilename)
         return False
-    permittedMedia = getMediaExtensions()
+    permittedMedia = get_media_extensions()
     for m in permittedMedia:
         if imageFilename.endswith('.' + m):
             return True
@@ -306,7 +306,7 @@ def attachMedia(base_dir: str, http_prefix: str,
         return postJson
 
     fileExtension = None
-    acceptedTypes = getMediaExtensions()
+    acceptedTypes = get_media_extensions()
     for mType in acceptedTypes:
         if imageFilename.endswith('.' + mType):
             if mType == 'jpg':
