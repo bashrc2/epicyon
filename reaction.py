@@ -29,7 +29,7 @@ from utils import local_actor_url
 from utils import load_json
 from utils import save_json
 from utils import removePostFromCache
-from utils import getCachedPostFilename
+from utils import get_cached_post_filename
 from utils import containsInvalidChars
 from posts import sendSignedJson
 from session import postJson
@@ -118,8 +118,8 @@ def _reaction(recent_posts_cache: {},
                     has_group_type(base_dir, actorReaction, person_cache)
 
     if reactionPostNickname:
-        postFilename = locate_post(base_dir, nickname, domain, objectUrl)
-        if not postFilename:
+        post_filename = locate_post(base_dir, nickname, domain, objectUrl)
+        if not post_filename:
             print('DEBUG: reaction base_dir: ' + base_dir)
             print('DEBUG: reaction nickname: ' + nickname)
             print('DEBUG: reaction domain: ' + domain)
@@ -127,7 +127,7 @@ def _reaction(recent_posts_cache: {},
             return None
 
         updateReactionCollection(recent_posts_cache,
-                                 base_dir, postFilename, objectUrl,
+                                 base_dir, post_filename, objectUrl,
                                  newReactionJson['actor'],
                                  nickname, domain, debug, None,
                                  emojiContent)
@@ -384,18 +384,18 @@ def outboxReaction(recent_posts_cache: {},
     messageId = removeIdEnding(message_json['object'])
     domain = remove_domain_port(domain)
     emojiContent = message_json['content']
-    postFilename = locate_post(base_dir, nickname, domain, messageId)
-    if not postFilename:
+    post_filename = locate_post(base_dir, nickname, domain, messageId)
+    if not post_filename:
         if debug:
             print('DEBUG: c2s reaction post not found in inbox or outbox')
             print(messageId)
         return True
     updateReactionCollection(recent_posts_cache,
-                             base_dir, postFilename, messageId,
+                             base_dir, post_filename, messageId,
                              message_json['actor'],
                              nickname, domain, debug, None, emojiContent)
     if debug:
-        print('DEBUG: post reaction via c2s - ' + postFilename)
+        print('DEBUG: post reaction via c2s - ' + post_filename)
 
 
 def outboxUndoReaction(recent_posts_cache: {},
@@ -426,21 +426,21 @@ def outboxUndoReaction(recent_posts_cache: {},
     messageId = removeIdEnding(message_json['object']['object'])
     emojiContent = message_json['object']['content']
     domain = remove_domain_port(domain)
-    postFilename = locate_post(base_dir, nickname, domain, messageId)
-    if not postFilename:
+    post_filename = locate_post(base_dir, nickname, domain, messageId)
+    if not post_filename:
         if debug:
             print('DEBUG: c2s undo reaction post not found in inbox or outbox')
             print(messageId)
         return True
-    undoReactionCollectionEntry(recent_posts_cache, base_dir, postFilename,
+    undoReactionCollectionEntry(recent_posts_cache, base_dir, post_filename,
                                 messageId, message_json['actor'],
                                 domain, debug, None, emojiContent)
     if debug:
-        print('DEBUG: post undo reaction via c2s - ' + postFilename)
+        print('DEBUG: post undo reaction via c2s - ' + post_filename)
 
 
 def updateReactionCollection(recent_posts_cache: {},
-                             base_dir: str, postFilename: str,
+                             base_dir: str, post_filename: str,
                              objectUrl: str, actor: str,
                              nickname: str, domain: str, debug: bool,
                              post_json_object: {},
@@ -448,15 +448,16 @@ def updateReactionCollection(recent_posts_cache: {},
     """Updates the reactions collection within a post
     """
     if not post_json_object:
-        post_json_object = load_json(postFilename)
+        post_json_object = load_json(post_filename)
     if not post_json_object:
         return
 
     # remove any cached version of this post so that the
     # reaction icon is changed
     removePostFromCache(post_json_object, recent_posts_cache)
-    cachedPostFilename = getCachedPostFilename(base_dir, nickname,
-                                               domain, post_json_object)
+    cachedPostFilename = \
+        get_cached_post_filename(base_dir, nickname,
+                                 domain, post_json_object)
     if cachedPostFilename:
         if os.path.isfile(cachedPostFilename):
             try:
@@ -510,7 +511,7 @@ def updateReactionCollection(recent_posts_cache: {},
     if debug:
         print('DEBUG: saving post with emoji reaction added')
         pprint(post_json_object)
-    save_json(post_json_object, postFilename)
+    save_json(post_json_object, post_filename)
 
 
 def htmlEmojiReactions(post_json_object: {}, interactive: bool,

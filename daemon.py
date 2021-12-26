@@ -291,7 +291,7 @@ from utils import deletePost
 from utils import isBlogPost
 from utils import removeAvatarFromCache
 from utils import locate_post
-from utils import getCachedPostFilename
+from utils import get_cached_post_filename
 from utils import removePostFromCache
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
@@ -524,11 +524,11 @@ class PubServer(BaseHTTPRequestHandler):
             message_json['object']['name'] = answer
             if self._postToOutbox(message_json,
                                   self.server.project_version, nickname):
-                postFilename = \
+                post_filename = \
                     locate_post(self.server.base_dir, nickname,
                                 self.server.domain, messageId)
-                if postFilename:
-                    post_json_object = load_json(postFilename)
+                if post_filename:
+                    post_json_object = load_json(post_filename)
                     if post_json_object:
                         populateReplies(self.server.base_dir,
                                         self.server.http_prefix,
@@ -547,10 +547,10 @@ class PubServer(BaseHTTPRequestHandler):
                         # ensure that the cached post is removed if it exists,
                         # so that it then will be recreated
                         cachedPostFilename = \
-                            getCachedPostFilename(self.server.base_dir,
-                                                  nickname,
-                                                  self.server.domain,
-                                                  post_json_object)
+                            get_cached_post_filename(self.server.base_dir,
+                                                     nickname,
+                                                     self.server.domain,
+                                                     post_json_object)
                         if cachedPostFilename:
                             if os.path.isfile(cachedPostFilename):
                                 try:
@@ -2005,33 +2005,33 @@ class PubServer(BaseHTTPRequestHandler):
                         removeAccount(base_dir, nickname, domain, port)
                     else:
                         # remove a post or thread
-                        postFilename = \
+                        post_filename = \
                             locate_post(base_dir, nickname, domain,
                                         moderationText)
-                        if postFilename:
+                        if post_filename:
                             if canRemovePost(base_dir,
                                              nickname, domain, port,
                                              moderationText):
                                 deletePost(base_dir,
                                            http_prefix,
                                            nickname, domain,
-                                           postFilename,
+                                           post_filename,
                                            debug,
                                            self.server.recent_posts_cache)
                         if nickname != 'news':
                             # if this is a local blog post then also remove it
                             # from the news actor
-                            postFilename = \
+                            post_filename = \
                                 locate_post(base_dir, 'news', domain,
                                             moderationText)
-                            if postFilename:
+                            if post_filename:
                                 if canRemovePost(base_dir,
                                                  'news', domain, port,
                                                  moderationText):
                                     deletePost(base_dir,
                                                http_prefix,
                                                'news', domain,
-                                               postFilename,
+                                               post_filename,
                                                debug,
                                                self.server.recent_posts_cache)
 
@@ -4627,11 +4627,11 @@ class PubServer(BaseHTTPRequestHandler):
 
             if newsPostUrl and newsPostContent and newsPostTitle:
                 # load the post
-                postFilename = \
+                post_filename = \
                     locate_post(base_dir, nickname, domain,
                                 newsPostUrl)
-                if postFilename:
-                    post_json_object = load_json(postFilename)
+                if post_filename:
+                    post_json_object = load_json(post_filename)
                     # update the content and title
                     post_json_object['object']['summary'] = \
                         newsPostTitle
@@ -4666,7 +4666,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         newsId)
 
                     # save the news post
-                    save_json(post_json_object, postFilename)
+                    save_json(post_json_object, post_filename)
 
         # redirect back to the default timeline
         if self.server.news_instance:
@@ -7739,8 +7739,8 @@ class PubServer(BaseHTTPRequestHandler):
             if debug:
                 print('Generating html post for announce')
             cachedPostFilename = \
-                getCachedPostFilename(base_dir, self.postToNickname,
-                                      domain, announceJson)
+                get_cached_post_filename(base_dir, self.postToNickname,
+                                         domain, announceJson)
             if debug:
                 print('Announced post json: ' + str(announceJson))
                 print('Announced post nickname: ' +
@@ -7867,15 +7867,15 @@ class PubServer(BaseHTTPRequestHandler):
             announceUrl = path.split('?unannounce=')[1]
             if '?' in announceUrl:
                 announceUrl = announceUrl.split('?')[0]
-            postFilename = None
+            post_filename = None
             nickname = getNicknameFromActor(announceUrl)
             if nickname:
                 if domain_full + '/users/' + nickname + '/' in announceUrl:
-                    postFilename = \
+                    post_filename = \
                         locate_post(base_dir, nickname, domain, announceUrl)
-            if postFilename:
+            if post_filename:
                 deletePost(base_dir, http_prefix,
-                           nickname, domain, postFilename,
+                           nickname, domain, post_filename,
                            debug, recent_posts_cache)
 
         self._postToOutbox(newUndoAnnounce,
@@ -8200,8 +8200,8 @@ class PubServer(BaseHTTPRequestHandler):
             # clear the icon from the cache so that it gets updated
             if likedPostJson:
                 cachedPostFilename = \
-                    getCachedPostFilename(base_dir, self.postToNickname,
-                                          domain, likedPostJson)
+                    get_cached_post_filename(base_dir, self.postToNickname,
+                                             domain, likedPostJson)
                 if debug:
                     print('Liked post json: ' + str(likedPostJson))
                     print('Liked post nickname: ' +
@@ -8538,8 +8538,8 @@ class PubServer(BaseHTTPRequestHandler):
             # clear the icon from the cache so that it gets updated
             if reactionPostJson:
                 cachedPostFilename = \
-                    getCachedPostFilename(base_dir, self.postToNickname,
-                                          domain, reactionPostJson)
+                    get_cached_post_filename(base_dir, self.postToNickname,
+                                             domain, reactionPostJson)
                 if debug:
                     print('Reaction post json: ' + str(reactionPostJson))
                     print('Reaction post nickname: ' +
@@ -8932,8 +8932,8 @@ class PubServer(BaseHTTPRequestHandler):
             bookmarkPostJson = load_json(bookmarkFilename, 0, 1)
             if bookmarkPostJson:
                 cachedPostFilename = \
-                    getCachedPostFilename(base_dir, self.postToNickname,
-                                          domain, bookmarkPostJson)
+                    get_cached_post_filename(base_dir, self.postToNickname,
+                                             domain, bookmarkPostJson)
                 print('Bookmarked post json: ' + str(bookmarkPostJson))
                 print('Bookmarked post nickname: ' +
                       self.postToNickname + ' ' + domain)
@@ -9060,8 +9060,8 @@ class PubServer(BaseHTTPRequestHandler):
             bookmarkPostJson = load_json(bookmarkFilename, 0, 1)
             if bookmarkPostJson:
                 cachedPostFilename = \
-                    getCachedPostFilename(base_dir, self.postToNickname,
-                                          domain, bookmarkPostJson)
+                    get_cached_post_filename(base_dir, self.postToNickname,
+                                             domain, bookmarkPostJson)
                 print('Unbookmarked post json: ' + str(bookmarkPostJson))
                 print('Unbookmarked post nickname: ' +
                       self.postToNickname + ' ' + domain)
@@ -9255,8 +9255,8 @@ class PubServer(BaseHTTPRequestHandler):
             mutePostJson = load_json(muteFilename, 0, 1)
             if mutePostJson:
                 cachedPostFilename = \
-                    getCachedPostFilename(base_dir, nickname,
-                                          domain, mutePostJson)
+                    get_cached_post_filename(base_dir, nickname,
+                                             domain, mutePostJson)
                 print('mutePost: Muted post json: ' + str(mutePostJson))
                 print('mutePost: Muted post nickname: ' +
                       nickname + ' ' + domain)
@@ -9365,8 +9365,8 @@ class PubServer(BaseHTTPRequestHandler):
             mutePostJson = load_json(muteFilename, 0, 1)
             if mutePostJson:
                 cachedPostFilename = \
-                    getCachedPostFilename(base_dir, nickname,
-                                          domain, mutePostJson)
+                    get_cached_post_filename(base_dir, nickname,
+                                             domain, mutePostJson)
                 print('unmutePost: Unmuted post json: ' + str(mutePostJson))
                 print('unmutePost: Unmuted post nickname: ' +
                       nickname + ' ' + domain)
@@ -9930,7 +9930,7 @@ class PubServer(BaseHTTPRequestHandler):
         if len(statusNumber) <= 10 or not statusNumber.isdigit():
             return False
 
-        postFilename = \
+        post_filename = \
             acct_dir(base_dir, nickname, domain) + '/outbox/' + \
             http_prefix + ':##' + domain_full + '#users#' + nickname + \
             '#statuses#' + statusNumber + '.json'
@@ -9939,7 +9939,7 @@ class PubServer(BaseHTTPRequestHandler):
         if postSections[-1] == 'activity':
             includeCreateWrapper = True
 
-        result = self._showPostFromFile(postFilename, likedBy,
+        result = self._showPostFromFile(post_filename, likedBy,
                                         reactBy, reactEmoji,
                                         authorized, calling_domain, path,
                                         base_dir, http_prefix, nickname,
@@ -9953,7 +9953,7 @@ class PubServer(BaseHTTPRequestHandler):
                            self.server.debug)
         return result
 
-    def _showPostFromFile(self, postFilename: str, likedBy: str,
+    def _showPostFromFile(self, post_filename: str, likedBy: str,
                           reactBy: str, reactEmoji: str,
                           authorized: bool,
                           calling_domain: str, path: str,
@@ -9965,12 +9965,12 @@ class PubServer(BaseHTTPRequestHandler):
                           debug: str, includeCreateWrapper: bool) -> bool:
         """Shows an individual post from its filename
         """
-        if not os.path.isfile(postFilename):
+        if not os.path.isfile(post_filename):
             self._404()
             self.server.GETbusy = False
             return True
 
-        post_json_object = load_json(postFilename)
+        post_json_object = load_json(post_filename)
         if not post_json_object:
             self.send_response(429)
             self.end_headers()
@@ -10088,7 +10088,7 @@ class PubServer(BaseHTTPRequestHandler):
         if len(statusNumber) <= 10 or (not statusNumber.isdigit()):
             return False
 
-        postFilename = \
+        post_filename = \
             acct_dir(base_dir, nickname, domain) + '/outbox/' + \
             http_prefix + ':##' + domain_full + '#users#' + nickname + \
             '#statuses#' + statusNumber + '.json'
@@ -10097,7 +10097,7 @@ class PubServer(BaseHTTPRequestHandler):
         if postSections[-1] == 'activity':
             includeCreateWrapper = True
 
-        result = self._showPostFromFile(postFilename, likedBy,
+        result = self._showPostFromFile(post_filename, likedBy,
                                         reactBy, reactEmoji,
                                         authorized, calling_domain, path,
                                         base_dir, http_prefix, nickname,
@@ -10133,16 +10133,16 @@ class PubServer(BaseHTTPRequestHandler):
             return False
         replies = False
 
-        postFilename = locate_post(base_dir, nickname, domain,
-                                   post_id, replies)
-        if not postFilename:
+        post_filename = locate_post(base_dir, nickname, domain,
+                                    post_id, replies)
+        if not post_filename:
             return False
 
         includeCreateWrapper = False
         if path.endswith('/activity'):
             includeCreateWrapper = True
 
-        result = self._showPostFromFile(postFilename, likedBy,
+        result = self._showPostFromFile(post_filename, likedBy,
                                         reactBy, reactEmoji,
                                         authorized, calling_domain, path,
                                         base_dir, http_prefix, nickname,
@@ -16749,12 +16749,12 @@ class PubServer(BaseHTTPRequestHandler):
                         return -1
             elif postType == 'editblogpost':
                 print('Edited blog post received')
-                postFilename = \
+                post_filename = \
                     locate_post(self.server.base_dir,
                                 nickname, self.server.domain,
                                 fields['postUrl'])
-                if os.path.isfile(postFilename):
-                    post_json_object = load_json(postFilename)
+                if os.path.isfile(post_filename):
+                    post_json_object = load_json(post_filename)
                     if post_json_object:
                         cachedFilename = \
                             acct_dir(self.server.base_dir,
@@ -16832,19 +16832,19 @@ class PubServer(BaseHTTPRequestHandler):
                         replaceTwitter(post_json_object,
                                        self.server.twitter_replacement_domain,
                                        self.server.system_language)
-                        save_json(post_json_object, postFilename)
+                        save_json(post_json_object, post_filename)
                         # also save to the news actor
                         if nickname != 'news':
-                            postFilename = \
-                                postFilename.replace('#users#' +
-                                                     nickname + '#',
-                                                     '#users#news#')
-                            save_json(post_json_object, postFilename)
-                        print('Edited blog post, resaved ' + postFilename)
+                            post_filename = \
+                                post_filename.replace('#users#' +
+                                                      nickname + '#',
+                                                      '#users#news#')
+                            save_json(post_json_object, post_filename)
+                        print('Edited blog post, resaved ' + post_filename)
                         return 1
                     else:
                         print('Edited blog post, unable to load json for ' +
-                              postFilename)
+                              post_filename)
                 else:
                     print('Edited blog post not found ' +
                           str(fields['postUrl']))

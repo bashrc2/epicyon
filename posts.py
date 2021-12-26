@@ -3445,10 +3445,10 @@ def createModeration(base_dir: str, nickname: str, domain: str, port: int,
                     lineNumber -= 1
 
             for postUrl in pageLines:
-                postFilename = \
+                post_filename = \
                     boxDir + '/' + postUrl.replace('/', '#') + '.json'
-                if os.path.isfile(postFilename):
-                    post_json_object = load_json(postFilename)
+                if os.path.isfile(post_filename):
+                    post_json_object = load_json(post_filename)
                     if post_json_object:
                         boxItems['orderedItems'].append(post_json_object)
 
@@ -3607,7 +3607,7 @@ def removePostInteractions(post_json_object: {}, force: bool) -> bool:
 
 def _passedNewswireVoting(newswire_votes_threshold: int,
                           base_dir: str, domain: str,
-                          postFilename: str,
+                          post_filename: str,
                           positive_voting: bool,
                           voting_time_mins: int) -> bool:
     """Returns true if the post has passed through newswire voting
@@ -3618,7 +3618,7 @@ def _passedNewswireVoting(newswire_votes_threshold: int,
     # note that the presence of an arrival file also indicates
     # that this post is moderated
     arrivalDate = \
-        locateNewsArrival(base_dir, domain, postFilename)
+        locateNewsArrival(base_dir, domain, post_filename)
     if not arrivalDate:
         return True
     # how long has elapsed since this post arrived?
@@ -3632,7 +3632,7 @@ def _passedNewswireVoting(newswire_votes_threshold: int,
         return False
     # if there a votes file for this post?
     votesFilename = \
-        locateNewsVotes(base_dir, domain, postFilename)
+        locateNewsVotes(base_dir, domain, post_filename)
     if not votesFilename:
         return True
     # load the votes file and count the votes
@@ -3733,15 +3733,15 @@ def _createBoxIndexed(recent_posts_cache: {},
         with open(indexFilename, 'r') as indexFile:
             postsAddedToTimeline = 0
             while postsAddedToTimeline < itemsPerPage:
-                postFilename = indexFile.readline()
+                post_filename = indexFile.readline()
 
-                if not postFilename:
+                if not post_filename:
                     break
 
                 # Has this post passed through the newswire voting stage?
                 if not _passedNewswireVoting(newswire_votes_threshold,
                                              base_dir, domain,
-                                             postFilename,
+                                             post_filename,
                                              positive_voting,
                                              voting_time_mins):
                     continue
@@ -3752,14 +3752,14 @@ def _createBoxIndexed(recent_posts_cache: {},
                     continue
 
                 # if this is a full path then remove the directories
-                if '/' in postFilename:
-                    postFilename = postFilename.split('/')[-1]
+                if '/' in post_filename:
+                    post_filename = post_filename.split('/')[-1]
 
                 # filename of the post without any extension or path
                 # This should also correspond to any index entry in
                 # the posts cache
                 postUrl = \
-                    postFilename.replace('\n', '').replace('\r', '')
+                    post_filename.replace('\n', '').replace('\r', '')
                 postUrl = postUrl.replace('.json', '').strip()
 
                 if postUrl in postUrlsInBox:
@@ -3983,12 +3983,12 @@ def archivePostsForPerson(http_prefix: str, nickname: str, domain: str,
     postsInBoxDict = {}
     postsCtr = 0
     postsInBox = os.scandir(boxDir)
-    for postFilename in postsInBox:
-        postFilename = postFilename.name
-        if not postFilename.endswith('.json'):
+    for post_filename in postsInBox:
+        post_filename = post_filename.name
+        if not post_filename.endswith('.json'):
             continue
         # Time of file creation
-        fullFilename = os.path.join(boxDir, postFilename)
+        fullFilename = os.path.join(boxDir, post_filename)
         if os.path.isfile(fullFilename):
             content = open(fullFilename).read()
             if '"published":' in content:
@@ -3996,7 +3996,7 @@ def archivePostsForPerson(http_prefix: str, nickname: str, domain: str,
                 if '"' in publishedStr:
                     publishedStr = publishedStr.split('"')[1]
                     if publishedStr.endswith('Z'):
-                        postsInBoxDict[publishedStr] = postFilename
+                        postsInBoxDict[publishedStr] = post_filename
                         postsCtr += 1
 
     noOfPosts = postsCtr
@@ -4013,12 +4013,12 @@ def archivePostsForPerson(http_prefix: str, nickname: str, domain: str,
     postCacheDir = boxDir.replace('/' + boxname, '/postcache')
 
     removeCtr = 0
-    for publishedStr, postFilename in postsInBoxSorted.items():
-        filePath = os.path.join(boxDir, postFilename)
+    for publishedStr, post_filename in postsInBoxSorted.items():
+        filePath = os.path.join(boxDir, post_filename)
         if not os.path.isfile(filePath):
             continue
         if archive_dir:
-            archivePath = os.path.join(archive_dir, postFilename)
+            archivePath = os.path.join(archive_dir, post_filename)
             os.rename(filePath, archivePath)
 
             extensions = ('replies', 'votes', 'arrived', 'muted')
@@ -4039,7 +4039,7 @@ def archivePostsForPerson(http_prefix: str, nickname: str, domain: str,
 
         # remove cached html posts
         postCacheFilename = \
-            os.path.join(postCacheDir, postFilename).replace('.json', '.html')
+            os.path.join(postCacheDir, post_filename).replace('.json', '.html')
         if os.path.isfile(postCacheFilename):
             try:
                 os.remove(postCacheFilename)
@@ -4754,10 +4754,10 @@ def isMuted(base_dir: str, nickname: str, domain: str, post_id: str,
             conversationId.replace('/', '#') + '.muted'
         if os.path.isfile(convMutedFilename):
             return True
-    postFilename = locate_post(base_dir, nickname, domain, post_id)
-    if not postFilename:
+    post_filename = locate_post(base_dir, nickname, domain, post_id)
+    if not post_filename:
         return False
-    if os.path.isfile(postFilename + '.muted'):
+    if os.path.isfile(post_filename + '.muted'):
         return True
     return False
 
@@ -5225,11 +5225,11 @@ def editedPostFilename(base_dir: str, nickname: str, domain: str,
         return ''
     if lastpost_id == post_id:
         return ''
-    lastpostFilename = \
+    lastpost_filename = \
         locate_post(base_dir, nickname, domain, lastpost_id, False)
-    if not lastpostFilename:
+    if not lastpost_filename:
         return ''
-    lastpostJson = load_json(lastpostFilename, 0)
+    lastpostJson = load_json(lastpost_filename, 0)
     if not lastpostJson:
         return ''
     if not lastpostJson.get('type'):
@@ -5261,7 +5261,7 @@ def editedPostFilename(base_dir: str, nickname: str, domain: str,
                        post_json_object['object']['content'], 10) < 70:
         return ''
     print(post_id + ' is an edit of ' + lastpost_id)
-    return lastpostFilename
+    return lastpost_filename
 
 
 def getOriginalPostFromAnnounceUrl(announceUrl: str, base_dir: str,
@@ -5270,20 +5270,20 @@ def getOriginalPostFromAnnounceUrl(announceUrl: str, base_dir: str,
     """From the url of an announce this returns the actor, url and
     filename (if available) of the original post being announced
     """
-    postFilename = locate_post(base_dir, nickname, domain, announceUrl)
-    if not postFilename:
+    post_filename = locate_post(base_dir, nickname, domain, announceUrl)
+    if not post_filename:
         return None, None, None
-    announcePostJson = load_json(postFilename, 0, 1)
+    announcePostJson = load_json(post_filename, 0, 1)
     if not announcePostJson:
-        return None, None, postFilename
+        return None, None, post_filename
     if not announcePostJson.get('type'):
-        return None, None, postFilename
+        return None, None, post_filename
     if announcePostJson['type'] != 'Announce':
-        return None, None, postFilename
+        return None, None, post_filename
     if not announcePostJson.get('object'):
-        return None, None, postFilename
+        return None, None, post_filename
     if not isinstance(announcePostJson['object'], str):
-        return None, None, postFilename
+        return None, None, post_filename
     actor = url = None
     # do we have the original post?
     origPostId = announcePostJson['object']

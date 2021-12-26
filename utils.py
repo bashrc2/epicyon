@@ -1256,9 +1256,9 @@ def locateNewsVotes(base_dir: str, domain: str,
         postUrl = postUrl + '.json.votes'
 
     accountDir = base_dir + '/accounts/news@' + domain + '/'
-    postFilename = accountDir + 'outbox/' + postUrl
-    if os.path.isfile(postFilename):
-        return postFilename
+    post_filename = accountDir + 'outbox/' + postUrl
+    if os.path.isfile(post_filename):
+        return post_filename
 
     return None
 
@@ -1280,9 +1280,9 @@ def locateNewsArrival(base_dir: str, domain: str,
         postUrl = postUrl + '.json.arrived'
 
     accountDir = base_dir + '/accounts/news@' + domain + '/'
-    postFilename = accountDir + 'outbox/' + postUrl
-    if os.path.isfile(postFilename):
-        with open(postFilename, 'r') as arrivalFile:
+    post_filename = accountDir + 'outbox/' + postUrl
+    if os.path.isfile(post_filename):
+        with open(post_filename, 'r') as arrivalFile:
             arrival = arrivalFile.read()
             if arrival:
                 arrivalDate = \
@@ -1306,13 +1306,13 @@ def clearFromPostCaches(base_dir: str, recent_posts_cache: {},
             if acct.startswith('inbox@'):
                 continue
             cacheDir = os.path.join(base_dir + '/accounts', acct)
-            postFilename = cacheDir + filename
-            if os.path.isfile(postFilename):
+            post_filename = cacheDir + filename
+            if os.path.isfile(post_filename):
                 try:
-                    os.remove(postFilename)
+                    os.remove(post_filename)
                 except OSError:
                     print('EX: clearFromPostCaches file not removed ' +
-                          str(postFilename))
+                          str(post_filename))
             # if the post is in the recent posts cache then remove it
             if recent_posts_cache.get('index'):
                 if post_id in recent_posts_cache['index']:
@@ -1345,20 +1345,20 @@ def locate_post(base_dir: str, nickname: str, domain: str,
     boxes = ('inbox', 'outbox', 'tlblogs')
     accountDir = acct_dir(base_dir, nickname, domain) + '/'
     for boxName in boxes:
-        postFilename = accountDir + boxName + '/' + postUrl
-        if os.path.isfile(postFilename):
-            return postFilename
+        post_filename = accountDir + boxName + '/' + postUrl
+        if os.path.isfile(post_filename):
+            return post_filename
 
     # check news posts
     accountDir = base_dir + '/accounts/news' + '@' + domain + '/'
-    postFilename = accountDir + 'outbox/' + postUrl
-    if os.path.isfile(postFilename):
-        return postFilename
+    post_filename = accountDir + 'outbox/' + postUrl
+    if os.path.isfile(post_filename):
+        return post_filename
 
     # is it in the announce cache?
-    postFilename = base_dir + '/cache/announce/' + nickname + '/' + postUrl
-    if os.path.isfile(postFilename):
-        return postFilename
+    post_filename = base_dir + '/cache/announce/' + nickname + '/' + postUrl
+    if os.path.isfile(post_filename):
+        return post_filename
 
     # print('WARN: unable to locate ' + nickname + ' ' + postUrl)
     return None
@@ -1427,10 +1427,10 @@ def canReplyTo(base_dir: str, nickname: str, domain: str,
     if '/statuses/' not in postUrl:
         return True
     if not post_json_object:
-        postFilename = locate_post(base_dir, nickname, domain, postUrl)
-        if not postFilename:
+        post_filename = locate_post(base_dir, nickname, domain, postUrl)
+        if not post_filename:
             return False
-        post_json_object = load_json(postFilename)
+        post_json_object = load_json(post_filename)
     if not post_json_object:
         return False
     published = _getPublishedDate(post_json_object)
@@ -1528,15 +1528,15 @@ def _is_reply_to_blog_post(base_dir: str, nickname: str, domain: str,
 
 
 def _deletePostRemoveReplies(base_dir: str, nickname: str, domain: str,
-                             http_prefix: str, postFilename: str,
+                             http_prefix: str, post_filename: str,
                              recent_posts_cache: {}, debug: bool) -> None:
     """Removes replies when deleting a post
     """
-    repliesFilename = postFilename.replace('.json', '.replies')
+    repliesFilename = post_filename.replace('.json', '.replies')
     if not os.path.isfile(repliesFilename):
         return
     if debug:
-        print('DEBUG: removing replies to ' + postFilename)
+        print('DEBUG: removing replies to ' + post_filename)
     with open(repliesFilename, 'r') as f:
         for replyId in f:
             replyFile = locate_post(base_dir, nickname, domain, replyId)
@@ -1555,13 +1555,13 @@ def _deletePostRemoveReplies(base_dir: str, nickname: str, domain: str,
 
 
 def _isBookmarked(base_dir: str, nickname: str, domain: str,
-                  postFilename: str) -> bool:
+                  post_filename: str) -> bool:
     """Returns True if the given post is bookmarked
     """
     bookmarksIndexFilename = \
         acct_dir(base_dir, nickname, domain) + '/bookmarks.index'
     if os.path.isfile(bookmarksIndexFilename):
-        bookmarkIndex = postFilename.split('/')[-1] + '\n'
+        bookmarkIndex = post_filename.split('/')[-1] + '\n'
         if bookmarkIndex in open(bookmarksIndexFilename).read():
             return True
     return False
@@ -1604,7 +1604,7 @@ def _deleteCachedHtml(base_dir: str, nickname: str, domain: str,
     """Removes cached html file for the given post
     """
     cachedPostFilename = \
-        getCachedPostFilename(base_dir, nickname, domain, post_json_object)
+        get_cached_post_filename(base_dir, nickname, domain, post_json_object)
     if cachedPostFilename:
         if os.path.isfile(cachedPostFilename):
             try:
@@ -1712,27 +1712,27 @@ def _deleteConversationPost(base_dir: str, nickname: str, domain: str,
 
 
 def deletePost(base_dir: str, http_prefix: str,
-               nickname: str, domain: str, postFilename: str,
+               nickname: str, domain: str, post_filename: str,
                debug: bool, recent_posts_cache: {}) -> None:
     """Recursively deletes a post and its replies and attachments
     """
-    post_json_object = load_json(postFilename, 1)
+    post_json_object = load_json(post_filename, 1)
     if not post_json_object:
         # remove any replies
         _deletePostRemoveReplies(base_dir, nickname, domain,
-                                 http_prefix, postFilename,
+                                 http_prefix, post_filename,
                                  recent_posts_cache, debug)
         # finally, remove the post itself
         try:
-            os.remove(postFilename)
+            os.remove(post_filename)
         except OSError:
             if debug:
                 print('EX: deletePost unable to delete post ' +
-                      str(postFilename))
+                      str(post_filename))
         return
 
     # don't allow deletion of bookmarked posts
-    if _isBookmarked(base_dir, nickname, domain, postFilename):
+    if _isBookmarked(base_dir, nickname, domain, post_filename):
         return
 
     # don't remove replies to blog posts
@@ -1751,7 +1751,7 @@ def deletePost(base_dir: str, http_prefix: str,
 
     extensions = ('votes', 'arrived', 'muted', 'tts', 'reject')
     for ext in extensions:
-        extFilename = postFilename + '.' + ext
+        extFilename = post_filename + '.' + ext
         if os.path.isfile(extFilename):
             try:
                 os.remove(extFilename)
@@ -1780,14 +1780,14 @@ def deletePost(base_dir: str, http_prefix: str,
 
     # remove any replies
     _deletePostRemoveReplies(base_dir, nickname, domain,
-                             http_prefix, postFilename,
+                             http_prefix, post_filename,
                              recent_posts_cache, debug)
     # finally, remove the post itself
     try:
-        os.remove(postFilename)
+        os.remove(post_filename)
     except OSError:
         if debug:
-            print('EX: deletePost unable to delete post ' + str(postFilename))
+            print('EX: deletePost unable to delete post ' + str(post_filename))
 
 
 def isValidLanguage(text: str) -> bool:
@@ -1946,10 +1946,10 @@ def isPublicPostFromUrl(base_dir: str, nickname: str, domain: str,
                         postUrl: str) -> bool:
     """Returns whether the given url is a public post
     """
-    postFilename = locate_post(base_dir, nickname, domain, postUrl)
-    if not postFilename:
+    post_filename = locate_post(base_dir, nickname, domain, postUrl)
+    if not post_filename:
         return False
-    post_json_object = load_json(postFilename, 1)
+    post_json_object = load_json(post_filename, 1)
     if not post_json_object:
         return False
     return isPublicPost(post_json_object)
@@ -1991,8 +1991,8 @@ def getCachedPostDirectory(base_dir: str, nickname: str, domain: str) -> str:
     return htmlPostCacheDir
 
 
-def getCachedPostFilename(base_dir: str, nickname: str, domain: str,
-                          post_json_object: {}) -> str:
+def get_cached_post_filename(base_dir: str, nickname: str, domain: str,
+                             post_json_object: {}) -> str:
     """Returns the html cache filename for the given post
     """
     cachedPostDir = getCachedPostDirectory(base_dir, nickname, domain)
@@ -2124,17 +2124,17 @@ def _searchVirtualBoxPosts(base_dir: str, nickname: str, domain: str,
 
     res = []
     with open(indexFilename, 'r') as indexFile:
-        postFilename = 'start'
-        while postFilename:
-            postFilename = indexFile.readline()
-            if not postFilename:
+        post_filename = 'start'
+        while post_filename:
+            post_filename = indexFile.readline()
+            if not post_filename:
                 break
-            if '.json' not in postFilename:
+            if '.json' not in post_filename:
                 break
-            postFilename = path + '/' + postFilename.strip()
-            if not os.path.isfile(postFilename):
+            post_filename = path + '/' + post_filename.strip()
+            if not os.path.isfile(post_filename):
                 continue
-            with open(postFilename, 'r') as postFile:
+            with open(post_filename, 'r') as postFile:
                 data = postFile.read().lower()
 
                 notFound = False
@@ -2145,7 +2145,7 @@ def _searchVirtualBoxPosts(base_dir: str, nickname: str, domain: str,
                 if notFound:
                     continue
 
-                res.append(postFilename)
+                res.append(post_filename)
                 if len(res) >= maxResults:
                     return res
     return res
@@ -2208,20 +2208,21 @@ def getFileCaseInsensitive(path: str) -> str:
 
 
 def undoLikesCollectionEntry(recent_posts_cache: {},
-                             base_dir: str, postFilename: str, objectUrl: str,
+                             base_dir: str, post_filename: str, objectUrl: str,
                              actor: str, domain: str, debug: bool,
                              post_json_object: {}) -> None:
     """Undoes a like for a particular actor
     """
     if not post_json_object:
-        post_json_object = load_json(postFilename)
+        post_json_object = load_json(post_filename)
     if not post_json_object:
         return
     # remove any cached version of this post so that the
     # like icon is changed
     nickname = getNicknameFromActor(actor)
-    cachedPostFilename = getCachedPostFilename(base_dir, nickname,
-                                               domain, post_json_object)
+    cachedPostFilename = \
+        get_cached_post_filename(base_dir, nickname,
+                                 domain, post_json_object)
     if cachedPostFilename:
         if os.path.isfile(cachedPostFilename):
             try:
@@ -2267,11 +2268,11 @@ def undoLikesCollectionEntry(recent_posts_cache: {},
         itlen = len(obj['likes']['items'])
         obj['likes']['totalItems'] = itlen
 
-    save_json(post_json_object, postFilename)
+    save_json(post_json_object, post_filename)
 
 
 def undoReactionCollectionEntry(recent_posts_cache: {},
-                                base_dir: str, postFilename: str,
+                                base_dir: str, post_filename: str,
                                 objectUrl: str,
                                 actor: str, domain: str, debug: bool,
                                 post_json_object: {},
@@ -2279,14 +2280,15 @@ def undoReactionCollectionEntry(recent_posts_cache: {},
     """Undoes an emoji reaction for a particular actor
     """
     if not post_json_object:
-        post_json_object = load_json(postFilename)
+        post_json_object = load_json(post_filename)
     if not post_json_object:
         return
     # remove any cached version of this post so that the
     # like icon is changed
     nickname = getNicknameFromActor(actor)
-    cachedPostFilename = getCachedPostFilename(base_dir, nickname,
-                                               domain, post_json_object)
+    cachedPostFilename = \
+        get_cached_post_filename(base_dir, nickname,
+                                 domain, post_json_object)
     if cachedPostFilename:
         if os.path.isfile(cachedPostFilename):
             try:
@@ -2333,25 +2335,26 @@ def undoReactionCollectionEntry(recent_posts_cache: {},
         itlen = len(obj['reactions']['items'])
         obj['reactions']['totalItems'] = itlen
 
-    save_json(post_json_object, postFilename)
+    save_json(post_json_object, post_filename)
 
 
 def undoAnnounceCollectionEntry(recent_posts_cache: {},
-                                base_dir: str, postFilename: str,
+                                base_dir: str, post_filename: str,
                                 actor: str, domain: str, debug: bool) -> None:
     """Undoes an announce for a particular actor by removing it from
     the "shares" collection within a post. Note that the "shares"
     collection has no relation to shared items in shares.py. It's
     shares of posts, not shares of physical objects.
     """
-    post_json_object = load_json(postFilename)
+    post_json_object = load_json(post_filename)
     if not post_json_object:
         return
     # remove any cached version of this announce so that the announce
     # icon is changed
     nickname = getNicknameFromActor(actor)
-    cachedPostFilename = getCachedPostFilename(base_dir, nickname, domain,
-                                               post_json_object)
+    cachedPostFilename = \
+        get_cached_post_filename(base_dir, nickname, domain,
+                                 post_json_object)
     if cachedPostFilename:
         if os.path.isfile(cachedPostFilename):
             try:
@@ -2400,32 +2403,33 @@ def undoAnnounceCollectionEntry(recent_posts_cache: {},
         itlen = len(post_json_object['object']['shares']['items'])
         post_json_object['object']['shares']['totalItems'] = itlen
 
-    save_json(post_json_object, postFilename)
+    save_json(post_json_object, post_filename)
 
 
-def updateAnnounceCollection(recent_posts_cache: {},
-                             base_dir: str, postFilename: str,
-                             actor: str,
-                             nickname: str, domain: str, debug: bool) -> None:
+def update_announce_collection(recent_posts_cache: {},
+                               base_dir: str, post_filename: str,
+                               actor: str, nickname: str, domain: str,
+                               debug: bool) -> None:
     """Updates the announcements collection within a post
     Confusingly this is known as "shares", but isn't the
     same as shared items within shares.py
     It's shares of posts, not shares of physical objects.
     """
-    post_json_object = load_json(postFilename)
+    post_json_object = load_json(post_filename)
     if not post_json_object:
         return
     # remove any cached version of this announce so that the announce
     # icon is changed
-    cachedPostFilename = getCachedPostFilename(base_dir, nickname, domain,
-                                               post_json_object)
+    cachedPostFilename = \
+        get_cached_post_filename(base_dir, nickname, domain,
+                                 post_json_object)
     if cachedPostFilename:
         if os.path.isfile(cachedPostFilename):
             try:
                 os.remove(cachedPostFilename)
             except OSError:
                 if debug:
-                    print('EX: updateAnnounceCollection ' +
+                    print('EX: update_announce_collection ' +
                           'unable to delete cached post ' +
                           str(cachedPostFilename))
     removePostFromCache(post_json_object, recent_posts_cache)
@@ -2433,7 +2437,7 @@ def updateAnnounceCollection(recent_posts_cache: {},
     if not has_object_dict(post_json_object):
         if debug:
             pprint(post_json_object)
-            print('DEBUG: post ' + postFilename + ' has no object')
+            print('DEBUG: post ' + post_filename + ' has no object')
         return
     postUrl = removeIdEnding(post_json_object['id']) + '/shares'
     if not post_json_object['object'].get('shares'):
@@ -2473,7 +2477,7 @@ def updateAnnounceCollection(recent_posts_cache: {},
     if debug:
         print('DEBUG: saving post with shares (announcements) added')
         pprint(post_json_object)
-    save_json(post_json_object, postFilename)
+    save_json(post_json_object, post_filename)
 
 
 def week_day_of_month_start(month_number: int, year: int) -> int:
@@ -2534,9 +2538,9 @@ def is_recent_post(post_json_object: {}, max_days: int) -> bool:
               str(published_date_str))
         return False
 
-    publishedDaysSinceEpoch = \
+    published_days_since_epoch = \
         (published_date - datetime.datetime(1970, 1, 1)).days
-    if publishedDaysSinceEpoch < recently:
+    if published_days_since_epoch < recently:
         return False
     return True
 

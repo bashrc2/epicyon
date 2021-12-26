@@ -660,10 +660,10 @@ def htmlEditNewsPost(cssCache: {}, translate: {}, base_dir: str, path: str,
         return ''
 
     postUrl = postUrl.replace('/', '#')
-    postFilename = locate_post(base_dir, nickname, domain, postUrl)
-    if not postFilename:
+    post_filename = locate_post(base_dir, nickname, domain, postUrl)
+    if not post_filename:
         return ''
-    post_json_object = load_json(postFilename)
+    post_json_object = load_json(post_filename)
     if not post_json_object:
         return ''
 

@@ -15,7 +15,7 @@ from utils import is_account_dir
 from utils import removeHtml
 from utils import getProtocolPrefixes
 from utils import load_json
-from utils import getCachedPostFilename
+from utils import get_cached_post_filename
 from utils import get_config_param
 from utils import acct_dir
 from utils import getNicknameFromActor
@@ -864,7 +864,7 @@ def loadIndividualPostAsHtmlFromCache(base_dir: str,
     This is much quicker than generating the html from the json object
     """
     cachedPostFilename = \
-        getCachedPostFilename(base_dir, nickname, domain, post_json_object)
+        get_cached_post_filename(base_dir, nickname, domain, post_json_object)
 
     postHtml = ''
     if not cachedPostFilename:

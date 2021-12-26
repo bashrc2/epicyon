@@ -64,14 +64,14 @@ def _updateFeedsOutboxIndex(base_dir: str, domain: str, post_id: str) -> None:
             print('EX: unable to write ' + indexFilename)
 
 
-def _saveArrivedTime(base_dir: str, postFilename: str, arrived: str) -> None:
+def _saveArrivedTime(base_dir: str, post_filename: str, arrived: str) -> None:
     """Saves the time when an rss post arrived to a file
     """
     try:
-        with open(postFilename + '.arrived', 'w+') as arrivedFile:
+        with open(post_filename + '.arrived', 'w+') as arrivedFile:
             arrivedFile.write(arrived)
     except OSError:
-        print('EX: unable to write ' + postFilename + '.arrived')
+        print('EX: unable to write ' + post_filename + '.arrived')
 
 
 def _removeControlCharacters(content: str) -> str:

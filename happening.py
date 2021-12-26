@@ -205,12 +205,12 @@ def getTodaysEvents(base_dir: str, nickname: str, domain: str,
     with open(calendarFilename, 'r') as eventsFile:
         for post_id in eventsFile:
             post_id = post_id.replace('\n', '').replace('\r', '')
-            postFilename = locate_post(base_dir, nickname, domain, post_id)
-            if not postFilename:
+            post_filename = locate_post(base_dir, nickname, domain, post_id)
+            if not post_filename:
                 recreateEventsFile = True
                 continue
 
-            post_json_object = load_json(postFilename)
+            post_json_object = load_json(post_filename)
             if not _isHappeningPost(post_json_object):
                 continue
 
@@ -280,11 +280,11 @@ def dayEventsCheck(base_dir: str, nickname: str, domain: str,
     with open(calendarFilename, 'r') as eventsFile:
         for post_id in eventsFile:
             post_id = post_id.replace('\n', '').replace('\r', '')
-            postFilename = locate_post(base_dir, nickname, domain, post_id)
-            if not postFilename:
+            post_filename = locate_post(base_dir, nickname, domain, post_id)
+            if not post_filename:
                 continue
 
-            post_json_object = load_json(postFilename)
+            post_json_object = load_json(post_filename)
             if not _isHappeningPost(post_json_object):
                 continue
 
@@ -336,12 +336,12 @@ def getThisWeeksEvents(base_dir: str, nickname: str, domain: str) -> {}:
     with open(calendarFilename, 'r') as eventsFile:
         for post_id in eventsFile:
             post_id = post_id.replace('\n', '').replace('\r', '')
-            postFilename = locate_post(base_dir, nickname, domain, post_id)
-            if not postFilename:
+            post_filename = locate_post(base_dir, nickname, domain, post_id)
+            if not post_filename:
                 recreateEventsFile = True
                 continue
 
-            post_json_object = load_json(postFilename)
+            post_json_object = load_json(post_filename)
             if not _isHappeningPost(post_json_object):
                 continue
 
@@ -401,12 +401,12 @@ def getCalendarEvents(base_dir: str, nickname: str, domain: str,
     with open(calendarFilename, 'r') as eventsFile:
         for post_id in eventsFile:
             post_id = post_id.replace('\n', '').replace('\r', '')
-            postFilename = locate_post(base_dir, nickname, domain, post_id)
-            if not postFilename:
+            post_filename = locate_post(base_dir, nickname, domain, post_id)
+            if not post_filename:
                 recreateEventsFile = True
                 continue
 
-            post_json_object = load_json(postFilename)
+            post_json_object = load_json(post_filename)
             if not _isHappeningPost(post_json_object):
                 continue
 

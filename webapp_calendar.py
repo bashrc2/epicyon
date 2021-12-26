@@ -43,11 +43,11 @@ def htmlCalendarDeleteConfirm(cssCache: {}, translate: {}, base_dir: str,
     domain, port = getDomainFromActor(actor)
     messageId = actor + '/statuses/' + post_id
 
-    postFilename = locate_post(base_dir, nickname, domain, messageId)
-    if not postFilename:
+    post_filename = locate_post(base_dir, nickname, domain, messageId)
+    if not post_filename:
         return None
 
-    post_json_object = load_json(postFilename)
+    post_json_object = load_json(post_filename)
     if not post_json_object:
         return None
 

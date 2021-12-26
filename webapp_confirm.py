@@ -47,11 +47,11 @@ def htmlConfirmDelete(cssCache: {},
     domain, port = getDomainFromActor(actor)
     domain_full = get_full_domain(domain, port)
 
-    postFilename = locate_post(base_dir, nickname, domain, messageId)
-    if not postFilename:
+    post_filename = locate_post(base_dir, nickname, domain, messageId)
+    if not post_filename:
         return None
 
-    post_json_object = load_json(postFilename)
+    post_json_object = load_json(post_filename)
     if not post_json_object:
         return None
 

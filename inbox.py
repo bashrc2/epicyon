@@ -44,7 +44,7 @@ from utils import getProtocolPrefixes
 from utils import isBlogPost
 from utils import removeAvatarFromCache
 from utils import isPublicPost
-from utils import getCachedPostFilename
+from utils import get_cached_post_filename
 from utils import removePostFromCache
 from utils import urlPermitted
 from utils import createInboxQueueDir
@@ -86,7 +86,7 @@ from blocking import isBlocked
 from blocking import isBlockedDomain
 from blocking import broch_modeLapses
 from filters import isFiltered
-from utils import updateAnnounceCollection
+from utils import update_announce_collection
 from utils import undoAnnounceCollectionEntry
 from utils import dangerousMarkup
 from utils import is_dm
@@ -913,11 +913,11 @@ def _receiveUpdateToQuestion(recent_posts_cache: {}, message_json: {},
     if '#' in messageId:
         messageId = messageId.split('#', 1)[0]
     # find the question post
-    postFilename = locate_post(base_dir, nickname, domain, messageId)
-    if not postFilename:
+    post_filename = locate_post(base_dir, nickname, domain, messageId)
+    if not post_filename:
         return
     # load the json for the question
-    post_json_object = load_json(postFilename, 1)
+    post_json_object = load_json(post_filename, 1)
     if not post_json_object:
         return
     if not post_json_object.get('actor'):
@@ -925,11 +925,11 @@ def _receiveUpdateToQuestion(recent_posts_cache: {}, message_json: {},
     # does the actor match?
     if post_json_object['actor'] != message_json['actor']:
         return
-    save_json(message_json, postFilename)
+    save_json(message_json, post_filename)
     # ensure that the cached post is removed if it exists, so
     # that it then will be recreated
     cachedPostFilename = \
-        getCachedPostFilename(base_dir, nickname, domain, message_json)
+        get_cached_post_filename(base_dir, nickname, domain, message_json)
     if cachedPostFilename:
         if os.path.isfile(cachedPostFilename):
             try:
@@ -1038,8 +1038,8 @@ def _receiveLike(recent_posts_cache: {},
     handleName = handle.split('@')[0]
     handleDom = handle.split('@')[1]
     postLikedId = message_json['object']
-    postFilename = locate_post(base_dir, handleName, handleDom, postLikedId)
-    if not postFilename:
+    post_filename = locate_post(base_dir, handleName, handleDom, postLikedId)
+    if not post_filename:
         if debug:
             print('DEBUG: post not found in inbox or outbox')
             print(postLikedId)
@@ -1056,11 +1056,11 @@ def _receiveLike(recent_posts_cache: {},
                          likeActor):
         _likeNotify(base_dir, domain, onion_domain, handle,
                     likeActor, postLikedId)
-    updateLikesCollection(recent_posts_cache, base_dir, postFilename,
+    updateLikesCollection(recent_posts_cache, base_dir, post_filename,
                           postLikedId, likeActor,
                           handleName, domain, debug, None)
     # regenerate the html
-    likedPostJson = load_json(postFilename, 0, 1)
+    likedPostJson = load_json(post_filename, 0, 1)
     if likedPostJson:
         if likedPostJson.get('type'):
             if likedPostJson['type'] == 'Announce' and \
@@ -1072,10 +1072,10 @@ def _receiveLike(recent_posts_cache: {},
                                     domain, announceLikeUrl)
                     if announceLikedFilename:
                         postLikedId = announceLikeUrl
-                        postFilename = announceLikedFilename
+                        post_filename = announceLikedFilename
                         updateLikesCollection(recent_posts_cache,
                                               base_dir,
-                                              postFilename,
+                                              post_filename,
                                               postLikedId,
                                               likeActor,
                                               handleName,
@@ -1083,8 +1083,8 @@ def _receiveLike(recent_posts_cache: {},
         if likedPostJson:
             if debug:
                 cachedPostFilename = \
-                    getCachedPostFilename(base_dir, handleName, domain,
-                                          likedPostJson)
+                    get_cached_post_filename(base_dir, handleName, domain,
+                                             likedPostJson)
                 print('Liked post json: ' + str(likedPostJson))
                 print('Liked post nickname: ' + handleName + ' ' + domain)
                 print('Liked post cache: ' + str(cachedPostFilename))
@@ -1159,10 +1159,10 @@ def _receiveUndoLike(recent_posts_cache: {},
     # if this post in the outbox of the person?
     handleName = handle.split('@')[0]
     handleDom = handle.split('@')[1]
-    postFilename = \
+    post_filename = \
         locate_post(base_dir, handleName, handleDom,
                     message_json['object']['object'])
-    if not postFilename:
+    if not post_filename:
         if debug:
             print('DEBUG: unliked post not found in inbox or outbox')
             print(message_json['object']['object'])
@@ -1171,10 +1171,10 @@ def _receiveUndoLike(recent_posts_cache: {},
         print('DEBUG: liked post found in inbox. Now undoing.')
     likeActor = message_json['actor']
     postLikedId = message_json['object']
-    undoLikesCollectionEntry(recent_posts_cache, base_dir, postFilename,
+    undoLikesCollectionEntry(recent_posts_cache, base_dir, post_filename,
                              postLikedId, likeActor, domain, debug, None)
     # regenerate the html
-    likedPostJson = load_json(postFilename, 0, 1)
+    likedPostJson = load_json(post_filename, 0, 1)
     if likedPostJson:
         if likedPostJson.get('type'):
             if likedPostJson['type'] == 'Announce' and \
@@ -1186,16 +1186,16 @@ def _receiveUndoLike(recent_posts_cache: {},
                                     domain, announceLikeUrl)
                     if announceLikedFilename:
                         postLikedId = announceLikeUrl
-                        postFilename = announceLikedFilename
+                        post_filename = announceLikedFilename
                         undoLikesCollectionEntry(recent_posts_cache, base_dir,
-                                                 postFilename, postLikedId,
+                                                 post_filename, postLikedId,
                                                  likeActor, domain, debug,
                                                  None)
         if likedPostJson:
             if debug:
                 cachedPostFilename = \
-                    getCachedPostFilename(base_dir, handleName, domain,
-                                          likedPostJson)
+                    get_cached_post_filename(base_dir, handleName, domain,
+                                             likedPostJson)
                 print('Unliked post json: ' + str(likedPostJson))
                 print('Unliked post nickname: ' + handleName + ' ' + domain)
                 print('Unliked post cache: ' + str(cachedPostFilename))
@@ -1295,8 +1295,9 @@ def _receiveReaction(recent_posts_cache: {},
         if debug:
             print('DEBUG: emoji reaction has no content')
         return True
-    postFilename = locate_post(base_dir, handleName, handleDom, postReactionId)
-    if not postFilename:
+    post_filename = locate_post(base_dir, handleName, handleDom,
+                                postReactionId)
+    if not post_filename:
         if debug:
             print('DEBUG: emoji reaction post not found in inbox or outbox')
             print(postReactionId)
@@ -1314,11 +1315,11 @@ def _receiveReaction(recent_posts_cache: {},
                            emojiContent):
         _reactionNotify(base_dir, domain, onion_domain, handle,
                         reactionActor, postReactionId, emojiContent)
-    updateReactionCollection(recent_posts_cache, base_dir, postFilename,
+    updateReactionCollection(recent_posts_cache, base_dir, post_filename,
                              postReactionId, reactionActor,
                              handleName, domain, debug, None, emojiContent)
     # regenerate the html
-    reactionPostJson = load_json(postFilename, 0, 1)
+    reactionPostJson = load_json(post_filename, 0, 1)
     if reactionPostJson:
         if reactionPostJson.get('type'):
             if reactionPostJson['type'] == 'Announce' and \
@@ -1330,10 +1331,10 @@ def _receiveReaction(recent_posts_cache: {},
                                     domain, announceReactionUrl)
                     if announceReactionFilename:
                         postReactionId = announceReactionUrl
-                        postFilename = announceReactionFilename
+                        post_filename = announceReactionFilename
                         updateReactionCollection(recent_posts_cache,
                                                  base_dir,
-                                                 postFilename,
+                                                 post_filename,
                                                  postReactionId,
                                                  reactionActor,
                                                  handleName,
@@ -1342,8 +1343,8 @@ def _receiveReaction(recent_posts_cache: {},
         if reactionPostJson:
             if debug:
                 cachedPostFilename = \
-                    getCachedPostFilename(base_dir, handleName, domain,
-                                          reactionPostJson)
+                    get_cached_post_filename(base_dir, handleName, domain,
+                                             reactionPostJson)
                 print('Reaction post json: ' + str(reactionPostJson))
                 print('Reaction post nickname: ' + handleName + ' ' + domain)
                 print('Reaction post cache: ' + str(cachedPostFilename))
@@ -1428,10 +1429,10 @@ def _receiveUndoReaction(recent_posts_cache: {},
     # if this post in the outbox of the person?
     handleName = handle.split('@')[0]
     handleDom = handle.split('@')[1]
-    postFilename = \
+    post_filename = \
         locate_post(base_dir, handleName, handleDom,
                     message_json['object']['object'])
-    if not postFilename:
+    if not post_filename:
         if debug:
             print('DEBUG: unreaction post not found in inbox or outbox')
             print(message_json['object']['object'])
@@ -1445,11 +1446,11 @@ def _receiveUndoReaction(recent_posts_cache: {},
         if debug:
             print('DEBUG: unreaction has no content')
         return True
-    undoReactionCollectionEntry(recent_posts_cache, base_dir, postFilename,
+    undoReactionCollectionEntry(recent_posts_cache, base_dir, post_filename,
                                 postReactionId, reactionActor, domain,
                                 debug, None, emojiContent)
     # regenerate the html
-    reactionPostJson = load_json(postFilename, 0, 1)
+    reactionPostJson = load_json(post_filename, 0, 1)
     if reactionPostJson:
         if reactionPostJson.get('type'):
             if reactionPostJson['type'] == 'Announce' and \
@@ -1461,10 +1462,10 @@ def _receiveUndoReaction(recent_posts_cache: {},
                                     domain, announceReactionUrl)
                     if announceReactionFilename:
                         postReactionId = announceReactionUrl
-                        postFilename = announceReactionFilename
+                        post_filename = announceReactionFilename
                         undoReactionCollectionEntry(recent_posts_cache,
                                                     base_dir,
-                                                    postFilename,
+                                                    post_filename,
                                                     postReactionId,
                                                     reactionActor, domain,
                                                     debug, None,
@@ -1472,8 +1473,8 @@ def _receiveUndoReaction(recent_posts_cache: {},
         if reactionPostJson:
             if debug:
                 cachedPostFilename = \
-                    getCachedPostFilename(base_dir, handleName, domain,
-                                          reactionPostJson)
+                    get_cached_post_filename(base_dir, handleName, domain,
+                                             reactionPostJson)
                 print('Unreaction post json: ' + str(reactionPostJson))
                 print('Unreaction post nickname: ' + handleName + ' ' + domain)
                 print('Unreaction post cache: ' + str(cachedPostFilename))
@@ -1567,23 +1568,23 @@ def _receiveBookmark(recent_posts_cache: {},
 
     messageUrl = removeIdEnding(message_json['object']['url'])
     domain = remove_domain_port(domain)
-    postFilename = locate_post(base_dir, nickname, domain, messageUrl)
-    if not postFilename:
+    post_filename = locate_post(base_dir, nickname, domain, messageUrl)
+    if not post_filename:
         if debug:
             print('DEBUG: c2s inbox like post not found in inbox or outbox')
             print(messageUrl)
         return True
 
-    updateBookmarksCollection(recent_posts_cache, base_dir, postFilename,
+    updateBookmarksCollection(recent_posts_cache, base_dir, post_filename,
                               message_json['object']['url'],
                               message_json['actor'], domain, debug)
     # regenerate the html
-    bookmarkedPostJson = load_json(postFilename, 0, 1)
+    bookmarkedPostJson = load_json(post_filename, 0, 1)
     if bookmarkedPostJson:
         if debug:
             cachedPostFilename = \
-                getCachedPostFilename(base_dir, nickname, domain,
-                                      bookmarkedPostJson)
+                get_cached_post_filename(base_dir, nickname, domain,
+                                         bookmarkedPostJson)
             print('Bookmarked post json: ' + str(bookmarkedPostJson))
             print('Bookmarked post nickname: ' + nickname + ' ' + domain)
             print('Bookmarked post cache: ' + str(cachedPostFilename))
@@ -1680,23 +1681,23 @@ def _receiveUndoBookmark(recent_posts_cache: {},
 
     messageUrl = removeIdEnding(message_json['object']['url'])
     domain = remove_domain_port(domain)
-    postFilename = locate_post(base_dir, nickname, domain, messageUrl)
-    if not postFilename:
+    post_filename = locate_post(base_dir, nickname, domain, messageUrl)
+    if not post_filename:
         if debug:
             print('DEBUG: c2s inbox like post not found in inbox or outbox')
             print(messageUrl)
         return True
 
-    undoBookmarksCollectionEntry(recent_posts_cache, base_dir, postFilename,
+    undoBookmarksCollectionEntry(recent_posts_cache, base_dir, post_filename,
                                  message_json['object']['url'],
                                  message_json['actor'], domain, debug)
     # regenerate the html
-    bookmarkedPostJson = load_json(postFilename, 0, 1)
+    bookmarkedPostJson = load_json(post_filename, 0, 1)
     if bookmarkedPostJson:
         if debug:
             cachedPostFilename = \
-                getCachedPostFilename(base_dir, nickname, domain,
-                                      bookmarkedPostJson)
+                get_cached_post_filename(base_dir, nickname, domain,
+                                         bookmarkedPostJson)
             print('Unbookmarked post json: ' + str(bookmarkedPostJson))
             print('Unbookmarked post nickname: ' + nickname + ' ' + domain)
             print('Unbookmarked post cache: ' + str(cachedPostFilename))
@@ -1776,29 +1777,29 @@ def _receiveDelete(session, handle: str, isGroup: bool, base_dir: str,
     removeModerationPostFromIndex(base_dir, messageId, debug)
     handleNickname = handle.split('@')[0]
     handleDomain = handle.split('@')[1]
-    postFilename = locate_post(base_dir, handleNickname,
-                               handleDomain, messageId)
-    if not postFilename:
+    post_filename = locate_post(base_dir, handleNickname,
+                                handleDomain, messageId)
+    if not post_filename:
         if debug:
             print('DEBUG: delete post not found in inbox or outbox')
             print(messageId)
         return True
     deletePost(base_dir, http_prefix, handleNickname,
-               handleDomain, postFilename, debug,
+               handleDomain, post_filename, debug,
                recent_posts_cache)
     if debug:
-        print('DEBUG: post deleted - ' + postFilename)
+        print('DEBUG: post deleted - ' + post_filename)
 
     # also delete any local blogs saved to the news actor
     if handleNickname != 'news' and handleDomain == domain_full:
-        postFilename = locate_post(base_dir, 'news',
-                                   handleDomain, messageId)
-        if postFilename:
+        post_filename = locate_post(base_dir, 'news',
+                                    handleDomain, messageId)
+        if post_filename:
             deletePost(base_dir, http_prefix, 'news',
-                       handleDomain, postFilename, debug,
+                       handleDomain, post_filename, debug,
                        recent_posts_cache)
             if debug:
-                print('DEBUG: blog post deleted - ' + postFilename)
+                print('DEBUG: blog post deleted - ' + post_filename)
     return True
 
 
@@ -1889,15 +1890,15 @@ def _receiveAnnounce(recent_posts_cache: {},
         return False
 
     # is this post in the outbox of the person?
-    postFilename = locate_post(base_dir, nickname, domain,
-                               message_json['object'])
-    if not postFilename:
+    post_filename = locate_post(base_dir, nickname, domain,
+                                message_json['object'])
+    if not post_filename:
         if debug:
             print('DEBUG: announce post not found in inbox or outbox')
             print(message_json['object'])
         return True
-    updateAnnounceCollection(recent_posts_cache, base_dir, postFilename,
-                             message_json['actor'], nickname, domain, debug)
+    update_announce_collection(recent_posts_cache, base_dir, post_filename,
+                               message_json['actor'], nickname, domain, debug)
     if debug:
         print('DEBUG: Downloading announce post ' + message_json['actor'] +
               ' -> ' + message_json['object'])
@@ -1959,13 +1960,13 @@ def _receiveAnnounce(recent_posts_cache: {},
             if onion_domain in message_json['object']:
                 notInOnion = False
         if domain not in message_json['object'] and notInOnion:
-            if os.path.isfile(postFilename):
+            if os.path.isfile(post_filename):
                 # if the announce can't be downloaded then remove it
                 try:
-                    os.remove(postFilename)
+                    os.remove(post_filename)
                 except OSError:
                     print('EX: _receiveAnnounce unable to delete ' +
-                          str(postFilename))
+                          str(post_filename))
     else:
         if debug:
             print('DEBUG: Announce post downloaded for ' +
@@ -1991,7 +1992,7 @@ def _receiveAnnounce(recent_posts_cache: {},
                     lookupActor = lookupActor.split('/statuses/')[0]
 
                 if is_recent_post(post_json_object, 3):
-                    if not os.path.isfile(postFilename + '.tts'):
+                    if not os.path.isfile(post_filename + '.tts'):
                         domain_full = get_full_domain(domain, port)
                         updateSpeaker(base_dir, http_prefix,
                                       nickname, domain, domain_full,
@@ -1999,11 +2000,11 @@ def _receiveAnnounce(recent_posts_cache: {},
                                       translate, lookupActor,
                                       theme_name)
                         try:
-                            with open(postFilename + '.tts', 'w+') as ttsFile:
+                            with open(post_filename + '.tts', 'w+') as ttsFile:
                                 ttsFile.write('\n')
                         except OSError:
                             print('EX: unable to write recent post ' +
-                                  postFilename)
+                                  post_filename)
 
                 if debug:
                     print('DEBUG: Obtaining actor for announce post ' +
@@ -2060,9 +2061,9 @@ def _receiveUndoAnnounce(recent_posts_cache: {},
     # if this post in the outbox of the person?
     handleName = handle.split('@')[0]
     handleDom = handle.split('@')[1]
-    postFilename = locate_post(base_dir, handleName, handleDom,
-                               message_json['object']['object'])
-    if not postFilename:
+    post_filename = locate_post(base_dir, handleName, handleDom,
+                                message_json['object']['object'])
+    if not post_filename:
         if debug:
             print('DEBUG: undo announce post not found in inbox or outbox')
             print(message_json['object']['object'])
@@ -2070,7 +2071,7 @@ def _receiveUndoAnnounce(recent_posts_cache: {},
     if debug:
         print('DEBUG: announced/repeated post to be undone found in inbox')
 
-    post_json_object = load_json(postFilename)
+    post_json_object = load_json(post_filename)
     if post_json_object:
         if not post_json_object.get('type'):
             if post_json_object['type'] != 'Announce':
@@ -2078,14 +2079,14 @@ def _receiveUndoAnnounce(recent_posts_cache: {},
                     print("DEBUG: Attempt to undo something " +
                           "which isn't an announcement")
                 return False
-    undoAnnounceCollectionEntry(recent_posts_cache, base_dir, postFilename,
+    undoAnnounceCollectionEntry(recent_posts_cache, base_dir, post_filename,
                                 message_json['actor'], domain, debug)
-    if os.path.isfile(postFilename):
+    if os.path.isfile(post_filename):
         try:
-            os.remove(postFilename)
+            os.remove(post_filename)
         except OSError:
             print('EX: _receiveUndoAnnounce unable to delete ' +
-                  str(postFilename))
+                  str(post_filename))
     return True
 
 
@@ -2106,10 +2107,10 @@ def jsonPostAllowsComments(post_json_object: {}) -> bool:
     return True
 
 
-def _postAllowsComments(postFilename: str) -> bool:
+def _postAllowsComments(post_filename: str) -> bool:
     """Returns true if the given post allows comments/replies
     """
-    post_json_object = load_json(postFilename)
+    post_json_object = load_json(post_filename)
     if not post_json_object:
         return False
     return jsonPostAllowsComments(post_json_object)
@@ -2150,19 +2151,19 @@ def populateReplies(base_dir: str, http_prefix: str, domain: str,
             print('DEBUG: no domain found for ' + replyTo)
         return False
 
-    postFilename = locate_post(base_dir, replyToNickname,
-                               replyToDomain, replyTo)
-    if not postFilename:
+    post_filename = locate_post(base_dir, replyToNickname,
+                                replyToDomain, replyTo)
+    if not post_filename:
         if debug:
             print('DEBUG: post may have expired - ' + replyTo)
         return False
 
-    if not _postAllowsComments(postFilename):
+    if not _postAllowsComments(post_filename):
         if debug:
             print('DEBUG: post does not allow comments - ' + replyTo)
         return False
     # populate a text file containing the ids of replies
-    postRepliesFilename = postFilename.replace('.json', '.replies')
+    postRepliesFilename = post_filename.replace('.json', '.replies')
     messageId = removeIdEnding(message_json['id'])
     if os.path.isfile(postRepliesFilename):
         numLines = sum(1 for line in open(postRepliesFilename))
@@ -2365,11 +2366,11 @@ def _alreadyLiked(base_dir: str, nickname: str, domain: str,
                   postUrl: str, likerActor: str) -> bool:
     """Is the given post already liked by the given handle?
     """
-    postFilename = \
+    post_filename = \
         locate_post(base_dir, nickname, domain, postUrl)
-    if not postFilename:
+    if not post_filename:
         return False
-    post_json_object = load_json(postFilename, 1)
+    post_json_object = load_json(post_filename, 1)
     if not post_json_object:
         return False
     if not has_object_dict(post_json_object):
@@ -2395,11 +2396,11 @@ def _alreadyReacted(base_dir: str, nickname: str, domain: str,
                     emojiContent: str) -> bool:
     """Is the given post already emoji reacted by the given handle?
     """
-    postFilename = \
+    post_filename = \
         locate_post(base_dir, nickname, domain, postUrl)
-    if not postFilename:
+    if not post_filename:
         return False
-    post_json_object = load_json(postFilename, 1)
+    post_json_object = load_json(post_filename, 1)
     if not post_json_object:
         return False
     if not has_object_dict(post_json_object):
@@ -3013,7 +3014,7 @@ def _receiveQuestionVote(base_dir: str, nickname: str, domain: str,
     # ensure that the cached post is removed if it exists, so
     # that it then will be recreated
     cachedPostFilename = \
-        getCachedPostFilename(base_dir, nickname, domain, questionJson)
+        get_cached_post_filename(base_dir, nickname, domain, questionJson)
     if cachedPostFilename:
         if os.path.isfile(cachedPostFilename):
             try:

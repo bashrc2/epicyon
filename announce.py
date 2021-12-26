@@ -21,7 +21,7 @@ from utils import getDomainFromActor
 from utils import locate_post
 from utils import save_json
 from utils import undoAnnounceCollectionEntry
-from utils import updateAnnounceCollection
+from utils import update_announce_collection
 from utils import local_actor_url
 from utils import replace_users_with_at
 from utils import has_actor
@@ -74,13 +74,13 @@ def outboxAnnounce(recent_posts_cache: {},
             print('WARN: no nickname found in ' + message_json['actor'])
             return False
         domain, _ = getDomainFromActor(message_json['actor'])
-        postFilename = locate_post(base_dir, nickname, domain,
-                                   message_json['object'])
-        if postFilename:
-            updateAnnounceCollection(recent_posts_cache,
-                                     base_dir, postFilename,
-                                     message_json['actor'],
-                                     nickname, domain, debug)
+        post_filename = locate_post(base_dir, nickname, domain,
+                                    message_json['object'])
+        if post_filename:
+            update_announce_collection(recent_posts_cache,
+                                       base_dir, post_filename,
+                                       message_json['actor'],
+                                       nickname, domain, debug)
             return True
     elif message_json['type'] == 'Undo':
         if not has_object_stringType(message_json, debug):
@@ -93,11 +93,11 @@ def outboxAnnounce(recent_posts_cache: {},
                 print('WARN: no nickname found in ' + message_json['actor'])
                 return False
             domain, _ = getDomainFromActor(message_json['actor'])
-            postFilename = locate_post(base_dir, nickname, domain,
-                                       message_json['object']['object'])
-            if postFilename:
+            post_filename = locate_post(base_dir, nickname, domain,
+                                        message_json['object']['object'])
+            if post_filename:
                 undoAnnounceCollectionEntry(recent_posts_cache,
-                                            base_dir, postFilename,
+                                            base_dir, post_filename,
                                             message_json['actor'],
                                             domain, debug)
                 return True
@@ -410,13 +410,13 @@ def outboxUndoAnnounce(recent_posts_cache: {},
 
     messageId = removeIdEnding(message_json['object']['object'])
     domain = remove_domain_port(domain)
-    postFilename = locate_post(base_dir, nickname, domain, messageId)
-    if not postFilename:
+    post_filename = locate_post(base_dir, nickname, domain, messageId)
+    if not post_filename:
         if debug:
             print('DEBUG: c2s undo announce post not found in inbox or outbox')
             print(messageId)
         return True
-    undoAnnounceCollectionEntry(recent_posts_cache, base_dir, postFilename,
+    undoAnnounceCollectionEntry(recent_posts_cache, base_dir, post_filename,
                                 message_json['actor'], domain, debug)
     if debug:
-        print('DEBUG: post undo announce via c2s - ' + postFilename)
+        print('DEBUG: post undo announce via c2s - ' + post_filename)

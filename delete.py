@@ -161,17 +161,17 @@ def outboxDelete(base_dir: str, http_prefix: str,
                   "wasn't created by you (domain does not match)")
         return
     removeModerationPostFromIndex(base_dir, messageId, debug)
-    postFilename = locate_post(base_dir, deleteNickname, deleteDomain,
-                               messageId)
-    if not postFilename:
+    post_filename = locate_post(base_dir, deleteNickname, deleteDomain,
+                                messageId)
+    if not post_filename:
         if debug:
             print('DEBUG: c2s delete post not found in inbox or outbox')
             print(messageId)
         return True
     deletePost(base_dir, http_prefix, deleteNickname, deleteDomain,
-               postFilename, debug, recent_posts_cache)
+               post_filename, debug, recent_posts_cache)
     if debug:
-        print('DEBUG: post deleted via c2s - ' + postFilename)
+        print('DEBUG: post deleted via c2s - ' + post_filename)
 
 
 def removeOldHashtags(base_dir: str, maxMonths: int) -> str:

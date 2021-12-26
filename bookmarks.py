@@ -20,7 +20,7 @@ from utils import urlPermitted
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import locate_post
-from utils import getCachedPostFilename
+from utils import get_cached_post_filename
 from utils import load_json
 from utils import save_json
 from utils import has_object_dict
@@ -33,20 +33,21 @@ from session import postJson
 
 
 def undoBookmarksCollectionEntry(recent_posts_cache: {},
-                                 base_dir: str, postFilename: str,
+                                 base_dir: str, post_filename: str,
                                  objectUrl: str,
                                  actor: str, domain: str, debug: bool) -> None:
     """Undoes a bookmark for a particular actor
     """
-    post_json_object = load_json(postFilename)
+    post_json_object = load_json(post_filename)
     if not post_json_object:
         return
 
     # remove any cached version of this post so that the
     # bookmark icon is changed
     nickname = getNicknameFromActor(actor)
-    cachedPostFilename = getCachedPostFilename(base_dir, nickname,
-                                               domain, post_json_object)
+    cachedPostFilename = \
+        get_cached_post_filename(base_dir, nickname,
+                                 domain, post_json_object)
     if cachedPostFilename:
         if os.path.isfile(cachedPostFilename):
             try:
@@ -63,10 +64,10 @@ def undoBookmarksCollectionEntry(recent_posts_cache: {},
         acct_dir(base_dir, nickname, domain) + '/bookmarks.index'
     if not os.path.isfile(bookmarksIndexFilename):
         return
-    if '/' in postFilename:
-        bookmarkIndex = postFilename.split('/')[-1].strip()
+    if '/' in post_filename:
+        bookmarkIndex = post_filename.split('/')[-1].strip()
     else:
-        bookmarkIndex = postFilename.strip()
+        bookmarkIndex = post_filename.strip()
     bookmarkIndex = bookmarkIndex.replace('\n', '').replace('\r', '')
     if bookmarkIndex not in open(bookmarksIndexFilename).read():
         return
@@ -122,7 +123,7 @@ def undoBookmarksCollectionEntry(recent_posts_cache: {},
     else:
         bmItLen = len(post_json_object['object']['bookmarks']['items'])
         post_json_object['object']['bookmarks']['totalItems'] = bmItLen
-    save_json(post_json_object, postFilename)
+    save_json(post_json_object, post_filename)
 
 
 def bookmarkedByPerson(post_json_object: {},
@@ -154,18 +155,19 @@ def _noOfBookmarks(post_json_object: {}) -> int:
 
 
 def updateBookmarksCollection(recent_posts_cache: {},
-                              base_dir: str, postFilename: str,
+                              base_dir: str, post_filename: str,
                               objectUrl: str,
                               actor: str, domain: str, debug: bool) -> None:
     """Updates the bookmarks collection within a post
     """
-    post_json_object = load_json(postFilename)
+    post_json_object = load_json(post_filename)
     if post_json_object:
         # remove any cached version of this post so that the
         # bookmark icon is changed
         nickname = getNicknameFromActor(actor)
-        cachedPostFilename = getCachedPostFilename(base_dir, nickname,
-                                                   domain, post_json_object)
+        cachedPostFilename = \
+            get_cached_post_filename(base_dir, nickname,
+                                     domain, post_json_object)
         if cachedPostFilename:
             if os.path.isfile(cachedPostFilename):
                 try:
@@ -220,12 +222,12 @@ def updateBookmarksCollection(recent_posts_cache: {},
             print('DEBUG: saving post with bookmarks added')
             pprint(post_json_object)
 
-        save_json(post_json_object, postFilename)
+        save_json(post_json_object, post_filename)
 
         # prepend to the index
         bookmarksIndexFilename = \
             acct_dir(base_dir, nickname, domain) + '/bookmarks.index'
-        bookmarkIndex = postFilename.split('/')[-1]
+        bookmarkIndex = post_filename.split('/')[-1]
         if os.path.isfile(bookmarksIndexFilename):
             if bookmarkIndex not in open(bookmarksIndexFilename).read():
                 try:
@@ -292,8 +294,8 @@ def bookmark(recent_posts_cache: {},
             bookmarkedPostDomain, bookmarkedPostPort = getDomainFromActor(ou)
 
     if bookmarkedPostNickname:
-        postFilename = locate_post(base_dir, nickname, domain, objectUrl)
-        if not postFilename:
+        post_filename = locate_post(base_dir, nickname, domain, objectUrl)
+        if not post_filename:
             print('DEBUG: bookmark base_dir: ' + base_dir)
             print('DEBUG: bookmark nickname: ' + nickname)
             print('DEBUG: bookmark domain: ' + domain)
@@ -301,7 +303,7 @@ def bookmark(recent_posts_cache: {},
             return None
 
         updateBookmarksCollection(recent_posts_cache,
-                                  base_dir, postFilename, objectUrl,
+                                  base_dir, post_filename, objectUrl,
                                   newBookmarkJson['actor'], domain, debug)
 
     return newBookmarkJson
@@ -356,12 +358,12 @@ def undoBookmark(recent_posts_cache: {},
             bookmarkedPostDomain, bookmarkedPostPort = getDomainFromActor(ou)
 
     if bookmarkedPostNickname:
-        postFilename = locate_post(base_dir, nickname, domain, objectUrl)
-        if not postFilename:
+        post_filename = locate_post(base_dir, nickname, domain, objectUrl)
+        if not post_filename:
             return None
 
         undoBookmarksCollectionEntry(recent_posts_cache,
-                                     base_dir, postFilename, objectUrl,
+                                     base_dir, post_filename, objectUrl,
                                      newUndoBookmarkJson['actor'],
                                      domain, debug)
     else:
@@ -593,17 +595,17 @@ def outboxBookmark(recent_posts_cache: {},
 
     messageUrl = removeIdEnding(message_json['object']['url'])
     domain = remove_domain_port(domain)
-    postFilename = locate_post(base_dir, nickname, domain, messageUrl)
-    if not postFilename:
+    post_filename = locate_post(base_dir, nickname, domain, messageUrl)
+    if not post_filename:
         if debug:
             print('DEBUG: c2s like post not found in inbox or outbox')
             print(messageUrl)
         return True
     updateBookmarksCollection(recent_posts_cache,
-                              base_dir, postFilename, messageUrl,
+                              base_dir, post_filename, messageUrl,
                               message_json['actor'], domain, debug)
     if debug:
-        print('DEBUG: post bookmarked via c2s - ' + postFilename)
+        print('DEBUG: post bookmarked via c2s - ' + post_filename)
 
 
 def outboxUndoBookmark(recent_posts_cache: {},
@@ -649,14 +651,14 @@ def outboxUndoBookmark(recent_posts_cache: {},
 
     messageUrl = removeIdEnding(message_json['object']['url'])
     domain = remove_domain_port(domain)
-    postFilename = locate_post(base_dir, nickname, domain, messageUrl)
-    if not postFilename:
+    post_filename = locate_post(base_dir, nickname, domain, messageUrl)
+    if not post_filename:
         if debug:
             print('DEBUG: c2s unbookmark post not found in inbox or outbox')
             print(messageUrl)
         return True
     updateBookmarksCollection(recent_posts_cache,
-                              base_dir, postFilename, messageUrl,
+                              base_dir, post_filename, messageUrl,
                               message_json['actor'], domain, debug)
     if debug:
-        print('DEBUG: post unbookmarked via c2s - ' + postFilename)
+        print('DEBUG: post unbookmarked via c2s - ' + post_filename)

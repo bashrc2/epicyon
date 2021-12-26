@@ -662,11 +662,11 @@ def htmlHistorySearch(cssCache: {}, translate: {}, base_dir: str,
 
     index = startIndex
     while index <= endIndex:
-        postFilename = boxFilenames[index]
-        if not postFilename:
+        post_filename = boxFilenames[index]
+        if not post_filename:
             index += 1
             continue
-        post_json_object = load_json(postFilename)
+        post_json_object = load_json(post_filename)
         if not post_json_object:
             index += 1
             continue
@@ -831,11 +831,11 @@ def htmlHashtagSearch(cssCache: {},
                 continue
             nickname = postFields[1]
             post_id = postFields[2]
-        postFilename = locate_post(base_dir, nickname, domain, post_id)
-        if not postFilename:
+        post_filename = locate_post(base_dir, nickname, domain, post_id)
+        if not post_filename:
             index += 1
             continue
-        post_json_object = load_json(postFilename)
+        post_json_object = load_json(post_filename)
         if not post_json_object:
             index += 1
             continue
@@ -956,13 +956,13 @@ def rssHashtagSearch(nickname: str, domain: str, port: int,
                 continue
             nickname = postFields[1]
             post_id = postFields[2]
-        postFilename = locate_post(base_dir, nickname, domain, post_id)
-        if not postFilename:
+        post_filename = locate_post(base_dir, nickname, domain, post_id)
+        if not post_filename:
             index += 1
             if index >= maxFeedLength:
                 break
             continue
-        post_json_object = load_json(postFilename)
+        post_json_object = load_json(post_filename)
         if post_json_object:
             if not isPublicPost(post_json_object):
                 index += 1

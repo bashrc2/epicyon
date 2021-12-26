@@ -43,15 +43,15 @@ def _updatePostSchedule(base_dir: str, handle: str, httpd,
             if 'T' not in dateStr:
                 continue
             post_id = line.split(' ', 1)[1].replace('\n', '').replace('\r', '')
-            postFilename = scheduleDir + post_id + '.json'
+            post_filename = scheduleDir + post_id + '.json'
             if deleteSchedulePost:
                 # delete extraneous scheduled posts
-                if os.path.isfile(postFilename):
+                if os.path.isfile(post_filename):
                     try:
-                        os.remove(postFilename)
+                        os.remove(post_filename)
                     except OSError:
                         print('EX: _updatePostSchedule unable to delete ' +
-                              str(postFilename))
+                              str(post_filename))
                 continue
             # create the new index file
             indexLines.append(line)
@@ -68,12 +68,12 @@ def _updatePostSchedule(base_dir: str, handle: str, httpd,
                     continue
                 if curr_time.time().minute < postTime.time().minute:
                     continue
-            if not os.path.isfile(postFilename):
-                print('WARN: schedule missing postFilename=' + postFilename)
+            if not os.path.isfile(post_filename):
+                print('WARN: schedule missing post_filename=' + post_filename)
                 indexLines.remove(line)
                 continue
             # load post
-            post_json_object = load_json(postFilename)
+            post_json_object = load_json(post_filename)
             if not post_json_object:
                 print('WARN: schedule json not loaded')
                 indexLines.remove(line)
@@ -132,16 +132,16 @@ def _updatePostSchedule(base_dir: str, handle: str, httpd,
                                        httpd.content_license_url):
                 indexLines.remove(line)
                 try:
-                    os.remove(postFilename)
+                    os.remove(post_filename)
                 except OSError:
                     print('EX: _updatePostSchedule unable to delete ' +
-                          str(postFilename))
+                          str(post_filename))
                 continue
 
             # move to the outbox
-            outboxPostFilename = postFilename.replace('/scheduled/',
-                                                      '/outbox/')
-            os.rename(postFilename, outboxPostFilename)
+            outboxPostFilename = \
+                post_filename.replace('/scheduled/', '/outbox/')
+            os.rename(post_filename, outboxPostFilename)
 
             print('Scheduled post sent ' + post_id)
 

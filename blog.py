@@ -53,19 +53,19 @@ def _noOfBlogReplies(base_dir: str, http_prefix: str, translate: {},
     tryPostBox = ('tlblogs', 'inbox', 'outbox')
     boxFound = False
     for postBox in tryPostBox:
-        postFilename = \
+        post_filename = \
             acct_dir(base_dir, nickname, domain) + '/' + postBox + '/' + \
             post_id.replace('/', '#') + '.replies'
-        if os.path.isfile(postFilename):
+        if os.path.isfile(post_filename):
             boxFound = True
             break
     if not boxFound:
         # post may exist but has no replies
         for postBox in tryPostBox:
-            postFilename = \
+            post_filename = \
                 acct_dir(base_dir, nickname, domain) + '/' + postBox + '/' + \
                 post_id.replace('/', '#')
-            if os.path.isfile(postFilename):
+            if os.path.isfile(post_filename):
                 return 1
         return 0
 
@@ -73,10 +73,10 @@ def _noOfBlogReplies(base_dir: str, http_prefix: str, translate: {},
     replies = 0
     lines = []
     try:
-        with open(postFilename, 'r') as f:
+        with open(post_filename, 'r') as f:
             lines = f.readlines()
     except OSError:
-        print('EX: failed to read blog ' + postFilename)
+        print('EX: failed to read blog ' + post_filename)
 
     for replyPostId in lines:
         replyPostId = replyPostId.replace('\n', '').replace('\r', '')
@@ -93,10 +93,10 @@ def _noOfBlogReplies(base_dir: str, http_prefix: str, translate: {},
 
     # remove posts from .replies file if they don't exist
     if lines and removals:
-        print('Rewriting ' + postFilename + ' to remove ' +
+        print('Rewriting ' + post_filename + ' to remove ' +
               str(len(removals)) + ' entries')
         try:
-            with open(postFilename, 'w+') as f:
+            with open(post_filename, 'w+') as f:
                 for replyPostId in lines:
                     replyPostId = \
                         replyPostId.replace('\n', '').replace('\r', '')
@@ -104,7 +104,7 @@ def _noOfBlogReplies(base_dir: str, http_prefix: str, translate: {},
                         f.write(replyPostId + '\n')
         except OSError as ex:
             print('EX: unable to remove replies from post ' +
-                  postFilename + ' ' + str(ex))
+                  post_filename + ' ' + str(ex))
 
     return replies
 
@@ -122,36 +122,36 @@ def _getBlogReplies(base_dir: str, http_prefix: str, translate: {},
     tryPostBox = ('tlblogs', 'inbox', 'outbox')
     boxFound = False
     for postBox in tryPostBox:
-        postFilename = \
+        post_filename = \
             acct_dir(base_dir, nickname, domain) + '/' + postBox + '/' + \
             post_id.replace('/', '#') + '.replies'
-        if os.path.isfile(postFilename):
+        if os.path.isfile(post_filename):
             boxFound = True
             break
     if not boxFound:
         # post may exist but has no replies
         for postBox in tryPostBox:
-            postFilename = \
+            post_filename = \
                 acct_dir(base_dir, nickname, domain) + '/' + postBox + '/' + \
                 post_id.replace('/', '#') + '.json'
-            if os.path.isfile(postFilename):
-                postFilename = acct_dir(base_dir, nickname, domain) + \
+            if os.path.isfile(post_filename):
+                post_filename = acct_dir(base_dir, nickname, domain) + \
                     '/postcache/' + \
                     post_id.replace('/', '#') + '.html'
-                if os.path.isfile(postFilename):
+                if os.path.isfile(post_filename):
                     try:
-                        with open(postFilename, 'r') as postFile:
+                        with open(post_filename, 'r') as postFile:
                             return postFile.read() + '\n'
                     except OSError:
-                        print('EX: unable to read blog 3 ' + postFilename)
+                        print('EX: unable to read blog 3 ' + post_filename)
         return ''
 
     lines = []
     try:
-        with open(postFilename, 'r') as f:
+        with open(post_filename, 'r') as f:
             lines = f.readlines()
     except OSError:
-        print('EX: unable to read blog 4 ' + postFilename)
+        print('EX: unable to read blog 4 ' + post_filename)
 
     if lines:
         repliesStr = ''
@@ -159,16 +159,16 @@ def _getBlogReplies(base_dir: str, http_prefix: str, translate: {},
             replyPostId = replyPostId.replace('\n', '').replace('\r', '')
             replyPostId = replyPostId.replace('.json', '')
             replyPostId = replyPostId.replace('.replies', '')
-            postFilename = acct_dir(base_dir, nickname, domain) + \
+            post_filename = acct_dir(base_dir, nickname, domain) + \
                 '/postcache/' + \
                 replyPostId.replace('/', '#') + '.html'
-            if not os.path.isfile(postFilename):
+            if not os.path.isfile(post_filename):
                 continue
             try:
-                with open(postFilename, 'r') as postFile:
+                with open(post_filename, 'r') as postFile:
                     repliesStr += postFile.read() + '\n'
             except OSError:
-                print('EX: unable to read blog replies ' + postFilename)
+                print('EX: unable to read blog replies ' + post_filename)
             rply = _getBlogReplies(base_dir, http_prefix, translate,
                                    nickname, domain, domain_full,
                                    replyPostId, depth+1)
@@ -780,14 +780,14 @@ def htmlEditBlog(media_instance: bool, translate: {},
                  postUrl: str, system_language: str) -> str:
     """Edit a blog post after it was created
     """
-    postFilename = locate_post(base_dir, nickname, domain, postUrl)
-    if not postFilename:
+    post_filename = locate_post(base_dir, nickname, domain, postUrl)
+    if not post_filename:
         print('Edit blog: Filename not found for ' + postUrl)
         return None
 
-    post_json_object = load_json(postFilename)
+    post_json_object = load_json(post_filename)
     if not post_json_object:
-        print('Edit blog: json not loaded for ' + postFilename)
+        print('Edit blog: json not loaded for ' + post_filename)
         return None
 
     editBlogText = '<h1">' + translate['Write your post text below.'] + '</h1>'

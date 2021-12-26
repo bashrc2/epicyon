@@ -17,7 +17,7 @@ from utils import has_object_stringType
 from utils import remove_domain_port
 from utils import has_object_dict
 from utils import is_account_dir
-from utils import getCachedPostFilename
+from utils import get_cached_post_filename
 from utils import load_json
 from utils import save_json
 from utils import fileLastModified
@@ -442,8 +442,8 @@ def outboxBlock(base_dir: str, http_prefix: str,
             print('DEBUG: c2s block object has no nickname')
         return False
     domain = remove_domain_port(domain)
-    postFilename = locate_post(base_dir, nickname, domain, messageId)
-    if not postFilename:
+    post_filename = locate_post(base_dir, nickname, domain, messageId)
+    if not post_filename:
         if debug:
             print('DEBUG: c2s block post not found in inbox or outbox')
             print(messageId)
@@ -459,7 +459,7 @@ def outboxBlock(base_dir: str, http_prefix: str,
              nicknameBlocked, domainBlockedFull)
 
     if debug:
-        print('DEBUG: post blocked via c2s - ' + postFilename)
+        print('DEBUG: post blocked via c2s - ' + post_filename)
     return True
 
 
@@ -498,8 +498,8 @@ def outboxUndoBlock(base_dir: str, http_prefix: str,
             print('DEBUG: c2s undo block object has no nickname')
         return
     domain = remove_domain_port(domain)
-    postFilename = locate_post(base_dir, nickname, domain, messageId)
-    if not postFilename:
+    post_filename = locate_post(base_dir, nickname, domain, messageId)
+    if not post_filename:
         if debug:
             print('DEBUG: c2s undo block post not found in inbox or outbox')
             print(messageId)
@@ -516,7 +516,7 @@ def outboxUndoBlock(base_dir: str, http_prefix: str,
     removeBlock(base_dir, nickname, domain,
                 nicknameBlocked, domainBlockedFull)
     if debug:
-        print('DEBUG: post undo blocked via c2s - ' + postFilename)
+        print('DEBUG: post undo blocked via c2s - ' + post_filename)
 
 
 def mutePost(base_dir: str, nickname: str, domain: str, port: int,
@@ -525,11 +525,11 @@ def mutePost(base_dir: str, nickname: str, domain: str, port: int,
     """ Mutes the given post
     """
     print('mutePost: post_id ' + post_id)
-    postFilename = locate_post(base_dir, nickname, domain, post_id)
-    if not postFilename:
+    post_filename = locate_post(base_dir, nickname, domain, post_id)
+    if not post_filename:
         print('mutePost: file not found ' + post_id)
         return
-    post_json_object = load_json(postFilename)
+    post_json_object = load_json(post_filename)
     if not post_json_object:
         print('mutePost: object not loaded ' + post_id)
         return
@@ -581,13 +581,13 @@ def mutePost(base_dir: str, nickname: str, domain: str, port: int,
         itemsList.append(newIgnore)
         postJsonObj['ignores']['totalItems'] = igIt
     postJsonObj['muted'] = True
-    if save_json(post_json_object, postFilename):
-        print('mutePost: saved ' + postFilename)
+    if save_json(post_json_object, post_filename):
+        print('mutePost: saved ' + post_filename)
 
     # remove cached post so that the muted version gets recreated
     # without its content text and/or image
     cachedPostFilename = \
-        getCachedPostFilename(base_dir, nickname, domain, post_json_object)
+        get_cached_post_filename(base_dir, nickname, domain, post_json_object)
     if cachedPostFilename:
         if os.path.isfile(cachedPostFilename):
             try:
@@ -601,12 +601,12 @@ def mutePost(base_dir: str, nickname: str, domain: str, port: int,
             print('MUTE: cached post not found ' + cachedPostFilename)
 
     try:
-        with open(postFilename + '.muted', 'w+') as muteFile:
+        with open(post_filename + '.muted', 'w+') as muteFile:
             muteFile.write('\n')
     except OSError:
-        print('EX: Failed to save mute file ' + postFilename + '.muted')
+        print('EX: Failed to save mute file ' + post_filename + '.muted')
         return
-    print('MUTE: ' + postFilename + '.muted file added')
+    print('MUTE: ' + post_filename + '.muted file added')
 
     # if the post is in the recent posts cache then mark it as muted
     if recent_posts_cache.get('index'):
@@ -624,13 +624,13 @@ def mutePost(base_dir: str, nickname: str, domain: str, port: int,
                 print('MUTE: ' + post_id + ' removed cached html')
 
     if alsoUpdatePostId:
-        postFilename = locate_post(base_dir, nickname, domain,
-                                   alsoUpdatePostId)
-        if os.path.isfile(postFilename):
-            postJsonObj = load_json(postFilename)
+        post_filename = locate_post(base_dir, nickname, domain,
+                                    alsoUpdatePostId)
+        if os.path.isfile(post_filename):
+            postJsonObj = load_json(post_filename)
             cachedPostFilename = \
-                getCachedPostFilename(base_dir, nickname, domain,
-                                      postJsonObj)
+                get_cached_post_filename(base_dir, nickname, domain,
+                                         postJsonObj)
             if cachedPostFilename:
                 if os.path.isfile(cachedPostFilename):
                     try:
@@ -658,14 +658,14 @@ def unmutePost(base_dir: str, nickname: str, domain: str, port: int,
                debug: bool) -> None:
     """ Unmutes the given post
     """
-    postFilename = locate_post(base_dir, nickname, domain, post_id)
-    if not postFilename:
+    post_filename = locate_post(base_dir, nickname, domain, post_id)
+    if not post_filename:
         return
-    post_json_object = load_json(postFilename)
+    post_json_object = load_json(post_filename)
     if not post_json_object:
         return
 
-    muteFilename = postFilename + '.muted'
+    muteFilename = post_filename + '.muted'
     if os.path.isfile(muteFilename):
         try:
             os.remove(muteFilename)
@@ -709,12 +709,12 @@ def unmutePost(base_dir: str, nickname: str, domain: str, port: int,
             igItLen = len(postJsonObj['ignores']['items'])
             postJsonObj['ignores']['totalItems'] = igItLen
     postJsonObj['muted'] = False
-    save_json(post_json_object, postFilename)
+    save_json(post_json_object, post_filename)
 
     # remove cached post so that the muted version gets recreated
     # with its content text and/or image
     cachedPostFilename = \
-        getCachedPostFilename(base_dir, nickname, domain, post_json_object)
+        get_cached_post_filename(base_dir, nickname, domain, post_json_object)
     if cachedPostFilename:
         if os.path.isfile(cachedPostFilename):
             try:
@@ -739,13 +739,13 @@ def unmutePost(base_dir: str, nickname: str, domain: str, port: int,
                 del recent_posts_cache['html'][post_id]
                 print('UNMUTE: ' + post_id + ' removed cached html')
     if alsoUpdatePostId:
-        postFilename = locate_post(base_dir, nickname, domain,
-                                   alsoUpdatePostId)
-        if os.path.isfile(postFilename):
-            postJsonObj = load_json(postFilename)
+        post_filename = locate_post(base_dir, nickname, domain,
+                                    alsoUpdatePostId)
+        if os.path.isfile(post_filename):
+            postJsonObj = load_json(post_filename)
             cachedPostFilename = \
-                getCachedPostFilename(base_dir, nickname, domain,
-                                      postJsonObj)
+                get_cached_post_filename(base_dir, nickname, domain,
+                                         postJsonObj)
             if cachedPostFilename:
                 if os.path.isfile(cachedPostFilename):
                     try:
@@ -800,8 +800,8 @@ def outboxMute(base_dir: str, http_prefix: str,
             print('DEBUG: c2s mute object has no nickname')
         return
     domain = remove_domain_port(domain)
-    postFilename = locate_post(base_dir, nickname, domain, messageId)
-    if not postFilename:
+    post_filename = locate_post(base_dir, nickname, domain, messageId)
+    if not post_filename:
         if debug:
             print('DEBUG: c2s mute post not found in inbox or outbox')
             print(messageId)
@@ -816,7 +816,7 @@ def outboxMute(base_dir: str, http_prefix: str,
              debug)
 
     if debug:
-        print('DEBUG: post muted via c2s - ' + postFilename)
+        print('DEBUG: post muted via c2s - ' + post_filename)
 
 
 def outboxUndoMute(base_dir: str, http_prefix: str,
@@ -855,8 +855,8 @@ def outboxUndoMute(base_dir: str, http_prefix: str,
             print('DEBUG: c2s undo mute object has no nickname')
         return
     domain = remove_domain_port(domain)
-    postFilename = locate_post(base_dir, nickname, domain, messageId)
-    if not postFilename:
+    post_filename = locate_post(base_dir, nickname, domain, messageId)
+    if not post_filename:
         if debug:
             print('DEBUG: c2s undo mute post not found in inbox or outbox')
             print(messageId)
@@ -872,7 +872,7 @@ def outboxUndoMute(base_dir: str, http_prefix: str,
                recent_posts_cache, debug)
 
     if debug:
-        print('DEBUG: post undo mute via c2s - ' + postFilename)
+        print('DEBUG: post undo mute via c2s - ' + post_filename)
 
 
 def broch_modeIsActive(base_dir: str) -> bool:

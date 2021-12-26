@@ -29,7 +29,7 @@ from utils import get_actor_languages_list
 from utils import get_base_content_from_post
 from utils import get_content_from_post
 from utils import has_object_dict
-from utils import updateAnnounceCollection
+from utils import update_announce_collection
 from utils import is_pgp_encrypted
 from utils import is_dm
 from utils import reject_post_id
@@ -40,7 +40,7 @@ from utils import is_editor
 from utils import locate_post
 from utils import load_json
 from utils import getCachedPostDirectory
-from utils import getCachedPostFilename
+from utils import get_cached_post_filename
 from utils import getProtocolPrefixes
 from utils import isNewsPost
 from utils import isBlogPost
@@ -252,7 +252,7 @@ def _saveIndividualPostAsHtmlToCache(base_dir: str,
     htmlPostCacheDir = \
         getCachedPostDirectory(base_dir, nickname, domain)
     cachedPostFilename = \
-        getCachedPostFilename(base_dir, nickname, domain, post_json_object)
+        get_cached_post_filename(base_dir, nickname, domain, post_json_object)
 
     # create the cache directory if needed
     if not os.path.isdir(htmlPostCacheDir):
@@ -1539,9 +1539,10 @@ def individualPostAsHtml(signing_priv_key_pem: str,
         announceFilename = \
             locate_post(base_dir, nickname, domain, post_json_object['id'])
         if announceFilename:
-            updateAnnounceCollection(recent_posts_cache,
-                                     base_dir, announceFilename,
-                                     postActor, nickname, domain_full, False)
+            update_announce_collection(recent_posts_cache,
+                                       base_dir, announceFilename,
+                                       postActor, nickname,
+                                       domain_full, False)
 
             # create a file for use by text-to-speech
             if is_recent_post(post_json_object, 3):
@@ -2078,12 +2079,12 @@ def htmlIndividualPost(cssCache: {},
     # show the previous posts
     if has_object_dict(post_json_object):
         while post_json_object['object'].get('inReplyTo'):
-            postFilename = \
+            post_filename = \
                 locate_post(base_dir, nickname, domain,
                             post_json_object['object']['inReplyTo'])
-            if not postFilename:
+            if not post_filename:
                 break
-            post_json_object = load_json(postFilename)
+            post_json_object = load_json(post_filename)
             if post_json_object:
                 postStr = \
                     individualPostAsHtml(signing_priv_key_pem,
@@ -2108,10 +2109,10 @@ def htmlIndividualPost(cssCache: {},
                                          cw_lists, lists_enabled) + postStr
 
     # show the following posts
-    postFilename = locate_post(base_dir, nickname, domain, messageId)
-    if postFilename:
+    post_filename = locate_post(base_dir, nickname, domain, messageId)
+    if post_filename:
         # is there a replies file for this post?
-        repliesFilename = postFilename.replace('.json', '.replies')
+        repliesFilename = post_filename.replace('.json', '.replies')
         if os.path.isfile(repliesFilename):
             # get items from the replies file
             repliesJson = {

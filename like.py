@@ -27,7 +27,7 @@ from utils import local_actor_url
 from utils import load_json
 from utils import save_json
 from utils import removePostFromCache
-from utils import getCachedPostFilename
+from utils import get_cached_post_filename
 from posts import sendSignedJson
 from session import postJson
 from webfinger import webfingerHandle
@@ -119,8 +119,8 @@ def _like(recent_posts_cache: {},
                     has_group_type(base_dir, actorLiked, person_cache)
 
     if likedPostNickname:
-        postFilename = locate_post(base_dir, nickname, domain, objectUrl)
-        if not postFilename:
+        post_filename = locate_post(base_dir, nickname, domain, objectUrl)
+        if not post_filename:
             print('DEBUG: like base_dir: ' + base_dir)
             print('DEBUG: like nickname: ' + nickname)
             print('DEBUG: like domain: ' + domain)
@@ -128,7 +128,7 @@ def _like(recent_posts_cache: {},
             return None
 
         updateLikesCollection(recent_posts_cache,
-                              base_dir, postFilename, objectUrl,
+                              base_dir, post_filename, objectUrl,
                               newLikeJson['actor'],
                               nickname, domain, debug, None)
 
@@ -360,18 +360,18 @@ def outboxLike(recent_posts_cache: {},
 
     messageId = removeIdEnding(message_json['object'])
     domain = remove_domain_port(domain)
-    postFilename = locate_post(base_dir, nickname, domain, messageId)
-    if not postFilename:
+    post_filename = locate_post(base_dir, nickname, domain, messageId)
+    if not post_filename:
         if debug:
             print('DEBUG: c2s like post not found in inbox or outbox')
             print(messageId)
         return True
     updateLikesCollection(recent_posts_cache,
-                          base_dir, postFilename, messageId,
+                          base_dir, post_filename, messageId,
                           message_json['actor'],
                           nickname, domain, debug, None)
     if debug:
-        print('DEBUG: post liked via c2s - ' + postFilename)
+        print('DEBUG: post liked via c2s - ' + post_filename)
 
 
 def outboxUndoLike(recent_posts_cache: {},
@@ -397,36 +397,37 @@ def outboxUndoLike(recent_posts_cache: {},
 
     messageId = removeIdEnding(message_json['object']['object'])
     domain = remove_domain_port(domain)
-    postFilename = locate_post(base_dir, nickname, domain, messageId)
-    if not postFilename:
+    post_filename = locate_post(base_dir, nickname, domain, messageId)
+    if not post_filename:
         if debug:
             print('DEBUG: c2s undo like post not found in inbox or outbox')
             print(messageId)
         return True
-    undoLikesCollectionEntry(recent_posts_cache, base_dir, postFilename,
+    undoLikesCollectionEntry(recent_posts_cache, base_dir, post_filename,
                              messageId, message_json['actor'],
                              domain, debug, None)
     if debug:
-        print('DEBUG: post undo liked via c2s - ' + postFilename)
+        print('DEBUG: post undo liked via c2s - ' + post_filename)
 
 
 def updateLikesCollection(recent_posts_cache: {},
-                          base_dir: str, postFilename: str,
+                          base_dir: str, post_filename: str,
                           objectUrl: str, actor: str,
                           nickname: str, domain: str, debug: bool,
                           post_json_object: {}) -> None:
     """Updates the likes collection within a post
     """
     if not post_json_object:
-        post_json_object = load_json(postFilename)
+        post_json_object = load_json(post_filename)
     if not post_json_object:
         return
 
     # remove any cached version of this post so that the
     # like icon is changed
     removePostFromCache(post_json_object, recent_posts_cache)
-    cachedPostFilename = getCachedPostFilename(base_dir, nickname,
-                                               domain, post_json_object)
+    cachedPostFilename = \
+        get_cached_post_filename(base_dir, nickname,
+                                 domain, post_json_object)
     if cachedPostFilename:
         if os.path.isfile(cachedPostFilename):
             try:
@@ -474,4 +475,4 @@ def updateLikesCollection(recent_posts_cache: {},
     if debug:
         print('DEBUG: saving post with likes added')
         pprint(post_json_object)
-    save_json(post_json_object, postFilename)
+    save_json(post_json_object, post_filename)

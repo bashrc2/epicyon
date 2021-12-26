@@ -200,7 +200,7 @@ def _downloadNewswireFeedFavicon(session, base_dir: str,
 def _addNewswireDictEntry(base_dir: str, domain: str,
                           newswire: {}, dateStr: str,
                           title: str, link: str,
-                          votesStatus: str, postFilename: str,
+                          votesStatus: str, post_filename: str,
                           description: str, moderated: bool,
                           mirrored: bool,
                           tags: [],
@@ -243,7 +243,7 @@ def _addNewswireDictEntry(base_dir: str, domain: str,
         title,
         link,
         votesStatus,
-        postFilename,
+        post_filename,
         description,
         moderated,
         postTags,
@@ -445,12 +445,12 @@ def _xml2StrToDict(base_dir: str, domain: str, xmlStr: str,
         pubDateStr = parseFeedDate(pubDate)
         if pubDateStr:
             if _validFeedDate(pubDateStr):
-                postFilename = ''
+                post_filename = ''
                 votesStatus = []
                 _addNewswireDictEntry(base_dir, domain,
                                       result, pubDateStr,
                                       title, link,
-                                      votesStatus, postFilename,
+                                      votesStatus, post_filename,
                                       description, moderated,
                                       mirrored, [], 32, session, debug)
                 postCtr += 1
@@ -533,12 +533,12 @@ def _xml1StrToDict(base_dir: str, domain: str, xmlStr: str,
         pubDateStr = parseFeedDate(pubDate)
         if pubDateStr:
             if _validFeedDate(pubDateStr):
-                postFilename = ''
+                post_filename = ''
                 votesStatus = []
                 _addNewswireDictEntry(base_dir, domain,
                                       result, pubDateStr,
                                       title, link,
-                                      votesStatus, postFilename,
+                                      votesStatus, post_filename,
                                       description, moderated,
                                       mirrored, [], 32, session, debug)
                 postCtr += 1
@@ -609,12 +609,12 @@ def _atomFeedToDict(base_dir: str, domain: str, xmlStr: str,
         pubDateStr = parseFeedDate(pubDate)
         if pubDateStr:
             if _validFeedDate(pubDateStr):
-                postFilename = ''
+                post_filename = ''
                 votesStatus = []
                 _addNewswireDictEntry(base_dir, domain,
                                       result, pubDateStr,
                                       title, link,
-                                      votesStatus, postFilename,
+                                      votesStatus, post_filename,
                                       description, moderated,
                                       mirrored, [], 32, session, debug)
                 postCtr += 1
@@ -721,12 +721,12 @@ def _jsonFeedV1ToDict(base_dir: str, domain: str, xmlStr: str,
         pubDateStr = parseFeedDate(pubDate)
         if pubDateStr:
             if _validFeedDate(pubDateStr):
-                postFilename = ''
+                post_filename = ''
                 votesStatus = []
                 _addNewswireDictEntry(base_dir, domain,
                                       result, pubDateStr,
                                       title, link,
-                                      votesStatus, postFilename,
+                                      votesStatus, post_filename,
                                       description, moderated,
                                       mirrored, [], 32, session, debug)
                 postCtr += 1
@@ -794,12 +794,12 @@ def _atomFeedYTToDict(base_dir: str, domain: str, xmlStr: str,
         pubDateStr = parseFeedDate(pubDate)
         if pubDateStr:
             if _validFeedDate(pubDateStr):
-                postFilename = ''
+                post_filename = ''
                 votesStatus = []
                 _addNewswireDictEntry(base_dir, domain,
                                       result, pubDateStr,
                                       title, link,
-                                      votesStatus, postFilename,
+                                      votesStatus, post_filename,
                                       description, moderated, mirrored,
                                       [], 32, session, debug)
                 postCtr += 1
@@ -1024,20 +1024,20 @@ def _addAccountBlogsToNewswire(base_dir: str, nickname: str, domain: str,
         moderated = True
 
     with open(indexFilename, 'r') as indexFile:
-        postFilename = 'start'
+        post_filename = 'start'
         ctr = 0
-        while postFilename:
-            postFilename = indexFile.readline()
-            if postFilename:
+        while post_filename:
+            post_filename = indexFile.readline()
+            if post_filename:
                 # if this is a full path then remove the directories
-                if '/' in postFilename:
-                    postFilename = postFilename.split('/')[-1]
+                if '/' in post_filename:
+                    post_filename = post_filename.split('/')[-1]
 
                 # filename of the post without any extension or path
                 # This should also correspond to any index entry in
                 # the posts cache
                 postUrl = \
-                    postFilename.replace('\n', '').replace('\r', '')
+                    post_filename.replace('\n', '').replace('\r', '')
                 postUrl = postUrl.replace('.json', '').strip()
 
                 # read the post from file
