@@ -24,7 +24,7 @@ from session import postImage
 from session import createSession
 from utils import has_object_stringType
 from utils import dateStringToSeconds
-from utils import dateSecondsToString
+from utils import date_seconds_to_string
 from utils import get_config_param
 from utils import get_full_domain
 from utils import validNickname
@@ -1314,8 +1314,8 @@ def sharesCatalogEndpoint(base_dir: str, http_prefix: str,
                     if not re.match(matchPattern, description):
                         continue
 
-                startDateStr = dateSecondsToString(item['published'])
-                expireDateStr = dateSecondsToString(item['expire'])
+                startDateStr = date_seconds_to_string(item['published'])
+                expireDateStr = date_seconds_to_string(item['expire'])
                 shareId = _getValidSharedItemID(owner, item['displayName'])
                 if item['dfcId'].startswith('epicyon#'):
                     dfcId = "epicyon:" + item['dfcId'].split('#')[1]

@@ -2981,11 +2981,11 @@ def dateStringToSeconds(dateStr: str) -> int:
     return int(datetime.datetime.timestamp(expiryTime))
 
 
-def dateSecondsToString(dateSec: int) -> str:
+def date_seconds_to_string(date_sec: int) -> str:
     """Converts a date in seconds since epoch to a string
     """
-    thisDate = datetime.datetime.fromtimestamp(dateSec)
-    return thisDate.strftime("%Y-%m-%dT%H:%M:%SZ")
+    this_date = datetime.datetime.fromtimestamp(date_sec)
+    return this_date.strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 def has_group_type(base_dir: str, actor: str, person_cache: {},
