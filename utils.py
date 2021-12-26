@@ -2084,7 +2084,7 @@ def isBlogPost(post_json_object: {}) -> bool:
         return False
     if not has_object_dict(post_json_object):
         return False
-    if not hasObjectStringType(post_json_object, False):
+    if not has_object_stringType(post_json_object, False):
         return False
     if not post_json_object['object'].get('content'):
         return False
@@ -3175,12 +3175,12 @@ def hasActor(post_json_object: {}, debug: bool) -> bool:
     return False
 
 
-def hasObjectStringType(post_json_object: {}, debug: bool) -> bool:
+def has_object_stringType(post_json_object: {}, debug: bool) -> bool:
     """Does the given post have a type field within an object dict?
     """
     if not has_object_dict(post_json_object):
         if debug:
-            print('hasObjectStringType no object found')
+            print('has_object_stringType no object found')
         return False
     if post_json_object['object'].get('type'):
         if isinstance(post_json_object['object']['type'], str):
@@ -3199,7 +3199,7 @@ def has_object_string_object(post_json_object: {}, debug: bool) -> bool:
     """
     if not has_object_dict(post_json_object):
         if debug:
-            print('hasObjectStringType no object found')
+            print('has_object_stringType no object found')
         return False
     if post_json_object['object'].get('object'):
         if isinstance(post_json_object['object']['object'], str):
@@ -3213,7 +3213,7 @@ def has_object_string_object(post_json_object: {}, debug: bool) -> bool:
     return False
 
 
-def hasObjectString(post_json_object: {}, debug: bool) -> bool:
+def has_object_string(post_json_object: {}, debug: bool) -> bool:
     """Does the given post have an object string field?
     """
     if post_json_object.get('object'):

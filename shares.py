@@ -22,7 +22,7 @@ from posts import getPersonBox
 from session import postJson
 from session import postImage
 from session import createSession
-from utils import hasObjectStringType
+from utils import has_object_stringType
 from utils import dateStringToSeconds
 from utils import dateSecondsToString
 from utils import get_config_param
@@ -1039,7 +1039,7 @@ def outboxShareUpload(base_dir: str, http_prefix: str,
         return
     if not message_json['type'] == 'Add':
         return
-    if not hasObjectStringType(message_json, debug):
+    if not has_object_stringType(message_json, debug):
         return
     if not message_json['object']['type'] == 'Offer':
         if debug:
@@ -1108,7 +1108,7 @@ def outboxUndoShareUpload(base_dir: str, http_prefix: str,
         return
     if not message_json['type'] == 'Remove':
         return
-    if not hasObjectStringType(message_json, debug):
+    if not has_object_stringType(message_json, debug):
         return
     if not message_json['object']['type'] == 'Offer':
         if debug:

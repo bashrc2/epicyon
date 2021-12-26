@@ -25,7 +25,7 @@ from utils import updateAnnounceCollection
 from utils import local_actor_url
 from utils import replaceUsersWithAt
 from utils import hasActor
-from utils import hasObjectStringType
+from utils import has_object_stringType
 from posts import sendSignedJson
 from posts import getPersonBox
 from session import postJson
@@ -82,7 +82,7 @@ def outboxAnnounce(recentPostsCache: {},
                                      nickname, domain, debug)
             return True
     elif message_json['type'] == 'Undo':
-        if not hasObjectStringType(message_json, debug):
+        if not has_object_stringType(message_json, debug):
             return False
         if message_json['object']['type'] == 'Announce':
             if not isinstance(message_json['object']['object'], str):
@@ -396,7 +396,7 @@ def outboxUndoAnnounce(recentPostsCache: {},
         return
     if not message_json['type'] == 'Undo':
         return
-    if not hasObjectStringType(message_json, debug):
+    if not has_object_stringType(message_json, debug):
         return
     if not message_json['object']['type'] == 'Announce':
         if debug:

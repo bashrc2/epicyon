@@ -27,7 +27,7 @@ from utils import has_object_dict
 from utils import acct_dir
 from utils import local_actor_url
 from utils import hasActor
-from utils import hasObjectStringType
+from utils import has_object_stringType
 from posts import getPersonBox
 from session import postJson
 
@@ -566,7 +566,7 @@ def outboxBookmark(recentPostsCache: {},
         if debug:
             print('DEBUG: no target in bookmark Add')
         return
-    if not hasObjectStringType(message_json, debug):
+    if not has_object_stringType(message_json, debug):
         return
     if not isinstance(message_json['target'], str):
         if debug:
@@ -622,7 +622,7 @@ def outboxUndoBookmark(recentPostsCache: {},
         if debug:
             print('DEBUG: no target in unbookmark Remove')
         return
-    if not hasObjectStringType(message_json, debug):
+    if not has_object_stringType(message_json, debug):
         return
     if not isinstance(message_json['target'], str):
         if debug:

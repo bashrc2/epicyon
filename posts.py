@@ -34,7 +34,7 @@ from siteactive import siteIsActive
 from languages import understoodPostLanguage
 from utils import get_user_paths
 from utils import invalidCiphertext
-from utils import hasObjectStringType
+from utils import has_object_stringType
 from utils import removeIdEnding
 from utils import replaceUsersWithAt
 from utils import hasGroupType
@@ -2850,7 +2850,7 @@ def _isProfileUpdate(post_json_object: {}) -> bool:
     for actor updates there is no 'to' within the object
     """
     if post_json_object.get('type'):
-        if hasObjectStringType(post_json_object, False):
+        if has_object_stringType(post_json_object, False):
             if (post_json_object['type'] == 'Update' and
                 (post_json_object['object']['type'] == 'Person' or
                  post_json_object['object']['type'] == 'Application' or
@@ -2891,7 +2891,7 @@ def _sendToNamedAddresses(session, base_dir: str,
                     pprint(post_json_object)
                     print('DEBUG: ' +
                           'no "to" field when sending to named addresses')
-                if hasObjectStringType(post_json_object, debug):
+                if has_object_stringType(post_json_object, debug):
                     if post_json_object['object']['type'] == 'Follow' or \
                        post_json_object['object']['type'] == 'Join':
                         post_json_obj2 = post_json_object['object']['object']
@@ -3077,7 +3077,7 @@ def _sendingProfileUpdate(post_json_object: {}) -> bool:
     """
     if post_json_object['type'] != 'Update':
         return False
-    if not hasObjectStringType(post_json_object, False):
+    if not has_object_stringType(post_json_object, False):
         return False
     activityType = post_json_object['object']['type']
     if activityType == 'Person' or \

@@ -23,7 +23,7 @@ from utils import isSystemAccount
 from utils import invalidCiphertext
 from utils import removeHtml
 from utils import fileLastModified
-from utils import hasObjectString
+from utils import has_object_string
 from utils import has_object_string_object
 from utils import getReplyIntervalHours
 from utils import canReplyTo
@@ -60,7 +60,7 @@ from utils import undoLikesCollectionEntry
 from utils import undoReactionCollectionEntry
 from utils import hasGroupType
 from utils import local_actor_url
-from utils import hasObjectStringType
+from utils import has_object_stringType
 from categories import getHashtagCategories
 from categories import setHashtagCategory
 from httpsig import getDigestAlgorithmFromHeaders
@@ -811,7 +811,7 @@ def _receiveUndo(session, base_dir: str, http_prefix: str,
         if debug:
             print('DEBUG: "users" or "profile" missing from actor')
         return False
-    if not hasObjectStringType(message_json, debug):
+    if not has_object_stringType(message_json, debug):
         return False
     if not has_object_string_object(message_json, debug):
         return False
@@ -951,7 +951,7 @@ def _receiveUpdate(recentPostsCache: {}, session, base_dir: str,
         return False
     if not hasActor(message_json, debug):
         return False
-    if not hasObjectStringType(message_json, debug):
+    if not has_object_stringType(message_json, debug):
         return False
     if not has_users_path(message_json['actor']):
         if debug:
@@ -1015,7 +1015,7 @@ def _receiveLike(recentPostsCache: {},
         return False
     if not hasActor(message_json, debug):
         return False
-    if not hasObjectString(message_json, debug):
+    if not has_object_string(message_json, debug):
         return False
     if not message_json.get('to'):
         if debug:
@@ -1137,7 +1137,7 @@ def _receiveUndoLike(recentPostsCache: {},
         return False
     if not hasActor(message_json, debug):
         return False
-    if not hasObjectStringType(message_json, debug):
+    if not has_object_stringType(message_json, debug):
         return False
     if message_json['object']['type'] != 'Like':
         return False
@@ -1249,7 +1249,7 @@ def _receiveReaction(recentPostsCache: {},
         return False
     if not hasActor(message_json, debug):
         return False
-    if not hasObjectString(message_json, debug):
+    if not has_object_string(message_json, debug):
         return False
     if not message_json.get('to'):
         if debug:
@@ -1398,7 +1398,7 @@ def _receiveUndoReaction(recentPostsCache: {},
         return False
     if not hasActor(message_json, debug):
         return False
-    if not hasObjectStringType(message_json, debug):
+    if not has_object_stringType(message_json, debug):
         return False
     if message_json['object']['type'] != 'EmojiReact':
         return False
@@ -1530,7 +1530,7 @@ def _receiveBookmark(recentPostsCache: {},
         if debug:
             print('DEBUG: no target in inbox bookmark Add')
         return False
-    if not hasObjectStringType(message_json, debug):
+    if not has_object_stringType(message_json, debug):
         return False
     if not isinstance(message_json['target'], str):
         if debug:
@@ -1642,7 +1642,7 @@ def _receiveUndoBookmark(recentPostsCache: {},
         if debug:
             print('DEBUG: no target in inbox undo bookmark Remove')
         return False
-    if not hasObjectStringType(message_json, debug):
+    if not has_object_stringType(message_json, debug):
         return False
     if not isinstance(message_json['target'], str):
         if debug:
@@ -1739,7 +1739,7 @@ def _receiveDelete(session, handle: str, isGroup: bool, base_dir: str,
         return False
     if debug:
         print('DEBUG: Delete activity arrived')
-    if not hasObjectString(message_json, debug):
+    if not has_object_string(message_json, debug):
         return False
     domain_full = get_full_domain(domain, port)
     deletePrefix = http_prefix + '://' + domain_full + '/'
@@ -1829,7 +1829,7 @@ def _receiveAnnounce(recentPostsCache: {},
         return False
     if debug:
         print('DEBUG: receiving announce on ' + handle)
-    if not hasObjectString(message_json, debug):
+    if not has_object_string(message_json, debug):
         return False
     if not message_json.get('to'):
         if debug:

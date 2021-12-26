@@ -11,9 +11,9 @@ import os
 import re
 import urllib.parse
 from pprint import pprint
-from utils import hasObjectString
+from utils import has_object_string
 from utils import has_object_string_object
-from utils import hasObjectStringType
+from utils import has_object_stringType
 from utils import removeDomainPort
 from utils import has_object_dict
 from utils import has_users_path
@@ -368,7 +368,7 @@ def outboxReaction(recentPostsCache: {},
         if debug:
             print('DEBUG: not a reaction')
         return
-    if not hasObjectString(message_json, debug):
+    if not has_object_string(message_json, debug):
         return
     if not message_json.get('content'):
         return
@@ -408,7 +408,7 @@ def outboxUndoReaction(recentPostsCache: {},
         return
     if not message_json['type'] == 'Undo':
         return
-    if not hasObjectStringType(message_json, debug):
+    if not has_object_stringType(message_json, debug):
         return
     if not message_json['object']['type'] == 'EmojiReact':
         if debug:

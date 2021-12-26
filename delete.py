@@ -9,7 +9,7 @@ __module_group__ = "ActivityPub"
 
 import os
 from datetime import datetime
-from utils import hasObjectString
+from utils import has_object_string
 from utils import removeDomainPort
 from utils import has_users_path
 from utils import get_full_domain
@@ -127,7 +127,7 @@ def outboxDelete(base_dir: str, http_prefix: str,
         if debug:
             print('DEBUG: not a delete')
         return
-    if not hasObjectString(message_json, debug):
+    if not has_object_string(message_json, debug):
         return
     if debug:
         print('DEBUG: c2s delete request arrived in outbox')

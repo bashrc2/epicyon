@@ -9,9 +9,9 @@ __module_group__ = "ActivityPub"
 
 import os
 from pprint import pprint
-from utils import hasObjectString
+from utils import has_object_string
 from utils import has_object_string_object
-from utils import hasObjectStringType
+from utils import has_object_stringType
 from utils import removeDomainPort
 from utils import has_object_dict
 from utils import has_users_path
@@ -353,7 +353,7 @@ def outboxLike(recentPostsCache: {},
         if debug:
             print('DEBUG: not a like')
         return
-    if not hasObjectString(message_json, debug):
+    if not has_object_string(message_json, debug):
         return
     if debug:
         print('DEBUG: c2s like request arrived in outbox')
@@ -384,7 +384,7 @@ def outboxUndoLike(recentPostsCache: {},
         return
     if not message_json['type'] == 'Undo':
         return
-    if not hasObjectStringType(message_json, debug):
+    if not has_object_stringType(message_json, debug):
         return
     if not message_json['object']['type'] == 'Like':
         if debug:

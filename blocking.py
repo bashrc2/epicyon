@@ -11,9 +11,9 @@ import os
 import json
 import time
 from datetime import datetime
-from utils import hasObjectString
+from utils import has_object_string
 from utils import has_object_string_object
-from utils import hasObjectStringType
+from utils import has_object_stringType
 from utils import removeDomainPort
 from utils import has_object_dict
 from utils import isAccountDir
@@ -427,7 +427,7 @@ def outboxBlock(base_dir: str, http_prefix: str,
         if debug:
             print('DEBUG: not a block')
         return False
-    if not hasObjectString(message_json, debug):
+    if not has_object_string(message_json, debug):
         return False
     if debug:
         print('DEBUG: c2s block request arrived in outbox')
@@ -477,7 +477,7 @@ def outboxUndoBlock(base_dir: str, http_prefix: str,
             print('DEBUG: not an undo block')
         return
 
-    if not hasObjectStringType(message_json, debug):
+    if not has_object_stringType(message_json, debug):
         return
     if not message_json['object']['type'] == 'Block':
         if debug:
@@ -540,7 +540,7 @@ def mutePost(base_dir: str, nickname: str, domain: str, port: int,
     if has_object_dict(post_json_object):
         postJsonObj = post_json_object['object']
     else:
-        if hasObjectString(post_json_object, debug):
+        if has_object_string(post_json_object, debug):
             alsoUpdatePostId = removeIdEnding(post_json_object['object'])
 
     domain_full = get_full_domain(domain, port)
@@ -679,7 +679,7 @@ def unmutePost(base_dir: str, nickname: str, domain: str, port: int,
     if has_object_dict(post_json_object):
         postJsonObj = post_json_object['object']
     else:
-        if hasObjectString(post_json_object, debug):
+        if has_object_string(post_json_object, debug):
             alsoUpdatePostId = removeIdEnding(post_json_object['object'])
 
     if postJsonObj.get('conversation'):
@@ -783,7 +783,7 @@ def outboxMute(base_dir: str, http_prefix: str,
         return
     if not message_json['type'] == 'Ignore':
         return
-    if not hasObjectString(message_json, debug):
+    if not has_object_string(message_json, debug):
         return
     if debug:
         print('DEBUG: c2s mute request arrived in outbox')
@@ -832,7 +832,7 @@ def outboxUndoMute(base_dir: str, http_prefix: str,
         return
     if not message_json['type'] == 'Undo':
         return
-    if not hasObjectStringType(message_json, debug):
+    if not has_object_stringType(message_json, debug):
         return
     if message_json['object']['type'] != 'Ignore':
         return

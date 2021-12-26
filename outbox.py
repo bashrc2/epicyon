@@ -16,7 +16,7 @@ from posts import outboxMessageCreateWrap
 from posts import savePostToBox
 from posts import sendToFollowersThread
 from posts import sendToNamedAddressesThread
-from utils import hasObjectStringType
+from utils import has_object_stringType
 from utils import get_base_content_from_post
 from utils import has_object_dict
 from utils import getLocalNetworkAddresses
@@ -76,7 +76,7 @@ def _outboxPersonReceiveUpdate(recentPostsCache: {},
         return
     if message_json['type'] != 'Update':
         return
-    if not hasObjectStringType(message_json, debug):
+    if not has_object_stringType(message_json, debug):
         return
     if not isinstance(message_json['object']['type'], str):
         if debug:
