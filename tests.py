@@ -59,7 +59,7 @@ from utils import dangerousSVG
 from utils import canReplyTo
 from utils import isGroupAccount
 from utils import get_actor_languages_list
-from utils import getCategoryTypes
+from utils import get_category_types
 from utils import getSupportedLanguages
 from utils import setConfigParam
 from utils import isGroupActor
@@ -5703,7 +5703,7 @@ def _testGetPriceFromString() -> None:
 
 def _translateOntology(base_dir: str) -> None:
     return
-    ontologyTypes = getCategoryTypes(base_dir)
+    ontologyTypes = get_category_types(base_dir)
     url = 'https://translate.astian.org'
     apiKey = None
     ltLangList = libretranslateLanguages(url, apiKey)

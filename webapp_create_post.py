@@ -16,7 +16,7 @@ from utils import getMediaFormats
 from utils import get_config_param
 from utils import acct_dir
 from utils import getCurrencies
-from utils import getCategoryTypes
+from utils import get_category_types
 from webapp_utils import getBannerFile
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
@@ -452,7 +452,7 @@ def htmlNewPost(cssCache: {}, media_instance: bool, translate: {},
         extraFields += '<br>' + \
             editTextField(translate['Type of shared item. eg. hat'] + ':',
                           'itemType', '', '', True)
-        categoryTypes = getCategoryTypes(base_dir)
+        categoryTypes = get_category_types(base_dir)
         catStr = translate['Category of shared item. eg. clothing']
         extraFields += '<label class="labels">' + catStr + '</label><br>\n'
 
@@ -517,7 +517,7 @@ def htmlNewPost(cssCache: {}, media_instance: bool, translate: {},
         extraFields += '<br>' + \
             editTextField(translate['Type of wanted item. eg. hat'] + ':',
                           'itemType', '', '', True)
-        categoryTypes = getCategoryTypes(base_dir)
+        categoryTypes = get_category_types(base_dir)
         catStr = translate['Category of wanted item. eg. clothes']
         extraFields += '<label class="labels">' + catStr + '</label><br>\n'
 

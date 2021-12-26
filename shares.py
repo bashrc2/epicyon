@@ -35,7 +35,7 @@ from utils import removeDomainPort
 from utils import isAccountDir
 from utils import acct_dir
 from utils import isfloat
-from utils import getCategoryTypes
+from utils import get_category_types
 from utils import getSharesFilesList
 from utils import local_actor_url
 from media import processMetaData
@@ -187,7 +187,7 @@ def _dfcProductTypeFromCategory(base_dir: str,
     This will be used to select an appropriate ontology file
     such as ontology/foodTypes.json
     """
-    productTypesList = getCategoryTypes(base_dir)
+    productTypesList = get_category_types(base_dir)
     categoryLower = itemCategory.lower()
     for productType in productTypesList:
         if translate.get(productType):
@@ -1762,7 +1762,7 @@ def _dfcToSharesFormat(catalogJson: {},
     sharesJson = {}
 
     dfcIds = {}
-    productTypesList = getCategoryTypes(base_dir)
+    productTypesList = get_category_types(base_dir)
     for productType in productTypesList:
         dfcIds[productType] = \
             _loadDfcIds(base_dir, system_language, productType,

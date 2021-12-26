@@ -3122,12 +3122,12 @@ def getSupportedLanguages(base_dir: str) -> []:
     return languagesStr
 
 
-def getCategoryTypes(base_dir: str) -> []:
+def get_category_types(base_dir: str) -> []:
     """Returns the list of ontologies
     """
-    ontologyDir = base_dir + '/ontology'
+    ontology_dir = base_dir + '/ontology'
     categories = []
-    for _, _, files in os.walk(ontologyDir):
+    for _, _, files in os.walk(ontology_dir):
         for f in files:
             if not f.endswith('.json'):
                 continue
@@ -3135,9 +3135,9 @@ def getCategoryTypes(base_dir: str) -> []:
                 continue
             if f.startswith('custom'):
                 continue
-            ontologyFilename = f.split('.')[0]
-            if 'Types' in ontologyFilename:
-                categories.append(ontologyFilename.replace('Types', ''))
+            ontology_filename = f.split('.')[0]
+            if 'Types' in ontology_filename:
+                categories.append(ontology_filename.replace('Types', ''))
         break
     return categories
 
