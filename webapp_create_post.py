@@ -8,7 +8,7 @@ __status__ = "Production"
 __module_group__ = "Web Interface"
 
 import os
-from utils import getNewPostEndpoints
+from utils import get_new_post_endpoints
 from utils import isPublicPostFromUrl
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
@@ -350,7 +350,7 @@ def htmlNewPost(cssCache: {}, media_instance: bool, translate: {},
 
     if '?' in path:
         path = path.split('?')[0]
-    newPostEndpoints = getNewPostEndpoints()
+    newPostEndpoints = get_new_post_endpoints()
     pathBase = path
     for currPostType in newPostEndpoints:
         pathBase = pathBase.replace('/' + currPostType, '')

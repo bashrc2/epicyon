@@ -3228,7 +3228,7 @@ def hasObjectString(post_json_object: {}, debug: bool) -> bool:
     return False
 
 
-def getNewPostEndpoints() -> []:
+def get_new_post_endpoints() -> []:
     """Returns a list of endpoints for new posts
     """
     return (
@@ -3238,11 +3238,11 @@ def getNewPostEndpoints() -> []:
     )
 
 
-def get_fav_filename_from_url(base_dir: str, faviconUrl: str) -> str:
+def get_fav_filename_from_url(base_dir: str, favicon_url: str) -> str:
     """Returns the cached filename for a favicon based upon its url
     """
-    if '://' in faviconUrl:
-        faviconUrl = faviconUrl.split('://')[1]
-    if '/favicon.' in faviconUrl:
-        faviconUrl = faviconUrl.replace('/favicon.', '.')
-    return base_dir + '/favicons/' + faviconUrl.replace('/', '-')
+    if '://' in favicon_url:
+        favicon_url = favicon_url.split('://')[1]
+    if '/favicon.' in favicon_url:
+        favicon_url = favicon_url.replace('/favicon.', '.')
+    return base_dir + '/favicons/' + favicon_url.replace('/', '-')

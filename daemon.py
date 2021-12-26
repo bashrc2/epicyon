@@ -244,7 +244,7 @@ from languages import setActorLanguages
 from like import updateLikesCollection
 from reaction import updateReactionCollection
 from utils import undoReactionCollectionEntry
-from utils import getNewPostEndpoints
+from utils import get_new_post_endpoints
 from utils import hasActor
 from utils import setReplyIntervalHours
 from utils import canReplyTo
@@ -12940,7 +12940,7 @@ class PubServer(BaseHTTPRequestHandler):
         isNewPostEndpoint = False
         if '/users/' in path and '/new' in path:
             # Various types of new post in the web interface
-            newPostEndpoints = getNewPostEndpoints()
+            newPostEndpoints = get_new_post_endpoints()
             for currPostType in newPostEndpoints:
                 if path.endswith('/' + currPostType):
                     isNewPostEndpoint = True
@@ -18008,7 +18008,7 @@ class PubServer(BaseHTTPRequestHandler):
                            self.server.debug)
 
         # receive different types of post created by htmlNewPost
-        newPostEndpoints = getNewPostEndpoints()
+        newPostEndpoints = get_new_post_endpoints()
         for currPostType in newPostEndpoints:
             if not authorized:
                 if self.server.debug:
