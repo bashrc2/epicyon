@@ -19,7 +19,7 @@ from utils import get_base_content_from_post
 from utils import get_full_domain
 from utils import getImageExtensions
 from utils import get_video_extensions
-from utils import getAudioExtensions
+from utils import get_audio_extensions
 from utils import getMediaExtensions
 from utils import has_object_dict
 from utils import acct_dir
@@ -254,7 +254,7 @@ def getAttachmentMediaType(filename: str) -> str:
     for mType in videoTypes:
         if filename.endswith('.' + mType):
             return 'video'
-    audioTypes = getAudioExtensions()
+    audioTypes = get_audio_extensions()
     for mType in audioTypes:
         if filename.endswith('.' + mType):
             return 'audio'

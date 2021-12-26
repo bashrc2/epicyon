@@ -20,7 +20,7 @@ from utils import get_config_param
 from utils import acct_dir
 from utils import getNicknameFromActor
 from utils import isfloat
-from utils import getAudioExtensions
+from utils import get_audio_extensions
 from utils import get_video_extensions
 from utils import getImageExtensions
 from utils import local_actor_url
@@ -969,7 +969,7 @@ def _isAudioMimeType(mimeType: str) -> bool:
         return True
     if not mimeType.startswith('audio/'):
         return False
-    extensions = getAudioExtensions()
+    extensions = get_audio_extensions()
     ext = mimeType.split('/')[1]
     if ext in extensions:
         return True

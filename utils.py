@@ -348,7 +348,7 @@ def get_video_extensions() -> []:
     return ('mp4', 'webm', 'ogv')
 
 
-def getAudioExtensions() -> []:
+def get_audio_extensions() -> []:
     """Returns a list of the possible audio file extensions
     """
     return ('mp3', 'ogg', 'flac')
@@ -399,7 +399,8 @@ def getImageExtensionFromMimeType(contentType: str) -> str:
 def getMediaExtensions() -> []:
     """Returns a list of the possible media file extensions
     """
-    return getImageExtensions() + get_video_extensions() + getAudioExtensions()
+    return getImageExtensions() + \
+        get_video_extensions() + get_audio_extensions()
 
 
 def getImageFormats() -> str:
