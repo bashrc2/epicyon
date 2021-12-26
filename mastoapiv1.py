@@ -81,7 +81,7 @@ def _getMastoApiV1Account(base_dir: str, nickname: str, domain: str) -> {}:
     return mastoAccountJson
 
 
-def mastoApiV1Response(path: str, callingDomain: str,
+def mastoApiV1Response(path: str, calling_domain: str,
                        uaStr: str,
                        authorized: bool,
                        http_prefix: str,
@@ -112,7 +112,7 @@ def mastoApiV1Response(path: str, callingDomain: str,
                 'masto API account sent for ' + nickname + ' ' + uaStr
 
     # information about where the request is coming from
-    callingInfo = ' ' + uaStr + ', ' + callingDomain
+    callingInfo = ' ' + uaStr + ', ' + calling_domain
 
     # Parts of the api which don't need authorization
     mastoId = _getMastApiV1Id(path)
@@ -207,10 +207,10 @@ def mastoApiV1Response(path: str, callingDomain: str,
             get_config_param(base_dir, 'instanceDescription')
         instanceTitle = get_config_param(base_dir, 'instanceTitle')
 
-        if callingDomain.endswith('.onion') and onion_domain:
+        if calling_domain.endswith('.onion') and onion_domain:
             domain_full = onion_domain
             http_prefix = 'http'
-        elif (callingDomain.endswith('.i2p') and i2p_domain):
+        elif (calling_domain.endswith('.i2p') and i2p_domain):
             domain_full = i2p_domain
             http_prefix = 'http'
 

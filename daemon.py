@@ -433,13 +433,13 @@ class PubServer(BaseHTTPRequestHandler):
                       self.server.base_dir + '/accounts/knownCrawlers.json')
         self.server.lastKnownCrawler = curr_time
 
-    def _get_instance_url(self, callingDomain: str) -> str:
+    def _get_instance_url(self, calling_domain: str) -> str:
         """Returns the URL for this instance
         """
-        if callingDomain.endswith('.onion') and \
+        if calling_domain.endswith('.onion') and \
            self.server.onion_domain:
             instanceUrl = 'http://' + self.server.onion_domain
-        elif (callingDomain.endswith('.i2p') and
+        elif (calling_domain.endswith('.i2p') and
               self.server.i2p_domain):
             instanceUrl = 'http://' + self.server.i2p_domain
         else:
@@ -567,7 +567,7 @@ class PubServer(BaseHTTPRequestHandler):
         else:
             print('ERROR: unable to create vote')
 
-    def _blockedUserAgent(self, callingDomain: str, agentStr: str) -> bool:
+    def _blockedUserAgent(self, calling_domain: str, agentStr: str) -> bool:
         """Should a GET or POST be blocked based upon its user agent?
         """
         if not agentStr:
@@ -612,7 +612,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # is the User-Agent domain blocked
         blockedUA = False
-        if not agentDomain.startswith(callingDomain):
+        if not agentDomain.startswith(calling_domain):
             self.server.blockedCacheLastUpdated = \
                 updateBlockedCache(self.server.base_dir,
                                    self.server.blockedCache,
@@ -757,22 +757,22 @@ class PubServer(BaseHTTPRequestHandler):
         return False
 
     def _login_headers(self, fileFormat: str, length: int,
-                       callingDomain: str) -> None:
+                       calling_domain: str) -> None:
         self.send_response(200)
         self.send_header('Content-type', fileFormat)
         self.send_header('Content-Length', str(length))
-        self.send_header('Host', callingDomain)
+        self.send_header('Host', calling_domain)
         self.send_header('WWW-Authenticate',
                          'title="Login to Epicyon", Basic realm="epicyon"')
         self.end_headers()
 
     def _logout_headers(self, fileFormat: str, length: int,
-                        callingDomain: str) -> None:
+                        calling_domain: str) -> None:
         self.send_response(200)
         self.send_header('Content-type', fileFormat)
         self.send_header('Content-Length', str(length))
         self.send_header('Set-Cookie', 'epicyon=; SameSite=Strict')
-        self.send_header('Host', callingDomain)
+        self.send_header('Host', calling_domain)
         self.send_header('WWW-Authenticate',
                          'title="Login to Epicyon", Basic realm="epicyon"')
         self.end_headers()
@@ -788,7 +788,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 urllib.parse.quote_plus(lastStr))
 
     def _logout_redirect(self, redirect: str, cookie: str,
-                         callingDomain: str) -> None:
+                         calling_domain: str) -> None:
         if '://' not in redirect:
             print('REDIRECT ERROR: redirect is not an absolute url ' +
                   redirect)
@@ -796,13 +796,13 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_response(303)
         self.send_header('Set-Cookie', 'epicyon=; SameSite=Strict')
         self.send_header('Location', self._quoted_redirect(redirect))
-        self.send_header('Host', callingDomain)
+        self.send_header('Host', calling_domain)
         self.send_header('X-AP-Instance-ID', self.server.instance_id)
         self.send_header('Content-Length', '0')
         self.end_headers()
 
     def _set_headers_base(self, fileFormat: str, length: int, cookie: str,
-                          callingDomain: str, permissive: bool) -> None:
+                          calling_domain: str, permissive: bool) -> None:
         self.send_response(200)
         self.send_header('Content-type', fileFormat)
         if 'image/' in fileFormat or \
@@ -815,8 +815,8 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_header('Origin', self.server.domain_full)
         if length > -1:
             self.send_header('Content-Length', str(length))
-        if callingDomain:
-            self.send_header('Host', callingDomain)
+        if calling_domain:
+            self.send_header('Host', calling_domain)
         if permissive:
             self.send_header('Access-Control-Allow-Origin', '*')
             return
@@ -831,24 +831,24 @@ class PubServer(BaseHTTPRequestHandler):
             self.send_header('Cookie', cookieStr)
 
     def _set_headers(self, fileFormat: str, length: int, cookie: str,
-                     callingDomain: str, permissive: bool) -> None:
-        self._set_headers_base(fileFormat, length, cookie, callingDomain,
+                     calling_domain: str, permissive: bool) -> None:
+        self._set_headers_base(fileFormat, length, cookie, calling_domain,
                                permissive)
         self.end_headers()
 
     def _set_headers_head(self, fileFormat: str, length: int, etag: str,
-                          callingDomain: str, permissive: bool) -> None:
-        self._set_headers_base(fileFormat, length, None, callingDomain,
+                          calling_domain: str, permissive: bool) -> None:
+        self._set_headers_base(fileFormat, length, None, calling_domain,
                                permissive)
         if etag:
             self.send_header('ETag', '"' + etag + '"')
         self.end_headers()
 
     def _set_headers_etag(self, mediaFilename: str, fileFormat: str,
-                          data, cookie: str, callingDomain: str,
+                          data, cookie: str, calling_domain: str,
                           permissive: bool, lastModified: str) -> None:
         datalen = len(data)
-        self._set_headers_base(fileFormat, datalen, cookie, callingDomain,
+        self._set_headers_base(fileFormat, datalen, cookie, calling_domain,
                                permissive)
         etag = None
         if os.path.isfile(mediaFilename + '.etag'):
@@ -898,7 +898,7 @@ class PubServer(BaseHTTPRequestHandler):
         return False
 
     def _redirect_headers(self, redirect: str, cookie: str,
-                          callingDomain: str) -> None:
+                          calling_domain: str) -> None:
         if '://' not in redirect:
             print('REDIRECT ERROR: redirect is not an absolute url ' +
                   redirect)
@@ -916,7 +916,7 @@ class PubServer(BaseHTTPRequestHandler):
             else:
                 self.send_header('Set-Cookie', cookieStr)
         self.send_header('Location', self._quoted_redirect(redirect))
-        self.send_header('Host', callingDomain)
+        self.send_header('Host', calling_domain)
         self.send_header('X-AP-Instance-ID', self.server.instance_id)
         self.send_header('Content-Length', '0')
         self.end_headers()
@@ -1021,7 +1021,7 @@ class PubServer(BaseHTTPRequestHandler):
             tries += 1
         return False
 
-    def _hasAccept(self, callingDomain: str) -> bool:
+    def _hasAccept(self, calling_domain: str) -> bool:
         """Do the http headers have an Accept field?
         """
         if not self.headers.get('Accept'):
@@ -1029,7 +1029,7 @@ class PubServer(BaseHTTPRequestHandler):
                 print('Upper case Accept')
                 self.headers['Accept'] = self.headers['accept']
 
-        if self.headers.get('Accept') or callingDomain.endswith('.b32.i2p'):
+        if self.headers.get('Accept') or calling_domain.endswith('.b32.i2p'):
             if not self.headers.get('Accept'):
                 self.headers['Accept'] = \
                     'text/html,application/xhtml+xml,' \
@@ -1037,7 +1037,7 @@ class PubServer(BaseHTTPRequestHandler):
             return True
         return False
 
-    def _mastoApiV1(self, path: str, callingDomain: str,
+    def _mastoApiV1(self, path: str, calling_domain: str,
                     uaStr: str,
                     authorized: bool,
                     http_prefix: str,
@@ -1063,7 +1063,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         broch_mode = broch_modeIsActive(base_dir)
         sendJson, sendJsonStr = mastoApiV1Response(path,
-                                                   callingDomain,
+                                                   calling_domain,
                                                    uaStr,
                                                    authorized,
                                                    http_prefix,
@@ -1083,16 +1083,16 @@ class PubServer(BaseHTTPRequestHandler):
         if sendJson is not None:
             msg = json.dumps(sendJson).encode('utf-8')
             msglen = len(msg)
-            if self._hasAccept(callingDomain):
+            if self._hasAccept(calling_domain):
                 if 'application/ld+json' in self.headers['Accept']:
                     self._set_headers('application/ld+json', msglen,
-                                      None, callingDomain, True)
+                                      None, calling_domain, True)
                 else:
                     self._set_headers('application/json', msglen,
-                                      None, callingDomain, True)
+                                      None, calling_domain, True)
             else:
                 self._set_headers('application/ld+json', msglen,
-                                  None, callingDomain, True)
+                                  None, calling_domain, True)
             self._write(msg)
             if sendJsonStr:
                 print(sendJsonStr)
@@ -1102,7 +1102,7 @@ class PubServer(BaseHTTPRequestHandler):
         self._404()
         return True
 
-    def _mastoApi(self, path: str, callingDomain: str,
+    def _mastoApi(self, path: str, calling_domain: str,
                   uaStr: str,
                   authorized: bool, http_prefix: str,
                   base_dir: str, nickname: str, domain: str,
@@ -1114,14 +1114,14 @@ class PubServer(BaseHTTPRequestHandler):
                   project_version: str,
                   customEmoji: [],
                   show_node_info_accounts: bool) -> bool:
-        return self._mastoApiV1(path, callingDomain, uaStr, authorized,
+        return self._mastoApiV1(path, calling_domain, uaStr, authorized,
                                 http_prefix, base_dir, nickname, domain,
                                 domain_full, onion_domain, i2p_domain,
                                 translate, registration, system_language,
                                 project_version, customEmoji,
                                 show_node_info_accounts)
 
-    def _nodeinfo(self, uaStr: str, callingDomain: str) -> bool:
+    def _nodeinfo(self, uaStr: str, calling_domain: str) -> bool:
         if not self.path.startswith('/nodeinfo/2.0'):
             return False
         if self.server.debug:
@@ -1143,7 +1143,7 @@ class PubServer(BaseHTTPRequestHandler):
         if broch_mode:
             show_node_info_accounts = False
 
-        instanceUrl = self._get_instance_url(callingDomain)
+        instanceUrl = self._get_instance_url(calling_domain)
         aboutUrl = instanceUrl + '/about'
         termsOfServiceUrl = instanceUrl + '/terms'
         info = metaDataNodeInfo(self.server.base_dir,
@@ -1154,23 +1154,23 @@ class PubServer(BaseHTTPRequestHandler):
         if info:
             msg = json.dumps(info).encode('utf-8')
             msglen = len(msg)
-            if self._hasAccept(callingDomain):
+            if self._hasAccept(calling_domain):
                 if 'application/ld+json' in self.headers['Accept']:
                     self._set_headers('application/ld+json', msglen,
-                                      None, callingDomain, True)
+                                      None, calling_domain, True)
                 else:
                     self._set_headers('application/json', msglen,
-                                      None, callingDomain, True)
+                                      None, calling_domain, True)
             else:
                 self._set_headers('application/ld+json', msglen,
-                                  None, callingDomain, True)
+                                  None, calling_domain, True)
             self._write(msg)
-            print('nodeinfo sent to ' + callingDomain)
+            print('nodeinfo sent to ' + calling_domain)
             return True
         self._404()
         return True
 
-    def _webfinger(self, callingDomain: str) -> bool:
+    def _webfinger(self, calling_domain: str) -> bool:
         if not self.path.startswith('/.well-known'):
             return False
         if self.server.debug:
@@ -1179,11 +1179,11 @@ class PubServer(BaseHTTPRequestHandler):
         if self.server.debug:
             print('DEBUG: WEBFINGER host-meta')
         if self.path.startswith('/.well-known/host-meta'):
-            if callingDomain.endswith('.onion') and \
+            if calling_domain.endswith('.onion') and \
                self.server.onion_domain:
                 wfResult = \
                     webfingerMeta('http', self.server.onion_domain)
-            elif (callingDomain.endswith('.i2p') and
+            elif (calling_domain.endswith('.i2p') and
                   self.server.i2p_domain):
                 wfResult = \
                     webfingerMeta('http', self.server.i2p_domain)
@@ -1195,7 +1195,7 @@ class PubServer(BaseHTTPRequestHandler):
                 msg = wfResult.encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('application/xrd+xml', msglen,
-                                  None, callingDomain, True)
+                                  None, calling_domain, True)
                 self._write(msg)
                 return True
             self._404()
@@ -1209,11 +1209,11 @@ class PubServer(BaseHTTPRequestHandler):
             return True
         if self.path.startswith('/.well-known/nodeinfo') or \
            self.path.startswith('/.well-known/x-nodeinfo'):
-            if callingDomain.endswith('.onion') and \
+            if calling_domain.endswith('.onion') and \
                self.server.onion_domain:
                 wfResult = \
                     webfingerNodeInfo('http', self.server.onion_domain)
-            elif (callingDomain.endswith('.i2p') and
+            elif (calling_domain.endswith('.i2p') and
                   self.server.i2p_domain):
                 wfResult = \
                     webfingerNodeInfo('http', self.server.i2p_domain)
@@ -1224,16 +1224,16 @@ class PubServer(BaseHTTPRequestHandler):
             if wfResult:
                 msg = json.dumps(wfResult).encode('utf-8')
                 msglen = len(msg)
-                if self._hasAccept(callingDomain):
+                if self._hasAccept(calling_domain):
                     if 'application/ld+json' in self.headers['Accept']:
                         self._set_headers('application/ld+json', msglen,
-                                          None, callingDomain, True)
+                                          None, calling_domain, True)
                     else:
                         self._set_headers('application/json', msglen,
-                                          None, callingDomain, True)
+                                          None, calling_domain, True)
                 else:
                     self._set_headers('application/ld+json', msglen,
-                                      None, callingDomain, True)
+                                      None, calling_domain, True)
                 self._write(msg)
                 return True
             self._404()
@@ -1250,7 +1250,7 @@ class PubServer(BaseHTTPRequestHandler):
             msg = json.dumps(wfResult).encode('utf-8')
             msglen = len(msg)
             self._set_headers('application/jrd+json', msglen,
-                              None, callingDomain, True)
+                              None, calling_domain, True)
             self._write(msg)
         else:
             if self.server.debug:
@@ -1620,7 +1620,7 @@ class PubServer(BaseHTTPRequestHandler):
                   self.headers['Authorization'])
         return False
 
-    def _clearLoginDetails(self, nickname: str, callingDomain: str) -> None:
+    def _clearLoginDetails(self, nickname: str, calling_domain: str) -> None:
         """Clears login details for the given account
         """
         # remove any token
@@ -1630,9 +1630,9 @@ class PubServer(BaseHTTPRequestHandler):
         self._redirect_headers(self.server.http_prefix + '://' +
                                self.server.domain_full + '/login',
                                'epicyon=; SameSite=Strict',
-                               callingDomain)
+                               calling_domain)
 
-    def _loginScreen(self, path: str, callingDomain: str, cookie: str,
+    def _loginScreen(self, path: str, calling_domain: str, cookie: str,
                      base_dir: str, http_prefix: str,
                      domain: str, domain_full: str, port: int,
                      onion_domain: str, i2p_domain: str,
@@ -1682,43 +1682,43 @@ class PubServer(BaseHTTPRequestHandler):
             if isSystemAccount(loginNickname):
                 print('Invalid username login: ' + loginNickname +
                       ' (system account)')
-                self._clearLoginDetails(loginNickname, callingDomain)
+                self._clearLoginDetails(loginNickname, calling_domain)
                 self.server.POSTbusy = False
                 return
             self.server.last_login_time = int(time.time())
             if register:
                 if not valid_password(loginPassword):
                     self.server.POSTbusy = False
-                    if callingDomain.endswith('.onion') and onion_domain:
+                    if calling_domain.endswith('.onion') and onion_domain:
                         self._redirect_headers('http://' + onion_domain +
                                                '/login', cookie,
-                                               callingDomain)
-                    elif (callingDomain.endswith('.i2p') and i2p_domain):
+                                               calling_domain)
+                    elif (calling_domain.endswith('.i2p') and i2p_domain):
                         self._redirect_headers('http://' + i2p_domain +
                                                '/login', cookie,
-                                               callingDomain)
+                                               calling_domain)
                     else:
                         self._redirect_headers(http_prefix + '://' +
                                                domain_full + '/login',
-                                               cookie, callingDomain)
+                                               cookie, calling_domain)
                     return
 
                 if not registerAccount(base_dir, http_prefix, domain, port,
                                        loginNickname, loginPassword,
                                        self.server.manual_follower_approval):
                     self.server.POSTbusy = False
-                    if callingDomain.endswith('.onion') and onion_domain:
+                    if calling_domain.endswith('.onion') and onion_domain:
                         self._redirect_headers('http://' + onion_domain +
                                                '/login', cookie,
-                                               callingDomain)
-                    elif (callingDomain.endswith('.i2p') and i2p_domain):
+                                               calling_domain)
+                    elif (calling_domain.endswith('.i2p') and i2p_domain):
                         self._redirect_headers('http://' + i2p_domain +
                                                '/login', cookie,
-                                               callingDomain)
+                                               calling_domain)
                     else:
                         self._redirect_headers(http_prefix + '://' +
                                                domain_full + '/login',
-                                               cookie, callingDomain)
+                                               cookie, calling_domain)
                     return
             authHeader = \
                 createBasicAuthHeader(loginNickname, loginPassword)
@@ -1735,7 +1735,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   loginNickname + '/outbox',
                                   authHeader, False):
                 print('Login failed: ' + loginNickname)
-                self._clearLoginDetails(loginNickname, callingDomain)
+                self._clearLoginDetails(loginNickname, calling_domain)
                 failTime = int(time.time())
                 self.server.last_login_failure = failTime
                 if not domain.endswith('.onion'):
@@ -1755,7 +1755,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       base_dir).encode('utf-8')
                     msglen = len(msg)
                     self._login_headers('text/html',
-                                        msglen, callingDomain)
+                                        msglen, calling_domain)
                     self._write(msg)
                     self.server.POSTbusy = False
                     return
@@ -1805,32 +1805,32 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.tokens_lookup[index] = loginNickname
                 cookieStr = 'SET:epicyon=' + \
                     self.server.tokens[loginNickname] + '; SameSite=Strict'
-                if callingDomain.endswith('.onion') and onion_domain:
+                if calling_domain.endswith('.onion') and onion_domain:
                     self._redirect_headers('http://' +
                                            onion_domain +
                                            '/users/' +
                                            loginNickname + '/' +
                                            self.server.defaultTimeline,
-                                           cookieStr, callingDomain)
-                elif (callingDomain.endswith('.i2p') and i2p_domain):
+                                           cookieStr, calling_domain)
+                elif (calling_domain.endswith('.i2p') and i2p_domain):
                     self._redirect_headers('http://' +
                                            i2p_domain +
                                            '/users/' +
                                            loginNickname + '/' +
                                            self.server.defaultTimeline,
-                                           cookieStr, callingDomain)
+                                           cookieStr, calling_domain)
                 else:
                     self._redirect_headers(http_prefix + '://' +
                                            domain_full + '/users/' +
                                            loginNickname + '/' +
                                            self.server.defaultTimeline,
-                                           cookieStr, callingDomain)
+                                           cookieStr, calling_domain)
                 self.server.POSTbusy = False
                 return
         self._200()
         self.server.POSTbusy = False
 
-    def _moderatorActions(self, path: str, callingDomain: str, cookie: str,
+    def _moderatorActions(self, path: str, calling_domain: str, cookie: str,
                           base_dir: str, http_prefix: str,
                           domain: str, domain_full: str, port: int,
                           onion_domain: str, i2p_domain: str,
@@ -1839,10 +1839,10 @@ class PubServer(BaseHTTPRequestHandler):
         """
         usersPath = path.replace('/moderationaction', '')
         nickname = usersPath.replace('/users/', '')
-        actorStr = self._get_instance_url(callingDomain) + usersPath
+        actorStr = self._get_instance_url(calling_domain) + usersPath
         if not isModerator(self.server.base_dir, nickname):
             self._redirect_headers(actorStr + '/moderation',
-                                   cookie, callingDomain)
+                                   cookie, calling_domain)
             self.server.POSTbusy = False
             return
 
@@ -1926,7 +1926,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._login_headers('text/html',
-                                        msglen, callingDomain)
+                                        msglen, calling_domain)
                     self._write(msg)
                     self.server.POSTbusy = False
                     return
@@ -2036,12 +2036,12 @@ class PubServer(BaseHTTPRequestHandler):
                                                self.server.recentPostsCache)
 
         self._redirect_headers(actorStr + '/moderation',
-                               cookie, callingDomain)
+                               cookie, calling_domain)
         self.server.POSTbusy = False
         return
 
     def _keyShortcuts(self, path: str,
-                      callingDomain: str, cookie: str,
+                      calling_domain: str, cookie: str,
                       base_dir: str, http_prefix: str, nickname: str,
                       domain: str, domain_full: str, port: int,
                       onion_domain: str, i2p_domain: str,
@@ -2080,14 +2080,14 @@ class PubServer(BaseHTTPRequestHandler):
         # See htmlAccessKeys
         if 'submitAccessKeysCancel=' in accessKeysParams or \
            'submitAccessKeys=' not in accessKeysParams:
-            if callingDomain.endswith('.onion') and onion_domain:
+            if calling_domain.endswith('.onion') and onion_domain:
                 originPathStr = \
                     'http://' + onion_domain + usersPath + '/' + \
                     defaultTimeline
-            elif callingDomain.endswith('.i2p') and i2p_domain:
+            elif calling_domain.endswith('.i2p') and i2p_domain:
                 originPathStr = \
                     'http://' + i2p_domain + usersPath + '/' + defaultTimeline
-            self._redirect_headers(originPathStr, cookie, callingDomain)
+            self._redirect_headers(originPathStr, cookie, calling_domain)
             self.server.POSTbusy = False
             return
 
@@ -2117,18 +2117,18 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.keyShortcuts[nickname] = accessKeys.copy()
 
         # redirect back from key shortcuts screen
-        if callingDomain.endswith('.onion') and onion_domain:
+        if calling_domain.endswith('.onion') and onion_domain:
             originPathStr = \
                 'http://' + onion_domain + usersPath + '/' + defaultTimeline
-        elif callingDomain.endswith('.i2p') and i2p_domain:
+        elif calling_domain.endswith('.i2p') and i2p_domain:
             originPathStr = \
                 'http://' + i2p_domain + usersPath + '/' + defaultTimeline
-        self._redirect_headers(originPathStr, cookie, callingDomain)
+        self._redirect_headers(originPathStr, cookie, calling_domain)
         self.server.POSTbusy = False
         return
 
     def _themeDesigner(self, path: str,
-                       callingDomain: str, cookie: str,
+                       calling_domain: str, cookie: str,
                        base_dir: str, http_prefix: str, nickname: str,
                        domain: str, domain_full: str, port: int,
                        onion_domain: str, i2p_domain: str,
@@ -2176,14 +2176,14 @@ class PubServer(BaseHTTPRequestHandler):
                 setTheme(base_dir, theme_name, domain,
                          allow_local_network_access, system_language)
 
-            if callingDomain.endswith('.onion') and onion_domain:
+            if calling_domain.endswith('.onion') and onion_domain:
                 originPathStr = \
                     'http://' + onion_domain + usersPath + '/' + \
                     defaultTimeline
-            elif callingDomain.endswith('.i2p') and i2p_domain:
+            elif calling_domain.endswith('.i2p') and i2p_domain:
                 originPathStr = \
                     'http://' + i2p_domain + usersPath + '/' + defaultTimeline
-            self._redirect_headers(originPathStr, cookie, callingDomain)
+            self._redirect_headers(originPathStr, cookie, calling_domain)
             self.server.POSTbusy = False
             return
 
@@ -2252,18 +2252,18 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.full_width_tl_button_header = False
 
         # redirect back from theme designer screen
-        if callingDomain.endswith('.onion') and onion_domain:
+        if calling_domain.endswith('.onion') and onion_domain:
             originPathStr = \
                 'http://' + onion_domain + usersPath + '/' + defaultTimeline
-        elif callingDomain.endswith('.i2p') and i2p_domain:
+        elif calling_domain.endswith('.i2p') and i2p_domain:
             originPathStr = \
                 'http://' + i2p_domain + usersPath + '/' + defaultTimeline
-        self._redirect_headers(originPathStr, cookie, callingDomain)
+        self._redirect_headers(originPathStr, cookie, calling_domain)
         self.server.POSTbusy = False
         return
 
     def _personOptions(self, path: str,
-                       callingDomain: str, cookie: str,
+                       calling_domain: str, cookie: str,
                        base_dir: str, http_prefix: str,
                        domain: str, domain_full: str, port: int,
                        onion_domain: str, i2p_domain: str,
@@ -2276,12 +2276,12 @@ class PubServer(BaseHTTPRequestHandler):
 
         chooserNickname = getNicknameFromActor(originPathStr)
         if not chooserNickname:
-            if callingDomain.endswith('.onion') and onion_domain:
+            if calling_domain.endswith('.onion') and onion_domain:
                 originPathStr = 'http://' + onion_domain + usersPath
-            elif (callingDomain.endswith('.i2p') and i2p_domain):
+            elif (calling_domain.endswith('.i2p') and i2p_domain):
                 originPathStr = 'http://' + i2p_domain + usersPath
             print('WARN: unable to find nickname in ' + originPathStr)
-            self._redirect_headers(originPathStr, cookie, callingDomain)
+            self._redirect_headers(originPathStr, cookie, calling_domain)
             self.server.POSTbusy = False
             return
 
@@ -2360,12 +2360,12 @@ class PubServer(BaseHTTPRequestHandler):
         # get the nickname
         optionsNickname = getNicknameFromActor(optionsActor)
         if not optionsNickname:
-            if callingDomain.endswith('.onion') and onion_domain:
+            if calling_domain.endswith('.onion') and onion_domain:
                 originPathStr = 'http://' + onion_domain + usersPath
-            elif (callingDomain.endswith('.i2p') and i2p_domain):
+            elif (calling_domain.endswith('.i2p') and i2p_domain):
                 originPathStr = 'http://' + i2p_domain + usersPath
             print('WARN: unable to find nickname in ' + optionsActor)
-            self._redirect_headers(originPathStr, cookie, callingDomain)
+            self._redirect_headers(originPathStr, cookie, calling_domain)
             self.server.POSTbusy = False
             return
 
@@ -2383,7 +2383,7 @@ class PubServer(BaseHTTPRequestHandler):
             if debug:
                 print('Viewing ' + optionsActor)
             self._redirect_headers(optionsActor,
-                                   cookie, callingDomain)
+                                   cookie, calling_domain)
             self.server.POSTbusy = False
             return
 
@@ -2401,7 +2401,7 @@ class PubServer(BaseHTTPRequestHandler):
                 usersPath + '/' + self.server.defaultTimeline + \
                 '?page=' + str(pageNumber)
             self._redirect_headers(usersPathStr, cookie,
-                                   callingDomain)
+                                   calling_domain)
             self.server.POSTbusy = False
             return
 
@@ -2421,7 +2421,7 @@ class PubServer(BaseHTTPRequestHandler):
                 usersPath + '/' + self.server.defaultTimeline + \
                 '?page=' + str(pageNumber)
             self._redirect_headers(usersPathStr, cookie,
-                                   callingDomain)
+                                   calling_domain)
             self.server.POSTbusy = False
             return
 
@@ -2449,7 +2449,7 @@ class PubServer(BaseHTTPRequestHandler):
                 usersPath + '/' + self.server.defaultTimeline + \
                 '?page=' + str(pageNumber)
             self._redirect_headers(usersPathStr, cookie,
-                                   callingDomain)
+                                   calling_domain)
             self.server.POSTbusy = False
             return
 
@@ -2477,7 +2477,7 @@ class PubServer(BaseHTTPRequestHandler):
                 usersPath + '/' + self.server.defaultTimeline + \
                 '?page=' + str(pageNumber)
             self._redirect_headers(usersPathStr, cookie,
-                                   callingDomain)
+                                   calling_domain)
             self.server.POSTbusy = False
             return
 
@@ -2522,7 +2522,7 @@ class PubServer(BaseHTTPRequestHandler):
                 usersPath + '/' + self.server.defaultTimeline + \
                 '?page=' + str(pageNumber)
             self._redirect_headers(usersPathStr, cookie,
-                                   callingDomain)
+                                   calling_domain)
             self.server.POSTbusy = False
             return
 
@@ -2568,7 +2568,7 @@ class PubServer(BaseHTTPRequestHandler):
                 usersPath + '/' + self.server.defaultTimeline + \
                 '?page=' + str(pageNumber)
             self._redirect_headers(usersPathStr, cookie,
-                                   callingDomain)
+                                   calling_domain)
             self.server.POSTbusy = False
             return
 
@@ -2608,7 +2608,7 @@ class PubServer(BaseHTTPRequestHandler):
                 usersPath + '/' + self.server.defaultTimeline + \
                 '?page=' + str(pageNumber)
             self._redirect_headers(usersPathStr, cookie,
-                                   callingDomain)
+                                   calling_domain)
             self.server.POSTbusy = False
             return
 
@@ -2639,7 +2639,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    optionsAvatarUrl).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
-                              cookie, callingDomain, False)
+                              cookie, calling_domain, False)
             self._write(msg)
             self.server.POSTbusy = False
             return
@@ -2659,7 +2659,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   optionsAvatarUrl).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
-                              cookie, callingDomain, False)
+                              cookie, calling_domain, False)
             self._write(msg)
             self.server.POSTbusy = False
             return
@@ -2678,7 +2678,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     optionsAvatarUrl).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
-                              cookie, callingDomain, False)
+                              cookie, calling_domain, False)
             self._write(msg)
             self.server.POSTbusy = False
             return
@@ -2737,7 +2737,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.defaultTimeline).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
-                              cookie, callingDomain, False)
+                              cookie, calling_domain, False)
             self._write(msg)
             self.server.POSTbusy = False
             return
@@ -2763,7 +2763,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     signing_priv_key_pem).encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
-                                  cookie, callingDomain, False)
+                                  cookie, calling_domain, False)
                 self._write(msg)
                 self.server.POSTbusy = False
                 return
@@ -2782,15 +2782,15 @@ class PubServer(BaseHTTPRequestHandler):
                 nickname = thisActor.split('/users/')[1]
                 personSnooze(base_dir, nickname,
                              domain, optionsActor)
-                if callingDomain.endswith('.onion') and onion_domain:
+                if calling_domain.endswith('.onion') and onion_domain:
                     thisActor = 'http://' + onion_domain + usersPath
-                elif (callingDomain.endswith('.i2p') and i2p_domain):
+                elif (calling_domain.endswith('.i2p') and i2p_domain):
                     thisActor = 'http://' + i2p_domain + usersPath
                 actorPathStr = \
                     thisActor + '/' + self.server.defaultTimeline + \
                     '?page=' + str(pageNumber)
                 self._redirect_headers(actorPathStr, cookie,
-                                       callingDomain)
+                                       calling_domain)
                 self.server.POSTbusy = False
                 return
 
@@ -2805,15 +2805,15 @@ class PubServer(BaseHTTPRequestHandler):
                 nickname = thisActor.split('/users/')[1]
                 personUnsnooze(base_dir, nickname,
                                domain, optionsActor)
-                if callingDomain.endswith('.onion') and onion_domain:
+                if calling_domain.endswith('.onion') and onion_domain:
                     thisActor = 'http://' + onion_domain + usersPath
-                elif (callingDomain.endswith('.i2p') and i2p_domain):
+                elif (calling_domain.endswith('.i2p') and i2p_domain):
                     thisActor = 'http://' + i2p_domain + usersPath
                 actorPathStr = \
                     thisActor + '/' + self.server.defaultTimeline + \
                     '?page=' + str(pageNumber)
                 self._redirect_headers(actorPathStr, cookie,
-                                       callingDomain)
+                                       calling_domain)
                 self.server.POSTbusy = False
                 return
 
@@ -2871,21 +2871,21 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.defaultTimeline).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
-                              cookie, callingDomain, False)
+                              cookie, calling_domain, False)
             self._write(msg)
             self.server.POSTbusy = False
             return
 
         # redirect back from person options screen
-        if callingDomain.endswith('.onion') and onion_domain:
+        if calling_domain.endswith('.onion') and onion_domain:
             originPathStr = 'http://' + onion_domain + usersPath
-        elif callingDomain.endswith('.i2p') and i2p_domain:
+        elif calling_domain.endswith('.i2p') and i2p_domain:
             originPathStr = 'http://' + i2p_domain + usersPath
-        self._redirect_headers(originPathStr, cookie, callingDomain)
+        self._redirect_headers(originPathStr, cookie, calling_domain)
         self.server.POSTbusy = False
         return
 
-    def _unfollowConfirm(self, callingDomain: str, cookie: str,
+    def _unfollowConfirm(self, calling_domain: str, cookie: str,
                          authorized: bool, path: str,
                          base_dir: str, http_prefix: str,
                          domain: str, domain_full: str, port: int,
@@ -2966,14 +2966,14 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.debug, group_account)
                 self._postToOutboxThread(unfollowJson)
 
-        if callingDomain.endswith('.onion') and onion_domain:
+        if calling_domain.endswith('.onion') and onion_domain:
             originPathStr = 'http://' + onion_domain + usersPath
-        elif (callingDomain.endswith('.i2p') and i2p_domain):
+        elif (calling_domain.endswith('.i2p') and i2p_domain):
             originPathStr = 'http://' + i2p_domain + usersPath
-        self._redirect_headers(originPathStr, cookie, callingDomain)
+        self._redirect_headers(originPathStr, cookie, calling_domain)
         self.server.POSTbusy = False
 
-    def _followConfirm(self, callingDomain: str, cookie: str,
+    def _followConfirm(self, calling_domain: str, cookie: str,
                        authorized: bool, path: str,
                        base_dir: str, http_prefix: str,
                        domain: str, domain_full: str, port: int,
@@ -3013,7 +3013,7 @@ class PubServer(BaseHTTPRequestHandler):
             followingActor = followingActor.split('actor=')[1]
             if '&' in followingActor:
                 followingActor = followingActor.split('&')[0]
-            self._redirect_headers(followingActor, cookie, callingDomain)
+            self._redirect_headers(followingActor, cookie, calling_domain)
             self.server.POSTbusy = False
             return
 
@@ -3056,14 +3056,14 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.person_cache, debug,
                                   self.server.project_version,
                                   self.server.signing_priv_key_pem)
-        if callingDomain.endswith('.onion') and onion_domain:
+        if calling_domain.endswith('.onion') and onion_domain:
             originPathStr = 'http://' + onion_domain + usersPath
-        elif (callingDomain.endswith('.i2p') and i2p_domain):
+        elif (calling_domain.endswith('.i2p') and i2p_domain):
             originPathStr = 'http://' + i2p_domain + usersPath
-        self._redirect_headers(originPathStr, cookie, callingDomain)
+        self._redirect_headers(originPathStr, cookie, calling_domain)
         self.server.POSTbusy = False
 
-    def _blockConfirm(self, callingDomain: str, cookie: str,
+    def _blockConfirm(self, calling_domain: str, cookie: str,
                       authorized: bool, path: str,
                       base_dir: str, http_prefix: str,
                       domain: str, domain_full: str, port: int,
@@ -3075,13 +3075,13 @@ class PubServer(BaseHTTPRequestHandler):
         originPathStr = http_prefix + '://' + domain_full + usersPath
         blockerNickname = getNicknameFromActor(originPathStr)
         if not blockerNickname:
-            if callingDomain.endswith('.onion') and onion_domain:
+            if calling_domain.endswith('.onion') and onion_domain:
                 originPathStr = 'http://' + onion_domain + usersPath
-            elif (callingDomain.endswith('.i2p') and i2p_domain):
+            elif (calling_domain.endswith('.i2p') and i2p_domain):
                 originPathStr = 'http://' + i2p_domain + usersPath
             print('WARN: unable to find nickname in ' + originPathStr)
             self._redirect_headers(originPathStr,
-                                   cookie, callingDomain)
+                                   cookie, calling_domain)
             self.server.POSTbusy = False
             return
 
@@ -3115,13 +3115,13 @@ class PubServer(BaseHTTPRequestHandler):
                 blockingActor = blockingActor.split('&')[0]
             blockingNickname = getNicknameFromActor(blockingActor)
             if not blockingNickname:
-                if callingDomain.endswith('.onion') and onion_domain:
+                if calling_domain.endswith('.onion') and onion_domain:
                     originPathStr = 'http://' + onion_domain + usersPath
-                elif (callingDomain.endswith('.i2p') and i2p_domain):
+                elif (calling_domain.endswith('.i2p') and i2p_domain):
                     originPathStr = 'http://' + i2p_domain + usersPath
                 print('WARN: unable to find nickname in ' + blockingActor)
                 self._redirect_headers(originPathStr,
-                                       cookie, callingDomain)
+                                       cookie, calling_domain)
                 self.server.POSTbusy = False
                 return
             blockingDomain, blockingPort = \
@@ -3143,14 +3143,14 @@ class PubServer(BaseHTTPRequestHandler):
                     self._sendBlock(http_prefix,
                                     blockerNickname, domain_full,
                                     blockingNickname, blockingDomainFull)
-        if callingDomain.endswith('.onion') and onion_domain:
+        if calling_domain.endswith('.onion') and onion_domain:
             originPathStr = 'http://' + onion_domain + usersPath
-        elif (callingDomain.endswith('.i2p') and i2p_domain):
+        elif (calling_domain.endswith('.i2p') and i2p_domain):
             originPathStr = 'http://' + i2p_domain + usersPath
-        self._redirect_headers(originPathStr, cookie, callingDomain)
+        self._redirect_headers(originPathStr, cookie, calling_domain)
         self.server.POSTbusy = False
 
-    def _unblockConfirm(self, callingDomain: str, cookie: str,
+    def _unblockConfirm(self, calling_domain: str, cookie: str,
                         authorized: bool, path: str,
                         base_dir: str, http_prefix: str,
                         domain: str, domain_full: str, port: int,
@@ -3162,13 +3162,13 @@ class PubServer(BaseHTTPRequestHandler):
         originPathStr = http_prefix + '://' + domain_full + usersPath
         blockerNickname = getNicknameFromActor(originPathStr)
         if not blockerNickname:
-            if callingDomain.endswith('.onion') and onion_domain:
+            if calling_domain.endswith('.onion') and onion_domain:
                 originPathStr = 'http://' + onion_domain + usersPath
-            elif (callingDomain.endswith('.i2p') and i2p_domain):
+            elif (calling_domain.endswith('.i2p') and i2p_domain):
                 originPathStr = 'http://' + i2p_domain + usersPath
             print('WARN: unable to find nickname in ' + originPathStr)
             self._redirect_headers(originPathStr,
-                                   cookie, callingDomain)
+                                   cookie, calling_domain)
             self.server.POSTbusy = False
             return
 
@@ -3202,13 +3202,13 @@ class PubServer(BaseHTTPRequestHandler):
                 blockingActor = blockingActor.split('&')[0]
             blockingNickname = getNicknameFromActor(blockingActor)
             if not blockingNickname:
-                if callingDomain.endswith('.onion') and onion_domain:
+                if calling_domain.endswith('.onion') and onion_domain:
                     originPathStr = 'http://' + onion_domain + usersPath
-                elif (callingDomain.endswith('.i2p') and i2p_domain):
+                elif (calling_domain.endswith('.i2p') and i2p_domain):
                     originPathStr = 'http://' + i2p_domain + usersPath
                 print('WARN: unable to find nickname in ' + blockingActor)
                 self._redirect_headers(originPathStr,
-                                       cookie, callingDomain)
+                                       cookie, calling_domain)
                 self.server.POSTbusy = False
                 return
             blockingDomain, blockingPort = \
@@ -3226,15 +3226,15 @@ class PubServer(BaseHTTPRequestHandler):
                 removeBlock(base_dir,
                             blockerNickname, domain,
                             blockingNickname, blockingDomainFull)
-        if callingDomain.endswith('.onion') and onion_domain:
+        if calling_domain.endswith('.onion') and onion_domain:
             originPathStr = 'http://' + onion_domain + usersPath
-        elif (callingDomain.endswith('.i2p') and i2p_domain):
+        elif (calling_domain.endswith('.i2p') and i2p_domain):
             originPathStr = 'http://' + i2p_domain + usersPath
         self._redirect_headers(originPathStr,
-                               cookie, callingDomain)
+                               cookie, calling_domain)
         self.server.POSTbusy = False
 
-    def _receiveSearchQuery(self, callingDomain: str, cookie: str,
+    def _receiveSearchQuery(self, calling_domain: str, cookie: str,
                             authorized: bool, path: str,
                             base_dir: str, http_prefix: str,
                             domain: str, domain_full: str,
@@ -3255,7 +3255,7 @@ class PubServer(BaseHTTPRequestHandler):
             path = path.split('?page=')[0]
 
         usersPath = path.replace('/searchhandle', '')
-        actorStr = self._get_instance_url(callingDomain) + usersPath
+        actorStr = self._get_instance_url(calling_domain) + usersPath
         length = int(self.headers['Content-length'])
         try:
             searchParams = self.rfile.read(length).decode('utf-8')
@@ -3278,7 +3278,7 @@ class PubServer(BaseHTTPRequestHandler):
             # go back on search screen
             self._redirect_headers(actorStr + '/' +
                                    self.server.defaultTimeline,
-                                   cookie, callingDomain)
+                                   cookie, calling_domain)
             self.server.POSTbusy = False
             return
         if 'searchtext=' in searchParams:
@@ -3323,7 +3323,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = hashtagStr.encode('utf-8')
                     msglen = len(msg)
                     self._login_headers('text/html',
-                                        msglen, callingDomain)
+                                        msglen, calling_domain)
                     self._write(msg)
                     self.server.POSTbusy = False
                     return
@@ -3351,7 +3351,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = skillStr.encode('utf-8')
                     msglen = len(msg)
                     self._login_headers('text/html',
-                                        msglen, callingDomain)
+                                        msglen, calling_domain)
                     self._write(msg)
                     self.server.POSTbusy = False
                     return
@@ -3418,7 +3418,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = historyStr.encode('utf-8')
                     msglen = len(msg)
                     self._login_headers('text/html',
-                                        msglen, callingDomain)
+                                        msglen, calling_domain)
                     self._write(msg)
                     self.server.POSTbusy = False
                     return
@@ -3486,7 +3486,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = bookmarksStr.encode('utf-8')
                     msglen = len(msg)
                     self._login_headers('text/html',
-                                        msglen, callingDomain)
+                                        msglen, calling_domain)
                     self._write(msg)
                     self.server.POSTbusy = False
                     return
@@ -3497,9 +3497,9 @@ class PubServer(BaseHTTPRequestHandler):
                    searchStr.endswith(';') or \
                    searchStr.endswith('.'):
                     actorStr = \
-                        self._get_instance_url(callingDomain) + usersPath
+                        self._get_instance_url(calling_domain) + usersPath
                     self._redirect_headers(actorStr + '/search',
-                                           cookie, callingDomain)
+                                           cookie, calling_domain)
                     self.server.POSTbusy = False
                     return
                 # profile search
@@ -3532,7 +3532,7 @@ class PubServer(BaseHTTPRequestHandler):
                     profilePathStr += \
                         '?options=' + actor + ';1;' + avatarUrl
 
-                    self._showPersonOptions(callingDomain, profilePathStr,
+                    self._showPersonOptions(calling_domain, profilePathStr,
                                             base_dir, http_prefix,
                                             domain, domain_full,
                                             GETstartTime,
@@ -3587,15 +3587,15 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = profileStr.encode('utf-8')
                     msglen = len(msg)
                     self._login_headers('text/html',
-                                        msglen, callingDomain)
+                                        msglen, calling_domain)
                     self._write(msg)
                     self.server.POSTbusy = False
                     return
                 else:
                     actorStr = \
-                        self._get_instance_url(callingDomain) + usersPath
+                        self._get_instance_url(calling_domain) + usersPath
                     self._redirect_headers(actorStr + '/search',
-                                           cookie, callingDomain)
+                                           cookie, calling_domain)
                     self.server.POSTbusy = False
                     return
             elif (searchStr.startswith(':') or
@@ -3615,7 +3615,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = emojiStr.encode('utf-8')
                     msglen = len(msg)
                     self._login_headers('text/html',
-                                        msglen, callingDomain)
+                                        msglen, calling_domain)
                     self._write(msg)
                     self.server.POSTbusy = False
                     return
@@ -3631,14 +3631,14 @@ class PubServer(BaseHTTPRequestHandler):
                                           maxPostsInFeed,
                                           http_prefix,
                                           domain_full,
-                                          actorStr, callingDomain,
+                                          actorStr, calling_domain,
                                           shared_items_federated_domains,
                                           'wanted')
                 if wantedItemsStr:
                     msg = wantedItemsStr.encode('utf-8')
                     msglen = len(msg)
                     self._login_headers('text/html',
-                                        msglen, callingDomain)
+                                        msglen, calling_domain)
                     self._write(msg)
                     self.server.POSTbusy = False
                     return
@@ -3654,24 +3654,24 @@ class PubServer(BaseHTTPRequestHandler):
                                           maxPostsInFeed,
                                           http_prefix,
                                           domain_full,
-                                          actorStr, callingDomain,
+                                          actorStr, calling_domain,
                                           shared_items_federated_domains,
                                           'shares')
                 if sharedItemsStr:
                     msg = sharedItemsStr.encode('utf-8')
                     msglen = len(msg)
                     self._login_headers('text/html',
-                                        msglen, callingDomain)
+                                        msglen, calling_domain)
                     self._write(msg)
                     self.server.POSTbusy = False
                     return
-        actorStr = self._get_instance_url(callingDomain) + usersPath
+        actorStr = self._get_instance_url(calling_domain) + usersPath
         self._redirect_headers(actorStr + '/' +
                                self.server.defaultTimeline,
-                               cookie, callingDomain)
+                               cookie, calling_domain)
         self.server.POSTbusy = False
 
-    def _receiveVote(self, callingDomain: str, cookie: str,
+    def _receiveVote(self, calling_domain: str, cookie: str,
                      authorized: bool, path: str,
                      base_dir: str, http_prefix: str,
                      domain: str, domain_full: str,
@@ -3693,15 +3693,15 @@ class PubServer(BaseHTTPRequestHandler):
         actor = http_prefix + '://' + domain_full + usersPath
         nickname = getNicknameFromActor(actor)
         if not nickname:
-            if callingDomain.endswith('.onion') and onion_domain:
+            if calling_domain.endswith('.onion') and onion_domain:
                 actor = 'http://' + onion_domain + usersPath
-            elif (callingDomain.endswith('.i2p') and i2p_domain):
+            elif (calling_domain.endswith('.i2p') and i2p_domain):
                 actor = 'http://' + i2p_domain + usersPath
             actorPathStr = \
                 actor + '/' + self.server.defaultTimeline + \
                 '?page=' + str(pageNumber)
             self._redirect_headers(actorPathStr,
-                                   cookie, callingDomain)
+                                   cookie, calling_domain)
             self.server.POSTbusy = False
             return
 
@@ -3745,20 +3745,20 @@ class PubServer(BaseHTTPRequestHandler):
                 answer = answer.split('&')[0]
 
         self._sendReplyToQuestion(nickname, messageId, answer)
-        if callingDomain.endswith('.onion') and onion_domain:
+        if calling_domain.endswith('.onion') and onion_domain:
             actor = 'http://' + onion_domain + usersPath
-        elif (callingDomain.endswith('.i2p') and i2p_domain):
+        elif (calling_domain.endswith('.i2p') and i2p_domain):
             actor = 'http://' + i2p_domain + usersPath
         actorPathStr = \
             actor + '/' + self.server.defaultTimeline + \
             '?page=' + str(pageNumber)
         self._redirect_headers(actorPathStr, cookie,
-                               callingDomain)
+                               calling_domain)
         self.server.POSTbusy = False
         return
 
     def _receiveImage(self, length: int,
-                      callingDomain: str, cookie: str,
+                      calling_domain: str, cookie: str,
                       authorized: bool, path: str,
                       base_dir: str, http_prefix: str,
                       domain: str, domain_full: str,
@@ -3820,7 +3820,7 @@ class PubServer(BaseHTTPRequestHandler):
         self.end_headers()
         self.server.POSTbusy = False
 
-    def _removeShare(self, callingDomain: str, cookie: str,
+    def _removeShare(self, calling_domain: str, cookie: str,
                      authorized: bool, path: str,
                      base_dir: str, http_prefix: str,
                      domain: str, domain_full: str,
@@ -3879,15 +3879,15 @@ class PubServer(BaseHTTPRequestHandler):
                                      shareNickname, shareDomain, itemID,
                                      http_prefix, domain_full, 'shares')
 
-        if callingDomain.endswith('.onion') and onion_domain:
+        if calling_domain.endswith('.onion') and onion_domain:
             originPathStr = 'http://' + onion_domain + usersPath
-        elif (callingDomain.endswith('.i2p') and i2p_domain):
+        elif (calling_domain.endswith('.i2p') and i2p_domain):
             originPathStr = 'http://' + i2p_domain + usersPath
         self._redirect_headers(originPathStr + '/tlshares',
-                               cookie, callingDomain)
+                               cookie, calling_domain)
         self.server.POSTbusy = False
 
-    def _removeWanted(self, callingDomain: str, cookie: str,
+    def _removeWanted(self, calling_domain: str, cookie: str,
                       authorized: bool, path: str,
                       base_dir: str, http_prefix: str,
                       domain: str, domain_full: str,
@@ -3946,15 +3946,15 @@ class PubServer(BaseHTTPRequestHandler):
                                      shareNickname, shareDomain, itemID,
                                      http_prefix, domain_full, 'wanted')
 
-        if callingDomain.endswith('.onion') and onion_domain:
+        if calling_domain.endswith('.onion') and onion_domain:
             originPathStr = 'http://' + onion_domain + usersPath
-        elif (callingDomain.endswith('.i2p') and i2p_domain):
+        elif (calling_domain.endswith('.i2p') and i2p_domain):
             originPathStr = 'http://' + i2p_domain + usersPath
         self._redirect_headers(originPathStr + '/tlwanted',
-                               cookie, callingDomain)
+                               cookie, calling_domain)
         self.server.POSTbusy = False
 
-    def _removePost(self, callingDomain: str, cookie: str,
+    def _removePost(self, calling_domain: str, cookie: str,
                     authorized: bool, path: str,
                     base_dir: str, http_prefix: str,
                     domain: str, domain_full: str,
@@ -4040,21 +4040,21 @@ class PubServer(BaseHTTPRequestHandler):
                                                 monthInt,
                                                 removeMessageId)
                     self._postToOutboxThread(deleteJson)
-        if callingDomain.endswith('.onion') and onion_domain:
+        if calling_domain.endswith('.onion') and onion_domain:
             originPathStr = 'http://' + onion_domain + usersPath
-        elif (callingDomain.endswith('.i2p') and i2p_domain):
+        elif (calling_domain.endswith('.i2p') and i2p_domain):
             originPathStr = 'http://' + i2p_domain + usersPath
         if pageNumber == 1:
             self._redirect_headers(originPathStr + '/outbox', cookie,
-                                   callingDomain)
+                                   calling_domain)
         else:
             pageNumberStr = str(pageNumber)
             actorPathStr = originPathStr + '/outbox?page=' + pageNumberStr
             self._redirect_headers(actorPathStr,
-                                   cookie, callingDomain)
+                                   cookie, calling_domain)
         self.server.POSTbusy = False
 
-    def _linksUpdate(self, callingDomain: str, cookie: str,
+    def _linksUpdate(self, calling_domain: str, cookie: str,
                      authorized: bool, path: str,
                      base_dir: str, http_prefix: str,
                      domain: str, domain_full: str,
@@ -4065,7 +4065,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         usersPath = path.replace('/linksdata', '')
         usersPath = usersPath.replace('/editlinks', '')
-        actorStr = self._get_instance_url(callingDomain) + usersPath
+        actorStr = self._get_instance_url(calling_domain) + usersPath
         if ' boundary=' in self.headers['Content-type']:
             boundary = self.headers['Content-type'].split('boundary=')[1]
             if ';' in boundary:
@@ -4081,7 +4081,7 @@ class PubServer(BaseHTTPRequestHandler):
                     print('WARN: nickname not found in ' + actorStr)
                 else:
                     print('WARN: nickname is not a moderator' + actorStr)
-                self._redirect_headers(actorStr, cookie, callingDomain)
+                self._redirect_headers(actorStr, cookie, calling_domain)
                 self.server.POSTbusy = False
                 return
 
@@ -4090,7 +4090,7 @@ class PubServer(BaseHTTPRequestHandler):
             # check that the POST isn't too large
             if length > self.server.max_post_length:
                 print('Maximum links data length exceeded ' + str(length))
-                self._redirect_headers(actorStr, cookie, callingDomain)
+                self._redirect_headers(actorStr, cookie, calling_domain)
                 self.server.POSTbusy = False
                 return
 
@@ -4192,10 +4192,10 @@ class PubServer(BaseHTTPRequestHandler):
 
         # redirect back to the default timeline
         self._redirect_headers(actorStr + '/' + defaultTimeline,
-                               cookie, callingDomain)
+                               cookie, calling_domain)
         self.server.POSTbusy = False
 
-    def _setHashtagCategory(self, callingDomain: str, cookie: str,
+    def _setHashtagCategory(self, calling_domain: str, cookie: str,
                             authorized: bool, path: str,
                             base_dir: str, http_prefix: str,
                             domain: str, domain_full: str,
@@ -4223,7 +4223,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._404()
             return
         usersPath = usersPath.split('/tags/')[0]
-        actorStr = self._get_instance_url(callingDomain) + usersPath
+        actorStr = self._get_instance_url(calling_domain) + usersPath
         tagScreenStr = actorStr + '/tags/' + hashtag
         if ' boundary=' in self.headers['Content-type']:
             boundary = self.headers['Content-type'].split('boundary=')[1]
@@ -4240,7 +4240,7 @@ class PubServer(BaseHTTPRequestHandler):
                     print('WARN: nickname not found in ' + actorStr)
                 else:
                     print('WARN: nickname is not a moderator' + actorStr)
-                self._redirect_headers(tagScreenStr, cookie, callingDomain)
+                self._redirect_headers(tagScreenStr, cookie, calling_domain)
                 self.server.POSTbusy = False
                 return
 
@@ -4249,7 +4249,7 @@ class PubServer(BaseHTTPRequestHandler):
             # check that the POST isn't too large
             if length > self.server.max_post_length:
                 print('Maximum links data length exceeded ' + str(length))
-                self._redirect_headers(tagScreenStr, cookie, callingDomain)
+                self._redirect_headers(tagScreenStr, cookie, calling_domain)
                 self.server.POSTbusy = False
                 return
 
@@ -4294,10 +4294,10 @@ class PubServer(BaseHTTPRequestHandler):
 
         # redirect back to the default timeline
         self._redirect_headers(tagScreenStr,
-                               cookie, callingDomain)
+                               cookie, calling_domain)
         self.server.POSTbusy = False
 
-    def _newswireUpdate(self, callingDomain: str, cookie: str,
+    def _newswireUpdate(self, calling_domain: str, cookie: str,
                         authorized: bool, path: str,
                         base_dir: str, http_prefix: str,
                         domain: str, domain_full: str,
@@ -4307,7 +4307,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         usersPath = path.replace('/newswiredata', '')
         usersPath = usersPath.replace('/editnewswire', '')
-        actorStr = self._get_instance_url(callingDomain) + usersPath
+        actorStr = self._get_instance_url(calling_domain) + usersPath
         if ' boundary=' in self.headers['Content-type']:
             boundary = self.headers['Content-type'].split('boundary=')[1]
             if ';' in boundary:
@@ -4323,7 +4323,7 @@ class PubServer(BaseHTTPRequestHandler):
                     print('WARN: nickname not found in ' + actorStr)
                 else:
                     print('WARN: nickname is not a moderator' + actorStr)
-                self._redirect_headers(actorStr, cookie, callingDomain)
+                self._redirect_headers(actorStr, cookie, calling_domain)
                 self.server.POSTbusy = False
                 return
 
@@ -4332,7 +4332,7 @@ class PubServer(BaseHTTPRequestHandler):
             # check that the POST isn't too large
             if length > self.server.max_post_length:
                 print('Maximum newswire data length exceeded ' + str(length))
-                self._redirect_headers(actorStr, cookie, callingDomain)
+                self._redirect_headers(actorStr, cookie, calling_domain)
                 self.server.POSTbusy = False
                 return
 
@@ -4449,10 +4449,10 @@ class PubServer(BaseHTTPRequestHandler):
 
         # redirect back to the default timeline
         self._redirect_headers(actorStr + '/' + defaultTimeline,
-                               cookie, callingDomain)
+                               cookie, calling_domain)
         self.server.POSTbusy = False
 
-    def _citationsUpdate(self, callingDomain: str, cookie: str,
+    def _citationsUpdate(self, calling_domain: str, cookie: str,
                          authorized: bool, path: str,
                          base_dir: str, http_prefix: str,
                          domain: str, domain_full: str,
@@ -4463,7 +4463,7 @@ class PubServer(BaseHTTPRequestHandler):
         update button on the citations screen
         """
         usersPath = path.replace('/citationsdata', '')
-        actorStr = self._get_instance_url(callingDomain) + usersPath
+        actorStr = self._get_instance_url(calling_domain) + usersPath
         nickname = getNicknameFromActor(actorStr)
 
         citationsFilename = \
@@ -4487,7 +4487,7 @@ class PubServer(BaseHTTPRequestHandler):
             # check that the POST isn't too large
             if length > self.server.max_post_length:
                 print('Maximum citations data length exceeded ' + str(length))
-                self._redirect_headers(actorStr, cookie, callingDomain)
+                self._redirect_headers(actorStr, cookie, calling_domain)
                 self.server.POSTbusy = False
                 return
 
@@ -4539,10 +4539,10 @@ class PubServer(BaseHTTPRequestHandler):
 
         # redirect back to the default timeline
         self._redirect_headers(actorStr + '/newblog',
-                               cookie, callingDomain)
+                               cookie, calling_domain)
         self.server.POSTbusy = False
 
-    def _newsPostEdit(self, callingDomain: str, cookie: str,
+    def _newsPostEdit(self, calling_domain: str, cookie: str,
                       authorized: bool, path: str,
                       base_dir: str, http_prefix: str,
                       domain: str, domain_full: str,
@@ -4552,7 +4552,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         usersPath = path.replace('/newseditdata', '')
         usersPath = usersPath.replace('/editnewspost', '')
-        actorStr = self._get_instance_url(callingDomain) + usersPath
+        actorStr = self._get_instance_url(calling_domain) + usersPath
         if ' boundary=' in self.headers['Content-type']:
             boundary = self.headers['Content-type'].split('boundary=')[1]
             if ';' in boundary:
@@ -4570,10 +4570,10 @@ class PubServer(BaseHTTPRequestHandler):
                     print('WARN: nickname is not an editor' + actorStr)
                 if self.server.news_instance:
                     self._redirect_headers(actorStr + '/tlfeatures',
-                                           cookie, callingDomain)
+                                           cookie, calling_domain)
                 else:
                     self._redirect_headers(actorStr + '/tlnews',
-                                           cookie, callingDomain)
+                                           cookie, calling_domain)
                 self.server.POSTbusy = False
                 return
 
@@ -4584,10 +4584,10 @@ class PubServer(BaseHTTPRequestHandler):
                 print('Maximum news data length exceeded ' + str(length))
                 if self.server.news_instance:
                     self._redirect_headers(actorStr + '/tlfeatures',
-                                           cookie, callingDomain)
+                                           cookie, calling_domain)
                 else:
                     self._redirect_headers(actorStr + '/tlnews',
-                                           cookie, callingDomain)
+                                           cookie, calling_domain)
                 self.server.POSTbusy = False
                 return
 
@@ -4670,13 +4670,13 @@ class PubServer(BaseHTTPRequestHandler):
         # redirect back to the default timeline
         if self.server.news_instance:
             self._redirect_headers(actorStr + '/tlfeatures',
-                                   cookie, callingDomain)
+                                   cookie, calling_domain)
         else:
             self._redirect_headers(actorStr + '/tlnews',
-                                   cookie, callingDomain)
+                                   cookie, calling_domain)
         self.server.POSTbusy = False
 
-    def _profileUpdate(self, callingDomain: str, cookie: str,
+    def _profileUpdate(self, calling_domain: str, cookie: str,
                        authorized: bool, path: str,
                        base_dir: str, http_prefix: str,
                        domain: str, domain_full: str,
@@ -4688,7 +4688,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         usersPath = path.replace('/profiledata', '')
         usersPath = usersPath.replace('/editprofile', '')
-        actorStr = self._get_instance_url(callingDomain) + usersPath
+        actorStr = self._get_instance_url(calling_domain) + usersPath
         if ' boundary=' in self.headers['Content-type']:
             boundary = self.headers['Content-type'].split('boundary=')[1]
             if ';' in boundary:
@@ -4698,7 +4698,7 @@ class PubServer(BaseHTTPRequestHandler):
             nickname = getNicknameFromActor(actorStr)
             if not nickname:
                 print('WARN: nickname not found in ' + actorStr)
-                self._redirect_headers(actorStr, cookie, callingDomain)
+                self._redirect_headers(actorStr, cookie, calling_domain)
                 self.server.POSTbusy = False
                 return
 
@@ -4708,7 +4708,7 @@ class PubServer(BaseHTTPRequestHandler):
             if length > self.server.max_post_length:
                 print('Maximum profile data length exceeded ' +
                       str(length))
-                self._redirect_headers(actorStr, cookie, callingDomain)
+                self._redirect_headers(actorStr, cookie, calling_domain)
                 self.server.POSTbusy = False
                 return
 
@@ -4869,7 +4869,7 @@ class PubServer(BaseHTTPRequestHandler):
                         '/exports/' + self.server.theme_name + '.zip'
                 print('submitExportTheme path=' + themeDownloadPath)
                 self._redirect_headers(themeDownloadPath,
-                                       cookie, callingDomain)
+                                       cookie, calling_domain)
                 self.server.POSTbusy = False
                 return
 
@@ -6530,16 +6530,16 @@ class PubServer(BaseHTTPRequestHandler):
                             deactivateAccount(base_dir,
                                               nickname, domain)
                             self._clearLoginDetails(nickname,
-                                                    callingDomain)
+                                                    calling_domain)
                             self.server.POSTbusy = False
                             return
 
         # redirect back to the profile screen
         self._redirect_headers(actorStr + redirectPath,
-                               cookie, callingDomain)
+                               cookie, calling_domain)
         self.server.POSTbusy = False
 
-    def _progressiveWebAppManifest(self, callingDomain: str,
+    def _progressiveWebAppManifest(self, calling_domain: str,
                                    GETstartTime) -> None:
         """gets the PWA manifest
         """
@@ -6633,15 +6633,15 @@ class PubServer(BaseHTTPRequestHandler):
                          ensure_ascii=False).encode('utf-8')
         msglen = len(msg)
         self._set_headers('application/json', msglen,
-                          None, callingDomain, False)
+                          None, calling_domain, False)
         self._write(msg)
         if self.server.debug:
-            print('Sent manifest: ' + callingDomain)
+            print('Sent manifest: ' + calling_domain)
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_progressiveWebAppManifest',
                            self.server.debug)
 
-    def _browserConfig(self, callingDomain: str, GETstartTime) -> None:
+    def _browserConfig(self, calling_domain: str, GETstartTime) -> None:
         """Used by MS Windows to put an icon on the desktop if you
         link to a website
         """
@@ -6660,21 +6660,21 @@ class PubServer(BaseHTTPRequestHandler):
                          ensure_ascii=False).encode('utf-8')
         msglen = len(msg)
         self._set_headers('application/xrd+xml', msglen,
-                          None, callingDomain, False)
+                          None, calling_domain, False)
         self._write(msg)
         if self.server.debug:
-            print('Sent browserconfig: ' + callingDomain)
+            print('Sent browserconfig: ' + calling_domain)
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_browserConfig',
                            self.server.debug)
 
-    def _getFavicon(self, callingDomain: str,
+    def _getFavicon(self, calling_domain: str,
                     base_dir: str, debug: bool,
                     favFilename: str) -> None:
         """Return the site favicon or default newswire favicon
         """
         favType = 'image/x-icon'
-        if self._hasAccept(callingDomain):
+        if self._hasAccept(calling_domain):
             if 'image/webp' in self.headers['Accept']:
                 favType = 'image/webp'
                 favFilename = favFilename.split('.')[0] + '.webp'
@@ -6702,7 +6702,7 @@ class PubServer(BaseHTTPRequestHandler):
         if self._etag_exists(faviconFilename):
             # The file has not changed
             if debug:
-                print('favicon icon has not changed: ' + callingDomain)
+                print('favicon icon has not changed: ' + calling_domain)
             self._304()
             return
         if self.server.iconsCache.get(favFilename):
@@ -6714,7 +6714,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    False, None)
             self._write(favBinary)
             if debug:
-                print('Sent favicon from cache: ' + callingDomain)
+                print('Sent favicon from cache: ' + calling_domain)
             return
         else:
             if os.path.isfile(faviconFilename):
@@ -6733,13 +6733,13 @@ class PubServer(BaseHTTPRequestHandler):
                     self._write(favBinary)
                     self.server.iconsCache[favFilename] = favBinary
                     if self.server.debug:
-                        print('Sent favicon from file: ' + callingDomain)
+                        print('Sent favicon from file: ' + calling_domain)
                     return
         if debug:
-            print('favicon not sent: ' + callingDomain)
+            print('favicon not sent: ' + calling_domain)
         self._404()
 
-    def _getSpeaker(self, callingDomain: str, path: str,
+    def _getSpeaker(self, calling_domain: str, path: str,
                     base_dir: str, domain: str, debug: bool) -> None:
         """Returns the speaker file used for TTS and
         accessed via c2s
@@ -6758,10 +6758,10 @@ class PubServer(BaseHTTPRequestHandler):
                          ensure_ascii=False).encode('utf-8')
         msglen = len(msg)
         self._set_headers('application/json', msglen,
-                          None, callingDomain, False)
+                          None, calling_domain, False)
         self._write(msg)
 
-    def _getExportedTheme(self, callingDomain: str, path: str,
+    def _getExportedTheme(self, calling_domain: str, path: str,
                           base_dir: str, domain_full: str,
                           debug: bool) -> None:
         """Returns an exported theme zip file
@@ -6783,7 +6783,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._write(exportBinary)
         self._404()
 
-    def _getFonts(self, callingDomain: str, path: str,
+    def _getFonts(self, calling_domain: str, path: str,
                   base_dir: str, debug: bool,
                   GETstartTime) -> None:
         """Returns a font
@@ -6816,7 +6816,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._write(fontBinary)
                 if debug:
                     print('font sent from cache: ' +
-                          path + ' ' + callingDomain)
+                          path + ' ' + calling_domain)
                 fitnessPerformance(GETstartTime, self.server.fitness,
                                    '_GET', '_getFonts cache',
                                    self.server.debug)
@@ -6839,17 +6839,17 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.fontsCache[fontStr] = fontBinary
                     if debug:
                         print('font sent from file: ' +
-                              path + ' ' + callingDomain)
+                              path + ' ' + calling_domain)
                     fitnessPerformance(GETstartTime, self.server.fitness,
                                        '_GET', '_getFonts',
                                        self.server.debug)
                     return
         if debug:
-            print('font not found: ' + path + ' ' + callingDomain)
+            print('font not found: ' + path + ' ' + calling_domain)
         self._404()
 
     def _getRSS2feed(self, authorized: bool,
-                     callingDomain: str, path: str,
+                     calling_domain: str, path: str,
                      base_dir: str, http_prefix: str,
                      domain: str, port: int, proxy_type: str,
                      GETstartTime,
@@ -6881,22 +6881,22 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/xml', msglen,
-                                      None, callingDomain, True)
+                                      None, calling_domain, True)
                     self._write(msg)
                     if debug:
                         print('Sent rss2 feed: ' +
-                              path + ' ' + callingDomain)
+                              path + ' ' + calling_domain)
                     fitnessPerformance(GETstartTime, self.server.fitness,
                                        '_GET', '_getRSS2feed',
                                        debug)
                     return
         if debug:
             print('Failed to get rss2 feed: ' +
-                  path + ' ' + callingDomain)
+                  path + ' ' + calling_domain)
         self._404()
 
     def _getRSS2site(self, authorized: bool,
-                     callingDomain: str, path: str,
+                     calling_domain: str, path: str,
                      base_dir: str, http_prefix: str,
                      domain_full: str, port: int, proxy_type: str,
                      translate: {},
@@ -6936,22 +6936,22 @@ class PubServer(BaseHTTPRequestHandler):
             msg = msg.encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/xml', msglen,
-                              None, callingDomain, True)
+                              None, calling_domain, True)
             self._write(msg)
             if debug:
                 print('Sent rss2 feed: ' +
-                      path + ' ' + callingDomain)
+                      path + ' ' + calling_domain)
             fitnessPerformance(GETstartTime, self.server.fitness,
                                '_GET', '_getRSS2site',
                                debug)
             return
         if debug:
             print('Failed to get rss2 feed: ' +
-                  path + ' ' + callingDomain)
+                  path + ' ' + calling_domain)
         self._404()
 
     def _getNewswireFeed(self, authorized: bool,
-                         callingDomain: str, path: str,
+                         calling_domain: str, path: str,
                          base_dir: str, http_prefix: str,
                          domain: str, port: int, proxy_type: str,
                          GETstartTime,
@@ -6970,22 +6970,22 @@ class PubServer(BaseHTTPRequestHandler):
             msg = msg.encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/xml', msglen,
-                              None, callingDomain, True)
+                              None, calling_domain, True)
             self._write(msg)
             if debug:
                 print('Sent rss2 newswire feed: ' +
-                      path + ' ' + callingDomain)
+                      path + ' ' + calling_domain)
             fitnessPerformance(GETstartTime, self.server.fitness,
                                '_GET', '_getNewswireFeed',
                                debug)
             return
         if debug:
             print('Failed to get rss2 newswire feed: ' +
-                  path + ' ' + callingDomain)
+                  path + ' ' + calling_domain)
         self._404()
 
     def _getHashtagCategoriesFeed(self, authorized: bool,
-                                  callingDomain: str, path: str,
+                                  calling_domain: str, path: str,
                                   base_dir: str, http_prefix: str,
                                   domain: str, port: int, proxy_type: str,
                                   GETstartTime,
@@ -7003,21 +7003,21 @@ class PubServer(BaseHTTPRequestHandler):
             msg = msg.encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/xml', msglen,
-                              None, callingDomain, True)
+                              None, calling_domain, True)
             self._write(msg)
             if debug:
                 print('Sent rss2 categories feed: ' +
-                      path + ' ' + callingDomain)
+                      path + ' ' + calling_domain)
             fitnessPerformance(GETstartTime, self.server.fitness,
                                '_GET', '_getHashtagCategoriesFeed', debug)
             return
         if debug:
             print('Failed to get rss2 categories feed: ' +
-                  path + ' ' + callingDomain)
+                  path + ' ' + calling_domain)
         self._404()
 
     def _getRSS3feed(self, authorized: bool,
-                     callingDomain: str, path: str,
+                     calling_domain: str, path: str,
                      base_dir: str, http_prefix: str,
                      domain: str, port: int, proxy_type: str,
                      GETstartTime,
@@ -7045,20 +7045,20 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/plain; charset=utf-8',
-                                      msglen, None, callingDomain, True)
+                                      msglen, None, calling_domain, True)
                     self._write(msg)
                     if self.server.debug:
                         print('Sent rss3 feed: ' +
-                              path + ' ' + callingDomain)
+                              path + ' ' + calling_domain)
                     fitnessPerformance(GETstartTime, self.server.fitness,
                                        '_GET', '_getRSS3feed', debug)
                     return
         if debug:
             print('Failed to get rss3 feed: ' +
-                  path + ' ' + callingDomain)
+                  path + ' ' + calling_domain)
         self._404()
 
-    def _showPersonOptions(self, callingDomain: str, path: str,
+    def _showPersonOptions(self, calling_domain: str, path: str,
                            base_dir: str, http_prefix: str,
                            domain: str, domain_full: str,
                            GETstartTime,
@@ -7179,7 +7179,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     accessKeys, isGroup).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
-                              cookie, callingDomain, False)
+                              cookie, calling_domain, False)
             self._write(msg)
             fitnessPerformance(GETstartTime, self.server.fitness,
                                '_GET', '_showPersonOptions', debug)
@@ -7187,22 +7187,22 @@ class PubServer(BaseHTTPRequestHandler):
 
         if '/users/news/' in path:
             self._redirect_headers(originPathStr + '/tlfeatures',
-                                   cookie, callingDomain)
+                                   cookie, calling_domain)
             return
 
-        if callingDomain.endswith('.onion') and onion_domain:
+        if calling_domain.endswith('.onion') and onion_domain:
             originPathStrAbsolute = \
                 'http://' + onion_domain + originPathStr
-        elif callingDomain.endswith('.i2p') and i2p_domain:
+        elif calling_domain.endswith('.i2p') and i2p_domain:
             originPathStrAbsolute = \
                 'http://' + i2p_domain + originPathStr
         else:
             originPathStrAbsolute = \
                 http_prefix + '://' + domain_full + originPathStr
         self._redirect_headers(originPathStrAbsolute, cookie,
-                               callingDomain)
+                               calling_domain)
 
-    def _showMedia(self, callingDomain: str,
+    def _showMedia(self, calling_domain: str,
                    path: str, base_dir: str,
                    GETstartTime) -> None:
         """Returns a media file
@@ -7242,7 +7242,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return
         self._404()
 
-    def _getOntology(self, callingDomain: str,
+    def _getOntology(self, calling_domain: str,
                      path: str, base_dir: str,
                      GETstartTime) -> None:
         """Returns an ontology file
@@ -7271,25 +7271,25 @@ class PubServer(BaseHTTPRequestHandler):
                 if ontologyFile:
                     ontologyFile = \
                         ontologyFile.replace('static.datafoodconsortium.org',
-                                             callingDomain)
-                    if not callingDomain.endswith('.i2p') and \
-                       not callingDomain.endswith('.onion'):
+                                             calling_domain)
+                    if not calling_domain.endswith('.i2p') and \
+                       not calling_domain.endswith('.onion'):
                         ontologyFile = \
                             ontologyFile.replace('http://' +
-                                                 callingDomain,
+                                                 calling_domain,
                                                  'https://' +
-                                                 callingDomain)
+                                                 calling_domain)
                     msg = ontologyFile.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers(ontologyFileType, msglen,
-                                      None, callingDomain, False)
+                                      None, calling_domain, False)
                     self._write(msg)
                 fitnessPerformance(GETstartTime, self.server.fitness,
                                    '_GET', '_getOntology', self.server.debug)
                 return
         self._404()
 
-    def _showEmoji(self, callingDomain: str, path: str,
+    def _showEmoji(self, calling_domain: str, path: str,
                    base_dir: str, GETstartTime) -> None:
         """Returns an emoji image
         """
@@ -7323,7 +7323,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return
         self._404()
 
-    def _showIcon(self, callingDomain: str, path: str,
+    def _showIcon(self, calling_domain: str, path: str,
                   base_dir: str, GETstartTime) -> None:
         """Shows an icon
         """
@@ -7380,7 +7380,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return
         self._404()
 
-    def _showHelpScreenImage(self, callingDomain: str, path: str,
+    def _showHelpScreenImage(self, calling_domain: str, path: str,
                              base_dir: str, GETstartTime) -> None:
         """Shows a help screen image
         """
@@ -7505,7 +7505,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return
         self._404()
 
-    def _hashtagSearch(self, callingDomain: str,
+    def _hashtagSearch(self, calling_domain: str,
                        path: str, cookie: str,
                        base_dir: str, http_prefix: str,
                        domain: str, domain_full: str, port: int,
@@ -7529,7 +7529,7 @@ class PubServer(BaseHTTPRequestHandler):
             msg = htmlHashtagBlocked(self.server.cssCache, base_dir,
                                      self.server.translate).encode('utf-8')
             msglen = len(msg)
-            self._login_headers('text/html', msglen, callingDomain)
+            self._login_headers('text/html', msglen, calling_domain)
             self._write(msg)
             return
         nickname = None
@@ -7566,25 +7566,25 @@ class PubServer(BaseHTTPRequestHandler):
             msg = hashtagStr.encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
-                              cookie, callingDomain, False)
+                              cookie, calling_domain, False)
             self._write(msg)
         else:
             originPathStr = path.split('/tags/')[0]
             originPathStrAbsolute = \
                 http_prefix + '://' + domain_full + originPathStr
-            if callingDomain.endswith('.onion') and onion_domain:
+            if calling_domain.endswith('.onion') and onion_domain:
                 originPathStrAbsolute = \
                     'http://' + onion_domain + originPathStr
-            elif (callingDomain.endswith('.i2p') and onion_domain):
+            elif (calling_domain.endswith('.i2p') and onion_domain):
                 originPathStrAbsolute = \
                     'http://' + i2p_domain + originPathStr
             self._redirect_headers(originPathStrAbsolute + '/search',
-                                   cookie, callingDomain)
+                                   cookie, calling_domain)
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_hashtagSearch',
                            self.server.debug)
 
-    def _hashtagSearchRSS2(self, callingDomain: str,
+    def _hashtagSearchRSS2(self, calling_domain: str,
                            path: str, cookie: str,
                            base_dir: str, http_prefix: str,
                            domain: str, domain_full: str, port: int,
@@ -7621,25 +7621,25 @@ class PubServer(BaseHTTPRequestHandler):
             msg = hashtagStr.encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/xml', msglen,
-                              cookie, callingDomain, False)
+                              cookie, calling_domain, False)
             self._write(msg)
         else:
             originPathStr = path.split('/tags/rss2/')[0]
             originPathStrAbsolute = \
                 http_prefix + '://' + domain_full + originPathStr
-            if callingDomain.endswith('.onion') and onion_domain:
+            if calling_domain.endswith('.onion') and onion_domain:
                 originPathStrAbsolute = \
                     'http://' + onion_domain + originPathStr
-            elif (callingDomain.endswith('.i2p') and onion_domain):
+            elif (calling_domain.endswith('.i2p') and onion_domain):
                 originPathStrAbsolute = \
                     'http://' + i2p_domain + originPathStr
             self._redirect_headers(originPathStrAbsolute + '/search',
-                                   cookie, callingDomain)
+                                   cookie, calling_domain)
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_hashtagSearchRSS2',
                            self.server.debug)
 
-    def _announceButton(self, callingDomain: str, path: str,
+    def _announceButton(self, calling_domain: str, path: str,
                         base_dir: str,
                         cookie: str, proxy_type: str,
                         http_prefix: str,
@@ -7677,12 +7677,12 @@ class PubServer(BaseHTTPRequestHandler):
         self.postToNickname = getNicknameFromActor(actor)
         if not self.postToNickname:
             print('WARN: unable to find nickname in ' + actor)
-            actorAbsolute = self._get_instance_url(callingDomain) + actor
+            actorAbsolute = self._get_instance_url(calling_domain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
                 '?page=' + str(pageNumber)
             self._redirect_headers(actorPathStr, cookie,
-                                   callingDomain)
+                                   calling_domain)
             return
         if not self._establishSession("announceButton"):
             self._404()
@@ -7779,16 +7779,16 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.cw_lists,
                                  self.server.lists_enabled)
 
-        actorAbsolute = self._get_instance_url(callingDomain) + actor
+        actorAbsolute = self._get_instance_url(calling_domain) + actor
         actorPathStr = \
             actorAbsolute + '/' + timelineStr + '?page=' + \
             str(pageNumber) + timelineBookmark
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_announceButton',
                            self.server.debug)
-        self._redirect_headers(actorPathStr, cookie, callingDomain)
+        self._redirect_headers(actorPathStr, cookie, calling_domain)
 
-    def _undoAnnounceButton(self, callingDomain: str, path: str,
+    def _undoAnnounceButton(self, calling_domain: str, path: str,
                             base_dir: str,
                             cookie: str, proxy_type: str,
                             http_prefix: str,
@@ -7829,12 +7829,12 @@ class PubServer(BaseHTTPRequestHandler):
         self.postToNickname = getNicknameFromActor(actor)
         if not self.postToNickname:
             print('WARN: unable to find nickname in ' + actor)
-            actorAbsolute = self._get_instance_url(callingDomain) + actor
+            actorAbsolute = self._get_instance_url(calling_domain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + '?page=' + \
                 str(pageNumber)
             self._redirect_headers(actorPathStr, cookie,
-                                   callingDomain)
+                                   calling_domain)
             return
         if not self._establishSession("undoAnnounceButton"):
             self._404()
@@ -7880,16 +7880,16 @@ class PubServer(BaseHTTPRequestHandler):
         self._postToOutbox(newUndoAnnounce,
                            self.server.project_version, self.postToNickname)
 
-        actorAbsolute = self._get_instance_url(callingDomain) + actor
+        actorAbsolute = self._get_instance_url(calling_domain) + actor
         actorPathStr = \
             actorAbsolute + '/' + timelineStr + '?page=' + \
             str(pageNumber) + timelineBookmark
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_undoAnnounceButton',
                            self.server.debug)
-        self._redirect_headers(actorPathStr, cookie, callingDomain)
+        self._redirect_headers(actorPathStr, cookie, calling_domain)
 
-    def _followApproveButton(self, callingDomain: str, path: str,
+    def _followApproveButton(self, calling_domain: str, path: str,
                              cookie: str,
                              base_dir: str, http_prefix: str,
                              domain: str, domain_full: str, port: int,
@@ -7926,19 +7926,19 @@ class PubServer(BaseHTTPRequestHandler):
                                              self.server.signing_priv_key_pem)
         originPathStrAbsolute = \
             http_prefix + '://' + domain_full + originPathStr
-        if callingDomain.endswith('.onion') and onion_domain:
+        if calling_domain.endswith('.onion') and onion_domain:
             originPathStrAbsolute = \
                 'http://' + onion_domain + originPathStr
-        elif (callingDomain.endswith('.i2p') and i2p_domain):
+        elif (calling_domain.endswith('.i2p') and i2p_domain):
             originPathStrAbsolute = \
                 'http://' + i2p_domain + originPathStr
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_followApproveButton',
                            self.server.debug)
         self._redirect_headers(originPathStrAbsolute,
-                               cookie, callingDomain)
+                               cookie, calling_domain)
 
-    def _newswireVote(self, callingDomain: str, path: str,
+    def _newswireVote(self, calling_domain: str, path: str,
                       cookie: str,
                       base_dir: str, http_prefix: str,
                       domain: str, domain_full: str, port: int,
@@ -7982,19 +7982,19 @@ class PubServer(BaseHTTPRequestHandler):
         originPathStrAbsolute = \
             http_prefix + '://' + domain_full + originPathStr + '/' + \
             self.server.defaultTimeline
-        if callingDomain.endswith('.onion') and onion_domain:
+        if calling_domain.endswith('.onion') and onion_domain:
             originPathStrAbsolute = \
                 'http://' + onion_domain + originPathStr
-        elif (callingDomain.endswith('.i2p') and i2p_domain):
+        elif (calling_domain.endswith('.i2p') and i2p_domain):
             originPathStrAbsolute = \
                 'http://' + i2p_domain + originPathStr
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_newswireVote',
                            self.server.debug)
         self._redirect_headers(originPathStrAbsolute,
-                               cookie, callingDomain)
+                               cookie, calling_domain)
 
-    def _newswireUnvote(self, callingDomain: str, path: str,
+    def _newswireUnvote(self, calling_domain: str, path: str,
                         cookie: str,
                         base_dir: str, http_prefix: str,
                         domain: str, domain_full: str, port: int,
@@ -8036,19 +8036,19 @@ class PubServer(BaseHTTPRequestHandler):
         originPathStrAbsolute = \
             http_prefix + '://' + domain_full + originPathStr + '/' + \
             self.server.defaultTimeline
-        if callingDomain.endswith('.onion') and onion_domain:
+        if calling_domain.endswith('.onion') and onion_domain:
             originPathStrAbsolute = \
                 'http://' + onion_domain + originPathStr
-        elif (callingDomain.endswith('.i2p') and i2p_domain):
+        elif (calling_domain.endswith('.i2p') and i2p_domain):
             originPathStrAbsolute = \
                 'http://' + i2p_domain + originPathStr
         self._redirect_headers(originPathStrAbsolute,
-                               cookie, callingDomain)
+                               cookie, calling_domain)
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_newswireUnvote',
                            self.server.debug)
 
-    def _followDenyButton(self, callingDomain: str, path: str,
+    def _followDenyButton(self, calling_domain: str, path: str,
                           cookie: str,
                           base_dir: str, http_prefix: str,
                           domain: str, domain_full: str, port: int,
@@ -8082,19 +8082,19 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.signing_priv_key_pem)
         originPathStrAbsolute = \
             http_prefix + '://' + domain_full + originPathStr
-        if callingDomain.endswith('.onion') and onion_domain:
+        if calling_domain.endswith('.onion') and onion_domain:
             originPathStrAbsolute = \
                 'http://' + onion_domain + originPathStr
-        elif callingDomain.endswith('.i2p') and i2p_domain:
+        elif calling_domain.endswith('.i2p') and i2p_domain:
             originPathStrAbsolute = \
                 'http://' + i2p_domain + originPathStr
         self._redirect_headers(originPathStrAbsolute,
-                               cookie, callingDomain)
+                               cookie, calling_domain)
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_followDenyButton',
                            self.server.debug)
 
-    def _likeButton(self, callingDomain: str, path: str,
+    def _likeButton(self, calling_domain: str, path: str,
                     base_dir: str, http_prefix: str,
                     domain: str, domain_full: str,
                     onion_domain: str, i2p_domain: str,
@@ -8131,12 +8131,12 @@ class PubServer(BaseHTTPRequestHandler):
         self.postToNickname = getNicknameFromActor(actor)
         if not self.postToNickname:
             print('WARN: unable to find nickname in ' + actor)
-            actorAbsolute = self._get_instance_url(callingDomain) + actor
+            actorAbsolute = self._get_instance_url(calling_domain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
                 '?page=' + str(pageNumber) + timelineBookmark
             self._redirect_headers(actorPathStr, cookie,
-                                   callingDomain)
+                                   calling_domain)
             return
         if not self._establishSession("likeButton"):
             self._404()
@@ -8249,7 +8249,7 @@ class PubServer(BaseHTTPRequestHandler):
             print('WARN: unable to locate file for liked post ' +
                   likeUrl)
 
-        actorAbsolute = self._get_instance_url(callingDomain) + actor
+        actorAbsolute = self._get_instance_url(calling_domain) + actor
         actorPathStr = \
             actorAbsolute + '/' + timelineStr + \
             '?page=' + str(pageNumber) + timelineBookmark
@@ -8257,9 +8257,9 @@ class PubServer(BaseHTTPRequestHandler):
                            '_GET', '_likeButton',
                            self.server.debug)
         self._redirect_headers(actorPathStr, cookie,
-                               callingDomain)
+                               calling_domain)
 
-    def _undoLikeButton(self, callingDomain: str, path: str,
+    def _undoLikeButton(self, calling_domain: str, path: str,
                         base_dir: str, http_prefix: str,
                         domain: str, domain_full: str,
                         onion_domain: str, i2p_domain: str,
@@ -8295,12 +8295,12 @@ class PubServer(BaseHTTPRequestHandler):
         self.postToNickname = getNicknameFromActor(actor)
         if not self.postToNickname:
             print('WARN: unable to find nickname in ' + actor)
-            actorAbsolute = self._get_instance_url(callingDomain) + actor
+            actorAbsolute = self._get_instance_url(calling_domain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
                 '?page=' + str(pageNumber)
             self._redirect_headers(actorPathStr, cookie,
-                                   callingDomain)
+                                   calling_domain)
             return
         if not self._establishSession("undoLikeButton"):
             self._404()
@@ -8399,7 +8399,7 @@ class PubServer(BaseHTTPRequestHandler):
             # clear the icon from the cache so that it gets updated
             if self.server.iconsCache.get('like_inactive.png'):
                 del self.server.iconsCache['like_inactive.png']
-        actorAbsolute = self._get_instance_url(callingDomain) + actor
+        actorAbsolute = self._get_instance_url(calling_domain) + actor
         actorPathStr = \
             actorAbsolute + '/' + timelineStr + \
             '?page=' + str(pageNumber) + timelineBookmark
@@ -8407,9 +8407,9 @@ class PubServer(BaseHTTPRequestHandler):
                            '_GET', '_undoLikeButton',
                            self.server.debug)
         self._redirect_headers(actorPathStr, cookie,
-                               callingDomain)
+                               calling_domain)
 
-    def _reactionButton(self, callingDomain: str, path: str,
+    def _reactionButton(self, calling_domain: str, path: str,
                         base_dir: str, http_prefix: str,
                         domain: str, domain_full: str,
                         onion_domain: str, i2p_domain: str,
@@ -8451,23 +8451,23 @@ class PubServer(BaseHTTPRequestHandler):
                 emojiContentEncoded = emojiContentEncoded.split('?')[0]
         if not emojiContentEncoded:
             print('WARN: no emoji reaction ' + actor)
-            actorAbsolute = self._get_instance_url(callingDomain) + actor
+            actorAbsolute = self._get_instance_url(calling_domain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
                 '?page=' + str(pageNumber) + timelineBookmark
             self._redirect_headers(actorPathStr, cookie,
-                                   callingDomain)
+                                   calling_domain)
             return
         emojiContent = urllib.parse.unquote_plus(emojiContentEncoded)
         self.postToNickname = getNicknameFromActor(actor)
         if not self.postToNickname:
             print('WARN: unable to find nickname in ' + actor)
-            actorAbsolute = self._get_instance_url(callingDomain) + actor
+            actorAbsolute = self._get_instance_url(calling_domain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
                 '?page=' + str(pageNumber) + timelineBookmark
             self._redirect_headers(actorPathStr, cookie,
-                                   callingDomain)
+                                   calling_domain)
             return
         if not self._establishSession("reactionButton"):
             self._404()
@@ -8585,7 +8585,7 @@ class PubServer(BaseHTTPRequestHandler):
             print('WARN: unable to locate file for emoji reaction post ' +
                   reactionUrl)
 
-        actorAbsolute = self._get_instance_url(callingDomain) + actor
+        actorAbsolute = self._get_instance_url(calling_domain) + actor
         actorPathStr = \
             actorAbsolute + '/' + timelineStr + \
             '?page=' + str(pageNumber) + timelineBookmark
@@ -8593,9 +8593,9 @@ class PubServer(BaseHTTPRequestHandler):
                            '_GET', '_reactionButton',
                            self.server.debug)
         self._redirect_headers(actorPathStr, cookie,
-                               callingDomain)
+                               calling_domain)
 
-    def _undoReactionButton(self, callingDomain: str, path: str,
+    def _undoReactionButton(self, calling_domain: str, path: str,
                             base_dir: str, http_prefix: str,
                             domain: str, domain_full: str,
                             onion_domain: str, i2p_domain: str,
@@ -8631,12 +8631,12 @@ class PubServer(BaseHTTPRequestHandler):
         self.postToNickname = getNicknameFromActor(actor)
         if not self.postToNickname:
             print('WARN: unable to find nickname in ' + actor)
-            actorAbsolute = self._get_instance_url(callingDomain) + actor
+            actorAbsolute = self._get_instance_url(calling_domain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
                 '?page=' + str(pageNumber)
             self._redirect_headers(actorPathStr, cookie,
-                                   callingDomain)
+                                   calling_domain)
             return
         emojiContentEncoded = None
         if '?emojreact=' in path:
@@ -8645,12 +8645,12 @@ class PubServer(BaseHTTPRequestHandler):
                 emojiContentEncoded = emojiContentEncoded.split('?')[0]
         if not emojiContentEncoded:
             print('WARN: no emoji reaction ' + actor)
-            actorAbsolute = self._get_instance_url(callingDomain) + actor
+            actorAbsolute = self._get_instance_url(calling_domain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
                 '?page=' + str(pageNumber) + timelineBookmark
             self._redirect_headers(actorPathStr, cookie,
-                                   callingDomain)
+                                   calling_domain)
             return
         emojiContent = urllib.parse.unquote_plus(emojiContentEncoded)
         if not self._establishSession("undoReactionButton"):
@@ -8754,16 +8754,16 @@ class PubServer(BaseHTTPRequestHandler):
                 print('WARN: Unreaction post not found: ' +
                       reactionPostFilename)
 
-        actorAbsolute = self._get_instance_url(callingDomain) + actor
+        actorAbsolute = self._get_instance_url(calling_domain) + actor
         actorPathStr = \
             actorAbsolute + '/' + timelineStr + \
             '?page=' + str(pageNumber) + timelineBookmark
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_undoReactionButton',
                            self.server.debug)
-        self._redirect_headers(actorPathStr, cookie, callingDomain)
+        self._redirect_headers(actorPathStr, cookie, calling_domain)
 
-    def _reactionPicker(self, callingDomain: str, path: str,
+    def _reactionPicker(self, calling_domain: str, path: str,
                         base_dir: str, http_prefix: str,
                         domain: str, domain_full: str, port: int,
                         onion_domain: str, i2p_domain: str,
@@ -8799,11 +8799,11 @@ class PubServer(BaseHTTPRequestHandler):
         self.postToNickname = getNicknameFromActor(actor)
         if not self.postToNickname:
             print('WARN: unable to find nickname in ' + actor)
-            actorAbsolute = self._get_instance_url(callingDomain) + actor
+            actorAbsolute = self._get_instance_url(calling_domain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
                 '?page=' + str(pageNumber) + timelineBookmark
-            self._redirect_headers(actorPathStr, cookie, callingDomain)
+            self._redirect_headers(actorPathStr, cookie, calling_domain)
             return
 
         post_json_object = None
@@ -8814,11 +8814,11 @@ class PubServer(BaseHTTPRequestHandler):
             post_json_object = load_json(reactionPostFilename)
         if not reactionPostFilename or not post_json_object:
             print('WARN: unable to locate reaction post ' + reactionUrl)
-            actorAbsolute = self._get_instance_url(callingDomain) + actor
+            actorAbsolute = self._get_instance_url(calling_domain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
                 '?page=' + str(pageNumber) + timelineBookmark
-            self._redirect_headers(actorPathStr, cookie, callingDomain)
+            self._redirect_headers(actorPathStr, cookie, calling_domain)
             return
 
         msg = \
@@ -8849,14 +8849,14 @@ class PubServer(BaseHTTPRequestHandler):
         msg = msg.encode('utf-8')
         msglen = len(msg)
         self._set_headers('text/html', msglen,
-                          cookie, callingDomain, False)
+                          cookie, calling_domain, False)
         self._write(msg)
         fitnessPerformance(GETstartTime,
                            self.server.fitness,
                            '_GET', '_reactionPicker',
                            self.server.debug)
 
-    def _bookmarkButton(self, callingDomain: str, path: str,
+    def _bookmarkButton(self, calling_domain: str, path: str,
                         base_dir: str, http_prefix: str,
                         domain: str, domain_full: str, port: int,
                         onion_domain: str, i2p_domain: str,
@@ -8893,12 +8893,12 @@ class PubServer(BaseHTTPRequestHandler):
         self.postToNickname = getNicknameFromActor(actor)
         if not self.postToNickname:
             print('WARN: unable to find nickname in ' + actor)
-            actorAbsolute = self._get_instance_url(callingDomain) + actor
+            actorAbsolute = self._get_instance_url(calling_domain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
                 '?page=' + str(pageNumber)
             self._redirect_headers(actorPathStr, cookie,
-                                   callingDomain)
+                                   calling_domain)
             return
         if not self._establishSession("bookmarkButton"):
             self._404()
@@ -8973,7 +8973,7 @@ class PubServer(BaseHTTPRequestHandler):
             else:
                 print('WARN: Bookmarked post not found: ' + bookmarkFilename)
         # self._postToOutbox(bookmarkJson, self.server.project_version, None)
-        actorAbsolute = self._get_instance_url(callingDomain) + actor
+        actorAbsolute = self._get_instance_url(calling_domain) + actor
         actorPathStr = \
             actorAbsolute + '/' + timelineStr + \
             '?page=' + str(pageNumber) + timelineBookmark
@@ -8981,9 +8981,9 @@ class PubServer(BaseHTTPRequestHandler):
                            '_GET', '_bookmarkButton',
                            self.server.debug)
         self._redirect_headers(actorPathStr, cookie,
-                               callingDomain)
+                               calling_domain)
 
-    def _undoBookmarkButton(self, callingDomain: str, path: str,
+    def _undoBookmarkButton(self, calling_domain: str, path: str,
                             base_dir: str, http_prefix: str,
                             domain: str, domain_full: str, port: int,
                             onion_domain: str, i2p_domain: str,
@@ -9019,12 +9019,12 @@ class PubServer(BaseHTTPRequestHandler):
         self.postToNickname = getNicknameFromActor(actor)
         if not self.postToNickname:
             print('WARN: unable to find nickname in ' + actor)
-            actorAbsolute = self._get_instance_url(callingDomain) + actor
+            actorAbsolute = self._get_instance_url(calling_domain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
                 '?page=' + str(pageNumber)
             self._redirect_headers(actorPathStr, cookie,
-                                   callingDomain)
+                                   calling_domain)
             return
         if not self._establishSession("undoBookmarkButton"):
             self._404()
@@ -9100,7 +9100,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.lists_enabled)
             else:
                 print('WARN: Unbookmarked post not found: ' + bookmarkFilename)
-        actorAbsolute = self._get_instance_url(callingDomain) + actor
+        actorAbsolute = self._get_instance_url(calling_domain) + actor
         actorPathStr = \
             actorAbsolute + '/' + timelineStr + \
             '?page=' + str(pageNumber) + timelineBookmark
@@ -9108,9 +9108,9 @@ class PubServer(BaseHTTPRequestHandler):
                            '_GET', '_undoBookmarkButton',
                            self.server.debug)
         self._redirect_headers(actorPathStr, cookie,
-                               callingDomain)
+                               calling_domain)
 
-    def _deleteButton(self, callingDomain: str, path: str,
+    def _deleteButton(self, calling_domain: str, path: str,
                       base_dir: str, http_prefix: str,
                       domain: str, domain_full: str, port: int,
                       onion_domain: str, i2p_domain: str,
@@ -9150,22 +9150,22 @@ class PubServer(BaseHTTPRequestHandler):
                 print('DEBUG: actor=' + actor)
             if actor not in deleteUrl:
                 # You can only delete your own posts
-                if callingDomain.endswith('.onion') and onion_domain:
+                if calling_domain.endswith('.onion') and onion_domain:
                     actor = 'http://' + onion_domain + usersPath
-                elif callingDomain.endswith('.i2p') and i2p_domain:
+                elif calling_domain.endswith('.i2p') and i2p_domain:
                     actor = 'http://' + i2p_domain + usersPath
                 self._redirect_headers(actor + '/' + timelineStr,
-                                       cookie, callingDomain)
+                                       cookie, calling_domain)
                 return
             self.postToNickname = getNicknameFromActor(actor)
             if not self.postToNickname:
                 print('WARN: unable to find nickname in ' + actor)
-                if callingDomain.endswith('.onion') and onion_domain:
+                if calling_domain.endswith('.onion') and onion_domain:
                     actor = 'http://' + onion_domain + usersPath
-                elif callingDomain.endswith('.i2p') and i2p_domain:
+                elif calling_domain.endswith('.i2p') and i2p_domain:
                     actor = 'http://' + i2p_domain + usersPath
                 self._redirect_headers(actor + '/' + timelineStr,
-                                       cookie, callingDomain)
+                                       cookie, calling_domain)
                 return
             if not self._establishSession("deleteButton"):
                 self._404()
@@ -9180,7 +9180,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   deleteUrl, http_prefix,
                                   self.server.project_version,
                                   self.server.cached_webfingers,
-                                  self.server.person_cache, callingDomain,
+                                  self.server.person_cache, calling_domain,
                                   self.server.yt_replace_domain,
                                   self.server.twitter_replacement_domain,
                                   self.server.show_published_date_only,
@@ -9195,21 +9195,21 @@ class PubServer(BaseHTTPRequestHandler):
             if deleteStr:
                 deleteStrLen = len(deleteStr)
                 self._set_headers('text/html', deleteStrLen,
-                                  cookie, callingDomain, False)
+                                  cookie, calling_domain, False)
                 self._write(deleteStr.encode('utf-8'))
                 self.server.GETbusy = False
                 return
-        if callingDomain.endswith('.onion') and onion_domain:
+        if calling_domain.endswith('.onion') and onion_domain:
             actor = 'http://' + onion_domain + usersPath
-        elif (callingDomain.endswith('.i2p') and i2p_domain):
+        elif (calling_domain.endswith('.i2p') and i2p_domain):
             actor = 'http://' + i2p_domain + usersPath
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_deleteButton',
                            self.server.debug)
         self._redirect_headers(actor + '/' + timelineStr,
-                               cookie, callingDomain)
+                               cookie, calling_domain)
 
-    def _muteButton(self, callingDomain: str, path: str,
+    def _muteButton(self, calling_domain: str, path: str,
                     base_dir: str, http_prefix: str,
                     domain: str, domain_full: str, port: int,
                     onion_domain: str, i2p_domain: str,
@@ -9304,11 +9304,11 @@ class PubServer(BaseHTTPRequestHandler):
             else:
                 print('WARN: Muted post not found: ' + muteFilename)
 
-        if callingDomain.endswith('.onion') and onion_domain:
+        if calling_domain.endswith('.onion') and onion_domain:
             actor = \
                 'http://' + onion_domain + \
                 path.split('?mute=')[0]
-        elif (callingDomain.endswith('.i2p') and i2p_domain):
+        elif (calling_domain.endswith('.i2p') and i2p_domain):
             actor = \
                 'http://' + i2p_domain + \
                 path.split('?mute=')[0]
@@ -9316,9 +9316,9 @@ class PubServer(BaseHTTPRequestHandler):
                            '_GET', '_muteButton', self.server.debug)
         self._redirect_headers(actor + '/' +
                                timelineStr + timelineBookmark,
-                               cookie, callingDomain)
+                               cookie, calling_domain)
 
-    def _undoMuteButton(self, callingDomain: str, path: str,
+    def _undoMuteButton(self, calling_domain: str, path: str,
                         base_dir: str, http_prefix: str,
                         domain: str, domain_full: str, port: int,
                         onion_domain: str, i2p_domain: str,
@@ -9413,20 +9413,20 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.lists_enabled)
             else:
                 print('WARN: Unmuted post not found: ' + muteFilename)
-        if callingDomain.endswith('.onion') and onion_domain:
+        if calling_domain.endswith('.onion') and onion_domain:
             actor = \
                 'http://' + onion_domain + path.split('?unmute=')[0]
-        elif callingDomain.endswith('.i2p') and i2p_domain:
+        elif calling_domain.endswith('.i2p') and i2p_domain:
             actor = \
                 'http://' + i2p_domain + path.split('?unmute=')[0]
         fitnessPerformance(GETstartTime, self.server.fitness,
                            '_GET', '_undoMuteButton', self.server.debug)
         self._redirect_headers(actor + '/' + timelineStr +
                                timelineBookmark,
-                               cookie, callingDomain)
+                               cookie, calling_domain)
 
     def _showRepliesToPost(self, authorized: bool,
-                           callingDomain: str, path: str,
+                           calling_domain: str, path: str,
                            base_dir: str, http_prefix: str,
                            domain: str, domain_full: str, port: int,
                            onion_domain: str, i2p_domain: str,
@@ -9532,7 +9532,7 @@ class PubServer(BaseHTTPRequestHandler):
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
-                                  cookie, callingDomain, False)
+                                  cookie, calling_domain, False)
                 self._write(msg)
                 fitnessPerformance(GETstartTime, self.server.fitness,
                                    '_GET', '_showRepliesToPost',
@@ -9544,7 +9544,7 @@ class PubServer(BaseHTTPRequestHandler):
                     protocolStr = 'application/json'
                     msglen = len(msg)
                     self._set_headers(protocolStr, msglen, None,
-                                      callingDomain, False)
+                                      calling_domain, False)
                     self._write(msg)
                     fitnessPerformance(GETstartTime, self.server.fitness,
                                        '_GET', '_showRepliesToPost json',
@@ -9624,7 +9624,7 @@ class PubServer(BaseHTTPRequestHandler):
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
-                                  cookie, callingDomain, False)
+                                  cookie, calling_domain, False)
                 self._write(msg)
                 fitnessPerformance(GETstartTime, self.server.fitness,
                                    '_GET', '_showRepliesToPost',
@@ -9637,7 +9637,7 @@ class PubServer(BaseHTTPRequestHandler):
                     protocolStr = 'application/json'
                     msglen = len(msg)
                     self._set_headers(protocolStr, msglen,
-                                      None, callingDomain, False)
+                                      None, calling_domain, False)
                     self._write(msg)
                     fitnessPerformance(GETstartTime, self.server.fitness,
                                        '_GET', '_showRepliesToPost json',
@@ -9648,7 +9648,7 @@ class PubServer(BaseHTTPRequestHandler):
         return False
 
     def _showRoles(self, authorized: bool,
-                   callingDomain: str, path: str,
+                   calling_domain: str, path: str,
                    base_dir: str, http_prefix: str,
                    domain: str, domain_full: str, port: int,
                    onion_domain: str, i2p_domain: str,
@@ -9734,7 +9734,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
-                                      cookie, callingDomain, False)
+                                      cookie, calling_domain, False)
                     self._write(msg)
                     fitnessPerformance(GETstartTime, self.server.fitness,
                                        '_GET', '_showRoles',
@@ -9747,7 +9747,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('application/json', msglen,
-                                      None, callingDomain, False)
+                                      None, calling_domain, False)
                     self._write(msg)
                     fitnessPerformance(GETstartTime, self.server.fitness,
                                        '_GET', '_showRoles json',
@@ -9758,7 +9758,7 @@ class PubServer(BaseHTTPRequestHandler):
         return False
 
     def _showSkills(self, authorized: bool,
-                    callingDomain: str, path: str,
+                    calling_domain: str, path: str,
                     base_dir: str, http_prefix: str,
                     domain: str, domain_full: str, port: int,
                     onion_domain: str, i2p_domain: str,
@@ -9851,7 +9851,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 msg = msg.encode('utf-8')
                                 msglen = len(msg)
                                 self._set_headers('text/html', msglen,
-                                                  cookie, callingDomain, False)
+                                                  cookie, calling_domain,
+                                                  False)
                                 self._write(msg)
                                 fitnessPerformance(GETstartTime,
                                                    self.server.fitness,
@@ -9868,7 +9869,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 msglen = len(msg)
                                 self._set_headers('application/json',
                                                   msglen, None,
-                                                  callingDomain, False)
+                                                  calling_domain, False)
                                 self._write(msg)
                                 fitnessPerformance(GETstartTime,
                                                    self.server.fitness,
@@ -9878,12 +9879,12 @@ class PubServer(BaseHTTPRequestHandler):
                                 self._404()
                         return True
         actor = path.replace('/skills', '')
-        actorAbsolute = self._get_instance_url(callingDomain) + actor
-        self._redirect_headers(actorAbsolute, cookie, callingDomain)
+        actorAbsolute = self._get_instance_url(calling_domain) + actor
+        self._redirect_headers(actorAbsolute, cookie, calling_domain)
         return True
 
     def _showIndividualAtPost(self, authorized: bool,
-                              callingDomain: str, path: str,
+                              calling_domain: str, path: str,
                               base_dir: str, http_prefix: str,
                               domain: str, domain_full: str, port: int,
                               onion_domain: str, i2p_domain: str,
@@ -9939,7 +9940,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         result = self._showPostFromFile(postFilename, likedBy,
                                         reactBy, reactEmoji,
-                                        authorized, callingDomain, path,
+                                        authorized, calling_domain, path,
                                         base_dir, http_prefix, nickname,
                                         domain, domain_full, port,
                                         onion_domain, i2p_domain,
@@ -9954,7 +9955,7 @@ class PubServer(BaseHTTPRequestHandler):
     def _showPostFromFile(self, postFilename: str, likedBy: str,
                           reactBy: str, reactEmoji: str,
                           authorized: bool,
-                          callingDomain: str, path: str,
+                          calling_domain: str, path: str,
                           base_dir: str, http_prefix: str, nickname: str,
                           domain: str, domain_full: str, port: int,
                           onion_domain: str, i2p_domain: str,
@@ -10014,7 +10015,7 @@ class PubServer(BaseHTTPRequestHandler):
             msg = msg.encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
-                              cookie, callingDomain, False)
+                              cookie, calling_domain, False)
             self._write(msg)
             fitnessPerformance(GETstartTime, self.server.fitness,
                                '_GET', '_showPostFromFile',
@@ -10036,7 +10037,7 @@ class PubServer(BaseHTTPRequestHandler):
                 msglen = len(msg)
                 self._set_headers('application/json',
                                   msglen,
-                                  None, callingDomain, False)
+                                  None, calling_domain, False)
                 self._write(msg)
                 fitnessPerformance(GETstartTime, self.server.fitness,
                                    '_GET', '_showPostFromFile json',
@@ -10047,7 +10048,7 @@ class PubServer(BaseHTTPRequestHandler):
         return True
 
     def _showIndividualPost(self, authorized: bool,
-                            callingDomain: str, path: str,
+                            calling_domain: str, path: str,
                             base_dir: str, http_prefix: str,
                             domain: str, domain_full: str, port: int,
                             onion_domain: str, i2p_domain: str,
@@ -10097,7 +10098,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         result = self._showPostFromFile(postFilename, likedBy,
                                         reactBy, reactEmoji,
-                                        authorized, callingDomain, path,
+                                        authorized, calling_domain, path,
                                         base_dir, http_prefix, nickname,
                                         domain, domain_full, port,
                                         onion_domain, i2p_domain,
@@ -10110,7 +10111,7 @@ class PubServer(BaseHTTPRequestHandler):
         return result
 
     def _showNotifyPost(self, authorized: bool,
-                        callingDomain: str, path: str,
+                        calling_domain: str, path: str,
                         base_dir: str, http_prefix: str,
                         domain: str, domain_full: str, port: int,
                         onion_domain: str, i2p_domain: str,
@@ -10141,7 +10142,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         result = self._showPostFromFile(postFilename, likedBy,
                                         reactBy, reactEmoji,
-                                        authorized, callingDomain, path,
+                                        authorized, calling_domain, path,
                                         base_dir, http_prefix, nickname,
                                         domain, domain_full, port,
                                         onion_domain, i2p_domain,
@@ -10154,7 +10155,7 @@ class PubServer(BaseHTTPRequestHandler):
         return result
 
     def _showInbox(self, authorized: bool,
-                   callingDomain: str, path: str,
+                   calling_domain: str, path: str,
                    base_dir: str, http_prefix: str,
                    domain: str, domain_full: str, port: int,
                    onion_domain: str, i2p_domain: str,
@@ -10285,7 +10286,7 @@ class PubServer(BaseHTTPRequestHandler):
                             msg = msg.encode('utf-8')
                             msglen = len(msg)
                             self._set_headers('text/html', msglen,
-                                              cookie, callingDomain, False)
+                                              cookie, calling_domain, False)
                             self._write(msg)
 
                         if GETstartTime:
@@ -10300,7 +10301,7 @@ class PubServer(BaseHTTPRequestHandler):
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('application/json', msglen,
-                                          None, callingDomain, False)
+                                          None, calling_domain, False)
                         self._write(msg)
                         fitnessPerformance(GETstartTime,
                                            self.server.fitness,
@@ -10323,7 +10324,7 @@ class PubServer(BaseHTTPRequestHandler):
         return False
 
     def _showDMs(self, authorized: bool,
-                 callingDomain: str, path: str,
+                 calling_domain: str, path: str,
                  base_dir: str, http_prefix: str,
                  domain: str, domain_full: str, port: int,
                  onion_domain: str, i2p_domain: str,
@@ -10431,7 +10432,7 @@ class PubServer(BaseHTTPRequestHandler):
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('text/html', msglen,
-                                          cookie, callingDomain, False)
+                                          cookie, calling_domain, False)
                         self._write(msg)
                         fitnessPerformance(GETstartTime,
                                            self.server.fitness,
@@ -10445,7 +10446,7 @@ class PubServer(BaseHTTPRequestHandler):
                         msglen = len(msg)
                         self._set_headers('application/json',
                                           msglen,
-                                          None, callingDomain, False)
+                                          None, calling_domain, False)
                         self._write(msg)
                         fitnessPerformance(GETstartTime,
                                            self.server.fitness,
@@ -10468,7 +10469,7 @@ class PubServer(BaseHTTPRequestHandler):
         return False
 
     def _showReplies(self, authorized: bool,
-                     callingDomain: str, path: str,
+                     calling_domain: str, path: str,
                      base_dir: str, http_prefix: str,
                      domain: str, domain_full: str, port: int,
                      onion_domain: str, i2p_domain: str,
@@ -10576,7 +10577,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
-                                      cookie, callingDomain, False)
+                                      cookie, calling_domain, False)
                     self._write(msg)
                     fitnessPerformance(GETstartTime,
                                        self.server.fitness,
@@ -10590,7 +10591,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('application/json', msglen,
-                                      None, callingDomain, False)
+                                      None, calling_domain, False)
                     self._write(msg)
                     fitnessPerformance(GETstartTime,
                                        self.server.fitness,
@@ -10613,7 +10614,7 @@ class PubServer(BaseHTTPRequestHandler):
         return False
 
     def _showMediaTimeline(self, authorized: bool,
-                           callingDomain: str, path: str,
+                           calling_domain: str, path: str,
                            base_dir: str, http_prefix: str,
                            domain: str, domain_full: str, port: int,
                            onion_domain: str, i2p_domain: str,
@@ -10718,7 +10719,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
-                                      cookie, callingDomain, False)
+                                      cookie, calling_domain, False)
                     self._write(msg)
                     fitnessPerformance(GETstartTime,
                                        self.server.fitness,
@@ -10732,7 +10733,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('application/json', msglen,
-                                      None, callingDomain, False)
+                                      None, calling_domain, False)
                     self._write(msg)
                     fitnessPerformance(GETstartTime,
                                        self.server.fitness,
@@ -10755,7 +10756,7 @@ class PubServer(BaseHTTPRequestHandler):
         return False
 
     def _showBlogsTimeline(self, authorized: bool,
-                           callingDomain: str, path: str,
+                           calling_domain: str, path: str,
                            base_dir: str, http_prefix: str,
                            domain: str, domain_full: str, port: int,
                            onion_domain: str, i2p_domain: str,
@@ -10860,7 +10861,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
-                                      cookie, callingDomain, False)
+                                      cookie, calling_domain, False)
                     self._write(msg)
                     fitnessPerformance(GETstartTime,
                                        self.server.fitness,
@@ -10875,7 +10876,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msglen = len(msg)
                     self._set_headers('application/json',
                                       msglen,
-                                      None, callingDomain, False)
+                                      None, calling_domain, False)
                     self._write(msg)
                     fitnessPerformance(GETstartTime,
                                        self.server.fitness,
@@ -10898,7 +10899,7 @@ class PubServer(BaseHTTPRequestHandler):
         return False
 
     def _showNewsTimeline(self, authorized: bool,
-                          callingDomain: str, path: str,
+                          calling_domain: str, path: str,
                           base_dir: str, http_prefix: str,
                           domain: str, domain_full: str, port: int,
                           onion_domain: str, i2p_domain: str,
@@ -11012,7 +11013,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
-                                      cookie, callingDomain, False)
+                                      cookie, calling_domain, False)
                     self._write(msg)
                     fitnessPerformance(GETstartTime,
                                        self.server.fitness,
@@ -11027,7 +11028,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msglen = len(msg)
                     self._set_headers('application/json',
                                       msglen,
-                                      None, callingDomain, False)
+                                      None, calling_domain, False)
                     self._write(msg)
                     fitnessPerformance(GETstartTime,
                                        self.server.fitness,
@@ -11049,7 +11050,7 @@ class PubServer(BaseHTTPRequestHandler):
         return False
 
     def _showFeaturesTimeline(self, authorized: bool,
-                              callingDomain: str, path: str,
+                              calling_domain: str, path: str,
                               base_dir: str, http_prefix: str,
                               domain: str, domain_full: str, port: int,
                               onion_domain: str, i2p_domain: str,
@@ -11163,7 +11164,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
-                                      cookie, callingDomain, False)
+                                      cookie, calling_domain, False)
                     self._write(msg)
                     fitnessPerformance(GETstartTime,
                                        self.server.fitness,
@@ -11178,7 +11179,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msglen = len(msg)
                     self._set_headers('application/json',
                                       msglen,
-                                      None, callingDomain, False)
+                                      None, calling_domain, False)
                     self._write(msg)
                     fitnessPerformance(GETstartTime,
                                        self.server.fitness,
@@ -11200,7 +11201,7 @@ class PubServer(BaseHTTPRequestHandler):
         return False
 
     def _showSharesTimeline(self, authorized: bool,
-                            callingDomain: str, path: str,
+                            calling_domain: str, path: str,
                             base_dir: str, http_prefix: str,
                             domain: str, domain_full: str, port: int,
                             onion_domain: str, i2p_domain: str,
@@ -11271,7 +11272,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
-                                      cookie, callingDomain, False)
+                                      cookie, calling_domain, False)
                     self._write(msg)
                     fitnessPerformance(GETstartTime,
                                        self.server.fitness,
@@ -11286,7 +11287,7 @@ class PubServer(BaseHTTPRequestHandler):
         return True
 
     def _showWantedTimeline(self, authorized: bool,
-                            callingDomain: str, path: str,
+                            calling_domain: str, path: str,
                             base_dir: str, http_prefix: str,
                             domain: str, domain_full: str, port: int,
                             onion_domain: str, i2p_domain: str,
@@ -11356,7 +11357,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
-                                      cookie, callingDomain, False)
+                                      cookie, calling_domain, False)
                     self._write(msg)
                     fitnessPerformance(GETstartTime,
                                        self.server.fitness,
@@ -11371,7 +11372,7 @@ class PubServer(BaseHTTPRequestHandler):
         return True
 
     def _showBookmarksTimeline(self, authorized: bool,
-                               callingDomain: str, path: str,
+                               calling_domain: str, path: str,
                                base_dir: str, http_prefix: str,
                                domain: str, domain_full: str, port: int,
                                onion_domain: str, i2p_domain: str,
@@ -11481,7 +11482,7 @@ class PubServer(BaseHTTPRequestHandler):
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('text/html', msglen,
-                                          cookie, callingDomain, False)
+                                          cookie, calling_domain, False)
                         self._write(msg)
                         fitnessPerformance(GETstartTime,
                                            self.server.fitness,
@@ -11495,7 +11496,7 @@ class PubServer(BaseHTTPRequestHandler):
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('application/json', msglen,
-                                          None, callingDomain, False)
+                                          None, calling_domain, False)
                         self._write(msg)
                         fitnessPerformance(GETstartTime,
                                            self.server.fitness,
@@ -11517,7 +11518,7 @@ class PubServer(BaseHTTPRequestHandler):
         return True
 
     def _showOutboxTimeline(self, authorized: bool,
-                            callingDomain: str, path: str,
+                            calling_domain: str, path: str,
                             base_dir: str, http_prefix: str,
                             domain: str, domain_full: str, port: int,
                             onion_domain: str, i2p_domain: str,
@@ -11619,7 +11620,7 @@ class PubServer(BaseHTTPRequestHandler):
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
-                                  cookie, callingDomain, False)
+                                  cookie, calling_domain, False)
                 self._write(msg)
                 fitnessPerformance(GETstartTime,
                                    self.server.fitness,
@@ -11632,7 +11633,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('application/json', msglen,
-                                      None, callingDomain, False)
+                                      None, calling_domain, False)
                     self._write(msg)
                     fitnessPerformance(GETstartTime,
                                        self.server.fitness,
@@ -11644,7 +11645,7 @@ class PubServer(BaseHTTPRequestHandler):
         return False
 
     def _showModTimeline(self, authorized: bool,
-                         callingDomain: str, path: str,
+                         calling_domain: str, path: str,
                          base_dir: str, http_prefix: str,
                          domain: str, domain_full: str, port: int,
                          onion_domain: str, i2p_domain: str,
@@ -11753,7 +11754,7 @@ class PubServer(BaseHTTPRequestHandler):
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('text/html', msglen,
-                                          cookie, callingDomain, False)
+                                          cookie, calling_domain, False)
                         self._write(msg)
                         fitnessPerformance(GETstartTime,
                                            self.server.fitness,
@@ -11767,7 +11768,7 @@ class PubServer(BaseHTTPRequestHandler):
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('application/json', msglen,
-                                          None, callingDomain, False)
+                                          None, calling_domain, False)
                         self._write(msg)
                         fitnessPerformance(GETstartTime,
                                            self.server.fitness,
@@ -11787,7 +11788,7 @@ class PubServer(BaseHTTPRequestHandler):
         return True
 
     def _showSharesFeed(self, authorized: bool,
-                        callingDomain: str, path: str,
+                        calling_domain: str, path: str,
                         base_dir: str, http_prefix: str,
                         domain: str, domain_full: str, port: int,
                         onion_domain: str, i2p_domain: str,
@@ -11876,7 +11877,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
-                                      cookie, callingDomain, False)
+                                      cookie, calling_domain, False)
                     self._write(msg)
                     fitnessPerformance(GETstartTime,
                                        self.server.fitness,
@@ -11891,7 +11892,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('application/json', msglen,
-                                      None, callingDomain, False)
+                                      None, calling_domain, False)
                     self._write(msg)
                     fitnessPerformance(GETstartTime,
                                        self.server.fitness,
@@ -11903,7 +11904,7 @@ class PubServer(BaseHTTPRequestHandler):
         return False
 
     def _showFollowingFeed(self, authorized: bool,
-                           callingDomain: str, path: str,
+                           calling_domain: str, path: str,
                            base_dir: str, http_prefix: str,
                            domain: str, domain_full: str, port: int,
                            onion_domain: str, i2p_domain: str,
@@ -11997,7 +11998,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     content_license_url).encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html',
-                                      msglen, cookie, callingDomain, False)
+                                      msglen, cookie, calling_domain, False)
                     self._write(msg)
                     fitnessPerformance(GETstartTime,
                                        self.server.fitness,
@@ -12010,7 +12011,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      ensure_ascii=False).encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('application/json', msglen,
-                                      None, callingDomain, False)
+                                      None, calling_domain, False)
                     self._write(msg)
                     fitnessPerformance(GETstartTime,
                                        self.server.fitness,
@@ -12022,7 +12023,7 @@ class PubServer(BaseHTTPRequestHandler):
         return False
 
     def _showFollowersFeed(self, authorized: bool,
-                           callingDomain: str, path: str,
+                           calling_domain: str, path: str,
                            base_dir: str, http_prefix: str,
                            domain: str, domain_full: str, port: int,
                            onion_domain: str, i2p_domain: str,
@@ -12117,7 +12118,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     content_license_url).encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
-                                      cookie, callingDomain, False)
+                                      cookie, calling_domain, False)
                     self._write(msg)
                     fitnessPerformance(GETstartTime,
                                        self.server.fitness,
@@ -12130,7 +12131,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      ensure_ascii=False).encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('application/json', msglen,
-                                      None, callingDomain, False)
+                                      None, calling_domain, False)
                     self._write(msg)
                     fitnessPerformance(GETstartTime,
                                        self.server.fitness,
@@ -12141,7 +12142,7 @@ class PubServer(BaseHTTPRequestHandler):
             return True
         return False
 
-    def _getFeaturedCollection(self, callingDomain: str,
+    def _getFeaturedCollection(self, calling_domain: str,
                                base_dir: str,
                                path: str,
                                http_prefix: str,
@@ -12157,10 +12158,10 @@ class PubServer(BaseHTTPRequestHandler):
                          ensure_ascii=False).encode('utf-8')
         msglen = len(msg)
         self._set_headers('application/json', msglen,
-                          None, callingDomain, False)
+                          None, calling_domain, False)
         self._write(msg)
 
-    def _getFeaturedTagsCollection(self, callingDomain: str,
+    def _getFeaturedTagsCollection(self, calling_domain: str,
                                    path: str,
                                    http_prefix: str,
                                    domain_full: str):
@@ -12180,11 +12181,11 @@ class PubServer(BaseHTTPRequestHandler):
                          ensure_ascii=False).encode('utf-8')
         msglen = len(msg)
         self._set_headers('application/json', msglen,
-                          None, callingDomain, False)
+                          None, calling_domain, False)
         self._write(msg)
 
     def _showPersonProfile(self, authorized: bool,
-                           callingDomain: str, path: str,
+                           calling_domain: str, path: str,
                            base_dir: str, http_prefix: str,
                            domain: str, domain_full: str, port: int,
                            onion_domain: str, i2p_domain: str,
@@ -12251,7 +12252,7 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.content_license_url).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
-                              cookie, callingDomain, False)
+                              cookie, calling_domain, False)
             self._write(msg)
             fitnessPerformance(GETstartTime,
                                self.server.fitness,
@@ -12265,13 +12266,13 @@ class PubServer(BaseHTTPRequestHandler):
                 msglen = len(msg)
                 if 'application/ld+json' in acceptStr:
                     self._set_headers('application/ld+json', msglen,
-                                      cookie, callingDomain, False)
+                                      cookie, calling_domain, False)
                 elif 'application/jrd+json' in acceptStr:
                     self._set_headers('application/jrd+json', msglen,
-                                      cookie, callingDomain, False)
+                                      cookie, calling_domain, False)
                 else:
                     self._set_headers('application/activity+json', msglen,
-                                      cookie, callingDomain, False)
+                                      cookie, calling_domain, False)
                 self._write(msg)
                 fitnessPerformance(GETstartTime,
                                    self.server.fitness,
@@ -12281,7 +12282,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._404()
         return True
 
-    def _showInstanceActor(self, callingDomain: str, path: str,
+    def _showInstanceActor(self, calling_domain: str, path: str,
                            base_dir: str, http_prefix: str,
                            domain: str, domain_full: str, port: int,
                            onion_domain: str, i2p_domain: str,
@@ -12292,7 +12293,7 @@ class PubServer(BaseHTTPRequestHandler):
         """Shows the instance actor
         """
         if debug:
-            print('Instance actor requested by ' + callingDomain)
+            print('Instance actor requested by ' + calling_domain)
         if self._requestHTTP():
             self._404()
             return False
@@ -12302,9 +12303,9 @@ class PubServer(BaseHTTPRequestHandler):
             self._404()
             return False
         acceptStr = self.headers['Accept']
-        if onion_domain and callingDomain.endswith('.onion'):
+        if onion_domain and calling_domain.endswith('.onion'):
             actorDomainUrl = 'http://' + onion_domain
-        elif i2p_domain and callingDomain.endswith('.i2p'):
+        elif i2p_domain and calling_domain.endswith('.i2p'):
             actorDomainUrl = 'http://' + i2p_domain
         else:
             actorDomainUrl = http_prefix + '://' + domain_full
@@ -12333,23 +12334,23 @@ class PubServer(BaseHTTPRequestHandler):
         actor_json['followers'] = actorUrl + '/followers'
         actor_json['following'] = actorUrl + '/following'
         msgStr = json.dumps(actor_json, ensure_ascii=False)
-        if onion_domain and callingDomain.endswith('.onion'):
+        if onion_domain and calling_domain.endswith('.onion'):
             msgStr = msgStr.replace(http_prefix + '://' + domain_full,
                                     'http://' + onion_domain)
-        elif i2p_domain and callingDomain.endswith('.i2p'):
+        elif i2p_domain and calling_domain.endswith('.i2p'):
             msgStr = msgStr.replace(http_prefix + '://' + domain_full,
                                     'http://' + i2p_domain)
         msg = msgStr.encode('utf-8')
         msglen = len(msg)
         if 'application/ld+json' in acceptStr:
             self._set_headers('application/ld+json', msglen,
-                              cookie, callingDomain, False)
+                              cookie, calling_domain, False)
         elif 'application/jrd+json' in acceptStr:
             self._set_headers('application/jrd+json', msglen,
-                              cookie, callingDomain, False)
+                              cookie, calling_domain, False)
         else:
             self._set_headers('application/activity+json', msglen,
-                              cookie, callingDomain, False)
+                              cookie, calling_domain, False)
         self._write(msg)
         fitnessPerformance(GETstartTime,
                            self.server.fitness,
@@ -12358,7 +12359,7 @@ class PubServer(BaseHTTPRequestHandler):
         return True
 
     def _showBlogPage(self, authorized: bool,
-                      callingDomain: str, path: str,
+                      calling_domain: str, path: str,
                       base_dir: str, http_prefix: str,
                       domain: str, domain_full: str, port: int,
                       onion_domain: str, i2p_domain: str,
@@ -12405,7 +12406,7 @@ class PubServer(BaseHTTPRequestHandler):
             msg = msg.encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
-                              cookie, callingDomain, False)
+                              cookie, calling_domain, False)
             self._write(msg)
             fitnessPerformance(GETstartTime,
                                self.server.fitness,
@@ -12415,7 +12416,7 @@ class PubServer(BaseHTTPRequestHandler):
         self._404()
         return True
 
-    def _redirectToLoginScreen(self, callingDomain: str, path: str,
+    def _redirectToLoginScreen(self, calling_domain: str, path: str,
                                http_prefix: str, domain_full: str,
                                onion_domain: str, i2p_domain: str,
                                GETstartTime,
@@ -12460,18 +12461,18 @@ class PubServer(BaseHTTPRequestHandler):
                   str(divertToLoginScreen))
             print('DEBUG: authorized=' + str(authorized))
             print('DEBUG: path=' + path)
-            if callingDomain.endswith('.onion') and onion_domain:
+            if calling_domain.endswith('.onion') and onion_domain:
                 self._redirect_headers('http://' +
                                        onion_domain + divertPath,
-                                       None, callingDomain)
-            elif callingDomain.endswith('.i2p') and i2p_domain:
+                                       None, calling_domain)
+            elif calling_domain.endswith('.i2p') and i2p_domain:
                 self._redirect_headers('http://' +
                                        i2p_domain + divertPath,
-                                       None, callingDomain)
+                                       None, calling_domain)
             else:
                 self._redirect_headers(http_prefix + '://' +
                                        domain_full +
-                                       divertPath, None, callingDomain)
+                                       divertPath, None, calling_domain)
             fitnessPerformance(GETstartTime,
                                self.server.fitness,
                                '_GET', '_redirectToLoginScreen',
@@ -12479,7 +12480,7 @@ class PubServer(BaseHTTPRequestHandler):
             return True
         return False
 
-    def _getStyleSheet(self, callingDomain: str, path: str,
+    def _getStyleSheet(self, calling_domain: str, path: str,
                        GETstartTime) -> bool:
         """Returns the content of a css file
         """
@@ -12503,7 +12504,7 @@ class PubServer(BaseHTTPRequestHandler):
             msg = css.encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/css', msglen,
-                              None, callingDomain, False)
+                              None, calling_domain, False)
             self._write(msg)
             fitnessPerformance(GETstartTime,
                                self.server.fitness,
@@ -12513,7 +12514,7 @@ class PubServer(BaseHTTPRequestHandler):
         self._404()
         return True
 
-    def _showQRcode(self, callingDomain: str, path: str,
+    def _showQRcode(self, calling_domain: str, path: str,
                     base_dir: str, domain: str, port: int,
                     GETstartTime) -> bool:
         """Shows a QR code for an account
@@ -12554,7 +12555,7 @@ class PubServer(BaseHTTPRequestHandler):
         self._404()
         return True
 
-    def _searchScreenBanner(self, callingDomain: str, path: str,
+    def _searchScreenBanner(self, calling_domain: str, path: str,
                             base_dir: str, domain: str, port: int,
                             GETstartTime) -> bool:
         """Shows a banner image on the search screen
@@ -12599,7 +12600,7 @@ class PubServer(BaseHTTPRequestHandler):
         self._404()
         return True
 
-    def _columnImage(self, side: str, callingDomain: str, path: str,
+    def _columnImage(self, side: str, calling_domain: str, path: str,
                      base_dir: str, domain: str, port: int,
                      GETstartTime) -> bool:
         """Shows an image at the top of the left/right column
@@ -12643,7 +12644,7 @@ class PubServer(BaseHTTPRequestHandler):
         self._404()
         return True
 
-    def _showBackgroundImage(self, callingDomain: str, path: str,
+    def _showBackgroundImage(self, calling_domain: str, path: str,
                              base_dir: str, GETstartTime) -> bool:
         """Show a background image
         """
@@ -12690,7 +12691,7 @@ class PubServer(BaseHTTPRequestHandler):
         self._404()
         return True
 
-    def _showDefaultProfileBackground(self, callingDomain: str, path: str,
+    def _showDefaultProfileBackground(self, calling_domain: str, path: str,
                                       base_dir: str, theme_name: str,
                                       GETstartTime) -> bool:
         """If a background image is missing after searching for a handle
@@ -12738,7 +12739,7 @@ class PubServer(BaseHTTPRequestHandler):
         self._404()
         return True
 
-    def _showShareImage(self, callingDomain: str, path: str,
+    def _showShareImage(self, calling_domain: str, path: str,
                         base_dir: str, GETstartTime) -> bool:
         """Show a shared item image
         """
@@ -12868,7 +12869,7 @@ class PubServer(BaseHTTPRequestHandler):
                            self.server.debug)
         return True
 
-    def _confirmDeleteEvent(self, callingDomain: str, path: str,
+    def _confirmDeleteEvent(self, calling_domain: str, path: str,
                             base_dir: str, http_prefix: str, cookie: str,
                             translate: {}, domain_full: str,
                             onion_domain: str, i2p_domain: str,
@@ -12898,22 +12899,22 @@ class PubServer(BaseHTTPRequestHandler):
                                         domain_full,
                                         postId, postTime,
                                         postYear, postMonth, postDay,
-                                        callingDomain)
+                                        calling_domain)
         if not msg:
             actor = \
                 http_prefix + '://' + \
                 domain_full + \
                 path.split('/eventdelete')[0]
-            if callingDomain.endswith('.onion') and onion_domain:
+            if calling_domain.endswith('.onion') and onion_domain:
                 actor = \
                     'http://' + onion_domain + \
                     path.split('/eventdelete')[0]
-            elif callingDomain.endswith('.i2p') and i2p_domain:
+            elif calling_domain.endswith('.i2p') and i2p_domain:
                 actor = \
                     'http://' + i2p_domain + \
                     path.split('/eventdelete')[0]
             self._redirect_headers(actor + '/calendar',
-                                   cookie, callingDomain)
+                                   cookie, calling_domain)
             fitnessPerformance(GETstartTime,
                                self.server.fitness,
                                '_GET', '_confirmDeleteEvent',
@@ -12922,11 +12923,11 @@ class PubServer(BaseHTTPRequestHandler):
         msg = msg.encode('utf-8')
         msglen = len(msg)
         self._set_headers('text/html', msglen,
-                          cookie, callingDomain, False)
+                          cookie, calling_domain, False)
         self._write(msg)
         return True
 
-    def _showNewPost(self, callingDomain: str, path: str,
+    def _showNewPost(self, calling_domain: str, path: str,
                      media_instance: bool, translate: {},
                      base_dir: str, http_prefix: str,
                      inReplyToUrl: str, replyToList: [],
@@ -13016,7 +13017,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return True
             msglen = len(msg)
             self._set_headers('text/html', msglen,
-                              cookie, callingDomain, False)
+                              cookie, calling_domain, False)
             self._write(msg)
             fitnessPerformance(GETstartTime,
                                self.server.fitness,
@@ -13025,7 +13026,7 @@ class PubServer(BaseHTTPRequestHandler):
             return True
         return False
 
-    def _showKnownCrawlers(self, callingDomain: str, path: str,
+    def _showKnownCrawlers(self, calling_domain: str, path: str,
                            base_dir: str, knownCrawlers: {}) -> bool:
         """Show a list of known web crawlers
         """
@@ -13052,11 +13053,11 @@ class PubServer(BaseHTTPRequestHandler):
         msg = msg.encode('utf-8')
         msglen = len(msg)
         self._set_headers('text/plain; charset=utf-8', msglen,
-                          None, callingDomain, True)
+                          None, calling_domain, True)
         self._write(msg)
         return True
 
-    def _editProfile(self, callingDomain: str, path: str,
+    def _editProfile(self, calling_domain: str, path: str,
                      translate: {}, base_dir: str,
                      http_prefix: str, domain: str, port: int,
                      cookie: str) -> bool:
@@ -13096,14 +13097,14 @@ class PubServer(BaseHTTPRequestHandler):
             if msg:
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
-                                  cookie, callingDomain, False)
+                                  cookie, calling_domain, False)
                 self._write(msg)
             else:
                 self._404()
             return True
         return False
 
-    def _editLinks(self, callingDomain: str, path: str,
+    def _editLinks(self, calling_domain: str, path: str,
                    translate: {}, base_dir: str,
                    http_prefix: str, domain: str, port: int,
                    cookie: str, theme: str) -> bool:
@@ -13129,14 +13130,14 @@ class PubServer(BaseHTTPRequestHandler):
             if msg:
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
-                                  cookie, callingDomain, False)
+                                  cookie, calling_domain, False)
                 self._write(msg)
             else:
                 self._404()
             return True
         return False
 
-    def _editNewswire(self, callingDomain: str, path: str,
+    def _editNewswire(self, calling_domain: str, path: str,
                       translate: {}, base_dir: str,
                       http_prefix: str, domain: str, port: int,
                       cookie: str) -> bool:
@@ -13163,14 +13164,14 @@ class PubServer(BaseHTTPRequestHandler):
             if msg:
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
-                                  cookie, callingDomain, False)
+                                  cookie, calling_domain, False)
                 self._write(msg)
             else:
                 self._404()
             return True
         return False
 
-    def _editNewsPost(self, callingDomain: str, path: str,
+    def _editNewsPost(self, calling_domain: str, path: str,
                       translate: {}, base_dir: str,
                       http_prefix: str, domain: str, port: int,
                       domain_full: str,
@@ -13198,7 +13199,7 @@ class PubServer(BaseHTTPRequestHandler):
             if msg:
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
-                                  cookie, callingDomain, False)
+                                  cookie, calling_domain, False)
                 self._write(msg)
             else:
                 self._404()
@@ -13206,7 +13207,7 @@ class PubServer(BaseHTTPRequestHandler):
         return False
 
     def _getFollowingJson(self, base_dir: str, path: str,
-                          callingDomain: str,
+                          calling_domain: str,
                           http_prefix: str,
                           domain: str, port: int,
                           followingItemsPerPage: int,
@@ -13225,7 +13226,7 @@ class PubServer(BaseHTTPRequestHandler):
                          ensure_ascii=False).encode('utf-8')
         msglen = len(msg)
         self._set_headers('application/json',
-                          msglen, None, callingDomain, False)
+                          msglen, None, calling_domain, False)
         self._write(msg)
 
     def _sendBlock(self, http_prefix: str,
@@ -13314,35 +13315,35 @@ class PubServer(BaseHTTPRequestHandler):
         return False
 
     def do_GET(self):
-        callingDomain = self.server.domain_full
+        calling_domain = self.server.domain_full
 
         if self.headers.get('Host'):
-            callingDomain = decoded_host(self.headers['Host'])
+            calling_domain = decoded_host(self.headers['Host'])
             if self.server.onion_domain:
-                if callingDomain != self.server.domain and \
-                   callingDomain != self.server.domain_full and \
-                   callingDomain != self.server.onion_domain:
-                    print('GET domain blocked: ' + callingDomain)
+                if calling_domain != self.server.domain and \
+                   calling_domain != self.server.domain_full and \
+                   calling_domain != self.server.onion_domain:
+                    print('GET domain blocked: ' + calling_domain)
                     self._400()
                     return
             elif self.server.i2p_domain:
-                if callingDomain != self.server.domain and \
-                   callingDomain != self.server.domain_full and \
-                   callingDomain != self.server.i2p_domain:
-                    print('GET domain blocked: ' + callingDomain)
+                if calling_domain != self.server.domain and \
+                   calling_domain != self.server.domain_full and \
+                   calling_domain != self.server.i2p_domain:
+                    print('GET domain blocked: ' + calling_domain)
                     self._400()
                     return
             else:
-                if callingDomain != self.server.domain and \
-                   callingDomain != self.server.domain_full:
-                    print('GET domain blocked: ' + callingDomain)
+                if calling_domain != self.server.domain and \
+                   calling_domain != self.server.domain_full:
+                    print('GET domain blocked: ' + calling_domain)
                     self._400()
                     return
 
         uaStr = self._getUserAgent()
 
         if not self._permittedCrawlerPath(self.path):
-            if self._blockedUserAgent(callingDomain, uaStr):
+            if self._blockedUserAgent(calling_domain, uaStr):
                 self._400()
                 return
 
@@ -13356,11 +13357,11 @@ class PubServer(BaseHTTPRequestHandler):
         # Since fediverse crawlers are quite active,
         # make returning info to them high priority
         # get nodeinfo endpoint
-        if self._nodeinfo(uaStr, callingDomain):
+        if self._nodeinfo(uaStr, calling_domain):
             return
 
         fitnessPerformance(GETstartTime, self.server.fitness,
-                           '_GET', '_nodeinfo[callingDomain]',
+                           '_GET', '_nodeinfo[calling_domain]',
                            self.server.debug)
 
         if self.path == '/logout':
@@ -13374,27 +13375,27 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.system_language,
                               False).encode('utf-8')
                 msglen = len(msg)
-                self._logout_headers('text/html', msglen, callingDomain)
+                self._logout_headers('text/html', msglen, calling_domain)
                 self._write(msg)
             else:
-                if callingDomain.endswith('.onion') and \
+                if calling_domain.endswith('.onion') and \
                    self.server.onion_domain:
                     self._logout_redirect('http://' +
                                           self.server.onion_domain +
                                           '/users/news', None,
-                                          callingDomain)
-                elif (callingDomain.endswith('.i2p') and
+                                          calling_domain)
+                elif (calling_domain.endswith('.i2p') and
                       self.server.i2p_domain):
                     self._logout_redirect('http://' +
                                           self.server.i2p_domain +
                                           '/users/news', None,
-                                          callingDomain)
+                                          calling_domain)
                 else:
                     self._logout_redirect(self.server.http_prefix +
                                           '://' +
                                           self.server.domain_full +
                                           '/users/news',
-                                          None, callingDomain)
+                                          None, calling_domain)
             fitnessPerformance(GETstartTime, self.server.fitness,
                                '_GET', 'logout',
                                self.server.debug)
@@ -13424,7 +13425,7 @@ class PubServer(BaseHTTPRequestHandler):
            self.path == '/Actor' or \
            self.path == '/users/Actor':
             self.path = '/users/inbox'
-            if self._showInstanceActor(callingDomain, self.path,
+            if self._showInstanceActor(calling_domain, self.path,
                                        self.server.base_dir,
                                        self.server.http_prefix,
                                        self.server.domain,
@@ -13468,31 +13469,31 @@ class PubServer(BaseHTTPRequestHandler):
                            self.server.debug)
 
         if '/manifest.json' in self.path:
-            if self._hasAccept(callingDomain):
+            if self._hasAccept(calling_domain):
                 if not self._requestHTTP():
-                    self._progressiveWebAppManifest(callingDomain,
+                    self._progressiveWebAppManifest(calling_domain,
                                                     GETstartTime)
                     return
                 else:
                     self.path = '/'
 
         if '/browserconfig.xml' in self.path:
-            if self._hasAccept(callingDomain):
-                self._browserConfig(callingDomain, GETstartTime)
+            if self._hasAccept(calling_domain):
+                self._browserConfig(calling_domain, GETstartTime)
                 return
 
         # default newswire favicon, for links to sites which
         # have no favicon
         if not self.path.startswith('/favicons/'):
             if 'newswire_favicon.ico' in self.path:
-                self._getFavicon(callingDomain, self.server.base_dir,
+                self._getFavicon(calling_domain, self.server.base_dir,
                                  self.server.debug,
                                  'newswire_favicon.ico')
                 return
 
             # favicon image
             if 'favicon.ico' in self.path:
-                self._getFavicon(callingDomain, self.server.base_dir,
+                self._getFavicon(calling_domain, self.server.base_dir,
                                  self.server.debug,
                                  'favicon.ico')
                 return
@@ -13528,7 +13529,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if authorizeSharedItems(permittedDomains,
                                             self.server.base_dir,
                                             self.headers['Origin'],
-                                            callingDomain,
+                                            calling_domain,
                                             self.headers['Authorization'],
                                             self.server.debug,
                                             sharedItemTokens):
@@ -13540,7 +13541,7 @@ class PubServer(BaseHTTPRequestHandler):
                     print('No Authorization header is available for ' +
                           'shared items federation')
             # show shared items catalog for federation
-            if self._hasAccept(callingDomain) and catalogAuthorized:
+            if self._hasAccept(calling_domain) and catalogAuthorized:
                 catalogType = 'json'
                 if self.path.endswith('.csv') or self._requestCSV():
                     catalogType = 'csv'
@@ -13580,7 +13581,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      ensure_ascii=False).encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('application/json',
-                                      msglen, None, callingDomain, False)
+                                      msglen, None, calling_domain, False)
                     self._write(msg)
                     return
                 elif catalogType == 'csv':
@@ -13593,7 +13594,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                  'shares').encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/csv',
-                                      msglen, None, callingDomain, False)
+                                      msglen, None, calling_domain, False)
                     self._write(msg)
                     return
                 self._404()
@@ -13620,7 +13621,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if authorizeSharedItems(permittedDomains,
                                             self.server.base_dir,
                                             self.headers['Origin'],
-                                            callingDomain,
+                                            calling_domain,
                                             self.headers['Authorization'],
                                             self.server.debug,
                                             sharedItemTokens):
@@ -13632,7 +13633,7 @@ class PubServer(BaseHTTPRequestHandler):
                     print('No Authorization header is available for ' +
                           'wanted items federation')
             # show wanted items catalog for federation
-            if self._hasAccept(callingDomain) and catalogAuthorized:
+            if self._hasAccept(calling_domain) and catalogAuthorized:
                 catalogType = 'json'
                 if self.path.endswith('.csv') or self._requestCSV():
                     catalogType = 'csv'
@@ -13673,7 +13674,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      ensure_ascii=False).encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('application/json',
-                                      msglen, None, callingDomain, False)
+                                      msglen, None, calling_domain, False)
                     self._write(msg)
                     return
                 elif catalogType == 'csv':
@@ -13686,7 +13687,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                  'wanted').encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/csv',
-                                      msglen, None, callingDomain, False)
+                                      msglen, None, calling_domain, False)
                     self._write(msg)
                     return
                 self._404()
@@ -13695,7 +13696,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         # minimal mastodon api
-        if self._mastoApi(self.path, callingDomain, uaStr,
+        if self._mastoApi(self.path, calling_domain, uaStr,
                           authorized,
                           self.server.http_prefix,
                           self.server.base_dir,
@@ -13713,7 +13714,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         fitnessPerformance(GETstartTime, self.server.fitness,
-                           '_GET', '_mastoApi[callingDomain]',
+                           '_GET', '_mastoApi[calling_domain]',
                            self.server.debug)
 
         if not self._establishSession("GET"):
@@ -13730,7 +13731,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # is this a html request?
         htmlGET = False
-        if self._hasAccept(callingDomain):
+        if self._hasAccept(calling_domain):
             if self._requestHTTP():
                 htmlGET = True
         else:
@@ -13758,7 +13759,7 @@ class PubServer(BaseHTTPRequestHandler):
         if self.path.startswith('/favicons/'):
             if self.server.domain_full in self.path:
                 # favicon for this instance
-                self._getFavicon(callingDomain, self.server.base_dir,
+                self._getFavicon(calling_domain, self.server.base_dir,
                                  self.server.debug,
                                  'favicon.ico')
                 return
@@ -13770,12 +13771,12 @@ class PubServer(BaseHTTPRequestHandler):
         # get css
         # Note that this comes before the busy flag to avoid conflicts
         if self.path.endswith('.css'):
-            if self._getStyleSheet(callingDomain, self.path,
+            if self._getStyleSheet(calling_domain, self.path,
                                    GETstartTime):
                 return
 
         if authorized and '/exports/' in self.path:
-            self._getExportedTheme(callingDomain, self.path,
+            self._getExportedTheme(calling_domain, self.path,
                                    self.server.base_dir,
                                    self.server.domain_full,
                                    self.server.debug)
@@ -13783,7 +13784,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # get fonts
         if '/fonts/' in self.path:
-            self._getFonts(callingDomain, self.path,
+            self._getFonts(calling_domain, self.path,
                            self.server.base_dir, self.server.debug,
                            GETstartTime)
             return
@@ -13809,7 +13810,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         if self.path == '/categories.xml':
             self._getHashtagCategoriesFeed(authorized,
-                                           callingDomain, self.path,
+                                           calling_domain, self.path,
                                            self.server.base_dir,
                                            self.server.http_prefix,
                                            self.server.domain,
@@ -13821,7 +13822,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         if self.path == '/newswire.xml':
             self._getNewswireFeed(authorized,
-                                  callingDomain, self.path,
+                                  calling_domain, self.path,
                                   self.server.base_dir,
                                   self.server.http_prefix,
                                   self.server.domain,
@@ -13836,7 +13837,7 @@ class PubServer(BaseHTTPRequestHandler):
            self.path.endswith('/rss.xml'):
             if not self.path == '/blog/rss.xml':
                 self._getRSS2feed(authorized,
-                                  callingDomain, self.path,
+                                  calling_domain, self.path,
                                   self.server.base_dir,
                                   self.server.http_prefix,
                                   self.server.domain,
@@ -13846,7 +13847,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.debug)
             else:
                 self._getRSS2site(authorized,
-                                  callingDomain, self.path,
+                                  calling_domain, self.path,
                                   self.server.base_dir,
                                   self.server.http_prefix,
                                   self.server.domain_full,
@@ -13865,7 +13866,7 @@ class PubServer(BaseHTTPRequestHandler):
         if self.path.startswith('/blog/') and \
            self.path.endswith('/rss.txt'):
             self._getRSS3feed(authorized,
-                              callingDomain, self.path,
+                              calling_domain, self.path,
                               self.server.base_dir,
                               self.server.http_prefix,
                               self.server.domain,
@@ -13884,7 +13885,7 @@ class PubServer(BaseHTTPRequestHandler):
             if '/following?page=' in self.path:
                 self._getFollowingJson(self.server.base_dir,
                                        self.path,
-                                       callingDomain,
+                                       calling_domain,
                                        self.server.http_prefix,
                                        self.server.domain,
                                        self.server.port,
@@ -13894,7 +13895,7 @@ class PubServer(BaseHTTPRequestHandler):
             elif '/followers?page=' in self.path:
                 self._getFollowingJson(self.server.base_dir,
                                        self.path,
-                                       callingDomain,
+                                       calling_domain,
                                        self.server.http_prefix,
                                        self.server.domain,
                                        self.server.port,
@@ -13904,7 +13905,7 @@ class PubServer(BaseHTTPRequestHandler):
             elif '/followrequests?page=' in self.path:
                 self._getFollowingJson(self.server.base_dir,
                                        self.path,
-                                       callingDomain,
+                                       calling_domain,
                                        self.server.http_prefix,
                                        self.server.domain,
                                        self.server.port,
@@ -13919,7 +13920,7 @@ class PubServer(BaseHTTPRequestHandler):
            self.path.endswith('/speaker'):
             if 'application/ssml' not in self.headers['Accept']:
                 # json endpoint
-                self._getSpeaker(callingDomain, self.path,
+                self._getSpeaker(calling_domain, self.path,
                                  self.server.base_dir,
                                  self.server.domain,
                                  self.server.debug)
@@ -13934,7 +13935,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = xmlStr.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('application/xrd+xml', msglen,
-                                      None, callingDomain, False)
+                                      None, calling_domain, False)
                     self._write(msg)
             return
 
@@ -13952,7 +13953,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                nickname,
                                                self.server.domain):
                     self._redirect_headers('/users/' + nickname + '/welcome',
-                                           cookie, callingDomain)
+                                           cookie, calling_domain)
                     return
 
         if not htmlGET and \
@@ -13983,7 +13984,7 @@ class PubServer(BaseHTTPRequestHandler):
                              ensure_ascii=False).encode('utf-8')
             msglen = len(msg)
             self._set_headers('application/json',
-                              msglen, None, callingDomain, False)
+                              msglen, None, calling_domain, False)
             self._write(msg)
             return
 
@@ -13993,7 +13994,7 @@ class PubServer(BaseHTTPRequestHandler):
             if '/' in nickname:
                 nickname = nickname.split('/')[0]
             # return the featured posts collection
-            self._getFeaturedCollection(callingDomain,
+            self._getFeaturedCollection(calling_domain,
                                         self.server.base_dir,
                                         self.path,
                                         self.server.http_prefix,
@@ -14004,7 +14005,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         if not htmlGET and \
            usersInPath and self.path.endswith('/collections/featuredTags'):
-            self._getFeaturedTagsCollection(callingDomain,
+            self._getFeaturedTagsCollection(calling_domain,
                                             self.path,
                                             self.server.http_prefix,
                                             self.server.domain_full)
@@ -14028,7 +14029,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          graph, 16).encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
-                                  cookie, callingDomain, False)
+                                  cookie, calling_domain, False)
                 self._write(msg)
                 fitnessPerformance(GETstartTime, self.server.fitness,
                                    '_GET', 'graph',
@@ -14045,7 +14046,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  ensure_ascii=False).encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('application/json', msglen,
-                                  None, callingDomain, False)
+                                  None, calling_domain, False)
                 self._write(msg)
                 fitnessPerformance(GETstartTime, self.server.fitness,
                                    '_GET', 'graph json',
@@ -14077,7 +14078,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
-                                      cookie, callingDomain, False)
+                                      cookie, calling_domain, False)
                     self._write(msg)
                     fitnessPerformance(GETstartTime, self.server.fitness,
                                        '_GET', 'blog view',
@@ -14095,7 +14096,7 @@ class PubServer(BaseHTTPRequestHandler):
         if htmlGET and self.path.startswith('/blog/'):
             if '/rss.xml' not in self.path:
                 if self._showBlogPage(authorized,
-                                      callingDomain, self.path,
+                                      calling_domain, self.path,
                                       self.server.base_dir,
                                       self.server.http_prefix,
                                       self.server.domain,
@@ -14126,7 +14127,7 @@ class PubServer(BaseHTTPRequestHandler):
                 msglen = len(msg)
                 self._set_headers('application/json',
                                   msglen,
-                                  None, callingDomain, False)
+                                  None, calling_domain, False)
                 self._write(msg)
                 fitnessPerformance(GETstartTime, self.server.fitness,
                                    '_GET', 'registered devices',
@@ -14140,7 +14141,7 @@ class PubServer(BaseHTTPRequestHandler):
         if htmlGET and usersInPath:
             # show the person options screen with view/follow/block/report
             if '?options=' in self.path:
-                self._showPersonOptions(callingDomain, self.path,
+                self._showPersonOptions(calling_domain, self.path,
                                         self.server.base_dir,
                                         self.server.http_prefix,
                                         self.server.domain,
@@ -14182,7 +14183,7 @@ class PubServer(BaseHTTPRequestHandler):
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('text/html', msglen,
-                                          cookie, callingDomain, False)
+                                          cookie, calling_domain, False)
                         self._write(msg)
                         fitnessPerformance(GETstartTime, self.server.fitness,
                                            '_GET', 'blog post 2',
@@ -14217,19 +14218,19 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.defaultTimeline,
                               self.server.theme_name, 'shares', category)
             if not msg:
-                if callingDomain.endswith('.onion') and \
+                if calling_domain.endswith('.onion') and \
                    self.server.onion_domain:
                     actor = 'http://' + self.server.onion_domain + usersPath
-                elif (callingDomain.endswith('.i2p') and
+                elif (calling_domain.endswith('.i2p') and
                       self.server.i2p_domain):
                     actor = 'http://' + self.server.i2p_domain + usersPath
                 self._redirect_headers(actor + '/tlshares',
-                                       cookie, callingDomain)
+                                       cookie, calling_domain)
                 return
             msg = msg.encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
-                              cookie, callingDomain, False)
+                              cookie, calling_domain, False)
             self._write(msg)
             fitnessPerformance(GETstartTime, self.server.fitness,
                                '_GET', 'htmlShowShare',
@@ -14256,19 +14257,19 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.defaultTimeline,
                               self.server.theme_name, 'wanted', category)
             if not msg:
-                if callingDomain.endswith('.onion') and \
+                if calling_domain.endswith('.onion') and \
                    self.server.onion_domain:
                     actor = 'http://' + self.server.onion_domain + usersPath
-                elif (callingDomain.endswith('.i2p') and
+                elif (calling_domain.endswith('.i2p') and
                       self.server.i2p_domain):
                     actor = 'http://' + self.server.i2p_domain + usersPath
                 self._redirect_headers(actor + '/tlwanted',
-                                       cookie, callingDomain)
+                                       cookie, calling_domain)
                 return
             msg = msg.encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
-                              cookie, callingDomain, False)
+                              cookie, calling_domain, False)
             self._write(msg)
             fitnessPerformance(GETstartTime, self.server.fitness,
                                '_GET', 'htmlShowWanted',
@@ -14287,21 +14288,21 @@ class PubServer(BaseHTTPRequestHandler):
                                               self.server.translate,
                                               self.server.base_dir,
                                               actor, itemID,
-                                              callingDomain, 'shares')
+                                              calling_domain, 'shares')
             if not msg:
-                if callingDomain.endswith('.onion') and \
+                if calling_domain.endswith('.onion') and \
                    self.server.onion_domain:
                     actor = 'http://' + self.server.onion_domain + usersPath
-                elif (callingDomain.endswith('.i2p') and
+                elif (calling_domain.endswith('.i2p') and
                       self.server.i2p_domain):
                     actor = 'http://' + self.server.i2p_domain + usersPath
                 self._redirect_headers(actor + '/tlshares',
-                                       cookie, callingDomain)
+                                       cookie, calling_domain)
                 return
             msg = msg.encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
-                              cookie, callingDomain, False)
+                              cookie, calling_domain, False)
             self._write(msg)
             fitnessPerformance(GETstartTime, self.server.fitness,
                                '_GET', 'remove shared item',
@@ -14320,21 +14321,21 @@ class PubServer(BaseHTTPRequestHandler):
                                               self.server.translate,
                                               self.server.base_dir,
                                               actor, itemID,
-                                              callingDomain, 'wanted')
+                                              calling_domain, 'wanted')
             if not msg:
-                if callingDomain.endswith('.onion') and \
+                if calling_domain.endswith('.onion') and \
                    self.server.onion_domain:
                     actor = 'http://' + self.server.onion_domain + usersPath
-                elif (callingDomain.endswith('.i2p') and
+                elif (calling_domain.endswith('.i2p') and
                       self.server.i2p_domain):
                     actor = 'http://' + self.server.i2p_domain + usersPath
                 self._redirect_headers(actor + '/tlwanted',
-                                       cookie, callingDomain)
+                                       cookie, calling_domain)
                 return
             msg = msg.encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
-                              cookie, callingDomain, False)
+                              cookie, calling_domain, False)
             self._write(msg)
             fitnessPerformance(GETstartTime, self.server.fitness,
                                '_GET', 'remove shared item',
@@ -14346,12 +14347,12 @@ class PubServer(BaseHTTPRequestHandler):
                            self.server.debug)
 
         if self.path.startswith('/terms'):
-            if callingDomain.endswith('.onion') and \
+            if calling_domain.endswith('.onion') and \
                self.server.onion_domain:
                 msg = htmlTermsOfService(self.server.cssCache,
                                          self.server.base_dir, 'http',
                                          self.server.onion_domain)
-            elif (callingDomain.endswith('.i2p') and
+            elif (calling_domain.endswith('.i2p') and
                   self.server.i2p_domain):
                 msg = htmlTermsOfService(self.server.cssCache,
                                          self.server.base_dir, 'http',
@@ -14363,7 +14364,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.domain_full)
             msg = msg.encode('utf-8')
             msglen = len(msg)
-            self._login_headers('text/html', msglen, callingDomain)
+            self._login_headers('text/html', msglen, calling_domain)
             self._write(msg)
             fitnessPerformance(GETstartTime, self.server.fitness,
                                '_GET', 'terms of service shown',
@@ -14387,7 +14388,7 @@ class PubServer(BaseHTTPRequestHandler):
             msg = htmlFollowingList(self.server.cssCache,
                                     self.server.base_dir, followingFilename)
             msglen = len(msg)
-            self._login_headers('text/html', msglen, callingDomain)
+            self._login_headers('text/html', msglen, calling_domain)
             self._write(msg.encode('utf-8'))
             fitnessPerformance(GETstartTime, self.server.fitness,
                                '_GET', 'following accounts shown',
@@ -14399,14 +14400,14 @@ class PubServer(BaseHTTPRequestHandler):
                            self.server.debug)
 
         if self.path.endswith('/about'):
-            if callingDomain.endswith('.onion'):
+            if calling_domain.endswith('.onion'):
                 msg = \
                     htmlAbout(self.server.cssCache,
                               self.server.base_dir, 'http',
                               self.server.onion_domain,
                               None, self.server.translate,
                               self.server.system_language)
-            elif callingDomain.endswith('.i2p'):
+            elif calling_domain.endswith('.i2p'):
                 msg = \
                     htmlAbout(self.server.cssCache,
                               self.server.base_dir, 'http',
@@ -14424,7 +14425,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.system_language)
             msg = msg.encode('utf-8')
             msglen = len(msg)
-            self._login_headers('text/html', msglen, callingDomain)
+            self._login_headers('text/html', msglen, calling_domain)
             self._write(msg)
             fitnessPerformance(GETstartTime, self.server.fitness,
                                '_GET', 'show about screen',
@@ -14452,7 +14453,7 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.defaultTimeline)
             msg = msg.encode('utf-8')
             msglen = len(msg)
-            self._login_headers('text/html', msglen, callingDomain)
+            self._login_headers('text/html', msglen, calling_domain)
             self._write(msg)
             fitnessPerformance(GETstartTime, self.server.fitness,
                                '_GET', 'show accesskeys screen',
@@ -14479,7 +14480,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.accessKeys)
             msg = msg.encode('utf-8')
             msglen = len(msg)
-            self._login_headers('text/html', msglen, callingDomain)
+            self._login_headers('text/html', msglen, calling_domain)
             self._write(msg)
             fitnessPerformance(GETstartTime, self.server.fitness,
                                '_GET', 'show theme designer screen',
@@ -14506,7 +14507,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.theme_name)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
-                self._login_headers('text/html', msglen, callingDomain)
+                self._login_headers('text/html', msglen, calling_domain)
                 self._write(msg)
                 fitnessPerformance(GETstartTime, self.server.fitness,
                                    '_GET', 'show welcome screen',
@@ -14534,7 +14535,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.theme_name)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
-                self._login_headers('text/html', msglen, callingDomain)
+                self._login_headers('text/html', msglen, calling_domain)
                 self._write(msg)
                 fitnessPerformance(GETstartTime, self.server.fitness,
                                    '_GET', 'show welcome profile screen',
@@ -14562,7 +14563,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.theme_name)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
-                self._login_headers('text/html', msglen, callingDomain)
+                self._login_headers('text/html', msglen, calling_domain)
                 self._write(msg)
                 fitnessPerformance(GETstartTime, self.server.fitness,
                                    '_GET', 'show welcome final screen',
@@ -14577,7 +14578,7 @@ class PubServer(BaseHTTPRequestHandler):
            self.path != '/' and \
            self.path != '/users/news/linksmobile' and \
            self.path != '/users/news/newswiremobile':
-            if self._redirectToLoginScreen(callingDomain, self.path,
+            if self._redirectToLoginScreen(calling_domain, self.path,
                                            self.server.http_prefix,
                                            self.server.domain_full,
                                            self.server.onion_domain,
@@ -14728,7 +14729,7 @@ class PubServer(BaseHTTPRequestHandler):
         # QR code for account handle
         if usersInPath and \
            self.path.endswith('/qrcode.png'):
-            if self._showQRcode(callingDomain, self.path,
+            if self._showQRcode(calling_domain, self.path,
                                 self.server.base_dir,
                                 self.server.domain,
                                 self.server.port,
@@ -14742,7 +14743,7 @@ class PubServer(BaseHTTPRequestHandler):
         # search screen banner image
         if usersInPath:
             if self.path.endswith('/search_banner.png'):
-                if self._searchScreenBanner(callingDomain, self.path,
+                if self._searchScreenBanner(calling_domain, self.path,
                                             self.server.base_dir,
                                             self.server.domain,
                                             self.server.port,
@@ -14750,7 +14751,7 @@ class PubServer(BaseHTTPRequestHandler):
                     return
 
             if self.path.endswith('/left_col_image.png'):
-                if self._columnImage('left', callingDomain, self.path,
+                if self._columnImage('left', calling_domain, self.path,
                                      self.server.base_dir,
                                      self.server.domain,
                                      self.server.port,
@@ -14758,7 +14759,7 @@ class PubServer(BaseHTTPRequestHandler):
                     return
 
             if self.path.endswith('/right_col_image.png'):
-                if self._columnImage('right', callingDomain, self.path,
+                if self._columnImage('right', calling_domain, self.path,
                                      self.server.base_dir,
                                      self.server.domain,
                                      self.server.port,
@@ -14770,7 +14771,7 @@ class PubServer(BaseHTTPRequestHandler):
                            self.server.debug)
 
         if self.path.startswith('/defaultprofilebackground'):
-            self._showDefaultProfileBackground(callingDomain, self.path,
+            self._showDefaultProfileBackground(calling_domain, self.path,
                                                self.server.base_dir,
                                                self.server.theme_name,
                                                GETstartTime)
@@ -14778,7 +14779,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # show a background image on the login or person options page
         if '-background.' in self.path:
-            if self._showBackgroundImage(callingDomain, self.path,
+            if self._showBackgroundImage(calling_domain, self.path,
                                          self.server.base_dir,
                                          GETstartTime):
                 return
@@ -14789,7 +14790,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # emoji images
         if '/emoji/' in self.path:
-            self._showEmoji(callingDomain, self.path,
+            self._showEmoji(calling_domain, self.path,
                             self.server.base_dir,
                             GETstartTime)
             return
@@ -14805,7 +14806,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.path = self.path.replace('/system/media_attachments/files/',
                                           '/media/')
         if '/media/' in self.path:
-            self._showMedia(callingDomain,
+            self._showMedia(calling_domain,
                             self.path, self.server.base_dir,
                             GETstartTime)
             return
@@ -14813,7 +14814,7 @@ class PubServer(BaseHTTPRequestHandler):
         if '/ontologies/' in self.path or \
            '/data/' in self.path:
             if not has_users_path(self.path):
-                self._getOntology(callingDomain,
+                self._getOntology(calling_domain,
                                   self.path, self.server.base_dir,
                                   GETstartTime)
                 return
@@ -14825,7 +14826,7 @@ class PubServer(BaseHTTPRequestHandler):
         # show shared item images
         # Note that this comes before the busy flag to avoid conflicts
         if '/sharefiles/' in self.path:
-            if self._showShareImage(callingDomain, self.path,
+            if self._showShareImage(calling_domain, self.path,
                                     self.server.base_dir,
                                     GETstartTime):
                 return
@@ -14837,14 +14838,14 @@ class PubServer(BaseHTTPRequestHandler):
         # icon images
         # Note that this comes before the busy flag to avoid conflicts
         if self.path.startswith('/icons/'):
-            self._showIcon(callingDomain, self.path,
+            self._showIcon(calling_domain, self.path,
                            self.server.base_dir, GETstartTime)
             return
 
         # help screen images
         # Note that this comes before the busy flag to avoid conflicts
         if self.path.startswith('/helpimages/'):
-            self._showHelpScreenImage(callingDomain, self.path,
+            self._showHelpScreenImage(calling_domain, self.path,
                                       self.server.base_dir, GETstartTime)
             return
 
@@ -14904,7 +14905,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         # get webfinger endpoint for a person
-        if self._webfinger(callingDomain):
+        if self._webfinger(calling_domain):
             fitnessPerformance(GETstartTime, self.server.fitness,
                                '_GET', 'webfinger called',
                                self.server.debug)
@@ -14929,7 +14930,7 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.system_language,
                             True).encode('utf-8')
             msglen = len(msg)
-            self._login_headers('text/html', msglen, callingDomain)
+            self._login_headers('text/html', msglen, calling_domain)
             self._write(msg)
             fitnessPerformance(GETstartTime, self.server.fitness,
                                '_GET', 'login shown',
@@ -14941,24 +14942,24 @@ class PubServer(BaseHTTPRequestHandler):
         if self.path == '/' and \
            not authorized and \
            self.server.news_instance:
-            if callingDomain.endswith('.onion') and \
+            if calling_domain.endswith('.onion') and \
                self.server.onion_domain:
                 self._logout_redirect('http://' +
                                       self.server.onion_domain +
                                       '/users/news', None,
-                                      callingDomain)
-            elif (callingDomain.endswith('.i2p') and
+                                      calling_domain)
+            elif (calling_domain.endswith('.i2p') and
                   self.server.i2p_domain):
                 self._logout_redirect('http://' +
                                       self.server.i2p_domain +
                                       '/users/news', None,
-                                      callingDomain)
+                                      calling_domain)
             else:
                 self._logout_redirect(self.server.http_prefix +
                                       '://' +
                                       self.server.domain_full +
                                       '/users/news',
-                                      None, callingDomain)
+                                      None, calling_domain)
             fitnessPerformance(GETstartTime, self.server.fitness,
                                '_GET', 'news front page shown',
                                self.server.debug)
@@ -15009,7 +15010,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          accessKeys).encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
-                                  cookie, callingDomain, False)
+                                  cookie, calling_domain, False)
                 self._write(msg)
                 self.server.GETbusy = False
                 return
@@ -15048,7 +15049,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       accessKeys,
                                       sharedItemsDomains).encode('utf-8')
                 msglen = len(msg)
-                self._set_headers('text/html', msglen, cookie, callingDomain,
+                self._set_headers('text/html', msglen, cookie, calling_domain,
                                   False)
                 self._write(msg)
                 self.server.GETbusy = False
@@ -15058,7 +15059,7 @@ class PubServer(BaseHTTPRequestHandler):
         if self.path.startswith('/tags/') or \
            (authorized and '/tags/' in self.path):
             if self.path.startswith('/tags/rss2/'):
-                self._hashtagSearchRSS2(callingDomain,
+                self._hashtagSearchRSS2(calling_domain,
                                         self.path, cookie,
                                         self.server.base_dir,
                                         self.server.http_prefix,
@@ -15070,7 +15071,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         GETstartTime)
                 self.server.GETbusy = False
                 return
-            self._hashtagSearch(callingDomain,
+            self._hashtagSearch(calling_domain,
                                 self.path, cookie,
                                 self.server.base_dir,
                                 self.server.http_prefix,
@@ -15135,7 +15136,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.text_mode_banner,
                                  accessKeys).encode('utf-8')
                 msglen = len(msg)
-                self._set_headers('text/html', msglen, cookie, callingDomain,
+                self._set_headers('text/html', msglen, cookie, calling_domain,
                                   False)
                 self._write(msg)
                 fitnessPerformance(GETstartTime, self.server.fitness,
@@ -15154,7 +15155,7 @@ class PubServer(BaseHTTPRequestHandler):
             if msg:
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
-                self._set_headers('text/html', msglen, cookie, callingDomain,
+                self._set_headers('text/html', msglen, cookie, calling_domain,
                                   False)
                 self._write(msg)
             fitnessPerformance(GETstartTime, self.server.fitness,
@@ -15188,7 +15189,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.text_mode_banner,
                                    accessKeys).encode('utf-8')
                 msglen = len(msg)
-                self._set_headers('text/html', msglen, cookie, callingDomain,
+                self._set_headers('text/html', msglen, cookie, calling_domain,
                                   False)
                 self._write(msg)
                 fitnessPerformance(GETstartTime, self.server.fitness,
@@ -15206,7 +15207,7 @@ class PubServer(BaseHTTPRequestHandler):
             if '/eventdelete' in self.path and \
                '?time=' in self.path and \
                '?eventid=' in self.path:
-                if self._confirmDeleteEvent(callingDomain, self.path,
+                if self._confirmDeleteEvent(calling_domain, self.path,
                                             self.server.base_dir,
                                             self.server.http_prefix,
                                             cookie,
@@ -15232,7 +15233,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                self.path).encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
-                                  cookie, callingDomain, False)
+                                  cookie, calling_domain, False)
                 self._write(msg)
                 fitnessPerformance(GETstartTime, self.server.fitness,
                                    '_GET', 'emoji search shown',
@@ -15250,7 +15251,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.path = self.path.replace('?repeatprivate=', '?repeat=')
         # announce/repeat button was pressed
         if authorized and htmlGET and '?repeat=' in self.path:
-            self._announceButton(callingDomain, self.path,
+            self._announceButton(calling_domain, self.path,
                                  self.server.base_dir,
                                  cookie, self.server.proxy_type,
                                  self.server.http_prefix,
@@ -15274,7 +15275,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # undo an announce/repeat from the web interface
         if authorized and htmlGET and '?unrepeat=' in self.path:
-            self._undoAnnounceButton(callingDomain, self.path,
+            self._undoAnnounceButton(calling_domain, self.path,
                                      self.server.base_dir,
                                      cookie, self.server.proxy_type,
                                      self.server.http_prefix,
@@ -15297,7 +15298,7 @@ class PubServer(BaseHTTPRequestHandler):
         # send a newswire moderation vote from the web interface
         if authorized and '/newswirevote=' in self.path and \
            self.path.startswith('/users/'):
-            self._newswireVote(callingDomain, self.path,
+            self._newswireVote(calling_domain, self.path,
                                cookie,
                                self.server.base_dir,
                                self.server.http_prefix,
@@ -15316,7 +15317,7 @@ class PubServer(BaseHTTPRequestHandler):
         # send a newswire moderation unvote from the web interface
         if authorized and '/newswireunvote=' in self.path and \
            self.path.startswith('/users/'):
-            self._newswireUnvote(callingDomain, self.path,
+            self._newswireUnvote(calling_domain, self.path,
                                  cookie,
                                  self.server.base_dir,
                                  self.server.http_prefix,
@@ -15335,7 +15336,7 @@ class PubServer(BaseHTTPRequestHandler):
         # send a follow request approval from the web interface
         if authorized and '/followapprove=' in self.path and \
            self.path.startswith('/users/'):
-            self._followApproveButton(callingDomain, self.path,
+            self._followApproveButton(calling_domain, self.path,
                                       cookie,
                                       self.server.base_dir,
                                       self.server.http_prefix,
@@ -15357,7 +15358,7 @@ class PubServer(BaseHTTPRequestHandler):
         # deny a follow request from the web interface
         if authorized and '/followdeny=' in self.path and \
            self.path.startswith('/users/'):
-            self._followDenyButton(callingDomain, self.path,
+            self._followDenyButton(calling_domain, self.path,
                                    cookie,
                                    self.server.base_dir,
                                    self.server.http_prefix,
@@ -15378,7 +15379,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # like from the web interface icon
         if authorized and htmlGET and '?like=' in self.path:
-            self._likeButton(callingDomain, self.path,
+            self._likeButton(calling_domain, self.path,
                              self.server.base_dir,
                              self.server.http_prefix,
                              self.server.domain,
@@ -15398,7 +15399,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # undo a like from the web interface icon
         if authorized and htmlGET and '?unlike=' in self.path:
-            self._undoLikeButton(callingDomain, self.path,
+            self._undoLikeButton(calling_domain, self.path,
                                  self.server.base_dir,
                                  self.server.http_prefix,
                                  self.server.domain,
@@ -15419,7 +15420,7 @@ class PubServer(BaseHTTPRequestHandler):
         if authorized and htmlGET and \
            '?react=' in self.path and \
            '?actor=' in self.path:
-            self._reactionButton(callingDomain, self.path,
+            self._reactionButton(calling_domain, self.path,
                                  self.server.base_dir,
                                  self.server.http_prefix,
                                  self.server.domain,
@@ -15441,7 +15442,7 @@ class PubServer(BaseHTTPRequestHandler):
         if authorized and htmlGET and \
            '?unreact=' in self.path and \
            '?actor=' in self.path:
-            self._undoReactionButton(callingDomain, self.path,
+            self._undoReactionButton(calling_domain, self.path,
                                      self.server.base_dir,
                                      self.server.http_prefix,
                                      self.server.domain,
@@ -15460,7 +15461,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # bookmark from the web interface icon
         if authorized and htmlGET and '?bookmark=' in self.path:
-            self._bookmarkButton(callingDomain, self.path,
+            self._bookmarkButton(calling_domain, self.path,
                                  self.server.base_dir,
                                  self.server.http_prefix,
                                  self.server.domain,
@@ -15480,7 +15481,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # emoji recation from the web interface bottom icon
         if authorized and htmlGET and '?selreact=' in self.path:
-            self._reactionPicker(callingDomain, self.path,
+            self._reactionPicker(calling_domain, self.path,
                                  self.server.base_dir,
                                  self.server.http_prefix,
                                  self.server.domain,
@@ -15500,7 +15501,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # undo a bookmark from the web interface icon
         if authorized and htmlGET and '?unbookmark=' in self.path:
-            self._undoBookmarkButton(callingDomain, self.path,
+            self._undoBookmarkButton(calling_domain, self.path,
                                      self.server.base_dir,
                                      self.server.http_prefix,
                                      self.server.domain,
@@ -15520,7 +15521,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # delete button is pressed on a post
         if authorized and htmlGET and '?delete=' in self.path:
-            self._deleteButton(callingDomain, self.path,
+            self._deleteButton(calling_domain, self.path,
                                self.server.base_dir,
                                self.server.http_prefix,
                                self.server.domain,
@@ -15540,7 +15541,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # The mute button is pressed
         if authorized and htmlGET and '?mute=' in self.path:
-            self._muteButton(callingDomain, self.path,
+            self._muteButton(calling_domain, self.path,
                              self.server.base_dir,
                              self.server.http_prefix,
                              self.server.domain,
@@ -15560,7 +15561,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # unmute a post from the web interface icon
         if authorized and htmlGET and '?unmute=' in self.path:
-            self._undoMuteButton(callingDomain, self.path,
+            self._undoMuteButton(calling_domain, self.path,
                                  self.server.base_dir,
                                  self.server.http_prefix,
                                  self.server.domain,
@@ -15708,20 +15709,20 @@ class PubServer(BaseHTTPRequestHandler):
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('text/html', msglen,
-                                          cookie, callingDomain, False)
+                                          cookie, calling_domain, False)
                         self._write(msg)
                         self.server.GETbusy = False
                         return
 
             # list of known crawlers accessing nodeinfo or masto API
-            if self._showKnownCrawlers(callingDomain, self.path,
+            if self._showKnownCrawlers(calling_domain, self.path,
                                        self.server.base_dir,
                                        self.server.knownCrawlers):
                 self.server.GETbusy = False
                 return
 
             # edit profile in web interface
-            if self._editProfile(callingDomain, self.path,
+            if self._editProfile(calling_domain, self.path,
                                  self.server.translate,
                                  self.server.base_dir,
                                  self.server.http_prefix,
@@ -15732,7 +15733,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return
 
             # edit links from the left column of the timeline in web interface
-            if self._editLinks(callingDomain, self.path,
+            if self._editLinks(calling_domain, self.path,
                                self.server.translate,
                                self.server.base_dir,
                                self.server.http_prefix,
@@ -15744,7 +15745,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return
 
             # edit newswire from the right column of the timeline
-            if self._editNewswire(callingDomain, self.path,
+            if self._editNewswire(calling_domain, self.path,
                                   self.server.translate,
                                   self.server.base_dir,
                                   self.server.http_prefix,
@@ -15755,7 +15756,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return
 
             # edit news post
-            if self._editNewsPost(callingDomain, self.path,
+            if self._editNewsPost(calling_domain, self.path,
                                   self.server.translate,
                                   self.server.base_dir,
                                   self.server.http_prefix,
@@ -15766,7 +15767,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.GETbusy = False
                 return
 
-            if self._showNewPost(callingDomain, self.path,
+            if self._showNewPost(calling_domain, self.path,
                                  self.server.media_instance,
                                  self.server.translate,
                                  self.server.base_dir,
@@ -15787,7 +15788,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # get an individual post from the path /@nickname/statusnumber
         if self._showIndividualAtPost(authorized,
-                                      callingDomain, self.path,
+                                      calling_domain, self.path,
                                       self.server.base_dir,
                                       self.server.http_prefix,
                                       self.server.domain,
@@ -15808,7 +15809,7 @@ class PubServer(BaseHTTPRequestHandler):
         # get replies to a post /users/nickname/statuses/number/replies
         if self.path.endswith('/replies') or '/replies?page=' in self.path:
             if self._showRepliesToPost(authorized,
-                                       callingDomain, self.path,
+                                       calling_domain, self.path,
                                        self.server.base_dir,
                                        self.server.http_prefix,
                                        self.server.domain,
@@ -15829,7 +15830,7 @@ class PubServer(BaseHTTPRequestHandler):
         # roles on profile screen
         if self.path.endswith('/roles') and usersInPath:
             if self._showRoles(authorized,
-                               callingDomain, self.path,
+                               calling_domain, self.path,
                                self.server.base_dir,
                                self.server.http_prefix,
                                self.server.domain,
@@ -15850,7 +15851,7 @@ class PubServer(BaseHTTPRequestHandler):
         # show skills on the profile page
         if self.path.endswith('/skills') and usersInPath:
             if self._showSkills(authorized,
-                                callingDomain, self.path,
+                                calling_domain, self.path,
                                 self.server.base_dir,
                                 self.server.http_prefix,
                                 self.server.domain,
@@ -15870,7 +15871,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         if '?notifypost=' in self.path and usersInPath and authorized:
             if self._showNotifyPost(authorized,
-                                    callingDomain, self.path,
+                                    calling_domain, self.path,
                                     self.server.base_dir,
                                     self.server.http_prefix,
                                     self.server.domain,
@@ -15888,7 +15889,7 @@ class PubServer(BaseHTTPRequestHandler):
         # /users/nickname/statuses/number
         if '/statuses/' in self.path and usersInPath:
             if self._showIndividualPost(authorized,
-                                        callingDomain, self.path,
+                                        calling_domain, self.path,
                                         self.server.base_dir,
                                         self.server.http_prefix,
                                         self.server.domain,
@@ -15909,7 +15910,7 @@ class PubServer(BaseHTTPRequestHandler):
         # get the inbox timeline for a given person
         if self.path.endswith('/inbox') or '/inbox?page=' in self.path:
             if self._showInbox(authorized,
-                               callingDomain, self.path,
+                               calling_domain, self.path,
                                self.server.base_dir,
                                self.server.http_prefix,
                                self.server.domain,
@@ -15941,7 +15942,7 @@ class PubServer(BaseHTTPRequestHandler):
         # get the direct messages timeline for a given person
         if self.path.endswith('/dm') or '/dm?page=' in self.path:
             if self._showDMs(authorized,
-                             callingDomain, self.path,
+                             calling_domain, self.path,
                              self.server.base_dir,
                              self.server.http_prefix,
                              self.server.domain,
@@ -15962,7 +15963,7 @@ class PubServer(BaseHTTPRequestHandler):
         # get the replies timeline for a given person
         if self.path.endswith('/tlreplies') or '/tlreplies?page=' in self.path:
             if self._showReplies(authorized,
-                                 callingDomain, self.path,
+                                 calling_domain, self.path,
                                  self.server.base_dir,
                                  self.server.http_prefix,
                                  self.server.domain,
@@ -15983,7 +15984,7 @@ class PubServer(BaseHTTPRequestHandler):
         # get the media timeline for a given person
         if self.path.endswith('/tlmedia') or '/tlmedia?page=' in self.path:
             if self._showMediaTimeline(authorized,
-                                       callingDomain, self.path,
+                                       calling_domain, self.path,
                                        self.server.base_dir,
                                        self.server.http_prefix,
                                        self.server.domain,
@@ -16004,7 +16005,7 @@ class PubServer(BaseHTTPRequestHandler):
         # get the blogs for a given person
         if self.path.endswith('/tlblogs') or '/tlblogs?page=' in self.path:
             if self._showBlogsTimeline(authorized,
-                                       callingDomain, self.path,
+                                       calling_domain, self.path,
                                        self.server.base_dir,
                                        self.server.http_prefix,
                                        self.server.domain,
@@ -16025,7 +16026,7 @@ class PubServer(BaseHTTPRequestHandler):
         # get the news for a given person
         if self.path.endswith('/tlnews') or '/tlnews?page=' in self.path:
             if self._showNewsTimeline(authorized,
-                                      callingDomain, self.path,
+                                      calling_domain, self.path,
                                       self.server.base_dir,
                                       self.server.http_prefix,
                                       self.server.domain,
@@ -16043,7 +16044,7 @@ class PubServer(BaseHTTPRequestHandler):
         if self.path.endswith('/tlfeatures') or \
            '/tlfeatures?page=' in self.path:
             if self._showFeaturesTimeline(authorized,
-                                          callingDomain, self.path,
+                                          calling_domain, self.path,
                                           self.server.base_dir,
                                           self.server.http_prefix,
                                           self.server.domain,
@@ -16064,7 +16065,7 @@ class PubServer(BaseHTTPRequestHandler):
         # get the shared items timeline for a given person
         if self.path.endswith('/tlshares') or '/tlshares?page=' in self.path:
             if self._showSharesTimeline(authorized,
-                                        callingDomain, self.path,
+                                        calling_domain, self.path,
                                         self.server.base_dir,
                                         self.server.http_prefix,
                                         self.server.domain,
@@ -16081,7 +16082,7 @@ class PubServer(BaseHTTPRequestHandler):
         # get the wanted items timeline for a given person
         if self.path.endswith('/tlwanted') or '/tlwanted?page=' in self.path:
             if self._showWantedTimeline(authorized,
-                                        callingDomain, self.path,
+                                        calling_domain, self.path,
                                         self.server.base_dir,
                                         self.server.http_prefix,
                                         self.server.domain,
@@ -16133,7 +16134,7 @@ class PubServer(BaseHTTPRequestHandler):
             msg = msg.encode('utf-8')
             msglen = len(msg)
             self._login_headers('text/html',
-                                msglen, callingDomain)
+                                msglen, calling_domain)
             self._write(msg)
             self.server.GETbusy = False
             return
@@ -16170,7 +16171,7 @@ class PubServer(BaseHTTPRequestHandler):
             msg = msg.encode('utf-8')
             msglen = len(msg)
             self._login_headers('text/html',
-                                msglen, callingDomain)
+                                msglen, calling_domain)
             self._write(msg)
             self.server.GETbusy = False
             return
@@ -16181,7 +16182,7 @@ class PubServer(BaseHTTPRequestHandler):
            self.path.endswith('/bookmarks') or \
            '/bookmarks?page=' in self.path:
             if self._showBookmarksTimeline(authorized,
-                                           callingDomain, self.path,
+                                           calling_domain, self.path,
                                            self.server.base_dir,
                                            self.server.http_prefix,
                                            self.server.domain,
@@ -16203,7 +16204,7 @@ class PubServer(BaseHTTPRequestHandler):
         if self.path.endswith('/outbox') or \
            '/outbox?page=' in self.path:
             if self._showOutboxTimeline(authorized,
-                                        callingDomain, self.path,
+                                        calling_domain, self.path,
                                         self.server.base_dir,
                                         self.server.http_prefix,
                                         self.server.domain,
@@ -16225,7 +16226,7 @@ class PubServer(BaseHTTPRequestHandler):
         if self.path.endswith('/moderation') or \
            '/moderation?' in self.path:
             if self._showModTimeline(authorized,
-                                     callingDomain, self.path,
+                                     calling_domain, self.path,
                                      self.server.base_dir,
                                      self.server.http_prefix,
                                      self.server.domain,
@@ -16244,7 +16245,7 @@ class PubServer(BaseHTTPRequestHandler):
                            self.server.debug)
 
         if self._showSharesFeed(authorized,
-                                callingDomain, self.path,
+                                calling_domain, self.path,
                                 self.server.base_dir,
                                 self.server.http_prefix,
                                 self.server.domain,
@@ -16263,7 +16264,7 @@ class PubServer(BaseHTTPRequestHandler):
                            self.server.debug)
 
         if self._showFollowingFeed(authorized,
-                                   callingDomain, self.path,
+                                   calling_domain, self.path,
                                    self.server.base_dir,
                                    self.server.http_prefix,
                                    self.server.domain,
@@ -16282,7 +16283,7 @@ class PubServer(BaseHTTPRequestHandler):
                            self.server.debug)
 
         if self._showFollowersFeed(authorized,
-                                   callingDomain, self.path,
+                                   calling_domain, self.path,
                                    self.server.base_dir,
                                    self.server.http_prefix,
                                    self.server.domain,
@@ -16302,7 +16303,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # look up a person
         if self._showPersonProfile(authorized,
-                                   callingDomain, self.path,
+                                   calling_domain, self.path,
                                    self.server.base_dir,
                                    self.server.http_prefix,
                                    self.server.domain,
@@ -16356,7 +16357,7 @@ class PubServer(BaseHTTPRequestHandler):
                 msglen = len(msg)
                 self._set_headers('application/json',
                                   msglen,
-                                  None, callingDomain, False)
+                                  None, calling_domain, False)
                 self._write(msg)
                 fitnessPerformance(GETstartTime, self.server.fitness,
                                    '_GET', 'arbitrary json',
@@ -16372,20 +16373,20 @@ class PubServer(BaseHTTPRequestHandler):
                            self.server.debug)
 
     def do_HEAD(self):
-        callingDomain = self.server.domain_full
+        calling_domain = self.server.domain_full
         if self.headers.get('Host'):
-            callingDomain = decoded_host(self.headers['Host'])
+            calling_domain = decoded_host(self.headers['Host'])
             if self.server.onion_domain:
-                if callingDomain != self.server.domain and \
-                   callingDomain != self.server.domain_full and \
-                   callingDomain != self.server.onion_domain:
-                    print('HEAD domain blocked: ' + callingDomain)
+                if calling_domain != self.server.domain and \
+                   calling_domain != self.server.domain_full and \
+                   calling_domain != self.server.onion_domain:
+                    print('HEAD domain blocked: ' + calling_domain)
                     self._400()
                     return
             else:
-                if callingDomain != self.server.domain and \
-                   callingDomain != self.server.domain_full:
-                    print('HEAD domain blocked: ' + callingDomain)
+                if calling_domain != self.server.domain and \
+                   calling_domain != self.server.domain_full:
+                    print('HEAD domain blocked: ' + calling_domain)
                     self._400()
                     return
 
@@ -16430,11 +16431,11 @@ class PubServer(BaseHTTPRequestHandler):
 
         mediaFileType = mediaFileMimeType(checkPath)
         self._set_headers_head(mediaFileType, fileLength,
-                               etag, callingDomain, False)
+                               etag, calling_domain, False)
 
     def _receiveNewPostProcess(self, postType: str, path: str, headers: {},
                                length: int, postBytes, boundary: str,
-                               callingDomain: str, cookie: str,
+                               calling_domain: str, cookie: str,
                                authorized: bool,
                                content_license_url: str) -> int:
         # Note: this needs to happen synchronously
@@ -16689,7 +16690,7 @@ class PubServer(BaseHTTPRequestHandler):
                         message_jsonLen = len(message_json)
                         self._set_headers('text/html',
                                           message_jsonLen,
-                                          cookie, callingDomain, False)
+                                          cookie, calling_domain, False)
                         self._write(message_json)
                         return 1
                     else:
@@ -17208,7 +17209,7 @@ class PubServer(BaseHTTPRequestHandler):
         return -1
 
     def _receiveNewPost(self, postType: str, path: str,
-                        callingDomain: str, cookie: str,
+                        calling_domain: str, cookie: str,
                         authorized: bool,
                         content_license_url: str) -> int:
         """A new post has been created
@@ -17312,7 +17313,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._receiveNewPostProcess(postType,
                                             path, headers, length,
                                             postBytes, boundary,
-                                            callingDomain, cookie,
+                                            calling_domain, cookie,
                                             authorized,
                                             content_license_url)
         return pageNumber
@@ -17391,7 +17392,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         return json.loads(messageBytes)
 
-    def _cryptoAPIQuery(self, callingDomain: str) -> bool:
+    def _cryptoAPIQuery(self, calling_domain: str) -> bool:
         handle = self._cryptoAPIreadHandle()
         if not handle:
             return False
@@ -17416,7 +17417,7 @@ class PubServer(BaseHTTPRequestHandler):
             msglen = len(msg)
             self._set_headers('application/json',
                               msglen,
-                              None, callingDomain, False)
+                              None, calling_domain, False)
             self._write(msg)
             return True
         return False
@@ -17486,27 +17487,27 @@ class PubServer(BaseHTTPRequestHandler):
                   ' path: ' + self.path + ' busy: ' +
                   str(self.server.POSTbusy))
 
-        callingDomain = self.server.domain_full
+        calling_domain = self.server.domain_full
         if self.headers.get('Host'):
-            callingDomain = decoded_host(self.headers['Host'])
+            calling_domain = decoded_host(self.headers['Host'])
             if self.server.onion_domain:
-                if callingDomain != self.server.domain and \
-                   callingDomain != self.server.domain_full and \
-                   callingDomain != self.server.onion_domain:
-                    print('POST domain blocked: ' + callingDomain)
+                if calling_domain != self.server.domain and \
+                   calling_domain != self.server.domain_full and \
+                   calling_domain != self.server.onion_domain:
+                    print('POST domain blocked: ' + calling_domain)
                     self._400()
                     return
             elif self.server.i2p_domain:
-                if callingDomain != self.server.domain and \
-                   callingDomain != self.server.domain_full and \
-                   callingDomain != self.server.i2p_domain:
-                    print('POST domain blocked: ' + callingDomain)
+                if calling_domain != self.server.domain and \
+                   calling_domain != self.server.domain_full and \
+                   calling_domain != self.server.i2p_domain:
+                    print('POST domain blocked: ' + calling_domain)
                     self._400()
                     return
             else:
-                if callingDomain != self.server.domain and \
-                   callingDomain != self.server.domain_full:
-                    print('POST domain blocked: ' + callingDomain)
+                if calling_domain != self.server.domain and \
+                   calling_domain != self.server.domain_full:
+                    print('POST domain blocked: ' + calling_domain)
                     self._400()
                     return
 
@@ -17521,7 +17522,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         uaStr = self._getUserAgent()
 
-        if self._blockedUserAgent(callingDomain, uaStr):
+        if self._blockedUserAgent(calling_domain, uaStr):
             self._400()
             self.server.POSTbusy = False
             return
@@ -17574,7 +17575,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # login screen
         if self.path.startswith('/login'):
-            self._loginScreen(self.path, callingDomain, cookie,
+            self._loginScreen(self.path, calling_domain, cookie,
                               self.server.base_dir, self.server.http_prefix,
                               self.server.domain, self.server.domain_full,
                               self.server.port,
@@ -17588,7 +17589,7 @@ class PubServer(BaseHTTPRequestHandler):
                            self.server.debug)
 
         if authorized and self.path.endswith('/sethashtagcategory'):
-            self._setHashtagCategory(callingDomain, cookie,
+            self._setHashtagCategory(calling_domain, cookie,
                                      authorized, self.path,
                                      self.server.base_dir,
                                      self.server.http_prefix,
@@ -17605,7 +17606,7 @@ class PubServer(BaseHTTPRequestHandler):
         # update of profile/avatar from web interface,
         # after selecting Edit button then Submit
         if authorized and self.path.endswith('/profiledata'):
-            self._profileUpdate(callingDomain, cookie, authorized, self.path,
+            self._profileUpdate(calling_domain, cookie, authorized, self.path,
                                 self.server.base_dir, self.server.http_prefix,
                                 self.server.domain,
                                 self.server.domain_full,
@@ -17618,7 +17619,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         if authorized and self.path.endswith('/linksdata'):
-            self._linksUpdate(callingDomain, cookie, authorized, self.path,
+            self._linksUpdate(calling_domain, cookie, authorized, self.path,
                               self.server.base_dir, self.server.http_prefix,
                               self.server.domain,
                               self.server.domain_full,
@@ -17630,7 +17631,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         if authorized and self.path.endswith('/newswiredata'):
-            self._newswireUpdate(callingDomain, cookie, authorized, self.path,
+            self._newswireUpdate(calling_domain, cookie, authorized, self.path,
                                  self.server.base_dir, self.server.http_prefix,
                                  self.server.domain,
                                  self.server.domain_full,
@@ -17641,7 +17642,8 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         if authorized and self.path.endswith('/citationsdata'):
-            self._citationsUpdate(callingDomain, cookie, authorized, self.path,
+            self._citationsUpdate(calling_domain, cookie,
+                                  authorized, self.path,
                                   self.server.base_dir,
                                   self.server.http_prefix,
                                   self.server.domain,
@@ -17654,7 +17656,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         if authorized and self.path.endswith('/newseditdata'):
-            self._newsPostEdit(callingDomain, cookie, authorized, self.path,
+            self._newsPostEdit(calling_domain, cookie, authorized, self.path,
                                self.server.base_dir, self.server.http_prefix,
                                self.server.domain,
                                self.server.domain_full,
@@ -17675,7 +17677,7 @@ class PubServer(BaseHTTPRequestHandler):
         # moderator action buttons
         if authorized and usersInPath and \
            self.path.endswith('/moderationaction'):
-            self._moderatorActions(self.path, callingDomain, cookie,
+            self._moderatorActions(self.path, calling_domain, cookie,
                                    self.server.base_dir,
                                    self.server.http_prefix,
                                    self.server.domain,
@@ -17708,7 +17710,7 @@ class PubServer(BaseHTTPRequestHandler):
         if ((authorized or searchForEmoji) and
             (self.path.endswith('/searchhandle') or
              '/searchhandle?page=' in self.path)):
-            self._receiveSearchQuery(callingDomain, cookie,
+            self._receiveSearchQuery(calling_domain, cookie,
                                      authorized, self.path,
                                      self.server.base_dir,
                                      self.server.http_prefix,
@@ -17738,7 +17740,7 @@ class PubServer(BaseHTTPRequestHandler):
             # a vote/question/poll is posted
             if self.path.endswith('/question') or \
                '/question?page=' in self.path:
-                self._receiveVote(callingDomain, cookie,
+                self._receiveVote(calling_domain, cookie,
                                   authorized, self.path,
                                   self.server.base_dir,
                                   self.server.http_prefix,
@@ -17752,7 +17754,7 @@ class PubServer(BaseHTTPRequestHandler):
 
             # removes a shared item
             if self.path.endswith('/rmshare'):
-                self._removeShare(callingDomain, cookie,
+                self._removeShare(calling_domain, cookie,
                                   authorized, self.path,
                                   self.server.base_dir,
                                   self.server.http_prefix,
@@ -17766,7 +17768,7 @@ class PubServer(BaseHTTPRequestHandler):
 
             # removes a wanted item
             if self.path.endswith('/rmwanted'):
-                self._removeWanted(callingDomain, cookie,
+                self._removeWanted(calling_domain, cookie,
                                    authorized, self.path,
                                    self.server.base_dir,
                                    self.server.http_prefix,
@@ -17791,7 +17793,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.POSTbusy = False
                     return
             if self.path.endswith('/rmpost'):
-                self._removePost(callingDomain, cookie,
+                self._removePost(calling_domain, cookie,
                                  authorized, self.path,
                                  self.server.base_dir,
                                  self.server.http_prefix,
@@ -17809,7 +17811,7 @@ class PubServer(BaseHTTPRequestHandler):
 
             # decision to follow in the web interface is confirmed
             if self.path.endswith('/followconfirm'):
-                self._followConfirm(callingDomain, cookie,
+                self._followConfirm(calling_domain, cookie,
                                     authorized, self.path,
                                     self.server.base_dir,
                                     self.server.http_prefix,
@@ -17828,7 +17830,7 @@ class PubServer(BaseHTTPRequestHandler):
 
             # decision to unfollow in the web interface is confirmed
             if self.path.endswith('/unfollowconfirm'):
-                self._unfollowConfirm(callingDomain, cookie,
+                self._unfollowConfirm(calling_domain, cookie,
                                       authorized, self.path,
                                       self.server.base_dir,
                                       self.server.http_prefix,
@@ -17847,7 +17849,7 @@ class PubServer(BaseHTTPRequestHandler):
 
             # decision to unblock in the web interface is confirmed
             if self.path.endswith('/unblockconfirm'):
-                self._unblockConfirm(callingDomain, cookie,
+                self._unblockConfirm(calling_domain, cookie,
                                      authorized, self.path,
                                      self.server.base_dir,
                                      self.server.http_prefix,
@@ -17866,7 +17868,7 @@ class PubServer(BaseHTTPRequestHandler):
 
             # decision to block in the web interface is confirmed
             if self.path.endswith('/blockconfirm'):
-                self._blockConfirm(callingDomain, cookie,
+                self._blockConfirm(calling_domain, cookie,
                                    authorized, self.path,
                                    self.server.base_dir,
                                    self.server.http_prefix,
@@ -17887,7 +17889,7 @@ class PubServer(BaseHTTPRequestHandler):
             # view/follow/block/report
             if self.path.endswith('/personoptions'):
                 self._personOptions(self.path,
-                                    callingDomain, cookie,
+                                    calling_domain, cookie,
                                     self.server.base_dir,
                                     self.server.http_prefix,
                                     self.server.domain,
@@ -17912,7 +17914,7 @@ class PubServer(BaseHTTPRequestHandler):
                 accessKeys = self.server.keyShortcuts[nickname]
 
                 self._keyShortcuts(self.path,
-                                   callingDomain, cookie,
+                                   calling_domain, cookie,
                                    self.server.base_dir,
                                    self.server.http_prefix,
                                    nickname,
@@ -17940,7 +17942,7 @@ class PubServer(BaseHTTPRequestHandler):
                 accessKeys = self.server.keyShortcuts[nickname]
 
                 self._themeDesigner(self.path,
-                                    callingDomain, cookie,
+                                    calling_domain, cookie,
                                     self.server.base_dir,
                                     self.server.http_prefix,
                                     nickname,
@@ -18023,7 +18025,7 @@ class PubServer(BaseHTTPRequestHandler):
 
             pageNumber = \
                 self._receiveNewPost(currPostType, self.path,
-                                     callingDomain, cookie,
+                                     calling_domain, cookie,
                                      authorized,
                                      self.server.content_license_url)
             if pageNumber:
@@ -18034,7 +18036,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if '/' in nickname:
                     nickname = nickname.split('/')[0]
 
-                if callingDomain.endswith('.onion') and \
+                if calling_domain.endswith('.onion') and \
                    self.server.onion_domain:
                     actorPathStr = \
                         local_actor_url('http', nickname,
@@ -18042,8 +18044,8 @@ class PubServer(BaseHTTPRequestHandler):
                         '/' + postRedirect + \
                         '?page=' + str(pageNumber)
                     self._redirect_headers(actorPathStr, cookie,
-                                           callingDomain)
-                elif (callingDomain.endswith('.i2p') and
+                                           calling_domain)
+                elif (calling_domain.endswith('.i2p') and
                       self.server.i2p_domain):
                     actorPathStr = \
                         local_actor_url('http', nickname,
@@ -18051,14 +18053,14 @@ class PubServer(BaseHTTPRequestHandler):
                         '/' + postRedirect + \
                         '?page=' + str(pageNumber)
                     self._redirect_headers(actorPathStr, cookie,
-                                           callingDomain)
+                                           calling_domain)
                 else:
                     actorPathStr = \
                         local_actor_url(self.server.http_prefix, nickname,
                                         self.server.domain_full) + \
                         '/' + postRedirect + '?page=' + str(pageNumber)
                     self._redirect_headers(actorPathStr, cookie,
-                                           callingDomain)
+                                           calling_domain)
                 self.server.POSTbusy = False
                 return
 
@@ -18122,7 +18124,7 @@ class PubServer(BaseHTTPRequestHandler):
         # receive images to the outbox
         if self.headers['Content-type'].startswith('image/') and \
            usersInPath:
-            self._receiveImage(length, callingDomain, cookie,
+            self._receiveImage(length, calling_domain, cookie,
                                authorized, self.path,
                                self.server.base_dir,
                                self.server.http_prefix,

@@ -134,12 +134,12 @@ def _matchSharedItem(searchStrLowerList: [],
 
 
 def _htmlSearchResultSharePage(actor: str, domain_full: str,
-                               callingDomain: str, pageNumber: int,
+                               calling_domain: str, pageNumber: int,
                                searchStrLower: str, translate: {},
                                previous: bool) -> str:
     """Returns the html for the previous button on shared items search results
     """
-    postActor = getAltPath(actor, domain_full, callingDomain)
+    postActor = getAltPath(actor, domain_full, calling_domain)
     # previous page link, needs to be a POST
     if previous:
         pageNumber -= 1
@@ -172,7 +172,7 @@ def _htmlSearchResultSharePage(actor: str, domain_full: str,
 def _htmlSharesResult(base_dir: str,
                       sharesJson: {}, pageNumber: int, resultsPerPage: int,
                       searchStrLowerList: [], currPage: int, ctr: int,
-                      callingDomain: str, http_prefix: str, domain_full: str,
+                      calling_domain: str, http_prefix: str, domain_full: str,
                       contactNickname: str, actor: str,
                       resultsExist: bool, searchStrLower: str, translate: {},
                       sharesFileType: str) -> (bool, int, int, str):
@@ -196,7 +196,7 @@ def _htmlSharesResult(base_dir: str,
                     # show the previous page button
                     sharedItemsForm += \
                         _htmlSearchResultSharePage(actor, domain_full,
-                                                   callingDomain,
+                                                   calling_domain,
                                                    pageNumber,
                                                    searchStrLower,
                                                    translate, True)
@@ -208,7 +208,7 @@ def _htmlSharesResult(base_dir: str,
                     # show the next page button
                     sharedItemsForm += \
                         _htmlSearchResultSharePage(actor, domain_full,
-                                                   callingDomain,
+                                                   calling_domain,
                                                    pageNumber,
                                                    searchStrLower,
                                                    translate, False)
@@ -223,7 +223,7 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
                           resultsPerPage: int,
                           http_prefix: str,
                           domain_full: str, actor: str,
-                          callingDomain: str,
+                          calling_domain: str,
                           shared_items_federated_domains: [],
                           sharesFileType: str) -> str:
     """Search results for shared items
@@ -269,7 +269,7 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
                                             resultsPerPage,
                                             searchStrLowerList,
                                             currPage, ctr,
-                                            callingDomain, http_prefix,
+                                            calling_domain, http_prefix,
                                             domain_full,
                                             contactNickname,
                                             actor, resultsExist,
@@ -307,7 +307,7 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
                                                 resultsPerPage,
                                                 searchStrLowerList,
                                                 currPage, ctr,
-                                                callingDomain, http_prefix,
+                                                calling_domain, http_prefix,
                                                 domain_full,
                                                 contactNickname,
                                                 actor, resultsExist,

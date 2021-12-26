@@ -1485,7 +1485,7 @@ def createSharedItemFederationToken(base_dir: str,
 def authorizeSharedItems(shared_items_federated_domains: [],
                          base_dir: str,
                          originDomainFull: str,
-                         callingDomainFull: str,
+                         calling_domainFull: str,
                          authHeader: str,
                          debug: bool,
                          tokensJson: {} = None) -> bool:
@@ -1525,16 +1525,16 @@ def authorizeSharedItems(shared_items_federated_domains: [],
         tokensJson = load_json(tokensFilename, 1, 2)
     if not tokensJson:
         return False
-    if not tokensJson.get(callingDomainFull):
+    if not tokensJson.get(calling_domainFull):
         if debug:
             print('DEBUG: shared item federation token ' +
-                  'check failed for ' + callingDomainFull)
+                  'check failed for ' + calling_domainFull)
         return False
-    if not constantTimeStringCheck(tokensJson[callingDomainFull],
+    if not constantTimeStringCheck(tokensJson[calling_domainFull],
                                    providedToken):
         if debug:
             print('DEBUG: shared item federation token ' +
-                  'mismatch for ' + callingDomainFull)
+                  'mismatch for ' + calling_domainFull)
         return False
     return True
 

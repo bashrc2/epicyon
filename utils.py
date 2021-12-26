@@ -2859,18 +2859,18 @@ def has_object_dict(post_json_object: {}) -> bool:
     return False
 
 
-def getAltPath(actor: str, domain_full: str, callingDomain: str) -> str:
+def getAltPath(actor: str, domain_full: str, calling_domain: str) -> str:
     """Returns alternate path from the actor
     eg. https://clearnetdomain/path becomes http://oniondomain/path
     """
-    postActor = actor
-    if callingDomain not in actor and domain_full in actor:
-        if callingDomain.endswith('.onion') or \
-           callingDomain.endswith('.i2p'):
-            postActor = \
-                'http://' + callingDomain + actor.split(domain_full)[1]
-            print('Changed POST domain from ' + actor + ' to ' + postActor)
-    return postActor
+    post_actor = actor
+    if calling_domain not in actor and domain_full in actor:
+        if calling_domain.endswith('.onion') or \
+           calling_domain.endswith('.i2p'):
+            post_actor = \
+                'http://' + calling_domain + actor.split(domain_full)[1]
+            print('Changed POST domain from ' + actor + ' to ' + post_actor)
+    return post_actor
 
 
 def get_actor_property_url(actor_json: {}, property_name: str) -> str:

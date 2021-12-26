@@ -29,7 +29,7 @@ def htmlConfirmDelete(cssCache: {},
                       session, base_dir: str, messageId: str,
                       http_prefix: str, project_version: str,
                       cached_webfingers: {}, person_cache: {},
-                      callingDomain: str,
+                      calling_domain: str,
                       yt_replace_domain: str,
                       twitter_replacement_domain: str,
                       show_published_date_only: bool,
@@ -85,7 +85,7 @@ def htmlConfirmDelete(cssCache: {},
         '  <p class="followText">' + \
         translate['Delete this post?'] + '</p>'
 
-    postActor = getAltPath(actor, domain_full, callingDomain)
+    postActor = getAltPath(actor, domain_full, calling_domain)
     deletePostStr += \
         '  <form method="POST" action="' + postActor + '/rmpost">\n'
     deletePostStr += \
@@ -108,7 +108,7 @@ def htmlConfirmDelete(cssCache: {},
 
 def htmlConfirmRemoveSharedItem(cssCache: {}, translate: {}, base_dir: str,
                                 actor: str, itemID: str,
-                                callingDomain: str,
+                                calling_domain: str,
                                 sharesFileType: str) -> str:
     """Shows a screen asking to confirm the removal of a shared item
     """
@@ -149,7 +149,7 @@ def htmlConfirmRemoveSharedItem(cssCache: {}, translate: {}, base_dir: str,
     sharesStr += \
         '  <p class="followText">' + translate['Remove'] + \
         ' ' + sharedItemDisplayName + ' ?</p>\n'
-    postActor = getAltPath(actor, domain_full, callingDomain)
+    postActor = getAltPath(actor, domain_full, calling_domain)
     if sharesFileType == 'shares':
         endpoint = 'rmshare'
     else:

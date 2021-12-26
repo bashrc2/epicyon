@@ -35,7 +35,7 @@ def htmlCalendarDeleteConfirm(cssCache: {}, translate: {}, base_dir: str,
                               path: str, http_prefix: str,
                               domain_full: str, postId: str, postTime: str,
                               year: int, monthNumber: int,
-                              dayNumber: int, callingDomain: str) -> str:
+                              dayNumber: int, calling_domain: str) -> str:
     """Shows a screen asking to confirm the deletion of a calendar event
     """
     nickname = getNicknameFromActor(path)
@@ -68,7 +68,7 @@ def htmlCalendarDeleteConfirm(cssCache: {}, translate: {}, base_dir: str,
     deletePostStr += '  <p class="followText">' + \
         translate['Delete this event'] + '</p>'
 
-    postActor = getAltPath(actor, domain_full, callingDomain)
+    postActor = getAltPath(actor, domain_full, calling_domain)
     deletePostStr += \
         '  <form method="POST" action="' + postActor + '/rmpost">\n'
     deletePostStr += '    <input type="hidden" name="year" value="' + \
