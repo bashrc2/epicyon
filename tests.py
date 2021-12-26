@@ -87,7 +87,7 @@ from utils import dangerousMarkup
 from utils import acct_dir
 from pgp import extractPGPPublicKey
 from pgp import pgpPublicKeyUpload
-from utils import containsPGPPublicKey
+from utils import contains_pgp_public_key
 from follow import followerOfPerson
 from follow import unfollowAccount
 from follow import unfollowerOfAccount
@@ -5053,8 +5053,8 @@ def _testExtractPGPPublicKey():
         '=gv5G\n' + \
         '-----END PGP PUBLIC KEY BLOCK-----'
     testStr = "Some introduction\n\n" + pubKey + "\n\nSome message."
-    assert containsPGPPublicKey(testStr)
-    assert not containsPGPPublicKey('String without a pgp key')
+    assert contains_pgp_public_key(testStr)
+    assert not contains_pgp_public_key('String without a pgp key')
     result = extractPGPPublicKey(testStr)
     assert result
     assert result == pubKey

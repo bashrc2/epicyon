@@ -22,7 +22,7 @@ from utils import getDisplayName
 from utils import removeHtml
 from utils import load_json
 from utils import save_json
-from utils import isPGPEncrypted
+from utils import is_pgp_encrypted
 from utils import has_object_dict
 from utils import acct_dir
 from utils import local_actor_url
@@ -382,7 +382,7 @@ def speakableText(base_dir: str, content: str, translate: {}) -> (str, []):
     which includes changes for prononciation
     """
     content = str(content)
-    if isPGPEncrypted(content):
+    if is_pgp_encrypted(content):
         return content, []
 
     # replace some emoji before removing html
@@ -422,7 +422,7 @@ def _postToSpeakerJson(base_dir: str, http_prefix: str,
     content = urllib.parse.unquote_plus(post_json_object['object']['content'])
     content = html.unescape(content)
     content = content.replace('<p>', '').replace('</p>', ' ')
-    if not isPGPEncrypted(content):
+    if not is_pgp_encrypted(content):
         # replace some emoji before removing html
         if ' <3' in content:
             content = content.replace(' <3', ' ' + translate['heart'])

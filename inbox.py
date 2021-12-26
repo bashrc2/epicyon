@@ -20,7 +20,7 @@ from reaction import validEmojiContent
 from utils import domainPermitted
 from utils import is_group_account
 from utils import isSystemAccount
-from utils import invalidCiphertext
+from utils import invalid_ciphertext
 from utils import removeHtml
 from utils import fileLastModified
 from utils import has_object_string
@@ -2290,7 +2290,7 @@ def _validPostContent(base_dir: str, nickname: str, domain: str,
                     print('REJECT: reply to post which does not ' +
                           'allow comments: ' + originalPostId)
                     return False
-    if invalidCiphertext(message_json['object']['content']):
+    if invalid_ciphertext(message_json['object']['content']):
         print('REJECT: malformed ciphertext in content')
         return False
     if debug:

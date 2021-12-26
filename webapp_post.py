@@ -30,7 +30,7 @@ from utils import get_base_content_from_post
 from utils import get_content_from_post
 from utils import has_object_dict
 from utils import updateAnnounceCollection
-from utils import isPGPEncrypted
+from utils import is_pgp_encrypted
 from utils import isDM
 from utils import rejectPostId
 from utils import isRecentPost
@@ -1871,7 +1871,7 @@ def individualPostAsHtml(signing_priv_key_pem: str,
 
     _logPostTiming(enableTimingLog, postStartTime, '16')
 
-    if not isPGPEncrypted(contentStr):
+    if not is_pgp_encrypted(contentStr):
         if not isPatch:
             objectContent = \
                 removeLongWords(contentStr, 40, [])

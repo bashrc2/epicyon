@@ -24,7 +24,7 @@ from utils import load_translations_from_file
 from utils import removeHtml
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
-from utils import isPGPEncrypted
+from utils import is_pgp_encrypted
 from utils import local_actor_url
 from session import createSession
 from speaker import speakableText
@@ -755,11 +755,11 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
     content = _textOnlyContent(content)
     content += _getImageDescription(post_json_object)
 
-    if isPGPEncrypted(content):
+    if is_pgp_encrypted(content):
         sayStr = 'Encrypted message. Please enter your passphrase.'
         _sayCommand(sayStr, sayStr, screenreader, system_language, espeak)
         content = pgpDecrypt(domain, content, actor, signing_priv_key_pem)
-        if isPGPEncrypted(content):
+        if is_pgp_encrypted(content):
             sayStr = 'Message could not be decrypted'
             _sayCommand(sayStr, sayStr, screenreader, system_language, espeak)
             return {}
@@ -1079,14 +1079,14 @@ def _desktopShowBox(indent: str,
             if isDM(post_json_object):
                 content = '📧' + content
         if not contentWarning:
-            if isPGPEncrypted(content):
+            if is_pgp_encrypted(content):
                 content = '🔒' + content
             elif '://' in content:
                 content = '🔗' + content
             content = _padToWidth(content, contentWidth)
         else:
             # display content warning
-            if isPGPEncrypted(content):
+            if is_pgp_encrypted(content):
                 content = '🔒' + contentWarning
             else:
                 if '://' in content:

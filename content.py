@@ -20,8 +20,8 @@ from utils import save_json
 from utils import fileLastModified
 from utils import getLinkPrefixes
 from utils import dangerousMarkup
-from utils import isPGPEncrypted
-from utils import containsPGPPublicKey
+from utils import is_pgp_encrypted
+from utils import contains_pgp_public_key
 from utils import acct_dir
 from utils import is_float
 from utils import get_currencies
@@ -76,7 +76,7 @@ def _removeQuotesWithinQuotes(content: str) -> str:
 def htmlReplaceEmailQuote(content: str) -> str:
     """Replaces an email style quote "> Some quote" with html blockquote
     """
-    if isPGPEncrypted(content) or containsPGPPublicKey(content):
+    if is_pgp_encrypted(content) or contains_pgp_public_key(content):
         return content
     # replace quote paragraph
     if '<p>&quot;' in content:
@@ -119,7 +119,7 @@ def htmlReplaceQuoteMarks(content: str) -> str:
     """Replaces quotes with html formatting
     "hello" becomes <q>hello</q>
     """
-    if isPGPEncrypted(content) or containsPGPPublicKey(content):
+    if is_pgp_encrypted(content) or contains_pgp_public_key(content):
         return content
     if '"' not in content:
         if '&quot;' not in content:
@@ -218,7 +218,7 @@ def switchWords(base_dir: str, nickname: str, domain: str, content: str,
                 rules: [] = []) -> str:
     """Performs word replacements. eg. Trump -> The Orange Menace
     """
-    if isPGPEncrypted(content) or containsPGPPublicKey(content):
+    if is_pgp_encrypted(content) or contains_pgp_public_key(content):
         return content
 
     if not rules:
@@ -671,7 +671,7 @@ def _addMention(wordStr: str, http_prefix: str, following: str, petnames: str,
 def replaceContentDuplicates(content: str) -> str:
     """Replaces invalid duplicates within content
     """
-    if isPGPEncrypted(content) or containsPGPPublicKey(content):
+    if is_pgp_encrypted(content) or contains_pgp_public_key(content):
         return content
     while '<<' in content:
         content = content.replace('<<', '<')
@@ -684,7 +684,7 @@ def replaceContentDuplicates(content: str) -> str:
 def removeTextFormatting(content: str) -> str:
     """Removes markup for bold, italics, etc
     """
-    if isPGPEncrypted(content) or containsPGPPublicKey(content):
+    if is_pgp_encrypted(content) or contains_pgp_public_key(content):
         return content
     if '<' not in content:
         return content
@@ -703,7 +703,7 @@ def removeLongWords(content: str, maxWordLength: int,
     """Breaks up long words so that on mobile screens this doesn't
     disrupt the layout
     """
-    if isPGPEncrypted(content) or containsPGPPublicKey(content):
+    if is_pgp_encrypted(content) or contains_pgp_public_key(content):
         return content
     content = replaceContentDuplicates(content)
     if ' ' not in content:

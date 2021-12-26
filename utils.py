@@ -2646,7 +2646,7 @@ def isReply(post_json_object: {}, actor: str) -> bool:
     return False
 
 
-def containsPGPPublicKey(content: str) -> bool:
+def contains_pgp_public_key(content: str) -> bool:
     """Returns true if the given content contains a PGP public key
     """
     if '--BEGIN PGP PUBLIC KEY BLOCK--' in content:
@@ -2655,7 +2655,7 @@ def containsPGPPublicKey(content: str) -> bool:
     return False
 
 
-def isPGPEncrypted(content: str) -> bool:
+def is_pgp_encrypted(content: str) -> bool:
     """Returns true if the given content is PGP encrypted
     """
     if '--BEGIN PGP MESSAGE--' in content:
@@ -2664,12 +2664,12 @@ def isPGPEncrypted(content: str) -> bool:
     return False
 
 
-def invalidCiphertext(content: str) -> bool:
+def invalid_ciphertext(content: str) -> bool:
     """Returns true if the given content contains an invalid key
     """
     if '----BEGIN ' in content or '----END ' in content:
-        if not containsPGPPublicKey(content) and \
-           not isPGPEncrypted(content):
+        if not contains_pgp_public_key(content) and \
+           not is_pgp_encrypted(content):
             return True
     return False
 

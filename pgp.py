@@ -11,8 +11,8 @@ import os
 import subprocess
 from pathlib import Path
 from person import getActorJson
-from utils import containsPGPPublicKey
-from utils import isPGPEncrypted
+from utils import contains_pgp_public_key
+from utils import is_pgp_encrypted
 from utils import get_full_domain
 from utils import getStatusNumber
 from utils import local_actor_url
@@ -63,7 +63,7 @@ def getPGPpubKey(actor_json: {}) -> str:
             continue
         if property_value['type'] != 'PropertyValue':
             continue
-        if not containsPGPPublicKey(property_value['value']):
+        if not contains_pgp_public_key(property_value['value']):
             continue
         return property_value['value']
     return ''
@@ -150,7 +150,7 @@ def setPGPpubKey(actor_json: {}, PGPpubKey: str) -> None:
     if not PGPpubKey:
         removeKey = True
     else:
-        if not containsPGPPublicKey(PGPpubKey):
+        if not contains_pgp_public_key(PGPpubKey):
             removeKey = True
         if '<' in PGPpubKey:
             removeKey = True
@@ -329,7 +329,7 @@ def _pgpEncrypt(content: str, recipientPubKey: str) -> str:
     if not encryptResult:
         return None
     encryptResult = encryptResult.decode('utf-8')
-    if not isPGPEncrypted(encryptResult):
+    if not is_pgp_encrypted(encryptResult):
         return None
     return encryptResult
 
@@ -358,7 +358,7 @@ def _getPGPPublicKeyFromActor(signing_priv_key_pem: str,
             continue
         if not isinstance(tag['value'], str):
             continue
-        if containsPGPPublicKey(tag['value']):
+        if contains_pgp_public_key(tag['value']):
             return tag['value']
     return None
 
@@ -393,11 +393,11 @@ def pgpDecrypt(domain: str, content: str, fromHandle: str,
     """ Encrypt using your default pgp key to the given recipient
     fromHandle can be a handle or actor url
     """
-    if not isPGPEncrypted(content):
+    if not is_pgp_encrypted(content):
         return content
 
     # if the public key is also included within the message then import it
-    if containsPGPPublicKey(content):
+    if contains_pgp_public_key(content):
         pubKey = extractPGPPublicKey(content)
     else:
         pubKey = \

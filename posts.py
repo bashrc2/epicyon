@@ -33,7 +33,7 @@ from httpsig import createSignedHeader
 from siteactive import siteIsActive
 from languages import understoodPostLanguage
 from utils import get_user_paths
-from utils import invalidCiphertext
+from utils import invalid_ciphertext
 from utils import has_object_stringType
 from utils import removeIdEnding
 from utils import replace_users_with_at
@@ -4683,7 +4683,7 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
                             recentPostsCache)
             return None
 
-        if invalidCiphertext(contentStr):
+        if invalid_ciphertext(contentStr):
             _rejectAnnounce(announceFilename,
                             base_dir, nickname, domain, postId,
                             recentPostsCache)
