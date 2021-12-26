@@ -17,7 +17,7 @@ from utils import getNicknameFromActor
 from utils import domainPermitted
 from utils import followPerson
 from utils import acct_dir
-from utils import hasGroupType
+from utils import has_group_type
 from utils import local_actor_url
 from utils import has_actor
 from utils import has_object_stringType
@@ -163,7 +163,7 @@ def _accept_follow(base_dir: str, domain: str, message_json: {},
             return
 
     # does the url path indicate that this is a group actor
-    group_account = hasGroupType(base_dir, followed_actor, None, debug)
+    group_account = has_group_type(base_dir, followed_actor, None, debug)
     if debug:
         print('Accepted follow is a group: ' + str(group_account) +
               ' ' + followed_actor + ' ' + base_dir)

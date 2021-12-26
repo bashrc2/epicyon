@@ -8,7 +8,7 @@ __status__ = "Production"
 __module_group__ = "ActivityPub"
 
 from utils import has_object_string_object
-from utils import hasGroupType
+from utils import has_group_type
 from utils import removeDomainPort
 from utils import removeIdEnding
 from utils import has_users_path
@@ -171,7 +171,7 @@ def createAnnounce(session, base_dir: str, federation_list: [],
             announceActor = \
                 objectUrl.split('/' + announceNickname + '/')[0] + \
                 '/' + announceNickname
-            if hasGroupType(base_dir, announceActor, person_cache):
+            if has_group_type(base_dir, announceActor, person_cache):
                 group_account = True
 
     if announceNickname and announceDomain:

@@ -1063,7 +1063,7 @@ def get_user_paths() -> []:
             '/c/', '/video-channels/')
 
 
-def getGroupPaths() -> []:
+def get_group_paths() -> []:
     """Returns possible group paths
     e.g. https://lemmy/c/groupname
     """
@@ -2988,17 +2988,17 @@ def dateSecondsToString(dateSec: int) -> str:
     return thisDate.strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
-def hasGroupType(base_dir: str, actor: str, person_cache: {},
-                 debug: bool = False) -> bool:
+def has_group_type(base_dir: str, actor: str, person_cache: {},
+                   debug: bool = False) -> bool:
     """Does the given actor url have a group type?
     """
     # does the actor path clearly indicate that this is a group?
     # eg. https://lemmy/c/groupname
-    groupPaths = getGroupPaths()
-    for grpPath in groupPaths:
-        if grpPath in actor:
+    group_paths = get_group_paths()
+    for grp_path in group_paths:
+        if grp_path in actor:
             if debug:
-                print('grpPath ' + grpPath + ' in ' + actor)
+                print('grpPath ' + grp_path + ' in ' + actor)
             return True
     # is there a cached actor which can be examined for Group type?
     return is_group_actor(base_dir, actor, person_cache, debug)

@@ -28,7 +28,7 @@ from utils import save_json
 from utils import isAccountDir
 from utils import get_user_paths
 from utils import acct_dir
-from utils import hasGroupType
+from utils import has_group_type
 from utils import local_actor_url
 from acceptreject import createAccept
 from acceptreject import createReject
@@ -763,7 +763,7 @@ def followedAccountAccepts(session, base_dir: str, http_prefix: str,
     group_account = False
     if followJson:
         if followJson.get('actor'):
-            if hasGroupType(base_dir, followJson['actor'], person_cache):
+            if has_group_type(base_dir, followJson['actor'], person_cache):
                 group_account = True
 
     return sendSignedJson(acceptJson, session, base_dir,
@@ -822,7 +822,7 @@ def followedAccountRejects(session, base_dir: str, http_prefix: str,
     client_to_server = False
     denyHandle = get_full_domain(nickname + '@' + domain, fromPort)
     group_account = False
-    if hasGroupType(base_dir, personUrl, person_cache):
+    if has_group_type(base_dir, personUrl, person_cache):
         group_account = True
     # remove from the follow requests file
     removeFromFollowRequests(base_dir, nicknameToFollow, domainToFollow,
@@ -874,7 +874,7 @@ def sendFollowRequest(session, base_dir: str,
     if followNickname:
         followedId = followedActor
         followHandle = followNickname + '@' + requestDomain
-        group_account = hasGroupType(base_dir, followedActor, person_cache)
+        group_account = has_group_type(base_dir, followedActor, person_cache)
         if group_account:
             followHandle = '!' + followHandle
             print('Follow request being sent to group account')
@@ -1416,7 +1416,7 @@ def outboxUndoFollow(base_dir: str, message_json: {}, debug: bool) -> None:
     domainFollowingFull = get_full_domain(domainFollowing, portFollowing)
 
     group_account = \
-        hasGroupType(base_dir, message_json['object']['object'], None)
+        has_group_type(base_dir, message_json['object']['object'], None)
     if unfollowAccount(base_dir, nicknameFollower, domainFollowerFull,
                        nicknameFollowing, domainFollowingFull,
                        debug, group_account):

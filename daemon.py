@@ -303,7 +303,7 @@ from utils import isSuspended
 from utils import dangerousMarkup
 from utils import refresh_newswire
 from utils import isImageFile
-from utils import hasGroupType
+from utils import has_group_type
 from manualapprove import manualDenyFollowRequestThread
 from manualapprove import manualApproveFollowRequestThread
 from announce import createAnnounce
@@ -2957,9 +2957,9 @@ class PubServer(BaseHTTPRequestHandler):
                 }
                 pathUsersSection = path.split('/users/')[1]
                 self.postToNickname = pathUsersSection.split('/')[0]
-                group_account = hasGroupType(self.server.base_dir,
-                                             followingActor,
-                                             self.server.person_cache)
+                group_account = has_group_type(self.server.base_dir,
+                                               followingActor,
+                                               self.server.person_cache)
                 unfollowAccount(self.server.base_dir, self.postToNickname,
                                 self.server.domain,
                                 followingNickname, followingDomainFull,

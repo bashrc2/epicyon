@@ -19,7 +19,7 @@ from utils import save_json
 from utils import getProtocolPrefixes
 from utils import removeDomainPort
 from utils import get_user_paths
-from utils import getGroupPaths
+from utils import get_group_paths
 from utils import local_actor_url
 
 
@@ -49,7 +49,7 @@ def _parseHandle(handle: str) -> (str, str, bool):
 
     # try for different /users/ paths
     usersPaths = get_user_paths()
-    groupPaths = getGroupPaths()
+    groupPaths = get_group_paths()
     for possibleUsersPath in usersPaths:
         if possibleUsersPath in handle:
             if possibleUsersPath in groupPaths:

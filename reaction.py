@@ -24,7 +24,7 @@ from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import locatePost
 from utils import undoReactionCollectionEntry
-from utils import hasGroupType
+from utils import has_group_type
 from utils import local_actor_url
 from utils import load_json
 from utils import save_json
@@ -104,7 +104,7 @@ def _reaction(recentPostsCache: {},
         reactionPostNickname = getNicknameFromActor(actorReaction)
         reactionPostDomain, reactionPostPort = \
             getDomainFromActor(actorReaction)
-        group_account = hasGroupType(base_dir, actorReaction, person_cache)
+        group_account = has_group_type(base_dir, actorReaction, person_cache)
     else:
         if has_users_path(objectUrl):
             reactionPostNickname = getNicknameFromActor(objectUrl)
@@ -115,7 +115,7 @@ def _reaction(recentPostsCache: {},
                     objectUrl.split('/' + reactionPostNickname + '/')[0] + \
                     '/' + reactionPostNickname
                 group_account = \
-                    hasGroupType(base_dir, actorReaction, person_cache)
+                    has_group_type(base_dir, actorReaction, person_cache)
 
     if reactionPostNickname:
         postFilename = locatePost(base_dir, nickname, domain, objectUrl)

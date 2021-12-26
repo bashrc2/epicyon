@@ -22,7 +22,7 @@ from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import locatePost
 from utils import undoLikesCollectionEntry
-from utils import hasGroupType
+from utils import has_group_type
 from utils import local_actor_url
 from utils import load_json
 from utils import save_json
@@ -106,7 +106,7 @@ def _like(recentPostsCache: {},
     if actorLiked:
         likedPostNickname = getNicknameFromActor(actorLiked)
         likedPostDomain, likedPostPort = getDomainFromActor(actorLiked)
-        group_account = hasGroupType(base_dir, actorLiked, person_cache)
+        group_account = has_group_type(base_dir, actorLiked, person_cache)
     else:
         if has_users_path(objectUrl):
             likedPostNickname = getNicknameFromActor(objectUrl)
@@ -116,7 +116,7 @@ def _like(recentPostsCache: {},
                     objectUrl.split('/' + likedPostNickname + '/')[0] + \
                     '/' + likedPostNickname
                 group_account = \
-                    hasGroupType(base_dir, actorLiked, person_cache)
+                    has_group_type(base_dir, actorLiked, person_cache)
 
     if likedPostNickname:
         postFilename = locatePost(base_dir, nickname, domain, objectUrl)

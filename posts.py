@@ -37,7 +37,7 @@ from utils import invalidCiphertext
 from utils import has_object_stringType
 from utils import removeIdEnding
 from utils import replace_users_with_at
-from utils import hasGroupType
+from utils import has_group_type
 from utils import get_base_content_from_post
 from utils import removeDomainPort
 from utils import getPortFromDomain
@@ -3000,7 +3000,7 @@ def _sendToNamedAddresses(session, base_dir: str,
             if sharedItemFederationTokens.get(fromDomainFull):
                 sharedItemsToken = sharedItemFederationTokens[fromDomainFull]
 
-        group_account = hasGroupType(base_dir, address, person_cache)
+        group_account = has_group_type(base_dir, address, person_cache)
 
         sendSignedJson(post_json_object, session, base_dir,
                        nickname, fromDomain, port,

@@ -58,7 +58,7 @@ from utils import load_json
 from utils import save_json
 from utils import undoLikesCollectionEntry
 from utils import undoReactionCollectionEntry
-from utils import hasGroupType
+from utils import has_group_type
 from utils import local_actor_url
 from utils import has_object_stringType
 from categories import getHashtagCategories
@@ -777,7 +777,7 @@ def _receiveUndoFollow(session, base_dir: str, http_prefix: str,
     domainFollowingFull = get_full_domain(domainFollowing, portFollowing)
 
     group_account = \
-        hasGroupType(base_dir, message_json['object']['actor'], None)
+        has_group_type(base_dir, message_json['object']['actor'], None)
     if unfollowerOfAccount(base_dir,
                            nicknameFollowing, domainFollowingFull,
                            nicknameFollower, domainFollowerFull,
@@ -3985,7 +3985,7 @@ def _receiveFollowRequest(session, base_dir: str, http_prefix: str,
                       message_json['actor'])
 
         group_account = \
-            hasGroupType(base_dir, message_json['actor'], person_cache)
+            has_group_type(base_dir, message_json['actor'], person_cache)
         if group_account and is_group_account(base_dir, nickname, domain):
             print('Group cannot follow a group')
             return False
@@ -4027,8 +4027,8 @@ def _receiveFollowRequest(session, base_dir: str, http_prefix: str,
             if os.path.isfile(followersFilename):
                 if approveHandle not in open(followersFilename).read():
                     group_account = \
-                        hasGroupType(base_dir,
-                                     message_json['actor'], person_cache)
+                        has_group_type(base_dir,
+                                       message_json['actor'], person_cache)
                     if debug:
                         print(approveHandle + ' / ' + message_json['actor'] +
                               ' is Group: ' + str(group_account))

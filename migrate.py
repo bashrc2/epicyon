@@ -12,7 +12,7 @@ from utils import isAccountDir
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import acct_dir
-from utils import hasGroupType
+from utils import has_group_type
 from webfinger import webfingerHandle
 from blocking import isBlocked
 from posts import getUserUrl
@@ -106,7 +106,7 @@ def _updateMovedHandle(base_dir: str, nickname: str, domain: str,
     if movedToPort:
         if movedToPort != 80 and movedToPort != 443:
             movedToDomainFull = movedToDomain + ':' + str(movedToPort)
-    group_account = hasGroupType(base_dir, movedToUrl, None)
+    group_account = has_group_type(base_dir, movedToUrl, None)
     if isBlocked(base_dir, nickname, domain,
                  movedToNickname, movedToDomain):
         # someone that you follow has moved to a blocked domain

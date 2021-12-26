@@ -57,7 +57,7 @@ from utils import get_image_extensions
 from utils import isImageFile
 from utils import acct_dir
 from utils import get_user_paths
-from utils import getGroupPaths
+from utils import get_group_paths
 from utils import local_actor_url
 from utils import dangerousSVG
 from session import createSession
@@ -1445,7 +1445,7 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
        detectedUsersPath in handle or \
        handle.startswith('http') or \
        handle.startswith('hyper'):
-        groupPaths = getGroupPaths()
+        groupPaths = get_group_paths()
         if detectedUsersPath in groupPaths:
             group_account = True
         # format: https://domain/@nick
