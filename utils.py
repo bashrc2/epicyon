@@ -381,7 +381,7 @@ def get_image_mime_type(image_filename: str) -> str:
 def getImageExtensionFromMimeType(contentType: str) -> str:
     """Returns the image extension from a mime type, such as image/jpeg
     """
-    imageMedia = {
+    image_media = {
         'png': 'png',
         'jpeg': 'jpg',
         'gif': 'gif',
@@ -390,7 +390,7 @@ def getImageExtensionFromMimeType(contentType: str) -> str:
         'avif': 'avif',
         'x-icon': 'ico'
     }
-    for mimeExt, ext in imageMedia.items():
+    for mimeExt, ext in image_media.items():
         if contentType.endswith(mimeExt):
             return ext
     return 'png'
