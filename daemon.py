@@ -268,7 +268,7 @@ from utils import getOccupationName
 from utils import setOccupationName
 from utils import loadTranslationsFromFile
 from utils import getLocalNetworkAddresses
-from utils import decodedHost
+from utils import decoded_host
 from utils import isPublicPost
 from utils import get_locked_account
 from utils import has_users_path
@@ -13312,7 +13312,7 @@ class PubServer(BaseHTTPRequestHandler):
         callingDomain = self.server.domain_full
 
         if self.headers.get('Host'):
-            callingDomain = decodedHost(self.headers['Host'])
+            callingDomain = decoded_host(self.headers['Host'])
             if self.server.onion_domain:
                 if callingDomain != self.server.domain and \
                    callingDomain != self.server.domain_full and \
@@ -16369,7 +16369,7 @@ class PubServer(BaseHTTPRequestHandler):
     def do_HEAD(self):
         callingDomain = self.server.domain_full
         if self.headers.get('Host'):
-            callingDomain = decodedHost(self.headers['Host'])
+            callingDomain = decoded_host(self.headers['Host'])
             if self.server.onion_domain:
                 if callingDomain != self.server.domain and \
                    callingDomain != self.server.domain_full and \
@@ -17483,7 +17483,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         callingDomain = self.server.domain_full
         if self.headers.get('Host'):
-            callingDomain = decodedHost(self.headers['Host'])
+            callingDomain = decoded_host(self.headers['Host'])
             if self.server.onion_domain:
                 if callingDomain != self.server.domain and \
                    callingDomain != self.server.domain_full and \

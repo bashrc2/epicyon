@@ -168,7 +168,7 @@ def _local_network_host(host: str) -> bool:
     return False
 
 
-def decodedHost(host: str) -> str:
+def decoded_host(host: str) -> str:
     """Convert hostname to internationalized domain
     https://en.wikipedia.org/wiki/Internationalized_domain_name
     """

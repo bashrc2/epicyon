@@ -68,7 +68,7 @@ from utils import dateSecondsToString
 from utils import validPassword
 from utils import userAgentDomain
 from utils import camelCaseSplit
-from utils import decodedHost
+from utils import decoded_host
 from utils import getFullDomain
 from utils import validNickname
 from utils import firstParagraphFromString
@@ -4865,13 +4865,13 @@ def _testMastoApi():
 def _testDomainHandling():
     print('testDomainHandling')
     testDomain = 'localhost'
-    assert decodedHost(testDomain) == testDomain
+    assert decoded_host(testDomain) == testDomain
     testDomain = '127.0.0.1:60'
-    assert decodedHost(testDomain) == testDomain
+    assert decoded_host(testDomain) == testDomain
     testDomain = '192.168.5.153'
-    assert decodedHost(testDomain) == testDomain
+    assert decoded_host(testDomain) == testDomain
     testDomain = 'xn--espaa-rta.icom.museum'
-    assert decodedHost(testDomain) == "españa.icom.museum"
+    assert decoded_host(testDomain) == "españa.icom.museum"
 
 
 def _testPrepareHtmlPostNickname():
