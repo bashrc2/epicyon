@@ -251,7 +251,7 @@ from utils import canReplyTo
 from utils import isDM
 from utils import replace_users_with_at
 from utils import local_actor_url
-from utils import isfloat
+from utils import is_float
 from utils import validPassword
 from utils import removeLineEndings
 from utils import get_base_content_from_post
@@ -17164,7 +17164,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.domain)
                 itemQty = 1
                 if fields['itemQty']:
-                    if isfloat(fields['itemQty']):
+                    if is_float(fields['itemQty']):
                         itemQty = float(fields['itemQty'])
                 itemPrice = "0.00"
                 itemCurrency = "EUR"

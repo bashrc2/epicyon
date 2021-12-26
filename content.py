@@ -23,7 +23,7 @@ from utils import dangerousMarkup
 from utils import isPGPEncrypted
 from utils import containsPGPPublicKey
 from utils import acct_dir
-from utils import isfloat
+from utils import is_float
 from utils import get_currencies
 from utils import removeHtml
 from petnames import getPetName
@@ -1225,13 +1225,13 @@ def getPriceFromString(priceStr: str) -> (str, str):
     for symbol, name in currencies.items():
         if symbol in priceStr:
             price = priceStr.replace(symbol, '')
-            if isfloat(price):
+            if is_float(price):
                 return price, name
         elif name in priceStr:
             price = priceStr.replace(name, '')
-            if isfloat(price):
+            if is_float(price):
                 return price, name
-    if isfloat(priceStr):
+    if is_float(priceStr):
         return priceStr, "EUR"
     return "0.00", "EUR"
 

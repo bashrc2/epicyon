@@ -17,7 +17,7 @@ from utils import get_full_domain
 from utils import is_editor
 from utils import removeIdEnding
 from utils import acct_dir
-from utils import isfloat
+from utils import is_float
 from utils import local_actor_url
 from follow import followerApprovalActive
 from person import isPersonSnoozed
@@ -1000,7 +1000,7 @@ def htmlIndividualShare(domain: str, shareId: str,
             sharedItem['location'] + '<br>'
     contactTitleStr = translate['Contact']
     if sharedItem.get('itemPrice') and sharedItem.get('itemCurrency'):
-        if isfloat(sharedItem['itemPrice']):
+        if is_float(sharedItem['itemPrice']):
             if float(sharedItem['itemPrice']) > 0:
                 profileStr += ' ' + \
                     '<b>' + translate['Price'] + ':</b> ' + \

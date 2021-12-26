@@ -19,7 +19,7 @@ from utils import getCachedPostFilename
 from utils import get_config_param
 from utils import acct_dir
 from utils import getNicknameFromActor
-from utils import isfloat
+from utils import is_float
 from utils import get_audio_extensions
 from utils import get_video_extensions
 from utils import get_image_extensions
@@ -1439,7 +1439,7 @@ def htmlSearchResultShare(base_dir: str, sharedItem: {}, translate: {},
     contactTitleStr = translate['Contact']
     if sharedItem.get('itemPrice') and \
        sharedItem.get('itemCurrency'):
-        if isfloat(sharedItem['itemPrice']):
+        if is_float(sharedItem['itemPrice']):
             if float(sharedItem['itemPrice']) > 0:
                 sharedItemsForm += \
                     ' <b>' + translate['Price'] + \

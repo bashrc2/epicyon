@@ -34,7 +34,7 @@ from utils import get_image_extensions
 from utils import removeDomainPort
 from utils import isAccountDir
 from utils import acct_dir
-from utils import isfloat
+from utils import is_float
 from utils import get_category_types
 from utils import get_shares_files_list
 from utils import local_actor_url
@@ -1147,10 +1147,10 @@ def _sharesCatalogParams(path: str) -> (bool, float, float, str):
             if 't' in value or 'y' in value or '1' in value:
                 today = True
         elif key.startswith('min'):
-            if isfloat(value):
+            if is_float(value):
                 minPrice = float(value)
         elif key.startswith('max'):
-            if isfloat(value):
+            if is_float(value):
                 maxPrice = float(value)
         elif key.startswith('match'):
             matchPattern = value
