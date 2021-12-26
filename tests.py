@@ -67,7 +67,7 @@ from utils import date_string_to_seconds
 from utils import date_seconds_to_string
 from utils import valid_password
 from utils import user_agent_domain
-from utils import camelCaseSplit
+from utils import camel_case_split
 from utils import decoded_host
 from utils import get_full_domain
 from utils import validNickname
@@ -5010,10 +5010,10 @@ def _testSpeakerReplaceLinks():
 def _testCamelCaseSplit():
     print('testCamelCaseSplit')
     testStr = 'ThisIsCamelCase'
-    assert camelCaseSplit(testStr) == 'This Is Camel Case'
+    assert camel_case_split(testStr) == 'This Is Camel Case'
 
     testStr = 'Notcamelcase test'
-    assert camelCaseSplit(testStr) == 'Notcamelcase test'
+    assert camel_case_split(testStr) == 'Notcamelcase test'
 
 
 def _testEmojiImages():

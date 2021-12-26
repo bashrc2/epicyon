@@ -14,7 +14,7 @@ import urllib.parse
 from utils import removeIdEnding
 from utils import is_dm
 from utils import is_reply
-from utils import camelCaseSplit
+from utils import camel_case_split
 from utils import getDomainFromActor
 from utils import getNicknameFromActor
 from utils import getGenderFromBio
@@ -475,7 +475,7 @@ def _postToSpeakerJson(base_dir: str, http_prefix: str,
         return
     speakerName = _removeEmojiFromText(speakerName)
     speakerName = speakerName.replace('_', ' ')
-    speakerName = camelCaseSplit(speakerName)
+    speakerName = camel_case_split(speakerName)
     gender = getGenderFromBio(base_dir, post_json_object['actor'],
                               person_cache, translate)
     if announcingActor:

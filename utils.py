@@ -2541,7 +2541,7 @@ def isRecentPost(post_json_object: {}, maxDays: int) -> bool:
     return True
 
 
-def camelCaseSplit(text: str) -> str:
+def camel_case_split(text: str) -> str:
     """ Splits CamelCase into "Camel Case"
     """
     matches = re.finditer('.+?(?:(?<=[a-z])(?=[A-Z])|' +
