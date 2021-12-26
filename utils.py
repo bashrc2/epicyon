@@ -34,7 +34,7 @@ def local_actor_url(http_prefix: str, nickname: str, domain_full: str) -> str:
     return http_prefix + '://' + domain_full + '/users/' + nickname
 
 
-def getActorLanguagesList(actorJson: {}) -> []:
+def get_actor_languages_list(actorJson: {}) -> []:
     """Returns a list containing languages used by the given actor
     """
     if not actorJson.get('attachment'):

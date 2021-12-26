@@ -58,7 +58,7 @@ from utils import getSHA256
 from utils import dangerousSVG
 from utils import canReplyTo
 from utils import isGroupAccount
-from utils import getActorLanguagesList
+from utils import get_actor_languages_list
 from utils import getCategoryTypes
 from utils import getSupportedLanguages
 from utils import setConfigParam
@@ -5595,7 +5595,7 @@ def _testSetActorLanguages():
     assert actorJson['attachment'][0]['type'] == 'PropertyValue'
     assert isinstance(actorJson['attachment'][0]['value'], str)
     assert ',' in actorJson['attachment'][0]['value']
-    langList = getActorLanguagesList(actorJson)
+    langList = get_actor_languages_list(actorJson)
     assert 'en' in langList
     assert 'fr' in langList
     assert 'es' in langList

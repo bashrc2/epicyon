@@ -18,7 +18,7 @@ from webapp_utils import getPostAttachmentsAsHtml
 from webapp_utils import editTextArea
 from webapp_media import addEmbeddedElements
 from utils import local_actor_url
-from utils import getActorLanguagesList
+from utils import get_actor_languages_list
 from utils import getBaseContentFromPost
 from utils import getContentFromPost
 from utils import isAccountDir
@@ -270,7 +270,7 @@ def _htmlBlogPostContent(debug: bool, session, authorized: bool,
         getPersonFromCache(base_dir, personUrl, person_cache, False)
     languagesUnderstood = []
     if actorJson:
-        languagesUnderstood = getActorLanguagesList(actorJson)
+        languagesUnderstood = get_actor_languages_list(actorJson)
     jsonContent = getContentFromPost(post_json_object, system_language,
                                      languagesUnderstood)
     if jsonContent:

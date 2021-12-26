@@ -25,7 +25,7 @@ from posts import downloadAnnounce
 from posts import populateRepliesJson
 from utils import removeHashFromPostId
 from utils import removeHtml
-from utils import getActorLanguagesList
+from utils import get_actor_languages_list
 from utils import getBaseContentFromPost
 from utils import getContentFromPost
 from utils import hasObjectDict
@@ -1854,7 +1854,7 @@ def individualPostAsHtml(signing_priv_key_pem: str,
         getPersonFromCache(base_dir, personUrl, person_cache, False)
     languagesUnderstood = []
     if actorJson:
-        languagesUnderstood = getActorLanguagesList(actorJson)
+        languagesUnderstood = get_actor_languages_list(actorJson)
     contentStr = getContentFromPost(post_json_object, system_language,
                                     languagesUnderstood)
     if not contentStr:
