@@ -37,7 +37,7 @@ from utils import dmAllowedFromDomain
 from utils import isRecentPost
 from utils import getConfigParam
 from utils import has_users_path
-from utils import validPostDate
+from utils import valid_post_date
 from utils import getFullDomain
 from utils import removeIdEnding
 from utils import getProtocolPrefixes
@@ -2217,7 +2217,7 @@ def _validPostContent(base_dir: str, nickname: str, domain: str,
         return False
     if 'Z' not in message_json['object']['published']:
         return False
-    if not validPostDate(message_json['object']['published'], 90, debug):
+    if not valid_post_date(message_json['object']['published'], 90, debug):
         return False
 
     summary = None

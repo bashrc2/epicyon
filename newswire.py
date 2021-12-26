@@ -16,7 +16,7 @@ from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
 from collections import OrderedDict
-from utils import validPostDate
+from utils import valid_post_date
 from categories import setHashtagCategory
 from utils import dangerousSVG
 from utils import getFavFilenameFromUrl
@@ -255,7 +255,7 @@ def _validFeedDate(pubDate: str, debug: bool = False) -> bool:
     # convert from YY-MM-DD HH:MM:SS+00:00 to
     # YY-MM-DDTHH:MM:SSZ
     postDate = pubDate.replace(' ', 'T').replace('+00:00', 'Z')
-    return validPostDate(postDate, 90, debug)
+    return valid_post_date(postDate, 90, debug)
 
 
 def parseFeedDate(pubDate: str) -> str:

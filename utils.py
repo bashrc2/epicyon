@@ -191,27 +191,27 @@ def get_locked_account(actor_json: {}) -> bool:
     return False
 
 
-def has_users_path(pathStr: str) -> bool:
+def has_users_path(path_str: str) -> bool:
     """Whether there is a /users/ path (or equivalent) in the given string
     """
-    usersList = get_user_paths()
-    for usersStr in usersList:
-        if usersStr in pathStr:
+    users_list = get_user_paths()
+    for users_str in users_list:
+        if users_str in path_str:
             return True
-    if '://' in pathStr:
-        domain = pathStr.split('://')[1]
+    if '://' in path_str:
+        domain = path_str.split('://')[1]
         if '/' in domain:
             domain = domain.split('/')[0]
-        if '://' + domain + '/' not in pathStr:
+        if '://' + domain + '/' not in path_str:
             return False
-        nickname = pathStr.split('://' + domain + '/')[1]
+        nickname = path_str.split('://' + domain + '/')[1]
         if '/' in nickname or '.' in nickname:
             return False
         return True
     return False
 
 
-def validPostDate(published: str, maxAgeDays: int, debug: bool) -> bool:
+def valid_post_date(published: str, maxAgeDays: int, debug: bool) -> bool:
     """Returns true if the published date is recent and is not in the future
     """
     baselineTime = datetime.datetime(1970, 1, 1)
@@ -224,7 +224,8 @@ def validPostDate(published: str, maxAgeDays: int, debug: bool) -> bool:
             datetime.datetime.strptime(published, "%Y-%m-%dT%H:%M:%SZ")
     except BaseException:
         if debug:
-            print('EX: validPostDate invalid published date ' + str(published))
+            print('EX: valid_post_date invalid published date ' +
+                  str(published))
         return False
 
     daysDiff = postTimeObject - baselineTime

@@ -47,7 +47,7 @@ from utils import removeInvalidChars
 from utils import fileLastModified
 from utils import isPublicPost
 from utils import has_users_path
-from utils import validPostDate
+from utils import valid_post_date
 from utils import getFullDomain
 from utils import getFollowersList
 from utils import isEvil
@@ -4659,7 +4659,7 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
                             base_dir, nickname, domain, postId,
                             recentPostsCache)
             return None
-        if not validPostDate(announcedJson['published'], 90, debug):
+        if not valid_post_date(announcedJson['published'], 90, debug):
             _rejectAnnounce(announceFilename,
                             base_dir, nickname, domain, postId,
                             recentPostsCache)
