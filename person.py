@@ -41,7 +41,7 @@ from media import processMetaData
 from utils import removeHtml
 from utils import containsInvalidChars
 from utils import replace_users_with_at
-from utils import removeLineEndings
+from utils import remove_line_endings
 from utils import removeDomainPort
 from utils import getStatusNumber
 from utils import get_full_domain
@@ -533,7 +533,7 @@ def _createPersonBase(base_dir: str, nickname: str, domain: str, port: int,
             print('EX: unable to save 2 ' + filename)
 
         if password:
-            password = removeLineEndings(password)
+            password = remove_line_endings(password)
             storeBasicCredentials(base_dir, nickname, password)
 
     return privateKeyPem, publicKeyPem, newPerson, webfingerEndpoint

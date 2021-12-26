@@ -2945,7 +2945,7 @@ def validUrlPrefix(url: str) -> bool:
     return False
 
 
-def removeLineEndings(text: str) -> str:
+def remove_line_endings(text: str) -> str:
     """Removes any newline from the end of a string
     """
     text = text.replace('\n', '')

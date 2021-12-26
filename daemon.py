@@ -253,7 +253,7 @@ from utils import replace_users_with_at
 from utils import local_actor_url
 from utils import is_float
 from utils import valid_password
-from utils import removeLineEndings
+from utils import remove_line_endings
 from utils import get_base_content_from_post
 from utils import acct_dir
 from utils import getImageExtensionFromMimeType
@@ -4968,9 +4968,9 @@ class PubServer(BaseHTTPRequestHandler):
                     if fields.get('password') and \
                        fields.get('passwordconfirm'):
                         fields['password'] = \
-                            removeLineEndings(fields['password'])
+                            remove_line_endings(fields['password'])
                         fields['passwordconfirm'] = \
-                            removeLineEndings(fields['passwordconfirm'])
+                            remove_line_endings(fields['passwordconfirm'])
                         if valid_password(fields['password']) and \
                            fields['password'] == fields['passwordconfirm']:
                             # set password
