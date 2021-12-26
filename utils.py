@@ -670,7 +670,7 @@ def save_json(json_object: {}, filename: str) -> bool:
     return False
 
 
-def load_json(filename: str, delaySec: int = 2, max_tries: int = 5) -> {}:
+def load_json(filename: str, delay_sec: int = 2, max_tries: int = 5) -> {}:
     """Makes a few attempts to load a json formatted file
     """
     jsonObject = None
@@ -683,14 +683,14 @@ def load_json(filename: str, delaySec: int = 2, max_tries: int = 5) -> {}:
                 break
         except BaseException:
             print('EX: load_json exception ' + str(filename))
-            if delaySec > 0:
-                time.sleep(delaySec)
+            if delay_sec > 0:
+                time.sleep(delay_sec)
             tries += 1
     return jsonObject
 
 
 def load_json_onionify(filename: str, domain: str, onion_domain: str,
-                       delaySec: int = 2) -> {}:
+                       delay_sec: int = 2) -> {}:
     """Makes a few attempts to load a json formatted file
     This also converts the domain name to the onion domain
     """
@@ -708,8 +708,8 @@ def load_json_onionify(filename: str, domain: str, onion_domain: str,
                 break
         except BaseException:
             print('EX: load_json_onionify exception ' + str(filename))
-            if delaySec > 0:
-                time.sleep(delaySec)
+            if delay_sec > 0:
+                time.sleep(delay_sec)
             tries += 1
     return jsonObject
 
