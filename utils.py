@@ -211,16 +211,16 @@ def has_users_path(path_str: str) -> bool:
     return False
 
 
-def valid_post_date(published: str, maxAgeDays: int, debug: bool) -> bool:
+def valid_post_date(published: str, max_age_days: int, debug: bool) -> bool:
     """Returns true if the published date is recent and is not in the future
     """
-    baselineTime = datetime.datetime(1970, 1, 1)
+    baseline_time = datetime.datetime(1970, 1, 1)
 
-    daysDiff = datetime.datetime.utcnow() - baselineTime
-    nowDaysSinceEpoch = daysDiff.days
+    daysDiff = datetime.datetime.utcnow() - baseline_time
+    now_days_since_epoch = daysDiff.days
 
     try:
-        postTimeObject = \
+        post_time_object = \
             datetime.datetime.strptime(published, "%Y-%m-%dT%H:%M:%SZ")
     except BaseException:
         if debug:
@@ -228,15 +228,15 @@ def valid_post_date(published: str, maxAgeDays: int, debug: bool) -> bool:
                   str(published))
         return False
 
-    daysDiff = postTimeObject - baselineTime
+    daysDiff = post_time_object - baseline_time
     postDaysSinceEpoch = daysDiff.days
 
-    if postDaysSinceEpoch > nowDaysSinceEpoch:
+    if postDaysSinceEpoch > now_days_since_epoch:
         if debug:
             print("Inbox post has a published date in the future!")
         return False
 
-    if nowDaysSinceEpoch - postDaysSinceEpoch >= maxAgeDays:
+    if now_days_since_epoch - postDaysSinceEpoch >= max_age_days:
         if debug:
             print("Inbox post is not recent enough")
         return False
