@@ -36,7 +36,7 @@ from utils import isAccountDir
 from utils import acct_dir
 from utils import isfloat
 from utils import get_category_types
-from utils import getSharesFilesList
+from utils import get_shares_files_list
 from utils import local_actor_url
 from media import processMetaData
 from media import convertImageToLowBandwidth
@@ -405,7 +405,7 @@ def expireShares(base_dir: str) -> None:
                 continue
             nickname = account.split('@')[0]
             domain = account.split('@')[1]
-            for sharesFileType in getSharesFilesList():
+            for sharesFileType in get_shares_files_list():
                 _expireSharesForAccount(base_dir, nickname, domain,
                                         sharesFileType)
         break
@@ -1742,7 +1742,7 @@ def runFederatedSharesDaemon(base_dir: str, httpd, http_prefix: str,
             continue
 
         session = createSession(proxy_type)
-        for sharesFileType in getSharesFilesList():
+        for sharesFileType in get_shares_files_list():
             _updateFederatedSharesCache(session,
                                         shared_items_federated_domains,
                                         base_dir, domain_full, http_prefix,

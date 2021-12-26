@@ -3142,7 +3142,7 @@ def get_category_types(base_dir: str) -> []:
     return categories
 
 
-def getSharesFilesList() -> []:
+def get_shares_files_list() -> []:
     """Returns the possible shares files
     """
     return ('shares', 'wanted')
