@@ -18,7 +18,7 @@ from utils import domainPermitted
 from utils import followPerson
 from utils import acctDir
 from utils import hasGroupType
-from utils import localActorUrl
+from utils import local_actor_url
 from utils import hasActor
 from utils import hasObjectStringType
 
@@ -44,7 +44,7 @@ def _create_accept_reject(base_dir: str, federation_list: [],
     new_accept = {
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': acceptType,
-        'actor': localActorUrl(http_prefix, nickname, domain),
+        'actor': local_actor_url(http_prefix, nickname, domain),
         'to': [toUrl],
         'cc': [],
         'object': objectJson

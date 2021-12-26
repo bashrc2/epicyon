@@ -13,7 +13,7 @@ from utils import getNicknameFromActor
 from utils import isEditor
 from utils import isArtist
 from utils import removeDomainPort
-from utils import localActorUrl
+from utils import local_actor_url
 from webapp_utils import sharesTimelineJson
 from webapp_utils import htmlPostSeparator
 from webapp_utils import getLeftImageFile
@@ -41,7 +41,7 @@ def _getLeftColumnShares(base_dir: str,
     """get any shares and turn them into the left column links format
     """
     pageNumber = 1
-    actor = localActorUrl(http_prefix, nickname, domain_full)
+    actor = local_actor_url(http_prefix, nickname, domain_full)
     # NOTE: this could potentially be slow if the number of federated
     # shared items is large
     sharesJson, lastPage = \
@@ -83,7 +83,7 @@ def _getLeftColumnWanted(base_dir: str,
     """get any wanted items and turn them into the left column links format
     """
     pageNumber = 1
-    actor = localActorUrl(http_prefix, nickname, domain_full)
+    actor = local_actor_url(http_prefix, nickname, domain_full)
     # NOTE: this could potentially be slow if the number of federated
     # wanted items is large
     sharesJson, lastPage = \

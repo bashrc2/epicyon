@@ -37,7 +37,7 @@ from utils import acctDir
 from utils import isfloat
 from utils import getCategoryTypes
 from utils import getSharesFilesList
-from utils import localActorUrl
+from utils import local_actor_url
 from media import processMetaData
 from media import convertImageToLowBandwidth
 from filters import isFilteredGlobally
@@ -287,7 +287,7 @@ def _indicateNewShareAvailable(base_dir: str, http_prefix: str,
                              nickname, domain, None):
                     continue
             localActor = \
-                localActorUrl(http_prefix, accountNickname, domain_full)
+                local_actor_url(http_prefix, accountNickname, domain_full)
             try:
                 with open(newShareFile, 'w+') as fp:
                     if sharesFileType == 'shares':
@@ -327,7 +327,7 @@ def addShare(base_dir: str,
     durationSec = _addShareDurationSec(duration, published)
 
     domain_full = getFullDomain(domain, port)
-    actor = localActorUrl(http_prefix, nickname, domain_full)
+    actor = local_actor_url(http_prefix, nickname, domain_full)
     itemID = _getValidSharedItemID(actor, displayName)
     dfcId = _getshareDfcId(base_dir, system_language,
                            itemType, itemCategory, translate,
@@ -499,7 +499,7 @@ def getSharesFeedForPerson(base_dir: str,
             sharesJson = loadJson(sharesFilename)
             if sharesJson:
                 noOfShares = len(sharesJson.items())
-        idStr = localActorUrl(http_prefix, nickname, domain)
+        idStr = local_actor_url(http_prefix, nickname, domain)
         shares = {
             '@context': 'https://www.w3.org/ns/activitystreams',
             'first': idStr + '/' + sharesFileType + '?page=1',
@@ -513,7 +513,7 @@ def getSharesFeedForPerson(base_dir: str,
         pageNumber = 1
 
     nextPageNumber = int(pageNumber + 1)
-    idStr = localActorUrl(http_prefix, nickname, domain)
+    idStr = local_actor_url(http_prefix, nickname, domain)
     shares = {
         '@context': 'https://www.w3.org/ns/activitystreams',
         'id': idStr + '/' + sharesFileType + '?page=' + str(pageNumber),
@@ -546,7 +546,7 @@ def getSharesFeedForPerson(base_dir: str,
         lastPage = 1
     if nextPageNumber > lastPage:
         shares['next'] = \
-            localActorUrl(http_prefix, nickname, domain) + \
+            local_actor_url(http_prefix, nickname, domain) + \
             '/' + sharesFileType + '?page=' + str(lastPage)
     return shares
 
@@ -578,7 +578,7 @@ def sendShareViaServer(base_dir, session,
 
     fromDomainFull = getFullDomain(fromDomain, fromPort)
 
-    actor = localActorUrl(http_prefix, fromNickname, fromDomainFull)
+    actor = local_actor_url(http_prefix, fromNickname, fromDomainFull)
     toUrl = 'https://www.w3.org/ns/activitystreams#Public'
     ccUrl = actor + '/followers'
 
@@ -691,7 +691,7 @@ def sendUndoShareViaServer(base_dir: str, session,
 
     fromDomainFull = getFullDomain(fromDomain, fromPort)
 
-    actor = localActorUrl(http_prefix, fromNickname, fromDomainFull)
+    actor = local_actor_url(http_prefix, fromNickname, fromDomainFull)
     toUrl = 'https://www.w3.org/ns/activitystreams#Public'
     ccUrl = actor + '/followers'
 
@@ -798,7 +798,7 @@ def sendWantedViaServer(base_dir, session,
 
     fromDomainFull = getFullDomain(fromDomain, fromPort)
 
-    actor = localActorUrl(http_prefix, fromNickname, fromDomainFull)
+    actor = local_actor_url(http_prefix, fromNickname, fromDomainFull)
     toUrl = 'https://www.w3.org/ns/activitystreams#Public'
     ccUrl = actor + '/followers'
 
@@ -911,7 +911,7 @@ def sendUndoWantedViaServer(base_dir: str, session,
 
     fromDomainFull = getFullDomain(fromDomain, fromPort)
 
-    actor = localActorUrl(http_prefix, fromNickname, fromDomainFull)
+    actor = local_actor_url(http_prefix, fromNickname, fromDomainFull)
     toUrl = 'https://www.w3.org/ns/activitystreams#Public'
     ccUrl = actor + '/followers'
 
@@ -1011,7 +1011,7 @@ def getSharedItemsCatalogViaServer(base_dir, session,
         'Accept': 'application/json'
     }
     domain_full = getFullDomain(domain, port)
-    url = localActorUrl(http_prefix, nickname, domain_full) + '/catalog'
+    url = local_actor_url(http_prefix, nickname, domain_full) + '/catalog'
     if debug:
         print('Shared items catalog request to: ' + url)
     catalogJson = getJson(signing_priv_key_pem, session, url, headers, None,
@@ -1172,7 +1172,7 @@ def sharesCatalogAccountEndpoint(base_dir: str, http_prefix: str,
     dfcPtUrl = \
         http_prefix + '://' + domain_full + \
         '/ontologies/DFC_ProductGlossary.rdf#'
-    owner = localActorUrl(http_prefix, nickname, domain_full)
+    owner = local_actor_url(http_prefix, nickname, domain_full)
     if sharesFileType == 'shares':
         dfcInstanceId = owner + '/catalog'
     else:
@@ -1283,7 +1283,7 @@ def sharesCatalogEndpoint(base_dir: str, http_prefix: str,
                 continue
             nickname = acct.split('@')[0]
             domain = acct.split('@')[1]
-            owner = localActorUrl(http_prefix, nickname, domain_full)
+            owner = local_actor_url(http_prefix, nickname, domain_full)
 
             sharesFilename = \
                 acctDir(base_dir, nickname, domain) + '/' + \

@@ -59,7 +59,7 @@ from utils import saveJson
 from utils import undoLikesCollectionEntry
 from utils import undoReactionCollectionEntry
 from utils import hasGroupType
-from utils import localActorUrl
+from utils import local_actor_url
 from utils import hasObjectStringType
 from categories import getHashtagCategories
 from categories import setHashtagCategory
@@ -186,7 +186,7 @@ def _updateCachedHashtagSwarm(base_dir: str, nickname: str, domain: str,
         else:
             print('WARN: no modified date for ' + str(lastModified))
     if saveSwarm:
-        actor = localActorUrl(http_prefix, nickname, domain_full)
+        actor = local_actor_url(http_prefix, nickname, domain_full)
         newSwarmStr = htmlHashTagSwarm(base_dir, actor, translate)
         if newSwarmStr:
             try:
@@ -544,7 +544,7 @@ def savePostToInboxQueue(base_dir: str, http_prefix: str,
         if actor:
             postId = actor + '/statuses/' + statusNumber
         else:
-            postId = localActorUrl(http_prefix, nickname, originalDomain) + \
+            postId = local_actor_url(http_prefix, nickname, originalDomain) + \
                 '/statuses/' + statusNumber
 
     # NOTE: don't change post_json_object['id'] before signature check
@@ -2651,7 +2651,7 @@ def _sendToGroupMembers(session, base_dir: str, handle: str, port: int,
     nickname = handle.split('@')[0].replace('!', '')
     domain = handle.split('@')[1]
     domain_full = getFullDomain(domain, port)
-    groupActor = localActorUrl(http_prefix, nickname, domain_full)
+    groupActor = local_actor_url(http_prefix, nickname, domain_full)
     if groupActor not in post_json_object['to']:
         return
     cc = ''
@@ -2904,7 +2904,7 @@ def _isValidDM(base_dir: str, nickname: str, domain: str, port: int,
     if not os.path.isfile(followDMsFilename):
         # dm index will be updated
         updateIndexList.append('dm')
-        actUrl = localActorUrl(http_prefix, nickname, domain)
+        actUrl = local_actor_url(http_prefix, nickname, domain)
         _dmNotify(base_dir, handle, actUrl + '/dm')
         return True
 
@@ -2975,7 +2975,7 @@ def _isValidDM(base_dir: str, nickname: str, domain: str, port: int,
 
     # dm index will be updated
     updateIndexList.append('dm')
-    actUrl = localActorUrl(http_prefix, nickname, domain)
+    actUrl = local_actor_url(http_prefix, nickname, domain)
     _dmNotify(base_dir, handle, actUrl + '/dm')
     return True
 
@@ -3108,7 +3108,7 @@ def _createReplyNotificationFile(base_dir: str, nickname: str, domain: str,
                                   default_reply_interval_hrs)
         if canReplyTo(base_dir, nickname, domain, inReplyTo,
                       replyIntervalHours):
-            actUrl = localActorUrl(http_prefix, nickname, domain)
+            actUrl = local_actor_url(http_prefix, nickname, domain)
             _replyNotify(base_dir, handle, actUrl + '/tlreplies')
         else:
             if debug:
@@ -3148,7 +3148,7 @@ def _lowFrequencyPostNotification(base_dir: str, http_prefix: str,
         postId = removeIdEnding(jsonObj['id'])
         domFull = getFullDomain(domain, port)
         postLink = \
-            localActorUrl(http_prefix, nickname, domFull) + \
+            local_actor_url(http_prefix, nickname, domFull) + \
             '?notifypost=' + postId.replace('/', '-')
         _notifyPostArrival(base_dir, handle, postLink)
 
@@ -3495,7 +3495,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                     return False
 
             # get the actor being replied to
-            actor = localActorUrl(http_prefix, nickname, domain_full)
+            actor = local_actor_url(http_prefix, nickname, domain_full)
 
             # create a reply notification file if needed
             isReplyToMutedPost = \

@@ -29,7 +29,7 @@ from utils import isAccountDir
 from utils import getUserPaths
 from utils import acctDir
 from utils import hasGroupType
-from utils import localActorUrl
+from utils import local_actor_url
 from acceptreject import createAccept
 from acceptreject import createReject
 from webfinger import webfingerHandle
@@ -70,7 +70,7 @@ def createInitialLastSeen(base_dir: str, http_prefix: str) -> None:
                 domain = handle.split('@')[1]
                 if nickname.startswith('!'):
                     nickname = nickname[1:]
-                actor = localActorUrl(http_prefix, nickname, domain)
+                actor = local_actor_url(http_prefix, nickname, domain)
                 lastSeenFilename = \
                     lastSeenDir + '/' + actor.replace('/', '#') + '.txt'
                 if not os.path.isfile(lastSeenFilename):
@@ -468,10 +468,10 @@ def getFollowingFeed(base_dir: str, domain: str, port: int, path: str,
 
     if headerOnly:
         firstStr = \
-            localActorUrl(http_prefix, nickname, domain) + \
+            local_actor_url(http_prefix, nickname, domain) + \
             '/' + followFile + '?page=1'
         idStr = \
-            localActorUrl(http_prefix, nickname, domain) + '/' + followFile
+            local_actor_url(http_prefix, nickname, domain) + '/' + followFile
         totalStr = \
             _getNoOfFollows(base_dir, nickname, domain, authorized)
         following = {
@@ -488,10 +488,10 @@ def getFollowingFeed(base_dir: str, domain: str, port: int, path: str,
 
     nextPageNumber = int(pageNumber + 1)
     idStr = \
-        localActorUrl(http_prefix, nickname, domain) + \
+        local_actor_url(http_prefix, nickname, domain) + \
         '/' + followFile + '?page=' + str(pageNumber)
     partOfStr = \
-        localActorUrl(http_prefix, nickname, domain) + '/' + followFile
+        local_actor_url(http_prefix, nickname, domain) + '/' + followFile
     following = {
         '@context': 'https://www.w3.org/ns/activitystreams',
         'id': idStr,
@@ -529,7 +529,7 @@ def getFollowingFeed(base_dir: str, domain: str, port: int, path: str,
                     dom = line2.split('@')[1]
                     if not nick.startswith('!'):
                         # person actor
-                        url = localActorUrl(http_prefix, nick, dom)
+                        url = local_actor_url(http_prefix, nick, dom)
                     else:
                         # group actor
                         url = http_prefix + '://' + dom + '/c/' + nick
@@ -553,7 +553,7 @@ def getFollowingFeed(base_dir: str, domain: str, port: int, path: str,
         lastPage = 1
     if nextPageNumber > lastPage:
         following['next'] = \
-            localActorUrl(http_prefix, nickname, domain) + \
+            local_actor_url(http_prefix, nickname, domain) + \
             '/' + followFile + '?page=' + str(lastPage)
     return following
 
@@ -863,7 +863,7 @@ def sendFollowRequest(session, base_dir: str,
         return None
 
     fullDomain = getFullDomain(domain, port)
-    followActor = localActorUrl(http_prefix, nickname, fullDomain)
+    followActor = local_actor_url(http_prefix, nickname, fullDomain)
 
     requestDomain = getFullDomain(followDomain, followPort)
 
@@ -956,7 +956,7 @@ def sendFollowRequestViaServer(base_dir: str, session,
 
     followDomainFull = getFullDomain(followDomain, followPort)
 
-    followActor = localActorUrl(http_prefix, fromNickname, fromDomainFull)
+    followActor = local_actor_url(http_prefix, fromNickname, fromDomainFull)
     followedId = \
         http_prefix + '://' + followDomainFull + '/@' + followNickname
 
@@ -1045,7 +1045,7 @@ def sendUnfollowRequestViaServer(base_dir: str, session,
     fromDomainFull = getFullDomain(fromDomain, fromPort)
     followDomainFull = getFullDomain(followDomain, followPort)
 
-    followActor = localActorUrl(http_prefix, fromNickname, fromDomainFull)
+    followActor = local_actor_url(http_prefix, fromNickname, fromDomainFull)
     followedId = \
         http_prefix + '://' + followDomainFull + '/@' + followNickname
     statusNumber, published = getStatusNumber()
@@ -1138,7 +1138,7 @@ def getFollowingViaServer(base_dir: str, session,
         return 6
 
     domain_full = getFullDomain(domain, port)
-    followActor = localActorUrl(http_prefix, nickname, domain_full)
+    followActor = local_actor_url(http_prefix, nickname, domain_full)
 
     authHeader = createBasicAuthHeader(nickname, password)
 
@@ -1179,7 +1179,7 @@ def getFollowersViaServer(base_dir: str, session,
         return 6
 
     domain_full = getFullDomain(domain, port)
-    followActor = localActorUrl(http_prefix, nickname, domain_full)
+    followActor = local_actor_url(http_prefix, nickname, domain_full)
 
     authHeader = createBasicAuthHeader(nickname, password)
 
@@ -1221,7 +1221,7 @@ def getFollowRequestsViaServer(base_dir: str, session,
 
     domain_full = getFullDomain(domain, port)
 
-    followActor = localActorUrl(http_prefix, nickname, domain_full)
+    followActor = local_actor_url(http_prefix, nickname, domain_full)
     authHeader = createBasicAuthHeader(nickname, password)
 
     headers = {
@@ -1263,7 +1263,7 @@ def approveFollowRequestViaServer(base_dir: str, session,
         return 6
 
     domain_full = getFullDomain(domain, port)
-    actor = localActorUrl(http_prefix, nickname, domain_full)
+    actor = local_actor_url(http_prefix, nickname, domain_full)
 
     authHeader = createBasicAuthHeader(nickname, password)
 
@@ -1304,7 +1304,7 @@ def denyFollowRequestViaServer(base_dir: str, session,
         return 6
 
     domain_full = getFullDomain(domain, port)
-    actor = localActorUrl(http_prefix, nickname, domain_full)
+    actor = local_actor_url(http_prefix, nickname, domain_full)
 
     authHeader = createBasicAuthHeader(nickname, password)
 

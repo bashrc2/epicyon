@@ -15,7 +15,7 @@ from utils import getConfigParam
 from utils import getImageExtensions
 from utils import getImageFormats
 from utils import acctDir
-from utils import localActorUrl
+from utils import local_actor_url
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from webapp_utils import editTextField
@@ -76,7 +76,7 @@ def htmlWelcomeProfile(base_dir: str, nickname: str, domain: str,
         if os.path.isfile(avatarFilename):
             break
     avatarUrl = \
-        localActorUrl(http_prefix, nickname, domain_full) + '/avatar.' + ext
+        local_actor_url(http_prefix, nickname, domain_full) + '/avatar.' + ext
 
     imageFormats = getImageFormats()
     profileForm += '<div class="container">' + profileText + '</div>\n'

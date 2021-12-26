@@ -19,7 +19,7 @@ from utils import getDomainFromActor
 from utils import loadJson
 from utils import saveJson
 from utils import acctDir
-from utils import localActorUrl
+from utils import local_actor_url
 from utils import hasActor
 
 
@@ -92,7 +92,7 @@ def sendAvailabilityViaServer(base_dir: str, session,
 
     domain_full = getFullDomain(domain, port)
 
-    toUrl = localActorUrl(http_prefix, nickname, domain_full)
+    toUrl = local_actor_url(http_prefix, nickname, domain_full)
     ccUrl = toUrl + '/followers'
 
     newAvailabilityJson = {

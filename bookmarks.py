@@ -25,7 +25,7 @@ from utils import loadJson
 from utils import saveJson
 from utils import hasObjectDict
 from utils import acctDir
-from utils import localActorUrl
+from utils import local_actor_url
 from utils import hasActor
 from utils import hasObjectStringType
 from posts import getPersonBox
@@ -270,7 +270,7 @@ def bookmark(recentPostsCache: {},
     newBookmarkJson = {
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Bookmark',
-        'actor': localActorUrl(http_prefix, nickname, fullDomain),
+        'actor': local_actor_url(http_prefix, nickname, fullDomain),
         'object': objectUrl
     }
     if ccList:
@@ -329,10 +329,10 @@ def undoBookmark(recentPostsCache: {},
     newUndoBookmarkJson = {
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Undo',
-        'actor': localActorUrl(http_prefix, nickname, fullDomain),
+        'actor': local_actor_url(http_prefix, nickname, fullDomain),
         'object': {
             'type': 'Bookmark',
-            'actor': localActorUrl(http_prefix, nickname, fullDomain),
+            'actor': local_actor_url(http_prefix, nickname, fullDomain),
             'object': objectUrl
         }
     }
@@ -385,7 +385,7 @@ def sendBookmarkViaServer(base_dir: str, session,
 
     domain_full = getFullDomain(domain, fromPort)
 
-    actor = localActorUrl(http_prefix, nickname, domain_full)
+    actor = local_actor_url(http_prefix, nickname, domain_full)
 
     newBookmarkJson = {
         "@context": "https://www.w3.org/ns/activitystreams",
@@ -475,7 +475,7 @@ def sendUndoBookmarkViaServer(base_dir: str, session,
 
     domain_full = getFullDomain(domain, fromPort)
 
-    actor = localActorUrl(http_prefix, nickname, domain_full)
+    actor = local_actor_url(http_prefix, nickname, domain_full)
 
     newBookmarkJson = {
         "@context": "https://www.w3.org/ns/activitystreams",

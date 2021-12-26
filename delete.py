@@ -19,7 +19,7 @@ from utils import getDomainFromActor
 from utils import locatePost
 from utils import deletePost
 from utils import removeModerationPostFromIndex
-from utils import localActorUrl
+from utils import local_actor_url
 from session import postJson
 from webfinger import webfingerHandle
 from auth import createBasicAuthHeader
@@ -41,7 +41,7 @@ def sendDeleteViaServer(base_dir: str, session,
 
     fromDomainFull = getFullDomain(fromDomain, fromPort)
 
-    actor = localActorUrl(http_prefix, fromNickname, fromDomainFull)
+    actor = local_actor_url(http_prefix, fromNickname, fromDomainFull)
     toUrl = 'https://www.w3.org/ns/activitystreams#Public'
     ccUrl = actor + '/followers'
 

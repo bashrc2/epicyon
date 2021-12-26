@@ -22,7 +22,7 @@ from utils import locatePost
 from utils import saveJson
 from utils import undoAnnounceCollectionEntry
 from utils import updateAnnounceCollection
-from utils import localActorUrl
+from utils import local_actor_url
 from utils import replaceUsersWithAt
 from utils import hasActor
 from utils import hasObjectStringType
@@ -139,11 +139,11 @@ def createAnnounce(session, base_dir: str, federation_list: [],
     statusNumber, published = getStatusNumber()
     newAnnounceId = http_prefix + '://' + fullDomain + \
         '/users/' + nickname + '/statuses/' + statusNumber
-    atomUriStr = localActorUrl(http_prefix, nickname, fullDomain) + \
+    atomUriStr = local_actor_url(http_prefix, nickname, fullDomain) + \
         '/statuses/' + statusNumber
     newAnnounce = {
         "@context": "https://www.w3.org/ns/activitystreams",
-        'actor': localActorUrl(http_prefix, nickname, fullDomain),
+        'actor': local_actor_url(http_prefix, nickname, fullDomain),
         'atomUri': atomUriStr,
         'cc': [],
         'id': newAnnounceId + '/activity',
@@ -198,7 +198,7 @@ def announcePublic(session, base_dir: str, federation_list: [],
     fromDomain = getFullDomain(domain, port)
 
     toUrl = 'https://www.w3.org/ns/activitystreams#Public'
-    ccUrl = localActorUrl(http_prefix, nickname, fromDomain) + '/followers'
+    ccUrl = local_actor_url(http_prefix, nickname, fromDomain) + '/followers'
     return createAnnounce(session, base_dir, federation_list,
                           nickname, domain, port,
                           toUrl, ccUrl, http_prefix,
@@ -225,7 +225,7 @@ def sendAnnounceViaServer(base_dir: str, session,
     fromDomainFull = getFullDomain(fromDomain, fromPort)
 
     toUrl = 'https://www.w3.org/ns/activitystreams#Public'
-    actorStr = localActorUrl(http_prefix, fromNickname, fromDomainFull)
+    actorStr = local_actor_url(http_prefix, fromNickname, fromDomainFull)
     ccUrl = actorStr + '/followers'
 
     statusNumber, published = getStatusNumber()
@@ -317,7 +317,7 @@ def sendUndoAnnounceViaServer(base_dir: str, session,
 
     domain_full = getFullDomain(domain, port)
 
-    actor = localActorUrl(http_prefix, nickname, domain_full)
+    actor = local_actor_url(http_prefix, nickname, domain_full)
     handle = replaceUsersWithAt(actor)
 
     statusNumber, published = getStatusNumber()

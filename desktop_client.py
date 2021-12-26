@@ -25,7 +25,7 @@ from utils import removeHtml
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import isPGPEncrypted
-from utils import localActorUrl
+from utils import local_actor_url
 from session import createSession
 from speaker import speakableText
 from speaker import getSpeakerPitch
@@ -1409,7 +1409,7 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                 system_language, espeak)
 
     domain_full = getFullDomain(domain, port)
-    yourActor = localActorUrl(http_prefix, nickname, domain_full)
+    yourActor = local_actor_url(http_prefix, nickname, domain_full)
     actorJson = None
 
     notifyJson = {
@@ -2010,8 +2010,9 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                                 blockDomain = blockHandle.split('@')[1]
                                 blockNickname = blockHandle.split('@')[0]
                                 blockActor = \
-                                    localActorUrl(http_prefix,
-                                                  blockNickname, blockDomain)
+                                    local_actor_url(http_prefix,
+                                                    blockNickname,
+                                                    blockDomain)
                 if currIndex > 0 and boxJson and not blockActor:
                     post_json_object = \
                         _desktopGetBoxPostObject(boxJson, currIndex)

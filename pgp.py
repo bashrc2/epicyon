@@ -15,7 +15,7 @@ from utils import containsPGPPublicKey
 from utils import isPGPEncrypted
 from utils import getFullDomain
 from utils import getStatusNumber
-from utils import localActorUrl
+from utils import local_actor_url
 from utils import replaceUsersWithAt
 from webfinger import webfingerHandle
 from posts import getPersonBox
@@ -500,7 +500,7 @@ def pgpPublicKeyUpload(base_dir: str, session,
     if debug:
         print('Actor for ' + handle + ' obtained')
 
-    actor = localActorUrl(http_prefix, nickname, domain_full)
+    actor = local_actor_url(http_prefix, nickname, domain_full)
     handle = replaceUsersWithAt(actor)
 
     # check that this looks like the correct actor

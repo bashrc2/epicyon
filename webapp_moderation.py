@@ -16,7 +16,7 @@ from utils import loadJson
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import getConfigParam
-from utils import localActorUrl
+from utils import local_actor_url
 from posts import downloadFollowCollection
 from posts import getPublicPostInfo
 from posts import isModerator
@@ -108,7 +108,7 @@ def htmlAccountInfo(cssCache: {}, translate: {},
 
     searchHandle = searchNickname + '@' + searchDomain
     searchActor = \
-        localActorUrl(http_prefix, searchNickname, searchDomain)
+        local_actor_url(http_prefix, searchNickname, searchDomain)
     infoForm += \
         '<center><h1><a href="/users/' + nickname + '/moderation">' + \
         translate['Account Information'] + ':</a> <a href="' + searchActor + \

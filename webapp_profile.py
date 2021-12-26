@@ -27,7 +27,7 @@ from utils import getConfigParam
 from utils import getImageFormats
 from utils import acctDir
 from utils import getSupportedLanguages
-from utils import localActorUrl
+from utils import local_actor_url
 from utils import getReplyIntervalHours
 from languages import getActorLanguages
 from skills import getSkills
@@ -419,7 +419,7 @@ def _getProfileHeader(base_dir: str, http_prefix: str,
         otherAccountsHtml = \
             '    <p>' + translate['Other accounts'] + ': '
 
-        actor = localActorUrl(http_prefix, nickname, domain_full)
+        actor = local_actor_url(http_prefix, nickname, domain_full)
         ctr = 0
         if isinstance(alsoKnownAs, list):
             for altActor in alsoKnownAs:
@@ -755,7 +755,7 @@ def htmlProfile(signing_priv_key_pem: str,
                                 nick = followerHandle.split('@')[0]
                                 dom = followerHandle.split('@')[1]
                                 followerActor = \
-                                    localActorUrl(http_prefix, nick, dom)
+                                    local_actor_url(http_prefix, nick, dom)
 
                             # is this a new domain?
                             # if so then append a new instance indicator

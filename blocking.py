@@ -31,7 +31,7 @@ from utils import evilIncarnate
 from utils import getDomainFromActor
 from utils import getNicknameFromActor
 from utils import acctDir
-from utils import localActorUrl
+from utils import local_actor_url
 from utils import hasActor
 from conversation import muteConversation
 from conversation import unmuteConversation
@@ -544,7 +544,7 @@ def mutePost(base_dir: str, nickname: str, domain: str, port: int,
             alsoUpdatePostId = removeIdEnding(post_json_object['object'])
 
     domain_full = getFullDomain(domain, port)
-    actor = localActorUrl(http_prefix, nickname, domain_full)
+    actor = local_actor_url(http_prefix, nickname, domain_full)
 
     if postJsonObj.get('conversation'):
         muteConversation(base_dir, nickname, domain,
@@ -688,7 +688,7 @@ def unmutePost(base_dir: str, nickname: str, domain: str, port: int,
 
     if postJsonObj.get('ignores'):
         domain_full = getFullDomain(domain, port)
-        actor = localActorUrl(http_prefix, nickname, domain_full)
+        actor = local_actor_url(http_prefix, nickname, domain_full)
         totalItems = 0
         if postJsonObj['ignores'].get('totalItems'):
             totalItems = postJsonObj['ignores']['totalItems']
@@ -907,13 +907,13 @@ def setBrochMode(base_dir: str, domain_full: str, enabled: bool) -> None:
             return
         # generate instance allow list
         allowedDomains = [domain_full]
-        followFiles = ('following.txt', 'followers.txt')
+        follow_files = ('following.txt', 'followers.txt')
         for subdir, dirs, files in os.walk(base_dir + '/accounts'):
             for acct in dirs:
                 if not isAccountDir(acct):
                     continue
                 accountDir = os.path.join(base_dir + '/accounts', acct)
-                for followFileType in followFiles:
+                for followFileType in follow_files:
                     followingFilename = accountDir + '/' + followFileType
                     if not os.path.isfile(followingFilename):
                         continue

@@ -58,7 +58,7 @@ from utils import isImageFile
 from utils import acctDir
 from utils import getUserPaths
 from utils import getGroupPaths
-from utils import localActorUrl
+from utils import local_actor_url
 from utils import dangerousSVG
 from session import createSession
 from session import getJson
@@ -149,7 +149,7 @@ def setProfileImage(base_dir: str, http_prefix: str,
     if personJson:
         personJson[iconFilenameBase]['mediaType'] = mediaType
         personJson[iconFilenameBase]['url'] = \
-            localActorUrl(http_prefix, nickname, fullDomain) + \
+            local_actor_url(http_prefix, nickname, fullDomain) + \
             '/' + iconFilename
         saveJson(personJson, personFilename)
 
@@ -374,7 +374,7 @@ def _createPersonBase(base_dir: str, nickname: str, domain: str, port: int,
     # Enable follower approval by default
     approveFollowers = manual_follower_approval
     personName = nickname
-    personId = localActorUrl(http_prefix, nickname, domain)
+    personId = local_actor_url(http_prefix, nickname, domain)
     inboxStr = personId + '/inbox'
     personUrl = http_prefix + '://' + domain + '/@' + personName
     if nickname == 'inbox':

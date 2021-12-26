@@ -23,7 +23,7 @@ from utils import getDomainFromActor
 from utils import locatePost
 from utils import undoLikesCollectionEntry
 from utils import hasGroupType
-from utils import localActorUrl
+from utils import local_actor_url
 from utils import loadJson
 from utils import saveJson
 from utils import removePostFromCache
@@ -91,7 +91,7 @@ def _like(recentPostsCache: {},
     newLikeJson = {
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Like',
-        'actor': localActorUrl(http_prefix, nickname, fullDomain),
+        'actor': local_actor_url(http_prefix, nickname, fullDomain),
         'object': objectUrl
     }
     if ccList:
@@ -158,7 +158,7 @@ def likePost(recentPostsCache: {},
     """
     likeDomain = getFullDomain(likeDomain, likePort)
 
-    actorLiked = localActorUrl(http_prefix, likeNickname, likeDomain)
+    actorLiked = local_actor_url(http_prefix, likeNickname, likeDomain)
     objectUrl = actorLiked + '/statuses/' + str(likeStatusNumber)
 
     return _like(recentPostsCache,
@@ -183,7 +183,7 @@ def sendLikeViaServer(base_dir: str, session,
 
     fromDomainFull = getFullDomain(fromDomain, fromPort)
 
-    actor = localActorUrl(http_prefix, fromNickname, fromDomainFull)
+    actor = local_actor_url(http_prefix, fromNickname, fromDomainFull)
 
     newLikeJson = {
         "@context": "https://www.w3.org/ns/activitystreams",
@@ -266,7 +266,7 @@ def sendUndoLikeViaServer(base_dir: str, session,
 
     fromDomainFull = getFullDomain(fromDomain, fromPort)
 
-    actor = localActorUrl(http_prefix, fromNickname, fromDomainFull)
+    actor = local_actor_url(http_prefix, fromNickname, fromDomainFull)
 
     newUndoLikeJson = {
         "@context": "https://www.w3.org/ns/activitystreams",

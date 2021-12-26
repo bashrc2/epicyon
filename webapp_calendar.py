@@ -20,7 +20,7 @@ from utils import weekDayOfMonthStart
 from utils import getAltPath
 from utils import removeDomainPort
 from utils import acctDir
-from utils import localActorUrl
+from utils import local_actor_url
 from utils import replaceUsersWithAt
 from happening import getTodaysEvents
 from happening import getCalendarEvents
@@ -39,7 +39,7 @@ def htmlCalendarDeleteConfirm(cssCache: {}, translate: {}, base_dir: str,
     """Shows a screen asking to confirm the deletion of a calendar event
     """
     nickname = getNicknameFromActor(path)
-    actor = localActorUrl(http_prefix, nickname, domain_full)
+    actor = local_actor_url(http_prefix, nickname, domain_full)
     domain, port = getDomainFromActor(actor)
     messageId = actor + '/statuses/' + postId
 

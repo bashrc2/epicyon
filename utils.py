@@ -28,7 +28,7 @@ INVALID_CHARACTERS = (
 )
 
 
-def localActorUrl(http_prefix: str, nickname: str, domain_full: str) -> str:
+def local_actor_url(http_prefix: str, nickname: str, domain_full: str) -> str:
     """Returns the url for an actor on this instance
     """
     return http_prefix + '://' + domain_full + '/users/' + nickname

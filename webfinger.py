@@ -20,7 +20,7 @@ from utils import getProtocolPrefixes
 from utils import removeDomainPort
 from utils import getUserPaths
 from utils import getGroupPaths
-from utils import localActorUrl
+from utils import local_actor_url
 
 
 def _parseHandle(handle: str) -> (str, str, bool):
@@ -139,7 +139,7 @@ def createWebfingerEndpoint(nickname: str, domain: str, port: int,
     domain = getFullDomain(domain, port)
 
     personName = nickname
-    personId = localActorUrl(http_prefix, personName, domain)
+    personId = local_actor_url(http_prefix, personName, domain)
     subjectStr = "acct:" + personName + "@" + originalDomain
     profilePageHref = http_prefix + "://" + domain + "/@" + nickname
     if nickname == 'inbox' or nickname == originalDomain:

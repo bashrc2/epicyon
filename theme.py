@@ -15,7 +15,7 @@ from utils import getImageExtensions
 from utils import copytree
 from utils import acctDir
 from utils import dangerousSVG
-from utils import localActorUrl
+from utils import local_actor_url
 from shutil import copyfile
 from shutil import make_archive
 from shutil import unpack_archive
@@ -788,7 +788,7 @@ def setNewsAvatar(base_dir: str, name: str,
     if not os.path.isfile(newFilename):
         return
     avatarFilename = \
-        localActorUrl(http_prefix, domain_full, nickname) + '.png'
+        local_actor_url(http_prefix, domain_full, nickname) + '.png'
     avatarFilename = avatarFilename.replace('/', '-')
     filename = base_dir + '/cache/avatars/' + avatarFilename
 

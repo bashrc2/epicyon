@@ -20,7 +20,7 @@ from utils import loadJson
 from utils import getOccupationSkills
 from utils import setOccupationSkillsList
 from utils import acctDir
-from utils import localActorUrl
+from utils import local_actor_url
 from utils import hasActor
 
 
@@ -187,7 +187,7 @@ def sendSkillViaServer(base_dir: str, session, nickname: str, password: str,
 
     domain_full = getFullDomain(domain, port)
 
-    actor = localActorUrl(http_prefix, nickname, domain_full)
+    actor = local_actor_url(http_prefix, nickname, domain_full)
     toUrl = actor
     ccUrl = actor + '/followers'
 

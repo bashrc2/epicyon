@@ -23,7 +23,7 @@ from utils import isfloat
 from utils import getAudioExtensions
 from utils import getVideoExtensions
 from utils import getImageExtensions
-from utils import localActorUrl
+from utils import local_actor_url
 from cache import storePersonInCache
 from content import addHtmlTags
 from content import replaceEmojiFromTags
@@ -802,7 +802,7 @@ def htmlHeaderWithBlogMarkup(cssFilename: str, instanceTitle: str,
     """html header which includes blog post markup
     https://schema.org/BlogPosting
     """
-    authorUrl = localActorUrl(http_prefix, nickname, domain)
+    authorUrl = local_actor_url(http_prefix, nickname, domain)
     aboutUrl = http_prefix + '://' + domain + '/about.html'
 
     # license for content on the site may be different from
@@ -1448,7 +1448,7 @@ def htmlSearchResultShare(base_dir: str, sharedItem: {}, translate: {},
                 contactTitleStr = translate['Buy']
     sharedItemsForm += '</p>\n'
     contactActor = \
-        localActorUrl(http_prefix, contactNickname, domain_full)
+        local_actor_url(http_prefix, contactNickname, domain_full)
     buttonStyleStr = 'button'
     if category == 'accommodation':
         contactTitleStr = translate['Request to stay']
@@ -1545,7 +1545,7 @@ def htmlShowShare(base_dir: str, domain: str, nickname: str,
     if not sharesJson.get(itemID):
         return None
     sharedItem = sharesJson[itemID]
-    actor = localActorUrl(http_prefix, nickname, domain_full)
+    actor = local_actor_url(http_prefix, nickname, domain_full)
 
     # filename of the banner shown at the top
     bannerFile, bannerFilename = \

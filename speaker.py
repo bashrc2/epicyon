@@ -25,7 +25,7 @@ from utils import saveJson
 from utils import isPGPEncrypted
 from utils import hasObjectDict
 from utils import acctDir
-from utils import localActorUrl
+from utils import local_actor_url
 from content import htmlReplaceQuoteMarks
 
 speakerRemoveChars = ('.\n', '. ', ',', ';', '?', '!')
@@ -454,7 +454,7 @@ def _postToSpeakerJson(base_dir: str, http_prefix: str,
                             img['name'] + '. '
 
     isDirect = isDM(post_json_object)
-    actor = localActorUrl(http_prefix, nickname, domain_full)
+    actor = local_actor_url(http_prefix, nickname, domain_full)
     replyToYou = isReply(post_json_object, actor)
 
     published = ''

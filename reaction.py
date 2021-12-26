@@ -25,7 +25,7 @@ from utils import getDomainFromActor
 from utils import locatePost
 from utils import undoReactionCollectionEntry
 from utils import hasGroupType
-from utils import localActorUrl
+from utils import local_actor_url
 from utils import loadJson
 from utils import saveJson
 from utils import removePostFromCache
@@ -87,7 +87,7 @@ def _reaction(recentPostsCache: {},
     newReactionJson = {
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'EmojiReact',
-        'actor': localActorUrl(http_prefix, nickname, fullDomain),
+        'actor': local_actor_url(http_prefix, nickname, fullDomain),
         'object': objectUrl,
         'content': emojiContent
     }
@@ -161,7 +161,7 @@ def reactionPost(recentPostsCache: {},
     reactionDomain = getFullDomain(reactionDomain, reactionPort)
 
     actorReaction = \
-        localActorUrl(http_prefix, reactionNickname, reactionDomain)
+        local_actor_url(http_prefix, reactionNickname, reactionDomain)
     objectUrl = actorReaction + '/statuses/' + str(reactionStatusNumber)
 
     return _reaction(recentPostsCache,
@@ -193,7 +193,7 @@ def sendReactionViaServer(base_dir: str, session,
 
     fromDomainFull = getFullDomain(fromDomain, fromPort)
 
-    actor = localActorUrl(http_prefix, fromNickname, fromDomainFull)
+    actor = local_actor_url(http_prefix, fromNickname, fromDomainFull)
 
     newReactionJson = {
         "@context": "https://www.w3.org/ns/activitystreams",
@@ -279,7 +279,7 @@ def sendUndoReactionViaServer(base_dir: str, session,
 
     fromDomainFull = getFullDomain(fromDomain, fromPort)
 
-    actor = localActorUrl(http_prefix, fromNickname, fromDomainFull)
+    actor = local_actor_url(http_prefix, fromNickname, fromDomainFull)
 
     newUndoReactionJson = {
         "@context": "https://www.w3.org/ns/activitystreams",

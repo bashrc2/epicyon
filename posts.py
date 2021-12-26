@@ -68,7 +68,7 @@ from utils import votesOnNewswireItem
 from utils import removeHtml
 from utils import dangerousMarkup
 from utils import acctDir
-from utils import localActorUrl
+from utils import local_actor_url
 from media import attachMedia
 from media import replaceYouTube
 from media import replaceTwitter
@@ -359,7 +359,7 @@ def getPersonBox(signing_priv_key_pem: str, originDomain: str,
             }
         else:
             # the final fallback is a mastodon style url
-            personUrl = localActorUrl(http_prefix, nickname, domain)
+            personUrl = local_actor_url(http_prefix, nickname, domain)
     if not personUrl:
         return None, None, None, None, None, None, None, None
 
@@ -921,7 +921,7 @@ def savePostToBox(base_dir: str, http_prefix: str, postId: str,
     if not postId:
         statusNumber, published = getStatusNumber()
         postId = \
-            localActorUrl(http_prefix, nickname, originalDomain) + \
+            local_actor_url(http_prefix, nickname, originalDomain) + \
             '/statuses/' + statusNumber
         post_json_object['id'] = postId + '/activity'
     if hasObjectDict(post_json_object):
@@ -1076,14 +1076,14 @@ def _createPostS2S(base_dir: str, nickname: str, domain: str, port: int,
                    content_license_url: str) -> {}:
     """Creates a new server-to-server post
     """
-    actorUrl = localActorUrl(http_prefix, nickname, domain)
+    actorUrl = local_actor_url(http_prefix, nickname, domain)
     idStr = \
-        localActorUrl(http_prefix, nickname, domain) + \
+        local_actor_url(http_prefix, nickname, domain) + \
         '/statuses/' + statusNumber + '/replies'
     newPostUrl = \
         http_prefix + '://' + domain + '/@' + nickname + '/' + statusNumber
     newPostAttributedTo = \
-        localActorUrl(http_prefix, nickname, domain)
+        local_actor_url(http_prefix, nickname, domain)
     if not conversationId:
         conversationId = newPostId
     newPost = {
@@ -1153,7 +1153,7 @@ def _createPostC2S(base_dir: str, nickname: str, domain: str, port: int,
     """
     domain_full = getFullDomain(domain, port)
     idStr = \
-        localActorUrl(http_prefix, nickname, domain_full) + \
+        local_actor_url(http_prefix, nickname, domain_full) + \
         '/statuses/' + statusNumber + '/replies'
     newPostUrl = \
         http_prefix + '://' + domain + '/@' + nickname + '/' + statusNumber
@@ -1168,7 +1168,7 @@ def _createPostC2S(base_dir: str, nickname: str, domain: str, port: int,
         'inReplyTo': inReplyTo,
         'published': published,
         'url': newPostUrl,
-        'attributedTo': localActorUrl(http_prefix, nickname, domain_full),
+        'attributedTo': local_actor_url(http_prefix, nickname, domain_full),
         'to': toRecipients,
         'cc': toCC,
         'sensitive': sensitive,
@@ -1428,7 +1428,7 @@ def _createPostBase(base_dir: str,
 
     statusNumber, published = getStatusNumber()
     newPostId = \
-        localActorUrl(http_prefix, nickname, domain) + \
+        local_actor_url(http_prefix, nickname, domain) + \
         '/statuses/' + statusNumber
 
     sensitive = False
@@ -1574,7 +1574,7 @@ def outboxMessageCreateWrap(http_prefix: str,
     if message_json.get('published'):
         published = message_json['published']
     newPostId = \
-        localActorUrl(http_prefix, nickname, domain) + \
+        local_actor_url(http_prefix, nickname, domain) + \
         '/statuses/' + statusNumber
     cc = []
     if message_json.get('cc'):
@@ -1583,7 +1583,7 @@ def outboxMessageCreateWrap(http_prefix: str,
         "@context": "https://www.w3.org/ns/activitystreams",
         'id': newPostId + '/activity',
         'type': 'Create',
-        'actor': localActorUrl(http_prefix, nickname, domain),
+        'actor': local_actor_url(http_prefix, nickname, domain),
         'published': published,
         'to': message_json['to'],
         'cc': cc,
@@ -1593,7 +1593,7 @@ def outboxMessageCreateWrap(http_prefix: str,
     newPost['object']['url'] = \
         http_prefix + '://' + domain + '/@' + nickname + '/' + statusNumber
     newPost['object']['atomUri'] = \
-        localActorUrl(http_prefix, nickname, domain) + \
+        local_actor_url(http_prefix, nickname, domain) + \
         '/statuses/' + statusNumber
     return newPost
 
@@ -1623,7 +1623,7 @@ def _postIsAddressedToFollowers(base_dir: str,
             ccList = post_json_object['cc']
 
     followersUrl = \
-        localActorUrl(http_prefix, nickname, domain_full) + '/followers'
+        local_actor_url(http_prefix, nickname, domain_full) + '/followers'
 
     # does the followers url exist in 'to' or 'cc' lists?
     addressedToFollowers = False
@@ -1667,7 +1667,7 @@ def getPinnedPostAsJson(base_dir: str, http_prefix: str,
     accountDir = acctDir(base_dir, nickname, domain)
     pinnedFilename = accountDir + '/pinToProfile.txt'
     pinnedPostJson = {}
-    actor = localActorUrl(http_prefix, nickname, domain_full)
+    actor = local_actor_url(http_prefix, nickname, domain_full)
     if os.path.isfile(pinnedFilename):
         pinnedContent = None
         with open(pinnedFilename, 'r') as pinFile:
@@ -1712,7 +1712,7 @@ def jsonPinPost(base_dir: str, http_prefix: str,
     if pinnedPostJson:
         itemsList = [pinnedPostJson]
 
-    actor = localActorUrl(http_prefix, nickname, domain_full)
+    actor = local_actor_url(http_prefix, nickname, domain_full)
     postContext = getIndividualPostContext()
     return {
         '@context': postContext,
@@ -1783,7 +1783,7 @@ def createPublicPost(base_dir: str,
     anonymousParticipationEnabled = None
     eventStatus = None
     ticketUrl = None
-    localActor = localActorUrl(http_prefix, nickname, domain_full)
+    localActor = local_actor_url(http_prefix, nickname, domain_full)
     return _createPostBase(base_dir, nickname, domain, port,
                            'https://www.w3.org/ns/activitystreams#Public',
                            localActor + '/followers',
@@ -1908,7 +1908,7 @@ def createQuestionPost(base_dir: str,
     """Question post with multiple choice options
     """
     domain_full = getFullDomain(domain, port)
-    localActor = localActorUrl(http_prefix, nickname, domain_full)
+    localActor = local_actor_url(http_prefix, nickname, domain_full)
     message_json = \
         _createPostBase(base_dir, nickname, domain, port,
                         'https://www.w3.org/ns/activitystreams#Public',
@@ -1958,7 +1958,7 @@ def createUnlistedPost(base_dir: str,
     """Unlisted post. This has the #Public and followers links inverted.
     """
     domain_full = getFullDomain(domain, port)
-    localActor = localActorUrl(http_prefix, nickname, domain_full)
+    localActor = local_actor_url(http_prefix, nickname, domain_full)
     return _createPostBase(base_dir, nickname, domain, port,
                            localActor + '/followers',
                            'https://www.w3.org/ns/activitystreams#Public',
@@ -1993,7 +1993,7 @@ def createFollowersOnlyPost(base_dir: str,
     """Followers only post
     """
     domain_full = getFullDomain(domain, port)
-    localActor = localActorUrl(http_prefix, nickname, domain_full)
+    localActor = local_actor_url(http_prefix, nickname, domain_full)
     return _createPostBase(base_dir, nickname, domain, port,
                            localActor + '/followers',
                            None,
@@ -2040,7 +2040,8 @@ def getMentionedPeople(base_dir: str, http_prefix: str,
         if not validNickname(mentionedDomain, mentionedNickname):
             continue
         actor = \
-            localActorUrl(http_prefix, mentionedNickname, handle.split('@')[1])
+            local_actor_url(http_prefix, mentionedNickname,
+                            handle.split('@')[1])
         mentions.append(actor)
     return mentions
 
@@ -2135,7 +2136,7 @@ def createReportPost(base_dir: str,
                 if '@' in line:
                     nick = line.split('@')[0]
                     moderatorActor = \
-                        localActorUrl(http_prefix, nick, domain_full)
+                        local_actor_url(http_prefix, nick, domain_full)
                     if moderatorActor not in moderatorsList:
                         moderatorsList.append(moderatorActor)
                     continue
@@ -2147,14 +2148,15 @@ def createReportPost(base_dir: str,
                 else:
                     if '/' not in line:
                         moderatorActor = \
-                            localActorUrl(http_prefix, line, domain_full)
+                            local_actor_url(http_prefix, line, domain_full)
                         if moderatorActor not in moderatorsList:
                             moderatorsList.append(moderatorActor)
     if len(moderatorsList) == 0:
         # if there are no moderators then the admin becomes the moderator
         adminNickname = getConfigParam(base_dir, 'admin')
         if adminNickname:
-            localActor = localActorUrl(http_prefix, adminNickname, domain_full)
+            localActor = \
+                local_actor_url(http_prefix, adminNickname, domain_full)
             moderatorsList.append(localActor)
     if not moderatorsList:
         return None
@@ -2486,17 +2488,17 @@ def sendPostViaServer(signing_priv_key_pem: str, project_version: str,
     client_to_server = True
     if toDomain.lower().endswith('public'):
         toPersonId = 'https://www.w3.org/ns/activitystreams#Public'
-        cc = localActorUrl(http_prefix, fromNickname, fromDomainFull) + \
+        cc = local_actor_url(http_prefix, fromNickname, fromDomainFull) + \
             '/followers'
     else:
         if toDomain.lower().endswith('followers') or \
            toDomain.lower().endswith('followersonly'):
             toPersonId = \
-                localActorUrl(http_prefix, fromNickname, fromDomainFull) + \
+                local_actor_url(http_prefix, fromNickname, fromDomainFull) + \
                 '/followers'
         else:
             toDomainFull = getFullDomain(toDomain, toPort)
-            toPersonId = localActorUrl(http_prefix, toNickname, toDomainFull)
+            toPersonId = local_actor_url(http_prefix, toNickname, toDomainFull)
 
     post_json_object = \
         _createPostBase(base_dir,
@@ -3400,7 +3402,7 @@ def createModeration(base_dir: str, nickname: str, domain: str, port: int,
         pageNumber = 1
 
     pageStr = '?page=' + str(pageNumber)
-    boxUrl = localActorUrl(http_prefix, nickname, domain) + '/' + boxname
+    boxUrl = local_actor_url(http_prefix, nickname, domain) + '/' + boxname
     boxHeader = {
         '@context': 'https://www.w3.org/ns/activitystreams',
         'first': boxUrl + '?page=true',
@@ -3688,7 +3690,7 @@ def _createBoxIndexed(recentPostsCache: {},
     originalDomain = domain
     domain = getFullDomain(domain, port)
 
-    boxActor = localActorUrl(http_prefix, nickname, domain)
+    boxActor = local_actor_url(http_prefix, nickname, domain)
 
     pageStr = '?page=true'
     if pageNumber:
@@ -3700,7 +3702,7 @@ def _createBoxIndexed(recentPostsCache: {},
             print('EX: _createBoxIndexed ' +
                   'unable to convert page number to string')
             pass
-    boxUrl = localActorUrl(http_prefix, nickname, domain) + '/' + boxname
+    boxUrl = local_actor_url(http_prefix, nickname, domain) + '/' + boxname
     boxHeader = {
         '@context': 'https://www.w3.org/ns/activitystreams',
         'first': boxUrl + '?page=true',
@@ -3828,7 +3830,7 @@ def _createBoxIndexed(recentPostsCache: {},
         if lastPage < 1:
             lastPage = 1
         boxHeader['last'] = \
-            localActorUrl(http_prefix, nickname, domain) + \
+            local_actor_url(http_prefix, nickname, domain) + \
             '/' + boxname + '?page=' + str(lastPage)
 
     if headerOnly:
@@ -3837,12 +3839,12 @@ def _createBoxIndexed(recentPostsCache: {},
         if pageNumber > 1:
             prevPageStr = str(pageNumber - 1)
         boxHeader['prev'] = \
-            localActorUrl(http_prefix, nickname, domain) + \
+            local_actor_url(http_prefix, nickname, domain) + \
             '/' + boxname + '?page=' + prevPageStr
 
         nextPageStr = str(pageNumber + 1)
         boxHeader['next'] = \
-            localActorUrl(http_prefix, nickname, domain) + \
+            local_actor_url(http_prefix, nickname, domain) + \
             '/' + boxname + '?page=' + nextPageStr
         return boxHeader
 
@@ -4772,7 +4774,7 @@ def sendBlockViaServer(base_dir: str, session,
 
     fromDomainFull = getFullDomain(fromDomain, fromPort)
 
-    blockActor = localActorUrl(http_prefix, fromNickname, fromDomainFull)
+    blockActor = local_actor_url(http_prefix, fromNickname, fromDomainFull)
     toUrl = 'https://www.w3.org/ns/activitystreams#Public'
     ccUrl = blockActor + '/followers'
 
@@ -4856,7 +4858,7 @@ def sendMuteViaServer(base_dir: str, session,
 
     fromDomainFull = getFullDomain(fromDomain, fromPort)
 
-    actor = localActorUrl(http_prefix, fromNickname, fromDomainFull)
+    actor = local_actor_url(http_prefix, fromNickname, fromDomainFull)
     handle = replaceUsersWithAt(actor)
 
     newMuteJson = {
@@ -4936,7 +4938,7 @@ def sendUndoMuteViaServer(base_dir: str, session,
 
     fromDomainFull = getFullDomain(fromDomain, fromPort)
 
-    actor = localActorUrl(http_prefix, fromNickname, fromDomainFull)
+    actor = local_actor_url(http_prefix, fromNickname, fromDomainFull)
     handle = replaceUsersWithAt(actor)
 
     undoMuteJson = {
@@ -5022,7 +5024,7 @@ def sendUndoBlockViaServer(base_dir: str, session,
 
     fromDomainFull = getFullDomain(fromDomain, fromPort)
 
-    blockActor = localActorUrl(http_prefix, fromNickname, fromDomainFull)
+    blockActor = local_actor_url(http_prefix, fromNickname, fromDomainFull)
     toUrl = 'https://www.w3.org/ns/activitystreams#Public'
     ccUrl = blockActor + '/followers'
 
@@ -5138,7 +5140,7 @@ def c2sBoxJson(base_dir: str, session,
         return None
 
     domain_full = getFullDomain(domain, port)
-    actor = localActorUrl(http_prefix, nickname, domain_full)
+    actor = local_actor_url(http_prefix, nickname, domain_full)
 
     authHeader = createBasicAuthHeader(nickname, password)
 

@@ -51,7 +51,7 @@ from utils import removeIdEnding
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import acctDir
-from utils import localActorUrl
+from utils import local_actor_url
 from content import limitRepeatedWords
 from content import replaceEmojiFromTags
 from content import htmlReplaceQuoteMarks
@@ -1849,7 +1849,7 @@ def individualPostAsHtml(signing_priv_key_pem: str,
             post_json_object['object']['content']
 
     domain_full = getFullDomain(domain, port)
-    personUrl = localActorUrl(http_prefix, nickname, domain_full)
+    personUrl = local_actor_url(http_prefix, nickname, domain_full)
     actorJson = \
         getPersonFromCache(base_dir, personUrl, person_cache, False)
     languagesUnderstood = []

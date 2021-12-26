@@ -25,7 +25,7 @@ import datetime
 from utils import getFullDomain
 from utils import getSHA256
 from utils import getSHA512
-from utils import localActorUrl
+from utils import local_actor_url
 
 
 def messageContentDigest(messageBodyJsonStr: str, digestAlgorithm: str) -> str:
@@ -83,7 +83,7 @@ def signPostHeaders(dateStr: str, privateKeyPem: str,
     if not dateStr:
         dateStr = strftime("%a, %d %b %Y %H:%M:%S %Z", gmtime())
     if nickname != domain and nickname.lower() != 'actor':
-        keyID = localActorUrl(http_prefix, nickname, domain)
+        keyID = local_actor_url(http_prefix, nickname, domain)
     else:
         # instance actor
         keyID = http_prefix + '://' + domain + '/actor'
@@ -168,7 +168,7 @@ def signPostHeadersNew(dateStr: str, privateKeyPem: str,
         currTime = datetime.datetime.strptime(dateStr, timeFormat)
     secondsSinceEpoch = \
         int((currTime - datetime.datetime(1970, 1, 1)).total_seconds())
-    keyID = localActorUrl(http_prefix, nickname, domain) + '#main-key'
+    keyID = local_actor_url(http_prefix, nickname, domain) + '#main-key'
     if not messageBodyJsonStr:
         headers = {
             '@request-target': f'get {path}',
