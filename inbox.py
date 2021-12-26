@@ -33,7 +33,7 @@ from utils import acct_dir
 from utils import remove_domain_port
 from utils import get_port_from_domain
 from utils import has_object_dict
-from utils import dmAllowedFromDomain
+from utils import dm_allowed_from_domain
 from utils import isRecentPost
 from utils import get_config_param
 from utils import has_users_path
@@ -2945,9 +2945,9 @@ def _isValidDM(base_dir: str, nickname: str, domain: str, port: int,
         # check the follow
         if not isFollowingActor(base_dir, nickname, domain, sendH):
             # DMs may always be allowed from some domains
-            if not dmAllowedFromDomain(base_dir,
-                                       nickname, domain,
-                                       sendingActorDomain):
+            if not dm_allowed_from_domain(base_dir,
+                                          nickname, domain,
+                                          sendingActorDomain):
                 # send back a bounce DM
                 if post_json_object.get('id') and \
                    post_json_object.get('object'):

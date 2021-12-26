@@ -2701,20 +2701,20 @@ def loadTranslationsFromFile(base_dir: str, language: str) -> ({}, str):
     return load_json(translationsFile), system_language
 
 
-def dmAllowedFromDomain(base_dir: str,
-                        nickname: str, domain: str,
-                        sendingActorDomain: str) -> bool:
+def dm_allowed_from_domain(base_dir: str,
+                           nickname: str, domain: str,
+                           sending_actor_domain: str) -> bool:
     """When a DM is received and the .followDMs flag file exists
     Then optionally some domains can be specified as allowed,
     regardless of individual follows.
     i.e. Mostly you only want DMs from followers, but there are
     a few particular instances that you trust
     """
-    dmAllowedInstancesFilename = \
+    dm_allowed_instances_file = \
         acct_dir(base_dir, nickname, domain) + '/dmAllowedInstances.txt'
-    if not os.path.isfile(dmAllowedInstancesFilename):
+    if not os.path.isfile(dm_allowed_instances_file):
         return False
-    if sendingActorDomain + '\n' in open(dmAllowedInstancesFilename).read():
+    if sending_actor_domain + '\n' in open(dm_allowed_instances_file).read():
         return True
     return False
 
