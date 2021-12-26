@@ -122,7 +122,7 @@ def _validProfilePreviewPost(post_json_object: {},
 
 
 def htmlProfileAfterSearch(cssCache: {},
-                           recentPostsCache: {}, max_recent_posts: int,
+                           recent_posts_cache: {}, max_recent_posts: int,
                            translate: {},
                            base_dir: str, path: str, http_prefix: str,
                            nickname: str, domain: str, port: int,
@@ -334,7 +334,7 @@ def htmlProfileAfterSearch(cssCache: {},
 
             profileStr += \
                 individualPostAsHtml(signing_priv_key_pem,
-                                     True, recentPostsCache,
+                                     True, recent_posts_cache,
                                      max_recent_posts,
                                      translate, None, base_dir,
                                      session, cached_webfingers, person_cache,
@@ -545,7 +545,7 @@ def htmlProfile(signing_priv_key_pem: str,
                 rss_icon_at_top: bool,
                 cssCache: {}, icons_as_buttons: bool,
                 defaultTimeline: str,
-                recentPostsCache: {}, max_recent_posts: int,
+                recent_posts_cache: {}, max_recent_posts: int,
                 translate: {}, project_version: str,
                 base_dir: str, http_prefix: str, authorized: bool,
                 profile_json: {}, selected: str,
@@ -574,7 +574,7 @@ def htmlProfile(signing_priv_key_pem: str,
                                rss_icon_at_top,
                                cssCache, icons_as_buttons,
                                defaultTimeline,
-                               recentPostsCache, max_recent_posts,
+                               recent_posts_cache, max_recent_posts,
                                translate, project_version,
                                base_dir, http_prefix, authorized,
                                profile_json, selected,
@@ -956,7 +956,7 @@ def htmlProfile(signing_priv_key_pem: str,
 
     if selected == 'posts':
         profileStr += \
-            _htmlProfilePosts(recentPostsCache, max_recent_posts,
+            _htmlProfilePosts(recent_posts_cache, max_recent_posts,
                               translate,
                               base_dir, http_prefix, authorized,
                               nickname, domain, port,
@@ -1025,7 +1025,7 @@ def htmlProfile(signing_priv_key_pem: str,
     return profileStr
 
 
-def _htmlProfilePosts(recentPostsCache: {}, max_recent_posts: int,
+def _htmlProfilePosts(recent_posts_cache: {}, max_recent_posts: int,
                       translate: {},
                       base_dir: str, http_prefix: str,
                       authorized: bool,
@@ -1069,7 +1069,7 @@ def _htmlProfilePosts(recentPostsCache: {}, max_recent_posts: int,
             if item['type'] == 'Create':
                 postStr = \
                     individualPostAsHtml(signing_priv_key_pem,
-                                         True, recentPostsCache,
+                                         True, recent_posts_cache,
                                          max_recent_posts,
                                          translate, None,
                                          base_dir, session, cached_webfingers,

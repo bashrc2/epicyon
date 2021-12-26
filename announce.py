@@ -51,7 +51,7 @@ def isSelfAnnounce(post_json_object: {}) -> bool:
     return post_json_object['actor'] in post_json_object['object']
 
 
-def outboxAnnounce(recentPostsCache: {},
+def outboxAnnounce(recent_posts_cache: {},
                    base_dir: str, message_json: {}, debug: bool) -> bool:
     """ Adds or removes announce entries from the shares collection
     within a given post
@@ -77,7 +77,7 @@ def outboxAnnounce(recentPostsCache: {},
         postFilename = locatePost(base_dir, nickname, domain,
                                   message_json['object'])
         if postFilename:
-            updateAnnounceCollection(recentPostsCache, base_dir, postFilename,
+            updateAnnounceCollection(recent_posts_cache, base_dir, postFilename,
                                      message_json['actor'],
                                      nickname, domain, debug)
             return True
@@ -95,7 +95,7 @@ def outboxAnnounce(recentPostsCache: {},
             postFilename = locatePost(base_dir, nickname, domain,
                                       message_json['object']['object'])
             if postFilename:
-                undoAnnounceCollectionEntry(recentPostsCache,
+                undoAnnounceCollectionEntry(recent_posts_cache,
                                             base_dir, postFilename,
                                             message_json['actor'],
                                             domain, debug)
@@ -386,7 +386,7 @@ def sendUndoAnnounceViaServer(base_dir: str, session,
     return unAnnounceJson
 
 
-def outboxUndoAnnounce(recentPostsCache: {},
+def outboxUndoAnnounce(recent_posts_cache: {},
                        base_dir: str, http_prefix: str,
                        nickname: str, domain: str, port: int,
                        message_json: {}, debug: bool) -> None:
@@ -415,7 +415,7 @@ def outboxUndoAnnounce(recentPostsCache: {},
             print('DEBUG: c2s undo announce post not found in inbox or outbox')
             print(messageId)
         return True
-    undoAnnounceCollectionEntry(recentPostsCache, base_dir, postFilename,
+    undoAnnounceCollectionEntry(recent_posts_cache, base_dir, postFilename,
                                 message_json['actor'], domain, debug)
     if debug:
         print('DEBUG: post undo announce via c2s - ' + postFilename)

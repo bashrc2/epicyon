@@ -3301,11 +3301,11 @@ def sendToFollowersThread(session, base_dir: str,
     return sendThread
 
 
-def createInbox(recentPostsCache: {},
+def createInbox(recent_posts_cache: {},
                 session, base_dir: str, nickname: str, domain: str, port: int,
                 http_prefix: str, itemsPerPage: int, headerOnly: bool,
                 pageNumber: int) -> {}:
-    return _createBoxIndexed(recentPostsCache,
+    return _createBoxIndexed(recent_posts_cache,
                              session, base_dir, 'inbox',
                              nickname, domain, port, http_prefix,
                              itemsPerPage, headerOnly, True,
@@ -3321,21 +3321,21 @@ def createBookmarksTimeline(session, base_dir: str, nickname: str, domain: str,
                              True, 0, False, 0, pageNumber)
 
 
-def createDMTimeline(recentPostsCache: {},
+def createDMTimeline(recent_posts_cache: {},
                      session, base_dir: str, nickname: str, domain: str,
                      port: int, http_prefix: str, itemsPerPage: int,
                      headerOnly: bool, pageNumber: int) -> {}:
-    return _createBoxIndexed(recentPostsCache,
+    return _createBoxIndexed(recent_posts_cache,
                              session, base_dir, 'dm', nickname,
                              domain, port, http_prefix, itemsPerPage,
                              headerOnly, True, 0, False, 0, pageNumber)
 
 
-def createRepliesTimeline(recentPostsCache: {},
+def createRepliesTimeline(recent_posts_cache: {},
                           session, base_dir: str, nickname: str, domain: str,
                           port: int, http_prefix: str, itemsPerPage: int,
                           headerOnly: bool, pageNumber: int) -> {}:
-    return _createBoxIndexed(recentPostsCache, session, base_dir, 'tlreplies',
+    return _createBoxIndexed(recent_posts_cache, session, base_dir, 'tlreplies',
                              nickname, domain, port, http_prefix,
                              itemsPerPage, headerOnly, True,
                              0, False, 0, pageNumber)
@@ -3462,7 +3462,7 @@ def isImageMedia(session, base_dir: str, http_prefix: str,
                  yt_replace_domain: str,
                  twitter_replacement_domain: str,
                  allow_local_network_access: bool,
-                 recentPostsCache: {}, debug: bool,
+                 recent_posts_cache: {}, debug: bool,
                  system_language: str,
                  domain_full: str, person_cache: {},
                  signing_priv_key_pem: str) -> bool:
@@ -3477,7 +3477,7 @@ def isImageMedia(session, base_dir: str, http_prefix: str,
                              yt_replace_domain,
                              twitter_replacement_domain,
                              allow_local_network_access,
-                             recentPostsCache, debug,
+                             recent_posts_cache, debug,
                              system_language,
                              domain_full, person_cache,
                              signing_priv_key_pem,
@@ -3655,7 +3655,7 @@ def _passedNewswireVoting(newswire_votes_threshold: int,
     return True
 
 
-def _createBoxIndexed(recentPostsCache: {},
+def _createBoxIndexed(recent_posts_cache: {},
                       session, base_dir: str, boxname: str,
                       nickname: str, domain: str, port: int, http_prefix: str,
                       itemsPerPage: int, headerOnly: bool, authorized: bool,
@@ -3765,10 +3765,10 @@ def _createBoxIndexed(recentPostsCache: {},
                     continue
 
                 # is the post cached in memory?
-                if recentPostsCache.get('index'):
-                    if postUrl in recentPostsCache['index']:
-                        if recentPostsCache['json'].get(postUrl):
-                            url = recentPostsCache['json'][postUrl]
+                if recent_posts_cache.get('index'):
+                    if postUrl in recent_posts_cache['index']:
+                        if recent_posts_cache['json'].get(postUrl):
+                            url = recent_posts_cache['json'][postUrl]
                             if _addPostStringToTimeline(url,
                                                         boxname, postsInBox,
                                                         boxActor):
@@ -3879,7 +3879,7 @@ def _createBoxIndexed(recentPostsCache: {},
 
 def expireCache(base_dir: str, person_cache: {},
                 http_prefix: str, archive_dir: str,
-                recentPostsCache: {},
+                recent_posts_cache: {},
                 maxPostsInBox=32000):
     """Thread used to expire actors from the cache and archive old posts
     """
@@ -3887,12 +3887,12 @@ def expireCache(base_dir: str, person_cache: {},
         # once per day
         time.sleep(60 * 60 * 24)
         expirePersonCache(person_cache)
-        archivePosts(base_dir, http_prefix, archive_dir, recentPostsCache,
+        archivePosts(base_dir, http_prefix, archive_dir, recent_posts_cache,
                      maxPostsInBox)
 
 
 def archivePosts(base_dir: str, http_prefix: str, archive_dir: str,
-                 recentPostsCache: {},
+                 recent_posts_cache: {},
                  maxPostsInBox=32000) -> None:
     """Archives posts for all accounts
     """
@@ -3928,20 +3928,20 @@ def archivePosts(base_dir: str, http_prefix: str, archive_dir: str,
                         handle + '/inbox'
                 archivePostsForPerson(http_prefix, nickname, domain, base_dir,
                                       'inbox', archiveSubdir,
-                                      recentPostsCache, maxPostsInBox)
+                                      recent_posts_cache, maxPostsInBox)
                 if archive_dir:
                     archiveSubdir = archive_dir + '/accounts/' + \
                         handle + '/outbox'
                 archivePostsForPerson(http_prefix, nickname, domain, base_dir,
                                       'outbox', archiveSubdir,
-                                      recentPostsCache, maxPostsInBox)
+                                      recent_posts_cache, maxPostsInBox)
         break
 
 
 def archivePostsForPerson(http_prefix: str, nickname: str, domain: str,
                           base_dir: str,
                           boxname: str, archive_dir: str,
-                          recentPostsCache: {},
+                          recent_posts_cache: {},
                           maxPostsInBox=32000) -> None:
     """Retain a maximum number of posts within the given box
     Move any others to an archive directory
@@ -4034,7 +4034,7 @@ def archivePostsForPerson(http_prefix: str, nickname: str, domain: str,
                                   archivePath.replace('.json', '.json.' + ext))
         else:
             deletePost(base_dir, http_prefix, nickname, domain,
-                       filePath, False, recentPostsCache)
+                       filePath, False, recent_posts_cache)
 
         # remove cached html posts
         postCacheFilename = \
@@ -4497,10 +4497,10 @@ def populateRepliesJson(base_dir: str, nickname: str, domain: str,
 
 def _rejectAnnounce(announceFilename: str,
                     base_dir: str, nickname: str, domain: str,
-                    announcePostId: str, recentPostsCache: {}):
+                    announcePostId: str, recent_posts_cache: {}):
     """Marks an announce as rejected
     """
-    rejectPostId(base_dir, nickname, domain, announcePostId, recentPostsCache)
+    rejectPostId(base_dir, nickname, domain, announcePostId, recent_posts_cache)
 
     # reject the post referenced by the announce activity object
     if not os.path.isfile(announceFilename + '.reject'):
@@ -4515,7 +4515,7 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
                      yt_replace_domain: str,
                      twitter_replacement_domain: str,
                      allow_local_network_access: bool,
-                     recentPostsCache: {}, debug: bool,
+                     recent_posts_cache: {}, debug: bool,
                      system_language: str,
                      domain_full: str, person_cache: {},
                      signing_priv_key_pem: str,
@@ -4612,17 +4612,17 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
                   post_json_object['object'])
             _rejectAnnounce(announceFilename,
                             base_dir, nickname, domain, post_id,
-                            recentPostsCache)
+                            recent_posts_cache)
             return None
         if not announcedJson.get('id'):
             _rejectAnnounce(announceFilename,
                             base_dir, nickname, domain, post_id,
-                            recentPostsCache)
+                            recent_posts_cache)
             return None
         if not announcedJson.get('type'):
             _rejectAnnounce(announceFilename,
                             base_dir, nickname, domain, post_id,
-                            recentPostsCache)
+                            recent_posts_cache)
             return None
         if announcedJson['type'] == 'Video':
             convertedJson = \
@@ -4634,12 +4634,12 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
         if '/statuses/' not in announcedJson['id']:
             _rejectAnnounce(announceFilename,
                             base_dir, nickname, domain, post_id,
-                            recentPostsCache)
+                            recent_posts_cache)
             return None
         if not has_users_path(announcedJson['id']):
             _rejectAnnounce(announceFilename,
                             base_dir, nickname, domain, post_id,
-                            recentPostsCache)
+                            recent_posts_cache)
             return None
         if announcedJson['type'] != 'Note' and \
            announcedJson['type'] != 'Page' and \
@@ -4647,22 +4647,22 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
             # You can only announce Note or Article types
             _rejectAnnounce(announceFilename,
                             base_dir, nickname, domain, post_id,
-                            recentPostsCache)
+                            recent_posts_cache)
             return None
         if not announcedJson.get('content'):
             _rejectAnnounce(announceFilename,
                             base_dir, nickname, domain, post_id,
-                            recentPostsCache)
+                            recent_posts_cache)
             return None
         if not announcedJson.get('published'):
             _rejectAnnounce(announceFilename,
                             base_dir, nickname, domain, post_id,
-                            recentPostsCache)
+                            recent_posts_cache)
             return None
         if not valid_post_date(announcedJson['published'], 90, debug):
             _rejectAnnounce(announceFilename,
                             base_dir, nickname, domain, post_id,
-                            recentPostsCache)
+                            recent_posts_cache)
             return None
         if not understoodPostLanguage(base_dir, nickname, domain,
                                       announcedJson, system_language,
@@ -4674,19 +4674,19 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
         if dangerousMarkup(contentStr, allow_local_network_access):
             _rejectAnnounce(announceFilename,
                             base_dir, nickname, domain, post_id,
-                            recentPostsCache)
+                            recent_posts_cache)
             return None
 
         if isFiltered(base_dir, nickname, domain, contentStr):
             _rejectAnnounce(announceFilename,
                             base_dir, nickname, domain, post_id,
-                            recentPostsCache)
+                            recent_posts_cache)
             return None
 
         if invalid_ciphertext(contentStr):
             _rejectAnnounce(announceFilename,
                             base_dir, nickname, domain, post_id,
-                            recentPostsCache)
+                            recent_posts_cache)
             print('WARN: Invalid ciphertext within announce ' +
                   str(announcedJson))
             return None
@@ -4712,7 +4712,7 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
             # Create wrap failed
             _rejectAnnounce(announceFilename,
                             base_dir, nickname, domain, post_id,
-                            recentPostsCache)
+                            recent_posts_cache)
             return None
 
         # labelAccusatoryPost(post_json_object, translate)
@@ -4731,7 +4731,7 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
                          attributedNickname, attributedDomain):
                 _rejectAnnounce(announceFilename,
                                 base_dir, nickname, domain, post_id,
-                                recentPostsCache)
+                                recent_posts_cache)
                 return None
         post_json_object = announcedJson
         replaceYouTube(post_json_object, yt_replace_domain, system_language)

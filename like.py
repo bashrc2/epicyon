@@ -68,7 +68,7 @@ def likedByPerson(post_json_object: {}, nickname: str, domain: str) -> bool:
     return False
 
 
-def _like(recentPostsCache: {},
+def _like(recent_posts_cache: {},
           session, base_dir: str, federation_list: [],
           nickname: str, domain: str, port: int,
           ccList: [], http_prefix: str,
@@ -127,7 +127,7 @@ def _like(recentPostsCache: {},
             print('DEBUG: like objectUrl: ' + objectUrl)
             return None
 
-        updateLikesCollection(recentPostsCache,
+        updateLikesCollection(recent_posts_cache,
                               base_dir, postFilename, objectUrl,
                               newLikeJson['actor'],
                               nickname, domain, debug, None)
@@ -144,7 +144,7 @@ def _like(recentPostsCache: {},
     return newLikeJson
 
 
-def likePost(recentPostsCache: {},
+def likePost(recent_posts_cache: {},
              session, base_dir: str, federation_list: [],
              nickname: str, domain: str, port: int, http_prefix: str,
              likeNickname: str, likeDomain: str, likePort: int,
@@ -161,7 +161,7 @@ def likePost(recentPostsCache: {},
     actorLiked = local_actor_url(http_prefix, likeNickname, likeDomain)
     objectUrl = actorLiked + '/statuses/' + str(likeStatusNumber)
 
-    return _like(recentPostsCache,
+    return _like(recent_posts_cache,
                  session, base_dir, federation_list, nickname, domain, port,
                  ccList, http_prefix, objectUrl, actorLiked, client_to_server,
                  send_threads, postLog, person_cache, cached_webfingers,
@@ -339,7 +339,7 @@ def sendUndoLikeViaServer(base_dir: str, session,
     return newUndoLikeJson
 
 
-def outboxLike(recentPostsCache: {},
+def outboxLike(recent_posts_cache: {},
                base_dir: str, http_prefix: str,
                nickname: str, domain: str, port: int,
                message_json: {}, debug: bool) -> None:
@@ -366,7 +366,7 @@ def outboxLike(recentPostsCache: {},
             print('DEBUG: c2s like post not found in inbox or outbox')
             print(messageId)
         return True
-    updateLikesCollection(recentPostsCache,
+    updateLikesCollection(recent_posts_cache,
                           base_dir, postFilename, messageId,
                           message_json['actor'],
                           nickname, domain, debug, None)
@@ -374,7 +374,7 @@ def outboxLike(recentPostsCache: {},
         print('DEBUG: post liked via c2s - ' + postFilename)
 
 
-def outboxUndoLike(recentPostsCache: {},
+def outboxUndoLike(recent_posts_cache: {},
                    base_dir: str, http_prefix: str,
                    nickname: str, domain: str, port: int,
                    message_json: {}, debug: bool) -> None:
@@ -403,14 +403,14 @@ def outboxUndoLike(recentPostsCache: {},
             print('DEBUG: c2s undo like post not found in inbox or outbox')
             print(messageId)
         return True
-    undoLikesCollectionEntry(recentPostsCache, base_dir, postFilename,
+    undoLikesCollectionEntry(recent_posts_cache, base_dir, postFilename,
                              messageId, message_json['actor'],
                              domain, debug, None)
     if debug:
         print('DEBUG: post undo liked via c2s - ' + postFilename)
 
 
-def updateLikesCollection(recentPostsCache: {},
+def updateLikesCollection(recent_posts_cache: {},
                           base_dir: str, postFilename: str,
                           objectUrl: str, actor: str,
                           nickname: str, domain: str, debug: bool,
@@ -424,7 +424,7 @@ def updateLikesCollection(recentPostsCache: {},
 
     # remove any cached version of this post so that the
     # like icon is changed
-    removePostFromCache(post_json_object, recentPostsCache)
+    removePostFromCache(post_json_object, recent_posts_cache)
     cachedPostFilename = getCachedPostFilename(base_dir, nickname,
                                                domain, post_json_object)
     if cachedPostFilename:

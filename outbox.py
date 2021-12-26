@@ -58,7 +58,7 @@ from shares import outboxUndoShareUpload
 from webapp_post import individualPostAsHtml
 
 
-def _outboxPersonReceiveUpdate(recentPostsCache: {},
+def _outboxPersonReceiveUpdate(recent_posts_cache: {},
                                base_dir: str, http_prefix: str,
                                nickname: str, domain: str, port: int,
                                message_json: {}, debug: bool) -> None:
@@ -182,7 +182,7 @@ def postMessageToOutbox(session, translate: {},
                         server, base_dir: str, http_prefix: str,
                         domain: str, domain_full: str,
                         onion_domain: str, i2p_domain: str, port: int,
-                        recentPostsCache: {}, followers_threads: [],
+                        recent_posts_cache: {}, followers_threads: [],
                         federation_list: [], send_threads: [],
                         postLog: [], cached_webfingers: {},
                         person_cache: {}, allow_deletion: bool,
@@ -427,7 +427,7 @@ def postMessageToOutbox(session, translate: {},
                                     yt_replace_domain,
                                     twitter_replacement_domain,
                                     allow_local_network_access,
-                                    recentPostsCache, debug, system_language,
+                                    recent_posts_cache, debug, system_language,
                                     domain_full, person_cache,
                                     signing_priv_key_pem):
                         inboxUpdateIndex('tlmedia', base_dir,
@@ -454,7 +454,7 @@ def postMessageToOutbox(session, translate: {},
                         followerApprovalActive(base_dir,
                                                postToNickname, domain)
                     individualPostAsHtml(signing_priv_key_pem,
-                                         False, recentPostsCache,
+                                         False, recent_posts_cache,
                                          max_recent_posts,
                                          translate, pageNumber,
                                          base_dir, session,
@@ -478,7 +478,7 @@ def postMessageToOutbox(session, translate: {},
                                          False, True, useCacheOnly,
                                          cw_lists, lists_enabled)
 
-    if outboxAnnounce(recentPostsCache,
+    if outboxAnnounce(recent_posts_cache,
                       base_dir, message_json, debug):
         if debug:
             print('DEBUG: Updated announcements (shares) collection ' +
@@ -541,46 +541,46 @@ def postMessageToOutbox(session, translate: {},
 
     if debug:
         print('DEBUG: handle any like requests')
-    outboxLike(recentPostsCache,
+    outboxLike(recent_posts_cache,
                base_dir, http_prefix,
                postToNickname, domain, port,
                message_json, debug)
     if debug:
         print('DEBUG: handle any undo like requests')
-    outboxUndoLike(recentPostsCache,
+    outboxUndoLike(recent_posts_cache,
                    base_dir, http_prefix,
                    postToNickname, domain, port,
                    message_json, debug)
 
     if debug:
         print('DEBUG: handle any emoji reaction requests')
-    outboxReaction(recentPostsCache,
+    outboxReaction(recent_posts_cache,
                    base_dir, http_prefix,
                    postToNickname, domain, port,
                    message_json, debug)
     if debug:
         print('DEBUG: handle any undo emoji reaction requests')
-    outboxUndoReaction(recentPostsCache,
+    outboxUndoReaction(recent_posts_cache,
                        base_dir, http_prefix,
                        postToNickname, domain, port,
                        message_json, debug)
 
     if debug:
         print('DEBUG: handle any undo announce requests')
-    outboxUndoAnnounce(recentPostsCache,
+    outboxUndoAnnounce(recent_posts_cache,
                        base_dir, http_prefix,
                        postToNickname, domain, port,
                        message_json, debug)
 
     if debug:
         print('DEBUG: handle any bookmark requests')
-    outboxBookmark(recentPostsCache,
+    outboxBookmark(recent_posts_cache,
                    base_dir, http_prefix,
                    postToNickname, domain, port,
                    message_json, debug)
     if debug:
         print('DEBUG: handle any undo bookmark requests')
-    outboxUndoBookmark(recentPostsCache,
+    outboxUndoBookmark(recent_posts_cache,
                        base_dir, http_prefix,
                        postToNickname, domain, port,
                        message_json, debug)
@@ -591,7 +591,7 @@ def postMessageToOutbox(session, translate: {},
                  postToNickname, domain,
                  message_json, debug,
                  allow_deletion,
-                 recentPostsCache)
+                 recent_posts_cache)
 
     if debug:
         print('DEBUG: handle block requests')
@@ -612,7 +612,7 @@ def postMessageToOutbox(session, translate: {},
                postToNickname, domain,
                port,
                message_json, debug,
-               recentPostsCache)
+               recent_posts_cache)
 
     if debug:
         print('DEBUG: handle undo mute requests')
@@ -620,7 +620,7 @@ def postMessageToOutbox(session, translate: {},
                    postToNickname, domain,
                    port,
                    message_json, debug,
-                   recentPostsCache)
+                   recent_posts_cache)
 
     if debug:
         print('DEBUG: handle share uploads')
@@ -637,7 +637,7 @@ def postMessageToOutbox(session, translate: {},
 
     if debug:
         print('DEBUG: handle actor updates from c2s')
-    _outboxPersonReceiveUpdate(recentPostsCache,
+    _outboxPersonReceiveUpdate(recent_posts_cache,
                                base_dir, http_prefix,
                                postToNickname, domain, port,
                                message_json, debug)

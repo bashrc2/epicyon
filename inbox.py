@@ -278,7 +278,7 @@ def storeHashTags(base_dir: str, nickname: str, domain: str,
                                   http_prefix, domain_full, translate)
 
 
-def _inboxStorePostToHtmlCache(recentPostsCache: {}, max_recent_posts: int,
+def _inboxStorePostToHtmlCache(recent_posts_cache: {}, max_recent_posts: int,
                                translate: {},
                                base_dir: str, http_prefix: str,
                                session, cached_webfingers: {},
@@ -306,7 +306,7 @@ def _inboxStorePostToHtmlCache(recentPostsCache: {}, max_recent_posts: int,
     yt_replace_domain = get_config_param(base_dir, 'youtubedomain')
     twitter_replacement_domain = get_config_param(base_dir, 'twitterdomain')
     individualPostAsHtml(signing_priv_key_pem,
-                         True, recentPostsCache, max_recent_posts,
+                         True, recent_posts_cache, max_recent_posts,
                          translate, pageNumber,
                          base_dir, session, cached_webfingers,
                          person_cache,
@@ -899,7 +899,7 @@ def _personReceiveUpdate(base_dir: str,
     return True
 
 
-def _receiveUpdateToQuestion(recentPostsCache: {}, message_json: {},
+def _receiveUpdateToQuestion(recent_posts_cache: {}, message_json: {},
                              base_dir: str,
                              nickname: str, domain: str) -> None:
     """Updating a question as new votes arrive
@@ -938,10 +938,10 @@ def _receiveUpdateToQuestion(recentPostsCache: {}, message_json: {},
                 print('EX: _receiveUpdateToQuestion unable to delete ' +
                       cachedPostFilename)
     # remove from memory cache
-    removePostFromCache(message_json, recentPostsCache)
+    removePostFromCache(message_json, recent_posts_cache)
 
 
-def _receiveUpdate(recentPostsCache: {}, session, base_dir: str,
+def _receiveUpdate(recent_posts_cache: {}, session, base_dir: str,
                    http_prefix: str, domain: str, port: int,
                    send_threads: [], postLog: [], cached_webfingers: {},
                    person_cache: {}, message_json: {}, federation_list: [],
@@ -961,7 +961,7 @@ def _receiveUpdate(recentPostsCache: {}, session, base_dir: str,
         return False
 
     if message_json['object']['type'] == 'Question':
-        _receiveUpdateToQuestion(recentPostsCache, message_json,
+        _receiveUpdateToQuestion(recent_posts_cache, message_json,
                                  base_dir, nickname, domain)
         if debug:
             print('DEBUG: Question update was received')
@@ -993,7 +993,7 @@ def _receiveUpdate(recentPostsCache: {}, session, base_dir: str,
     return False
 
 
-def _receiveLike(recentPostsCache: {},
+def _receiveLike(recent_posts_cache: {},
                  session, handle: str, isGroup: bool, base_dir: str,
                  http_prefix: str, domain: str, port: int,
                  onion_domain: str,
@@ -1056,7 +1056,7 @@ def _receiveLike(recentPostsCache: {},
                          likeActor):
         _likeNotify(base_dir, domain, onion_domain, handle,
                     likeActor, postLikedId)
-    updateLikesCollection(recentPostsCache, base_dir, postFilename,
+    updateLikesCollection(recent_posts_cache, base_dir, postFilename,
                           postLikedId, likeActor,
                           handleName, domain, debug, None)
     # regenerate the html
@@ -1073,7 +1073,7 @@ def _receiveLike(recentPostsCache: {},
                     if announceLikedFilename:
                         postLikedId = announceLikeUrl
                         postFilename = announceLikedFilename
-                        updateLikesCollection(recentPostsCache,
+                        updateLikesCollection(recent_posts_cache,
                                               base_dir,
                                               postFilename,
                                               postLikedId,
@@ -1095,7 +1095,7 @@ def _receiveLike(recentPostsCache: {},
                 followerApprovalActive(base_dir, handleName, domain)
             notDM = not isDM(likedPostJson)
             individualPostAsHtml(signing_priv_key_pem, False,
-                                 recentPostsCache, max_recent_posts,
+                                 recent_posts_cache, max_recent_posts,
                                  translate, pageNumber, base_dir,
                                  session, cached_webfingers, person_cache,
                                  handleName, domain, port, likedPostJson,
@@ -1116,7 +1116,7 @@ def _receiveLike(recentPostsCache: {},
     return True
 
 
-def _receiveUndoLike(recentPostsCache: {},
+def _receiveUndoLike(recent_posts_cache: {},
                      session, handle: str, isGroup: bool, base_dir: str,
                      http_prefix: str, domain: str, port: int,
                      send_threads: [], postLog: [], cached_webfingers: {},
@@ -1171,7 +1171,7 @@ def _receiveUndoLike(recentPostsCache: {},
         print('DEBUG: liked post found in inbox. Now undoing.')
     likeActor = message_json['actor']
     postLikedId = message_json['object']
-    undoLikesCollectionEntry(recentPostsCache, base_dir, postFilename,
+    undoLikesCollectionEntry(recent_posts_cache, base_dir, postFilename,
                              postLikedId, likeActor, domain, debug, None)
     # regenerate the html
     likedPostJson = load_json(postFilename, 0, 1)
@@ -1187,7 +1187,7 @@ def _receiveUndoLike(recentPostsCache: {},
                     if announceLikedFilename:
                         postLikedId = announceLikeUrl
                         postFilename = announceLikedFilename
-                        undoLikesCollectionEntry(recentPostsCache, base_dir,
+                        undoLikesCollectionEntry(recent_posts_cache, base_dir,
                                                  postFilename, postLikedId,
                                                  likeActor, domain, debug,
                                                  None)
@@ -1206,7 +1206,7 @@ def _receiveUndoLike(recentPostsCache: {},
                 followerApprovalActive(base_dir, handleName, domain)
             notDM = not isDM(likedPostJson)
             individualPostAsHtml(signing_priv_key_pem, False,
-                                 recentPostsCache, max_recent_posts,
+                                 recent_posts_cache, max_recent_posts,
                                  translate, pageNumber, base_dir,
                                  session, cached_webfingers, person_cache,
                                  handleName, domain, port, likedPostJson,
@@ -1227,7 +1227,7 @@ def _receiveUndoLike(recentPostsCache: {},
     return True
 
 
-def _receiveReaction(recentPostsCache: {},
+def _receiveReaction(recent_posts_cache: {},
                      session, handle: str, isGroup: bool, base_dir: str,
                      http_prefix: str, domain: str, port: int,
                      onion_domain: str,
@@ -1314,7 +1314,7 @@ def _receiveReaction(recentPostsCache: {},
                            emojiContent):
         _reactionNotify(base_dir, domain, onion_domain, handle,
                         reactionActor, postReactionId, emojiContent)
-    updateReactionCollection(recentPostsCache, base_dir, postFilename,
+    updateReactionCollection(recent_posts_cache, base_dir, postFilename,
                              postReactionId, reactionActor,
                              handleName, domain, debug, None, emojiContent)
     # regenerate the html
@@ -1331,7 +1331,7 @@ def _receiveReaction(recentPostsCache: {},
                     if announceReactionFilename:
                         postReactionId = announceReactionUrl
                         postFilename = announceReactionFilename
-                        updateReactionCollection(recentPostsCache,
+                        updateReactionCollection(recent_posts_cache,
                                                  base_dir,
                                                  postFilename,
                                                  postReactionId,
@@ -1354,7 +1354,7 @@ def _receiveReaction(recentPostsCache: {},
                 followerApprovalActive(base_dir, handleName, domain)
             notDM = not isDM(reactionPostJson)
             individualPostAsHtml(signing_priv_key_pem, False,
-                                 recentPostsCache, max_recent_posts,
+                                 recent_posts_cache, max_recent_posts,
                                  translate, pageNumber, base_dir,
                                  session, cached_webfingers, person_cache,
                                  handleName, domain, port, reactionPostJson,
@@ -1375,7 +1375,7 @@ def _receiveReaction(recentPostsCache: {},
     return True
 
 
-def _receiveUndoReaction(recentPostsCache: {},
+def _receiveUndoReaction(recent_posts_cache: {},
                          session, handle: str, isGroup: bool, base_dir: str,
                          http_prefix: str, domain: str, port: int,
                          send_threads: [], postLog: [],
@@ -1445,7 +1445,7 @@ def _receiveUndoReaction(recentPostsCache: {},
         if debug:
             print('DEBUG: unreaction has no content')
         return True
-    undoReactionCollectionEntry(recentPostsCache, base_dir, postFilename,
+    undoReactionCollectionEntry(recent_posts_cache, base_dir, postFilename,
                                 postReactionId, reactionActor, domain,
                                 debug, None, emojiContent)
     # regenerate the html
@@ -1462,7 +1462,7 @@ def _receiveUndoReaction(recentPostsCache: {},
                     if announceReactionFilename:
                         postReactionId = announceReactionUrl
                         postFilename = announceReactionFilename
-                        undoReactionCollectionEntry(recentPostsCache, base_dir,
+                        undoReactionCollectionEntry(recent_posts_cache, base_dir,
                                                     postFilename,
                                                     postReactionId,
                                                     reactionActor, domain,
@@ -1483,7 +1483,7 @@ def _receiveUndoReaction(recentPostsCache: {},
                 followerApprovalActive(base_dir, handleName, domain)
             notDM = not isDM(reactionPostJson)
             individualPostAsHtml(signing_priv_key_pem, False,
-                                 recentPostsCache, max_recent_posts,
+                                 recent_posts_cache, max_recent_posts,
                                  translate, pageNumber, base_dir,
                                  session, cached_webfingers, person_cache,
                                  handleName, domain, port, reactionPostJson,
@@ -1504,7 +1504,7 @@ def _receiveUndoReaction(recentPostsCache: {},
     return True
 
 
-def _receiveBookmark(recentPostsCache: {},
+def _receiveBookmark(recent_posts_cache: {},
                      session, handle: str, isGroup: bool, base_dir: str,
                      http_prefix: str, domain: str, port: int,
                      send_threads: [], postLog: [], cached_webfingers: {},
@@ -1573,7 +1573,7 @@ def _receiveBookmark(recentPostsCache: {},
             print(messageUrl)
         return True
 
-    updateBookmarksCollection(recentPostsCache, base_dir, postFilename,
+    updateBookmarksCollection(recent_posts_cache, base_dir, postFilename,
                               message_json['object']['url'],
                               message_json['actor'], domain, debug)
     # regenerate the html
@@ -1593,7 +1593,7 @@ def _receiveBookmark(recentPostsCache: {},
             followerApprovalActive(base_dir, nickname, domain)
         notDM = not isDM(bookmarkedPostJson)
         individualPostAsHtml(signing_priv_key_pem, False,
-                             recentPostsCache, max_recent_posts,
+                             recent_posts_cache, max_recent_posts,
                              translate, pageNumber, base_dir,
                              session, cached_webfingers, person_cache,
                              nickname, domain, port, bookmarkedPostJson,
@@ -1614,7 +1614,7 @@ def _receiveBookmark(recentPostsCache: {},
     return True
 
 
-def _receiveUndoBookmark(recentPostsCache: {},
+def _receiveUndoBookmark(recent_posts_cache: {},
                          session, handle: str, isGroup: bool, base_dir: str,
                          http_prefix: str, domain: str, port: int,
                          send_threads: [], postLog: [],
@@ -1686,7 +1686,7 @@ def _receiveUndoBookmark(recentPostsCache: {},
             print(messageUrl)
         return True
 
-    undoBookmarksCollectionEntry(recentPostsCache, base_dir, postFilename,
+    undoBookmarksCollectionEntry(recent_posts_cache, base_dir, postFilename,
                                  message_json['object']['url'],
                                  message_json['actor'], domain, debug)
     # regenerate the html
@@ -1706,7 +1706,7 @@ def _receiveUndoBookmark(recentPostsCache: {},
             followerApprovalActive(base_dir, nickname, domain)
         notDM = not isDM(bookmarkedPostJson)
         individualPostAsHtml(signing_priv_key_pem, False,
-                             recentPostsCache, max_recent_posts,
+                             recent_posts_cache, max_recent_posts,
                              translate, pageNumber, base_dir,
                              session, cached_webfingers, person_cache,
                              nickname, domain, port, bookmarkedPostJson,
@@ -1731,7 +1731,7 @@ def _receiveDelete(session, handle: str, isGroup: bool, base_dir: str,
                    send_threads: [], postLog: [], cached_webfingers: {},
                    person_cache: {}, message_json: {}, federation_list: [],
                    debug: bool, allow_deletion: bool,
-                   recentPostsCache: {}) -> bool:
+                   recent_posts_cache: {}) -> bool:
     """Receives a Delete activity within the POST section of HTTPServer
     """
     if message_json['type'] != 'Delete':
@@ -1784,7 +1784,7 @@ def _receiveDelete(session, handle: str, isGroup: bool, base_dir: str,
         return True
     deletePost(base_dir, http_prefix, handleNickname,
                handleDomain, postFilename, debug,
-               recentPostsCache)
+               recent_posts_cache)
     if debug:
         print('DEBUG: post deleted - ' + postFilename)
 
@@ -1795,13 +1795,13 @@ def _receiveDelete(session, handle: str, isGroup: bool, base_dir: str,
         if postFilename:
             deletePost(base_dir, http_prefix, 'news',
                        handleDomain, postFilename, debug,
-                       recentPostsCache)
+                       recent_posts_cache)
             if debug:
                 print('DEBUG: blog post deleted - ' + postFilename)
     return True
 
 
-def _receiveAnnounce(recentPostsCache: {},
+def _receiveAnnounce(recent_posts_cache: {},
                      session, handle: str, isGroup: bool, base_dir: str,
                      http_prefix: str,
                      domain: str, onion_domain: str, port: int,
@@ -1895,7 +1895,7 @@ def _receiveAnnounce(recentPostsCache: {},
             print('DEBUG: announce post not found in inbox or outbox')
             print(message_json['object'])
         return True
-    updateAnnounceCollection(recentPostsCache, base_dir, postFilename,
+    updateAnnounceCollection(recent_posts_cache, base_dir, postFilename,
                              message_json['actor'], nickname, domain, debug)
     if debug:
         print('DEBUG: Downloading announce post ' + message_json['actor'] +
@@ -1913,7 +1913,7 @@ def _receiveAnnounce(recentPostsCache: {},
         print('Generating html for announce ' + message_json['id'])
     announceHtml = \
         individualPostAsHtml(signing_priv_key_pem, True,
-                             recentPostsCache, max_recent_posts,
+                             recent_posts_cache, max_recent_posts,
                              translate, pageNumber, base_dir,
                              session, cached_webfingers, person_cache,
                              nickname, domain, port, message_json,
@@ -1946,7 +1946,7 @@ def _receiveAnnounce(recentPostsCache: {},
                                         yt_replace_domain,
                                         twitter_replacement_domain,
                                         allow_local_network_access,
-                                        recentPostsCache, debug,
+                                        recent_posts_cache, debug,
                                         system_language,
                                         domain_full, person_cache,
                                         signing_priv_key_pem,
@@ -2029,7 +2029,7 @@ def _receiveAnnounce(recentPostsCache: {},
     return True
 
 
-def _receiveUndoAnnounce(recentPostsCache: {},
+def _receiveUndoAnnounce(recent_posts_cache: {},
                          session, handle: str, isGroup: bool, base_dir: str,
                          http_prefix: str, domain: str, port: int,
                          send_threads: [], postLog: [],
@@ -2077,7 +2077,7 @@ def _receiveUndoAnnounce(recentPostsCache: {},
                     print("DEBUG: Attempt to undo something " +
                           "which isn't an announcement")
                 return False
-    undoAnnounceCollectionEntry(recentPostsCache, base_dir, postFilename,
+    undoAnnounceCollectionEntry(recent_posts_cache, base_dir, postFilename,
                                 message_json['actor'], domain, debug)
     if os.path.isfile(postFilename):
         try:
@@ -2983,7 +2983,7 @@ def _isValidDM(base_dir: str, nickname: str, domain: str, port: int,
 
 def _receiveQuestionVote(base_dir: str, nickname: str, domain: str,
                          http_prefix: str, handle: str, debug: bool,
-                         post_json_object: {}, recentPostsCache: {},
+                         post_json_object: {}, recent_posts_cache: {},
                          session, onion_domain: str,
                          i2p_domain: str, port: int,
                          federation_list: [], send_threads: [], postLog: [],
@@ -3008,7 +3008,7 @@ def _receiveQuestionVote(base_dir: str, nickname: str, domain: str,
     if not questionPostFilename:
         return
 
-    removePostFromCache(questionJson, recentPostsCache)
+    removePostFromCache(questionJson, recent_posts_cache)
     # ensure that the cached post is removed if it exists, so
     # that it then will be recreated
     cachedPostFilename = \
@@ -3028,7 +3028,7 @@ def _receiveQuestionVote(base_dir: str, nickname: str, domain: str,
         followerApprovalActive(base_dir, nickname, domain)
     notDM = not isDM(questionJson)
     individualPostAsHtml(signing_priv_key_pem, False,
-                         recentPostsCache, max_recent_posts,
+                         recent_posts_cache, max_recent_posts,
                          translate, pageNumber, base_dir,
                          session, cached_webfingers, person_cache,
                          nickname, domain, port, questionJson,
@@ -3186,7 +3186,7 @@ def _checkForGitPatches(base_dir: str, nickname: str, domain: str,
     return 0
 
 
-def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
+def _inboxAfterInitial(recent_posts_cache: {}, max_recent_posts: int,
                        session, keyId: str, handle: str, message_json: {},
                        base_dir: str, http_prefix: str, send_threads: [],
                        postLog: [], cached_webfingers: {}, person_cache: {},
@@ -3221,7 +3221,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
     postIsDM = False
     isGroup = _groupHandle(base_dir, handle)
 
-    if _receiveLike(recentPostsCache,
+    if _receiveLike(recent_posts_cache,
                     session, handle, isGroup,
                     base_dir, http_prefix,
                     domain, port,
@@ -3244,7 +3244,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
             print('DEBUG: Like accepted from ' + actor)
         return False
 
-    if _receiveUndoLike(recentPostsCache,
+    if _receiveUndoLike(recent_posts_cache,
                         session, handle, isGroup,
                         base_dir, http_prefix,
                         domain, port,
@@ -3266,7 +3266,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
             print('DEBUG: Undo like accepted from ' + actor)
         return False
 
-    if _receiveReaction(recentPostsCache,
+    if _receiveReaction(recent_posts_cache,
                         session, handle, isGroup,
                         base_dir, http_prefix,
                         domain, port,
@@ -3289,7 +3289,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
             print('DEBUG: Reaction accepted from ' + actor)
         return False
 
-    if _receiveUndoReaction(recentPostsCache,
+    if _receiveUndoReaction(recent_posts_cache,
                             session, handle, isGroup,
                             base_dir, http_prefix,
                             domain, port,
@@ -3311,7 +3311,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
             print('DEBUG: Undo reaction accepted from ' + actor)
         return False
 
-    if _receiveBookmark(recentPostsCache,
+    if _receiveBookmark(recent_posts_cache,
                         session, handle, isGroup,
                         base_dir, http_prefix,
                         domain, port,
@@ -3333,7 +3333,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
             print('DEBUG: Bookmark accepted from ' + actor)
         return False
 
-    if _receiveUndoBookmark(recentPostsCache,
+    if _receiveUndoBookmark(recent_posts_cache,
                             session, handle, isGroup,
                             base_dir, http_prefix,
                             domain, port,
@@ -3358,7 +3358,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
     if isCreateInsideAnnounce(message_json):
         message_json = message_json['object']
 
-    if _receiveAnnounce(recentPostsCache,
+    if _receiveAnnounce(recent_posts_cache,
                         session, handle, isGroup,
                         base_dir, http_prefix,
                         domain, onion_domain, port,
@@ -3380,7 +3380,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
         if debug:
             print('DEBUG: Announce accepted from ' + actor)
 
-    if _receiveUndoAnnounce(recentPostsCache,
+    if _receiveUndoAnnounce(recent_posts_cache,
                             session, handle, isGroup,
                             base_dir, http_prefix,
                             domain, port,
@@ -3403,7 +3403,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                       message_json,
                       federation_list,
                       debug, allow_deletion,
-                      recentPostsCache):
+                      recent_posts_cache):
         if debug:
             print('DEBUG: Delete accepted from ' + actor)
         return False
@@ -3460,7 +3460,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
 
         _receiveQuestionVote(base_dir, nickname, domain,
                              http_prefix, handle, debug,
-                             post_json_object, recentPostsCache,
+                             post_json_object, recent_posts_cache,
                              session, onion_domain, i2p_domain, port,
                              federation_list, send_threads, postLog,
                              cached_webfingers, person_cache,
@@ -3512,7 +3512,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                             yt_replace_domain,
                             twitter_replacement_domain,
                             allow_local_network_access,
-                            recentPostsCache, debug, system_language,
+                            recent_posts_cache, debug, system_language,
                             domain_full, person_cache, signing_priv_key_pem):
                 # media index will be updated
                 updateIndexList.append('tlmedia')
@@ -3562,7 +3562,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
 
                         htmlCacheStartTime = time.time()
                         handleName = handle.split('@')[0]
-                        _inboxStorePostToHtmlCache(recentPostsCache,
+                        _inboxStorePostToHtmlCache(recent_posts_cache,
                                                    max_recent_posts,
                                                    translate, base_dir,
                                                    http_prefix,
@@ -3603,7 +3603,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
             if editedFilename:
                 deletePost(base_dir, http_prefix,
                            nickname, domain, editedFilename,
-                           debug, recentPostsCache)
+                           debug, recent_posts_cache)
 
             # store the id of the last post made by this actor
             _storeLastPostId(base_dir, nickname, domain, post_json_object)
@@ -4070,7 +4070,7 @@ def _receiveFollowRequest(session, base_dir: str, http_prefix: str,
                                   signing_priv_key_pem)
 
 
-def runInboxQueue(recentPostsCache: {}, max_recent_posts: int,
+def runInboxQueue(recent_posts_cache: {}, max_recent_posts: int,
                   project_version: str,
                   base_dir: str, http_prefix: str,
                   send_threads: [], postLog: [],
@@ -4417,7 +4417,7 @@ def runInboxQueue(recentPostsCache: {}, max_recent_posts: int,
                 queue.pop(0)
             continue
 
-        if _receiveUpdate(recentPostsCache, session,
+        if _receiveUpdate(recent_posts_cache, session,
                           base_dir, http_prefix,
                           domain, port,
                           send_threads, postLog,
@@ -4497,7 +4497,7 @@ def runInboxQueue(recentPostsCache: {}, max_recent_posts: int,
         for handle, capsId in recipientsDict.items():
             destination = \
                 queueJson['destination'].replace(inboxHandle, handle)
-            _inboxAfterInitial(recentPostsCache,
+            _inboxAfterInitial(recent_posts_cache,
                                max_recent_posts,
                                session, keyId, handle,
                                queueJson['post'],

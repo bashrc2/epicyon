@@ -696,7 +696,7 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
     if post_json_object['type'] == 'Announce':
         actor = post_json_object['actor']
         nameStr = getNicknameFromActor(actor)
-        recentPostsCache = {}
+        recent_posts_cache = {}
         allow_local_network_access = False
         yt_replace_domain = None
         twitter_replacement_domain = None
@@ -709,7 +709,7 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
                              yt_replace_domain,
                              twitter_replacement_domain,
                              allow_local_network_access,
-                             recentPostsCache, False,
+                             recent_posts_cache, False,
                              system_language,
                              domain_full, person_cache,
                              signing_priv_key_pem,
@@ -2402,7 +2402,7 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                         _desktopGetBoxPostObject(boxJson, currIndex)
                 if post_json_object:
                     if post_json_object['type'] == 'Announce':
-                        recentPostsCache = {}
+                        recent_posts_cache = {}
                         allow_local_network_access = False
                         yt_replace_domain = None
                         twitter_replacement_domain = None
@@ -2415,7 +2415,7 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                                              yt_replace_domain,
                                              twitter_replacement_domain,
                                              allow_local_network_access,
-                                             recentPostsCache, False,
+                                             recent_posts_cache, False,
                                              system_language,
                                              domain_full, person_cache,
                                              signing_priv_key_pem,

@@ -561,7 +561,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           cachedPostFilename)
                         # remove from memory cache
                         removePostFromCache(post_json_object,
-                                            self.server.recentPostsCache)
+                                            self.server.recent_posts_cache)
             else:
                 print('ERROR: unable to post vote to outbox')
         else:
@@ -1283,7 +1283,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.onion_domain,
                                    self.server.i2p_domain,
                                    self.server.port,
-                                   self.server.recentPostsCache,
+                                   self.server.recent_posts_cache,
                                    self.server.followers_threads,
                                    self.server.federation_list,
                                    self.server.send_threads,
@@ -2017,7 +2017,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            nickname, domain,
                                            postFilename,
                                            debug,
-                                           self.server.recentPostsCache)
+                                           self.server.recent_posts_cache)
                         if nickname != 'news':
                             # if this is a local blog post then also remove it
                             # from the news actor
@@ -2033,7 +2033,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                'news', domain,
                                                postFilename,
                                                debug,
-                                               self.server.recentPostsCache)
+                                               self.server.recent_posts_cache)
 
         self._redirect_headers(actorStr + '/moderation',
                                cookie, calling_domain)
@@ -2716,7 +2716,7 @@ class PubServer(BaseHTTPRequestHandler):
                               True, accessKeys,
                               customSubmitText,
                               conversationId,
-                              self.server.recentPostsCache,
+                              self.server.recent_posts_cache,
                               self.server.max_recent_posts,
                               self.server.session,
                               self.server.cached_webfingers,
@@ -2850,7 +2850,7 @@ class PubServer(BaseHTTPRequestHandler):
                               True, accessKeys,
                               customSubmitText,
                               conversationId,
-                              self.server.recentPostsCache,
+                              self.server.recent_posts_cache,
                               self.server.max_recent_posts,
                               self.server.session,
                               self.server.cached_webfingers,
@@ -3297,7 +3297,7 @@ class PubServer(BaseHTTPRequestHandler):
                 hashtagStr = \
                     htmlHashtagSearch(self.server.cssCache,
                                       nickname, domain, port,
-                                      self.server.recentPostsCache,
+                                      self.server.recent_posts_cache,
                                       self.server.max_recent_posts,
                                       self.server.translate,
                                       base_dir,
@@ -3397,7 +3397,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       maxPostsInFeed,
                                       pageNumber,
                                       self.server.project_version,
-                                      self.server.recentPostsCache,
+                                      self.server.recent_posts_cache,
                                       self.server.max_recent_posts,
                                       self.server.session,
                                       self.server.cached_webfingers,
@@ -3465,7 +3465,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       maxPostsInFeed,
                                       pageNumber,
                                       self.server.project_version,
-                                      self.server.recentPostsCache,
+                                      self.server.recent_posts_cache,
                                       self.server.max_recent_posts,
                                       self.server.session,
                                       self.server.cached_webfingers,
@@ -3555,7 +3555,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.twitter_replacement_domain
                     profileStr = \
                         htmlProfileAfterSearch(self.server.cssCache,
-                                               self.server.recentPostsCache,
+                                               self.server.recent_posts_cache,
                                                self.server.max_recent_posts,
                                                self.server.translate,
                                                base_dir,
@@ -4661,7 +4661,7 @@ class PubServer(BaseHTTPRequestHandler):
                     # remove any previous cached news posts
                     newsId = removeIdEnding(post_json_object['object']['id'])
                     newsId = newsId.replace('/', '#')
-                    clearFromPostCaches(base_dir, self.server.recentPostsCache,
+                    clearFromPostCaches(base_dir, self.server.recent_posts_cache,
                                         newsId)
 
                     # save the news post
@@ -7542,7 +7542,7 @@ class PubServer(BaseHTTPRequestHandler):
         hashtagStr = \
             htmlHashtagSearch(self.server.cssCache,
                               nickname, domain, port,
-                              self.server.recentPostsCache,
+                              self.server.recent_posts_cache,
                               self.server.max_recent_posts,
                               self.server.translate,
                               base_dir, hashtag, pageNumber,
@@ -7605,7 +7605,7 @@ class PubServer(BaseHTTPRequestHandler):
         hashtagStr = \
             rssHashtagSearch(nickname,
                              domain, port,
-                             self.server.recentPostsCache,
+                             self.server.recent_posts_cache,
                              self.server.max_recent_posts,
                              self.server.translate,
                              base_dir, hashtag,
@@ -7751,7 +7751,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.postToNickname, domain)
             showRepeats = not isDM(announceJson)
             individualPostAsHtml(self.server.signing_priv_key_pem, False,
-                                 self.server.recentPostsCache,
+                                 self.server.recent_posts_cache,
                                  self.server.max_recent_posts,
                                  self.server.translate,
                                  pageNumber, base_dir,
@@ -7796,7 +7796,7 @@ class PubServer(BaseHTTPRequestHandler):
                             onion_domain: str, i2p_domain: str,
                             GETstartTime,
                             repeatPrivate: bool, debug: bool,
-                            recentPostsCache: {}) -> None:
+                            recent_posts_cache: {}) -> None:
         """Undo announce/repeat button was pressed
         """
         pageNumber = 1
@@ -7875,7 +7875,7 @@ class PubServer(BaseHTTPRequestHandler):
             if postFilename:
                 deletePost(base_dir, http_prefix,
                            nickname, domain, postFilename,
-                           debug, recentPostsCache)
+                           debug, recent_posts_cache)
 
         self._postToOutbox(newUndoAnnounce,
                            self.server.project_version, self.postToNickname)
@@ -8179,10 +8179,10 @@ class PubServer(BaseHTTPRequestHandler):
             likedPostFilename = \
                 locatePost(base_dir, self.postToNickname, domain, likeUrl)
         if likedPostFilename:
-            recentPostsCache = self.server.recentPostsCache
+            recent_posts_cache = self.server.recent_posts_cache
             likedPostJson = load_json(likedPostFilename, 0, 1)
             if origFilename and origPostUrl:
-                updateLikesCollection(recentPostsCache,
+                updateLikesCollection(recent_posts_cache,
                                       base_dir, likedPostFilename,
                                       likeUrl, likeActor, self.postToNickname,
                                       domain, debug, likedPostJson)
@@ -8190,7 +8190,7 @@ class PubServer(BaseHTTPRequestHandler):
                 likedPostFilename = origFilename
             if debug:
                 print('Updating likes for ' + likedPostFilename)
-            updateLikesCollection(recentPostsCache,
+            updateLikesCollection(recent_posts_cache,
                                   base_dir, likedPostFilename, likeUrl,
                                   likeActor, self.postToNickname, domain,
                                   debug, None)
@@ -8212,7 +8212,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.postToNickname, domain)
                 showRepeats = not isDM(likedPostJson)
                 individualPostAsHtml(self.server.signing_priv_key_pem, False,
-                                     self.server.recentPostsCache,
+                                     self.server.recent_posts_cache,
                                      self.server.max_recent_posts,
                                      self.server.translate,
                                      pageNumber, base_dir,
@@ -8343,10 +8343,10 @@ class PubServer(BaseHTTPRequestHandler):
             likedPostFilename = locatePost(base_dir, self.postToNickname,
                                            domain, likeUrl)
         if likedPostFilename:
-            recentPostsCache = self.server.recentPostsCache
+            recent_posts_cache = self.server.recent_posts_cache
             likedPostJson = load_json(likedPostFilename, 0, 1)
             if origFilename and origPostUrl:
-                undoLikesCollectionEntry(recentPostsCache,
+                undoLikesCollectionEntry(recent_posts_cache,
                                          base_dir, likedPostFilename,
                                          likeUrl, undoActor, domain, debug,
                                          likedPostJson)
@@ -8354,7 +8354,7 @@ class PubServer(BaseHTTPRequestHandler):
                 likedPostFilename = origFilename
             if debug:
                 print('Removing likes for ' + likedPostFilename)
-            undoLikesCollectionEntry(recentPostsCache,
+            undoLikesCollectionEntry(recent_posts_cache,
                                      base_dir,
                                      likedPostFilename, likeUrl,
                                      undoActor, domain, debug, None)
@@ -8367,7 +8367,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.postToNickname, domain)
                 showRepeats = not isDM(likedPostJson)
                 individualPostAsHtml(self.server.signing_priv_key_pem, False,
-                                     self.server.recentPostsCache,
+                                     self.server.recent_posts_cache,
                                      self.server.max_recent_posts,
                                      self.server.translate,
                                      pageNumber, base_dir,
@@ -8512,10 +8512,10 @@ class PubServer(BaseHTTPRequestHandler):
             reactionPostFilename = \
                 locatePost(base_dir, self.postToNickname, domain, reactionUrl)
         if reactionPostFilename:
-            recentPostsCache = self.server.recentPostsCache
+            recent_posts_cache = self.server.recent_posts_cache
             reactionPostJson = load_json(reactionPostFilename, 0, 1)
             if origFilename and origPostUrl:
-                updateReactionCollection(recentPostsCache,
+                updateReactionCollection(recent_posts_cache,
                                          base_dir, reactionPostFilename,
                                          reactionUrl,
                                          reactionActor, self.postToNickname,
@@ -8525,7 +8525,7 @@ class PubServer(BaseHTTPRequestHandler):
                 reactionPostFilename = origFilename
             if debug:
                 print('Updating emoji reaction for ' + reactionPostFilename)
-            updateReactionCollection(recentPostsCache,
+            updateReactionCollection(recent_posts_cache,
                                      base_dir, reactionPostFilename,
                                      reactionUrl,
                                      reactionActor,
@@ -8550,7 +8550,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.postToNickname, domain)
                 showRepeats = not isDM(reactionPostJson)
                 individualPostAsHtml(self.server.signing_priv_key_pem, False,
-                                     self.server.recentPostsCache,
+                                     self.server.recent_posts_cache,
                                      self.server.max_recent_posts,
                                      self.server.translate,
                                      pageNumber, base_dir,
@@ -8695,10 +8695,10 @@ class PubServer(BaseHTTPRequestHandler):
             reactionPostFilename = \
                 locatePost(base_dir, self.postToNickname, domain, reactionUrl)
         if reactionPostFilename:
-            recentPostsCache = self.server.recentPostsCache
+            recent_posts_cache = self.server.recent_posts_cache
             reactionPostJson = load_json(reactionPostFilename, 0, 1)
             if origFilename and origPostUrl:
-                undoReactionCollectionEntry(recentPostsCache,
+                undoReactionCollectionEntry(recent_posts_cache,
                                             base_dir, reactionPostFilename,
                                             reactionUrl,
                                             undoActor, domain, debug,
@@ -8708,7 +8708,7 @@ class PubServer(BaseHTTPRequestHandler):
                 reactionPostFilename = origFilename
             if debug:
                 print('Removing emoji reaction for ' + reactionPostFilename)
-            undoReactionCollectionEntry(recentPostsCache,
+            undoReactionCollectionEntry(recent_posts_cache,
                                         base_dir,
                                         reactionPostFilename, reactionUrl,
                                         undoActor, domain, debug,
@@ -8723,7 +8723,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.postToNickname, domain)
                 showRepeats = not isDM(reactionPostJson)
                 individualPostAsHtml(self.server.signing_priv_key_pem, False,
-                                     self.server.recentPostsCache,
+                                     self.server.recent_posts_cache,
                                      self.server.max_recent_posts,
                                      self.server.translate,
                                      pageNumber, base_dir,
@@ -8823,7 +8823,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         msg = \
             htmlEmojiReactionPicker(self.server.cssCache,
-                                    self.server.recentPostsCache,
+                                    self.server.recent_posts_cache,
                                     self.server.max_recent_posts,
                                     self.server.translate,
                                     self.server.base_dir,
@@ -8906,7 +8906,7 @@ class PubServer(BaseHTTPRequestHandler):
         bookmarkActor = \
             local_actor_url(http_prefix, self.postToNickname, domain_full)
         ccList = []
-        bookmark(self.server.recentPostsCache,
+        bookmark(self.server.recent_posts_cache,
                  self.server.session,
                  base_dir,
                  self.server.federation_list,
@@ -8943,7 +8943,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.postToNickname, domain)
                 showRepeats = not isDM(bookmarkPostJson)
                 individualPostAsHtml(self.server.signing_priv_key_pem, False,
-                                     self.server.recentPostsCache,
+                                     self.server.recent_posts_cache,
                                      self.server.max_recent_posts,
                                      self.server.translate,
                                      pageNumber, base_dir,
@@ -9032,7 +9032,7 @@ class PubServer(BaseHTTPRequestHandler):
         undoActor = \
             local_actor_url(http_prefix, self.postToNickname, domain_full)
         ccList = []
-        undoBookmark(self.server.recentPostsCache,
+        undoBookmark(self.server.recent_posts_cache,
                      self.server.session,
                      base_dir,
                      self.server.federation_list,
@@ -9071,7 +9071,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.postToNickname, domain)
                 showRepeats = not isDM(bookmarkPostJson)
                 individualPostAsHtml(self.server.signing_priv_key_pem, False,
-                                     self.server.recentPostsCache,
+                                     self.server.recent_posts_cache,
                                      self.server.max_recent_posts,
                                      self.server.translate,
                                      pageNumber, base_dir,
@@ -9173,7 +9173,7 @@ class PubServer(BaseHTTPRequestHandler):
 
             deleteStr = \
                 htmlConfirmDelete(self.server.cssCache,
-                                  self.server.recentPostsCache,
+                                  self.server.recent_posts_cache,
                                   self.server.max_recent_posts,
                                   self.server.translate, pageNumber,
                                   self.server.session, base_dir,
@@ -9246,7 +9246,7 @@ class PubServer(BaseHTTPRequestHandler):
         nickname = getNicknameFromActor(actor)
         mutePost(base_dir, nickname, domain, port,
                  http_prefix, muteUrl,
-                 self.server.recentPostsCache, debug)
+                 self.server.recent_posts_cache, debug)
         muteFilename = \
             locatePost(base_dir, nickname, domain, muteUrl)
         if muteFilename:
@@ -9273,7 +9273,7 @@ class PubServer(BaseHTTPRequestHandler):
                 avatarUrl = None
                 individualPostAsHtml(self.server.signing_priv_key_pem,
                                      allowDownloads,
-                                     self.server.recentPostsCache,
+                                     self.server.recent_posts_cache,
                                      self.server.max_recent_posts,
                                      self.server.translate,
                                      pageNumber, base_dir,
@@ -9355,7 +9355,7 @@ class PubServer(BaseHTTPRequestHandler):
         nickname = getNicknameFromActor(actor)
         unmutePost(base_dir, nickname, domain, port,
                    http_prefix, muteUrl,
-                   self.server.recentPostsCache, debug)
+                   self.server.recent_posts_cache, debug)
         muteFilename = \
             locatePost(base_dir, nickname, domain, muteUrl)
         if muteFilename:
@@ -9383,7 +9383,7 @@ class PubServer(BaseHTTPRequestHandler):
                 avatarUrl = None
                 individualPostAsHtml(self.server.signing_priv_key_pem,
                                      allowDownloads,
-                                     self.server.recentPostsCache,
+                                     self.server.recent_posts_cache,
                                      self.server.max_recent_posts,
                                      self.server.translate,
                                      pageNumber, base_dir,
@@ -9492,7 +9492,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if not self._establishSession("showRepliesToPost"):
                     self._404()
                     return True
-                recentPostsCache = self.server.recentPostsCache
+                recent_posts_cache = self.server.recent_posts_cache
                 max_recent_posts = self.server.max_recent_posts
                 translate = self.server.translate
                 session = self.server.session
@@ -9505,7 +9505,7 @@ class PubServer(BaseHTTPRequestHandler):
                 peertube_instances = self.server.peertube_instances
                 msg = \
                     htmlPostReplies(self.server.cssCache,
-                                    recentPostsCache,
+                                    recent_posts_cache,
                                     max_recent_posts,
                                     translate,
                                     base_dir,
@@ -9584,7 +9584,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if not self._establishSession("showRepliesToPost2"):
                     self._404()
                     return True
-                recentPostsCache = self.server.recentPostsCache
+                recent_posts_cache = self.server.recent_posts_cache
                 max_recent_posts = self.server.max_recent_posts
                 translate = self.server.translate
                 session = self.server.session
@@ -9597,7 +9597,7 @@ class PubServer(BaseHTTPRequestHandler):
                 peertube_instances = self.server.peertube_instances
                 msg = \
                     htmlPostReplies(self.server.cssCache,
-                                    recentPostsCache,
+                                    recent_posts_cache,
                                     max_recent_posts,
                                     translate,
                                     base_dir,
@@ -9679,8 +9679,8 @@ class PubServer(BaseHTTPRequestHandler):
                 if getPerson:
                     defaultTimeline = \
                         self.server.defaultTimeline
-                    recentPostsCache = \
-                        self.server.recentPostsCache
+                    recent_posts_cache = \
+                        self.server.recent_posts_cache
                     cached_webfingers = \
                         self.server.cached_webfingers
                     yt_replace_domain = \
@@ -9704,7 +9704,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.cssCache,
                                     icons_as_buttons,
                                     defaultTimeline,
-                                    recentPostsCache,
+                                    recent_posts_cache,
                                     self.server.max_recent_posts,
                                     self.server.translate,
                                     self.server.project_version,
@@ -9784,8 +9784,8 @@ class PubServer(BaseHTTPRequestHandler):
                             if getPerson:
                                 defaultTimeline =  \
                                     self.server.defaultTimeline
-                                recentPostsCache = \
-                                    self.server.recentPostsCache
+                                recent_posts_cache = \
+                                    self.server.recent_posts_cache
                                 cached_webfingers = \
                                     self.server.cached_webfingers
                                 yt_replace_domain = \
@@ -9820,7 +9820,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                 self.server.cssCache,
                                                 icons_as_buttons,
                                                 defaultTimeline,
-                                                recentPostsCache,
+                                                recent_posts_cache,
                                                 self.server.max_recent_posts,
                                                 self.server.translate,
                                                 self.server.project_version,
@@ -9988,7 +9988,7 @@ class PubServer(BaseHTTPRequestHandler):
         if self._requestHTTP():
             msg = \
                 htmlIndividualPost(self.server.cssCache,
-                                   self.server.recentPostsCache,
+                                   self.server.recent_posts_cache,
                                    self.server.max_recent_posts,
                                    self.server.translate,
                                    base_dir,
@@ -10162,7 +10162,7 @@ class PubServer(BaseHTTPRequestHandler):
                    GETstartTime,
                    proxy_type: str, cookie: str,
                    debug: str,
-                   recentPostsCache: {}, session,
+                   recent_posts_cache: {}, session,
                    defaultTimeline: str,
                    max_recent_posts: int,
                    translate: {},
@@ -10177,7 +10177,7 @@ class PubServer(BaseHTTPRequestHandler):
         if '/users/' in path:
             if authorized:
                 inboxFeed = \
-                    personBoxJson(recentPostsCache,
+                    personBoxJson(recent_posts_cache,
                                   session,
                                   base_dir,
                                   domain,
@@ -10209,7 +10209,7 @@ class PubServer(BaseHTTPRequestHandler):
                         if 'page=' not in path:
                             # if no page was specified then show the first
                             inboxFeed = \
-                                personBoxJson(recentPostsCache,
+                                personBoxJson(recent_posts_cache,
                                               session,
                                               base_dir,
                                               domain,
@@ -10239,7 +10239,7 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.shared_items_federated_domains
                         msg = htmlInbox(self.server.cssCache,
                                         defaultTimeline,
-                                        recentPostsCache,
+                                        recent_posts_cache,
                                         max_recent_posts,
                                         translate,
                                         pageNumber, maxPostsInFeed,
@@ -10336,7 +10336,7 @@ class PubServer(BaseHTTPRequestHandler):
         if '/users/' in path:
             if authorized:
                 inboxDMFeed = \
-                    personBoxJson(self.server.recentPostsCache,
+                    personBoxJson(self.server.recent_posts_cache,
                                   self.server.session,
                                   base_dir,
                                   domain,
@@ -10362,7 +10362,7 @@ class PubServer(BaseHTTPRequestHandler):
                         if 'page=' not in path:
                             # if no page was specified then show the first
                             inboxDMFeed = \
-                                personBoxJson(self.server.recentPostsCache,
+                                personBoxJson(self.server.recent_posts_cache,
                                               self.server.session,
                                               base_dir,
                                               domain,
@@ -10392,7 +10392,7 @@ class PubServer(BaseHTTPRequestHandler):
                         msg = \
                             htmlInboxDMs(self.server.cssCache,
                                          self.server.defaultTimeline,
-                                         self.server.recentPostsCache,
+                                         self.server.recent_posts_cache,
                                          self.server.max_recent_posts,
                                          self.server.translate,
                                          pageNumber, maxPostsInFeed,
@@ -10481,7 +10481,7 @@ class PubServer(BaseHTTPRequestHandler):
         if '/users/' in path:
             if authorized:
                 inboxRepliesFeed = \
-                    personBoxJson(self.server.recentPostsCache,
+                    personBoxJson(self.server.recent_posts_cache,
                                   self.server.session,
                                   base_dir,
                                   domain,
@@ -10508,7 +10508,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if 'page=' not in path:
                         # if no page was specified then show the first
                         inboxRepliesFeed = \
-                            personBoxJson(self.server.recentPostsCache,
+                            personBoxJson(self.server.recent_posts_cache,
                                           self.server.session,
                                           base_dir,
                                           domain,
@@ -10537,7 +10537,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = \
                         htmlInboxReplies(self.server.cssCache,
                                          self.server.defaultTimeline,
-                                         self.server.recentPostsCache,
+                                         self.server.recent_posts_cache,
                                          self.server.max_recent_posts,
                                          self.server.translate,
                                          pageNumber, maxPostsInFeed,
@@ -10626,7 +10626,7 @@ class PubServer(BaseHTTPRequestHandler):
         if '/users/' in path:
             if authorized:
                 inboxMediaFeed = \
-                    personBoxJson(self.server.recentPostsCache,
+                    personBoxJson(self.server.recent_posts_cache,
                                   self.server.session,
                                   base_dir,
                                   domain,
@@ -10653,7 +10653,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if 'page=' not in path:
                         # if no page was specified then show the first
                         inboxMediaFeed = \
-                            personBoxJson(self.server.recentPostsCache,
+                            personBoxJson(self.server.recent_posts_cache,
                                           self.server.session,
                                           base_dir,
                                           domain,
@@ -10678,7 +10678,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = \
                         htmlInboxMedia(self.server.cssCache,
                                        self.server.defaultTimeline,
-                                       self.server.recentPostsCache,
+                                       self.server.recent_posts_cache,
                                        self.server.max_recent_posts,
                                        self.server.translate,
                                        pageNumber, maxPostsInMediaFeed,
@@ -10768,7 +10768,7 @@ class PubServer(BaseHTTPRequestHandler):
         if '/users/' in path:
             if authorized:
                 inboxBlogsFeed = \
-                    personBoxJson(self.server.recentPostsCache,
+                    personBoxJson(self.server.recent_posts_cache,
                                   self.server.session,
                                   base_dir,
                                   domain,
@@ -10795,7 +10795,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if 'page=' not in path:
                         # if no page was specified then show the first
                         inboxBlogsFeed = \
-                            personBoxJson(self.server.recentPostsCache,
+                            personBoxJson(self.server.recent_posts_cache,
                                           self.server.session,
                                           base_dir,
                                           domain,
@@ -10820,7 +10820,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = \
                         htmlInboxBlogs(self.server.cssCache,
                                        self.server.defaultTimeline,
-                                       self.server.recentPostsCache,
+                                       self.server.recent_posts_cache,
                                        self.server.max_recent_posts,
                                        self.server.translate,
                                        pageNumber, maxPostsInBlogsFeed,
@@ -10911,7 +10911,7 @@ class PubServer(BaseHTTPRequestHandler):
         if '/users/' in path:
             if authorized:
                 inboxNewsFeed = \
-                    personBoxJson(self.server.recentPostsCache,
+                    personBoxJson(self.server.recent_posts_cache,
                                   self.server.session,
                                   base_dir,
                                   domain,
@@ -10939,7 +10939,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if 'page=' not in path:
                         # if no page was specified then show the first
                         inboxNewsFeed = \
-                            personBoxJson(self.server.recentPostsCache,
+                            personBoxJson(self.server.recent_posts_cache,
                                           self.server.session,
                                           base_dir,
                                           domain,
@@ -10971,7 +10971,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = \
                         htmlInboxNews(self.server.cssCache,
                                       self.server.defaultTimeline,
-                                      self.server.recentPostsCache,
+                                      self.server.recent_posts_cache,
                                       self.server.max_recent_posts,
                                       self.server.translate,
                                       pageNumber, maxPostsInNewsFeed,
@@ -11062,7 +11062,7 @@ class PubServer(BaseHTTPRequestHandler):
         if '/users/' in path:
             if authorized:
                 inboxFeaturesFeed = \
-                    personBoxJson(self.server.recentPostsCache,
+                    personBoxJson(self.server.recent_posts_cache,
                                   self.server.session,
                                   base_dir,
                                   domain,
@@ -11090,7 +11090,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if 'page=' not in path:
                         # if no page was specified then show the first
                         inboxFeaturesFeed = \
-                            personBoxJson(self.server.recentPostsCache,
+                            personBoxJson(self.server.recent_posts_cache,
                                           self.server.session,
                                           base_dir,
                                           domain,
@@ -11123,7 +11123,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = \
                         htmlInboxFeatures(self.server.cssCache,
                                           self.server.defaultTimeline,
-                                          self.server.recentPostsCache,
+                                          self.server.recent_posts_cache,
                                           self.server.max_recent_posts,
                                           self.server.translate,
                                           pageNumber, maxPostsInBlogsFeed,
@@ -11234,7 +11234,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = \
                         htmlShares(self.server.cssCache,
                                    self.server.defaultTimeline,
-                                   self.server.recentPostsCache,
+                                   self.server.recent_posts_cache,
                                    self.server.max_recent_posts,
                                    self.server.translate,
                                    pageNumber, maxPostsInFeed,
@@ -11319,7 +11319,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = \
                         htmlWanted(self.server.cssCache,
                                    self.server.defaultTimeline,
-                                   self.server.recentPostsCache,
+                                   self.server.recent_posts_cache,
                                    self.server.max_recent_posts,
                                    self.server.translate,
                                    pageNumber, maxPostsInFeed,
@@ -11384,7 +11384,7 @@ class PubServer(BaseHTTPRequestHandler):
         if '/users/' in path:
             if authorized:
                 bookmarksFeed = \
-                    personBoxJson(self.server.recentPostsCache,
+                    personBoxJson(self.server.recent_posts_cache,
                                   self.server.session,
                                   base_dir,
                                   domain,
@@ -11411,7 +11411,7 @@ class PubServer(BaseHTTPRequestHandler):
                         if 'page=' not in path:
                             # if no page was specified then show the first
                             bookmarksFeed = \
-                                personBoxJson(self.server.recentPostsCache,
+                                personBoxJson(self.server.recent_posts_cache,
                                               self.server.session,
                                               base_dir,
                                               domain,
@@ -11441,7 +11441,7 @@ class PubServer(BaseHTTPRequestHandler):
                         msg = \
                             htmlBookmarks(self.server.cssCache,
                                           self.server.defaultTimeline,
-                                          self.server.recentPostsCache,
+                                          self.server.recent_posts_cache,
                                           self.server.max_recent_posts,
                                           self.server.translate,
                                           pageNumber, maxPostsInFeed,
@@ -11529,7 +11529,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         # get outbox feed for a person
         outboxFeed = \
-            personBoxJson(self.server.recentPostsCache,
+            personBoxJson(self.server.recent_posts_cache,
                           self.server.session,
                           base_dir, domain, port, path,
                           http_prefix, maxPostsInFeed, 'outbox',
@@ -11555,7 +11555,7 @@ class PubServer(BaseHTTPRequestHandler):
                 # if a page wasn't specified then show the first one
                 pageStr = '?page=' + str(pageNumber)
                 outboxFeed = \
-                    personBoxJson(self.server.recentPostsCache,
+                    personBoxJson(self.server.recent_posts_cache,
                                   self.server.session,
                                   base_dir, domain, port,
                                   path + pageStr,
@@ -11581,7 +11581,7 @@ class PubServer(BaseHTTPRequestHandler):
                 msg = \
                     htmlOutbox(self.server.cssCache,
                                self.server.defaultTimeline,
-                               self.server.recentPostsCache,
+                               self.server.recent_posts_cache,
                                self.server.max_recent_posts,
                                self.server.translate,
                                pageNumber, maxPostsInFeed,
@@ -11657,7 +11657,7 @@ class PubServer(BaseHTTPRequestHandler):
         if '/users/' in path:
             if authorized:
                 moderationFeed = \
-                    personBoxJson(self.server.recentPostsCache,
+                    personBoxJson(self.server.recent_posts_cache,
                                   self.server.session,
                                   base_dir,
                                   domain,
@@ -11683,7 +11683,7 @@ class PubServer(BaseHTTPRequestHandler):
                         if 'page=' not in path:
                             # if no page was specified then show the first
                             moderationFeed = \
-                                personBoxJson(self.server.recentPostsCache,
+                                personBoxJson(self.server.recent_posts_cache,
                                               self.server.session,
                                               base_dir,
                                               domain,
@@ -11714,7 +11714,7 @@ class PubServer(BaseHTTPRequestHandler):
                         msg = \
                             htmlModeration(self.server.cssCache,
                                            self.server.defaultTimeline,
-                                           self.server.recentPostsCache,
+                                           self.server.recent_posts_cache,
                                            self.server.max_recent_posts,
                                            self.server.translate,
                                            pageNumber, maxPostsInFeed,
@@ -11845,7 +11845,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.cssCache,
                                     self.server.icons_as_buttons,
                                     self.server.defaultTimeline,
-                                    self.server.recentPostsCache,
+                                    self.server.recent_posts_cache,
                                     self.server.max_recent_posts,
                                     self.server.translate,
                                     self.server.project_version,
@@ -11966,7 +11966,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.cssCache,
                                     self.server.icons_as_buttons,
                                     self.server.defaultTimeline,
-                                    self.server.recentPostsCache,
+                                    self.server.recent_posts_cache,
                                     self.server.max_recent_posts,
                                     self.server.translate,
                                     self.server.project_version,
@@ -12085,7 +12085,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.cssCache,
                                     self.server.icons_as_buttons,
                                     self.server.defaultTimeline,
-                                    self.server.recentPostsCache,
+                                    self.server.recent_posts_cache,
                                     self.server.max_recent_posts,
                                     self.server.translate,
                                     self.server.project_version,
@@ -12221,7 +12221,7 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.cssCache,
                             self.server.icons_as_buttons,
                             self.server.defaultTimeline,
-                            self.server.recentPostsCache,
+                            self.server.recent_posts_cache,
                             self.server.max_recent_posts,
                             self.server.translate,
                             self.server.project_version,
@@ -12992,7 +12992,7 @@ class PubServer(BaseHTTPRequestHandler):
                               noDropDown, accessKeys,
                               customSubmitText,
                               conversationId,
-                              self.server.recentPostsCache,
+                              self.server.recent_posts_cache,
                               self.server.max_recent_posts,
                               self.server.session,
                               self.server.cached_webfingers,
@@ -15287,7 +15287,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      GETstartTime,
                                      repeatPrivate,
                                      self.server.debug,
-                                     self.server.recentPostsCache)
+                                     self.server.recent_posts_cache)
             self.server.GETbusy = False
             return
 
@@ -15921,7 +15921,7 @@ class PubServer(BaseHTTPRequestHandler):
                                GETstartTime,
                                self.server.proxy_type,
                                cookie, self.server.debug,
-                               self.server.recentPostsCache,
+                               self.server.recent_posts_cache,
                                self.server.session,
                                self.server.defaultTimeline,
                                self.server.max_recent_posts,
@@ -16768,7 +16768,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       'unable to delete ' + cachedFilename)
                         # remove from memory cache
                         removePostFromCache(post_json_object,
-                                            self.server.recentPostsCache)
+                                            self.server.recent_posts_cache)
                         # change the blog post title
                         post_json_object['object']['summary'] = \
                             fields['subject']
@@ -18910,7 +18910,7 @@ def runDaemon(content_license_url: str,
     else:
         httpd.thrSharesExpire.start()
 
-    httpd.recentPostsCache = {}
+    httpd.recent_posts_cache = {}
     httpd.max_recent_posts = max_recent_posts
     httpd.iconsCache = {}
     httpd.fontsCache = {}
@@ -18933,7 +18933,7 @@ def runDaemon(content_license_url: str,
     print('Creating inbox queue')
     httpd.thrInboxQueue = \
         threadWithTrace(target=runInboxQueue,
-                        args=(httpd.recentPostsCache,
+                        args=(httpd.recent_posts_cache,
                               httpd.max_recent_posts,
                               project_version,
                               base_dir, http_prefix, httpd.send_threads,

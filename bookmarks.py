@@ -32,7 +32,7 @@ from posts import getPersonBox
 from session import postJson
 
 
-def undoBookmarksCollectionEntry(recentPostsCache: {},
+def undoBookmarksCollectionEntry(recent_posts_cache: {},
                                  base_dir: str, postFilename: str,
                                  objectUrl: str,
                                  actor: str, domain: str, debug: bool) -> None:
@@ -56,7 +56,7 @@ def undoBookmarksCollectionEntry(recentPostsCache: {},
                     print('EX: undoBookmarksCollectionEntry ' +
                           'unable to delete cached post file ' +
                           str(cachedPostFilename))
-    removePostFromCache(post_json_object, recentPostsCache)
+    removePostFromCache(post_json_object, recent_posts_cache)
 
     # remove from the index
     bookmarksIndexFilename = \
@@ -153,7 +153,7 @@ def _noOfBookmarks(post_json_object: {}) -> int:
     return len(post_json_object['object']['bookmarks']['items'])
 
 
-def updateBookmarksCollection(recentPostsCache: {},
+def updateBookmarksCollection(recent_posts_cache: {},
                               base_dir: str, postFilename: str,
                               objectUrl: str,
                               actor: str, domain: str, debug: bool) -> None:
@@ -175,7 +175,7 @@ def updateBookmarksCollection(recentPostsCache: {},
                         print('EX: updateBookmarksCollection ' +
                               'unable to delete cached post ' +
                               str(cachedPostFilename))
-        removePostFromCache(post_json_object, recentPostsCache)
+        removePostFromCache(post_json_object, recent_posts_cache)
 
         if not post_json_object.get('object'):
             if debug:
@@ -248,7 +248,7 @@ def updateBookmarksCollection(recentPostsCache: {},
                       bookmarksIndexFilename)
 
 
-def bookmark(recentPostsCache: {},
+def bookmark(recent_posts_cache: {},
              session, base_dir: str, federation_list: [],
              nickname: str, domain: str, port: int,
              ccList: [], http_prefix: str,
@@ -300,14 +300,14 @@ def bookmark(recentPostsCache: {},
             print('DEBUG: bookmark objectUrl: ' + objectUrl)
             return None
 
-        updateBookmarksCollection(recentPostsCache,
+        updateBookmarksCollection(recent_posts_cache,
                                   base_dir, postFilename, objectUrl,
                                   newBookmarkJson['actor'], domain, debug)
 
     return newBookmarkJson
 
 
-def undoBookmark(recentPostsCache: {},
+def undoBookmark(recent_posts_cache: {},
                  session, base_dir: str, federation_list: [],
                  nickname: str, domain: str, port: int,
                  ccList: [], http_prefix: str,
@@ -360,7 +360,7 @@ def undoBookmark(recentPostsCache: {},
         if not postFilename:
             return None
 
-        undoBookmarksCollectionEntry(recentPostsCache,
+        undoBookmarksCollectionEntry(recent_posts_cache,
                                      base_dir, postFilename, objectUrl,
                                      newUndoBookmarkJson['actor'],
                                      domain, debug)
@@ -550,7 +550,7 @@ def sendUndoBookmarkViaServer(base_dir: str, session,
     return newBookmarkJson
 
 
-def outboxBookmark(recentPostsCache: {},
+def outboxBookmark(recent_posts_cache: {},
                    base_dir: str, http_prefix: str,
                    nickname: str, domain: str, port: int,
                    message_json: {}, debug: bool) -> None:
@@ -599,14 +599,14 @@ def outboxBookmark(recentPostsCache: {},
             print('DEBUG: c2s like post not found in inbox or outbox')
             print(messageUrl)
         return True
-    updateBookmarksCollection(recentPostsCache,
+    updateBookmarksCollection(recent_posts_cache,
                               base_dir, postFilename, messageUrl,
                               message_json['actor'], domain, debug)
     if debug:
         print('DEBUG: post bookmarked via c2s - ' + postFilename)
 
 
-def outboxUndoBookmark(recentPostsCache: {},
+def outboxUndoBookmark(recent_posts_cache: {},
                        base_dir: str, http_prefix: str,
                        nickname: str, domain: str, port: int,
                        message_json: {}, debug: bool) -> None:
@@ -655,7 +655,7 @@ def outboxUndoBookmark(recentPostsCache: {},
             print('DEBUG: c2s unbookmark post not found in inbox or outbox')
             print(messageUrl)
         return True
-    updateBookmarksCollection(recentPostsCache,
+    updateBookmarksCollection(recent_posts_cache,
                               base_dir, postFilename, messageUrl,
                               message_json['actor'], domain, debug)
     if debug:

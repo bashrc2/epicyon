@@ -22,7 +22,7 @@ from webapp_column_right import getRightColumnContent
 from webapp_post import individualPostAsHtml
 
 
-def _htmlFrontScreenPosts(recentPostsCache: {}, max_recent_posts: int,
+def _htmlFrontScreenPosts(recent_posts_cache: {}, max_recent_posts: int,
                           translate: {},
                           base_dir: str, http_prefix: str,
                           nickname: str, domain: str, port: int,
@@ -65,7 +65,7 @@ def _htmlFrontScreenPosts(recentPostsCache: {}, max_recent_posts: int,
             if item['type'] == 'Create':
                 postStr = \
                     individualPostAsHtml(signing_priv_key_pem,
-                                         True, recentPostsCache,
+                                         True, recent_posts_cache,
                                          max_recent_posts,
                                          translate, None,
                                          base_dir, session,
@@ -97,7 +97,7 @@ def htmlFrontScreen(signing_priv_key_pem: str,
                     rss_icon_at_top: bool,
                     cssCache: {}, icons_as_buttons: bool,
                     defaultTimeline: str,
-                    recentPostsCache: {}, max_recent_posts: int,
+                    recent_posts_cache: {}, max_recent_posts: int,
                     translate: {}, project_version: str,
                     base_dir: str, http_prefix: str, authorized: bool,
                     profile_json: {}, selected: str,
@@ -173,7 +173,7 @@ def htmlFrontScreen(signing_priv_key_pem: str,
     bannerFile, bannerFilename = \
         getBannerFile(base_dir, nickname, domain, theme)
     profileStr += \
-        _htmlFrontScreenPosts(recentPostsCache, max_recent_posts,
+        _htmlFrontScreenPosts(recent_posts_cache, max_recent_posts,
                               translate,
                               base_dir, http_prefix,
                               nickname, domain, port,

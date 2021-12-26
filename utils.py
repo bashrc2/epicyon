@@ -1293,7 +1293,7 @@ def locateNewsArrival(base_dir: str, domain: str,
     return None
 
 
-def clearFromPostCaches(base_dir: str, recentPostsCache: {},
+def clearFromPostCaches(base_dir: str, recent_posts_cache: {},
                         post_id: str) -> None:
     """Clears cached html for the given post, so that edits
     to news will appear
@@ -1314,15 +1314,15 @@ def clearFromPostCaches(base_dir: str, recentPostsCache: {},
                     print('EX: clearFromPostCaches file not removed ' +
                           str(postFilename))
             # if the post is in the recent posts cache then remove it
-            if recentPostsCache.get('index'):
-                if post_id in recentPostsCache['index']:
-                    recentPostsCache['index'].remove(post_id)
-            if recentPostsCache.get('json'):
-                if recentPostsCache['json'].get(post_id):
-                    del recentPostsCache['json'][post_id]
-            if recentPostsCache.get('html'):
-                if recentPostsCache['html'].get(post_id):
-                    del recentPostsCache['html'][post_id]
+            if recent_posts_cache.get('index'):
+                if post_id in recent_posts_cache['index']:
+                    recent_posts_cache['index'].remove(post_id)
+            if recent_posts_cache.get('json'):
+                if recent_posts_cache['json'].get(post_id):
+                    del recent_posts_cache['json'][post_id]
+            if recent_posts_cache.get('html'):
+                if recent_posts_cache['html'].get(post_id):
+                    del recent_posts_cache['html'][post_id]
         break
 
 
@@ -1529,7 +1529,7 @@ def _is_reply_to_blog_post(base_dir: str, nickname: str, domain: str,
 
 def _deletePostRemoveReplies(base_dir: str, nickname: str, domain: str,
                              http_prefix: str, postFilename: str,
-                             recentPostsCache: {}, debug: bool) -> None:
+                             recent_posts_cache: {}, debug: bool) -> None:
     """Removes replies when deleting a post
     """
     repliesFilename = postFilename.replace('.json', '.replies')
@@ -1545,7 +1545,7 @@ def _deletePostRemoveReplies(base_dir: str, nickname: str, domain: str,
             if os.path.isfile(replyFile):
                 deletePost(base_dir, http_prefix,
                            nickname, domain, replyFile, debug,
-                           recentPostsCache)
+                           recent_posts_cache)
     # remove the replies file
     try:
         os.remove(repliesFilename)
@@ -1567,36 +1567,36 @@ def _isBookmarked(base_dir: str, nickname: str, domain: str,
     return False
 
 
-def removePostFromCache(post_json_object: {}, recentPostsCache: {}) -> None:
+def removePostFromCache(post_json_object: {}, recent_posts_cache: {}) -> None:
     """ if the post exists in the recent posts cache then remove it
     """
-    if not recentPostsCache:
+    if not recent_posts_cache:
         return
 
     if not post_json_object.get('id'):
         return
 
-    if not recentPostsCache.get('index'):
+    if not recent_posts_cache.get('index'):
         return
 
     post_id = post_json_object['id']
     if '#' in post_id:
         post_id = post_id.split('#', 1)[0]
     post_id = removeIdEnding(post_id).replace('/', '#')
-    if post_id not in recentPostsCache['index']:
+    if post_id not in recent_posts_cache['index']:
         return
 
-    if recentPostsCache.get('index'):
-        if post_id in recentPostsCache['index']:
-            recentPostsCache['index'].remove(post_id)
+    if recent_posts_cache.get('index'):
+        if post_id in recent_posts_cache['index']:
+            recent_posts_cache['index'].remove(post_id)
 
-    if recentPostsCache.get('json'):
-        if recentPostsCache['json'].get(post_id):
-            del recentPostsCache['json'][post_id]
+    if recent_posts_cache.get('json'):
+        if recent_posts_cache['json'].get(post_id):
+            del recent_posts_cache['json'][post_id]
 
-    if recentPostsCache.get('html'):
-        if recentPostsCache['html'].get(post_id):
-            del recentPostsCache['html'][post_id]
+    if recent_posts_cache.get('html'):
+        if recent_posts_cache['html'].get(post_id):
+            del recent_posts_cache['html'][post_id]
 
 
 def _deleteCachedHtml(base_dir: str, nickname: str, domain: str,
@@ -1713,7 +1713,7 @@ def _deleteConversationPost(base_dir: str, nickname: str, domain: str,
 
 def deletePost(base_dir: str, http_prefix: str,
                nickname: str, domain: str, postFilename: str,
-               debug: bool, recentPostsCache: {}) -> None:
+               debug: bool, recent_posts_cache: {}) -> None:
     """Recursively deletes a post and its replies and attachments
     """
     post_json_object = load_json(postFilename, 1)
@@ -1721,7 +1721,7 @@ def deletePost(base_dir: str, http_prefix: str,
         # remove any replies
         _deletePostRemoveReplies(base_dir, nickname, domain,
                                  http_prefix, postFilename,
-                                 recentPostsCache, debug)
+                                 recent_posts_cache, debug)
         # finally, remove the post itself
         try:
             os.remove(postFilename)
@@ -1741,7 +1741,7 @@ def deletePost(base_dir: str, http_prefix: str,
         return
 
     # remove from recent posts cache in memory
-    removePostFromCache(post_json_object, recentPostsCache)
+    removePostFromCache(post_json_object, recent_posts_cache)
 
     # remove from conversation index
     _deleteConversationPost(base_dir, nickname, domain, post_json_object)
@@ -1781,7 +1781,7 @@ def deletePost(base_dir: str, http_prefix: str,
     # remove any replies
     _deletePostRemoveReplies(base_dir, nickname, domain,
                              http_prefix, postFilename,
-                             recentPostsCache, debug)
+                             recent_posts_cache, debug)
     # finally, remove the post itself
     try:
         os.remove(postFilename)
@@ -2007,7 +2007,7 @@ def getCachedPostFilename(base_dir: str, nickname: str, domain: str,
     return cachedPostFilename + '.html'
 
 
-def updateRecentPostsCache(recentPostsCache: {}, max_recent_posts: int,
+def updateRecentPostsCache(recent_posts_cache: {}, max_recent_posts: int,
                            post_json_object: {}, htmlStr: str) -> None:
     """Store recent posts in memory so that they can be quickly recalled
     """
@@ -2017,27 +2017,27 @@ def updateRecentPostsCache(recentPostsCache: {}, max_recent_posts: int,
     if '#' in post_id:
         post_id = post_id.split('#', 1)[0]
     post_id = removeIdEnding(post_id).replace('/', '#')
-    if recentPostsCache.get('index'):
-        if post_id in recentPostsCache['index']:
+    if recent_posts_cache.get('index'):
+        if post_id in recent_posts_cache['index']:
             return
-        recentPostsCache['index'].append(post_id)
+        recent_posts_cache['index'].append(post_id)
         post_json_object['muted'] = False
-        recentPostsCache['json'][post_id] = json.dumps(post_json_object)
-        recentPostsCache['html'][post_id] = htmlStr
+        recent_posts_cache['json'][post_id] = json.dumps(post_json_object)
+        recent_posts_cache['html'][post_id] = htmlStr
 
-        while len(recentPostsCache['html'].items()) > max_recent_posts:
-            post_id = recentPostsCache['index'][0]
-            recentPostsCache['index'].pop(0)
-            if recentPostsCache['json'].get(post_id):
-                del recentPostsCache['json'][post_id]
-            if recentPostsCache['html'].get(post_id):
-                del recentPostsCache['html'][post_id]
+        while len(recent_posts_cache['html'].items()) > max_recent_posts:
+            post_id = recent_posts_cache['index'][0]
+            recent_posts_cache['index'].pop(0)
+            if recent_posts_cache['json'].get(post_id):
+                del recent_posts_cache['json'][post_id]
+            if recent_posts_cache['html'].get(post_id):
+                del recent_posts_cache['html'][post_id]
     else:
-        recentPostsCache['index'] = [post_id]
-        recentPostsCache['json'] = {}
-        recentPostsCache['html'] = {}
-        recentPostsCache['json'][post_id] = json.dumps(post_json_object)
-        recentPostsCache['html'][post_id] = htmlStr
+        recent_posts_cache['index'] = [post_id]
+        recent_posts_cache['json'] = {}
+        recent_posts_cache['html'] = {}
+        recent_posts_cache['json'][post_id] = json.dumps(post_json_object)
+        recent_posts_cache['html'][post_id] = htmlStr
 
 
 def fileLastModified(filename: str) -> str:
@@ -2207,7 +2207,7 @@ def getFileCaseInsensitive(path: str) -> str:
     return None
 
 
-def undoLikesCollectionEntry(recentPostsCache: {},
+def undoLikesCollectionEntry(recent_posts_cache: {},
                              base_dir: str, postFilename: str, objectUrl: str,
                              actor: str, domain: str, debug: bool,
                              post_json_object: {}) -> None:
@@ -2230,7 +2230,7 @@ def undoLikesCollectionEntry(recentPostsCache: {},
                 print('EX: undoLikesCollectionEntry ' +
                       'unable to delete cached post ' +
                       str(cachedPostFilename))
-    removePostFromCache(post_json_object, recentPostsCache)
+    removePostFromCache(post_json_object, recent_posts_cache)
 
     if not post_json_object.get('type'):
         return
@@ -2270,7 +2270,7 @@ def undoLikesCollectionEntry(recentPostsCache: {},
     save_json(post_json_object, postFilename)
 
 
-def undoReactionCollectionEntry(recentPostsCache: {},
+def undoReactionCollectionEntry(recent_posts_cache: {},
                                 base_dir: str, postFilename: str,
                                 objectUrl: str,
                                 actor: str, domain: str, debug: bool,
@@ -2295,7 +2295,7 @@ def undoReactionCollectionEntry(recentPostsCache: {},
                 print('EX: undoReactionCollectionEntry ' +
                       'unable to delete cached post ' +
                       str(cachedPostFilename))
-    removePostFromCache(post_json_object, recentPostsCache)
+    removePostFromCache(post_json_object, recent_posts_cache)
 
     if not post_json_object.get('type'):
         return
@@ -2336,7 +2336,7 @@ def undoReactionCollectionEntry(recentPostsCache: {},
     save_json(post_json_object, postFilename)
 
 
-def undoAnnounceCollectionEntry(recentPostsCache: {},
+def undoAnnounceCollectionEntry(recent_posts_cache: {},
                                 base_dir: str, postFilename: str,
                                 actor: str, domain: str, debug: bool) -> None:
     """Undoes an announce for a particular actor by removing it from
@@ -2361,7 +2361,7 @@ def undoAnnounceCollectionEntry(recentPostsCache: {},
                     print('EX: undoAnnounceCollectionEntry ' +
                           'unable to delete cached post ' +
                           str(cachedPostFilename))
-    removePostFromCache(post_json_object, recentPostsCache)
+    removePostFromCache(post_json_object, recent_posts_cache)
 
     if not post_json_object.get('type'):
         return
@@ -2403,7 +2403,7 @@ def undoAnnounceCollectionEntry(recentPostsCache: {},
     save_json(post_json_object, postFilename)
 
 
-def updateAnnounceCollection(recentPostsCache: {},
+def updateAnnounceCollection(recent_posts_cache: {},
                              base_dir: str, postFilename: str,
                              actor: str,
                              nickname: str, domain: str, debug: bool) -> None:
@@ -2428,7 +2428,7 @@ def updateAnnounceCollection(recentPostsCache: {},
                     print('EX: updateAnnounceCollection ' +
                           'unable to delete cached post ' +
                           str(cachedPostFilename))
-    removePostFromCache(post_json_object, recentPostsCache)
+    removePostFromCache(post_json_object, recent_posts_cache)
 
     if not has_object_dict(post_json_object):
         if debug:
@@ -2555,7 +2555,7 @@ def camelCaseSplit(text: str) -> str:
 
 
 def rejectPostId(base_dir: str, nickname: str, domain: str,
-                 post_id: str, recentPostsCache: {}) -> None:
+                 post_id: str, recent_posts_cache: {}) -> None:
     """ Marks the given post as rejected,
     for example an announce which is too old
     """
@@ -2563,7 +2563,7 @@ def rejectPostId(base_dir: str, nickname: str, domain: str,
     if not postFilename:
         return
 
-    if recentPostsCache.get('index'):
+    if recent_posts_cache.get('index'):
         # if this is a full path then remove the directories
         indexFilename = postFilename
         if '/' in postFilename:
@@ -2576,11 +2576,11 @@ def rejectPostId(base_dir: str, nickname: str, domain: str,
             indexFilename.replace('\n', '').replace('\r', '')
         postUrl = postUrl.replace('.json', '').strip()
 
-        if postUrl in recentPostsCache['index']:
-            if recentPostsCache['json'].get(postUrl):
-                del recentPostsCache['json'][postUrl]
-            if recentPostsCache['html'].get(postUrl):
-                del recentPostsCache['html'][postUrl]
+        if postUrl in recent_posts_cache['index']:
+            if recent_posts_cache['json'].get(postUrl):
+                del recent_posts_cache['json'][postUrl]
+            if recent_posts_cache['html'].get(postUrl):
+                del recent_posts_cache['html'][postUrl]
 
     with open(postFilename + '.reject', 'w+') as rejectFile:
         rejectFile.write('\n')

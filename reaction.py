@@ -60,7 +60,7 @@ def validEmojiContent(emojiContent: str) -> bool:
     return True
 
 
-def _reaction(recentPostsCache: {},
+def _reaction(recent_posts_cache: {},
               session, base_dir: str, federation_list: [],
               nickname: str, domain: str, port: int,
               ccList: [], http_prefix: str,
@@ -126,7 +126,7 @@ def _reaction(recentPostsCache: {},
             print('DEBUG: reaction objectUrl: ' + objectUrl)
             return None
 
-        updateReactionCollection(recentPostsCache,
+        updateReactionCollection(recent_posts_cache,
                                  base_dir, postFilename, objectUrl,
                                  newReactionJson['actor'],
                                  nickname, domain, debug, None,
@@ -145,7 +145,7 @@ def _reaction(recentPostsCache: {},
     return newReactionJson
 
 
-def reactionPost(recentPostsCache: {},
+def reactionPost(recent_posts_cache: {},
                  session, base_dir: str, federation_list: [],
                  nickname: str, domain: str, port: int, http_prefix: str,
                  reactionNickname: str, reactionDomain: str, reactionPort: int,
@@ -164,7 +164,7 @@ def reactionPost(recentPostsCache: {},
         local_actor_url(http_prefix, reactionNickname, reactionDomain)
     objectUrl = actorReaction + '/statuses/' + str(reactionStatusNumber)
 
-    return _reaction(recentPostsCache,
+    return _reaction(recent_posts_cache,
                      session, base_dir, federation_list,
                      nickname, domain, port,
                      ccList, http_prefix, objectUrl, emojiContent,
@@ -354,7 +354,7 @@ def sendUndoReactionViaServer(base_dir: str, session,
     return newUndoReactionJson
 
 
-def outboxReaction(recentPostsCache: {},
+def outboxReaction(recent_posts_cache: {},
                    base_dir: str, http_prefix: str,
                    nickname: str, domain: str, port: int,
                    message_json: {}, debug: bool) -> None:
@@ -390,7 +390,7 @@ def outboxReaction(recentPostsCache: {},
             print('DEBUG: c2s reaction post not found in inbox or outbox')
             print(messageId)
         return True
-    updateReactionCollection(recentPostsCache,
+    updateReactionCollection(recent_posts_cache,
                              base_dir, postFilename, messageId,
                              message_json['actor'],
                              nickname, domain, debug, None, emojiContent)
@@ -398,7 +398,7 @@ def outboxReaction(recentPostsCache: {},
         print('DEBUG: post reaction via c2s - ' + postFilename)
 
 
-def outboxUndoReaction(recentPostsCache: {},
+def outboxUndoReaction(recent_posts_cache: {},
                        base_dir: str, http_prefix: str,
                        nickname: str, domain: str, port: int,
                        message_json: {}, debug: bool) -> None:
@@ -432,14 +432,14 @@ def outboxUndoReaction(recentPostsCache: {},
             print('DEBUG: c2s undo reaction post not found in inbox or outbox')
             print(messageId)
         return True
-    undoReactionCollectionEntry(recentPostsCache, base_dir, postFilename,
+    undoReactionCollectionEntry(recent_posts_cache, base_dir, postFilename,
                                 messageId, message_json['actor'],
                                 domain, debug, None, emojiContent)
     if debug:
         print('DEBUG: post undo reaction via c2s - ' + postFilename)
 
 
-def updateReactionCollection(recentPostsCache: {},
+def updateReactionCollection(recent_posts_cache: {},
                              base_dir: str, postFilename: str,
                              objectUrl: str, actor: str,
                              nickname: str, domain: str, debug: bool,
@@ -454,7 +454,7 @@ def updateReactionCollection(recentPostsCache: {},
 
     # remove any cached version of this post so that the
     # reaction icon is changed
-    removePostFromCache(post_json_object, recentPostsCache)
+    removePostFromCache(post_json_object, recent_posts_cache)
     cachedPostFilename = getCachedPostFilename(base_dir, nickname,
                                                domain, post_json_object)
     if cachedPostFilename:

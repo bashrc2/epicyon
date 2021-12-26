@@ -520,7 +520,7 @@ def outboxUndoBlock(base_dir: str, http_prefix: str,
 
 
 def mutePost(base_dir: str, nickname: str, domain: str, port: int,
-             http_prefix: str, post_id: str, recentPostsCache: {},
+             http_prefix: str, post_id: str, recent_posts_cache: {},
              debug: bool) -> None:
     """ Mutes the given post
     """
@@ -609,18 +609,18 @@ def mutePost(base_dir: str, nickname: str, domain: str, port: int,
     print('MUTE: ' + postFilename + '.muted file added')
 
     # if the post is in the recent posts cache then mark it as muted
-    if recentPostsCache.get('index'):
+    if recent_posts_cache.get('index'):
         post_id = \
             removeIdEnding(post_json_object['id']).replace('/', '#')
-        if post_id in recentPostsCache['index']:
+        if post_id in recent_posts_cache['index']:
             print('MUTE: ' + post_id + ' is in recent posts cache')
-        if recentPostsCache.get('json'):
-            recentPostsCache['json'][post_id] = json.dumps(post_json_object)
+        if recent_posts_cache.get('json'):
+            recent_posts_cache['json'][post_id] = json.dumps(post_json_object)
             print('MUTE: ' + post_id +
                   ' marked as muted in recent posts memory cache')
-        if recentPostsCache.get('html'):
-            if recentPostsCache['html'].get(post_id):
-                del recentPostsCache['html'][post_id]
+        if recent_posts_cache.get('html'):
+            if recent_posts_cache['html'].get(post_id):
+                del recent_posts_cache['html'][post_id]
                 print('MUTE: ' + post_id + ' removed cached html')
 
     if alsoUpdatePostId:
@@ -642,18 +642,18 @@ def mutePost(base_dir: str, nickname: str, domain: str, port: int,
                               cachedPostFilename)
                         pass
 
-        if recentPostsCache.get('json'):
-            if recentPostsCache['json'].get(alsoUpdatePostId):
-                del recentPostsCache['json'][alsoUpdatePostId]
+        if recent_posts_cache.get('json'):
+            if recent_posts_cache['json'].get(alsoUpdatePostId):
+                del recent_posts_cache['json'][alsoUpdatePostId]
                 print('MUTE: ' + alsoUpdatePostId + ' removed referenced json')
-        if recentPostsCache.get('html'):
-            if recentPostsCache['html'].get(alsoUpdatePostId):
-                del recentPostsCache['html'][alsoUpdatePostId]
+        if recent_posts_cache.get('html'):
+            if recent_posts_cache['html'].get(alsoUpdatePostId):
+                del recent_posts_cache['html'][alsoUpdatePostId]
                 print('MUTE: ' + alsoUpdatePostId + ' removed referenced html')
 
 
 def unmutePost(base_dir: str, nickname: str, domain: str, port: int,
-               http_prefix: str, post_id: str, recentPostsCache: {},
+               http_prefix: str, post_id: str, recent_posts_cache: {},
                debug: bool) -> None:
     """ Unmutes the given post
     """
@@ -724,18 +724,18 @@ def unmutePost(base_dir: str, nickname: str, domain: str, port: int,
                           str(cachedPostFilename))
 
     # if the post is in the recent posts cache then mark it as unmuted
-    if recentPostsCache.get('index'):
+    if recent_posts_cache.get('index'):
         post_id = \
             removeIdEnding(post_json_object['id']).replace('/', '#')
-        if post_id in recentPostsCache['index']:
+        if post_id in recent_posts_cache['index']:
             print('UNMUTE: ' + post_id + ' is in recent posts cache')
-        if recentPostsCache.get('json'):
-            recentPostsCache['json'][post_id] = json.dumps(post_json_object)
+        if recent_posts_cache.get('json'):
+            recent_posts_cache['json'][post_id] = json.dumps(post_json_object)
             print('UNMUTE: ' + post_id +
                   ' marked as unmuted in recent posts cache')
-        if recentPostsCache.get('html'):
-            if recentPostsCache['html'].get(post_id):
-                del recentPostsCache['html'][post_id]
+        if recent_posts_cache.get('html'):
+            if recent_posts_cache['html'].get(post_id):
+                del recent_posts_cache['html'][post_id]
                 print('UNMUTE: ' + post_id + ' removed cached html')
     if alsoUpdatePostId:
         postFilename = locatePost(base_dir, nickname, domain, alsoUpdatePostId)
@@ -756,14 +756,14 @@ def unmutePost(base_dir: str, nickname: str, domain: str, port: int,
                                   'unmutePost cached ref post not removed ' +
                                   str(cachedPostFilename))
 
-        if recentPostsCache.get('json'):
-            if recentPostsCache['json'].get(alsoUpdatePostId):
-                del recentPostsCache['json'][alsoUpdatePostId]
+        if recent_posts_cache.get('json'):
+            if recent_posts_cache['json'].get(alsoUpdatePostId):
+                del recent_posts_cache['json'][alsoUpdatePostId]
                 print('UNMUTE: ' +
                       alsoUpdatePostId + ' removed referenced json')
-        if recentPostsCache.get('html'):
-            if recentPostsCache['html'].get(alsoUpdatePostId):
-                del recentPostsCache['html'][alsoUpdatePostId]
+        if recent_posts_cache.get('html'):
+            if recent_posts_cache['html'].get(alsoUpdatePostId):
+                del recent_posts_cache['html'][alsoUpdatePostId]
                 print('UNMUTE: ' +
                       alsoUpdatePostId + ' removed referenced html')
 
@@ -771,7 +771,7 @@ def unmutePost(base_dir: str, nickname: str, domain: str, port: int,
 def outboxMute(base_dir: str, http_prefix: str,
                nickname: str, domain: str, port: int,
                message_json: {}, debug: bool,
-               recentPostsCache: {}) -> None:
+               recent_posts_cache: {}) -> None:
     """When a mute is received by the outbox from c2s
     """
     if not message_json.get('type'):
@@ -810,7 +810,7 @@ def outboxMute(base_dir: str, http_prefix: str,
         return
 
     mutePost(base_dir, nickname, domain, port,
-             http_prefix, message_json['object'], recentPostsCache,
+             http_prefix, message_json['object'], recent_posts_cache,
              debug)
 
     if debug:
@@ -820,7 +820,7 @@ def outboxMute(base_dir: str, http_prefix: str,
 def outboxUndoMute(base_dir: str, http_prefix: str,
                    nickname: str, domain: str, port: int,
                    message_json: {}, debug: bool,
-                   recentPostsCache: {}) -> None:
+                   recent_posts_cache: {}) -> None:
     """When an undo mute is received by the outbox from c2s
     """
     if not message_json.get('type'):
@@ -867,7 +867,7 @@ def outboxUndoMute(base_dir: str, http_prefix: str,
 
     unmutePost(base_dir, nickname, domain, port,
                http_prefix, message_json['object']['object'],
-               recentPostsCache, debug)
+               recent_posts_cache, debug)
 
     if debug:
         print('DEBUG: post undo mute via c2s - ' + postFilename)

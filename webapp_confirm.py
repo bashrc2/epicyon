@@ -24,7 +24,7 @@ from webapp_post import individualPostAsHtml
 
 
 def htmlConfirmDelete(cssCache: {},
-                      recentPostsCache: {}, max_recent_posts: int,
+                      recent_posts_cache: {}, max_recent_posts: int,
                       translate, pageNumber: int,
                       session, base_dir: str, messageId: str,
                       http_prefix: str, project_version: str,
@@ -66,7 +66,7 @@ def htmlConfirmDelete(cssCache: {},
         htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     deletePostStr += \
         individualPostAsHtml(signing_priv_key_pem,
-                             True, recentPostsCache, max_recent_posts,
+                             True, recent_posts_cache, max_recent_posts,
                              translate, pageNumber,
                              base_dir, session,
                              cached_webfingers, person_cache,

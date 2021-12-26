@@ -31,7 +31,7 @@ from session import createSession
 
 
 def htmlModeration(cssCache: {}, defaultTimeline: str,
-                   recentPostsCache: {}, max_recent_posts: int,
+                   recent_posts_cache: {}, max_recent_posts: int,
                    translate: {}, pageNumber: int, itemsPerPage: int,
                    session, base_dir: str, wfRequest: {}, person_cache: {},
                    nickname: str, domain: str, port: int, inboxJson: {},
@@ -60,7 +60,7 @@ def htmlModeration(cssCache: {}, defaultTimeline: str,
     """
     artist = is_artist(base_dir, nickname)
     return htmlTimeline(cssCache, defaultTimeline,
-                        recentPostsCache, max_recent_posts,
+                        recent_posts_cache, max_recent_posts,
                         translate, pageNumber,
                         itemsPerPage, session, base_dir,
                         wfRequest, person_cache,

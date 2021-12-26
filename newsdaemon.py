@@ -538,7 +538,7 @@ def _convertRSStoActivityPub(base_dir: str, http_prefix: str,
                              domain: str, port: int,
                              newswire: {},
                              translate: {},
-                             recentPostsCache: {}, max_recent_posts: int,
+                             recent_posts_cache: {}, max_recent_posts: int,
                              session, cached_webfingers: {},
                              person_cache: {},
                              federation_list: [],
@@ -730,7 +730,7 @@ def _convertRSStoActivityPub(base_dir: str, http_prefix: str,
                           http_prefix, domain_full,
                           blog, translate)
 
-            clearFromPostCaches(base_dir, recentPostsCache, post_id)
+            clearFromPostCaches(base_dir, recent_posts_cache, post_id)
             if save_json(blog, filename):
                 _updateFeedsOutboxIndex(base_dir, domain, post_id + '.json')
 
@@ -826,7 +826,7 @@ def runNewswireDaemon(base_dir: str, httpd,
         _convertRSStoActivityPub(base_dir,
                                  http_prefix, domain, port,
                                  newNewswire, translate,
-                                 httpd.recentPostsCache,
+                                 httpd.recent_posts_cache,
                                  httpd.max_recent_posts,
                                  httpd.session,
                                  httpd.cached_webfingers,
@@ -849,7 +849,7 @@ def runNewswireDaemon(base_dir: str, httpd,
             archivePostsForPerson(http_prefix, 'news',
                                   domain, base_dir, 'outbox',
                                   archiveSubdir,
-                                  httpd.recentPostsCache,
+                                  httpd.recent_posts_cache,
                                   httpd.max_news_posts)
 
         # wait a while before the next feeds update

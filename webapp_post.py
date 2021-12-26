@@ -282,7 +282,7 @@ def _getPostFromRecentCache(session,
                             enableTimingLog: bool,
                             postStartTime,
                             pageNumber: int,
-                            recentPostsCache: {},
+                            recent_posts_cache: {},
                             max_recent_posts: int,
                             signing_priv_key_pem: str) -> str:
     """Attempts to get the html post from the recent posts cache in memory
@@ -324,7 +324,7 @@ def _getPostFromRecentCache(session,
 
     postHtml = \
         preparePostFromHtmlCache(nickname, postHtml, boxName, pageNumber)
-    updateRecentPostsCache(recentPostsCache, max_recent_posts,
+    updateRecentPostsCache(recent_posts_cache, max_recent_posts,
                            post_json_object, postHtml)
     _logPostTiming(enableTimingLog, postStartTime, '3')
     return postHtml
@@ -1321,7 +1321,7 @@ def _getFooterWithIcons(showIcons: bool,
 
 def individualPostAsHtml(signing_priv_key_pem: str,
                          allowDownloads: bool,
-                         recentPostsCache: {}, max_recent_posts: int,
+                         recent_posts_cache: {}, max_recent_posts: int,
                          translate: {},
                          pageNumber: int, base_dir: str,
                          session, cached_webfingers: {}, person_cache: {},
@@ -1402,7 +1402,7 @@ def individualPostAsHtml(signing_priv_key_pem: str,
                                 enableTimingLog,
                                 postStartTime,
                                 pageNumber,
-                                recentPostsCache,
+                                recent_posts_cache,
                                 max_recent_posts,
                                 signing_priv_key_pem)
     if postHtml:
@@ -1502,7 +1502,7 @@ def individualPostAsHtml(signing_priv_key_pem: str,
                              yt_replace_domain,
                              twitter_replacement_domain,
                              allow_local_network_access,
-                             recentPostsCache, False,
+                             recent_posts_cache, False,
                              system_language,
                              domain_full, person_cache,
                              signing_priv_key_pem,
@@ -1511,7 +1511,7 @@ def individualPostAsHtml(signing_priv_key_pem: str,
             # if the announce could not be downloaded then mark it as rejected
             announcedPostId = removeIdEnding(post_json_object['id'])
             rejectPostId(base_dir, nickname, domain, announcedPostId,
-                         recentPostsCache)
+                         recent_posts_cache)
             return ''
         post_json_object = postJsonAnnounce
 
@@ -1530,7 +1530,7 @@ def individualPostAsHtml(signing_priv_key_pem: str,
                                     enableTimingLog,
                                     postStartTime,
                                     pageNumber,
-                                    recentPostsCache,
+                                    recent_posts_cache,
                                     max_recent_posts,
                                     signing_priv_key_pem)
         if postHtml:
@@ -1539,7 +1539,7 @@ def individualPostAsHtml(signing_priv_key_pem: str,
         announceFilename = \
             locatePost(base_dir, nickname, domain, post_json_object['id'])
         if announceFilename:
-            updateAnnounceCollection(recentPostsCache,
+            updateAnnounceCollection(recent_posts_cache,
                                      base_dir, announceFilename,
                                      postActor, nickname, domain_full, False)
 
@@ -1982,7 +1982,7 @@ def individualPostAsHtml(signing_priv_key_pem: str,
        boxName != 'bookmarks':
         _saveIndividualPostAsHtmlToCache(base_dir, nickname, domain,
                                          post_json_object, postHtml)
-        updateRecentPostsCache(recentPostsCache, max_recent_posts,
+        updateRecentPostsCache(recent_posts_cache, max_recent_posts,
                                post_json_object, postHtml)
 
     _logPostTiming(enableTimingLog, postStartTime, '19')
@@ -1991,7 +1991,7 @@ def individualPostAsHtml(signing_priv_key_pem: str,
 
 
 def htmlIndividualPost(cssCache: {},
-                       recentPostsCache: {}, max_recent_posts: int,
+                       recent_posts_cache: {}, max_recent_posts: int,
                        translate: {},
                        base_dir: str, session, cached_webfingers: {},
                        person_cache: {},
@@ -2058,7 +2058,7 @@ def htmlIndividualPost(cssCache: {},
 
     postStr += \
         individualPostAsHtml(signing_priv_key_pem,
-                             True, recentPostsCache, max_recent_posts,
+                             True, recent_posts_cache, max_recent_posts,
                              translate, None,
                              base_dir, session,
                              cached_webfingers, person_cache,
@@ -2087,7 +2087,7 @@ def htmlIndividualPost(cssCache: {},
             if post_json_object:
                 postStr = \
                     individualPostAsHtml(signing_priv_key_pem,
-                                         True, recentPostsCache,
+                                         True, recent_posts_cache,
                                          max_recent_posts,
                                          translate, None,
                                          base_dir, session, cached_webfingers,
@@ -2123,7 +2123,7 @@ def htmlIndividualPost(cssCache: {},
             for item in repliesJson['orderedItems']:
                 postStr += \
                     individualPostAsHtml(signing_priv_key_pem,
-                                         True, recentPostsCache,
+                                         True, recent_posts_cache,
                                          max_recent_posts,
                                          translate, None,
                                          base_dir, session, cached_webfingers,
@@ -2154,7 +2154,7 @@ def htmlIndividualPost(cssCache: {},
 
 
 def htmlPostReplies(cssCache: {},
-                    recentPostsCache: {}, max_recent_posts: int,
+                    recent_posts_cache: {}, max_recent_posts: int,
                     translate: {}, base_dir: str,
                     session, cached_webfingers: {}, person_cache: {},
                     nickname: str, domain: str, port: int, repliesJson: {},
@@ -2175,7 +2175,7 @@ def htmlPostReplies(cssCache: {},
         for item in repliesJson['orderedItems']:
             repliesStr += \
                 individualPostAsHtml(signing_priv_key_pem,
-                                     True, recentPostsCache,
+                                     True, recent_posts_cache,
                                      max_recent_posts,
                                      translate, None,
                                      base_dir, session, cached_webfingers,
@@ -2205,7 +2205,7 @@ def htmlPostReplies(cssCache: {},
 
 
 def htmlEmojiReactionPicker(cssCache: {},
-                            recentPostsCache: {}, max_recent_posts: int,
+                            recent_posts_cache: {}, max_recent_posts: int,
                             translate: {},
                             base_dir: str, session, cached_webfingers: {},
                             person_cache: {},
@@ -2227,7 +2227,7 @@ def htmlEmojiReactionPicker(cssCache: {},
         '<br><center><label class="followText">' + \
         translate['Select reaction'].title() + '</label></center>\n' + \
         individualPostAsHtml(signing_priv_key_pem,
-                             True, recentPostsCache,
+                             True, recent_posts_cache,
                              max_recent_posts,
                              translate, None,
                              base_dir, session, cached_webfingers,

@@ -898,7 +898,7 @@ def personLookup(domain: str, path: str, base_dir: str) -> {}:
     return personJson
 
 
-def personBoxJson(recentPostsCache: {},
+def personBoxJson(recent_posts_cache: {},
                   session, base_dir: str, domain: str, port: int, path: str,
                   http_prefix: str, noOfItems: int, boxname: str,
                   authorized: bool,
@@ -949,12 +949,12 @@ def personBoxJson(recentPostsCache: {},
     if not validNickname(domain, nickname):
         return None
     if boxname == 'inbox':
-        return createInbox(recentPostsCache,
+        return createInbox(recent_posts_cache,
                            session, base_dir, nickname, domain, port,
                            http_prefix,
                            noOfItems, headerOnly, pageNumber)
     elif boxname == 'dm':
-        return createDMTimeline(recentPostsCache,
+        return createDMTimeline(recent_posts_cache,
                                 session, base_dir, nickname, domain, port,
                                 http_prefix,
                                 noOfItems, headerOnly, pageNumber)
@@ -964,7 +964,7 @@ def personBoxJson(recentPostsCache: {},
                                        noOfItems, headerOnly,
                                        pageNumber)
     elif boxname == 'tlreplies':
-        return createRepliesTimeline(recentPostsCache,
+        return createRepliesTimeline(recent_posts_cache,
                                      session, base_dir, nickname, domain,
                                      port, http_prefix,
                                      noOfItems, headerOnly,

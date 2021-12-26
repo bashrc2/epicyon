@@ -116,7 +116,7 @@ def outboxDelete(base_dir: str, http_prefix: str,
                  nickname: str, domain: str,
                  message_json: {}, debug: bool,
                  allow_deletion: bool,
-                 recentPostsCache: {}) -> None:
+                 recent_posts_cache: {}) -> None:
     """ When a delete request is received by the outbox from c2s
     """
     if not message_json.get('type'):
@@ -169,7 +169,7 @@ def outboxDelete(base_dir: str, http_prefix: str,
             print(messageId)
         return True
     deletePost(base_dir, http_prefix, deleteNickname, deleteDomain,
-               postFilename, debug, recentPostsCache)
+               postFilename, debug, recent_posts_cache)
     if debug:
         print('DEBUG: post deleted via c2s - ' + postFilename)
 
