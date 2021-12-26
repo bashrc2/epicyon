@@ -670,12 +670,12 @@ def save_json(json_object: {}, filename: str) -> bool:
     return False
 
 
-def load_json(filename: str, delaySec: int = 2, maxTries: int = 5) -> {}:
+def load_json(filename: str, delaySec: int = 2, max_tries: int = 5) -> {}:
     """Makes a few attempts to load a json formatted file
     """
     jsonObject = None
     tries = 0
-    while tries < maxTries:
+    while tries < max_tries:
         try:
             with open(filename, 'r') as fp:
                 data = fp.read()
