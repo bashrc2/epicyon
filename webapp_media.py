@@ -8,7 +8,7 @@ __status__ = "Production"
 __module_group__ = "Timeline"
 
 import os
-from utils import validUrlPrefix
+from utils import valid_url_prefix
 
 
 def loadPeertubeInstances(base_dir: str, peertube_instances: []) -> None:
@@ -190,7 +190,7 @@ def _addEmbeddedAudio(translate: {}, content: str) -> str:
         if not w.endswith(extension):
             continue
 
-        if not validUrlPrefix(w):
+        if not valid_url_prefix(w):
             continue
         content += \
             '<center>\n<audio controls>\n' + \
@@ -231,7 +231,7 @@ def _addEmbeddedVideo(translate: {}, content: str) -> str:
             w = w[:-1]
         if not w.endswith(extension):
             continue
-        if not validUrlPrefix(w):
+        if not valid_url_prefix(w):
             continue
         content += \
             '<center><figure id="videoContainer" ' + \

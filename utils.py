@@ -2933,7 +2933,7 @@ def getPortFromDomain(domain: str) -> int:
     return None
 
 
-def validUrlPrefix(url: str) -> bool:
+def valid_url_prefix(url: str) -> bool:
     """Does the given url have a valid prefix?
     """
     if '/' not in url:
