@@ -258,7 +258,7 @@ from utils import getBaseContentFromPost
 from utils import acctDir
 from utils import getImageExtensionFromMimeType
 from utils import getImageMimeType
-from utils import hasObjectDict
+from utils import has_object_dict
 from utils import userAgentDomain
 from utils import isLocalNetworkAddress
 from utils import permittedDir
@@ -1414,7 +1414,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.POSTbusy = False
                 return 3
 
-        if hasObjectDict(message_json):
+        if has_object_dict(message_json):
             stringFields = (
                 'id', 'actor', 'type', 'content', 'published',
                 'summary', 'url', 'attributedTo'
@@ -10018,7 +10018,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self._secure_mode():
                 if not includeCreateWrapper and \
                    post_json_object['type'] == 'Create' and \
-                   hasObjectDict(post_json_object):
+                   has_object_dict(post_json_object):
                     unwrappedJson = post_json_object['object']
                     unwrappedJson['@context'] = \
                         getIndividualPostContext()

@@ -21,7 +21,7 @@ from utils import getImageExtensions
 from utils import getVideoExtensions
 from utils import getAudioExtensions
 from utils import getMediaExtensions
-from utils import hasObjectDict
+from utils import has_object_dict
 from utils import acctDir
 from shutil import copyfile
 from shutil import rmtree
@@ -59,7 +59,7 @@ def _replaceSiloDomain(post_json_object: {},
     """
     if not replacementDomain:
         return
-    if not hasObjectDict(post_json_object):
+    if not has_object_dict(post_json_object):
         return
     if not post_json_object['object'].get('content'):
         return

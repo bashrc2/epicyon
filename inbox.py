@@ -32,7 +32,7 @@ from utils import getBaseContentFromPost
 from utils import acctDir
 from utils import removeDomainPort
 from utils import getPortFromDomain
-from utils import hasObjectDict
+from utils import has_object_dict
 from utils import dmAllowedFromDomain
 from utils import isRecentPost
 from utils import getConfigParam
@@ -133,7 +133,7 @@ def _storeLastPostId(base_dir: str, nickname: str, domain: str,
     source but we don't live in that ideal world.
     """
     actor = postId = None
-    if hasObjectDict(post_json_object):
+    if has_object_dict(post_json_object):
         if post_json_object['object'].get('attributedTo'):
             if isinstance(post_json_object['object']['attributedTo'], str):
                 actor = post_json_object['object']['attributedTo']
@@ -207,7 +207,7 @@ def storeHashTags(base_dir: str, nickname: str, domain: str,
     """
     if not isPublicPost(post_json_object):
         return
-    if not hasObjectDict(post_json_object):
+    if not has_object_dict(post_json_object):
         return
     if not post_json_object['object'].get('tag'):
         return
@@ -402,7 +402,7 @@ def inboxMessageHasParams(message_json: {}) -> bool:
         return False
 
     # object should be a dict or a string
-    if not hasObjectDict(message_json):
+    if not has_object_dict(message_json):
         if not isinstance(message_json['object'], str):
             print('WARN: object from ' + str(message_json['actor']) +
                   ' should be a dict or string, but is actually: ' +
@@ -437,7 +437,7 @@ def inboxPermittedMessage(domain: str, message_json: {},
         'Follow', 'Join', 'Like', 'EmojiReact', 'Delete', 'Announce'
     )
     if message_json['type'] not in alwaysAllowedTypes:
-        if not hasObjectDict(message_json):
+        if not has_object_dict(message_json):
             return True
         if message_json['object'].get('inReplyTo'):
             inReplyTo = message_json['object']['inReplyTo']
@@ -493,7 +493,7 @@ def savePostToInboxQueue(base_dir: str, http_prefix: str,
             return None
         postDomain = getFullDomain(postDomain, postPort)
 
-    if hasObjectDict(post_json_object):
+    if has_object_dict(post_json_object):
         if post_json_object['object'].get('inReplyTo'):
             if isinstance(post_json_object['object']['inReplyTo'], str):
                 inReplyTo = \
@@ -653,7 +653,7 @@ def _inboxPostRecipients(base_dir: str, post_json_object: {},
     # first get any specific people which the post is addressed to
 
     followerRecipients = False
-    if hasObjectDict(post_json_object):
+    if has_object_dict(post_json_object):
         if post_json_object['object'].get('to'):
             if isinstance(post_json_object['object']['to'], list):
                 recipientsList = post_json_object['object']['to']
@@ -1978,7 +1978,7 @@ def _receiveAnnounce(recentPostsCache: {},
             if isinstance(post_json_object['attributedTo'], str):
                 lookupActor = post_json_object['attributedTo']
         else:
-            if hasObjectDict(post_json_object):
+            if has_object_dict(post_json_object):
                 if post_json_object['object'].get('attributedTo'):
                     attrib = post_json_object['object']['attributedTo']
                     if isinstance(attrib, str):
@@ -2042,7 +2042,7 @@ def _receiveUndoAnnounce(recentPostsCache: {},
         return False
     if not hasActor(message_json, debug):
         return False
-    if not hasObjectDict(message_json):
+    if not has_object_dict(message_json):
         return False
     if not hasObjectStringObject(message_json, debug):
         return False
@@ -2095,7 +2095,7 @@ def jsonPostAllowsComments(post_json_object: {}) -> bool:
     if 'rejectReplies' in post_json_object:
         return not post_json_object['rejectReplies']
     if post_json_object.get('object'):
-        if not hasObjectDict(post_json_object):
+        if not has_object_dict(post_json_object):
             return False
         elif 'commentsEnabled' in post_json_object['object']:
             return post_json_object['object']['commentsEnabled']
@@ -2120,7 +2120,7 @@ def populateReplies(base_dir: str, http_prefix: str, domain: str,
     """
     if not message_json.get('id'):
         return False
-    if not hasObjectDict(message_json):
+    if not has_object_dict(message_json):
         return False
     if not message_json['object'].get('inReplyTo'):
         return False
@@ -2206,7 +2206,7 @@ def _validPostContent(base_dir: str, nickname: str, domain: str,
     Check if it's a git patch
     Check number of tags and mentions is reasonable
     """
-    if not hasObjectDict(message_json):
+    if not has_object_dict(message_json):
         return True
     if not message_json['object'].get('content'):
         return True
@@ -2305,7 +2305,7 @@ def _obtainAvatarForReplyPost(session, base_dir: str, http_prefix: str,
     """Tries to obtain the actor for the person being replied to
     so that their avatar can later be shown
     """
-    if not hasObjectDict(post_json_object):
+    if not has_object_dict(post_json_object):
         return
 
     if not post_json_object['object'].get('inReplyTo'):
@@ -2370,7 +2370,7 @@ def _alreadyLiked(base_dir: str, nickname: str, domain: str,
     post_json_object = loadJson(postFilename, 1)
     if not post_json_object:
         return False
-    if not hasObjectDict(post_json_object):
+    if not has_object_dict(post_json_object):
         return False
     if not post_json_object['object'].get('likes'):
         return False
@@ -2400,7 +2400,7 @@ def _alreadyReacted(base_dir: str, nickname: str, domain: str,
     post_json_object = loadJson(postFilename, 1)
     if not post_json_object:
         return False
-    if not hasObjectDict(post_json_object):
+    if not has_object_dict(post_json_object):
         return False
     if not post_json_object['object'].get('reactions'):
         return False
@@ -2646,7 +2646,7 @@ def _sendToGroupMembers(session, base_dir: str, handle: str, port: int,
         return
     if not post_json_object.get('object'):
         return
-    if not hasObjectDict(post_json_object):
+    if not has_object_dict(post_json_object):
         return
     nickname = handle.split('@')[0].replace('!', '')
     domain = handle.split('@')[1]
@@ -2693,7 +2693,7 @@ def _inboxUpdateCalendar(base_dir: str, handle: str,
     """
     if not post_json_object.get('actor'):
         return
-    if not hasObjectDict(post_json_object):
+    if not has_object_dict(post_json_object):
         return
     if not post_json_object['object'].get('tag'):
         return

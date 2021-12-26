@@ -13,7 +13,7 @@ from utils import hasObjectString
 from utils import hasObjectStringObject
 from utils import hasObjectStringType
 from utils import removeDomainPort
-from utils import hasObjectDict
+from utils import has_object_dict
 from utils import hasUsersPath
 from utils import getFullDomain
 from utils import removeIdEnding
@@ -39,7 +39,7 @@ def noOfLikes(post_json_object: {}) -> int:
     """Returns the number of likes ona  given post
     """
     obj = post_json_object
-    if hasObjectDict(post_json_object):
+    if has_object_dict(post_json_object):
         obj = post_json_object['object']
     if not obj.get('likes'):
         return 0
@@ -59,7 +59,7 @@ def likedByPerson(post_json_object: {}, nickname: str, domain: str) -> bool:
     actorMatch = domain + '/users/' + nickname
 
     obj = post_json_object
-    if hasObjectDict(post_json_object):
+    if has_object_dict(post_json_object):
         obj = post_json_object['object']
 
     for item in obj['likes']['items']:
@@ -436,7 +436,7 @@ def updateLikesCollection(recentPostsCache: {},
                       cachedPostFilename)
 
     obj = post_json_object
-    if hasObjectDict(post_json_object):
+    if has_object_dict(post_json_object):
         obj = post_json_object['object']
 
     if not objectUrl.endswith('/likes'):

@@ -21,7 +21,7 @@ from categories import setHashtagCategory
 from utils import dangerousSVG
 from utils import getFavFilenameFromUrl
 from utils import getBaseContentFromPost
-from utils import hasObjectDict
+from utils import has_object_dict
 from utils import firstParagraphFromString
 from utils import isPublicPost
 from utils import locatePost
@@ -970,7 +970,7 @@ def _isNewswireBlogPost(post_json_object: {}) -> bool:
     """
     if not post_json_object:
         return False
-    if not hasObjectDict(post_json_object):
+    if not has_object_dict(post_json_object):
         return False
     if post_json_object['object'].get('summary') and \
        post_json_object['object'].get('url') and \
@@ -983,7 +983,7 @@ def _isNewswireBlogPost(post_json_object: {}) -> bool:
 def _getHashtagsFromPost(post_json_object: {}) -> []:
     """Returns a list of any hashtags within a post
     """
-    if not hasObjectDict(post_json_object):
+    if not has_object_dict(post_json_object):
         return []
     if not post_json_object['object'].get('tag'):
         return []

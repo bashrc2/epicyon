@@ -83,7 +83,7 @@ def get_content_from_post(post_json_object: {}, system_language: str,
     including searching for a matching entry within contentMap
     """
     this_post_json = post_json_object
-    if hasObjectDict(post_json_object):
+    if has_object_dict(post_json_object):
         this_post_json = post_json_object['object']
     if not this_post_json.get('content'):
         return ''
@@ -110,7 +110,7 @@ def getBaseContentFromPost(post_json_object: {}, system_language: str) -> str:
     """Returns the content from the post in the given language
     """
     this_post_json = post_json_object
-    if hasObjectDict(post_json_object):
+    if has_object_dict(post_json_object):
         this_post_json = post_json_object['object']
     if not this_post_json.get('content'):
         return ''
@@ -1366,7 +1366,7 @@ def _getPublishedDate(post_json_object: {}) -> str:
     published = None
     if post_json_object.get('published'):
         published = post_json_object['published']
-    elif hasObjectDict(post_json_object):
+    elif has_object_dict(post_json_object):
         if post_json_object['object'].get('published'):
             published = post_json_object['object']['published']
     if not published:
@@ -1506,7 +1506,7 @@ def _isReplyToBlogPost(base_dir: str, nickname: str, domain: str,
                        post_json_object: str):
     """Is the given post a reply to a blog post?
     """
-    if not hasObjectDict(post_json_object):
+    if not has_object_dict(post_json_object):
         return False
     if not post_json_object['object'].get('inReplyTo'):
         return False
@@ -1614,7 +1614,7 @@ def _deleteHashtagsOnPost(base_dir: str, post_json_object: {}) -> None:
     """Removes hashtags when a post is deleted
     """
     removeHashtagIndex = False
-    if hasObjectDict(post_json_object):
+    if has_object_dict(post_json_object):
         if post_json_object['object'].get('content'):
             if '#' in post_json_object['object']['content']:
                 removeHashtagIndex = True
@@ -1668,7 +1668,7 @@ def _deleteConversationPost(base_dir: str, nickname: str, domain: str,
                             post_json_object: {}) -> None:
     """Deletes a post from a conversation
     """
-    if not hasObjectDict(post_json_object):
+    if not has_object_dict(post_json_object):
         return False
     if not post_json_object['object'].get('conversation'):
         return False
@@ -1763,7 +1763,7 @@ def deletePost(base_dir: str, http_prefix: str,
 
     # remove from moderation index file
     if hasObject:
-        if hasObjectDict(post_json_object):
+        if has_object_dict(post_json_object):
             if post_json_object['object'].get('moderationStatus'):
                 if post_json_object.get('id'):
                     postId = removeIdEnding(post_json_object['id'])
@@ -1957,7 +1957,7 @@ def isPublicPost(post_json_object: {}) -> bool:
         return False
     if post_json_object['type'] != 'Create':
         return False
-    if not hasObjectDict(post_json_object):
+    if not has_object_dict(post_json_object):
         return False
     if not post_json_object['object'].get('to'):
         return False
@@ -2077,7 +2077,7 @@ def isBlogPost(post_json_object: {}) -> bool:
     """
     if post_json_object['type'] != 'Create':
         return False
-    if not hasObjectDict(post_json_object):
+    if not has_object_dict(post_json_object):
         return False
     if not hasObjectStringType(post_json_object, False):
         return False
@@ -2232,7 +2232,7 @@ def undoLikesCollectionEntry(recentPostsCache: {},
     if post_json_object['type'] != 'Create':
         return
     obj = post_json_object
-    if hasObjectDict(post_json_object):
+    if has_object_dict(post_json_object):
         obj = post_json_object['object']
     if not obj.get('likes'):
         return
@@ -2297,7 +2297,7 @@ def undoReactionCollectionEntry(recentPostsCache: {},
     if post_json_object['type'] != 'Create':
         return
     obj = post_json_object
-    if hasObjectDict(post_json_object):
+    if has_object_dict(post_json_object):
         obj = post_json_object['object']
     if not obj.get('reactions'):
         return
@@ -2362,7 +2362,7 @@ def undoAnnounceCollectionEntry(recentPostsCache: {},
         return
     if post_json_object['type'] != 'Create':
         return
-    if not hasObjectDict(post_json_object):
+    if not has_object_dict(post_json_object):
         if debug:
             pprint(post_json_object)
             print('DEBUG: post has no object')
@@ -2425,7 +2425,7 @@ def updateAnnounceCollection(recentPostsCache: {},
                           str(cachedPostFilename))
     removePostFromCache(post_json_object, recentPostsCache)
 
-    if not hasObjectDict(post_json_object):
+    if not has_object_dict(post_json_object):
         if debug:
             pprint(post_json_object)
             print('DEBUG: post ' + postFilename + ' has no object')
@@ -2509,7 +2509,7 @@ def mediaFileMimeType(filename: str) -> str:
 def isRecentPost(post_json_object: {}, maxDays: int) -> bool:
     """ Is the given post recent?
     """
-    if not hasObjectDict(post_json_object):
+    if not has_object_dict(post_json_object):
         return False
     if not post_json_object['object'].get('published'):
         return False
@@ -2586,7 +2586,7 @@ def isDM(post_json_object: {}) -> bool:
     """
     if post_json_object['type'] != 'Create':
         return False
-    if not hasObjectDict(post_json_object):
+    if not has_object_dict(post_json_object):
         return False
     if post_json_object['object']['type'] != 'Note' and \
        post_json_object['object']['type'] != 'Page' and \
@@ -2613,7 +2613,7 @@ def isReply(post_json_object: {}, actor: str) -> bool:
     """
     if post_json_object['type'] != 'Create':
         return False
-    if not hasObjectDict(post_json_object):
+    if not has_object_dict(post_json_object):
         return False
     if post_json_object['object'].get('moderationStatus'):
         return False
@@ -2845,7 +2845,7 @@ def userAgentDomain(userAgent: str, debug: bool) -> str:
     return agentDomain
 
 
-def hasObjectDict(post_json_object: {}) -> bool:
+def has_object_dict(post_json_object: {}) -> bool:
     """Returns true if the given post has an object dict
     """
     if post_json_object.get('object'):
@@ -3173,7 +3173,7 @@ def hasActor(post_json_object: {}, debug: bool) -> bool:
 def hasObjectStringType(post_json_object: {}, debug: bool) -> bool:
     """Does the given post have a type field within an object dict?
     """
-    if not hasObjectDict(post_json_object):
+    if not has_object_dict(post_json_object):
         if debug:
             print('hasObjectStringType no object found')
         return False
@@ -3192,7 +3192,7 @@ def hasObjectStringType(post_json_object: {}, debug: bool) -> bool:
 def hasObjectStringObject(post_json_object: {}, debug: bool) -> bool:
     """Does the given post have an object string field within an object dict?
     """
-    if not hasObjectDict(post_json_object):
+    if not has_object_dict(post_json_object):
         if debug:
             print('hasObjectStringType no object found')
         return False

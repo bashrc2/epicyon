@@ -18,7 +18,7 @@ from posts import sendToFollowersThread
 from posts import sendToNamedAddressesThread
 from utils import hasObjectStringType
 from utils import getBaseContentFromPost
-from utils import hasObjectDict
+from utils import has_object_dict
 from utils import getLocalNetworkAddresses
 from utils import getFullDomain
 from utils import removeIdEnding
@@ -222,7 +222,7 @@ def postMessageToOutbox(session, translate: {},
 
     # check that the outgoing post doesn't contain any markup
     # which can be used to implement exploits
-    if hasObjectDict(message_json):
+    if has_object_dict(message_json):
         contentStr = getBaseContentFromPost(message_json, system_language)
         if contentStr:
             if dangerousMarkup(contentStr, allow_local_network_access):
@@ -365,7 +365,7 @@ def postMessageToOutbox(session, translate: {},
 
         # if this is a blog post or an event then save to its own box
         if message_json['type'] == 'Create':
-            if hasObjectDict(message_json):
+            if has_object_dict(message_json):
                 if message_json['object'].get('type'):
                     if message_json['object']['type'] == 'Article':
                         outboxName = 'tlblogs'

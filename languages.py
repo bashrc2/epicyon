@@ -12,7 +12,7 @@ import json
 from urllib import request, parse
 from utils import get_actor_languages_list
 from utils import removeHtml
-from utils import hasObjectDict
+from utils import has_object_dict
 from utils import getConfigParam
 from utils import local_actor_url
 from cache import getPersonFromCache
@@ -98,7 +98,7 @@ def understoodPostLanguage(base_dir: str, nickname: str, domain: str,
     understood by this account
     """
     msgObject = message_json
-    if hasObjectDict(message_json):
+    if has_object_dict(message_json):
         msgObject = message_json['object']
     if not msgObject.get('contentMap'):
         return True
@@ -278,7 +278,7 @@ def autoTranslatePost(base_dir: str, post_json_object: {},
                       system_language: str, translate: {}) -> str:
     """Tries to automatically translate the given post
     """
-    if not hasObjectDict(post_json_object):
+    if not has_object_dict(post_json_object):
         return ''
     msgObject = post_json_object['object']
     if not msgObject.get('contentMap'):

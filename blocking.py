@@ -15,7 +15,7 @@ from utils import hasObjectString
 from utils import hasObjectStringObject
 from utils import hasObjectStringType
 from utils import removeDomainPort
-from utils import hasObjectDict
+from utils import has_object_dict
 from utils import isAccountDir
 from utils import getCachedPostFilename
 from utils import loadJson
@@ -537,7 +537,7 @@ def mutePost(base_dir: str, nickname: str, domain: str, port: int,
 
     postJsonObj = post_json_object
     alsoUpdatePostId = None
-    if hasObjectDict(post_json_object):
+    if has_object_dict(post_json_object):
         postJsonObj = post_json_object['object']
     else:
         if hasObjectString(post_json_object, debug):
@@ -676,7 +676,7 @@ def unmutePost(base_dir: str, nickname: str, domain: str, port: int,
 
     postJsonObj = post_json_object
     alsoUpdatePostId = None
-    if hasObjectDict(post_json_object):
+    if has_object_dict(post_json_object):
         postJsonObj = post_json_object['object']
     else:
         if hasObjectString(post_json_object, debug):

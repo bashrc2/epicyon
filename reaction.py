@@ -15,7 +15,7 @@ from utils import hasObjectString
 from utils import hasObjectStringObject
 from utils import hasObjectStringType
 from utils import removeDomainPort
-from utils import hasObjectDict
+from utils import has_object_dict
 from utils import hasUsersPath
 from utils import getFullDomain
 from utils import removeIdEnding
@@ -466,7 +466,7 @@ def updateReactionCollection(recentPostsCache: {},
                       cachedPostFilename)
 
     obj = post_json_object
-    if hasObjectDict(post_json_object):
+    if has_object_dict(post_json_object):
         obj = post_json_object['object']
 
     if not objectUrl.endswith('/reactions'):
@@ -519,7 +519,7 @@ def htmlEmojiReactions(post_json_object: {}, interactive: bool,
     """html containing row of emoji reactions
     displayed at the bottom of posts, above the icons
     """
-    if not hasObjectDict(post_json_object):
+    if not has_object_dict(post_json_object):
         return ''
     if not post_json_object.get('actor'):
         return ''

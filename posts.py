@@ -41,7 +41,7 @@ from utils import hasGroupType
 from utils import getBaseContentFromPost
 from utils import removeDomainPort
 from utils import getPortFromDomain
-from utils import hasObjectDict
+from utils import has_object_dict
 from utils import rejectPostId
 from utils import removeInvalidChars
 from utils import fileLastModified
@@ -782,7 +782,7 @@ def getPostDomains(session, outboxUrl: str, maxPosts: int,
         i += 1
         if i > maxPosts:
             break
-        if not hasObjectDict(item):
+        if not has_object_dict(item):
             continue
         contentStr = getBaseContentFromPost(item, system_language)
         if contentStr:
@@ -847,7 +847,7 @@ def _getPostsForBlockedDomains(base_dir: str,
         i += 1
         if i > maxPosts:
             break
-        if not hasObjectDict(item):
+        if not has_object_dict(item):
             continue
         if item['object'].get('inReplyTo'):
             if isinstance(item['object']['inReplyTo'], str):
@@ -924,7 +924,7 @@ def savePostToBox(base_dir: str, http_prefix: str, postId: str,
             local_actor_url(http_prefix, nickname, originalDomain) + \
             '/statuses/' + statusNumber
         post_json_object['id'] = postId + '/activity'
-    if hasObjectDict(post_json_object):
+    if has_object_dict(post_json_object):
         post_json_object['object']['id'] = postId
         post_json_object['object']['atomUri'] = postId
 
@@ -1611,7 +1611,7 @@ def _postIsAddressedToFollowers(base_dir: str,
     toList = []
     ccList = []
     if post_json_object['type'] != 'Update' and \
-       hasObjectDict(post_json_object):
+       has_object_dict(post_json_object):
         if post_json_object['object'].get('to'):
             toList = post_json_object['object']['to']
         if post_json_object['object'].get('cc'):
@@ -2595,7 +2595,7 @@ def _addFollowersToPublicPost(post_json_object: {}) -> None:
         if post_json_object.get('cc'):
             return
         post_json_object['cc'] = post_json_object['actor'] + '/followers'
-    elif hasObjectDict(post_json_object):
+    elif has_object_dict(post_json_object):
         if not post_json_object['object'].get('to'):
             return
         if len(post_json_object['object']['to']) > 1:
@@ -2808,7 +2808,7 @@ def addToField(activityType: str, post_json_object: {},
                         toAddress = toAddress.split('/statuses/')[0]
                     post_json_object['to'] = [toAddress]
                     toFieldAdded = True
-        elif hasObjectDict(post_json_object):
+        elif has_object_dict(post_json_object):
             # add a to field to bookmark add or remove
             if post_json_object.get('type') and \
                post_json_object.get('actor') and \
@@ -2879,7 +2879,7 @@ def _sendToNamedAddresses(session, base_dir: str,
     if not post_json_object.get('object'):
         return
     isProfileUpdate = False
-    if hasObjectDict(post_json_object):
+    if has_object_dict(post_json_object):
         if _isProfileUpdate(post_json_object):
             # use the original object, which has a 'to'
             recipientsObject = post_json_object
@@ -3486,7 +3486,7 @@ def isImageMedia(session, base_dir: str, http_prefix: str,
             post_json_object = postJsonAnnounce
     if post_json_object['type'] != 'Create':
         return False
-    if not hasObjectDict(post_json_object):
+    if not has_object_dict(post_json_object):
         return False
     if post_json_object['object'].get('moderationStatus'):
         return False
@@ -3572,7 +3572,7 @@ def removePostInteractions(post_json_object: {}, force: bool) -> bool:
     Returns False if this is a private post
     """
     hasObject = False
-    if hasObjectDict(post_json_object):
+    if has_object_dict(post_json_object):
         hasObject = True
     if hasObject:
         postObj = post_json_object['object']
@@ -5188,7 +5188,7 @@ def editedPostFilename(base_dir: str, nickname: str, domain: str,
                        maxTimeDiffSeconds: int) -> str:
     """Returns the filename of the edited post
     """
-    if not hasObjectDict(post_json_object):
+    if not has_object_dict(post_json_object):
         return ''
     if not post_json_object.get('type'):
         return ''
@@ -5289,7 +5289,7 @@ def getOriginalPostFromAnnounceUrl(announceUrl: str, base_dir: str,
         # we have the original post
         origPostJson = loadJson(origFilename, 0, 1)
         if origPostJson:
-            if hasObjectDict(origPostJson):
+            if has_object_dict(origPostJson):
                 if origPostJson['object'].get('attributedTo'):
                     if isinstance(origPostJson['object']['attributedTo'], str):
                         actor = origPostJson['object']['attributedTo']

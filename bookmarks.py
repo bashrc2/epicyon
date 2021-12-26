@@ -23,7 +23,7 @@ from utils import locatePost
 from utils import getCachedPostFilename
 from utils import loadJson
 from utils import saveJson
-from utils import hasObjectDict
+from utils import has_object_dict
 from utils import acctDir
 from utils import local_actor_url
 from utils import hasActor
@@ -87,7 +87,7 @@ def undoBookmarksCollectionEntry(recentPostsCache: {},
         return
     if post_json_object['type'] != 'Create':
         return
-    if not hasObjectDict(post_json_object):
+    if not has_object_dict(post_json_object):
         if debug:
             print('DEBUG: bookmarked post has no object ' +
                   str(post_json_object))
@@ -141,7 +141,7 @@ def bookmarkedByPerson(post_json_object: {},
 def _noOfBookmarks(post_json_object: {}) -> int:
     """Returns the number of bookmarks ona  given post
     """
-    if not hasObjectDict(post_json_object):
+    if not has_object_dict(post_json_object):
         return 0
     if not post_json_object['object'].get('bookmarks'):
         return 0

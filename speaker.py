@@ -23,7 +23,7 @@ from utils import removeHtml
 from utils import loadJson
 from utils import saveJson
 from utils import isPGPEncrypted
-from utils import hasObjectDict
+from utils import has_object_dict
 from utils import acctDir
 from utils import local_actor_url
 from content import htmlReplaceQuoteMarks
@@ -412,7 +412,7 @@ def _postToSpeakerJson(base_dir: str, http_prefix: str,
     NOTE: There currently appears to be no standardized json
     format for speech synthesis
     """
-    if not hasObjectDict(post_json_object):
+    if not has_object_dict(post_json_object):
         return
     if not post_json_object['object'].get('content'):
         return

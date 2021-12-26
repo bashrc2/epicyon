@@ -16,7 +16,7 @@ from utils import isPublicPost
 from utils import loadJson
 from utils import saveJson
 from utils import locatePost
-from utils import hasObjectDict
+from utils import has_object_dict
 from utils import acctDir
 
 
@@ -166,7 +166,7 @@ def _isHappeningPost(post_json_object: {}) -> bool:
     """
     if not post_json_object:
         return False
-    if not hasObjectDict(post_json_object):
+    if not has_object_dict(post_json_object):
         return False
     if not post_json_object['object'].get('tag'):
         return False

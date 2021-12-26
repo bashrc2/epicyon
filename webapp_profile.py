@@ -12,7 +12,7 @@ from pprint import pprint
 from webfinger import webfingerHandle
 from utils import getDisplayName
 from utils import isGroupAccount
-from utils import hasObjectDict
+from utils import has_object_dict
 from utils import getOccupationName
 from utils import getLockedAccount
 from utils import getFullDomain
@@ -88,7 +88,7 @@ def _validProfilePreviewPost(post_json_object: {},
     if not post_json_object.get('type'):
         return False, None
     if post_json_object['type'] == 'Create':
-        if not hasObjectDict(post_json_object):
+        if not has_object_dict(post_json_object):
             return False, None
     if post_json_object['type'] != 'Create' and \
        post_json_object['type'] != 'Announce':

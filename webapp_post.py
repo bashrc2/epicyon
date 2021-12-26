@@ -28,7 +28,7 @@ from utils import removeHtml
 from utils import get_actor_languages_list
 from utils import getBaseContentFromPost
 from utils import get_content_from_post
-from utils import hasObjectDict
+from utils import has_object_dict
 from utils import updateAnnounceCollection
 from utils import isPGPEncrypted
 from utils import isDM
@@ -93,7 +93,7 @@ def _htmlPostMetadataOpenGraph(domain: str, post_json_object: {}) -> str:
     metadata += \
         "    <meta content=\"article\" property=\"og:type\" />\n"
     objJson = post_json_object
-    if hasObjectDict(post_json_object):
+    if has_object_dict(post_json_object):
         objJson = post_json_object['object']
     if objJson.get('attributedTo'):
         if isinstance(objJson['attributedTo'], str):
@@ -1559,7 +1559,7 @@ def individualPostAsHtml(signing_priv_key_pem: str,
 
     _logPostTiming(enableTimingLog, postStartTime, '8')
 
-    if not hasObjectDict(post_json_object):
+    if not has_object_dict(post_json_object):
         return ''
 
     # if this post should be public then check its recipients
@@ -2076,7 +2076,7 @@ def htmlIndividualPost(cssCache: {},
     messageId = removeIdEnding(post_json_object['id'])
 
     # show the previous posts
-    if hasObjectDict(post_json_object):
+    if has_object_dict(post_json_object):
         while post_json_object['object'].get('inReplyTo'):
             postFilename = \
                 locatePost(base_dir, nickname, domain,

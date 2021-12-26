@@ -8,7 +8,7 @@ __status__ = "Production"
 __module_group__ = "Timeline"
 
 import os
-from utils import hasObjectDict
+from utils import has_object_dict
 from utils import acctDir
 from utils import removeIdEnding
 
@@ -17,7 +17,7 @@ def _getConversationFilename(base_dir: str, nickname: str, domain: str,
                              post_json_object: {}) -> str:
     """Returns the conversation filename
     """
-    if not hasObjectDict(post_json_object):
+    if not has_object_dict(post_json_object):
         return None
     if not post_json_object['object'].get('conversation'):
         return None

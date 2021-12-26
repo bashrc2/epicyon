@@ -17,7 +17,7 @@ import urllib.parse
 from pathlib import Path
 from random import randint
 from utils import getBaseContentFromPost
-from utils import hasObjectDict
+from utils import has_object_dict
 from utils import getFullDomain
 from utils import isDM
 from utils import loadTranslationsFromFile
@@ -210,7 +210,7 @@ def _postIsToYou(actor: str, post_json_object: {}) -> bool:
     if not toYourActor and post_json_object.get('cc'):
         if actor in post_json_object['cc']:
             toYourActor = True
-    if not toYourActor and hasObjectDict(post_json_object):
+    if not toYourActor and has_object_dict(post_json_object):
         if post_json_object['object'].get('to'):
             if actor in post_json_object['object']['to']:
                 toYourActor = True
@@ -621,7 +621,7 @@ def _getImageDescription(post_json_object: {}) -> str:
 def _showLikesOnPost(post_json_object: {}, maxLikes: int) -> None:
     """Shows the likes on a post
     """
-    if not hasObjectDict(post_json_object):
+    if not has_object_dict(post_json_object):
         return
     if not post_json_object['object'].get('likes'):
         return
@@ -644,7 +644,7 @@ def _showLikesOnPost(post_json_object: {}, maxLikes: int) -> None:
 def _showRepliesOnPost(post_json_object: {}, max_replies: int) -> None:
     """Shows the replies on a post
     """
-    if not hasObjectDict(post_json_object):
+    if not has_object_dict(post_json_object):
         return
     if not post_json_object['object'].get('replies'):
         return
@@ -715,7 +715,7 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
                              signing_priv_key_pem,
                              blockedCache)
         if post_json_object2:
-            if hasObjectDict(post_json_object2):
+            if has_object_dict(post_json_object2):
                 if post_json_object2['object'].get('attributedTo') and \
                    post_json_object2['object'].get('content'):
                     attributedTo = post_json_object2['object']['attributedTo']
@@ -916,7 +916,7 @@ def _desktopGetBoxPostObject(boxJson: {}, index: int) -> {}:
             if ctr == index:
                 return post_json_object
             continue
-        if not hasObjectDict(post_json_object):
+        if not has_object_dict(post_json_object):
             continue
         if not post_json_object['object'].get('published'):
             continue
@@ -1028,7 +1028,7 @@ def _desktopShowBox(indent: str,
                     ctr += 1
                     continue
 
-        if not hasObjectDict(post_json_object):
+        if not has_object_dict(post_json_object):
             continue
         if not post_json_object['object'].get('published'):
             continue
@@ -1973,7 +1973,7 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                 if post_json_object:
                     if post_json_object.get('id') and \
                        post_json_object.get('object'):
-                        if hasObjectDict(post_json_object):
+                        if has_object_dict(post_json_object):
                             if post_json_object['object'].get('attributedTo'):
                                 blockActor = \
                                     post_json_object['object']['attributedTo']
@@ -2019,7 +2019,7 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                 if post_json_object and not blockActor:
                     if post_json_object.get('id') and \
                        post_json_object.get('object'):
-                        if hasObjectDict(post_json_object):
+                        if has_object_dict(post_json_object):
                             if post_json_object['object'].get('attributedTo'):
                                 blockActor = \
                                     post_json_object['object']['attributedTo']

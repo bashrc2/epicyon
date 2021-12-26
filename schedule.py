@@ -10,7 +10,7 @@ __module_group__ = "Calendar"
 import os
 import time
 import datetime
-from utils import hasObjectDict
+from utils import has_object_dict
 from utils import getStatusNumber
 from utils import loadJson
 from utils import isAccountDir
@@ -85,7 +85,7 @@ def _updatePostSchedule(base_dir: str, handle: str, httpd,
             statusNumber, published = getStatusNumber()
             if post_json_object.get('published'):
                 post_json_object['published'] = published
-            if hasObjectDict(post_json_object):
+            if has_object_dict(post_json_object):
                 if post_json_object['object'].get('published'):
                     post_json_object['published'] = published
 
