@@ -2765,7 +2765,7 @@ def getOccupationName(actor_json: {}) -> str:
     return ""
 
 
-def setOccupationName(actor_json: {}, name: str) -> bool:
+def set_occupation_name(actor_json: {}, name: str) -> bool:
     """Sets the occupation name of an actor
     """
     if not actor_json.get('hasOccupation'):
@@ -2773,14 +2773,14 @@ def setOccupationName(actor_json: {}, name: str) -> bool:
     if not isinstance(actor_json['hasOccupation'], list):
         return False
     for index in range(len(actor_json['hasOccupation'])):
-        occupationItem = actor_json['hasOccupation'][index]
-        if not isinstance(occupationItem, dict):
+        occupation_item = actor_json['hasOccupation'][index]
+        if not isinstance(occupation_item, dict):
             continue
-        if not occupationItem.get('@type'):
+        if not occupation_item.get('@type'):
             continue
-        if occupationItem['@type'] != 'Occupation':
+        if occupation_item['@type'] != 'Occupation':
             continue
-        occupationItem['name'] = name
+        occupation_item['name'] = name
         return True
     return False
 

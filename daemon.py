@@ -265,7 +265,7 @@ from utils import permitted_dir
 from utils import is_account_dir
 from utils import getOccupationSkills
 from utils import getOccupationName
-from utils import setOccupationName
+from utils import set_occupation_name
 from utils import loadTranslationsFromFile
 from utils import getLocalNetworkAddresses
 from utils import decoded_host
@@ -5479,12 +5479,12 @@ class PubServer(BaseHTTPRequestHandler):
                             removeHtml(fields['occupationName'])
                         if occupationName != \
                            fields['occupationName']:
-                            setOccupationName(actor_json,
-                                              fields['occupationName'])
+                            set_occupation_name(actor_json,
+                                                fields['occupationName'])
                             actorChanged = True
                     else:
                         if occupationName:
-                            setOccupationName(actor_json, '')
+                            set_occupation_name(actor_json, '')
                             actorChanged = True
 
                     # Other accounts (alsoKnownAs)
