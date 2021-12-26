@@ -18,7 +18,7 @@ from utils import createOutboxDir
 from utils import urlPermitted
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
-from utils import locatePost
+from utils import locate_post
 from utils import save_json
 from utils import undoAnnounceCollectionEntry
 from utils import updateAnnounceCollection
@@ -74,8 +74,8 @@ def outboxAnnounce(recent_posts_cache: {},
             print('WARN: no nickname found in ' + message_json['actor'])
             return False
         domain, _ = getDomainFromActor(message_json['actor'])
-        postFilename = locatePost(base_dir, nickname, domain,
-                                  message_json['object'])
+        postFilename = locate_post(base_dir, nickname, domain,
+                                   message_json['object'])
         if postFilename:
             updateAnnounceCollection(recent_posts_cache,
                                      base_dir, postFilename,
@@ -93,8 +93,8 @@ def outboxAnnounce(recent_posts_cache: {},
                 print('WARN: no nickname found in ' + message_json['actor'])
                 return False
             domain, _ = getDomainFromActor(message_json['actor'])
-            postFilename = locatePost(base_dir, nickname, domain,
-                                      message_json['object']['object'])
+            postFilename = locate_post(base_dir, nickname, domain,
+                                       message_json['object']['object'])
             if postFilename:
                 undoAnnounceCollectionEntry(recent_posts_cache,
                                             base_dir, postFilename,
@@ -410,7 +410,7 @@ def outboxUndoAnnounce(recent_posts_cache: {},
 
     messageId = removeIdEnding(message_json['object']['object'])
     domain = remove_domain_port(domain)
-    postFilename = locatePost(base_dir, nickname, domain, messageId)
+    postFilename = locate_post(base_dir, nickname, domain, messageId)
     if not postFilename:
         if debug:
             print('DEBUG: c2s undo announce post not found in inbox or outbox')

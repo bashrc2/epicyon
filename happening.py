@@ -15,7 +15,7 @@ from datetime import timedelta
 from utils import isPublicPost
 from utils import load_json
 from utils import save_json
-from utils import locatePost
+from utils import locate_post
 from utils import has_object_dict
 from utils import acct_dir
 
@@ -205,7 +205,7 @@ def getTodaysEvents(base_dir: str, nickname: str, domain: str,
     with open(calendarFilename, 'r') as eventsFile:
         for post_id in eventsFile:
             post_id = post_id.replace('\n', '').replace('\r', '')
-            postFilename = locatePost(base_dir, nickname, domain, post_id)
+            postFilename = locate_post(base_dir, nickname, domain, post_id)
             if not postFilename:
                 recreateEventsFile = True
                 continue
@@ -280,7 +280,7 @@ def dayEventsCheck(base_dir: str, nickname: str, domain: str,
     with open(calendarFilename, 'r') as eventsFile:
         for post_id in eventsFile:
             post_id = post_id.replace('\n', '').replace('\r', '')
-            postFilename = locatePost(base_dir, nickname, domain, post_id)
+            postFilename = locate_post(base_dir, nickname, domain, post_id)
             if not postFilename:
                 continue
 
@@ -336,7 +336,7 @@ def getThisWeeksEvents(base_dir: str, nickname: str, domain: str) -> {}:
     with open(calendarFilename, 'r') as eventsFile:
         for post_id in eventsFile:
             post_id = post_id.replace('\n', '').replace('\r', '')
-            postFilename = locatePost(base_dir, nickname, domain, post_id)
+            postFilename = locate_post(base_dir, nickname, domain, post_id)
             if not postFilename:
                 recreateEventsFile = True
                 continue
@@ -401,7 +401,7 @@ def getCalendarEvents(base_dir: str, nickname: str, domain: str,
     with open(calendarFilename, 'r') as eventsFile:
         for post_id in eventsFile:
             post_id = post_id.replace('\n', '').replace('\r', '')
-            postFilename = locatePost(base_dir, nickname, domain, post_id)
+            postFilename = locate_post(base_dir, nickname, domain, post_id)
             if not postFilename:
                 recreateEventsFile = True
                 continue

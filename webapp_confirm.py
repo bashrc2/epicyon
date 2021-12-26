@@ -12,7 +12,7 @@ from shutil import copyfile
 from utils import get_full_domain
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
-from utils import locatePost
+from utils import locate_post
 from utils import load_json
 from utils import get_config_param
 from utils import get_alt_path
@@ -47,7 +47,7 @@ def htmlConfirmDelete(cssCache: {},
     domain, port = getDomainFromActor(actor)
     domain_full = get_full_domain(domain, port)
 
-    postFilename = locatePost(base_dir, nickname, domain, messageId)
+    postFilename = locate_post(base_dir, nickname, domain, messageId)
     if not postFilename:
         return None
 

@@ -14,7 +14,7 @@ from utils import getDisplayName
 from utils import get_config_param
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
-from utils import locatePost
+from utils import locate_post
 from utils import load_json
 from utils import weekDayOfMonthStart
 from utils import get_alt_path
@@ -43,7 +43,7 @@ def htmlCalendarDeleteConfirm(cssCache: {}, translate: {}, base_dir: str,
     domain, port = getDomainFromActor(actor)
     messageId = actor + '/statuses/' + post_id
 
-    postFilename = locatePost(base_dir, nickname, domain, messageId)
+    postFilename = locate_post(base_dir, nickname, domain, messageId)
     if not postFilename:
         return None
 

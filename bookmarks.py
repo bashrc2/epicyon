@@ -19,7 +19,7 @@ from utils import removePostFromCache
 from utils import urlPermitted
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
-from utils import locatePost
+from utils import locate_post
 from utils import getCachedPostFilename
 from utils import load_json
 from utils import save_json
@@ -292,7 +292,7 @@ def bookmark(recent_posts_cache: {},
             bookmarkedPostDomain, bookmarkedPostPort = getDomainFromActor(ou)
 
     if bookmarkedPostNickname:
-        postFilename = locatePost(base_dir, nickname, domain, objectUrl)
+        postFilename = locate_post(base_dir, nickname, domain, objectUrl)
         if not postFilename:
             print('DEBUG: bookmark base_dir: ' + base_dir)
             print('DEBUG: bookmark nickname: ' + nickname)
@@ -356,7 +356,7 @@ def undoBookmark(recent_posts_cache: {},
             bookmarkedPostDomain, bookmarkedPostPort = getDomainFromActor(ou)
 
     if bookmarkedPostNickname:
-        postFilename = locatePost(base_dir, nickname, domain, objectUrl)
+        postFilename = locate_post(base_dir, nickname, domain, objectUrl)
         if not postFilename:
             return None
 
@@ -593,7 +593,7 @@ def outboxBookmark(recent_posts_cache: {},
 
     messageUrl = removeIdEnding(message_json['object']['url'])
     domain = remove_domain_port(domain)
-    postFilename = locatePost(base_dir, nickname, domain, messageUrl)
+    postFilename = locate_post(base_dir, nickname, domain, messageUrl)
     if not postFilename:
         if debug:
             print('DEBUG: c2s like post not found in inbox or outbox')
@@ -649,7 +649,7 @@ def outboxUndoBookmark(recent_posts_cache: {},
 
     messageUrl = removeIdEnding(message_json['object']['url'])
     domain = remove_domain_port(domain)
-    postFilename = locatePost(base_dir, nickname, domain, messageUrl)
+    postFilename = locate_post(base_dir, nickname, domain, messageUrl)
     if not postFilename:
         if debug:
             print('DEBUG: c2s unbookmark post not found in inbox or outbox')

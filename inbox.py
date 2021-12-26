@@ -51,7 +51,7 @@ from utils import createInboxQueueDir
 from utils import getStatusNumber
 from utils import getDomainFromActor
 from utils import getNicknameFromActor
-from utils import locatePost
+from utils import locate_post
 from utils import deletePost
 from utils import removeModerationPostFromIndex
 from utils import load_json
@@ -913,7 +913,7 @@ def _receiveUpdateToQuestion(recent_posts_cache: {}, message_json: {},
     if '#' in messageId:
         messageId = messageId.split('#', 1)[0]
     # find the question post
-    postFilename = locatePost(base_dir, nickname, domain, messageId)
+    postFilename = locate_post(base_dir, nickname, domain, messageId)
     if not postFilename:
         return
     # load the json for the question
@@ -1038,7 +1038,7 @@ def _receiveLike(recent_posts_cache: {},
     handleName = handle.split('@')[0]
     handleDom = handle.split('@')[1]
     postLikedId = message_json['object']
-    postFilename = locatePost(base_dir, handleName, handleDom, postLikedId)
+    postFilename = locate_post(base_dir, handleName, handleDom, postLikedId)
     if not postFilename:
         if debug:
             print('DEBUG: post not found in inbox or outbox')
@@ -1068,8 +1068,8 @@ def _receiveLike(recent_posts_cache: {},
                 if isinstance(likedPostJson['object'], str):
                     announceLikeUrl = likedPostJson['object']
                     announceLikedFilename = \
-                        locatePost(base_dir, handleName,
-                                   domain, announceLikeUrl)
+                        locate_post(base_dir, handleName,
+                                    domain, announceLikeUrl)
                     if announceLikedFilename:
                         postLikedId = announceLikeUrl
                         postFilename = announceLikedFilename
@@ -1160,8 +1160,8 @@ def _receiveUndoLike(recent_posts_cache: {},
     handleName = handle.split('@')[0]
     handleDom = handle.split('@')[1]
     postFilename = \
-        locatePost(base_dir, handleName, handleDom,
-                   message_json['object']['object'])
+        locate_post(base_dir, handleName, handleDom,
+                    message_json['object']['object'])
     if not postFilename:
         if debug:
             print('DEBUG: unliked post not found in inbox or outbox')
@@ -1182,8 +1182,8 @@ def _receiveUndoLike(recent_posts_cache: {},
                 if isinstance(likedPostJson['object'], str):
                     announceLikeUrl = likedPostJson['object']
                     announceLikedFilename = \
-                        locatePost(base_dir, handleName,
-                                   domain, announceLikeUrl)
+                        locate_post(base_dir, handleName,
+                                    domain, announceLikeUrl)
                     if announceLikedFilename:
                         postLikedId = announceLikeUrl
                         postFilename = announceLikedFilename
@@ -1295,7 +1295,7 @@ def _receiveReaction(recent_posts_cache: {},
         if debug:
             print('DEBUG: emoji reaction has no content')
         return True
-    postFilename = locatePost(base_dir, handleName, handleDom, postReactionId)
+    postFilename = locate_post(base_dir, handleName, handleDom, postReactionId)
     if not postFilename:
         if debug:
             print('DEBUG: emoji reaction post not found in inbox or outbox')
@@ -1326,8 +1326,8 @@ def _receiveReaction(recent_posts_cache: {},
                 if isinstance(reactionPostJson['object'], str):
                     announceReactionUrl = reactionPostJson['object']
                     announceReactionFilename = \
-                        locatePost(base_dir, handleName,
-                                   domain, announceReactionUrl)
+                        locate_post(base_dir, handleName,
+                                    domain, announceReactionUrl)
                     if announceReactionFilename:
                         postReactionId = announceReactionUrl
                         postFilename = announceReactionFilename
@@ -1429,8 +1429,8 @@ def _receiveUndoReaction(recent_posts_cache: {},
     handleName = handle.split('@')[0]
     handleDom = handle.split('@')[1]
     postFilename = \
-        locatePost(base_dir, handleName, handleDom,
-                   message_json['object']['object'])
+        locate_post(base_dir, handleName, handleDom,
+                    message_json['object']['object'])
     if not postFilename:
         if debug:
             print('DEBUG: unreaction post not found in inbox or outbox')
@@ -1457,8 +1457,8 @@ def _receiveUndoReaction(recent_posts_cache: {},
                 if isinstance(reactionPostJson['object'], str):
                     announceReactionUrl = reactionPostJson['object']
                     announceReactionFilename = \
-                        locatePost(base_dir, handleName,
-                                   domain, announceReactionUrl)
+                        locate_post(base_dir, handleName,
+                                    domain, announceReactionUrl)
                     if announceReactionFilename:
                         postReactionId = announceReactionUrl
                         postFilename = announceReactionFilename
@@ -1567,7 +1567,7 @@ def _receiveBookmark(recent_posts_cache: {},
 
     messageUrl = removeIdEnding(message_json['object']['url'])
     domain = remove_domain_port(domain)
-    postFilename = locatePost(base_dir, nickname, domain, messageUrl)
+    postFilename = locate_post(base_dir, nickname, domain, messageUrl)
     if not postFilename:
         if debug:
             print('DEBUG: c2s inbox like post not found in inbox or outbox')
@@ -1680,7 +1680,7 @@ def _receiveUndoBookmark(recent_posts_cache: {},
 
     messageUrl = removeIdEnding(message_json['object']['url'])
     domain = remove_domain_port(domain)
-    postFilename = locatePost(base_dir, nickname, domain, messageUrl)
+    postFilename = locate_post(base_dir, nickname, domain, messageUrl)
     if not postFilename:
         if debug:
             print('DEBUG: c2s inbox like post not found in inbox or outbox')
@@ -1776,8 +1776,8 @@ def _receiveDelete(session, handle: str, isGroup: bool, base_dir: str,
     removeModerationPostFromIndex(base_dir, messageId, debug)
     handleNickname = handle.split('@')[0]
     handleDomain = handle.split('@')[1]
-    postFilename = locatePost(base_dir, handleNickname,
-                              handleDomain, messageId)
+    postFilename = locate_post(base_dir, handleNickname,
+                               handleDomain, messageId)
     if not postFilename:
         if debug:
             print('DEBUG: delete post not found in inbox or outbox')
@@ -1791,8 +1791,8 @@ def _receiveDelete(session, handle: str, isGroup: bool, base_dir: str,
 
     # also delete any local blogs saved to the news actor
     if handleNickname != 'news' and handleDomain == domain_full:
-        postFilename = locatePost(base_dir, 'news',
-                                  handleDomain, messageId)
+        postFilename = locate_post(base_dir, 'news',
+                                   handleDomain, messageId)
         if postFilename:
             deletePost(base_dir, http_prefix, 'news',
                        handleDomain, postFilename, debug,
@@ -1889,8 +1889,8 @@ def _receiveAnnounce(recent_posts_cache: {},
         return False
 
     # is this post in the outbox of the person?
-    postFilename = locatePost(base_dir, nickname, domain,
-                              message_json['object'])
+    postFilename = locate_post(base_dir, nickname, domain,
+                               message_json['object'])
     if not postFilename:
         if debug:
             print('DEBUG: announce post not found in inbox or outbox')
@@ -2060,8 +2060,8 @@ def _receiveUndoAnnounce(recent_posts_cache: {},
     # if this post in the outbox of the person?
     handleName = handle.split('@')[0]
     handleDom = handle.split('@')[1]
-    postFilename = locatePost(base_dir, handleName, handleDom,
-                              message_json['object']['object'])
+    postFilename = locate_post(base_dir, handleName, handleDom,
+                               message_json['object']['object'])
     if not postFilename:
         if debug:
             print('DEBUG: undo announce post not found in inbox or outbox')
@@ -2150,8 +2150,8 @@ def populateReplies(base_dir: str, http_prefix: str, domain: str,
             print('DEBUG: no domain found for ' + replyTo)
         return False
 
-    postFilename = locatePost(base_dir, replyToNickname,
-                              replyToDomain, replyTo)
+    postFilename = locate_post(base_dir, replyToNickname,
+                               replyToDomain, replyTo)
     if not postFilename:
         if debug:
             print('DEBUG: post may have expired - ' + replyTo)
@@ -2285,8 +2285,8 @@ def _validPostContent(base_dir: str, nickname: str, domain: str,
     if message_json['object'].get('inReplyTo'):
         if isinstance(message_json['object']['inReplyTo'], str):
             originalPostId = message_json['object']['inReplyTo']
-            postPostFilename = locatePost(base_dir, nickname, domain,
-                                          originalPostId)
+            postPostFilename = locate_post(base_dir, nickname, domain,
+                                           originalPostId)
             if postPostFilename:
                 if not _postAllowsComments(postPostFilename):
                     print('REJECT: reply to post which does not ' +
@@ -2366,7 +2366,7 @@ def _alreadyLiked(base_dir: str, nickname: str, domain: str,
     """Is the given post already liked by the given handle?
     """
     postFilename = \
-        locatePost(base_dir, nickname, domain, postUrl)
+        locate_post(base_dir, nickname, domain, postUrl)
     if not postFilename:
         return False
     post_json_object = load_json(postFilename, 1)
@@ -2396,7 +2396,7 @@ def _alreadyReacted(base_dir: str, nickname: str, domain: str,
     """Is the given post already emoji reacted by the given handle?
     """
     postFilename = \
-        locatePost(base_dir, nickname, domain, postUrl)
+        locate_post(base_dir, nickname, domain, postUrl)
     if not postFilename:
         return False
     post_json_object = load_json(postFilename, 1)

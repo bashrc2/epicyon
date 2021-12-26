@@ -8,7 +8,7 @@ __status__ = "Production"
 __module_group__ = "ActivityPub"
 
 import os
-from utils import locatePost
+from utils import locate_post
 from utils import load_json
 from utils import save_json
 from utils import has_object_dict
@@ -30,7 +30,7 @@ def questionUpdateVotes(base_dir: str, nickname: str, domain: str,
     if not replyJson['object'].get('name'):
         return None, None
     inReplyTo = replyJson['object']['inReplyTo']
-    questionPostFilename = locatePost(base_dir, nickname, domain, inReplyTo)
+    questionPostFilename = locate_post(base_dir, nickname, domain, inReplyTo)
     if not questionPostFilename:
         return None, None
     questionJson = load_json(questionPostFilename)

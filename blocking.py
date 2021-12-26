@@ -26,7 +26,7 @@ from utils import has_users_path
 from utils import get_full_domain
 from utils import removeIdEnding
 from utils import isEvil
-from utils import locatePost
+from utils import locate_post
 from utils import evilIncarnate
 from utils import getDomainFromActor
 from utils import getNicknameFromActor
@@ -442,7 +442,7 @@ def outboxBlock(base_dir: str, http_prefix: str,
             print('DEBUG: c2s block object has no nickname')
         return False
     domain = remove_domain_port(domain)
-    postFilename = locatePost(base_dir, nickname, domain, messageId)
+    postFilename = locate_post(base_dir, nickname, domain, messageId)
     if not postFilename:
         if debug:
             print('DEBUG: c2s block post not found in inbox or outbox')
@@ -498,7 +498,7 @@ def outboxUndoBlock(base_dir: str, http_prefix: str,
             print('DEBUG: c2s undo block object has no nickname')
         return
     domain = remove_domain_port(domain)
-    postFilename = locatePost(base_dir, nickname, domain, messageId)
+    postFilename = locate_post(base_dir, nickname, domain, messageId)
     if not postFilename:
         if debug:
             print('DEBUG: c2s undo block post not found in inbox or outbox')
@@ -525,7 +525,7 @@ def mutePost(base_dir: str, nickname: str, domain: str, port: int,
     """ Mutes the given post
     """
     print('mutePost: post_id ' + post_id)
-    postFilename = locatePost(base_dir, nickname, domain, post_id)
+    postFilename = locate_post(base_dir, nickname, domain, post_id)
     if not postFilename:
         print('mutePost: file not found ' + post_id)
         return
@@ -624,7 +624,8 @@ def mutePost(base_dir: str, nickname: str, domain: str, port: int,
                 print('MUTE: ' + post_id + ' removed cached html')
 
     if alsoUpdatePostId:
-        postFilename = locatePost(base_dir, nickname, domain, alsoUpdatePostId)
+        postFilename = locate_post(base_dir, nickname, domain,
+                                   alsoUpdatePostId)
         if os.path.isfile(postFilename):
             postJsonObj = load_json(postFilename)
             cachedPostFilename = \
@@ -657,7 +658,7 @@ def unmutePost(base_dir: str, nickname: str, domain: str, port: int,
                debug: bool) -> None:
     """ Unmutes the given post
     """
-    postFilename = locatePost(base_dir, nickname, domain, post_id)
+    postFilename = locate_post(base_dir, nickname, domain, post_id)
     if not postFilename:
         return
     post_json_object = load_json(postFilename)
@@ -738,7 +739,8 @@ def unmutePost(base_dir: str, nickname: str, domain: str, port: int,
                 del recent_posts_cache['html'][post_id]
                 print('UNMUTE: ' + post_id + ' removed cached html')
     if alsoUpdatePostId:
-        postFilename = locatePost(base_dir, nickname, domain, alsoUpdatePostId)
+        postFilename = locate_post(base_dir, nickname, domain,
+                                   alsoUpdatePostId)
         if os.path.isfile(postFilename):
             postJsonObj = load_json(postFilename)
             cachedPostFilename = \
@@ -798,7 +800,7 @@ def outboxMute(base_dir: str, http_prefix: str,
             print('DEBUG: c2s mute object has no nickname')
         return
     domain = remove_domain_port(domain)
-    postFilename = locatePost(base_dir, nickname, domain, messageId)
+    postFilename = locate_post(base_dir, nickname, domain, messageId)
     if not postFilename:
         if debug:
             print('DEBUG: c2s mute post not found in inbox or outbox')
@@ -853,7 +855,7 @@ def outboxUndoMute(base_dir: str, http_prefix: str,
             print('DEBUG: c2s undo mute object has no nickname')
         return
     domain = remove_domain_port(domain)
-    postFilename = locatePost(base_dir, nickname, domain, messageId)
+    postFilename = locate_post(base_dir, nickname, domain, messageId)
     if not postFilename:
         if debug:
             print('DEBUG: c2s undo mute post not found in inbox or outbox')

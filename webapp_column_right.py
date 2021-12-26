@@ -14,7 +14,7 @@ from content import limitRepeatedWords
 from utils import get_fav_filename_from_url
 from utils import get_base_content_from_post
 from utils import removeHtml
-from utils import locatePost
+from utils import locate_post
 from utils import load_json
 from utils import votesOnNewswireItem
 from utils import getNicknameFromActor
@@ -660,7 +660,7 @@ def htmlEditNewsPost(cssCache: {}, translate: {}, base_dir: str, path: str,
         return ''
 
     postUrl = postUrl.replace('/', '#')
-    postFilename = locatePost(base_dir, nickname, domain, postUrl)
+    postFilename = locate_post(base_dir, nickname, domain, postUrl)
     if not postFilename:
         return ''
     post_json_object = load_json(postFilename)

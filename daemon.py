@@ -290,7 +290,7 @@ from utils import undoLikesCollectionEntry
 from utils import deletePost
 from utils import isBlogPost
 from utils import removeAvatarFromCache
-from utils import locatePost
+from utils import locate_post
 from utils import getCachedPostFilename
 from utils import removePostFromCache
 from utils import getNicknameFromActor
@@ -525,8 +525,8 @@ class PubServer(BaseHTTPRequestHandler):
             if self._postToOutbox(message_json,
                                   self.server.project_version, nickname):
                 postFilename = \
-                    locatePost(self.server.base_dir, nickname,
-                               self.server.domain, messageId)
+                    locate_post(self.server.base_dir, nickname,
+                                self.server.domain, messageId)
                 if postFilename:
                     post_json_object = load_json(postFilename)
                     if post_json_object:
@@ -2006,8 +2006,8 @@ class PubServer(BaseHTTPRequestHandler):
                     else:
                         # remove a post or thread
                         postFilename = \
-                            locatePost(base_dir, nickname, domain,
-                                       moderationText)
+                            locate_post(base_dir, nickname, domain,
+                                        moderationText)
                         if postFilename:
                             if canRemovePost(base_dir,
                                              nickname, domain, port,
@@ -2022,8 +2022,8 @@ class PubServer(BaseHTTPRequestHandler):
                             # if this is a local blog post then also remove it
                             # from the news actor
                             postFilename = \
-                                locatePost(base_dir, 'news', domain,
-                                           moderationText)
+                                locate_post(base_dir, 'news', domain,
+                                            moderationText)
                             if postFilename:
                                 if canRemovePost(base_dir,
                                                  'news', domain, port,
@@ -4628,8 +4628,8 @@ class PubServer(BaseHTTPRequestHandler):
             if newsPostUrl and newsPostContent and newsPostTitle:
                 # load the post
                 postFilename = \
-                    locatePost(base_dir, nickname, domain,
-                               newsPostUrl)
+                    locate_post(base_dir, nickname, domain,
+                                newsPostUrl)
                 if postFilename:
                     post_json_object = load_json(postFilename)
                     # update the content and title
@@ -7872,7 +7872,7 @@ class PubServer(BaseHTTPRequestHandler):
             if nickname:
                 if domain_full + '/users/' + nickname + '/' in announceUrl:
                     postFilename = \
-                        locatePost(base_dir, nickname, domain, announceUrl)
+                        locate_post(base_dir, nickname, domain, announceUrl)
             if postFilename:
                 deletePost(base_dir, http_prefix,
                            nickname, domain, postFilename,
@@ -8178,7 +8178,7 @@ class PubServer(BaseHTTPRequestHandler):
         # directly like the post file
         if not likedPostFilename:
             likedPostFilename = \
-                locatePost(base_dir, self.postToNickname, domain, likeUrl)
+                locate_post(base_dir, self.postToNickname, domain, likeUrl)
         if likedPostFilename:
             recent_posts_cache = self.server.recent_posts_cache
             likedPostJson = load_json(likedPostFilename, 0, 1)
@@ -8341,8 +8341,8 @@ class PubServer(BaseHTTPRequestHandler):
 
         # directly undo the like within the post file
         if not likedPostFilename:
-            likedPostFilename = locatePost(base_dir, self.postToNickname,
-                                           domain, likeUrl)
+            likedPostFilename = locate_post(base_dir, self.postToNickname,
+                                            domain, likeUrl)
         if likedPostFilename:
             recent_posts_cache = self.server.recent_posts_cache
             likedPostJson = load_json(likedPostFilename, 0, 1)
@@ -8511,7 +8511,7 @@ class PubServer(BaseHTTPRequestHandler):
         # directly emoji reaction the post file
         if not reactionPostFilename:
             reactionPostFilename = \
-                locatePost(base_dir, self.postToNickname, domain, reactionUrl)
+                locate_post(base_dir, self.postToNickname, domain, reactionUrl)
         if reactionPostFilename:
             recent_posts_cache = self.server.recent_posts_cache
             reactionPostJson = load_json(reactionPostFilename, 0, 1)
@@ -8694,7 +8694,7 @@ class PubServer(BaseHTTPRequestHandler):
         # directly undo the emoji reaction within the post file
         if not reactionPostFilename:
             reactionPostFilename = \
-                locatePost(base_dir, self.postToNickname, domain, reactionUrl)
+                locate_post(base_dir, self.postToNickname, domain, reactionUrl)
         if reactionPostFilename:
             recent_posts_cache = self.server.recent_posts_cache
             reactionPostJson = load_json(reactionPostFilename, 0, 1)
@@ -8809,8 +8809,8 @@ class PubServer(BaseHTTPRequestHandler):
 
         post_json_object = None
         reactionPostFilename = \
-            locatePost(self.server.base_dir,
-                       self.postToNickname, domain, reactionUrl)
+            locate_post(self.server.base_dir,
+                        self.postToNickname, domain, reactionUrl)
         if reactionPostFilename:
             post_json_object = load_json(reactionPostFilename)
         if not reactionPostFilename or not post_json_object:
@@ -8926,7 +8926,7 @@ class PubServer(BaseHTTPRequestHandler):
         if self.server.iconsCache.get('bookmark.png'):
             del self.server.iconsCache['bookmark.png']
         bookmarkFilename = \
-            locatePost(base_dir, self.postToNickname, domain, bookmarkUrl)
+            locate_post(base_dir, self.postToNickname, domain, bookmarkUrl)
         if bookmarkFilename:
             print('Regenerating html post for changed bookmark')
             bookmarkPostJson = load_json(bookmarkFilename, 0, 1)
@@ -9054,7 +9054,7 @@ class PubServer(BaseHTTPRequestHandler):
         # self._postToOutbox(undoBookmarkJson,
         #                    self.server.project_version, None)
         bookmarkFilename = \
-            locatePost(base_dir, self.postToNickname, domain, bookmarkUrl)
+            locate_post(base_dir, self.postToNickname, domain, bookmarkUrl)
         if bookmarkFilename:
             print('Regenerating html post for changed unbookmark')
             bookmarkPostJson = load_json(bookmarkFilename, 0, 1)
@@ -9249,7 +9249,7 @@ class PubServer(BaseHTTPRequestHandler):
                  http_prefix, muteUrl,
                  self.server.recent_posts_cache, debug)
         muteFilename = \
-            locatePost(base_dir, nickname, domain, muteUrl)
+            locate_post(base_dir, nickname, domain, muteUrl)
         if muteFilename:
             print('mutePost: Regenerating html post for changed mute status')
             mutePostJson = load_json(muteFilename, 0, 1)
@@ -9358,7 +9358,7 @@ class PubServer(BaseHTTPRequestHandler):
                    http_prefix, muteUrl,
                    self.server.recent_posts_cache, debug)
         muteFilename = \
-            locatePost(base_dir, nickname, domain, muteUrl)
+            locate_post(base_dir, nickname, domain, muteUrl)
         if muteFilename:
             print('unmutePost: ' +
                   'Regenerating html post for changed unmute status')
@@ -10133,7 +10133,8 @@ class PubServer(BaseHTTPRequestHandler):
             return False
         replies = False
 
-        postFilename = locatePost(base_dir, nickname, domain, post_id, replies)
+        postFilename = locate_post(base_dir, nickname, domain,
+                                   post_id, replies)
         if not postFilename:
             return False
 
@@ -12971,7 +12972,7 @@ class PubServer(BaseHTTPRequestHandler):
             post_json_object = None
             if inReplyToUrl:
                 replyPostFilename = \
-                    locatePost(base_dir, nickname, domain, inReplyToUrl)
+                    locate_post(base_dir, nickname, domain, inReplyToUrl)
                 if replyPostFilename:
                     post_json_object = load_json(replyPostFilename)
 
@@ -16749,9 +16750,9 @@ class PubServer(BaseHTTPRequestHandler):
             elif postType == 'editblogpost':
                 print('Edited blog post received')
                 postFilename = \
-                    locatePost(self.server.base_dir,
-                               nickname, self.server.domain,
-                               fields['postUrl'])
+                    locate_post(self.server.base_dir,
+                                nickname, self.server.domain,
+                                fields['postUrl'])
                 if os.path.isfile(postFilename):
                     post_json_object = load_json(postFilename)
                     if post_json_object:

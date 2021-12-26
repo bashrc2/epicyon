@@ -37,7 +37,7 @@ from utils import isRecentPost
 from utils import get_config_param
 from utils import get_full_domain
 from utils import is_editor
-from utils import locatePost
+from utils import locate_post
 from utils import load_json
 from utils import getCachedPostDirectory
 from utils import getCachedPostFilename
@@ -1537,7 +1537,7 @@ def individualPostAsHtml(signing_priv_key_pem: str,
             return postHtml
 
         announceFilename = \
-            locatePost(base_dir, nickname, domain, post_json_object['id'])
+            locate_post(base_dir, nickname, domain, post_json_object['id'])
         if announceFilename:
             updateAnnounceCollection(recent_posts_cache,
                                      base_dir, announceFilename,
@@ -2079,8 +2079,8 @@ def htmlIndividualPost(cssCache: {},
     if has_object_dict(post_json_object):
         while post_json_object['object'].get('inReplyTo'):
             postFilename = \
-                locatePost(base_dir, nickname, domain,
-                           post_json_object['object']['inReplyTo'])
+                locate_post(base_dir, nickname, domain,
+                            post_json_object['object']['inReplyTo'])
             if not postFilename:
                 break
             post_json_object = load_json(postFilename)
@@ -2108,7 +2108,7 @@ def htmlIndividualPost(cssCache: {},
                                          cw_lists, lists_enabled) + postStr
 
     # show the following posts
-    postFilename = locatePost(base_dir, nickname, domain, messageId)
+    postFilename = locate_post(base_dir, nickname, domain, messageId)
     if postFilename:
         # is there a replies file for this post?
         repliesFilename = postFilename.replace('.json', '.replies')

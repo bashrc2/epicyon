@@ -28,7 +28,7 @@ from utils import get_full_domain
 from utils import getMediaFormats
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
-from utils import locatePost
+from utils import locate_post
 from utils import load_json
 from utils import firstParagraphFromString
 from utils import get_actor_property_url
@@ -81,7 +81,7 @@ def _noOfBlogReplies(base_dir: str, http_prefix: str, translate: {},
     for replyPostId in lines:
         replyPostId = replyPostId.replace('\n', '').replace('\r', '')
         replyPostId = replyPostId.replace('.json', '')
-        if locatePost(base_dir, nickname, domain, replyPostId):
+        if locate_post(base_dir, nickname, domain, replyPostId):
             replyPostId = replyPostId.replace('.replies', '')
             replies += \
                 1 + _noOfBlogReplies(base_dir, http_prefix, translate,
@@ -780,7 +780,7 @@ def htmlEditBlog(media_instance: bool, translate: {},
                  postUrl: str, system_language: str) -> str:
     """Edit a blog post after it was created
     """
-    postFilename = locatePost(base_dir, nickname, domain, postUrl)
+    postFilename = locate_post(base_dir, nickname, domain, postUrl)
     if not postFilename:
         print('Edit blog: Filename not found for ' + postUrl)
         return None
@@ -944,7 +944,7 @@ def pathContainsBlogLink(base_dir: str,
         return None, None
     messageId = local_actor_url(http_prefix, nickname, domain_full) + \
         '/statuses/' + userEnding2[1]
-    return locatePost(base_dir, nickname, domain, messageId), nickname
+    return locate_post(base_dir, nickname, domain, messageId), nickname
 
 
 def getBlogAddress(actor_json: {}) -> str:

@@ -58,7 +58,7 @@ from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import deletePost
 from utils import validNickname
-from utils import locatePost
+from utils import locate_post
 from utils import load_json
 from utils import save_json
 from utils import get_config_param
@@ -1050,7 +1050,7 @@ def _createPostCWFromReply(base_dir: str, nickname: str, domain: str,
         # it has a content warning. If it does then reproduce
         # the same warning
         replyPostFilename = \
-            locatePost(base_dir, nickname, domain, inReplyTo)
+            locate_post(base_dir, nickname, domain, inReplyTo)
         if replyPostFilename:
             replyToJson = load_json(replyPostFilename)
             if replyToJson:
@@ -3782,8 +3782,8 @@ def _createBoxIndexed(recent_posts_cache: {},
 
                 # read the post from file
                 fullPostFilename = \
-                    locatePost(base_dir, nickname,
-                               originalDomain, postUrl, False)
+                    locate_post(base_dir, nickname,
+                                originalDomain, postUrl, False)
                 if fullPostFilename:
                     # has the post been rejected?
                     if os.path.isfile(fullPostFilename + '.reject'):
@@ -3802,8 +3802,8 @@ def _createBoxIndexed(recent_posts_cache: {},
                     if timelineNickname != nickname:
                         # if this is the features timeline
                         fullPostFilename = \
-                            locatePost(base_dir, timelineNickname,
-                                       originalDomain, postUrl, False)
+                            locate_post(base_dir, timelineNickname,
+                                        originalDomain, postUrl, False)
                         if fullPostFilename:
                             if _addPostToTimeline(fullPostFilename, boxname,
                                                   postsInBox, boxActor):
@@ -4754,7 +4754,7 @@ def isMuted(base_dir: str, nickname: str, domain: str, post_id: str,
             conversationId.replace('/', '#') + '.muted'
         if os.path.isfile(convMutedFilename):
             return True
-    postFilename = locatePost(base_dir, nickname, domain, post_id)
+    postFilename = locate_post(base_dir, nickname, domain, post_id)
     if not postFilename:
         return False
     if os.path.isfile(postFilename + '.muted'):
@@ -5226,7 +5226,7 @@ def editedPostFilename(base_dir: str, nickname: str, domain: str,
     if lastpost_id == post_id:
         return ''
     lastpostFilename = \
-        locatePost(base_dir, nickname, domain, lastpost_id, False)
+        locate_post(base_dir, nickname, domain, lastpost_id, False)
     if not lastpostFilename:
         return ''
     lastpostJson = load_json(lastpostFilename, 0)
@@ -5270,7 +5270,7 @@ def getOriginalPostFromAnnounceUrl(announceUrl: str, base_dir: str,
     """From the url of an announce this returns the actor, url and
     filename (if available) of the original post being announced
     """
-    postFilename = locatePost(base_dir, nickname, domain, announceUrl)
+    postFilename = locate_post(base_dir, nickname, domain, announceUrl)
     if not postFilename:
         return None, None, None
     announcePostJson = load_json(postFilename, 0, 1)
@@ -5287,7 +5287,7 @@ def getOriginalPostFromAnnounceUrl(announceUrl: str, base_dir: str,
     actor = url = None
     # do we have the original post?
     origPostId = announcePostJson['object']
-    origFilename = locatePost(base_dir, nickname, domain, origPostId)
+    origFilename = locate_post(base_dir, nickname, domain, origPostId)
     if origFilename:
         # we have the original post
         origPostJson = load_json(origFilename, 0, 1)

@@ -16,7 +16,7 @@ from utils import get_full_domain
 from utils import removeIdEnding
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
-from utils import locatePost
+from utils import locate_post
 from utils import deletePost
 from utils import removeModerationPostFromIndex
 from utils import local_actor_url
@@ -161,8 +161,8 @@ def outboxDelete(base_dir: str, http_prefix: str,
                   "wasn't created by you (domain does not match)")
         return
     removeModerationPostFromIndex(base_dir, messageId, debug)
-    postFilename = locatePost(base_dir, deleteNickname, deleteDomain,
-                              messageId)
+    postFilename = locate_post(base_dir, deleteNickname, deleteDomain,
+                               messageId)
     if not postFilename:
         if debug:
             print('DEBUG: c2s delete post not found in inbox or outbox')

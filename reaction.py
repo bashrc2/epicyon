@@ -22,7 +22,7 @@ from utils import removeIdEnding
 from utils import urlPermitted
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
-from utils import locatePost
+from utils import locate_post
 from utils import undoReactionCollectionEntry
 from utils import has_group_type
 from utils import local_actor_url
@@ -118,7 +118,7 @@ def _reaction(recent_posts_cache: {},
                     has_group_type(base_dir, actorReaction, person_cache)
 
     if reactionPostNickname:
-        postFilename = locatePost(base_dir, nickname, domain, objectUrl)
+        postFilename = locate_post(base_dir, nickname, domain, objectUrl)
         if not postFilename:
             print('DEBUG: reaction base_dir: ' + base_dir)
             print('DEBUG: reaction nickname: ' + nickname)
@@ -384,7 +384,7 @@ def outboxReaction(recent_posts_cache: {},
     messageId = removeIdEnding(message_json['object'])
     domain = remove_domain_port(domain)
     emojiContent = message_json['content']
-    postFilename = locatePost(base_dir, nickname, domain, messageId)
+    postFilename = locate_post(base_dir, nickname, domain, messageId)
     if not postFilename:
         if debug:
             print('DEBUG: c2s reaction post not found in inbox or outbox')
@@ -426,7 +426,7 @@ def outboxUndoReaction(recent_posts_cache: {},
     messageId = removeIdEnding(message_json['object']['object'])
     emojiContent = message_json['object']['content']
     domain = remove_domain_port(domain)
-    postFilename = locatePost(base_dir, nickname, domain, messageId)
+    postFilename = locate_post(base_dir, nickname, domain, messageId)
     if not postFilename:
         if debug:
             print('DEBUG: c2s undo reaction post not found in inbox or outbox')

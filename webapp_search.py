@@ -19,7 +19,7 @@ from utils import is_editor
 from utils import load_json
 from utils import getDomainFromActor
 from utils import getNicknameFromActor
-from utils import locatePost
+from utils import locate_post
 from utils import isPublicPost
 from utils import firstParagraphFromString
 from utils import searchBoxPosts
@@ -831,7 +831,7 @@ def htmlHashtagSearch(cssCache: {},
                 continue
             nickname = postFields[1]
             post_id = postFields[2]
-        postFilename = locatePost(base_dir, nickname, domain, post_id)
+        postFilename = locate_post(base_dir, nickname, domain, post_id)
         if not postFilename:
             index += 1
             continue
@@ -956,7 +956,7 @@ def rssHashtagSearch(nickname: str, domain: str, port: int,
                 continue
             nickname = postFields[1]
             post_id = postFields[2]
-        postFilename = locatePost(base_dir, nickname, domain, post_id)
+        postFilename = locate_post(base_dir, nickname, domain, post_id)
         if not postFilename:
             index += 1
             if index >= maxFeedLength:

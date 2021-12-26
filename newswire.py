@@ -24,7 +24,7 @@ from utils import get_base_content_from_post
 from utils import has_object_dict
 from utils import firstParagraphFromString
 from utils import isPublicPost
-from utils import locatePost
+from utils import locate_post
 from utils import load_json
 from utils import save_json
 from utils import isSuspended
@@ -1042,8 +1042,8 @@ def _addAccountBlogsToNewswire(base_dir: str, nickname: str, domain: str,
 
                 # read the post from file
                 fullPostFilename = \
-                    locatePost(base_dir, nickname,
-                               domain, postUrl, False)
+                    locate_post(base_dir, nickname,
+                                domain, postUrl, False)
                 if not fullPostFilename:
                     print('Unable to locate post for newswire ' + postUrl)
                     ctr += 1

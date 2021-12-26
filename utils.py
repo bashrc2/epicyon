@@ -1326,8 +1326,8 @@ def clearFromPostCaches(base_dir: str, recent_posts_cache: {},
         break
 
 
-def locatePost(base_dir: str, nickname: str, domain: str,
-               postUrl: str, replies: bool = False) -> str:
+def locate_post(base_dir: str, nickname: str, domain: str,
+                postUrl: str, replies: bool = False) -> str:
     """Returns the filename for the given status post url
     """
     if not replies:
@@ -1427,7 +1427,7 @@ def canReplyTo(base_dir: str, nickname: str, domain: str,
     if '/statuses/' not in postUrl:
         return True
     if not post_json_object:
-        postFilename = locatePost(base_dir, nickname, domain, postUrl)
+        postFilename = locate_post(base_dir, nickname, domain, postUrl)
         if not postFilename:
             return False
         post_json_object = load_json(postFilename)
@@ -1539,7 +1539,7 @@ def _deletePostRemoveReplies(base_dir: str, nickname: str, domain: str,
         print('DEBUG: removing replies to ' + postFilename)
     with open(repliesFilename, 'r') as f:
         for replyId in f:
-            replyFile = locatePost(base_dir, nickname, domain, replyId)
+            replyFile = locate_post(base_dir, nickname, domain, replyId)
             if not replyFile:
                 continue
             if os.path.isfile(replyFile):
@@ -1946,7 +1946,7 @@ def isPublicPostFromUrl(base_dir: str, nickname: str, domain: str,
                         postUrl: str) -> bool:
     """Returns whether the given url is a public post
     """
-    postFilename = locatePost(base_dir, nickname, domain, postUrl)
+    postFilename = locate_post(base_dir, nickname, domain, postUrl)
     if not postFilename:
         return False
     post_json_object = load_json(postFilename, 1)
@@ -2559,7 +2559,7 @@ def reject_post_id(base_dir: str, nickname: str, domain: str,
     """ Marks the given post as rejected,
     for example an announce which is too old
     """
-    postFilename = locatePost(base_dir, nickname, domain, post_id)
+    postFilename = locate_post(base_dir, nickname, domain, post_id)
     if not postFilename:
         return
 
