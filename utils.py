@@ -2953,7 +2953,7 @@ def removeLineEndings(text: str) -> str:
     return text.strip()
 
 
-def validPassword(password: str) -> bool:
+def valid_password(password: str) -> bool:
     """Returns true if the given password is valid
     """
     if len(password) < 8:

@@ -65,7 +65,7 @@ from utils import setConfigParam
 from utils import is_group_actor
 from utils import date_string_to_seconds
 from utils import date_seconds_to_string
-from utils import validPassword
+from utils import valid_password
 from utils import userAgentDomain
 from utils import camelCaseSplit
 from utils import decoded_host
@@ -5681,11 +5681,11 @@ def _testDateConversions() -> None:
 
 def _testValidPassword():
     print('testValidPassword')
-    assert not validPassword('123')
-    assert not validPassword('')
-    assert validPassword('パスワード12345')
-    assert validPassword('测试密码12345')
-    assert validPassword('A!bc:defg1/234?56')
+    assert not valid_password('123')
+    assert not valid_password('')
+    assert valid_password('パスワード12345')
+    assert valid_password('测试密码12345')
+    assert valid_password('A!bc:defg1/234?56')
 
 
 def _testGetPriceFromString() -> None:

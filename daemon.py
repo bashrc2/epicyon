@@ -252,7 +252,7 @@ from utils import isDM
 from utils import replace_users_with_at
 from utils import local_actor_url
 from utils import is_float
-from utils import validPassword
+from utils import valid_password
 from utils import removeLineEndings
 from utils import get_base_content_from_post
 from utils import acct_dir
@@ -1687,7 +1687,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return
             self.server.last_login_time = int(time.time())
             if register:
-                if not validPassword(loginPassword):
+                if not valid_password(loginPassword):
                     self.server.POSTbusy = False
                     if callingDomain.endswith('.onion') and onion_domain:
                         self._redirect_headers('http://' + onion_domain +
@@ -4971,7 +4971,7 @@ class PubServer(BaseHTTPRequestHandler):
                             removeLineEndings(fields['password'])
                         fields['passwordconfirm'] = \
                             removeLineEndings(fields['passwordconfirm'])
-                        if validPassword(fields['password']) and \
+                        if valid_password(fields['password']) and \
                            fields['password'] == fields['passwordconfirm']:
                             # set password
                             storeBasicCredentials(base_dir, nickname,
