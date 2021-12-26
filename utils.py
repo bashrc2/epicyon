@@ -23,7 +23,7 @@ from followingCalendar import addPersonToCalendar
 # posts containing these strings will always get screened out,
 # both incoming and outgoing.
 # Could include dubious clacks or admin dogwhistles
-invalidCharacters = (
+INVALID_CHARACTERS = (
     '卐', '卍', '࿕', '࿖', '࿗', '࿘', 'ϟϟ', '🏳️‍🌈🚫', '⚡⚡'
 )
 
@@ -766,7 +766,7 @@ def isEvil(domain: str) -> bool:
 def containsInvalidChars(jsonStr: str) -> bool:
     """Does the given json string contain invalid characters?
     """
-    for isInvalid in invalidCharacters:
+    for isInvalid in INVALID_CHARACTERS:
         if isInvalid in jsonStr:
             return True
     return False
@@ -775,7 +775,7 @@ def containsInvalidChars(jsonStr: str) -> bool:
 def removeInvalidChars(text: str) -> str:
     """Removes any invalid characters from a string
     """
-    for isInvalid in invalidCharacters:
+    for isInvalid in INVALID_CHARACTERS:
         if isInvalid not in text:
             continue
         text = text.replace(isInvalid, '')
