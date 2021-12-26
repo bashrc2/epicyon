@@ -15,7 +15,7 @@ from utils import getDomainFromActor
 from utils import locatePost
 from utils import load_json
 from utils import get_config_param
-from utils import getAltPath
+from utils import get_alt_path
 from utils import acct_dir
 from webapp_utils import setCustomBackground
 from webapp_utils import htmlHeaderWithExternalStyle
@@ -85,7 +85,7 @@ def htmlConfirmDelete(cssCache: {},
         '  <p class="followText">' + \
         translate['Delete this post?'] + '</p>'
 
-    postActor = getAltPath(actor, domain_full, calling_domain)
+    postActor = get_alt_path(actor, domain_full, calling_domain)
     deletePostStr += \
         '  <form method="POST" action="' + postActor + '/rmpost">\n'
     deletePostStr += \
@@ -149,7 +149,7 @@ def htmlConfirmRemoveSharedItem(cssCache: {}, translate: {}, base_dir: str,
     sharesStr += \
         '  <p class="followText">' + translate['Remove'] + \
         ' ' + sharedItemDisplayName + ' ?</p>\n'
-    postActor = getAltPath(actor, domain_full, calling_domain)
+    postActor = get_alt_path(actor, domain_full, calling_domain)
     if sharesFileType == 'shares':
         endpoint = 'rmshare'
     else:

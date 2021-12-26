@@ -17,7 +17,7 @@ from utils import getDomainFromActor
 from utils import locatePost
 from utils import load_json
 from utils import weekDayOfMonthStart
-from utils import getAltPath
+from utils import get_alt_path
 from utils import remove_domain_port
 from utils import acct_dir
 from utils import local_actor_url
@@ -68,7 +68,7 @@ def htmlCalendarDeleteConfirm(cssCache: {}, translate: {}, base_dir: str,
     deletePostStr += '  <p class="followText">' + \
         translate['Delete this event'] + '</p>'
 
-    postActor = getAltPath(actor, domain_full, calling_domain)
+    postActor = get_alt_path(actor, domain_full, calling_domain)
     deletePostStr += \
         '  <form method="POST" action="' + postActor + '/rmpost">\n'
     deletePostStr += '    <input type="hidden" name="year" value="' + \

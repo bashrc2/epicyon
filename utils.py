@@ -2859,7 +2859,7 @@ def has_object_dict(post_json_object: {}) -> bool:
     return False
 
 
-def getAltPath(actor: str, domain_full: str, calling_domain: str) -> str:
+def get_alt_path(actor: str, domain_full: str, calling_domain: str) -> str:
     """Returns alternate path from the actor
     eg. https://clearnetdomain/path becomes http://oniondomain/path
     """
