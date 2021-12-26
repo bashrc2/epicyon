@@ -2554,8 +2554,8 @@ def camelCaseSplit(text: str) -> str:
     return resultStr.strip()
 
 
-def rejectPostId(base_dir: str, nickname: str, domain: str,
-                 post_id: str, recent_posts_cache: {}) -> None:
+def reject_post_id(base_dir: str, nickname: str, domain: str,
+                   post_id: str, recent_posts_cache: {}) -> None:
     """ Marks the given post as rejected,
     for example an announce which is too old
     """
@@ -2605,10 +2605,10 @@ def is_dm(post_json_object: {}) -> bool:
     for f in fields:
         if not post_json_object['object'].get(f):
             continue
-        for toAddress in post_json_object['object'][f]:
-            if toAddress.endswith('#Public'):
+        for to_address in post_json_object['object'][f]:
+            if to_address.endswith('#Public'):
                 return False
-            if toAddress.endswith('followers'):
+            if to_address.endswith('followers'):
                 return False
     return True
 

@@ -32,7 +32,7 @@ from utils import has_object_dict
 from utils import updateAnnounceCollection
 from utils import is_pgp_encrypted
 from utils import is_dm
-from utils import rejectPostId
+from utils import reject_post_id
 from utils import isRecentPost
 from utils import get_config_param
 from utils import get_full_domain
@@ -1510,8 +1510,8 @@ def individualPostAsHtml(signing_priv_key_pem: str,
         if not postJsonAnnounce:
             # if the announce could not be downloaded then mark it as rejected
             announcedPostId = removeIdEnding(post_json_object['id'])
-            rejectPostId(base_dir, nickname, domain, announcedPostId,
-                         recent_posts_cache)
+            reject_post_id(base_dir, nickname, domain, announcedPostId,
+                           recent_posts_cache)
             return ''
         post_json_object = postJsonAnnounce
 

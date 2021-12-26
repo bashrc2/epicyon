@@ -42,7 +42,7 @@ from utils import get_base_content_from_post
 from utils import remove_domain_port
 from utils import get_port_from_domain
 from utils import has_object_dict
-from utils import rejectPostId
+from utils import reject_post_id
 from utils import removeInvalidChars
 from utils import fileLastModified
 from utils import isPublicPost
@@ -4501,8 +4501,8 @@ def _rejectAnnounce(announceFilename: str,
                     announcePostId: str, recent_posts_cache: {}):
     """Marks an announce as rejected
     """
-    rejectPostId(base_dir, nickname, domain, announcePostId,
-                 recent_posts_cache)
+    reject_post_id(base_dir, nickname, domain, announcePostId,
+                   recent_posts_cache)
 
     # reject the post referenced by the announce activity object
     if not os.path.isfile(announceFilename + '.reject'):
