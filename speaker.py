@@ -12,7 +12,7 @@ import html
 import random
 import urllib.parse
 from utils import removeIdEnding
-from utils import isDM
+from utils import is_dm
 from utils import is_reply
 from utils import camelCaseSplit
 from utils import getDomainFromActor
@@ -453,7 +453,7 @@ def _postToSpeakerJson(base_dir: str, http_prefix: str,
                         imageDescription += \
                             img['name'] + '. '
 
-    isDirect = isDM(post_json_object)
+    isDirect = is_dm(post_json_object)
     actor = local_actor_url(http_prefix, nickname, domain_full)
     replyToYou = is_reply(post_json_object, actor)
 

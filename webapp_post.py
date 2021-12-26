@@ -31,7 +31,7 @@ from utils import get_content_from_post
 from utils import has_object_dict
 from utils import updateAnnounceCollection
 from utils import is_pgp_encrypted
-from utils import isDM
+from utils import is_dm
 from utils import rejectPostId
 from utils import isRecentPost
 from utils import get_config_param
@@ -435,7 +435,7 @@ def _getReplyIconHtml(base_dir: str, nickname: str, domain: str,
             conversationStr + \
             '" title="' + replyToThisPostStr + '">\n'
     else:
-        if isDM(post_json_object):
+        if is_dm(post_json_object):
             replyStr += \
                 '        ' + \
                 '<a class="imageAnchor" href="/users/' + nickname + \
@@ -1480,7 +1480,7 @@ def individualPostAsHtml(signing_priv_key_pem: str,
     # If this is the inbox timeline then don't show the repeat icon on any DMs
     showRepeatIcon = showRepeats
     isPublicRepeat = False
-    postIsDM = isDM(post_json_object)
+    postIsDM = is_dm(post_json_object)
     if showRepeats:
         if postIsDM:
             showRepeatIcon = False

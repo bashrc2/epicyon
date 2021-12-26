@@ -2586,7 +2586,7 @@ def rejectPostId(base_dir: str, nickname: str, domain: str,
         rejectFile.write('\n')
 
 
-def isDM(post_json_object: {}) -> bool:
+def is_dm(post_json_object: {}) -> bool:
     """Returns true if the given post is a DM
     """
     if post_json_object['type'] != 'Create':

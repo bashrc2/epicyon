@@ -89,7 +89,7 @@ from filters import isFiltered
 from utils import updateAnnounceCollection
 from utils import undoAnnounceCollectionEntry
 from utils import dangerousMarkup
-from utils import isDM
+from utils import is_dm
 from utils import is_reply
 from utils import has_actor
 from httpsig import messageContentDigest
@@ -302,7 +302,7 @@ def _inboxStorePostToHtmlCache(recent_posts_cache: {}, max_recent_posts: int,
     if boxname != 'outbox':
         boxname = 'inbox'
 
-    notDM = not isDM(post_json_object)
+    notDM = not is_dm(post_json_object)
     yt_replace_domain = get_config_param(base_dir, 'youtubedomain')
     twitter_replacement_domain = get_config_param(base_dir, 'twitterdomain')
     individualPostAsHtml(signing_priv_key_pem,
@@ -1093,7 +1093,7 @@ def _receiveLike(recent_posts_cache: {},
             showIndividualPostIcons = True
             manuallyApproveFollowers = \
                 followerApprovalActive(base_dir, handleName, domain)
-            notDM = not isDM(likedPostJson)
+            notDM = not is_dm(likedPostJson)
             individualPostAsHtml(signing_priv_key_pem, False,
                                  recent_posts_cache, max_recent_posts,
                                  translate, pageNumber, base_dir,
@@ -1204,7 +1204,7 @@ def _receiveUndoLike(recent_posts_cache: {},
             showIndividualPostIcons = True
             manuallyApproveFollowers = \
                 followerApprovalActive(base_dir, handleName, domain)
-            notDM = not isDM(likedPostJson)
+            notDM = not is_dm(likedPostJson)
             individualPostAsHtml(signing_priv_key_pem, False,
                                  recent_posts_cache, max_recent_posts,
                                  translate, pageNumber, base_dir,
@@ -1352,7 +1352,7 @@ def _receiveReaction(recent_posts_cache: {},
             showIndividualPostIcons = True
             manuallyApproveFollowers = \
                 followerApprovalActive(base_dir, handleName, domain)
-            notDM = not isDM(reactionPostJson)
+            notDM = not is_dm(reactionPostJson)
             individualPostAsHtml(signing_priv_key_pem, False,
                                  recent_posts_cache, max_recent_posts,
                                  translate, pageNumber, base_dir,
@@ -1482,7 +1482,7 @@ def _receiveUndoReaction(recent_posts_cache: {},
             showIndividualPostIcons = True
             manuallyApproveFollowers = \
                 followerApprovalActive(base_dir, handleName, domain)
-            notDM = not isDM(reactionPostJson)
+            notDM = not is_dm(reactionPostJson)
             individualPostAsHtml(signing_priv_key_pem, False,
                                  recent_posts_cache, max_recent_posts,
                                  translate, pageNumber, base_dir,
@@ -1592,7 +1592,7 @@ def _receiveBookmark(recent_posts_cache: {},
         showIndividualPostIcons = True
         manuallyApproveFollowers = \
             followerApprovalActive(base_dir, nickname, domain)
-        notDM = not isDM(bookmarkedPostJson)
+        notDM = not is_dm(bookmarkedPostJson)
         individualPostAsHtml(signing_priv_key_pem, False,
                              recent_posts_cache, max_recent_posts,
                              translate, pageNumber, base_dir,
@@ -1705,7 +1705,7 @@ def _receiveUndoBookmark(recent_posts_cache: {},
         showIndividualPostIcons = True
         manuallyApproveFollowers = \
             followerApprovalActive(base_dir, nickname, domain)
-        notDM = not isDM(bookmarkedPostJson)
+        notDM = not is_dm(bookmarkedPostJson)
         individualPostAsHtml(signing_priv_key_pem, False,
                              recent_posts_cache, max_recent_posts,
                              translate, pageNumber, base_dir,
@@ -3027,7 +3027,7 @@ def _receiveQuestionVote(base_dir: str, nickname: str, domain: str,
     showIndividualPostIcons = True
     manuallyApproveFollowers = \
         followerApprovalActive(base_dir, nickname, domain)
-    notDM = not isDM(questionJson)
+    notDM = not is_dm(questionJson)
     individualPostAsHtml(signing_priv_key_pem, False,
                          recent_posts_cache, max_recent_posts,
                          translate, pageNumber, base_dir,
@@ -3480,7 +3480,7 @@ def _inboxAfterInitial(recent_posts_cache: {}, max_recent_posts: int,
 
         if not isGroup:
             # create a DM notification file if needed
-            postIsDM = isDM(post_json_object)
+            postIsDM = is_dm(post_json_object)
             if postIsDM:
                 if not _isValidDM(base_dir, nickname, domain, port,
                                   post_json_object, updateIndexList,

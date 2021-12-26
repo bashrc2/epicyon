@@ -19,7 +19,7 @@ from random import randint
 from utils import get_base_content_from_post
 from utils import has_object_dict
 from utils import get_full_domain
-from utils import isDM
+from utils import is_dm
 from utils import load_translations_from_file
 from utils import removeHtml
 from utils import getNicknameFromActor
@@ -241,7 +241,7 @@ def _newDesktopNotifications(actor: str, inboxJson: {},
             continue
         if not _postIsToYou(actor, post_json_object):
             continue
-        if isDM(post_json_object):
+        if is_dm(post_json_object):
             if not DMdone:
                 if not _hasReadPost(actor, post_json_object['id'], 'dm'):
                     changed = False
@@ -790,7 +790,7 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
 
     # if the post is addressed to you then mark it as read
     if _postIsToYou(yourActor, post_json_object):
-        if isDM(post_json_object):
+        if is_dm(post_json_object):
             _markPostAsRead(yourActor, post_json_object['id'], 'dm')
         else:
             _markPostAsRead(yourActor, post_json_object['id'], 'replies')
@@ -1076,7 +1076,7 @@ def _desktopShowBox(indent: str,
                                                 system_language)
         content = _textOnlyContent(contentStr)
         if boxName != 'dm':
-            if isDM(post_json_object):
+            if is_dm(post_json_object):
                 content = '📧' + content
         if not contentWarning:
             if is_pgp_encrypted(content):
