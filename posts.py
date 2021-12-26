@@ -3335,7 +3335,8 @@ def createRepliesTimeline(recent_posts_cache: {},
                           session, base_dir: str, nickname: str, domain: str,
                           port: int, http_prefix: str, itemsPerPage: int,
                           headerOnly: bool, pageNumber: int) -> {}:
-    return _createBoxIndexed(recent_posts_cache, session, base_dir, 'tlreplies',
+    return _createBoxIndexed(recent_posts_cache, session,
+                             base_dir, 'tlreplies',
                              nickname, domain, port, http_prefix,
                              itemsPerPage, headerOnly, True,
                              0, False, 0, pageNumber)
@@ -4500,7 +4501,8 @@ def _rejectAnnounce(announceFilename: str,
                     announcePostId: str, recent_posts_cache: {}):
     """Marks an announce as rejected
     """
-    rejectPostId(base_dir, nickname, domain, announcePostId, recent_posts_cache)
+    rejectPostId(base_dir, nickname, domain, announcePostId,
+                 recent_posts_cache)
 
     # reject the post referenced by the announce activity object
     if not os.path.isfile(announceFilename + '.reject'):

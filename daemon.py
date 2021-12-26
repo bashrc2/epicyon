@@ -4661,7 +4661,8 @@ class PubServer(BaseHTTPRequestHandler):
                     # remove any previous cached news posts
                     newsId = removeIdEnding(post_json_object['object']['id'])
                     newsId = newsId.replace('/', '#')
-                    clearFromPostCaches(base_dir, self.server.recent_posts_cache,
+                    clearFromPostCaches(base_dir,
+                                        self.server.recent_posts_cache,
                                         newsId)
 
                     # save the news post

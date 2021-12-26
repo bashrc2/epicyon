@@ -73,11 +73,12 @@ def outboxAnnounce(recent_posts_cache: {},
         if not nickname:
             print('WARN: no nickname found in ' + message_json['actor'])
             return False
-        domain, port = getDomainFromActor(message_json['actor'])
+        domain, _ = getDomainFromActor(message_json['actor'])
         postFilename = locatePost(base_dir, nickname, domain,
                                   message_json['object'])
         if postFilename:
-            updateAnnounceCollection(recent_posts_cache, base_dir, postFilename,
+            updateAnnounceCollection(recent_posts_cache,
+                                     base_dir, postFilename,
                                      message_json['actor'],
                                      nickname, domain, debug)
             return True
@@ -91,7 +92,7 @@ def outboxAnnounce(recent_posts_cache: {},
             if not nickname:
                 print('WARN: no nickname found in ' + message_json['actor'])
                 return False
-            domain, port = getDomainFromActor(message_json['actor'])
+            domain, _ = getDomainFromActor(message_json['actor'])
             postFilename = locatePost(base_dir, nickname, domain,
                                       message_json['object']['object'])
             if postFilename:

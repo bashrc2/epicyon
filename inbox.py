@@ -1462,7 +1462,8 @@ def _receiveUndoReaction(recent_posts_cache: {},
                     if announceReactionFilename:
                         postReactionId = announceReactionUrl
                         postFilename = announceReactionFilename
-                        undoReactionCollectionEntry(recent_posts_cache, base_dir,
+                        undoReactionCollectionEntry(recent_posts_cache,
+                                                    base_dir,
                                                     postFilename,
                                                     postReactionId,
                                                     reactionActor, domain,
