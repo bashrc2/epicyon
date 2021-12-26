@@ -266,7 +266,7 @@ from utils import is_account_dir
 from utils import get_occupation_skills
 from utils import get_occupation_name
 from utils import set_occupation_name
-from utils import loadTranslationsFromFile
+from utils import load_translations_from_file
 from utils import getLocalNetworkAddresses
 from utils import decoded_host
 from utils import isPublicPost
@@ -18641,7 +18641,7 @@ def runDaemon(content_license_url: str,
     httpd.system_language = 'en'
     if not unit_test:
         httpd.translate, httpd.system_language = \
-            loadTranslationsFromFile(base_dir, language)
+            load_translations_from_file(base_dir, language)
         if not httpd.system_language:
             print('ERROR: no system language loaded')
             sys.exit()

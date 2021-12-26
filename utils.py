@@ -2674,7 +2674,7 @@ def invalidCiphertext(content: str) -> bool:
     return False
 
 
-def loadTranslationsFromFile(base_dir: str, language: str) -> ({}, str):
+def load_translations_from_file(base_dir: str, language: str) -> ({}, str):
     """Returns the translations dictionary
     """
     if not os.path.isdir(base_dir + '/translations'):
@@ -2692,13 +2692,13 @@ def loadTranslationsFromFile(base_dir: str, language: str) -> ({}, str):
         system_language = system_language.split('/')[1]
     if '.' in system_language:
         system_language = system_language.split('.')[0]
-    translationsFile = base_dir + '/translations/' + \
+    translations_file = base_dir + '/translations/' + \
         system_language + '.json'
-    if not os.path.isfile(translationsFile):
+    if not os.path.isfile(translations_file):
         system_language = 'en'
-        translationsFile = base_dir + '/translations/' + \
+        translations_file = base_dir + '/translations/' + \
             system_language + '.json'
-    return load_json(translationsFile), system_language
+    return load_json(translations_file), system_language
 
 
 def dm_allowed_from_domain(base_dir: str,

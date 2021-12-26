@@ -20,7 +20,7 @@ from utils import get_base_content_from_post
 from utils import has_object_dict
 from utils import get_full_domain
 from utils import isDM
-from utils import loadTranslationsFromFile
+from utils import load_translations_from_file
 from utils import removeHtml
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
@@ -1398,7 +1398,7 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
     _sayCommand(sayStr, sayStr, screenreader,
                 system_language, espeak)
     translate, system_language = \
-        loadTranslationsFromFile(base_dir, language)
+        load_translations_from_file(base_dir, language)
 
     sayStr = indent + 'Connecting...'
     _sayCommand(sayStr, sayStr, screenreader,
