@@ -2873,16 +2873,16 @@ def getAltPath(actor: str, domain_full: str, callingDomain: str) -> str:
     return postActor
 
 
-def getActorPropertyUrl(actor_json: {}, propertyName: str) -> str:
+def getActorPropertyUrl(actor_json: {}, property_name: str) -> str:
     """Returns a url property from an actor
     """
     if not actor_json.get('attachment'):
         return ''
-    propertyName = propertyName.lower()
+    property_name = property_name.lower()
     for property_value in actor_json['attachment']:
         if not property_value.get('name'):
             continue
-        if not property_value['name'].lower().startswith(propertyName):
+        if not property_value['name'].lower().startswith(property_name):
             continue
         if not property_value.get('type'):
             continue

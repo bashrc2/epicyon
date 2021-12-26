@@ -170,13 +170,13 @@ def getContentWarningButton(postID: str, translate: {},
         '</div></details>\n'
 
 
-def _setActorPropertyUrl(actor_json: {}, propertyName: str, url: str) -> None:
+def _setActorPropertyUrl(actor_json: {}, property_name: str, url: str) -> None:
     """Sets a url for the given actor property
     """
     if not actor_json.get('attachment'):
         actor_json['attachment'] = []
 
-    propertyNameLower = propertyName.lower()
+    property_nameLower = property_name.lower()
 
     # remove any existing value
     propertyFound = None
@@ -185,7 +185,7 @@ def _setActorPropertyUrl(actor_json: {}, propertyName: str, url: str) -> None:
             continue
         if not property_value.get('type'):
             continue
-        if not property_value['name'].lower().startswith(propertyNameLower):
+        if not property_value['name'].lower().startswith(property_nameLower):
             continue
         propertyFound = property_value
         break
@@ -212,7 +212,7 @@ def _setActorPropertyUrl(actor_json: {}, propertyName: str, url: str) -> None:
             continue
         if not property_value.get('type'):
             continue
-        if not property_value['name'].lower().startswith(propertyNameLower):
+        if not property_value['name'].lower().startswith(property_nameLower):
             continue
         if property_value['type'] != 'PropertyValue':
             continue
@@ -220,7 +220,7 @@ def _setActorPropertyUrl(actor_json: {}, propertyName: str, url: str) -> None:
         return
 
     newAddress = {
-        "name": propertyName,
+        "name": property_name,
         "type": "PropertyValue",
         "value": url
     }
