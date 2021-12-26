@@ -3194,7 +3194,7 @@ def hasObjectStringType(post_json_object: {}, debug: bool) -> bool:
     return False
 
 
-def hasObjectStringObject(post_json_object: {}, debug: bool) -> bool:
+def has_object_string_object(post_json_object: {}, debug: bool) -> bool:
     """Does the given post have an object string field within an object dict?
     """
     if not has_object_dict(post_json_object):

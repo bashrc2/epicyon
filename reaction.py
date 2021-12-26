@@ -12,7 +12,7 @@ import re
 import urllib.parse
 from pprint import pprint
 from utils import hasObjectString
-from utils import hasObjectStringObject
+from utils import has_object_string_object
 from utils import hasObjectStringType
 from utils import removeDomainPort
 from utils import has_object_dict
@@ -418,7 +418,7 @@ def outboxUndoReaction(recentPostsCache: {},
         return
     if not isinstance(message_json['object']['content'], str):
         return
-    if not hasObjectStringObject(message_json, debug):
+    if not has_object_string_object(message_json, debug):
         return
     if debug:
         print('DEBUG: c2s undo reaction request arrived in outbox')

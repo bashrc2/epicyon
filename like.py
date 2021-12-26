@@ -10,7 +10,7 @@ __module_group__ = "ActivityPub"
 import os
 from pprint import pprint
 from utils import hasObjectString
-from utils import hasObjectStringObject
+from utils import has_object_string_object
 from utils import hasObjectStringType
 from utils import removeDomainPort
 from utils import has_object_dict
@@ -390,7 +390,7 @@ def outboxUndoLike(recentPostsCache: {},
         if debug:
             print('DEBUG: not a undo like')
         return
-    if not hasObjectStringObject(message_json, debug):
+    if not has_object_string_object(message_json, debug):
         return
     if debug:
         print('DEBUG: c2s undo like request arrived in outbox')

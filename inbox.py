@@ -24,7 +24,7 @@ from utils import invalidCiphertext
 from utils import removeHtml
 from utils import fileLastModified
 from utils import hasObjectString
-from utils import hasObjectStringObject
+from utils import has_object_string_object
 from utils import getReplyIntervalHours
 from utils import canReplyTo
 from utils import get_user_paths
@@ -813,7 +813,7 @@ def _receiveUndo(session, base_dir: str, http_prefix: str,
         return False
     if not hasObjectStringType(message_json, debug):
         return False
-    if not hasObjectStringObject(message_json, debug):
+    if not has_object_string_object(message_json, debug):
         return False
     if message_json['object']['type'] == 'Follow' or \
        message_json['object']['type'] == 'Join':
@@ -1141,7 +1141,7 @@ def _receiveUndoLike(recentPostsCache: {},
         return False
     if message_json['object']['type'] != 'Like':
         return False
-    if not hasObjectStringObject(message_json, debug):
+    if not has_object_string_object(message_json, debug):
         return False
     if not has_users_path(message_json['actor']):
         if debug:
@@ -1402,7 +1402,7 @@ def _receiveUndoReaction(recentPostsCache: {},
         return False
     if message_json['object']['type'] != 'EmojiReact':
         return False
-    if not hasObjectStringObject(message_json, debug):
+    if not has_object_string_object(message_json, debug):
         return False
     if not message_json['object'].get('content'):
         if debug:
@@ -2044,7 +2044,7 @@ def _receiveUndoAnnounce(recentPostsCache: {},
         return False
     if not has_object_dict(message_json):
         return False
-    if not hasObjectStringObject(message_json, debug):
+    if not has_object_string_object(message_json, debug):
         return False
     if message_json['object']['type'] != 'Announce':
         return False
