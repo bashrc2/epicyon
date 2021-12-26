@@ -5154,13 +5154,13 @@ def testUpdateActor(base_dir: str):
 
     # load alice actor
     print('Loading actor: ' + actorFilename)
-    actorJson = loadJson(actorFilename)
-    assert actorJson
-    if len(actorJson['attachment']) == 0:
-        print("actorJson['attachment'] has no contents")
-    assert len(actorJson['attachment']) > 0
+    actor_json = loadJson(actorFilename)
+    assert actor_json
+    if len(actor_json['attachment']) == 0:
+        print("actor_json['attachment'] has no contents")
+    assert len(actor_json['attachment']) > 0
     propertyFound = False
-    for propertyValue in actorJson['attachment']:
+    for propertyValue in actor_json['attachment']:
         if propertyValue['name'] == 'PGP':
             print('PGP property set within attachment')
             assert pubKey in propertyValue['value']
@@ -5455,7 +5455,7 @@ def _testSpoofGeolocation() -> None:
 
 def _testSkills() -> None:
     print('testSkills')
-    actorJson = {
+    actor_json = {
         'hasOccupation': [
             {
                 '@type': 'Occupation',
@@ -5472,16 +5472,16 @@ def _testSkills() -> None:
         'bakery': 40,
         'gardening': 70
     }
-    setSkillsFromDict(actorJson, skillsDict)
-    assert actorHasSkill(actorJson, 'bakery')
-    assert actorHasSkill(actorJson, 'gardening')
-    assert actorSkillValue(actorJson, 'bakery') == 40
-    assert actorSkillValue(actorJson, 'gardening') == 70
+    setSkillsFromDict(actor_json, skillsDict)
+    assert actorHasSkill(actor_json, 'bakery')
+    assert actorHasSkill(actor_json, 'gardening')
+    assert actorSkillValue(actor_json, 'bakery') == 40
+    assert actorSkillValue(actor_json, 'gardening') == 70
 
 
 def _testRoles() -> None:
     print('testRoles')
-    actorJson = {
+    actor_json = {
         'hasOccupation': [
             {
                 '@type': 'Occupation',
@@ -5495,12 +5495,12 @@ def _testRoles() -> None:
         ]
     }
     testRolesList = ["admin", "moderator"]
-    setRolesFromList(actorJson, testRolesList)
-    assert actorHasRole(actorJson, "admin")
-    assert actorHasRole(actorJson, "moderator")
-    assert not actorHasRole(actorJson, "editor")
-    assert not actorHasRole(actorJson, "counselor")
-    assert not actorHasRole(actorJson, "artist")
+    setRolesFromList(actor_json, testRolesList)
+    assert actorHasRole(actor_json, "admin")
+    assert actorHasRole(actor_json, "moderator")
+    assert not actorHasRole(actor_json, "editor")
+    assert not actorHasRole(actor_json, "counselor")
+    assert not actorHasRole(actor_json, "artist")
 
 
 def _testUserAgentDomain() -> None:
@@ -5586,20 +5586,20 @@ def _testLimitRepetedWords() -> None:
 
 def _testSetActorLanguages():
     print('testSetActorLanguages')
-    actorJson = {
+    actor_json = {
         "attachment": []
     }
-    setActorLanguages(None, actorJson, 'es, fr, en')
-    assert len(actorJson['attachment']) == 1
-    assert actorJson['attachment'][0]['name'] == 'Languages'
-    assert actorJson['attachment'][0]['type'] == 'PropertyValue'
-    assert isinstance(actorJson['attachment'][0]['value'], str)
-    assert ',' in actorJson['attachment'][0]['value']
-    langList = get_actor_languages_list(actorJson)
+    setActorLanguages(None, actor_json, 'es, fr, en')
+    assert len(actor_json['attachment']) == 1
+    assert actor_json['attachment'][0]['name'] == 'Languages'
+    assert actor_json['attachment'][0]['type'] == 'PropertyValue'
+    assert isinstance(actor_json['attachment'][0]['value'], str)
+    assert ',' in actor_json['attachment'][0]['value']
+    langList = get_actor_languages_list(actor_json)
     assert 'en' in langList
     assert 'fr' in langList
     assert 'es' in langList
-    languagesStr = getActorLanguages(actorJson)
+    languagesStr = getActorLanguages(actor_json)
     assert languagesStr == 'en / es / fr'
 
 

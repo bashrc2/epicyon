@@ -266,11 +266,11 @@ def _htmlBlogPostContent(debug: bool, session, authorized: bool,
         blogStr += '<br><center>' + attachmentStr + '</center>'
 
     personUrl = local_actor_url(http_prefix, nickname, domain_full)
-    actorJson = \
+    actor_json = \
         getPersonFromCache(base_dir, personUrl, person_cache, False)
     languagesUnderstood = []
-    if actorJson:
-        languagesUnderstood = get_actor_languages_list(actorJson)
+    if actor_json:
+        languagesUnderstood = get_actor_languages_list(actor_json)
     jsonContent = getContentFromPost(post_json_object, system_language,
                                      languagesUnderstood)
     if jsonContent:
@@ -945,7 +945,7 @@ def pathContainsBlogLink(base_dir: str,
     return locatePost(base_dir, nickname, domain, messageId), nickname
 
 
-def getBlogAddress(actorJson: {}) -> str:
+def getBlogAddress(actor_json: {}) -> str:
     """Returns blog address for the given actor
     """
-    return getActorPropertyUrl(actorJson, 'Blog')
+    return getActorPropertyUrl(actor_json, 'Blog')

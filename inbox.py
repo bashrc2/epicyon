@@ -2608,10 +2608,10 @@ def _groupHandle(base_dir: str, handle: str) -> bool:
     actorFile = base_dir + '/accounts/' + handle + '.json'
     if not os.path.isfile(actorFile):
         return False
-    actorJson = loadJson(actorFile)
-    if not actorJson:
+    actor_json = loadJson(actorFile)
+    if not actor_json:
         return False
-    return actorJson['type'] == 'Group'
+    return actor_json['type'] == 'Group'
 
 
 def _sendToGroupMembers(session, base_dir: str, handle: str, port: int,

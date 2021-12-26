@@ -4885,51 +4885,51 @@ class PubServer(BaseHTTPRequestHandler):
             actorFilename = \
                 acctDir(base_dir, nickname, domain) + '.json'
             if os.path.isfile(actorFilename):
-                actorJson = loadJson(actorFilename)
-                if actorJson:
-                    if not actorJson.get('discoverable'):
+                actor_json = loadJson(actorFilename)
+                if actor_json:
+                    if not actor_json.get('discoverable'):
                         # discoverable in profile directory
                         # which isn't implemented in Epicyon
-                        actorJson['discoverable'] = True
+                        actor_json['discoverable'] = True
                         actorChanged = True
-                    if actorJson.get('capabilityAcquisitionEndpoint'):
-                        del actorJson['capabilityAcquisitionEndpoint']
+                    if actor_json.get('capabilityAcquisitionEndpoint'):
+                        del actor_json['capabilityAcquisitionEndpoint']
                         actorChanged = True
                     # update the avatar/image url file extension
                     uploads = profileMediaTypesUploaded.items()
                     for mType, lastPart in uploads:
                         repStr = '/' + lastPart
                         if mType == 'avatar':
-                            actorUrl = actorJson['icon']['url']
+                            actorUrl = actor_json['icon']['url']
                             lastPartOfUrl = actorUrl.split('/')[-1]
                             srchStr = '/' + lastPartOfUrl
                             actorUrl = actorUrl.replace(srchStr, repStr)
-                            actorJson['icon']['url'] = actorUrl
+                            actor_json['icon']['url'] = actorUrl
                             print('actorUrl: ' + actorUrl)
                             if '.' in actorUrl:
                                 imgExt = actorUrl.split('.')[-1]
                                 if imgExt == 'jpg':
                                     imgExt = 'jpeg'
-                                actorJson['icon']['mediaType'] = \
+                                actor_json['icon']['mediaType'] = \
                                     'image/' + imgExt
                         elif mType == 'image':
                             lastPartOfUrl = \
-                                actorJson['image']['url'].split('/')[-1]
+                                actor_json['image']['url'].split('/')[-1]
                             srchStr = '/' + lastPartOfUrl
-                            actorJson['image']['url'] = \
-                                actorJson['image']['url'].replace(srchStr,
-                                                                  repStr)
-                            if '.' in actorJson['image']['url']:
+                            actor_json['image']['url'] = \
+                                actor_json['image']['url'].replace(srchStr,
+                                                                   repStr)
+                            if '.' in actor_json['image']['url']:
                                 imgExt = \
-                                    actorJson['image']['url'].split('.')[-1]
+                                    actor_json['image']['url'].split('.')[-1]
                                 if imgExt == 'jpg':
                                     imgExt = 'jpeg'
-                                actorJson['image']['mediaType'] = \
+                                actor_json['image']['mediaType'] = \
                                     'image/' + imgExt
 
                     # set skill levels
                     skillCtr = 1
-                    actorSkillsCtr = noOfActorSkills(actorJson)
+                    actorSkillsCtr = noOfActorSkills(actor_json)
                     while skillCtr < 10:
                         skillName = \
                             fields.get('skillName' + str(skillCtr))
@@ -4944,20 +4944,20 @@ class PubServer(BaseHTTPRequestHandler):
                         if not skillValue:
                             skillCtr += 1
                             continue
-                        if not actorHasSkill(actorJson, skillName):
+                        if not actorHasSkill(actor_json, skillName):
                             actorChanged = True
                         else:
-                            if actorSkillValue(actorJson, skillName) != \
+                            if actorSkillValue(actor_json, skillName) != \
                                int(skillValue):
                                 actorChanged = True
-                        setActorSkillLevel(actorJson,
+                        setActorSkillLevel(actor_json,
                                            skillName, int(skillValue))
                         skillsStr = self.server.translate['Skills']
                         skillsStr = skillsStr.lower()
                         setHashtagCategory(base_dir, skillName,
                                            skillsStr, False)
                         skillCtr += 1
-                    if noOfActorSkills(actorJson) != \
+                    if noOfActorSkills(actor_json) != \
                        actorSkillsCtr:
                         actorChanged = True
 
@@ -4992,15 +4992,15 @@ class PubServer(BaseHTTPRequestHandler):
 
                     # change displayed name
                     if fields.get('displayNickname'):
-                        if fields['displayNickname'] != actorJson['name']:
+                        if fields['displayNickname'] != actor_json['name']:
                             displayName = \
                                 removeHtml(fields['displayNickname'])
                             if not isFiltered(base_dir,
                                               nickname, domain,
                                               displayName):
-                                actorJson['name'] = displayName
+                                actor_json['name'] = displayName
                             else:
-                                actorJson['name'] = nickname
+                                actor_json['name'] = nickname
                                 if checkNameAndBio:
                                     redirectPath = 'previewAvatar'
                             actorChanged = True
@@ -5274,220 +5274,220 @@ class PubServer(BaseHTTPRequestHandler):
                                                'instanceDescription', '')
 
                     # change email address
-                    currentEmailAddress = getEmailAddress(actorJson)
+                    currentEmailAddress = getEmailAddress(actor_json)
                     if fields.get('email'):
                         if fields['email'] != currentEmailAddress:
-                            setEmailAddress(actorJson, fields['email'])
+                            setEmailAddress(actor_json, fields['email'])
                             actorChanged = True
                     else:
                         if currentEmailAddress:
-                            setEmailAddress(actorJson, '')
+                            setEmailAddress(actor_json, '')
                             actorChanged = True
 
                     # change xmpp address
-                    currentXmppAddress = getXmppAddress(actorJson)
+                    currentXmppAddress = getXmppAddress(actor_json)
                     if fields.get('xmppAddress'):
                         if fields['xmppAddress'] != currentXmppAddress:
-                            setXmppAddress(actorJson,
+                            setXmppAddress(actor_json,
                                            fields['xmppAddress'])
                             actorChanged = True
                     else:
                         if currentXmppAddress:
-                            setXmppAddress(actorJson, '')
+                            setXmppAddress(actor_json, '')
                             actorChanged = True
 
                     # change matrix address
-                    currentMatrixAddress = getMatrixAddress(actorJson)
+                    currentMatrixAddress = getMatrixAddress(actor_json)
                     if fields.get('matrixAddress'):
                         if fields['matrixAddress'] != currentMatrixAddress:
-                            setMatrixAddress(actorJson,
+                            setMatrixAddress(actor_json,
                                              fields['matrixAddress'])
                             actorChanged = True
                     else:
                         if currentMatrixAddress:
-                            setMatrixAddress(actorJson, '')
+                            setMatrixAddress(actor_json, '')
                             actorChanged = True
 
                     # change SSB address
-                    currentSSBAddress = getSSBAddress(actorJson)
+                    currentSSBAddress = getSSBAddress(actor_json)
                     if fields.get('ssbAddress'):
                         if fields['ssbAddress'] != currentSSBAddress:
-                            setSSBAddress(actorJson,
+                            setSSBAddress(actor_json,
                                           fields['ssbAddress'])
                             actorChanged = True
                     else:
                         if currentSSBAddress:
-                            setSSBAddress(actorJson, '')
+                            setSSBAddress(actor_json, '')
                             actorChanged = True
 
                     # change blog address
-                    currentBlogAddress = getBlogAddress(actorJson)
+                    currentBlogAddress = getBlogAddress(actor_json)
                     if fields.get('blogAddress'):
                         if fields['blogAddress'] != currentBlogAddress:
-                            setBlogAddress(actorJson,
+                            setBlogAddress(actor_json,
                                            fields['blogAddress'])
                             actorChanged = True
                     else:
                         if currentBlogAddress:
-                            setBlogAddress(actorJson, '')
+                            setBlogAddress(actor_json, '')
                             actorChanged = True
 
                     # change Languages address
-                    currentShowLanguages = getActorLanguages(actorJson)
+                    currentShowLanguages = getActorLanguages(actor_json)
                     if fields.get('showLanguages'):
                         if fields['showLanguages'] != currentShowLanguages:
-                            setActorLanguages(base_dir, actorJson,
+                            setActorLanguages(base_dir, actor_json,
                                               fields['showLanguages'])
                             actorChanged = True
                     else:
                         if currentShowLanguages:
-                            setActorLanguages(base_dir, actorJson, '')
+                            setActorLanguages(base_dir, actor_json, '')
                             actorChanged = True
 
                     # change tox address
-                    currentToxAddress = getToxAddress(actorJson)
+                    currentToxAddress = getToxAddress(actor_json)
                     if fields.get('toxAddress'):
                         if fields['toxAddress'] != currentToxAddress:
-                            setToxAddress(actorJson,
+                            setToxAddress(actor_json,
                                           fields['toxAddress'])
                             actorChanged = True
                     else:
                         if currentToxAddress:
-                            setToxAddress(actorJson, '')
+                            setToxAddress(actor_json, '')
                             actorChanged = True
 
                     # change briar address
-                    currentBriarAddress = getBriarAddress(actorJson)
+                    currentBriarAddress = getBriarAddress(actor_json)
                     if fields.get('briarAddress'):
                         if fields['briarAddress'] != currentBriarAddress:
-                            setBriarAddress(actorJson,
+                            setBriarAddress(actor_json,
                                             fields['briarAddress'])
                             actorChanged = True
                     else:
                         if currentBriarAddress:
-                            setBriarAddress(actorJson, '')
+                            setBriarAddress(actor_json, '')
                             actorChanged = True
 
                     # change jami address
-                    currentJamiAddress = getJamiAddress(actorJson)
+                    currentJamiAddress = getJamiAddress(actor_json)
                     if fields.get('jamiAddress'):
                         if fields['jamiAddress'] != currentJamiAddress:
-                            setJamiAddress(actorJson,
+                            setJamiAddress(actor_json,
                                            fields['jamiAddress'])
                             actorChanged = True
                     else:
                         if currentJamiAddress:
-                            setJamiAddress(actorJson, '')
+                            setJamiAddress(actor_json, '')
                             actorChanged = True
 
                     # change cwtch address
-                    currentCwtchAddress = getCwtchAddress(actorJson)
+                    currentCwtchAddress = getCwtchAddress(actor_json)
                     if fields.get('cwtchAddress'):
                         if fields['cwtchAddress'] != currentCwtchAddress:
-                            setCwtchAddress(actorJson,
+                            setCwtchAddress(actor_json,
                                             fields['cwtchAddress'])
                             actorChanged = True
                     else:
                         if currentCwtchAddress:
-                            setCwtchAddress(actorJson, '')
+                            setCwtchAddress(actor_json, '')
                             actorChanged = True
 
                     # change Enigma public key
-                    currentEnigmaPubKey = getEnigmaPubKey(actorJson)
+                    currentEnigmaPubKey = getEnigmaPubKey(actor_json)
                     if fields.get('enigmapubkey'):
                         if fields['enigmapubkey'] != currentEnigmaPubKey:
-                            setEnigmaPubKey(actorJson,
+                            setEnigmaPubKey(actor_json,
                                             fields['enigmapubkey'])
                             actorChanged = True
                     else:
                         if currentEnigmaPubKey:
-                            setEnigmaPubKey(actorJson, '')
+                            setEnigmaPubKey(actor_json, '')
                             actorChanged = True
 
                     # change PGP public key
-                    currentPGPpubKey = getPGPpubKey(actorJson)
+                    currentPGPpubKey = getPGPpubKey(actor_json)
                     if fields.get('pgp'):
                         if fields['pgp'] != currentPGPpubKey:
-                            setPGPpubKey(actorJson,
+                            setPGPpubKey(actor_json,
                                          fields['pgp'])
                             actorChanged = True
                     else:
                         if currentPGPpubKey:
-                            setPGPpubKey(actorJson, '')
+                            setPGPpubKey(actor_json, '')
                             actorChanged = True
 
                     # change PGP fingerprint
-                    currentPGPfingerprint = getPGPfingerprint(actorJson)
+                    currentPGPfingerprint = getPGPfingerprint(actor_json)
                     if fields.get('openpgp'):
                         if fields['openpgp'] != currentPGPfingerprint:
-                            setPGPfingerprint(actorJson,
+                            setPGPfingerprint(actor_json,
                                               fields['openpgp'])
                             actorChanged = True
                     else:
                         if currentPGPfingerprint:
-                            setPGPfingerprint(actorJson, '')
+                            setPGPfingerprint(actor_json, '')
                             actorChanged = True
 
                     # change donation link
-                    currentDonateUrl = getDonationUrl(actorJson)
+                    currentDonateUrl = getDonationUrl(actor_json)
                     if fields.get('donateUrl'):
                         if fields['donateUrl'] != currentDonateUrl:
-                            setDonationUrl(actorJson,
+                            setDonationUrl(actor_json,
                                            fields['donateUrl'])
                             actorChanged = True
                     else:
                         if currentDonateUrl:
-                            setDonationUrl(actorJson, '')
+                            setDonationUrl(actor_json, '')
                             actorChanged = True
 
                     # change website
                     currentWebsite = \
-                        getWebsite(actorJson, self.server.translate)
+                        getWebsite(actor_json, self.server.translate)
                     if fields.get('websiteUrl'):
                         if fields['websiteUrl'] != currentWebsite:
-                            setWebsite(actorJson,
+                            setWebsite(actor_json,
                                        fields['websiteUrl'],
                                        self.server.translate)
                             actorChanged = True
                     else:
                         if currentWebsite:
-                            setWebsite(actorJson, '', self.server.translate)
+                            setWebsite(actor_json, '', self.server.translate)
                             actorChanged = True
 
                     # account moved to new address
                     movedTo = ''
-                    if actorJson.get('movedTo'):
-                        movedTo = actorJson['movedTo']
+                    if actor_json.get('movedTo'):
+                        movedTo = actor_json['movedTo']
                     if fields.get('movedTo'):
                         if fields['movedTo'] != movedTo and \
                            '://' in fields['movedTo'] and \
                            '.' in fields['movedTo']:
-                            actorJson['movedTo'] = movedTo
+                            actor_json['movedTo'] = movedTo
                             actorChanged = True
                     else:
                         if movedTo:
-                            del actorJson['movedTo']
+                            del actor_json['movedTo']
                             actorChanged = True
 
                     # Other accounts (alsoKnownAs)
-                    occupationName = getOccupationName(actorJson)
+                    occupationName = getOccupationName(actor_json)
                     if fields.get('occupationName'):
                         fields['occupationName'] = \
                             removeHtml(fields['occupationName'])
                         if occupationName != \
                            fields['occupationName']:
-                            setOccupationName(actorJson,
+                            setOccupationName(actor_json,
                                               fields['occupationName'])
                             actorChanged = True
                     else:
                         if occupationName:
-                            setOccupationName(actorJson, '')
+                            setOccupationName(actor_json, '')
                             actorChanged = True
 
                     # Other accounts (alsoKnownAs)
                     alsoKnownAs = []
-                    if actorJson.get('alsoKnownAs'):
-                        alsoKnownAs = actorJson['alsoKnownAs']
+                    if actor_json.get('alsoKnownAs'):
+                        alsoKnownAs = actor_json['alsoKnownAs']
                     if fields.get('alsoKnownAs'):
                         alsoKnownAsStr = ''
                         alsoKnownAsCtr = 0
@@ -5510,30 +5510,30 @@ class PubServer(BaseHTTPRequestHandler):
                                 if '://' in altActor and '.' in altActor:
                                     if altActor not in alsoKnownAs:
                                         alsoKnownAs.append(altActor)
-                            actorJson['alsoKnownAs'] = alsoKnownAs
+                            actor_json['alsoKnownAs'] = alsoKnownAs
                             actorChanged = True
                     else:
                         if alsoKnownAs:
-                            del actorJson['alsoKnownAs']
+                            del actor_json['alsoKnownAs']
                             actorChanged = True
 
                     # change user bio
                     if fields.get('bio'):
-                        if fields['bio'] != actorJson['summary']:
+                        if fields['bio'] != actor_json['summary']:
                             bioStr = removeHtml(fields['bio'])
                             if not isFiltered(base_dir,
                                               nickname, domain, bioStr):
                                 actorTags = {}
-                                actorJson['summary'] = \
+                                actor_json['summary'] = \
                                     addHtmlTags(base_dir,
                                                 http_prefix,
                                                 nickname,
                                                 domain_full,
                                                 bioStr, [], actorTags)
                                 if actorTags:
-                                    actorJson['tag'] = []
+                                    actor_json['tag'] = []
                                     for tagName, tag in actorTags.items():
-                                        actorJson['tag'].append(tag)
+                                        actor_json['tag'].append(tag)
                                 actorChanged = True
                             else:
                                 if checkNameAndBio:
@@ -5905,7 +5905,7 @@ class PubServer(BaseHTTPRequestHandler):
                     # approve followers
                     if onFinalWelcomeScreen:
                         # Default setting created via the welcome screen
-                        actorJson['manuallyApprovesFollowers'] = True
+                        actor_json['manuallyApprovesFollowers'] = True
                         actorChanged = True
                     else:
                         approveFollowers = False
@@ -5913,8 +5913,8 @@ class PubServer(BaseHTTPRequestHandler):
                             if fields['approveFollowers'] == 'on':
                                 approveFollowers = True
                         if approveFollowers != \
-                           actorJson['manuallyApprovesFollowers']:
-                            actorJson['manuallyApprovesFollowers'] = \
+                           actor_json['manuallyApprovesFollowers']:
+                            actor_json['manuallyApprovesFollowers'] = \
                                 approveFollowers
                             actorChanged = True
 
@@ -6174,23 +6174,23 @@ class PubServer(BaseHTTPRequestHandler):
                     # this account is a bot
                     if fields.get('isBot'):
                         if fields['isBot'] == 'on':
-                            if actorJson['type'] != 'Service':
-                                actorJson['type'] = 'Service'
+                            if actor_json['type'] != 'Service':
+                                actor_json['type'] = 'Service'
                                 actorChanged = True
                     else:
                         # this account is a group
                         if fields.get('isGroup'):
                             if fields['isGroup'] == 'on':
-                                if actorJson['type'] != 'Group':
+                                if actor_json['type'] != 'Group':
                                     # only allow admin to create groups
                                     if path.startswith('/users/' +
                                                        adminNickname + '/'):
-                                        actorJson['type'] = 'Group'
+                                        actor_json['type'] = 'Group'
                                         actorChanged = True
                         else:
                             # this account is a person (default)
-                            if actorJson['type'] != 'Person':
-                                actorJson['type'] = 'Person'
+                            if actor_json['type'] != 'Person':
+                                actor_json['type'] = 'Person'
                                 actorChanged = True
 
                     # grayscale theme
@@ -6478,23 +6478,23 @@ class PubServer(BaseHTTPRequestHandler):
                     # save actor json file within accounts
                     if actorChanged:
                         # update the context for the actor
-                        actorJson['@context'] = [
+                        actor_json['@context'] = [
                             'https://www.w3.org/ns/activitystreams',
                             'https://w3id.org/security/v1',
                             getDefaultPersonContext()
                         ]
-                        if actorJson.get('nomadicLocations'):
-                            del actorJson['nomadicLocations']
-                        if not actorJson.get('featured'):
-                            actorJson['featured'] = \
-                                actorJson['id'] + '/collections/featured'
-                        if not actorJson.get('featuredTags'):
-                            actorJson['featuredTags'] = \
-                                actorJson['id'] + '/collections/tags'
-                        randomizeActorImages(actorJson)
-                        addActorUpdateTimestamp(actorJson)
+                        if actor_json.get('nomadicLocations'):
+                            del actor_json['nomadicLocations']
+                        if not actor_json.get('featured'):
+                            actor_json['featured'] = \
+                                actor_json['id'] + '/collections/featured'
+                        if not actor_json.get('featuredTags'):
+                            actor_json['featuredTags'] = \
+                                actor_json['id'] + '/collections/tags'
+                        randomizeActorImages(actor_json)
+                        addActorUpdateTimestamp(actor_json)
                         # save the actor
-                        saveJson(actorJson, actorFilename)
+                        saveJson(actor_json, actorFilename)
                         webfingerUpdate(base_dir,
                                         nickname, domain,
                                         onion_domain,
@@ -6502,20 +6502,20 @@ class PubServer(BaseHTTPRequestHandler):
                         # also copy to the actors cache and
                         # person_cache in memory
                         storePersonInCache(base_dir,
-                                           actorJson['id'], actorJson,
+                                           actor_json['id'], actor_json,
                                            self.server.person_cache,
                                            True)
                         # clear any cached images for this actor
-                        idStr = actorJson['id'].replace('/', '-')
+                        idStr = actor_json['id'].replace('/', '-')
                         removeAvatarFromCache(base_dir, idStr)
                         # save the actor to the cache
                         actorCacheFilename = \
                             base_dir + '/cache/actors/' + \
-                            actorJson['id'].replace('/', '#') + '.json'
-                        saveJson(actorJson, actorCacheFilename)
+                            actor_json['id'].replace('/', '#') + '.json'
+                        saveJson(actor_json, actorCacheFilename)
                         # send profile update to followers
                         pubNumber, pubDate = getStatusNumber()
-                        updateActorJson = getActorUpdateJson(actorJson)
+                        updateActorJson = getActorUpdateJson(actor_json)
                         print('Sending actor update: ' + str(updateActorJson))
                         self._postToOutbox(updateActorJson,
                                            self.server.project_version,
@@ -7104,34 +7104,35 @@ class PubServer(BaseHTTPRequestHandler):
             lockedAccount = False
             alsoKnownAs = None
             movedTo = ''
-            actorJson = getPersonFromCache(base_dir,
-                                           optionsActor,
-                                           self.server.person_cache,
-                                           True)
-            if actorJson:
-                if actorJson.get('movedTo'):
-                    movedTo = actorJson['movedTo']
+            actor_json = \
+                getPersonFromCache(base_dir,
+                                   optionsActor,
+                                   self.server.person_cache,
+                                   True)
+            if actor_json:
+                if actor_json.get('movedTo'):
+                    movedTo = actor_json['movedTo']
                     if '"' in movedTo:
                         movedTo = movedTo.split('"')[1]
-                if actorJson['type'] == 'Group':
+                if actor_json['type'] == 'Group':
                     isGroup = True
-                lockedAccount = getLockedAccount(actorJson)
-                donateUrl = getDonationUrl(actorJson)
-                websiteUrl = getWebsite(actorJson, self.server.translate)
-                xmppAddress = getXmppAddress(actorJson)
-                matrixAddress = getMatrixAddress(actorJson)
-                ssbAddress = getSSBAddress(actorJson)
-                blogAddress = getBlogAddress(actorJson)
-                toxAddress = getToxAddress(actorJson)
-                briarAddress = getBriarAddress(actorJson)
-                jamiAddress = getJamiAddress(actorJson)
-                cwtchAddress = getCwtchAddress(actorJson)
-                emailAddress = getEmailAddress(actorJson)
-                EnigmaPubKey = getEnigmaPubKey(actorJson)
-                PGPpubKey = getPGPpubKey(actorJson)
-                PGPfingerprint = getPGPfingerprint(actorJson)
-                if actorJson.get('alsoKnownAs'):
-                    alsoKnownAs = actorJson['alsoKnownAs']
+                lockedAccount = getLockedAccount(actor_json)
+                donateUrl = getDonationUrl(actor_json)
+                websiteUrl = getWebsite(actor_json, self.server.translate)
+                xmppAddress = getXmppAddress(actor_json)
+                matrixAddress = getMatrixAddress(actor_json)
+                ssbAddress = getSSBAddress(actor_json)
+                blogAddress = getBlogAddress(actor_json)
+                toxAddress = getToxAddress(actor_json)
+                briarAddress = getBriarAddress(actor_json)
+                jamiAddress = getJamiAddress(actor_json)
+                cwtchAddress = getCwtchAddress(actor_json)
+                emailAddress = getEmailAddress(actor_json)
+                EnigmaPubKey = getEnigmaPubKey(actor_json)
+                PGPpubKey = getPGPpubKey(actor_json)
+                PGPfingerprint = getPGPfingerprint(actor_json)
+                if actor_json.get('alsoKnownAs'):
+                    alsoKnownAs = actor_json['alsoKnownAs']
 
             if self.server.session:
                 checkForChangedActor(self.server.session,
@@ -9661,11 +9662,11 @@ class PubServer(BaseHTTPRequestHandler):
         if not os.path.isfile(actorFilename):
             return False
 
-        actorJson = loadJson(actorFilename)
-        if not actorJson:
+        actor_json = loadJson(actorFilename)
+        if not actor_json:
             return False
 
-        if actorJson.get('hasOccupation'):
+        if actor_json.get('hasOccupation'):
             if self._requestHTTP():
                 getPerson = \
                     personLookup(domain, path.replace('/roles', ''),
@@ -9688,7 +9689,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if self.server.keyShortcuts.get(nickname):
                         accessKeys = self.server.keyShortcuts[nickname]
 
-                    rolesList = getActorRolesList(actorJson)
+                    rolesList = getActorRolesList(actor_json)
                     city = \
                         getSpoofedCity(self.server.city,
                                        base_dir, nickname, domain)
@@ -9735,7 +9736,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.debug)
             else:
                 if self._secure_mode():
-                    rolesList = getActorRolesList(actorJson)
+                    rolesList = getActorRolesList(actor_json)
                     msg = json.dumps(rolesList,
                                      ensure_ascii=False)
                     msg = msg.encode('utf-8')
@@ -9767,9 +9768,9 @@ class PubServer(BaseHTTPRequestHandler):
             nickname = postSections[0]
             actorFilename = acctDir(base_dir, nickname, domain) + '.json'
             if os.path.isfile(actorFilename):
-                actorJson = loadJson(actorFilename)
-                if actorJson:
-                    if noOfActorSkills(actorJson) > 0:
+                actor_json = loadJson(actorFilename)
+                if actor_json:
+                    if noOfActorSkills(actor_json) > 0:
                         if self._requestHTTP():
                             getPerson = \
                                 personLookup(domain,
@@ -9797,7 +9798,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     accessKeys = \
                                         self.server.keyShortcuts[nickname]
                                 actorSkillsList = \
-                                    getOccupationSkills(actorJson)
+                                    getOccupationSkills(actor_json)
                                 skills = getSkillsFromList(actorSkillsList)
                                 city = getSpoofedCity(self.server.city,
                                                       base_dir,
@@ -9854,7 +9855,7 @@ class PubServer(BaseHTTPRequestHandler):
                         else:
                             if self._secure_mode():
                                 actorSkillsList = \
-                                    getOccupationSkills(actorJson)
+                                    getOccupationSkills(actor_json)
                                 skills = getSkillsFromList(actorSkillsList)
                                 msg = json.dumps(skills,
                                                  ensure_ascii=False)
@@ -12188,8 +12189,8 @@ class PubServer(BaseHTTPRequestHandler):
         """Shows the profile for a person
         """
         # look up a person
-        actorJson = personLookup(domain, path, base_dir)
-        if not actorJson:
+        actor_json = personLookup(domain, path, base_dir)
+        if not actor_json:
             return False
         if self._requestHTTP():
             if not self._establishSession("showPersonProfile"):
@@ -12221,7 +12222,7 @@ class PubServer(BaseHTTPRequestHandler):
                             base_dir,
                             http_prefix,
                             authorized,
-                            actorJson, 'posts',
+                            actor_json, 'posts',
                             self.server.session,
                             self.server.cached_webfingers,
                             self.server.person_cache,
@@ -12254,7 +12255,7 @@ class PubServer(BaseHTTPRequestHandler):
         else:
             if self._secure_mode():
                 acceptStr = self.headers['Accept']
-                msgStr = json.dumps(actorJson, ensure_ascii=False)
+                msgStr = json.dumps(actor_json, ensure_ascii=False)
                 msg = msgStr.encode('utf-8')
                 msglen = len(msg)
                 if 'application/ld+json' in acceptStr:
@@ -12290,8 +12291,8 @@ class PubServer(BaseHTTPRequestHandler):
         if self._requestHTTP():
             self._404()
             return False
-        actorJson = personLookup(domain, path, base_dir)
-        if not actorJson:
+        actor_json = personLookup(domain, path, base_dir)
+        if not actor_json:
             print('ERROR: no instance actor found')
             self._404()
             return False
@@ -12308,25 +12309,25 @@ class PubServer(BaseHTTPRequestHandler):
                         'featuredTags', 'discoverable', 'published',
                         'devices')
         for r in removeFields:
-            if r in actorJson:
-                del actorJson[r]
-        actorJson['endpoints'] = {}
+            if r in actor_json:
+                del actor_json[r]
+        actor_json['endpoints'] = {}
         if enable_shared_inbox:
-            actorJson['endpoints'] = {
+            actor_json['endpoints'] = {
                 'sharedInbox': actorDomainUrl + '/inbox'
             }
-        actorJson['name'] = 'ACTOR'
-        actorJson['preferredUsername'] = domain_full
-        actorJson['id'] = actorDomainUrl + '/actor'
-        actorJson['type'] = 'Application'
-        actorJson['summary'] = 'Instance Actor'
-        actorJson['publicKey']['id'] = actorDomainUrl + '/actor#main-key'
-        actorJson['publicKey']['owner'] = actorDomainUrl + '/actor'
-        actorJson['url'] = actorDomainUrl + '/actor'
-        actorJson['inbox'] = actorUrl + '/inbox'
-        actorJson['followers'] = actorUrl + '/followers'
-        actorJson['following'] = actorUrl + '/following'
-        msgStr = json.dumps(actorJson, ensure_ascii=False)
+        actor_json['name'] = 'ACTOR'
+        actor_json['preferredUsername'] = domain_full
+        actor_json['id'] = actorDomainUrl + '/actor'
+        actor_json['type'] = 'Application'
+        actor_json['summary'] = 'Instance Actor'
+        actor_json['publicKey']['id'] = actorDomainUrl + '/actor#main-key'
+        actor_json['publicKey']['owner'] = actorDomainUrl + '/actor'
+        actor_json['url'] = actorDomainUrl + '/actor'
+        actor_json['inbox'] = actorUrl + '/inbox'
+        actor_json['followers'] = actorUrl + '/followers'
+        actor_json['following'] = actorUrl + '/following'
+        msgStr = json.dumps(actor_json, ensure_ascii=False)
         if onion_domain and callingDomain.endswith('.onion'):
             msgStr = msgStr.replace(http_prefix + '://' + domain_full,
                                     'http://' + onion_domain)

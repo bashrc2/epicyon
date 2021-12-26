@@ -100,15 +100,15 @@ def htmlWelcomeProfile(base_dir: str, nickname: str, domain: str,
     profileForm += '</center>\n'
 
     actorFilename = acctDir(base_dir, nickname, domain) + '.json'
-    actorJson = loadJson(actorFilename)
-    displayNickname = actorJson['name']
+    actor_json = loadJson(actorFilename)
+    displayNickname = actor_json['name']
     profileForm += '<div class="container">\n'
     profileForm += \
         editTextField(translate['Nickname'], 'displayNickname',
                       displayNickname)
 
     bioStr = \
-        actorJson['summary'].replace('<p>', '').replace('</p>', '')
+        actor_json['summary'].replace('<p>', '').replace('</p>', '')
     if not bioStr:
         bioStr = translate['Your bio']
     profileForm += '  <label class="labels">' + \

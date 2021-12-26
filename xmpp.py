@@ -8,12 +8,12 @@ __status__ = "Production"
 __module_group__ = "Profile Metadata"
 
 
-def getXmppAddress(actorJson: {}) -> str:
+def getXmppAddress(actor_json: {}) -> str:
     """Returns xmpp address for the given actor
     """
-    if not actorJson.get('attachment'):
+    if not actor_json.get('attachment'):
         return ''
-    for propertyValue in actorJson['attachment']:
+    for propertyValue in actor_json['attachment']:
         if not propertyValue.get('name'):
             continue
         nameLower = propertyValue['name'].lower()
@@ -34,7 +34,7 @@ def getXmppAddress(actorJson: {}) -> str:
     return ''
 
 
-def setXmppAddress(actorJson: {}, xmppAddress: str) -> None:
+def setXmppAddress(actor_json: {}, xmppAddress: str) -> None:
     """Sets an xmpp address for the given actor
     """
     notXmppAddress = False
@@ -47,12 +47,12 @@ def setXmppAddress(actorJson: {}, xmppAddress: str) -> None:
     if '<' in xmppAddress:
         notXmppAddress = True
 
-    if not actorJson.get('attachment'):
-        actorJson['attachment'] = []
+    if not actor_json.get('attachment'):
+        actor_json['attachment'] = []
 
     # remove any existing value
     propertyFound = None
-    for propertyValue in actorJson['attachment']:
+    for propertyValue in actor_json['attachment']:
         if not propertyValue.get('name'):
             continue
         if not propertyValue.get('type'):
@@ -63,11 +63,11 @@ def setXmppAddress(actorJson: {}, xmppAddress: str) -> None:
         propertyFound = propertyValue
         break
     if propertyFound:
-        actorJson['attachment'].remove(propertyFound)
+        actor_json['attachment'].remove(propertyFound)
     if notXmppAddress:
         return
 
-    for propertyValue in actorJson['attachment']:
+    for propertyValue in actor_json['attachment']:
         if not propertyValue.get('name'):
             continue
         if not propertyValue.get('type'):
@@ -86,4 +86,4 @@ def setXmppAddress(actorJson: {}, xmppAddress: str) -> None:
         "type": "PropertyValue",
         "value": xmppAddress
     }
-    actorJson['attachment'].append(newXmppAddress)
+    actor_json['attachment'].append(newXmppAddress)

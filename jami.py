@@ -8,12 +8,12 @@ __status__ = "Production"
 __module_group__ = "Profile Metadata"
 
 
-def getJamiAddress(actorJson: {}) -> str:
+def getJamiAddress(actor_json: {}) -> str:
     """Returns jami address for the given actor
     """
-    if not actorJson.get('attachment'):
+    if not actor_json.get('attachment'):
         return ''
-    for propertyValue in actorJson['attachment']:
+    for propertyValue in actor_json['attachment']:
         if not propertyValue.get('name'):
             continue
         if not propertyValue['name'].lower().startswith('jami'):
@@ -39,7 +39,7 @@ def getJamiAddress(actorJson: {}) -> str:
     return ''
 
 
-def setJamiAddress(actorJson: {}, jamiAddress: str) -> None:
+def setJamiAddress(actor_json: {}, jamiAddress: str) -> None:
     """Sets an jami address for the given actor
     """
     notJamiAddress = False
@@ -57,12 +57,12 @@ def setJamiAddress(actorJson: {}, jamiAddress: str) -> None:
     if '<' in jamiAddress:
         notJamiAddress = True
 
-    if not actorJson.get('attachment'):
-        actorJson['attachment'] = []
+    if not actor_json.get('attachment'):
+        actor_json['attachment'] = []
 
     # remove any existing value
     propertyFound = None
-    for propertyValue in actorJson['attachment']:
+    for propertyValue in actor_json['attachment']:
         if not propertyValue.get('name'):
             continue
         if not propertyValue.get('type'):
@@ -72,11 +72,11 @@ def setJamiAddress(actorJson: {}, jamiAddress: str) -> None:
         propertyFound = propertyValue
         break
     if propertyFound:
-        actorJson['attachment'].remove(propertyFound)
+        actor_json['attachment'].remove(propertyFound)
     if notJamiAddress:
         return
 
-    for propertyValue in actorJson['attachment']:
+    for propertyValue in actor_json['attachment']:
         if not propertyValue.get('name'):
             continue
         if not propertyValue.get('type'):
@@ -93,4 +93,4 @@ def setJamiAddress(actorJson: {}, jamiAddress: str) -> None:
         "type": "PropertyValue",
         "value": jamiAddress
     }
-    actorJson['attachment'].append(newJamiAddress)
+    actor_json['attachment'].append(newJamiAddress)

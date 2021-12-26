@@ -1985,7 +1985,7 @@ def _getSupportedLanguagesSorted(base_dir: str) -> str:
 
 def _htmlEditProfileMain(base_dir: str, displayNickname: str, bioStr: str,
                          movedTo: str, donateUrl: str, websiteUrl: str,
-                         blogAddress: str, actorJson: {},
+                         blogAddress: str, actor_json: {},
                          translate: {}) -> str:
     """main info on edit profile screen
     """
@@ -2007,16 +2007,16 @@ def _htmlEditProfileMain(base_dir: str, displayNickname: str, bioStr: str,
         '            accept="' + imageFormats + '">\n'
 
     occupationName = ''
-    if actorJson.get('hasOccupation'):
-        occupationName = getOccupationName(actorJson)
+    if actor_json.get('hasOccupation'):
+        occupationName = getOccupationName(actor_json)
 
     editProfileForm += \
         editTextField(translate['Occupation'], 'occupationName',
                       occupationName)
 
     alsoKnownAsStr = ''
-    if actorJson.get('alsoKnownAs'):
-        alsoKnownAs = actorJson['alsoKnownAs']
+    if actor_json.get('alsoKnownAs'):
+        alsoKnownAs = actor_json['alsoKnownAs']
         ctr = 0
         for altActor in alsoKnownAs:
             if ctr > 0:
@@ -2044,7 +2044,7 @@ def _htmlEditProfileMain(base_dir: str, displayNickname: str, bioStr: str,
         editTextField('Blog', 'blogAddress', blogAddress, 'https://...')
 
     languagesListStr = _getSupportedLanguagesSorted(base_dir)
-    showLanguages = getActorLanguages(actorJson)
+    showLanguages = getActorLanguages(actor_json)
     editProfileForm += \
         editTextField(translate['Languages'], 'showLanguages',
                       showLanguages, languagesListStr)
@@ -2126,42 +2126,42 @@ def htmlEditProfile(cssCache: {}, translate: {}, base_dir: str, path: str,
     ssbAddress = blogAddress = toxAddress = jamiAddress = ''
     cwtchAddress = briarAddress = manuallyApprovesFollowers = ''
 
-    actorJson = loadJson(actorFilename)
-    if actorJson:
-        if actorJson.get('movedTo'):
-            movedTo = actorJson['movedTo']
-        donateUrl = getDonationUrl(actorJson)
-        websiteUrl = getWebsite(actorJson, translate)
-        xmppAddress = getXmppAddress(actorJson)
-        matrixAddress = getMatrixAddress(actorJson)
-        ssbAddress = getSSBAddress(actorJson)
-        blogAddress = getBlogAddress(actorJson)
-        toxAddress = getToxAddress(actorJson)
-        briarAddress = getBriarAddress(actorJson)
-        jamiAddress = getJamiAddress(actorJson)
-        cwtchAddress = getCwtchAddress(actorJson)
-        emailAddress = getEmailAddress(actorJson)
-        EnigmaPubKey = getEnigmaPubKey(actorJson)
-        PGPpubKey = getPGPpubKey(actorJson)
-        PGPfingerprint = getPGPfingerprint(actorJson)
-        if actorJson.get('name'):
-            if not isFiltered(base_dir, nickname, domain, actorJson['name']):
-                displayNickname = actorJson['name']
-        if actorJson.get('summary'):
+    actor_json = loadJson(actorFilename)
+    if actor_json:
+        if actor_json.get('movedTo'):
+            movedTo = actor_json['movedTo']
+        donateUrl = getDonationUrl(actor_json)
+        websiteUrl = getWebsite(actor_json, translate)
+        xmppAddress = getXmppAddress(actor_json)
+        matrixAddress = getMatrixAddress(actor_json)
+        ssbAddress = getSSBAddress(actor_json)
+        blogAddress = getBlogAddress(actor_json)
+        toxAddress = getToxAddress(actor_json)
+        briarAddress = getBriarAddress(actor_json)
+        jamiAddress = getJamiAddress(actor_json)
+        cwtchAddress = getCwtchAddress(actor_json)
+        emailAddress = getEmailAddress(actor_json)
+        EnigmaPubKey = getEnigmaPubKey(actor_json)
+        PGPpubKey = getPGPpubKey(actor_json)
+        PGPfingerprint = getPGPfingerprint(actor_json)
+        if actor_json.get('name'):
+            if not isFiltered(base_dir, nickname, domain, actor_json['name']):
+                displayNickname = actor_json['name']
+        if actor_json.get('summary'):
             bioStr = \
-                actorJson['summary'].replace('<p>', '').replace('</p>', '')
+                actor_json['summary'].replace('<p>', '').replace('</p>', '')
             if isFiltered(base_dir, nickname, domain, bioStr):
                 bioStr = ''
-        if actorJson.get('manuallyApprovesFollowers'):
-            if actorJson['manuallyApprovesFollowers']:
+        if actor_json.get('manuallyApprovesFollowers'):
+            if actor_json['manuallyApprovesFollowers']:
                 manuallyApprovesFollowers = 'checked'
             else:
                 manuallyApprovesFollowers = ''
-        if actorJson.get('type'):
-            if actorJson['type'] == 'Service':
+        if actor_json.get('type'):
+            if actor_json['type'] == 'Service':
                 isBot = 'checked'
                 isGroup = ''
-            elif actorJson['type'] == 'Group':
+            elif actor_json['type'] == 'Group':
                 isGroup = 'checked'
                 isBot = ''
     accountDir = acctDir(base_dir, nickname, domain)
@@ -2266,7 +2266,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, base_dir: str, path: str,
     editProfileForm += \
         _htmlEditProfileMain(base_dir, displayNickname, bioStr,
                              movedTo, donateUrl, websiteUrl,
-                             blogAddress, actorJson, translate)
+                             blogAddress, actor_json, translate)
 
     # Option checkboxes
     editProfileForm += \

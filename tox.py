@@ -8,12 +8,12 @@ __status__ = "Production"
 __module_group__ = "Profile Metadata"
 
 
-def getToxAddress(actorJson: {}) -> str:
+def getToxAddress(actor_json: {}) -> str:
     """Returns tox address for the given actor
     """
-    if not actorJson.get('attachment'):
+    if not actor_json.get('attachment'):
         return ''
-    for propertyValue in actorJson['attachment']:
+    for propertyValue in actor_json['attachment']:
         if not propertyValue.get('name'):
             continue
         if not propertyValue['name'].lower().startswith('tox'):
@@ -41,7 +41,7 @@ def getToxAddress(actorJson: {}) -> str:
     return ''
 
 
-def setToxAddress(actorJson: {}, toxAddress: str) -> None:
+def setToxAddress(actor_json: {}, toxAddress: str) -> None:
     """Sets an tox address for the given actor
     """
     notToxAddress = False
@@ -61,12 +61,12 @@ def setToxAddress(actorJson: {}, toxAddress: str) -> None:
     if '<' in toxAddress:
         notToxAddress = True
 
-    if not actorJson.get('attachment'):
-        actorJson['attachment'] = []
+    if not actor_json.get('attachment'):
+        actor_json['attachment'] = []
 
     # remove any existing value
     propertyFound = None
-    for propertyValue in actorJson['attachment']:
+    for propertyValue in actor_json['attachment']:
         if not propertyValue.get('name'):
             continue
         if not propertyValue.get('type'):
@@ -76,11 +76,11 @@ def setToxAddress(actorJson: {}, toxAddress: str) -> None:
         propertyFound = propertyValue
         break
     if propertyFound:
-        actorJson['attachment'].remove(propertyFound)
+        actor_json['attachment'].remove(propertyFound)
     if notToxAddress:
         return
 
-    for propertyValue in actorJson['attachment']:
+    for propertyValue in actor_json['attachment']:
         if not propertyValue.get('name'):
             continue
         if not propertyValue.get('type'):
@@ -97,4 +97,4 @@ def setToxAddress(actorJson: {}, toxAddress: str) -> None:
         "type": "PropertyValue",
         "value": toxAddress
     }
-    actorJson['attachment'].append(newToxAddress)
+    actor_json['attachment'].append(newToxAddress)

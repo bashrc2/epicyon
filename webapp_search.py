@@ -475,14 +475,14 @@ def htmlSkillsSearch(actor: str,
             if not isAccountDir(f):
                 continue
             actorFilename = os.path.join(subdir, f)
-            actorJson = loadJson(actorFilename)
-            if actorJson:
-                if actorJson.get('id') and \
-                   noOfActorSkills(actorJson) > 0 and \
-                   actorJson.get('name') and \
-                   actorJson.get('icon'):
-                    actor = actorJson['id']
-                    actorSkillsList = actorJson['hasOccupation']['skills']
+            actor_json = loadJson(actorFilename)
+            if actor_json:
+                if actor_json.get('id') and \
+                   noOfActorSkills(actor_json) > 0 and \
+                   actor_json.get('name') and \
+                   actor_json.get('icon'):
+                    actor = actor_json['id']
+                    actorSkillsList = actor_json['hasOccupation']['skills']
                     skills = getSkillsFromList(actorSkillsList)
                     for skillName, skillLevel in skills.items():
                         skillName = skillName.lower()
@@ -496,8 +496,8 @@ def htmlSkillsSearch(actor: str,
                             skillLevelStr = '0' + skillLevelStr
                         indexStr = \
                             skillLevelStr + ';' + actor + ';' + \
-                            actorJson['name'] + \
-                            ';' + actorJson['icon']['url']
+                            actor_json['name'] + \
+                            ';' + actor_json['icon']['url']
                         if indexStr not in results:
                             results.append(indexStr)
         break
@@ -513,14 +513,14 @@ def htmlSkillsSearch(actor: str,
                 cachedActorJson = loadJson(actorFilename)
                 if cachedActorJson:
                     if cachedActorJson.get('actor'):
-                        actorJson = cachedActorJson['actor']
-                        if actorJson.get('id') and \
-                           noOfActorSkills(actorJson) > 0 and \
-                           actorJson.get('name') and \
-                           actorJson.get('icon'):
-                            actor = actorJson['id']
+                        actor_json = cachedActorJson['actor']
+                        if actor_json.get('id') and \
+                           noOfActorSkills(actor_json) > 0 and \
+                           actor_json.get('name') and \
+                           actor_json.get('icon'):
+                            actor = actor_json['id']
                             actorSkillsList = \
-                                actorJson['hasOccupation']['skills']
+                                actor_json['hasOccupation']['skills']
                             skills = getSkillsFromList(actorSkillsList)
                             for skillName, skillLevel in skills.items():
                                 skillName = skillName.lower()
@@ -534,8 +534,8 @@ def htmlSkillsSearch(actor: str,
                                     skillLevelStr = '0' + skillLevelStr
                                 indexStr = \
                                     skillLevelStr + ';' + actor + ';' + \
-                                    actorJson['name'] + \
-                                    ';' + actorJson['icon']['url']
+                                    actor_json['name'] + \
+                                    ';' + actor_json['icon']['url']
                                 if indexStr not in results:
                                     results.append(indexStr)
             break

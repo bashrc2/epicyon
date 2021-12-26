@@ -10,12 +10,12 @@ __module_group__ = "Profile Metadata"
 import re
 
 
-def getCwtchAddress(actorJson: {}) -> str:
+def getCwtchAddress(actor_json: {}) -> str:
     """Returns cwtch address for the given actor
     """
-    if not actorJson.get('attachment'):
+    if not actor_json.get('attachment'):
         return ''
-    for propertyValue in actorJson['attachment']:
+    for propertyValue in actor_json['attachment']:
         if not propertyValue.get('name'):
             continue
         if not propertyValue['name'].lower().startswith('cwtch'):
@@ -41,7 +41,7 @@ def getCwtchAddress(actorJson: {}) -> str:
     return ''
 
 
-def setCwtchAddress(actorJson: {}, cwtchAddress: str) -> None:
+def setCwtchAddress(actor_json: {}, cwtchAddress: str) -> None:
     """Sets an cwtch address for the given actor
     """
     notCwtchAddress = False
@@ -53,12 +53,12 @@ def setCwtchAddress(actorJson: {}, cwtchAddress: str) -> None:
     if not re.match("^[a-z0-9]*$", cwtchAddress):
         notCwtchAddress = True
 
-    if not actorJson.get('attachment'):
-        actorJson['attachment'] = []
+    if not actor_json.get('attachment'):
+        actor_json['attachment'] = []
 
     # remove any existing value
     propertyFound = None
-    for propertyValue in actorJson['attachment']:
+    for propertyValue in actor_json['attachment']:
         if not propertyValue.get('name'):
             continue
         if not propertyValue.get('type'):
@@ -68,11 +68,11 @@ def setCwtchAddress(actorJson: {}, cwtchAddress: str) -> None:
         propertyFound = propertyValue
         break
     if propertyFound:
-        actorJson['attachment'].remove(propertyFound)
+        actor_json['attachment'].remove(propertyFound)
     if notCwtchAddress:
         return
 
-    for propertyValue in actorJson['attachment']:
+    for propertyValue in actor_json['attachment']:
         if not propertyValue.get('name'):
             continue
         if not propertyValue.get('type'):
@@ -89,4 +89,4 @@ def setCwtchAddress(actorJson: {}, cwtchAddress: str) -> None:
         "type": "PropertyValue",
         "value": cwtchAddress
     }
-    actorJson['attachment'].append(newCwtchAddress)
+    actor_json['attachment'].append(newCwtchAddress)

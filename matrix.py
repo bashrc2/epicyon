@@ -8,12 +8,12 @@ __status__ = "Production"
 __module_group__ = "Profile Metadata"
 
 
-def getMatrixAddress(actorJson: {}) -> str:
+def getMatrixAddress(actor_json: {}) -> str:
     """Returns matrix address for the given actor
     """
-    if not actorJson.get('attachment'):
+    if not actor_json.get('attachment'):
         return ''
-    for propertyValue in actorJson['attachment']:
+    for propertyValue in actor_json['attachment']:
         if not propertyValue.get('name'):
             continue
         if not propertyValue['name'].lower().startswith('matrix'):
@@ -36,15 +36,15 @@ def getMatrixAddress(actorJson: {}) -> str:
     return ''
 
 
-def setMatrixAddress(actorJson: {}, matrixAddress: str) -> None:
+def setMatrixAddress(actor_json: {}, matrixAddress: str) -> None:
     """Sets an matrix address for the given actor
     """
-    if not actorJson.get('attachment'):
-        actorJson['attachment'] = []
+    if not actor_json.get('attachment'):
+        actor_json['attachment'] = []
 
     # remove any existing value
     propertyFound = None
-    for propertyValue in actorJson['attachment']:
+    for propertyValue in actor_json['attachment']:
         if not propertyValue.get('name'):
             continue
         if not propertyValue.get('type'):
@@ -54,7 +54,7 @@ def setMatrixAddress(actorJson: {}, matrixAddress: str) -> None:
         propertyFound = propertyValue
         break
     if propertyFound:
-        actorJson['attachment'].remove(propertyFound)
+        actor_json['attachment'].remove(propertyFound)
 
     if '@' not in matrixAddress:
         return
@@ -69,7 +69,7 @@ def setMatrixAddress(actorJson: {}, matrixAddress: str) -> None:
     if ':' not in matrixAddress:
         return
 
-    for propertyValue in actorJson['attachment']:
+    for propertyValue in actor_json['attachment']:
         if not propertyValue.get('name'):
             continue
         if not propertyValue.get('type'):
@@ -86,4 +86,4 @@ def setMatrixAddress(actorJson: {}, matrixAddress: str) -> None:
         "type": "PropertyValue",
         "value": matrixAddress
     }
-    actorJson['attachment'].append(newMatrixAddress)
+    actor_json['attachment'].append(newMatrixAddress)

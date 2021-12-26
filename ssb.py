@@ -8,12 +8,12 @@ __status__ = "Production"
 __module_group__ = "Profile Metadata"
 
 
-def getSSBAddress(actorJson: {}) -> str:
+def getSSBAddress(actor_json: {}) -> str:
     """Returns ssb address for the given actor
     """
-    if not actorJson.get('attachment'):
+    if not actor_json.get('attachment'):
         return ''
-    for propertyValue in actorJson['attachment']:
+    for propertyValue in actor_json['attachment']:
         if not propertyValue.get('name'):
             continue
         if not propertyValue['name'].lower().startswith('ssb'):
@@ -39,7 +39,7 @@ def getSSBAddress(actorJson: {}) -> str:
     return ''
 
 
-def setSSBAddress(actorJson: {}, ssbAddress: str) -> None:
+def setSSBAddress(actor_json: {}, ssbAddress: str) -> None:
     """Sets an ssb address for the given actor
     """
     notSSBAddress = False
@@ -56,12 +56,12 @@ def setSSBAddress(actorJson: {}, ssbAddress: str) -> None:
     if '<' in ssbAddress:
         notSSBAddress = True
 
-    if not actorJson.get('attachment'):
-        actorJson['attachment'] = []
+    if not actor_json.get('attachment'):
+        actor_json['attachment'] = []
 
     # remove any existing value
     propertyFound = None
-    for propertyValue in actorJson['attachment']:
+    for propertyValue in actor_json['attachment']:
         if not propertyValue.get('name'):
             continue
         if not propertyValue.get('type'):
@@ -71,11 +71,11 @@ def setSSBAddress(actorJson: {}, ssbAddress: str) -> None:
         propertyFound = propertyValue
         break
     if propertyFound:
-        actorJson['attachment'].remove(propertyFound)
+        actor_json['attachment'].remove(propertyFound)
     if notSSBAddress:
         return
 
-    for propertyValue in actorJson['attachment']:
+    for propertyValue in actor_json['attachment']:
         if not propertyValue.get('name'):
             continue
         if not propertyValue.get('type'):
@@ -92,4 +92,4 @@ def setSSBAddress(actorJson: {}, ssbAddress: str) -> None:
         "type": "PropertyValue",
         "value": ssbAddress
     }
-    actorJson['attachment'].append(newSSBAddress)
+    actor_json['attachment'].append(newSSBAddress)

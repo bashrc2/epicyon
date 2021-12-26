@@ -1850,11 +1850,11 @@ def individualPostAsHtml(signing_priv_key_pem: str,
 
     domain_full = getFullDomain(domain, port)
     personUrl = local_actor_url(http_prefix, nickname, domain_full)
-    actorJson = \
+    actor_json = \
         getPersonFromCache(base_dir, personUrl, person_cache, False)
     languagesUnderstood = []
-    if actorJson:
-        languagesUnderstood = get_actor_languages_list(actorJson)
+    if actor_json:
+        languagesUnderstood = get_actor_languages_list(actor_json)
     contentStr = getContentFromPost(post_json_object, system_language,
                                     languagesUnderstood)
     if not contentStr:

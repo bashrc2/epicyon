@@ -322,15 +322,15 @@ def htmlModerationInfo(cssCache: {}, translate: {},
     for acct in accounts:
         acctNickname = acct.split('@')[0]
         accountDir = os.path.join(base_dir + '/accounts', acct)
-        actorJson = loadJson(accountDir + '.json')
-        if not actorJson:
+        actor_json = loadJson(accountDir + '.json')
+        if not actor_json:
             continue
-        actor = actorJson['id']
+        actor = actor_json['id']
         avatarUrl = ''
         ext = ''
-        if actorJson.get('icon'):
-            if actorJson['icon'].get('url'):
-                avatarUrl = actorJson['icon']['url']
+        if actor_json.get('icon'):
+            if actor_json['icon'].get('url'):
+                avatarUrl = actor_json['icon']['url']
                 if '.' in avatarUrl:
                     ext = '.' + avatarUrl.split('.')[-1]
         acctUrl = \

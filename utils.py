@@ -34,12 +34,12 @@ def local_actor_url(http_prefix: str, nickname: str, domain_full: str) -> str:
     return http_prefix + '://' + domain_full + '/users/' + nickname
 
 
-def get_actor_languages_list(actorJson: {}) -> []:
+def get_actor_languages_list(actor_json: {}) -> []:
     """Returns a list containing languages used by the given actor
     """
-    if not actorJson.get('attachment'):
+    if not actor_json.get('attachment'):
         return []
-    for propertyValue in actorJson['attachment']:
+    for propertyValue in actor_json['attachment']:
         if not propertyValue.get('name'):
             continue
         if not propertyValue['name'].lower().startswith('languages'):
@@ -180,12 +180,12 @@ def decodedHost(host: str) -> str:
     return host
 
 
-def getLockedAccount(actorJson: {}) -> bool:
+def getLockedAccount(actor_json: {}) -> bool:
     """Returns whether the given account requires follower approval
     """
-    if not actorJson.get('manuallyApprovesFollowers'):
+    if not actor_json.get('manuallyApprovesFollowers'):
         return False
-    if actorJson['manuallyApprovesFollowers'] is True:
+    if actor_json['manuallyApprovesFollowers'] is True:
         return True
     return False
 
@@ -917,10 +917,10 @@ def getDisplayName(base_dir: str, actor: str, person_cache: {}) -> str:
         cachedActorFilename = \
             base_dir + '/cache/actors/' + (actor.replace('/', '#')) + '.json'
         if os.path.isfile(cachedActorFilename):
-            actorJson = loadJson(cachedActorFilename, 1)
-            if actorJson:
-                if actorJson.get('name'):
-                    nameFound = actorJson['name']
+            actor_json = loadJson(cachedActorFilename, 1)
+            if actor_json:
+                if actor_json.get('name'):
+                    nameFound = actor_json['name']
     if nameFound:
         if dangerousMarkup(nameFound, False):
             nameFound = "*ADVERSARY*"
@@ -966,20 +966,20 @@ def getGenderFromBio(base_dir: str, actor: str, person_cache: {},
         pronounStr = translate['pronoun'].lower()
     else:
         pronounStr = 'pronoun'
-    actorJson = None
+    actor_json = None
     if person_cache[actor].get('actor'):
-        actorJson = person_cache[actor]['actor']
+        actor_json = person_cache[actor]['actor']
     else:
         # Try to obtain from the cached actors
         cachedActorFilename = \
             base_dir + '/cache/actors/' + (actor.replace('/', '#')) + '.json'
         if os.path.isfile(cachedActorFilename):
-            actorJson = loadJson(cachedActorFilename, 1)
-    if not actorJson:
+            actor_json = loadJson(cachedActorFilename, 1)
+    if not actor_json:
         return defaultGender
     # is gender defined as a profile tag?
-    if actorJson.get('attachment'):
-        tagsList = actorJson['attachment']
+    if actor_json.get('attachment'):
+        tagsList = actor_json['attachment']
         if isinstance(tagsList, list):
             # look for a gender field name
             for tag in tagsList:
@@ -1006,8 +1006,8 @@ def getGenderFromBio(base_dir: str, actor: str, person_cache: {},
                     if gender:
                         return gender
     # if not then use the bio
-    if not bioFound and actorJson.get('summary'):
-        bioFound = actorJson['summary']
+    if not bioFound and actor_json.get('summary'):
+        bioFound = actor_json['summary']
     if not bioFound:
         return defaultGender
     gender = _genderFromString(translate, bioFound)
@@ -2714,14 +2714,14 @@ def dmAllowedFromDomain(base_dir: str,
     return False
 
 
-def getOccupationSkills(actorJson: {}) -> []:
+def getOccupationSkills(actor_json: {}) -> []:
     """Returns the list of skills for an actor
     """
-    if 'hasOccupation' not in actorJson:
+    if 'hasOccupation' not in actor_json:
         return []
-    if not isinstance(actorJson['hasOccupation'], list):
+    if not isinstance(actor_json['hasOccupation'], list):
         return []
-    for occupationItem in actorJson['hasOccupation']:
+    for occupationItem in actor_json['hasOccupation']:
         if not isinstance(occupationItem, dict):
             continue
         if not occupationItem.get('@type'):
@@ -2738,14 +2738,14 @@ def getOccupationSkills(actorJson: {}) -> []:
     return []
 
 
-def getOccupationName(actorJson: {}) -> str:
+def getOccupationName(actor_json: {}) -> str:
     """Returns the occupation name an actor
     """
-    if not actorJson.get('hasOccupation'):
+    if not actor_json.get('hasOccupation'):
         return ""
-    if not isinstance(actorJson['hasOccupation'], list):
+    if not isinstance(actor_json['hasOccupation'], list):
         return ""
-    for occupationItem in actorJson['hasOccupation']:
+    for occupationItem in actor_json['hasOccupation']:
         if not isinstance(occupationItem, dict):
             continue
         if not occupationItem.get('@type'):
@@ -2760,15 +2760,15 @@ def getOccupationName(actorJson: {}) -> str:
     return ""
 
 
-def setOccupationName(actorJson: {}, name: str) -> bool:
+def setOccupationName(actor_json: {}, name: str) -> bool:
     """Sets the occupation name of an actor
     """
-    if not actorJson.get('hasOccupation'):
+    if not actor_json.get('hasOccupation'):
         return False
-    if not isinstance(actorJson['hasOccupation'], list):
+    if not isinstance(actor_json['hasOccupation'], list):
         return False
-    for index in range(len(actorJson['hasOccupation'])):
-        occupationItem = actorJson['hasOccupation'][index]
+    for index in range(len(actor_json['hasOccupation'])):
+        occupationItem = actor_json['hasOccupation'][index]
         if not isinstance(occupationItem, dict):
             continue
         if not occupationItem.get('@type'):
@@ -2780,15 +2780,15 @@ def setOccupationName(actorJson: {}, name: str) -> bool:
     return False
 
 
-def setOccupationSkillsList(actorJson: {}, skillsList: []) -> bool:
+def setOccupationSkillsList(actor_json: {}, skillsList: []) -> bool:
     """Sets the occupation skills for an actor
     """
-    if 'hasOccupation' not in actorJson:
+    if 'hasOccupation' not in actor_json:
         return False
-    if not isinstance(actorJson['hasOccupation'], list):
+    if not isinstance(actor_json['hasOccupation'], list):
         return False
-    for index in range(len(actorJson['hasOccupation'])):
-        occupationItem = actorJson['hasOccupation'][index]
+    for index in range(len(actor_json['hasOccupation'])):
+        occupationItem = actor_json['hasOccupation'][index]
         if not isinstance(occupationItem, dict):
             continue
         if not occupationItem.get('@type'):
@@ -2868,13 +2868,13 @@ def getAltPath(actor: str, domain_full: str, callingDomain: str) -> str:
     return postActor
 
 
-def getActorPropertyUrl(actorJson: {}, propertyName: str) -> str:
+def getActorPropertyUrl(actor_json: {}, propertyName: str) -> str:
     """Returns a url property from an actor
     """
-    if not actorJson.get('attachment'):
+    if not actor_json.get('attachment'):
         return ''
     propertyName = propertyName.lower()
-    for propertyValue in actorJson['attachment']:
+    for propertyValue in actor_json['attachment']:
         if not propertyValue.get('name'):
             continue
         if not propertyValue['name'].lower().startswith(propertyName):

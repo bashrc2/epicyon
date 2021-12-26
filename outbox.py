@@ -123,8 +123,8 @@ def _outboxPersonReceiveUpdate(recentPostsCache: {},
     if not os.path.isfile(actorFilename):
         print('actorFilename not found: ' + actorFilename)
         return
-    actorJson = loadJson(actorFilename)
-    if not actorJson:
+    actor_json = loadJson(actorFilename)
+    if not actor_json:
         return
     actorChanged = False
     # update fields within actor
@@ -140,26 +140,26 @@ def _outboxPersonReceiveUpdate(recentPostsCache: {},
                 continue
             if newPropertyValue['type'] != 'PropertyValue':
                 continue
-            if 'attachment' not in actorJson:
+            if 'attachment' not in actor_json:
                 continue
             found = False
-            for attachIdx in range(len(actorJson['attachment'])):
-                if actorJson['attachment'][attachIdx]['type'] != \
+            for attachIdx in range(len(actor_json['attachment'])):
+                if actor_json['attachment'][attachIdx]['type'] != \
                    'PropertyValue':
                     continue
-                if actorJson['attachment'][attachIdx]['name'] != \
+                if actor_json['attachment'][attachIdx]['name'] != \
                    newPropertyValue['name']:
                     continue
                 else:
-                    if actorJson['attachment'][attachIdx]['value'] != \
+                    if actor_json['attachment'][attachIdx]['value'] != \
                        newPropertyValue['value']:
-                        actorJson['attachment'][attachIdx]['value'] = \
+                        actor_json['attachment'][attachIdx]['value'] = \
                             newPropertyValue['value']
                         actorChanged = True
                     found = True
                     break
             if not found:
-                actorJson['attachment'].append({
+                actor_json['attachment'].append({
                     "name": newPropertyValue['name'],
                     "type": "PropertyValue",
                     "value": newPropertyValue['value']
@@ -167,12 +167,12 @@ def _outboxPersonReceiveUpdate(recentPostsCache: {},
                 actorChanged = True
     # save actor to file
     if actorChanged:
-        saveJson(actorJson, actorFilename)
+        saveJson(actor_json, actorFilename)
         if debug:
             print('actor saved: ' + actorFilename)
     if debug:
-        print('New attachment: ' + str(actorJson['attachment']))
-    message_json['object'] = actorJson
+        print('New attachment: ' + str(actor_json['attachment']))
+    message_json['object'] = actor_json
     if debug:
         print('DEBUG: actor update via c2s - ' + nickname + '@' + domain)
 

@@ -33,10 +33,10 @@ def setAvailability(base_dir: str, nickname: str, domain: str,
     actorFilename = acctDir(base_dir, nickname, domain) + '.json'
     if not os.path.isfile(actorFilename):
         return False
-    actorJson = loadJson(actorFilename)
-    if actorJson:
-        actorJson['availability'] = status
-        saveJson(actorJson, actorFilename)
+    actor_json = loadJson(actorFilename)
+    if actor_json:
+        actor_json['availability'] = status
+        saveJson(actor_json, actorFilename)
     return True
 
 
@@ -46,11 +46,11 @@ def getAvailability(base_dir: str, nickname: str, domain: str) -> str:
     actorFilename = acctDir(base_dir, nickname, domain) + '.json'
     if not os.path.isfile(actorFilename):
         return False
-    actorJson = loadJson(actorFilename)
-    if actorJson:
-        if not actorJson.get('availability'):
+    actor_json = loadJson(actorFilename)
+    if actor_json:
+        if not actor_json.get('availability'):
             return None
-        return actorJson['availability']
+        return actor_json['availability']
     return None
 
 

@@ -798,12 +798,12 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
     return post_json_object
 
 
-def _desktopShowActor(base_dir: str, actorJson: {}, translate: {},
+def _desktopShowActor(base_dir: str, actor_json: {}, translate: {},
                       system_language: str, screenreader: str,
                       espeak) -> None:
     """Shows information for the given actor
     """
-    actor = actorJson['id']
+    actor = actor_json['id']
     actorNickname = getNicknameFromActor(actor)
     actorDomain, actorPort = getDomainFromActor(actor)
     actorDomainFull = getFullDomain(actorDomain, actorPort)
@@ -812,13 +812,13 @@ def _desktopShowActor(base_dir: str, actorJson: {}, translate: {},
     sayStr = 'Profile for ' + html.unescape(handle)
     _sayCommand(sayStr, sayStr, screenreader, system_language, espeak)
     print(actor)
-    if actorJson.get('movedTo'):
-        sayStr = 'Moved to ' + html.unescape(actorJson['movedTo'])
+    if actor_json.get('movedTo'):
+        sayStr = 'Moved to ' + html.unescape(actor_json['movedTo'])
         _sayCommand(sayStr, sayStr, screenreader, system_language, espeak)
-    if actorJson.get('alsoKnownAs'):
+    if actor_json.get('alsoKnownAs'):
         alsoKnownAsStr = ''
         ctr = 0
-        for altActor in actorJson['alsoKnownAs']:
+        for altActor in actor_json['alsoKnownAs']:
             if ctr > 0:
                 alsoKnownAsStr += ', '
             ctr += 1
@@ -826,8 +826,8 @@ def _desktopShowActor(base_dir: str, actorJson: {}, translate: {},
 
         sayStr = 'Also known as ' + html.unescape(alsoKnownAsStr)
         _sayCommand(sayStr, sayStr, screenreader, system_language, espeak)
-    if actorJson.get('summary'):
-        sayStr = html.unescape(removeHtml(actorJson['summary']))
+    if actor_json.get('summary'):
+        sayStr = html.unescape(removeHtml(actor_json['summary']))
         sayStr = sayStr.replace('"', "'")
         sayStr2 = speakableText(base_dir, sayStr, translate)[0]
         _sayCommand(sayStr, sayStr2, screenreader, system_language, espeak)
@@ -869,14 +869,14 @@ def _desktopShowProfile(session, nickname: str, domain: str,
     isHttp = False
     if 'http://' in actor:
         isHttp = True
-    actorJson, asHeader = \
+    actor_json, asHeader = \
         getActorJson(domain, actor, isHttp, False, False, True,
                      signing_priv_key_pem, session)
 
-    _desktopShowActor(base_dir, actorJson, translate,
+    _desktopShowActor(base_dir, actor_json, translate,
                       system_language, screenreader, espeak)
 
-    return actorJson
+    return actor_json
 
 
 def _desktopShowProfileFromHandle(session, nickname: str, domain: str,
@@ -890,14 +890,14 @@ def _desktopShowProfileFromHandle(session, nickname: str, domain: str,
     """Shows the profile for a handle
     Returns the actor json
     """
-    actorJson, asHeader = \
+    actor_json, asHeader = \
         getActorJson(domain, handle, False, False, False, True,
                      signing_priv_key_pem, session)
 
-    _desktopShowActor(base_dir, actorJson, translate,
+    _desktopShowActor(base_dir, actor_json, translate,
                       system_language, screenreader, espeak)
 
-    return actorJson
+    return actor_json
 
 
 def _desktopGetBoxPostObject(boxJson: {}, index: int) -> {}:
@@ -1410,7 +1410,7 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
 
     domain_full = getFullDomain(domain, port)
     yourActor = local_actor_url(http_prefix, nickname, domain_full)
-    actorJson = None
+    actor_json = None
 
     notifyJson = {
         "dmPostId": "Initial",
@@ -1656,10 +1656,10 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                     refreshTimeline = True
                 print('')
             elif commandStr.startswith('profile ') or commandStr == 'profile':
-                actorJson = None
+                actor_json = None
                 if commandStr == 'profile':
                     if post_json_object:
-                        actorJson = \
+                        actor_json = \
                             _desktopShowProfile(session, nickname, domain,
                                                 http_prefix, base_dir,
                                                 currTimeline,
@@ -1695,11 +1695,11 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                     input()
                     prevTimelineFirstId = ''
                     refreshTimeline = True
-                elif not actorJson and boxJson:
+                elif not actor_json and boxJson:
                     _desktopClearScreen()
                     _desktopShowBanner()
                     postIndex = int(postIndexStr)
-                    actorJson = \
+                    actor_json = \
                         _desktopShowProfile(session, nickname, domain,
                                             http_prefix, base_dir,
                                             currTimeline,
@@ -2201,8 +2201,8 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
             elif (commandStr == 'follow' or
                   commandStr.startswith('follow ')):
                 if commandStr == 'follow':
-                    if actorJson:
-                        followHandle = actorJson['id']
+                    if actor_json:
+                        followHandle = actor_json['id']
                     else:
                         followHandle = ''
                 else:

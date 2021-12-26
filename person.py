@@ -196,11 +196,11 @@ def randomizeActorImages(personJson: {}) -> None:
         '/image' + randStr + '.' + existingExtension
 
 
-def getActorUpdateJson(actorJson: {}) -> {}:
+def getActorUpdateJson(actor_json: {}) -> {}:
     """Returns the json for an Person Update
     """
     pubNumber, _ = getStatusNumber()
-    manuallyApprovesFollowers = actorJson['manuallyApprovesFollowers']
+    manuallyApprovesFollowers = actor_json['manuallyApprovesFollowers']
     return {
         '@context': [
             "https://www.w3.org/ns/activitystreams",
@@ -271,38 +271,38 @@ def getActorUpdateJson(actorJson: {}) -> {}:
                 }
             }
         ],
-        'id': actorJson['id'] + '#updates/' + pubNumber,
+        'id': actor_json['id'] + '#updates/' + pubNumber,
         'type': 'Update',
-        'actor': actorJson['id'],
+        'actor': actor_json['id'],
         'to': ['https://www.w3.org/ns/activitystreams#Public'],
-        'cc': [actorJson['id'] + '/followers'],
+        'cc': [actor_json['id'] + '/followers'],
         'object': {
-            'id': actorJson['id'],
-            'type': actorJson['type'],
+            'id': actor_json['id'],
+            'type': actor_json['type'],
             'icon': {
                 'type': 'Image',
-                'url': actorJson['icon']['url']
+                'url': actor_json['icon']['url']
             },
             'image': {
                 'type': 'Image',
-                'url': actorJson['image']['url']
+                'url': actor_json['image']['url']
             },
-            'attachment': actorJson['attachment'],
-            'following': actorJson['id'] + '/following',
-            'followers': actorJson['id'] + '/followers',
-            'inbox': actorJson['id'] + '/inbox',
-            'outbox': actorJson['id'] + '/outbox',
-            'featured': actorJson['id'] + '/collections/featured',
-            'featuredTags': actorJson['id'] + '/collections/tags',
-            'preferredUsername': actorJson['preferredUsername'],
-            'name': actorJson['name'],
-            'summary': actorJson['summary'],
-            'url': actorJson['url'],
+            'attachment': actor_json['attachment'],
+            'following': actor_json['id'] + '/following',
+            'followers': actor_json['id'] + '/followers',
+            'inbox': actor_json['id'] + '/inbox',
+            'outbox': actor_json['id'] + '/outbox',
+            'featured': actor_json['id'] + '/collections/featured',
+            'featuredTags': actor_json['id'] + '/collections/tags',
+            'preferredUsername': actor_json['preferredUsername'],
+            'name': actor_json['name'],
+            'summary': actor_json['summary'],
+            'url': actor_json['url'],
             'manuallyApprovesFollowers': manuallyApprovesFollowers,
-            'discoverable': actorJson['discoverable'],
-            'published': actorJson['published'],
-            'devices': actorJson['devices'],
-            "publicKey": actorJson['publicKey'],
+            'discoverable': actor_json['discoverable'],
+            'published': actor_json['published'],
+            'devices': actor_json['devices'],
+            "publicKey": actor_json['publicKey'],
         }
     }
 
@@ -1643,15 +1643,15 @@ def getPersonAvatarUrl(base_dir: str, personUrl: str, person_cache: {},
     return None
 
 
-def addActorUpdateTimestamp(actorJson: {}) -> None:
+def addActorUpdateTimestamp(actor_json: {}) -> None:
     """Adds 'updated' fields with a timestamp
     """
     updatedTime = datetime.datetime.utcnow()
     currDateStr = updatedTime.strftime("%Y-%m-%dT%H:%M:%SZ")
-    actorJson['updated'] = currDateStr
+    actor_json['updated'] = currDateStr
     # add updated timestamp to avatar and banner
-    actorJson['icon']['updated'] = currDateStr
-    actorJson['image']['updated'] = currDateStr
+    actor_json['icon']['updated'] = currDateStr
+    actor_json['image']['updated'] = currDateStr
 
 
 def validSendingActor(session, base_dir: str,
@@ -1675,26 +1675,26 @@ def validSendingActor(session, base_dir: str,
         return True
 
     # get their actor
-    actorJson = getPersonFromCache(base_dir, sendingActor, person_cache, True)
+    actor_json = getPersonFromCache(base_dir, sendingActor, person_cache, True)
     downloadedActor = False
-    if not actorJson:
+    if not actor_json:
         # download the actor
-        actorJson, _ = getActorJson(domain, sendingActor,
-                                    True, False, debug, True,
-                                    signing_priv_key_pem, session)
-        if actorJson:
+        actor_json, _ = getActorJson(domain, sendingActor,
+                                     True, False, debug, True,
+                                     signing_priv_key_pem, session)
+        if actor_json:
             downloadedActor = True
-    if not actorJson:
+    if not actor_json:
         # if the actor couldn't be obtained then proceed anyway
         return True
-    if not actorJson.get('preferredUsername'):
-        print('REJECT: no preferredUsername within actor ' + str(actorJson))
+    if not actor_json.get('preferredUsername'):
+        print('REJECT: no preferredUsername within actor ' + str(actor_json))
         return False
     # does the actor have a bio ?
     if not unit_test:
         bioStr = ''
-        if actorJson.get('summary'):
-            bioStr = removeHtml(actorJson['summary']).strip()
+        if actor_json.get('summary'):
+            bioStr = removeHtml(actor_json['summary']).strip()
         if not bioStr:
             # allow no bio if it's an actor in this instance
             if domain not in sendingActor:
@@ -1705,11 +1705,11 @@ def validSendingActor(session, base_dir: str,
             print('REJECT: actor bio is not long enough ' +
                   sendingActor + ' ' + bioStr)
             return False
-        bioStr += ' ' + removeHtml(actorJson['preferredUsername'])
+        bioStr += ' ' + removeHtml(actor_json['preferredUsername'])
 
-        if actorJson.get('attachment'):
-            if isinstance(actorJson['attachment'], list):
-                for tag in actorJson['attachment']:
+        if actor_json.get('attachment'):
+            if isinstance(actor_json['attachment'], list):
+                for tag in actor_json['attachment']:
                     if not isinstance(tag, dict):
                         continue
                     if not tag.get('name'):
@@ -1721,8 +1721,8 @@ def validSendingActor(session, base_dir: str,
                     if isinstance(tag['value'], str):
                         bioStr += ' ' + tag['value']
 
-        if actorJson.get('name'):
-            bioStr += ' ' + removeHtml(actorJson['name'])
+        if actor_json.get('name'):
+            bioStr += ' ' + removeHtml(actor_json['name'])
         if containsInvalidChars(bioStr):
             print('REJECT: post actor bio contains invalid characters')
             return False
@@ -1734,11 +1734,11 @@ def validSendingActor(session, base_dir: str,
 
     # Check any attached fields for the actor.
     # Spam actors will sometimes have attached fields which are all empty
-    if actorJson.get('attachment'):
-        if isinstance(actorJson['attachment'], list):
+    if actor_json.get('attachment'):
+        if isinstance(actor_json['attachment'], list):
             noOfTags = 0
             tagsWithoutValue = 0
-            for tag in actorJson['attachment']:
+            for tag in actor_json['attachment']:
                 if not isinstance(tag, dict):
                     continue
                 if not tag.get('name'):
@@ -1765,6 +1765,6 @@ def validSendingActor(session, base_dir: str,
     if downloadedActor:
         # if the actor is valid and was downloaded then
         # store it in the cache, but don't write it to file
-        storePersonInCache(base_dir, sendingActor, actorJson, person_cache,
+        storePersonInCache(base_dir, sendingActor, actor_json, person_cache,
                            False)
     return True

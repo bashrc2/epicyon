@@ -279,12 +279,12 @@ def webfingerLookup(path: str, base_dir: str,
     return wfJson
 
 
-def _webfingerUpdateAvatar(wfJson: {}, actorJson: {}) -> bool:
+def _webfingerUpdateAvatar(wfJson: {}, actor_json: {}) -> bool:
     """Updates the avatar image link
     """
     found = False
-    avatarUrl = actorJson['icon']['url']
-    mediaType = actorJson['icon']['mediaType']
+    avatarUrl = actor_json['icon']['url']
+    mediaType = actor_json['icon']['mediaType']
     for link in wfJson['links']:
         if not link.get('rel'):
             continue
@@ -306,18 +306,18 @@ def _webfingerUpdateAvatar(wfJson: {}, actorJson: {}) -> bool:
     return True
 
 
-def _webfingerAddBlogLink(wfJson: {}, actorJson: {}) -> bool:
+def _webfingerAddBlogLink(wfJson: {}, actor_json: {}) -> bool:
     """Adds a blog link to webfinger if needed
     """
     found = False
-    if '/users/' in actorJson['id']:
+    if '/users/' in actor_json['id']:
         blogUrl = \
-            actorJson['id'].split('/users/')[0] + '/blog/' + \
-            actorJson['id'].split('/users/')[1]
+            actor_json['id'].split('/users/')[0] + '/blog/' + \
+            actor_json['id'].split('/users/')[1]
     else:
         blogUrl = \
-            actorJson['id'].split('/@')[0] + '/blog/' + \
-            actorJson['id'].split('/@')[1]
+            actor_json['id'].split('/@')[0] + '/blog/' + \
+            actor_json['id'].split('/@')[1]
     for link in wfJson['links']:
         if not link.get('rel'):
             continue
@@ -337,11 +337,11 @@ def _webfingerAddBlogLink(wfJson: {}, actorJson: {}) -> bool:
     return True
 
 
-def _webfingerUpdateFromProfile(wfJson: {}, actorJson: {}) -> bool:
+def _webfingerUpdateFromProfile(wfJson: {}, actor_json: {}) -> bool:
     """Updates webfinger Email/blog/xmpp links from profile
     Returns true if one or more tags has been changed
     """
-    if not actorJson.get('attachment'):
+    if not actor_json.get('attachment'):
         return False
 
     changed = False
@@ -361,7 +361,7 @@ def _webfingerUpdateFromProfile(wfJson: {}, actorJson: {}) -> bool:
     for name, alias in webfingerPropertyName.items():
         aliasesNotFound.append(alias)
 
-    for propertyValue in actorJson['attachment']:
+    for propertyValue in actor_json['attachment']:
         if not propertyValue.get('name'):
             continue
         propertyName = propertyValue['name'].lower()
@@ -411,10 +411,10 @@ def _webfingerUpdateFromProfile(wfJson: {}, actorJson: {}) -> bool:
         wfJson['aliases'].remove(fullAlias)
         changed = True
 
-    if _webfingerUpdateAvatar(wfJson, actorJson):
+    if _webfingerUpdateAvatar(wfJson, actor_json):
         changed = True
 
-    if _webfingerAddBlogLink(wfJson, actorJson):
+    if _webfingerAddBlogLink(wfJson, actor_json):
         changed = True
 
     return changed
@@ -442,10 +442,10 @@ def webfingerUpdate(base_dir: str, nickname: str, domain: str,
         return
 
     actorFilename = base_dir + '/accounts/' + handle + '.json'
-    actorJson = loadJson(actorFilename)
-    if not actorJson:
+    actor_json = loadJson(actorFilename)
+    if not actor_json:
         return
 
-    if _webfingerUpdateFromProfile(wfJson, actorJson):
+    if _webfingerUpdateFromProfile(wfJson, actor_json):
         if saveJson(wfJson, filename):
             storeWebfingerInCache(handle, wfJson, cached_webfingers)

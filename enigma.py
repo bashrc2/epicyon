@@ -8,12 +8,12 @@ __status__ = "Production"
 __module_group__ = "Profile Metadata"
 
 
-def getEnigmaPubKey(actorJson: {}) -> str:
+def getEnigmaPubKey(actor_json: {}) -> str:
     """Returns Enigma public key for the given actor
     """
-    if not actorJson.get('attachment'):
+    if not actor_json.get('attachment'):
         return ''
-    for propertyValue in actorJson['attachment']:
+    for propertyValue in actor_json['attachment']:
         if not propertyValue.get('name'):
             continue
         if not propertyValue['name'].lower().startswith('enigma'):
@@ -28,19 +28,19 @@ def getEnigmaPubKey(actorJson: {}) -> str:
     return ''
 
 
-def setEnigmaPubKey(actorJson: {}, enigmaPubKey: str) -> None:
+def setEnigmaPubKey(actor_json: {}, enigmaPubKey: str) -> None:
     """Sets a Enigma public key for the given actor
     """
     removeKey = False
     if not enigmaPubKey:
         removeKey = True
 
-    if not actorJson.get('attachment'):
-        actorJson['attachment'] = []
+    if not actor_json.get('attachment'):
+        actor_json['attachment'] = []
 
     # remove any existing value
     propertyFound = None
-    for propertyValue in actorJson['attachment']:
+    for propertyValue in actor_json['attachment']:
         if not propertyValue.get('name'):
             continue
         if not propertyValue.get('type'):
@@ -50,11 +50,11 @@ def setEnigmaPubKey(actorJson: {}, enigmaPubKey: str) -> None:
         propertyFound = propertyValue
         break
     if propertyFound:
-        actorJson['attachment'].remove(propertyValue)
+        actor_json['attachment'].remove(propertyValue)
     if removeKey:
         return
 
-    for propertyValue in actorJson['attachment']:
+    for propertyValue in actor_json['attachment']:
         if not propertyValue.get('name'):
             continue
         if not propertyValue.get('type'):
@@ -71,4 +71,4 @@ def setEnigmaPubKey(actorJson: {}, enigmaPubKey: str) -> None:
         "type": "PropertyValue",
         "value": enigmaPubKey
     }
-    actorJson['attachment'].append(newenigmaPubKey)
+    actor_json['attachment'].append(newenigmaPubKey)

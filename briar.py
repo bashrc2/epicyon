@@ -8,12 +8,12 @@ __status__ = "Production"
 __module_group__ = "Profile Metadata"
 
 
-def getBriarAddress(actorJson: {}) -> str:
+def getBriarAddress(actor_json: {}) -> str:
     """Returns briar address for the given actor
     """
-    if not actorJson.get('attachment'):
+    if not actor_json.get('attachment'):
         return ''
-    for propertyValue in actorJson['attachment']:
+    for propertyValue in actor_json['attachment']:
         if not propertyValue.get('name'):
             continue
         if not propertyValue['name'].lower().startswith('briar'):
@@ -43,7 +43,7 @@ def getBriarAddress(actorJson: {}) -> str:
     return ''
 
 
-def setBriarAddress(actorJson: {}, briarAddress: str) -> None:
+def setBriarAddress(actor_json: {}, briarAddress: str) -> None:
     """Sets an briar address for the given actor
     """
     notBriarAddress = False
@@ -65,12 +65,12 @@ def setBriarAddress(actorJson: {}, briarAddress: str) -> None:
     if '<' in briarAddress:
         notBriarAddress = True
 
-    if not actorJson.get('attachment'):
-        actorJson['attachment'] = []
+    if not actor_json.get('attachment'):
+        actor_json['attachment'] = []
 
     # remove any existing value
     propertyFound = None
-    for propertyValue in actorJson['attachment']:
+    for propertyValue in actor_json['attachment']:
         if not propertyValue.get('name'):
             continue
         if not propertyValue.get('type'):
@@ -80,11 +80,11 @@ def setBriarAddress(actorJson: {}, briarAddress: str) -> None:
         propertyFound = propertyValue
         break
     if propertyFound:
-        actorJson['attachment'].remove(propertyFound)
+        actor_json['attachment'].remove(propertyFound)
     if notBriarAddress:
         return
 
-    for propertyValue in actorJson['attachment']:
+    for propertyValue in actor_json['attachment']:
         if not propertyValue.get('name'):
             continue
         if not propertyValue.get('type'):
@@ -101,4 +101,4 @@ def setBriarAddress(actorJson: {}, briarAddress: str) -> None:
         "type": "PropertyValue",
         "value": briarAddress
     }
-    actorJson['attachment'].append(newBriarAddress)
+    actor_json['attachment'].append(newBriarAddress)

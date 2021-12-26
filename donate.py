@@ -18,13 +18,13 @@ def _getWebsiteStrings() -> []:
     return ['www', 'website', 'web', 'homepage']
 
 
-def getDonationUrl(actorJson: {}) -> str:
+def getDonationUrl(actor_json: {}) -> str:
     """Returns a link used for donations
     """
-    if not actorJson.get('attachment'):
+    if not actor_json.get('attachment'):
         return ''
     donationType = _getDonationTypes()
-    for propertyValue in actorJson['attachment']:
+    for propertyValue in actor_json['attachment']:
         if not propertyValue.get('name'):
             continue
         if propertyValue['name'].lower() not in donationType:
@@ -43,14 +43,14 @@ def getDonationUrl(actorJson: {}) -> str:
     return ''
 
 
-def getWebsite(actorJson: {}, translate: {}) -> str:
+def getWebsite(actor_json: {}, translate: {}) -> str:
     """Returns a web address link
     """
-    if not actorJson.get('attachment'):
+    if not actor_json.get('attachment'):
         return ''
     matchStrings = _getWebsiteStrings()
     matchStrings.append(translate['Website'].lower())
-    for propertyValue in actorJson['attachment']:
+    for propertyValue in actor_json['attachment']:
         if not propertyValue.get('name'):
             continue
         if propertyValue['name'].lower() not in matchStrings:
@@ -65,7 +65,7 @@ def getWebsite(actorJson: {}, translate: {}) -> str:
     return ''
 
 
-def setDonationUrl(actorJson: {}, donateUrl: str) -> None:
+def setDonationUrl(actor_json: {}, donateUrl: str) -> None:
     """Sets a link used for donations
     """
     notUrl = False
@@ -78,8 +78,8 @@ def setDonationUrl(actorJson: {}, donateUrl: str) -> None:
     if '<' in donateUrl:
         notUrl = True
 
-    if not actorJson.get('attachment'):
-        actorJson['attachment'] = []
+    if not actor_json.get('attachment'):
+        actor_json['attachment'] = []
 
     donationType = _getDonationTypes()
     donateName = None
@@ -91,7 +91,7 @@ def setDonationUrl(actorJson: {}, donateUrl: str) -> None:
 
     # remove any existing value
     propertyFound = None
-    for propertyValue in actorJson['attachment']:
+    for propertyValue in actor_json['attachment']:
         if not propertyValue.get('name'):
             continue
         if not propertyValue.get('type'):
@@ -101,7 +101,7 @@ def setDonationUrl(actorJson: {}, donateUrl: str) -> None:
         propertyFound = propertyValue
         break
     if propertyFound:
-        actorJson['attachment'].remove(propertyFound)
+        actor_json['attachment'].remove(propertyFound)
     if notUrl:
         return
 
@@ -110,7 +110,7 @@ def setDonationUrl(actorJson: {}, donateUrl: str) -> None:
         '" rel="me nofollow noopener noreferrer" target="_blank">' + \
         donateUrl + '</a>'
 
-    for propertyValue in actorJson['attachment']:
+    for propertyValue in actor_json['attachment']:
         if not propertyValue.get('name'):
             continue
         if not propertyValue.get('type'):
@@ -127,10 +127,10 @@ def setDonationUrl(actorJson: {}, donateUrl: str) -> None:
         "type": "PropertyValue",
         "value": donateValue
     }
-    actorJson['attachment'].append(newDonate)
+    actor_json['attachment'].append(newDonate)
 
 
-def setWebsite(actorJson: {}, websiteUrl: str, translate: {}) -> None:
+def setWebsite(actor_json: {}, websiteUrl: str, translate: {}) -> None:
     """Sets a web address
     """
     websiteUrl = websiteUrl.strip()
@@ -144,15 +144,15 @@ def setWebsite(actorJson: {}, websiteUrl: str, translate: {}) -> None:
     if '<' in websiteUrl:
         notUrl = True
 
-    if not actorJson.get('attachment'):
-        actorJson['attachment'] = []
+    if not actor_json.get('attachment'):
+        actor_json['attachment'] = []
 
     matchStrings = _getWebsiteStrings()
     matchStrings.append(translate['Website'].lower())
 
     # remove any existing value
     propertyFound = None
-    for propertyValue in actorJson['attachment']:
+    for propertyValue in actor_json['attachment']:
         if not propertyValue.get('name'):
             continue
         if not propertyValue.get('type'):
@@ -162,7 +162,7 @@ def setWebsite(actorJson: {}, websiteUrl: str, translate: {}) -> None:
         propertyFound = propertyValue
         break
     if propertyFound:
-        actorJson['attachment'].remove(propertyFound)
+        actor_json['attachment'].remove(propertyFound)
     if notUrl:
         return
 
@@ -171,4 +171,4 @@ def setWebsite(actorJson: {}, websiteUrl: str, translate: {}) -> None:
         "type": "PropertyValue",
         "value": websiteUrl
     }
-    actorJson['attachment'].append(newEntry)
+    actor_json['attachment'].append(newEntry)

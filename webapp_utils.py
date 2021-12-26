@@ -170,17 +170,17 @@ def getContentWarningButton(postID: str, translate: {},
         '</div></details>\n'
 
 
-def _setActorPropertyUrl(actorJson: {}, propertyName: str, url: str) -> None:
+def _setActorPropertyUrl(actor_json: {}, propertyName: str, url: str) -> None:
     """Sets a url for the given actor property
     """
-    if not actorJson.get('attachment'):
-        actorJson['attachment'] = []
+    if not actor_json.get('attachment'):
+        actor_json['attachment'] = []
 
     propertyNameLower = propertyName.lower()
 
     # remove any existing value
     propertyFound = None
-    for propertyValue in actorJson['attachment']:
+    for propertyValue in actor_json['attachment']:
         if not propertyValue.get('name'):
             continue
         if not propertyValue.get('type'):
@@ -190,7 +190,7 @@ def _setActorPropertyUrl(actorJson: {}, propertyName: str, url: str) -> None:
         propertyFound = propertyValue
         break
     if propertyFound:
-        actorJson['attachment'].remove(propertyFound)
+        actor_json['attachment'].remove(propertyFound)
 
     prefixes = getProtocolPrefixes()
     prefixFound = False
@@ -207,7 +207,7 @@ def _setActorPropertyUrl(actorJson: {}, propertyName: str, url: str) -> None:
     if ',' in url:
         return
 
-    for propertyValue in actorJson['attachment']:
+    for propertyValue in actor_json['attachment']:
         if not propertyValue.get('name'):
             continue
         if not propertyValue.get('type'):
@@ -224,13 +224,13 @@ def _setActorPropertyUrl(actorJson: {}, propertyName: str, url: str) -> None:
         "type": "PropertyValue",
         "value": url
     }
-    actorJson['attachment'].append(newAddress)
+    actor_json['attachment'].append(newAddress)
 
 
-def setBlogAddress(actorJson: {}, blogAddress: str) -> None:
+def setBlogAddress(actor_json: {}, blogAddress: str) -> None:
     """Sets an blog address for the given actor
     """
-    _setActorPropertyUrl(actorJson, 'Blog', removeHtml(blogAddress))
+    _setActorPropertyUrl(actor_json, 'Blog', removeHtml(blogAddress))
 
 
 def updateAvatarImageCache(signing_priv_key_pem: str,
@@ -550,13 +550,13 @@ def htmlHeaderWithExternalStyle(cssFilename: str, instanceTitle: str,
 
 
 def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
-                               actorJson: {}, city: str,
+                               actor_json: {}, city: str,
                                content_license_url: str,
                                lang='en') -> str:
     """html header which includes person markup
     https://schema.org/Person
     """
-    if not actorJson:
+    if not actor_json:
         htmlStr = \
             htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None, lang)
         return htmlStr
@@ -580,11 +580,11 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
             '        },\n'
 
     skillsMarkup = ''
-    if actorJson.get('hasOccupation'):
-        if isinstance(actorJson['hasOccupation'], list):
+    if actor_json.get('hasOccupation'):
+        if isinstance(actor_json['hasOccupation'], list):
             skillsMarkup = '        "hasOccupation": [\n'
             firstEntry = True
-            for skillDict in actorJson['hasOccupation']:
+            for skillDict in actor_json['hasOccupation']:
                 if skillDict['@type'] == 'Role':
                     if not firstEntry:
                         skillsMarkup += ',\n'
@@ -650,19 +650,19 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
                 firstEntry = False
             skillsMarkup += '\n        ],\n'
 
-    description = removeHtml(actorJson['summary'])
-    nameStr = removeHtml(actorJson['name'])
-    domain_full = actorJson['id'].split('://')[1].split('/')[0]
-    handle = actorJson['preferredUsername'] + '@' + domain_full
+    description = removeHtml(actor_json['summary'])
+    nameStr = removeHtml(actor_json['name'])
+    domain_full = actor_json['id'].split('://')[1].split('/')[0]
+    handle = actor_json['preferredUsername'] + '@' + domain_full
 
     personMarkup = \
         '      "about": {\n' + \
         '        "@type" : "Person",\n' + \
         '        "name": "' + nameStr + '",\n' + \
-        '        "image": "' + actorJson['icon']['url'] + '",\n' + \
+        '        "image": "' + actor_json['icon']['url'] + '",\n' + \
         '        "description": "' + description + '",\n' + \
         cityMarkup + skillsMarkup + \
-        '        "url": "' + actorJson['id'] + '"\n' + \
+        '        "url": "' + actor_json['id'] + '"\n' + \
         '      },\n'
 
     profileMarkup = \
@@ -672,7 +672,7 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
         '      "@type": "ProfilePage",\n' + \
         '      "mainEntityOfPage": {\n' + \
         '        "@type": "WebPage",\n' + \
-        "        \"@id\": \"" + actorJson['id'] + "\"\n" + \
+        "        \"@id\": \"" + actor_json['id'] + "\"\n" + \
         '      },\n' + personMarkup + \
         '      "accountablePerson": {\n' + \
         '        "@type": "Person",\n' + \
@@ -683,7 +683,7 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
         '        "name": "' + nameStr + '"\n' + \
         '      },\n' + \
         '      "name": "' + nameStr + '",\n' + \
-        '      "image": "' + actorJson['icon']['url'] + '",\n' + \
+        '      "image": "' + actor_json['icon']['url'] + '",\n' + \
         '      "description": "' + description + '",\n' + \
         '      "license": "' + content_license_url + '"\n' + \
         '    }\n' + \
@@ -694,7 +694,7 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
         "    <meta content=\"profile\" property=\"og:type\" />\n" + \
         "    <meta content=\"" + description + \
         "\" name='description'>\n" + \
-        "    <meta content=\"" + actorJson['url'] + \
+        "    <meta content=\"" + actor_json['url'] + \
         "\" property=\"og:url\" />\n" + \
         "    <meta content=\"" + domain_full + \
         "\" property=\"og:site_name\" />\n" + \
@@ -702,19 +702,19 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
         ")\" property=\"og:title\" />\n" + \
         "    <meta content=\"" + description + \
         "\" property=\"og:description\" />\n" + \
-        "    <meta content=\"" + actorJson['icon']['url'] + \
+        "    <meta content=\"" + actor_json['icon']['url'] + \
         "\" property=\"og:image\" />\n" + \
         "    <meta content=\"400\" property=\"og:image:width\" />\n" + \
         "    <meta content=\"400\" property=\"og:image:height\" />\n" + \
         "    <meta content=\"summary\" property=\"twitter:card\" />\n" + \
         "    <meta content=\"" + handle + \
         "\" property=\"profile:username\" />\n"
-    if actorJson.get('attachment'):
+    if actor_json.get('attachment'):
         ogTags = (
             'email', 'openpgp', 'blog', 'xmpp', 'matrix', 'briar',
             'jami', 'cwtch', 'languages'
         )
-        for attachJson in actorJson['attachment']:
+        for attachJson in actor_json['attachment']:
             if not attachJson.get('name'):
                 continue
             if not attachJson.get('value'):

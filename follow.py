@@ -1434,9 +1434,9 @@ def followerApprovalActive(base_dir: str, nickname: str, domain: str) -> bool:
     manuallyApprovesFollowers = False
     actorFilename = acctDir(base_dir, nickname, domain) + '.json'
     if os.path.isfile(actorFilename):
-        actorJson = loadJson(actorFilename)
-        if actorJson:
-            if actorJson.get('manuallyApprovesFollowers'):
+        actor_json = loadJson(actorFilename)
+        if actor_json:
+            if actor_json.get('manuallyApprovesFollowers'):
                 manuallyApprovesFollowers = \
-                    actorJson['manuallyApprovesFollowers']
+                    actor_json['manuallyApprovesFollowers']
     return manuallyApprovesFollowers

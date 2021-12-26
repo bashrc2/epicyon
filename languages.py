@@ -18,10 +18,10 @@ from utils import local_actor_url
 from cache import getPersonFromCache
 
 
-def getActorLanguages(actorJson: {}) -> str:
+def getActorLanguages(actor_json: {}) -> str:
     """Returns a string containing languages used by the given actor
     """
-    langList = get_actor_languages_list(actorJson)
+    langList = get_actor_languages_list(actor_json)
     if not langList:
         return ''
     languagesStr = ''
@@ -33,7 +33,8 @@ def getActorLanguages(actorJson: {}) -> str:
     return languagesStr
 
 
-def setActorLanguages(base_dir: str, actorJson: {}, languagesStr: str) -> None:
+def setActorLanguages(base_dir: str, actor_json: {},
+                      languagesStr: str) -> None:
     """Sets the languages used by the given actor
     """
     separator = ','
@@ -66,7 +67,7 @@ def setActorLanguages(base_dir: str, actorJson: {}, languagesStr: str) -> None:
 
     # remove any existing value
     propertyFound = None
-    for propertyValue in actorJson['attachment']:
+    for propertyValue in actor_json['attachment']:
         if not propertyValue.get('name'):
             continue
         if not propertyValue.get('type'):
@@ -76,7 +77,7 @@ def setActorLanguages(base_dir: str, actorJson: {}, languagesStr: str) -> None:
         propertyFound = propertyValue
         break
     if propertyFound:
-        actorJson['attachment'].remove(propertyFound)
+        actor_json['attachment'].remove(propertyFound)
 
     if not langList2:
         return
@@ -86,7 +87,7 @@ def setActorLanguages(base_dir: str, actorJson: {}, languagesStr: str) -> None:
         "type": "PropertyValue",
         "value": langList2
     }
-    actorJson['attachment'].append(newLanguages)
+    actor_json['attachment'].append(newLanguages)
 
 
 def understoodPostLanguage(base_dir: str, nickname: str, domain: str,
@@ -106,11 +107,11 @@ def understoodPostLanguage(base_dir: str, nickname: str, domain: str,
     if msgObject['contentMap'].get(system_language):
         return True
     personUrl = local_actor_url(http_prefix, nickname, domain_full)
-    actorJson = getPersonFromCache(base_dir, personUrl, person_cache, False)
-    if not actorJson:
+    actor_json = getPersonFromCache(base_dir, personUrl, person_cache, False)
+    if not actor_json:
         print('WARN: unable to load actor to check languages ' + personUrl)
         return False
-    languagesUnderstood = get_actor_languages_list(actorJson)
+    languagesUnderstood = get_actor_languages_list(actor_json)
     if not languagesUnderstood:
         return True
     for lang in languagesUnderstood:
