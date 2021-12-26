@@ -33,7 +33,7 @@ from webapp_utils import htmlKeyboardNavigation
 
 def htmlPersonOptions(defaultTimeline: str,
                       cssCache: {}, translate: {}, base_dir: str,
-                      domain: str, domainFull: str,
+                      domain: str, domain_full: str,
                       originPathStr: str,
                       optionsActor: str,
                       optionsProfileUrl: str,
@@ -288,7 +288,7 @@ def htmlPersonOptions(defaultTimeline: str,
 
             # checkbox for permission to post to newswire
             newswirePostsPermitted = False
-            if optionsDomainFull == domainFull:
+            if optionsDomainFull == domain_full:
                 adminNickname = getConfigParam(base_dir, 'admin')
                 if (nickname == adminNickname or
                     (isModerator(base_dir, nickname) and
@@ -329,7 +329,7 @@ def htmlPersonOptions(defaultTimeline: str,
                 optionsStr += checkboxStr
 
             # checkbox for permission to post to featured articles
-            if news_instance and optionsDomainFull == domainFull:
+            if news_instance and optionsDomainFull == domain_full:
                 adminNickname = getConfigParam(base_dir, 'admin')
                 if (nickname == adminNickname or
                     (isModerator(base_dir, nickname) and

@@ -104,13 +104,13 @@ def outboxAnnounce(recentPostsCache: {},
 
 
 def announcedByPerson(isAnnounced: bool, postActor: str,
-                      nickname: str, domainFull: str) -> bool:
+                      nickname: str, domain_full: str) -> bool:
     """Returns True if the given post is announced by the given person
     """
     if not postActor:
         return False
     if isAnnounced and \
-       postActor.endswith(domainFull + '/users/' + nickname):
+       postActor.endswith(domain_full + '/users/' + nickname):
         return True
     return False
 
@@ -315,9 +315,9 @@ def sendUndoAnnounceViaServer(base_dir: str, session,
         print('WARN: No session for sendUndoAnnounceViaServer')
         return 6
 
-    domainFull = getFullDomain(domain, port)
+    domain_full = getFullDomain(domain, port)
 
-    actor = localActorUrl(http_prefix, nickname, domainFull)
+    actor = localActorUrl(http_prefix, nickname, domain_full)
     handle = replaceUsersWithAt(actor)
 
     statusNumber, published = getStatusNumber()
@@ -374,7 +374,7 @@ def sendUndoAnnounceViaServer(base_dir: str, session,
         'Content-type': 'application/json',
         'Authorization': authHeader
     }
-    postResult = postJson(http_prefix, domainFull,
+    postResult = postJson(http_prefix, domain_full,
                           session, unAnnounceJson, [], inboxUrl,
                           headers, 3, True)
     if not postResult:

@@ -47,7 +47,7 @@ def _votesIndicator(totalVotes: int, positive_voting: bool) -> str:
     return totalVotesStr
 
 
-def getRightColumnContent(base_dir: str, nickname: str, domainFull: str,
+def getRightColumnContent(base_dir: str, nickname: str, domain_full: str,
                           http_prefix: str, translate: {},
                           moderator: bool, editor: bool,
                           newswire: {}, positive_voting: bool,
@@ -65,7 +65,7 @@ def getRightColumnContent(base_dir: str, nickname: str, domainFull: str,
     """
     htmlStr = ''
 
-    domain = removeDomainPort(domainFull)
+    domain = removeDomainPort(domain_full)
 
     if authorized:
         # only show the publish button if logged in, otherwise replace it with
@@ -445,7 +445,7 @@ def htmlCitations(base_dir: str, nickname: str, domain: str,
 
 
 def htmlNewswireMobile(cssCache: {}, base_dir: str, nickname: str,
-                       domain: str, domainFull: str,
+                       domain: str, domain_full: str,
                        http_prefix: str, translate: {},
                        newswire: {},
                        positive_voting: bool,
@@ -498,7 +498,7 @@ def htmlNewswireMobile(cssCache: {}, base_dir: str, nickname: str,
                                  'newswire', authorized,
                                  icons_as_buttons) + '</center>'
     htmlStr += \
-        getRightColumnContent(base_dir, nickname, domainFull,
+        getRightColumnContent(base_dir, nickname, domain_full,
                               http_prefix, translate,
                               moderator, editor,
                               newswire, positive_voting,

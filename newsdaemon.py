@@ -285,7 +285,7 @@ def hashtagRuleTree(operators: [],
     return tree
 
 
-def _hashtagAdd(base_dir: str, http_prefix: str, domainFull: str,
+def _hashtagAdd(base_dir: str, http_prefix: str, domain_full: str,
                 post_json_object: {},
                 actionStr: str, hashtags: [], system_language: str,
                 translate: {}) -> None:
@@ -301,7 +301,7 @@ def _hashtagAdd(base_dir: str, http_prefix: str, domainFull: str,
     if not validHashTag(htId):
         return
 
-    hashtagUrl = http_prefix + "://" + domainFull + "/tags/" + htId
+    hashtagUrl = http_prefix + "://" + domain_full + "/tags/" + htId
     newTag = {
         'href': hashtagUrl,
         'name': addHashtag,
@@ -333,15 +333,15 @@ def _hashtagAdd(base_dir: str, http_prefix: str, domainFull: str,
     else:
         content += hashtagHtml
     post_json_object['object']['content'] = content
-    domain = domainFull
+    domain = domain_full
     if ':' in domain:
         domain = domain.split(':')[0]
     storeHashTags(base_dir, 'news', domain,
-                  http_prefix, domainFull,
+                  http_prefix, domain_full,
                   post_json_object, translate)
 
 
-def _hashtagRemove(http_prefix: str, domainFull: str, post_json_object: {},
+def _hashtagRemove(http_prefix: str, domain_full: str, post_json_object: {},
                    actionStr: str, hashtags: [], system_language: str) -> None:
     """Removes a hashtag via a hashtag rule
     """
@@ -352,7 +352,7 @@ def _hashtagRemove(http_prefix: str, domainFull: str, post_json_object: {},
     if rmHashtag in hashtags:
         hashtags.remove(rmHashtag)
     htId = rmHashtag.replace('#', '')
-    hashtagUrl = http_prefix + "://" + domainFull + "/tags/" + htId
+    hashtagUrl = http_prefix + "://" + domain_full + "/tags/" + htId
     # remove tag html from the post content
     hashtagHtml = \
         "<a href=\"" + hashtagUrl + "\" class=\"addedHashtag\" " + \
@@ -394,7 +394,7 @@ def _newswireHashtagProcessing(session, base_dir: str, post_json_object: {},
     with open(rulesFilename, 'r') as f:
         rules = f.readlines()
 
-    domainFull = getFullDomain(domain, port)
+    domain_full = getFullDomain(domain, port)
 
     # get the full text content of the post
     content = ''
@@ -425,12 +425,12 @@ def _newswireHashtagProcessing(session, base_dir: str, post_json_object: {},
 
         if actionStr.startswith('add '):
             # add a hashtag
-            _hashtagAdd(base_dir, http_prefix, domainFull,
+            _hashtagAdd(base_dir, http_prefix, domain_full,
                         post_json_object, actionStr, hashtags, system_language,
                         translate)
         elif actionStr.startswith('remove '):
             # remove a hashtag
-            _hashtagRemove(http_prefix, domainFull, post_json_object,
+            _hashtagRemove(http_prefix, domain_full, post_json_object,
                            actionStr, hashtags, system_language)
         elif actionStr.startswith('block') or actionStr.startswith('drop'):
             # Block this item
@@ -671,7 +671,7 @@ def _convertRSStoActivityPub(base_dir: str, http_prefix: str,
         blog['object']['content'] = rssDescription
         blog['object']['contentMap'][system_language] = rssDescription
 
-        domainFull = getFullDomain(domain, port)
+        domain_full = getFullDomain(domain, port)
 
         hashtags = item[6]
 
@@ -696,7 +696,7 @@ def _convertRSStoActivityPub(base_dir: str, http_prefix: str,
             for tagName in hashtags:
                 htId = tagName.replace('#', '')
                 hashtagUrl = \
-                    http_prefix + "://" + domainFull + "/tags/" + htId
+                    http_prefix + "://" + domain_full + "/tags/" + htId
                 newTag = {
                     'href': hashtagUrl,
                     'name': tagName,
@@ -726,7 +726,7 @@ def _convertRSStoActivityPub(base_dir: str, http_prefix: str,
                     newswire[originalDateStr][6].append(tag)
 
             storeHashTags(base_dir, 'news', domain,
-                          http_prefix, domainFull,
+                          http_prefix, domain_full,
                           blog, translate)
 
             clearFromPostCaches(base_dir, recentPostsCache, postId)

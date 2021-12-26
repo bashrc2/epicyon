@@ -45,7 +45,7 @@ def htmlConfirmDelete(cssCache: {},
     actor = messageId.split('/statuses/')[0]
     nickname = getNicknameFromActor(actor)
     domain, port = getDomainFromActor(actor)
-    domainFull = getFullDomain(domain, port)
+    domain_full = getFullDomain(domain, port)
 
     postFilename = locatePost(base_dir, nickname, domain, messageId)
     if not postFilename:
@@ -85,7 +85,7 @@ def htmlConfirmDelete(cssCache: {},
         '  <p class="followText">' + \
         translate['Delete this post?'] + '</p>'
 
-    postActor = getAltPath(actor, domainFull, callingDomain)
+    postActor = getAltPath(actor, domain_full, callingDomain)
     deletePostStr += \
         '  <form method="POST" action="' + postActor + '/rmpost">\n'
     deletePostStr += \
@@ -114,7 +114,7 @@ def htmlConfirmRemoveSharedItem(cssCache: {}, translate: {}, base_dir: str,
     """
     nickname = getNicknameFromActor(actor)
     domain, port = getDomainFromActor(actor)
-    domainFull = getFullDomain(domain, port)
+    domain_full = getFullDomain(domain, port)
     sharesFile = \
         acctDir(base_dir, nickname, domain) + '/' + sharesFileType + '.json'
     if not os.path.isfile(sharesFile):
@@ -149,7 +149,7 @@ def htmlConfirmRemoveSharedItem(cssCache: {}, translate: {}, base_dir: str,
     sharesStr += \
         '  <p class="followText">' + translate['Remove'] + \
         ' ' + sharedItemDisplayName + ' ?</p>\n'
-    postActor = getAltPath(actor, domainFull, callingDomain)
+    postActor = getAltPath(actor, domain_full, callingDomain)
     if sharesFileType == 'shares':
         endpoint = 'rmshare'
     else:

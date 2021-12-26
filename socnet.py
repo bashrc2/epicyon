@@ -49,8 +49,8 @@ def instancesGraph(base_dir: str, handles: str,
         nickname = handle.split('@')[0]
         domain = handle.split('@')[1]
 
-        domainFull = getFullDomain(domain, port)
-        handle = http_prefix + "://" + domainFull + "/@" + nickname
+        domain_full = getFullDomain(domain, port)
+        handle = http_prefix + "://" + domain_full + "/@" + nickname
         wfRequest = \
             webfingerHandle(session, handle, http_prefix,
                             cached_webfingers,

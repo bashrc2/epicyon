@@ -48,7 +48,7 @@ from blocking import isBlocked
 
 def _loadDfcIds(base_dir: str, system_language: str,
                 productType: str,
-                http_prefix: str, domainFull: str) -> {}:
+                http_prefix: str, domain_full: str) -> {}:
     """Loads the product types ontology
     This is used to add an id to shared items
     """
@@ -95,7 +95,7 @@ def _loadDfcIds(base_dir: str, system_language: str,
             if label['@language'] == system_language:
                 itemId = \
                     item['@id'].replace('http://static.datafoodconsortium.org',
-                                        http_prefix + '://' + domainFull)
+                                        http_prefix + '://' + domain_full)
                 dfcIds[label['@value'].lower()] = itemId
                 break
     return dfcIds
@@ -120,7 +120,7 @@ def _getValidSharedItemID(actor: str, displayName: str) -> str:
 
 def removeSharedItem(base_dir: str, nickname: str, domain: str,
                      itemID: str,
-                     http_prefix: str, domainFull: str,
+                     http_prefix: str, domain_full: str,
                      sharesFileType: str) -> None:
     """Removes a share for a person
     """
@@ -202,7 +202,7 @@ def _dfcProductTypeFromCategory(base_dir: str,
 def _getshareDfcId(base_dir: str, system_language: str,
                    itemType: str, itemCategory: str,
                    translate: {},
-                   http_prefix: str, domainFull: str,
+                   http_prefix: str, domain_full: str,
                    dfcIds: {} = None) -> str:
     """Attempts to obtain a DFC Id for the shared item,
     based upon productTypes ontology.
@@ -218,7 +218,7 @@ def _getshareDfcId(base_dir: str, system_language: str,
         return 'epicyon#' + itemType
     if not dfcIds:
         dfcIds = _loadDfcIds(base_dir, system_language, matchedProductType,
-                             http_prefix, domainFull)
+                             http_prefix, domain_full)
         if not dfcIds:
             return ''
     itemTypeLower = itemType.lower()
@@ -266,7 +266,7 @@ def _getshareTypeFromDfcId(dfcUri: str, dfcIds: {}) -> str:
 
 def _indicateNewShareAvailable(base_dir: str, http_prefix: str,
                                nickname: str, domain: str,
-                               domainFull: str, sharesFileType: str) -> None:
+                               domain_full: str, sharesFileType: str) -> None:
     """Indicate to each account that a new share is available
     """
     for subdir, dirs, files in os.walk(base_dir + '/accounts'):
@@ -287,7 +287,7 @@ def _indicateNewShareAvailable(base_dir: str, http_prefix: str,
                              nickname, domain, None):
                     continue
             localActor = \
-                localActorUrl(http_prefix, accountNickname, domainFull)
+                localActorUrl(http_prefix, accountNickname, domain_full)
             try:
                 with open(newShareFile, 'w+') as fp:
                     if sharesFileType == 'shares':
@@ -326,12 +326,12 @@ def addShare(base_dir: str,
     published = int(time.time())
     durationSec = _addShareDurationSec(duration, published)
 
-    domainFull = getFullDomain(domain, port)
-    actor = localActorUrl(http_prefix, nickname, domainFull)
+    domain_full = getFullDomain(domain, port)
+    actor = localActorUrl(http_prefix, nickname, domain_full)
     itemID = _getValidSharedItemID(actor, displayName)
     dfcId = _getshareDfcId(base_dir, system_language,
                            itemType, itemCategory, translate,
-                           http_prefix, domainFull)
+                           http_prefix, domain_full)
 
     # has an image for this share been uploaded?
     imageUrl = None
@@ -345,7 +345,7 @@ def addShare(base_dir: str,
                 imageFilename = sharesImageFilename + '.' + ext
                 moveImage = True
 
-    domainFull = getFullDomain(domain, port)
+    domain_full = getFullDomain(domain, port)
 
     # copy or move the image for the shared item to its destination
     if imageFilename:
@@ -371,7 +371,7 @@ def addShare(base_dir: str,
                         print('EX: addShare unable to delete ' +
                               str(imageFilename))
                 imageUrl = \
-                    http_prefix + '://' + domainFull + \
+                    http_prefix + '://' + domain_full + \
                     '/sharefiles/' + nickname + '/' + itemID + '.' + ext
 
     sharesJson[itemID] = {
@@ -392,7 +392,7 @@ def addShare(base_dir: str,
     saveJson(sharesJson, sharesFilename)
 
     _indicateNewShareAvailable(base_dir, http_prefix,
-                               nickname, domain, domainFull,
+                               nickname, domain, domain_full,
                                sharesFileType)
 
 
@@ -1010,8 +1010,8 @@ def getSharedItemsCatalogViaServer(base_dir, session,
         'Authorization': authHeader,
         'Accept': 'application/json'
     }
-    domainFull = getFullDomain(domain, port)
-    url = localActorUrl(http_prefix, nickname, domainFull) + '/catalog'
+    domain_full = getFullDomain(domain, port)
+    url = localActorUrl(http_prefix, nickname, domain_full) + '/catalog'
     if debug:
         print('Shared items catalog request to: ' + url)
     catalogJson = getJson(signing_priv_key_pem, session, url, headers, None,
@@ -1118,10 +1118,10 @@ def outboxUndoShareUpload(base_dir: str, http_prefix: str,
         if debug:
             print('DEBUG: displayName missing from Offer')
         return
-    domainFull = getFullDomain(domain, port)
+    domain_full = getFullDomain(domain, port)
     removeSharedItem(base_dir, nickname, domain,
                      message_json['object']['displayName'],
-                     http_prefix, domainFull, 'shares')
+                     http_prefix, domain_full, 'shares')
     if debug:
         print('DEBUG: shared item removed via c2s')
 
@@ -1159,7 +1159,7 @@ def _sharesCatalogParams(path: str) -> (bool, float, float, str):
 
 def sharesCatalogAccountEndpoint(base_dir: str, http_prefix: str,
                                  nickname: str, domain: str,
-                                 domainFull: str,
+                                 domain_full: str,
                                  path: str, debug: bool,
                                  sharesFileType: str) -> {}:
     """Returns the endpoint for the shares catalog of a particular account
@@ -1168,11 +1168,11 @@ def sharesCatalogAccountEndpoint(base_dir: str, http_prefix: str,
     """
     today, minPrice, maxPrice, matchPattern = _sharesCatalogParams(path)
     dfcUrl = \
-        http_prefix + '://' + domainFull + '/ontologies/DFC_FullModel.owl#'
+        http_prefix + '://' + domain_full + '/ontologies/DFC_FullModel.owl#'
     dfcPtUrl = \
-        http_prefix + '://' + domainFull + \
+        http_prefix + '://' + domain_full + \
         '/ontologies/DFC_ProductGlossary.rdf#'
-    owner = localActorUrl(http_prefix, nickname, domainFull)
+    owner = localActorUrl(http_prefix, nickname, domain_full)
     if sharesFileType == 'shares':
         dfcInstanceId = owner + '/catalog'
     else:
@@ -1250,7 +1250,7 @@ def sharesCatalogAccountEndpoint(base_dir: str, http_prefix: str,
 
 
 def sharesCatalogEndpoint(base_dir: str, http_prefix: str,
-                          domainFull: str,
+                          domain_full: str,
                           path: str, sharesFileType: str) -> {}:
     """Returns the endpoint for the shares catalog for the instance
     See https://github.com/datafoodconsortium/ontology
@@ -1258,11 +1258,11 @@ def sharesCatalogEndpoint(base_dir: str, http_prefix: str,
     """
     today, minPrice, maxPrice, matchPattern = _sharesCatalogParams(path)
     dfcUrl = \
-        http_prefix + '://' + domainFull + '/ontologies/DFC_FullModel.owl#'
+        http_prefix + '://' + domain_full + '/ontologies/DFC_FullModel.owl#'
     dfcPtUrl = \
-        http_prefix + '://' + domainFull + \
+        http_prefix + '://' + domain_full + \
         '/ontologies/DFC_ProductGlossary.rdf#'
-    dfcInstanceId = http_prefix + '://' + domainFull + '/catalog'
+    dfcInstanceId = http_prefix + '://' + domain_full + '/catalog'
     endpoint = {
         "@context": {
             "DFC": dfcUrl,
@@ -1283,7 +1283,7 @@ def sharesCatalogEndpoint(base_dir: str, http_prefix: str,
                 continue
             nickname = acct.split('@')[0]
             domain = acct.split('@')[1]
-            owner = localActorUrl(http_prefix, nickname, domainFull)
+            owner = localActorUrl(http_prefix, nickname, domain_full)
 
             sharesFilename = \
                 acctDir(base_dir, nickname, domain) + '/' + \
@@ -1339,12 +1339,12 @@ def sharesCatalogEndpoint(base_dir: str, http_prefix: str,
 
 
 def sharesCatalogCSVEndpoint(base_dir: str, http_prefix: str,
-                             domainFull: str,
+                             domain_full: str,
                              path: str, sharesFileType: str) -> str:
     """Returns a CSV version of the shares catalog
     """
     catalogJson = \
-        sharesCatalogEndpoint(base_dir, http_prefix, domainFull, path,
+        sharesCatalogEndpoint(base_dir, http_prefix, domain_full, path,
                               sharesFileType)
     if not catalogJson:
         return ''
@@ -1386,9 +1386,9 @@ def generateSharedItemFederationTokens(shared_items_federated_domains: [],
                 tokensJson = {}
 
     tokensAdded = False
-    for domainFull in shared_items_federated_domains:
-        if not tokensJson.get(domainFull):
-            tokensJson[domainFull] = ''
+    for domain_full in shared_items_federated_domains:
+        if not tokensJson.get(domain_full):
+            tokensJson[domain_full] = ''
             tokensAdded = True
 
     if not tokensAdded:
@@ -1430,7 +1430,7 @@ def updateSharedItemFederationToken(base_dir: str,
     return tokensJson
 
 
-def mergeSharedItemTokens(base_dir: str, domainFull: str,
+def mergeSharedItemTokens(base_dir: str, domain_full: str,
                           newSharedItemsFederatedDomains: [],
                           tokensJson: {}) -> {}:
     """When the shared item federation domains list has changed, update
@@ -1439,8 +1439,8 @@ def mergeSharedItemTokens(base_dir: str, domainFull: str,
     removals = []
     changed = False
     for tokenDomainFull, tok in tokensJson.items():
-        if domainFull:
-            if tokenDomainFull.startswith(domainFull):
+        if domain_full:
+            if tokenDomainFull.startswith(domain_full):
                 continue
         if tokenDomainFull not in newSharedItemsFederatedDomains:
             removals.append(tokenDomainFull)
@@ -1540,7 +1540,7 @@ def authorizeSharedItems(shared_items_federated_domains: [],
 
 
 def _updateFederatedSharesCache(session, shared_items_federated_domains: [],
-                                base_dir: str, domainFull: str,
+                                base_dir: str, domain_full: str,
                                 http_prefix: str,
                                 tokensJson: {}, debug: bool,
                                 system_language: str,
@@ -1562,12 +1562,12 @@ def _updateFederatedSharesCache(session, shared_items_federated_domains: [],
 
     asHeader = {
         "Accept": "application/ld+json",
-        "Origin": domainFull
+        "Origin": domain_full
     }
     for federatedDomainFull in shared_items_federated_domains:
         # NOTE: federatedDomain does not have a port extension,
         # so may not work in some situations
-        if federatedDomainFull.startswith(domainFull):
+        if federatedDomainFull.startswith(domain_full):
             # only download from instances other than this one
             continue
         if not tokensJson.get(federatedDomainFull):
@@ -1591,7 +1591,7 @@ def _updateFederatedSharesCache(session, shared_items_federated_domains: [],
             print('Downloaded shared items catalog for ' + federatedDomainFull)
             sharesJson = _dfcToSharesFormat(catalogJson,
                                             base_dir, system_language,
-                                            http_prefix, domainFull)
+                                            http_prefix, domain_full)
             if sharesJson:
                 sharesFilename = \
                     catalogsDir + '/' + federatedDomainFull + '.' + \
@@ -1657,7 +1657,7 @@ def _generateNextSharesTokenUpdate(base_dir: str,
             fp.write(str(nextUpdateSec))
 
 
-def _regenerateSharesToken(base_dir: str, domainFull: str,
+def _regenerateSharesToken(base_dir: str, domain_full: str,
                            minDays: int, maxDays: int, httpd) -> None:
     """Occasionally the shared items token for your instance is updated.
     Scenario:
@@ -1688,7 +1688,7 @@ def _regenerateSharesToken(base_dir: str, domainFull: str,
     currTime = int(time.time())
     if currTime <= nextUpdateSec:
         return
-    createSharedItemFederationToken(base_dir, domainFull, True, None)
+    createSharedItemFederationToken(base_dir, domain_full, True, None)
     _generateNextSharesTokenUpdate(base_dir, minDays, maxDays)
     # update the tokens used within the daemon
     shared_fed_domains = httpd.shared_items_federated_domains
@@ -1698,7 +1698,7 @@ def _regenerateSharesToken(base_dir: str, domainFull: str,
 
 
 def runFederatedSharesDaemon(base_dir: str, httpd, http_prefix: str,
-                             domainFull: str, proxy_type: str, debug: bool,
+                             domain_full: str, proxy_type: str, debug: bool,
                              system_language: str) -> None:
     """Runs the daemon used to update federated shared items
     """
@@ -1718,7 +1718,7 @@ def runFederatedSharesDaemon(base_dir: str, httpd, http_prefix: str,
 
         # occasionally change the federated shared items token
         # for this instance
-        _regenerateSharesToken(base_dir, domainFull, minDays, maxDays, httpd)
+        _regenerateSharesToken(base_dir, domain_full, minDays, maxDays, httpd)
 
         # get a list of the domains within the shared items federation
         shared_items_federated_domains = []
@@ -1745,7 +1745,7 @@ def runFederatedSharesDaemon(base_dir: str, httpd, http_prefix: str,
         for sharesFileType in getSharesFilesList():
             _updateFederatedSharesCache(session,
                                         shared_items_federated_domains,
-                                        base_dir, domainFull, http_prefix,
+                                        base_dir, domain_full, http_prefix,
                                         tokensJson, debug, system_language,
                                         sharesFileType)
         time.sleep(secondsPerHour * 6)
@@ -1753,7 +1753,7 @@ def runFederatedSharesDaemon(base_dir: str, httpd, http_prefix: str,
 
 def _dfcToSharesFormat(catalogJson: {},
                        base_dir: str, system_language: str,
-                       http_prefix: str, domainFull: str) -> {}:
+                       http_prefix: str, domain_full: str) -> {}:
     """Converts DFC format into the internal formal used to store shared items.
     This simplifies subsequent search and display
     """
@@ -1766,7 +1766,7 @@ def _dfcToSharesFormat(catalogJson: {},
     for productType in productTypesList:
         dfcIds[productType] = \
             _loadDfcIds(base_dir, system_language, productType,
-                        http_prefix, domainFull)
+                        http_prefix, domain_full)
 
     currTime = int(time.time())
     for item in catalogJson['DFC:supplies']:

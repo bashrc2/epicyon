@@ -2980,19 +2980,19 @@ if args.testdata:
                      testEventDate, testEventTime, testLocation,
                      testIsArticle, args.language, conversationId,
                      low_bandwidth, args.content_license_url)
-    domainFull = domain + ':' + str(port)
+    domain_full = domain + ':' + str(port)
     clearFollows(base_dir, nickname, domain)
-    followPerson(base_dir, nickname, domain, 'maxboardroom', domainFull,
+    followPerson(base_dir, nickname, domain, 'maxboardroom', domain_full,
                  federation_list, False, False)
-    followPerson(base_dir, nickname, domain, 'ultrapancake', domainFull,
+    followPerson(base_dir, nickname, domain, 'ultrapancake', domain_full,
                  federation_list, False, False)
-    followPerson(base_dir, nickname, domain, 'sausagedog', domainFull,
+    followPerson(base_dir, nickname, domain, 'sausagedog', domain_full,
                  federation_list, False, False)
-    followPerson(base_dir, nickname, domain, 'drokk', domainFull,
+    followPerson(base_dir, nickname, domain, 'drokk', domain_full,
                  federation_list, False, False)
-    followerOfPerson(base_dir, nickname, domain, 'drokk', domainFull,
+    followerOfPerson(base_dir, nickname, domain, 'drokk', domain_full,
                      federation_list, False, False)
-    followerOfPerson(base_dir, nickname, domain, 'maxboardroom', domainFull,
+    followerOfPerson(base_dir, nickname, domain, 'maxboardroom', domain_full,
                      federation_list, False, False)
     setConfigParam(base_dir, 'admin', nickname)
 

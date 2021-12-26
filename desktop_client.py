@@ -670,7 +670,7 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
                       system_language: str,
                       screenreader: str, espeak,
                       translate: {}, yourActor: str,
-                      domainFull: str, person_cache: {},
+                      domain_full: str, person_cache: {},
                       signing_priv_key_pem: str,
                       blockedCache: {}) -> {}:
     """Reads a post from the given timeline
@@ -711,7 +711,7 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
                              allow_local_network_access,
                              recentPostsCache, False,
                              system_language,
-                             domainFull, person_cache,
+                             domain_full, person_cache,
                              signing_priv_key_pem,
                              blockedCache)
         if post_json_object2:
@@ -1408,8 +1408,8 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
     _sayCommand(sayStr, sayStr, screenreader,
                 system_language, espeak)
 
-    domainFull = getFullDomain(domain, port)
-    yourActor = localActorUrl(http_prefix, nickname, domainFull)
+    domain_full = getFullDomain(domain, port)
+    yourActor = localActorUrl(http_prefix, nickname, domain_full)
     actorJson = None
 
     notifyJson = {
@@ -1643,7 +1643,7 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                                           pageNumber, postIndex, boxJson,
                                           system_language, screenreader,
                                           espeak, translate, yourActor,
-                                          domainFull, person_cache,
+                                          domain_full, person_cache,
                                           signing_priv_key_pem,
                                           blockedCache)
                     print('')
@@ -2415,7 +2415,7 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                                              allow_local_network_access,
                                              recentPostsCache, False,
                                              system_language,
-                                             domainFull, person_cache,
+                                             domain_full, person_cache,
                                              signing_priv_key_pem,
                                              blockedCache)
                         if post_json_object2:

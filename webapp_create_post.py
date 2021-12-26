@@ -27,7 +27,7 @@ from webapp_post import individualPostAsHtml
 
 
 def _htmlFollowingDataList(base_dir: str, nickname: str,
-                           domain: str, domainFull: str) -> str:
+                           domain: str, domain_full: str) -> str:
     """Returns a datalist of handles being followed
     """
     listStr = '<datalist id="followingHandles">\n'
@@ -39,7 +39,7 @@ def _htmlFollowingDataList(base_dir: str, nickname: str,
             msg = followingFile.read()
             # add your own handle, so that you can send DMs
             # to yourself as reminders
-            msg += nickname + '@' + domainFull + '\n'
+            msg += nickname + '@' + domain_full + '\n'
     if msg:
         # include petnames
         petnamesFilename = \
@@ -192,7 +192,7 @@ def htmlNewPost(cssCache: {}, media_instance: bool, translate: {},
                 reportUrl: str, pageNumber: int,
                 category: str,
                 nickname: str, domain: str,
-                domainFull: str,
+                domain_full: str,
                 defaultTimeline: str, newswire: {},
                 theme: str, noDropDown: bool,
                 accessKeys: {}, customSubmitText: str,
@@ -812,7 +812,7 @@ def htmlNewPost(cssCache: {}, media_instance: bool, translate: {},
             '    <input type="text" name="mentions" ' + \
             'list="followingHandles" value="' + mentionsStr + '" selected>\n'
         newPostForm += \
-            _htmlFollowingDataList(base_dir, nickname, domain, domainFull)
+            _htmlFollowingDataList(base_dir, nickname, domain, domain_full)
         newPostForm += ''
         selectedStr = ''
 

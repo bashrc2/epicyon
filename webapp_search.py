@@ -133,13 +133,13 @@ def _matchSharedItem(searchStrLowerList: [],
     return False
 
 
-def _htmlSearchResultSharePage(actor: str, domainFull: str,
+def _htmlSearchResultSharePage(actor: str, domain_full: str,
                                callingDomain: str, pageNumber: int,
                                searchStrLower: str, translate: {},
                                previous: bool) -> str:
     """Returns the html for the previous button on shared items search results
     """
-    postActor = getAltPath(actor, domainFull, callingDomain)
+    postActor = getAltPath(actor, domain_full, callingDomain)
     # previous page link, needs to be a POST
     if previous:
         pageNumber -= 1
@@ -172,7 +172,7 @@ def _htmlSearchResultSharePage(actor: str, domainFull: str,
 def _htmlSharesResult(base_dir: str,
                       sharesJson: {}, pageNumber: int, resultsPerPage: int,
                       searchStrLowerList: [], currPage: int, ctr: int,
-                      callingDomain: str, http_prefix: str, domainFull: str,
+                      callingDomain: str, http_prefix: str, domain_full: str,
                       contactNickname: str, actor: str,
                       resultsExist: bool, searchStrLower: str, translate: {},
                       sharesFileType: str) -> (bool, int, int, str):
@@ -188,14 +188,14 @@ def _htmlSharesResult(base_dir: str,
                 # show individual search result
                 sharedItemsForm += \
                     htmlSearchResultShare(base_dir, sharedItem, translate,
-                                          http_prefix, domainFull,
+                                          http_prefix, domain_full,
                                           contactNickname,
                                           name, actor, sharesFileType,
                                           sharedItem['category'])
                 if not resultsExist and currPage > 1:
                     # show the previous page button
                     sharedItemsForm += \
-                        _htmlSearchResultSharePage(actor, domainFull,
+                        _htmlSearchResultSharePage(actor, domain_full,
                                                    callingDomain,
                                                    pageNumber,
                                                    searchStrLower,
@@ -207,7 +207,7 @@ def _htmlSharesResult(base_dir: str,
                 if currPage > pageNumber:
                     # show the next page button
                     sharedItemsForm += \
-                        _htmlSearchResultSharePage(actor, domainFull,
+                        _htmlSearchResultSharePage(actor, domain_full,
                                                    callingDomain,
                                                    pageNumber,
                                                    searchStrLower,
@@ -222,7 +222,7 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
                           pageNumber: int,
                           resultsPerPage: int,
                           http_prefix: str,
-                          domainFull: str, actor: str,
+                          domain_full: str, actor: str,
                           callingDomain: str,
                           shared_items_federated_domains: [],
                           sharesFileType: str) -> str:
@@ -270,7 +270,7 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
                                             searchStrLowerList,
                                             currPage, ctr,
                                             callingDomain, http_prefix,
-                                            domainFull,
+                                            domain_full,
                                             contactNickname,
                                             actor, resultsExist,
                                             searchStrLower, translate,
@@ -308,7 +308,7 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
                                                 searchStrLowerList,
                                                 currPage, ctr,
                                                 callingDomain, http_prefix,
-                                                domainFull,
+                                                domain_full,
                                                 contactNickname,
                                                 actor, resultsExist,
                                                 searchStrLower, translate,
@@ -629,8 +629,8 @@ def htmlHistorySearch(cssCache: {}, translate: {}, base_dir: str,
         htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
 
     # add the page title
-    domainFull = getFullDomain(domain, port)
-    actor = localActorUrl(http_prefix, nickname, domainFull)
+    domain_full = getFullDomain(domain, port)
+    actor = localActorUrl(http_prefix, nickname, domain_full)
     historySearchTitle = '🔍 ' + translate['Your Posts']
     if boxName == 'bookmarks':
         historySearchTitle = '🔍 ' + translate['Bookmarks']
@@ -933,11 +933,11 @@ def rssHashtagSearch(nickname: str, domain: str, port: int,
     if not lines:
         return None
 
-    domainFull = getFullDomain(domain, port)
+    domain_full = getFullDomain(domain, port)
 
     maxFeedLength = 10
     hashtagFeed = \
-        rss2TagHeader(hashtag, http_prefix, domainFull)
+        rss2TagHeader(hashtag, http_prefix, domain_full)
     for index in range(len(lines)):
         postId = lines[index].strip('\n').strip('\r')
         if '  ' not in postId:

@@ -181,13 +181,13 @@ def createWebfingerEndpoint(nickname: str, domain: str, port: int,
     return account
 
 
-def webfingerNodeInfo(http_prefix: str, domainFull: str) -> {}:
+def webfingerNodeInfo(http_prefix: str, domain_full: str) -> {}:
     """ /.well-known/nodeinfo endpoint
     """
     nodeinfo = {
         'links': [
             {
-                'href': http_prefix + '://' + domainFull + '/nodeinfo/2.0',
+                'href': http_prefix + '://' + domain_full + '/nodeinfo/2.0',
                 'rel': 'http://nodeinfo.diaspora.software/ns/schema/2.0'
             }
         ]
@@ -195,7 +195,7 @@ def webfingerNodeInfo(http_prefix: str, domainFull: str) -> {}:
     return nodeinfo
 
 
-def webfingerMeta(http_prefix: str, domainFull: str) -> str:
+def webfingerMeta(http_prefix: str, domain_full: str) -> str:
     """Return /.well-known/host-meta
     """
     metaStr = \
@@ -203,10 +203,10 @@ def webfingerMeta(http_prefix: str, domainFull: str) -> str:
         "<XRD xmlns=’http://docs.oasis-open.org/ns/xri/xrd-1.0'" + \
         " xmlns:hm=’http://host-meta.net/xrd/1.0'>" + \
         "" + \
-        "<hm:Host>" + domainFull + "</hm:Host>" + \
+        "<hm:Host>" + domain_full + "</hm:Host>" + \
         "" + \
         "<Link rel=’lrdd’" + \
-        " template=’" + http_prefix + "://" + domainFull + \
+        " template=’" + http_prefix + "://" + domain_full + \
         "/describe?uri={uri}'>" + \
         " <Title>Resource Descriptor</Title>" + \
         " </Link>" + \

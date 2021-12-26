@@ -271,16 +271,16 @@ def htmlProfileAfterSearch(cssCache: {},
                                      alsoKnownAs, accessKeys,
                                      joinedDate)
 
-    domainFull = getFullDomain(domain, port)
+    domain_full = getFullDomain(domain, port)
 
     followIsPermitted = True
     if not profileJson.get('followers'):
         # no followers collection specified within actor
         followIsPermitted = False
-    elif searchNickname == 'news' and searchDomainFull == domainFull:
+    elif searchNickname == 'news' and searchDomainFull == domain_full:
         # currently the news actor is not something you can follow
         followIsPermitted = False
-    elif searchNickname == nickname and searchDomainFull == domainFull:
+    elif searchNickname == nickname and searchDomainFull == domain_full:
         # don't follow yourself!
         followIsPermitted = False
 
@@ -363,7 +363,7 @@ def htmlProfileAfterSearch(cssCache: {},
 
 def _getProfileHeader(base_dir: str, http_prefix: str,
                       nickname: str, domain: str,
-                      domainFull: str, translate: {},
+                      domain_full: str, translate: {},
                       defaultTimeline: str,
                       displayName: str,
                       avatarDescription: str,
@@ -401,7 +401,7 @@ def _getProfileHeader(base_dir: str, http_prefix: str,
     htmlStr += '        <h1>' + displayName + '</h1>\n' + occupationStr
 
     htmlStr += \
-        '    <p><b>@' + nickname + '@' + domainFull + '</b><br>\n'
+        '    <p><b>@' + nickname + '@' + domain_full + '</b><br>\n'
     if joinedDate:
         htmlStr += \
             '    <p>' + translate['Joined'] + ' ' + \
@@ -419,7 +419,7 @@ def _getProfileHeader(base_dir: str, http_prefix: str,
         otherAccountsHtml = \
             '    <p>' + translate['Other accounts'] + ': '
 
-        actor = localActorUrl(http_prefix, nickname, domainFull)
+        actor = localActorUrl(http_prefix, nickname, domain_full)
         ctr = 0
         if isinstance(alsoKnownAs, list):
             for altActor in alsoKnownAs:
@@ -596,7 +596,7 @@ def htmlProfile(signing_priv_key_pem: str,
         addEmojiToDisplayName(session, base_dir, http_prefix,
                               nickname, domain,
                               profileJson['name'], True)
-    domainFull = getFullDomain(domain, port)
+    domain_full = getFullDomain(domain, port)
     profileDescription = \
         addEmojiToDisplayName(session, base_dir, http_prefix,
                               nickname, domain,
@@ -828,10 +828,11 @@ def htmlProfile(signing_priv_key_pem: str,
 
     avatarUrl = profileJson['icon']['url']
     # use alternate path for local avatars to avoid any caching issues
-    if '://' + domainFull + '/system/accounts/avatars/' in avatarUrl:
+    if '://' + domain_full + '/system/accounts/avatars/' in avatarUrl:
         avatarUrl = \
-            avatarUrl.replace('://' + domainFull + '/system/accounts/avatars/',
-                              '://' + domainFull + '/users/')
+            avatarUrl.replace('://' + domain_full +
+                              '/system/accounts/avatars/',
+                              '://' + domain_full + '/users/')
 
     # get pinned post content
     accountDir = acctDir(base_dir, nickname, domain)
@@ -844,7 +845,7 @@ def htmlProfile(signing_priv_key_pem: str,
     profileHeaderStr = \
         _getProfileHeader(base_dir, http_prefix,
                           nickname, domain,
-                          domainFull, translate,
+                          domain_full, translate,
                           defaultTimeline, displayName,
                           avatarDescription,
                           profileDescriptionShort,
@@ -996,20 +997,20 @@ def htmlProfile(signing_priv_key_pem: str,
     if not isGroup:
         if selected == 'roles':
             profileStr += \
-                _htmlProfileRoles(translate, nickname, domainFull,
+                _htmlProfileRoles(translate, nickname, domain_full,
                                   extraJson)
         elif selected == 'skills':
             profileStr += \
-                _htmlProfileSkills(translate, nickname, domainFull, extraJson)
+                _htmlProfileSkills(translate, nickname, domain_full, extraJson)
 #       elif selected == 'shares':
 #           profileStr += \
 #                _htmlProfileShares(actor, translate,
-#                                   nickname, domainFull,
+#                                   nickname, domain_full,
 #                                   extraJson, 'shares') + licenseStr
 #        elif selected == 'wanted':
 #            profileStr += \
 #                _htmlProfileShares(actor, translate,
-#                                   nickname, domainFull,
+#                                   nickname, domain_full,
 #                                   extraJson, 'wanted') + licenseStr
     # end of #timeline
     profileStr += '</div>'
@@ -2053,7 +2054,7 @@ def _htmlEditProfileMain(base_dir: str, displayNickname: str, bioStr: str,
 
 
 def _htmlEditProfileTopBanner(base_dir: str,
-                              nickname: str, domain: str, domainFull: str,
+                              nickname: str, domain: str, domain_full: str,
                               defaultTimeline: str, bannerFile: str,
                               path: str, accessKeys: {}, translate: {}) -> str:
     """top banner on edit profile screen
@@ -2069,7 +2070,7 @@ def _htmlEditProfileTopBanner(base_dir: str,
     editProfileForm += '  <div class="vertical-center">\n'
     editProfileForm += \
         '    <h1>' + translate['Profile for'] + \
-        ' ' + nickname + '@' + domainFull + '</h1>'
+        ' ' + nickname + '@' + domain_full + '</h1>'
     editProfileForm += '    <div class="container">\n'
     editProfileForm += \
         '      <center>\n' + \
@@ -2104,7 +2105,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, base_dir: str, path: str,
     nickname = getNicknameFromActor(path)
     if not nickname:
         return ''
-    domainFull = getFullDomain(domain, port)
+    domain_full = getFullDomain(domain, port)
 
     actorFilename = acctDir(base_dir, nickname, domain) + '.json'
     if not os.path.isfile(actorFilename):
@@ -2257,7 +2258,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, base_dir: str, path: str,
 
     # top banner
     editProfileForm += \
-        _htmlEditProfileTopBanner(base_dir, nickname, domain, domainFull,
+        _htmlEditProfileTopBanner(base_dir, nickname, domain, domain_full,
                                   defaultTimeline, bannerFile,
                                   path, accessKeys, translate)
 

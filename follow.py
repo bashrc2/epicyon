@@ -632,7 +632,7 @@ def storeFollowRequest(base_dir: str,
     if not os.path.isdir(accountsDir):
         return False
 
-    domainFull = getFullDomain(domain, fromPort)
+    domain_full = getFullDomain(domain, fromPort)
     approveHandle = getFullDomain(nickname + '@' + domain, fromPort)
 
     if group_account:
@@ -654,7 +654,7 @@ def storeFollowRequest(base_dir: str,
         else:
             usersPaths = getUserPaths()
             for possibleUsersPath in usersPaths:
-                url = '://' + domainFull + possibleUsersPath + nickname
+                url = '://' + domain_full + possibleUsersPath + nickname
                 if url in followersStr:
                     alreadyFollowing = True
                     break
@@ -1137,8 +1137,8 @@ def getFollowingViaServer(base_dir: str, session,
         print('WARN: No session for getFollowingViaServer')
         return 6
 
-    domainFull = getFullDomain(domain, port)
-    followActor = localActorUrl(http_prefix, nickname, domainFull)
+    domain_full = getFullDomain(domain, port)
+    followActor = localActorUrl(http_prefix, nickname, domain_full)
 
     authHeader = createBasicAuthHeader(nickname, password)
 
@@ -1178,8 +1178,8 @@ def getFollowersViaServer(base_dir: str, session,
         print('WARN: No session for getFollowersViaServer')
         return 6
 
-    domainFull = getFullDomain(domain, port)
-    followActor = localActorUrl(http_prefix, nickname, domainFull)
+    domain_full = getFullDomain(domain, port)
+    followActor = localActorUrl(http_prefix, nickname, domain_full)
 
     authHeader = createBasicAuthHeader(nickname, password)
 
@@ -1219,9 +1219,9 @@ def getFollowRequestsViaServer(base_dir: str, session,
         print('WARN: No session for getFollowRequestsViaServer')
         return 6
 
-    domainFull = getFullDomain(domain, port)
+    domain_full = getFullDomain(domain, port)
 
-    followActor = localActorUrl(http_prefix, nickname, domainFull)
+    followActor = localActorUrl(http_prefix, nickname, domain_full)
     authHeader = createBasicAuthHeader(nickname, password)
 
     headers = {
@@ -1262,8 +1262,8 @@ def approveFollowRequestViaServer(base_dir: str, session,
         print('WARN: No session for approveFollowRequestViaServer')
         return 6
 
-    domainFull = getFullDomain(domain, port)
-    actor = localActorUrl(http_prefix, nickname, domainFull)
+    domain_full = getFullDomain(domain, port)
+    actor = localActorUrl(http_prefix, nickname, domain_full)
 
     authHeader = createBasicAuthHeader(nickname, password)
 
@@ -1303,8 +1303,8 @@ def denyFollowRequestViaServer(base_dir: str, session,
         print('WARN: No session for denyFollowRequestViaServer')
         return 6
 
-    domainFull = getFullDomain(domain, port)
-    actor = localActorUrl(http_prefix, nickname, domainFull)
+    domain_full = getFullDomain(domain, port)
+    actor = localActorUrl(http_prefix, nickname, domain_full)
 
     authHeader = createBasicAuthHeader(nickname, password)
 

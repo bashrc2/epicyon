@@ -1114,13 +1114,13 @@ def canRemovePost(base_dir: str, nickname: str,
     if '/statuses/' not in postId:
         return False
 
-    domainFull = getFullDomain(domain, port)
+    domain_full = getFullDomain(domain, port)
 
     # is the post by the admin?
     adminNickname = getConfigParam(base_dir, 'admin')
     if not adminNickname:
         return False
-    if domainFull + '/users/' + adminNickname + '/' in postId:
+    if domain_full + '/users/' + adminNickname + '/' in postId:
         return False
 
     # is the post by a moderator?
@@ -1129,7 +1129,7 @@ def canRemovePost(base_dir: str, nickname: str,
         with open(moderatorsFile, 'r') as f:
             lines = f.readlines()
         for moderator in lines:
-            if domainFull + '/users/' + moderator.strip('\n') + '/' in postId:
+            if domain_full + '/users/' + moderator.strip('\n') + '/' in postId:
                 return False
     return True
 
@@ -1140,8 +1140,8 @@ def _removeTagsForNickname(base_dir: str, nickname: str,
     """
     if not os.path.isdir(base_dir + '/tags'):
         return
-    domainFull = getFullDomain(domain, port)
-    matchStr = domainFull + '/users/' + nickname + '/'
+    domain_full = getFullDomain(domain, port)
+    matchStr = domain_full + '/users/' + nickname + '/'
     directory = os.fsencode(base_dir + '/tags/')
     for f in os.scandir(directory):
         f = f.name

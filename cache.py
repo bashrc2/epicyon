@@ -33,7 +33,7 @@ def _removePersonFromCache(base_dir: str, personUrl: str,
 
 
 def checkForChangedActor(session, base_dir: str,
-                         http_prefix: str, domainFull: str,
+                         http_prefix: str, domain_full: str,
                          personUrl: str, avatarUrl: str, person_cache: {},
                          timeoutSec: int):
     """Checks if the avatar url exists and if not then
@@ -43,9 +43,9 @@ def checkForChangedActor(session, base_dir: str,
     """
     if not session or not avatarUrl:
         return
-    if domainFull in avatarUrl:
+    if domain_full in avatarUrl:
         return
-    if urlExists(session, avatarUrl, timeoutSec, http_prefix, domainFull):
+    if urlExists(session, avatarUrl, timeoutSec, http_prefix, domain_full):
         return
     _removePersonFromCache(base_dir, personUrl, person_cache)
 

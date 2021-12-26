@@ -383,9 +383,9 @@ def sendBookmarkViaServer(base_dir: str, session,
         print('WARN: No session for sendBookmarkViaServer')
         return 6
 
-    domainFull = getFullDomain(domain, fromPort)
+    domain_full = getFullDomain(domain, fromPort)
 
-    actor = localActorUrl(http_prefix, nickname, domainFull)
+    actor = localActorUrl(http_prefix, nickname, domain_full)
 
     newBookmarkJson = {
         "@context": "https://www.w3.org/ns/activitystreams",
@@ -400,7 +400,7 @@ def sendBookmarkViaServer(base_dir: str, session,
         "target": actor + "/tlbookmarks"
     }
 
-    handle = http_prefix + '://' + domainFull + '/@' + nickname
+    handle = http_prefix + '://' + domain_full + '/@' + nickname
 
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, http_prefix,
@@ -446,7 +446,7 @@ def sendBookmarkViaServer(base_dir: str, session,
         'Content-type': 'application/json',
         'Authorization': authHeader
     }
-    postResult = postJson(http_prefix, domainFull,
+    postResult = postJson(http_prefix, domain_full,
                           session, newBookmarkJson, [], inboxUrl,
                           headers, 3, True)
     if not postResult:
@@ -473,9 +473,9 @@ def sendUndoBookmarkViaServer(base_dir: str, session,
         print('WARN: No session for sendUndoBookmarkViaServer')
         return 6
 
-    domainFull = getFullDomain(domain, fromPort)
+    domain_full = getFullDomain(domain, fromPort)
 
-    actor = localActorUrl(http_prefix, nickname, domainFull)
+    actor = localActorUrl(http_prefix, nickname, domain_full)
 
     newBookmarkJson = {
         "@context": "https://www.w3.org/ns/activitystreams",
@@ -490,7 +490,7 @@ def sendUndoBookmarkViaServer(base_dir: str, session,
         "target": actor + "/tlbookmarks"
     }
 
-    handle = http_prefix + '://' + domainFull + '/@' + nickname
+    handle = http_prefix + '://' + domain_full + '/@' + nickname
 
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, http_prefix,
@@ -536,7 +536,7 @@ def sendUndoBookmarkViaServer(base_dir: str, session,
         'Content-type': 'application/json',
         'Authorization': authHeader
     }
-    postResult = postJson(http_prefix, domainFull,
+    postResult = postJson(http_prefix, domain_full,
                           session, newBookmarkJson, [], inboxUrl,
                           headers, 3, True)
     if not postResult:
@@ -572,8 +572,8 @@ def outboxBookmark(recentPostsCache: {},
         if debug:
             print('DEBUG: bookmark Add target is not string')
         return
-    domainFull = getFullDomain(domain, port)
-    if not message_json['target'].endswith('://' + domainFull +
+    domain_full = getFullDomain(domain, port)
+    if not message_json['target'].endswith('://' + domain_full +
                                            '/users/' + nickname +
                                            '/tlbookmarks'):
         if debug:
@@ -628,8 +628,8 @@ def outboxUndoBookmark(recentPostsCache: {},
         if debug:
             print('DEBUG: unbookmark Remove target is not string')
         return
-    domainFull = getFullDomain(domain, port)
-    if not message_json['target'].endswith('://' + domainFull +
+    domain_full = getFullDomain(domain, port)
+    if not message_json['target'].endswith('://' + domain_full +
                                            '/users/' + nickname +
                                            '/tlbookmarks'):
         if debug:

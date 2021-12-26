@@ -28,10 +28,10 @@ invalidCharacters = (
 )
 
 
-def localActorUrl(http_prefix: str, nickname: str, domainFull: str) -> str:
+def localActorUrl(http_prefix: str, nickname: str, domain_full: str) -> str:
     """Returns the url for an actor on this instance
     """
-    return http_prefix + '://' + domainFull + '/users/' + nickname
+    return http_prefix + '://' + domain_full + '/users/' + nickname
 
 
 def getActorLanguagesList(actorJson: {}) -> []:
@@ -2854,16 +2854,16 @@ def hasObjectDict(post_json_object: {}) -> bool:
     return False
 
 
-def getAltPath(actor: str, domainFull: str, callingDomain: str) -> str:
+def getAltPath(actor: str, domain_full: str, callingDomain: str) -> str:
     """Returns alternate path from the actor
     eg. https://clearnetdomain/path becomes http://oniondomain/path
     """
     postActor = actor
-    if callingDomain not in actor and domainFull in actor:
+    if callingDomain not in actor and domain_full in actor:
         if callingDomain.endswith('.onion') or \
            callingDomain.endswith('.i2p'):
             postActor = \
-                'http://' + callingDomain + actor.split(domainFull)[1]
+                'http://' + callingDomain + actor.split(domain_full)[1]
             print('Changed POST domain from ' + actor + ' to ' + postActor)
     return postActor
 

@@ -155,7 +155,7 @@ def _storeLastPostId(base_dir: str, nickname: str, domain: str,
 
 
 def _updateCachedHashtagSwarm(base_dir: str, nickname: str, domain: str,
-                              http_prefix: str, domainFull: str,
+                              http_prefix: str, domain_full: str,
                               translate: {}) -> bool:
     """Updates the hashtag swarm stored as a file
     """
@@ -186,7 +186,7 @@ def _updateCachedHashtagSwarm(base_dir: str, nickname: str, domain: str,
         else:
             print('WARN: no modified date for ' + str(lastModified))
     if saveSwarm:
-        actor = localActorUrl(http_prefix, nickname, domainFull)
+        actor = localActorUrl(http_prefix, nickname, domain_full)
         newSwarmStr = htmlHashTagSwarm(base_dir, actor, translate)
         if newSwarmStr:
             try:
@@ -200,7 +200,7 @@ def _updateCachedHashtagSwarm(base_dir: str, nickname: str, domain: str,
 
 
 def storeHashTags(base_dir: str, nickname: str, domain: str,
-                  http_prefix: str, domainFull: str,
+                  http_prefix: str, domain_full: str,
                   post_json_object: {}, translate: {}) -> None:
     """Extracts hashtags from an incoming post and updates the
     relevant tags files.
@@ -275,7 +275,7 @@ def storeHashTags(base_dir: str, nickname: str, domain: str,
     # ready for later display
     if hashtagsCtr > 0:
         _updateCachedHashtagSwarm(base_dir, nickname, domain,
-                                  http_prefix, domainFull, translate)
+                                  http_prefix, domain_full, translate)
 
 
 def _inboxStorePostToHtmlCache(recentPostsCache: {}, max_recent_posts: int,
@@ -834,7 +834,7 @@ def _personReceiveUpdate(base_dir: str,
     if debug:
         print('Receiving actor update for ' + personJson['url'] +
               ' ' + str(personJson))
-    domainFull = getFullDomain(domain, port)
+    domain_full = getFullDomain(domain, port)
     updateDomainFull = getFullDomain(updateDomain, updatePort)
     usersPaths = getUserPaths()
     usersStrFound = False
@@ -849,7 +849,7 @@ def _personReceiveUpdate(base_dir: str,
             print('id: ' + personJson['id'])
             print('DEBUG: Actor does not match id')
         return False
-    if updateDomainFull == domainFull:
+    if updateDomainFull == domain_full:
         if debug:
             print('DEBUG: You can only receive actor updates ' +
                   'for domains other than your own')
@@ -1536,9 +1536,9 @@ def _receiveBookmark(recentPostsCache: {},
         if debug:
             print('DEBUG: inbox bookmark Add target is not string')
         return False
-    domainFull = getFullDomain(domain, port)
+    domain_full = getFullDomain(domain, port)
     nickname = handle.split('@')[0]
-    if not message_json['actor'].endswith(domainFull + '/users/' + nickname):
+    if not message_json['actor'].endswith(domain_full + '/users/' + nickname):
         if debug:
             print('DEBUG: inbox bookmark Add unexpected actor')
         return False
@@ -1648,9 +1648,9 @@ def _receiveUndoBookmark(recentPostsCache: {},
         if debug:
             print('DEBUG: inbox Remove bookmark target is not string')
         return False
-    domainFull = getFullDomain(domain, port)
+    domain_full = getFullDomain(domain, port)
     nickname = handle.split('@')[0]
-    if not message_json['actor'].endswith(domainFull + '/users/' + nickname):
+    if not message_json['actor'].endswith(domain_full + '/users/' + nickname):
         if debug:
             print('DEBUG: inbox undo bookmark Remove unexpected actor')
         return False
@@ -1741,8 +1741,8 @@ def _receiveDelete(session, handle: str, isGroup: bool, base_dir: str,
         print('DEBUG: Delete activity arrived')
     if not hasObjectString(message_json, debug):
         return False
-    domainFull = getFullDomain(domain, port)
-    deletePrefix = http_prefix + '://' + domainFull + '/'
+    domain_full = getFullDomain(domain, port)
+    deletePrefix = http_prefix + '://' + domain_full + '/'
     if (not allow_deletion and
         (not message_json['object'].startswith(deletePrefix) or
          not message_json['actor'].startswith(deletePrefix))):
@@ -1788,7 +1788,7 @@ def _receiveDelete(session, handle: str, isGroup: bool, base_dir: str,
         print('DEBUG: post deleted - ' + postFilename)
 
     # also delete any local blogs saved to the news actor
-    if handleNickname != 'news' and handleDomain == domainFull:
+    if handleNickname != 'news' and handleDomain == domain_full:
         postFilename = locatePost(base_dir, 'news',
                                   handleDomain, messageId)
         if postFilename:
@@ -1899,7 +1899,7 @@ def _receiveAnnounce(recentPostsCache: {},
     if debug:
         print('DEBUG: Downloading announce post ' + message_json['actor'] +
               ' -> ' + message_json['object'])
-    domainFull = getFullDomain(domain, port)
+    domain_full = getFullDomain(domain, port)
 
     # Generate html. This also downloads the announced post.
     pageNumber = 1
@@ -1947,7 +1947,7 @@ def _receiveAnnounce(recentPostsCache: {},
                                         allow_local_network_access,
                                         recentPostsCache, debug,
                                         system_language,
-                                        domainFull, person_cache,
+                                        domain_full, person_cache,
                                         signing_priv_key_pem,
                                         blockedCache)
     if not post_json_object:
@@ -1969,7 +1969,7 @@ def _receiveAnnounce(recentPostsCache: {},
             print('DEBUG: Announce post downloaded for ' +
                   message_json['actor'] + ' -> ' + message_json['object'])
         storeHashTags(base_dir, nickname, domain,
-                      http_prefix, domainFull,
+                      http_prefix, domain_full,
                       post_json_object, translate)
         # Try to obtain the actor for this person
         # so that their avatar can be shown
@@ -1990,9 +1990,9 @@ def _receiveAnnounce(recentPostsCache: {},
 
                 if isRecentPost(post_json_object, 3):
                     if not os.path.isfile(postFilename + '.tts'):
-                        domainFull = getFullDomain(domain, port)
+                        domain_full = getFullDomain(domain, port)
                         updateSpeaker(base_dir, http_prefix,
-                                      nickname, domain, domainFull,
+                                      nickname, domain, domain_full,
                                       post_json_object, person_cache,
                                       translate, lookupActor,
                                       theme_name)
@@ -2197,7 +2197,7 @@ def _validPostContent(base_dir: str, nickname: str, domain: str,
                       message_json: {}, max_mentions: int, max_emoji: int,
                       allow_local_network_access: bool, debug: bool,
                       system_language: str,
-                      http_prefix: str, domainFull: str,
+                      http_prefix: str, domain_full: str,
                       person_cache: {}) -> bool:
     """Is the content of a received post valid?
     Check for bad html
@@ -2273,7 +2273,7 @@ def _validPostContent(base_dir: str, nickname: str, domain: str,
     # check that the post is in a language suitable for this account
     if not understoodPostLanguage(base_dir, nickname, domain,
                                   message_json, system_language,
-                                  http_prefix, domainFull,
+                                  http_prefix, domain_full,
                                   person_cache):
         return False
     # check for filtered content
@@ -2650,8 +2650,8 @@ def _sendToGroupMembers(session, base_dir: str, handle: str, port: int,
         return
     nickname = handle.split('@')[0].replace('!', '')
     domain = handle.split('@')[1]
-    domainFull = getFullDomain(domain, port)
-    groupActor = localActorUrl(http_prefix, nickname, domainFull)
+    domain_full = getFullDomain(domain, port)
+    groupActor = localActorUrl(http_prefix, nickname, domain_full)
     if groupActor not in post_json_object['to']:
         return
     cc = ''
@@ -3422,12 +3422,12 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
 
     nickname = handle.split('@')[0]
     jsonObj = None
-    domainFull = getFullDomain(domain, port)
+    domain_full = getFullDomain(domain, port)
     if _validPostContent(base_dir, nickname, domain,
                          post_json_object, max_mentions, max_emoji,
                          allow_local_network_access, debug,
                          system_language, http_prefix,
-                         domainFull, person_cache):
+                         domain_full, person_cache):
         # is the sending actor valid?
         if not validSendingActor(session, base_dir, nickname, domain,
                                  person_cache, post_json_object,
@@ -3495,7 +3495,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                     return False
 
             # get the actor being replied to
-            actor = localActorUrl(http_prefix, nickname, domainFull)
+            actor = localActorUrl(http_prefix, nickname, domain_full)
 
             # create a reply notification file if needed
             isReplyToMutedPost = \
@@ -3512,7 +3512,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                             twitter_replacement_domain,
                             allow_local_network_access,
                             recentPostsCache, debug, system_language,
-                            domainFull, person_cache, signing_priv_key_pem):
+                            domain_full, person_cache, signing_priv_key_pem):
                 # media index will be updated
                 updateIndexList.append('tlmedia')
             if isBlogPost(post_json_object):
@@ -3550,9 +3550,9 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                 else:
                     if boxname == 'inbox':
                         if isRecentPost(post_json_object, 3):
-                            domainFull = getFullDomain(domain, port)
+                            domain_full = getFullDomain(domain, port)
                             updateSpeaker(base_dir, http_prefix,
-                                          nickname, domain, domainFull,
+                                          nickname, domain, domain_full,
                                           post_json_object, person_cache,
                                           translate, None, theme_name)
                     if not unit_test:
@@ -3610,7 +3610,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
             _inboxUpdateCalendar(base_dir, handle, post_json_object)
 
             storeHashTags(base_dir, handleName, domain,
-                          http_prefix, domainFull,
+                          http_prefix, domain_full,
                           post_json_object, translate)
 
             # send the post out to group members
@@ -3874,7 +3874,7 @@ def _receiveFollowRequest(session, base_dir: str, http_prefix: str,
         return False
     domain, tempPort = getDomainFromActor(message_json['actor'])
     fromPort = port
-    domainFull = getFullDomain(domain, tempPort)
+    domain_full = getFullDomain(domain, tempPort)
     if tempPort:
         fromPort = tempPort
     if not domainPermitted(domain, federation_list):
@@ -3929,14 +3929,14 @@ def _receiveFollowRequest(session, base_dir: str, http_prefix: str,
 
     if isFollowerOfPerson(base_dir,
                           nicknameToFollow, domainToFollowFull,
-                          nickname, domainFull):
+                          nickname, domain_full):
         if debug:
             print('DEBUG: ' + nickname + '@' + domain +
                   ' is already a follower of ' +
                   nicknameToFollow + '@' + domainToFollow)
         return True
 
-    approveHandle = nickname + '@' + domainFull
+    approveHandle = nickname + '@' + domain_full
 
     # is the actor sending the request valid?
     if not validSendingActor(session, base_dir,

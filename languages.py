@@ -91,7 +91,7 @@ def setActorLanguages(base_dir: str, actorJson: {}, languagesStr: str) -> None:
 
 def understoodPostLanguage(base_dir: str, nickname: str, domain: str,
                            message_json: {}, system_language: str,
-                           http_prefix: str, domainFull: str,
+                           http_prefix: str, domain_full: str,
                            person_cache: {}) -> bool:
     """Returns true if the post is written in a language
     understood by this account
@@ -105,7 +105,7 @@ def understoodPostLanguage(base_dir: str, nickname: str, domain: str,
         return True
     if msgObject['contentMap'].get(system_language):
         return True
-    personUrl = localActorUrl(http_prefix, nickname, domainFull)
+    personUrl = localActorUrl(http_prefix, nickname, domain_full)
     actorJson = getPersonFromCache(base_dir, personUrl, person_cache, False)
     if not actorJson:
         print('WARN: unable to load actor to check languages ' + personUrl)

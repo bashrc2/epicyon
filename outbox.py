@@ -100,8 +100,8 @@ def _outboxPersonReceiveUpdate(recentPostsCache: {},
         if debug:
             print('DEBUG: c2s actor update id is not a string')
         return
-    domainFull = getFullDomain(domain, port)
-    actor = localActorUrl(http_prefix, nickname, domainFull)
+    domain_full = getFullDomain(domain, port)
+    actor = localActorUrl(http_prefix, nickname, domain_full)
     if len(message_json['to']) != 1:
         if debug:
             print('DEBUG: c2s actor update - to does not contain one actor ' +
@@ -180,7 +180,7 @@ def _outboxPersonReceiveUpdate(recentPostsCache: {},
 def postMessageToOutbox(session, translate: {},
                         message_json: {}, postToNickname: str,
                         server, base_dir: str, http_prefix: str,
-                        domain: str, domainFull: str,
+                        domain: str, domain_full: str,
                         onion_domain: str, i2p_domain: str, port: int,
                         recentPostsCache: {}, followers_threads: [],
                         federation_list: [], send_threads: [],
@@ -335,7 +335,7 @@ def postMessageToOutbox(session, translate: {},
                     os.rename(uploadMediaFilename, mediaFilename)
                     # change the url of the attachment
                     attach['url'] = \
-                        http_prefix + '://' + domainFull + '/' + mediaPath
+                        http_prefix + '://' + domain_full + '/' + mediaPath
                     attach['url'] = \
                         attach['url'].replace('/media/',
                                               '/system/' +
@@ -374,7 +374,7 @@ def postMessageToOutbox(session, translate: {},
             savePostToBox(base_dir,
                           http_prefix,
                           postId,
-                          postToNickname, domainFull,
+                          postToNickname, domain_full,
                           message_json, outboxName)
         if not savedFilename:
             print('WARN: post not saved to outbox ' + outboxName)
@@ -413,7 +413,7 @@ def postMessageToOutbox(session, translate: {},
         if message_json['type'] in indexedActivities:
             indexes = [outboxName, "inbox"]
             selfActor = \
-                localActorUrl(http_prefix, postToNickname, domainFull)
+                localActorUrl(http_prefix, postToNickname, domain_full)
             for boxNameIndex in indexes:
                 if not boxNameIndex:
                     continue
@@ -428,7 +428,7 @@ def postMessageToOutbox(session, translate: {},
                                     twitter_replacement_domain,
                                     allow_local_network_access,
                                     recentPostsCache, debug, system_language,
-                                    domainFull, person_cache,
+                                    domain_full, person_cache,
                                     signing_priv_key_pem):
                         inboxUpdateIndex('tlmedia', base_dir,
                                          postToNickname + '@' + domain,

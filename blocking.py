@@ -543,8 +543,8 @@ def mutePost(base_dir: str, nickname: str, domain: str, port: int,
         if hasObjectString(post_json_object, debug):
             alsoUpdatePostId = removeIdEnding(post_json_object['object'])
 
-    domainFull = getFullDomain(domain, port)
-    actor = localActorUrl(http_prefix, nickname, domainFull)
+    domain_full = getFullDomain(domain, port)
+    actor = localActorUrl(http_prefix, nickname, domain_full)
 
     if postJsonObj.get('conversation'):
         muteConversation(base_dir, nickname, domain,
@@ -687,8 +687,8 @@ def unmutePost(base_dir: str, nickname: str, domain: str, port: int,
                            postJsonObj['conversation'])
 
     if postJsonObj.get('ignores'):
-        domainFull = getFullDomain(domain, port)
-        actor = localActorUrl(http_prefix, nickname, domainFull)
+        domain_full = getFullDomain(domain, port)
+        actor = localActorUrl(http_prefix, nickname, domain_full)
         totalItems = 0
         if postJsonObj['ignores'].get('totalItems'):
             totalItems = postJsonObj['ignores']['totalItems']
@@ -778,8 +778,8 @@ def outboxMute(base_dir: str, http_prefix: str,
         return
     if not hasActor(message_json, debug):
         return
-    domainFull = getFullDomain(domain, port)
-    if not message_json['actor'].endswith(domainFull + '/users/' + nickname):
+    domain_full = getFullDomain(domain, port)
+    if not message_json['actor'].endswith(domain_full + '/users/' + nickname):
         return
     if not message_json['type'] == 'Ignore':
         return
@@ -827,8 +827,8 @@ def outboxUndoMute(base_dir: str, http_prefix: str,
         return
     if not hasActor(message_json, debug):
         return
-    domainFull = getFullDomain(domain, port)
-    if not message_json['actor'].endswith(domainFull + '/users/' + nickname):
+    domain_full = getFullDomain(domain, port)
+    if not message_json['actor'].endswith(domain_full + '/users/' + nickname):
         return
     if not message_json['type'] == 'Undo':
         return
@@ -880,7 +880,7 @@ def broch_modeIsActive(base_dir: str) -> bool:
     return os.path.isfile(allowFilename)
 
 
-def setBrochMode(base_dir: str, domainFull: str, enabled: bool) -> None:
+def setBrochMode(base_dir: str, domain_full: str, enabled: bool) -> None:
     """Broch mode can be used to lock down the instance during
     a period of time when it is temporarily under attack.
     For example, where an adversary is constantly spinning up new
@@ -906,7 +906,7 @@ def setBrochMode(base_dir: str, domainFull: str, enabled: bool) -> None:
             print('Broch mode already activated ' + lastModified)
             return
         # generate instance allow list
-        allowedDomains = [domainFull]
+        allowedDomains = [domain_full]
         followFiles = ('following.txt', 'followers.txt')
         for subdir, dirs, files in os.walk(base_dir + '/accounts'):
             for acct in dirs:
@@ -935,7 +935,7 @@ def setBrochMode(base_dir: str, domainFull: str, enabled: bool) -> None:
         # write the allow file
         try:
             with open(allowFilename, 'w+') as allowFile:
-                allowFile.write(domainFull + '\n')
+                allowFile.write(domain_full + '\n')
                 for d in allowedDomains:
                     allowFile.write(d + '\n')
                 print('Broch mode enabled')

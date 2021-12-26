@@ -125,9 +125,9 @@ def htmlFrontScreen(signing_priv_key_pem: str,
     domain, port = getDomainFromActor(profileJson['id'])
     if not domain:
         return ""
-    domainFull = domain
+    domain_full = domain
     if port:
-        domainFull = domain + ':' + str(port)
+        domain_full = domain + ':' + str(port)
 
     loginButton = headerButtonsFrontScreen(translate, nickname,
                                            'features', authorized,
@@ -153,7 +153,7 @@ def htmlFrontScreen(signing_priv_key_pem: str,
         '    <tr>\n' + \
         '      <td valign="top" class="col-left">\n'
     profileHeaderStr += \
-        getLeftColumnContent(base_dir, 'news', domainFull,
+        getLeftColumnContent(base_dir, 'news', domain_full,
                              http_prefix, translate,
                              False, False,
                              False, None, rss_icon_at_top, True,
@@ -193,7 +193,7 @@ def htmlFrontScreen(signing_priv_key_pem: str,
     profileFooterStr = '      </td>\n'
     profileFooterStr += '      <td valign="top" class="col-right">\n'
     profileFooterStr += \
-        getRightColumnContent(base_dir, 'news', domainFull,
+        getRightColumnContent(base_dir, 'news', domain_full,
                               http_prefix, translate,
                               False, False, newswire, False,
                               False, None, False, False,

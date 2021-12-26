@@ -86,7 +86,7 @@ def mastoApiV1Response(path: str, callingDomain: str,
                        authorized: bool,
                        http_prefix: str,
                        base_dir: str, nickname: str, domain: str,
-                       domainFull: str,
+                       domain_full: str,
                        onion_domain: str, i2p_domain: str,
                        translate: {},
                        registration: bool,
@@ -209,10 +209,10 @@ def mastoApiV1Response(path: str, callingDomain: str,
         instanceTitle = getConfigParam(base_dir, 'instanceTitle')
 
         if callingDomain.endswith('.onion') and onion_domain:
-            domainFull = onion_domain
+            domain_full = onion_domain
             http_prefix = 'http'
         elif (callingDomain.endswith('.i2p') and i2p_domain):
-            domainFull = i2p_domain
+            domain_full = i2p_domain
             http_prefix = 'http'
 
         if broch_mode:
@@ -227,7 +227,7 @@ def mastoApiV1Response(path: str, callingDomain: str,
                              base_dir,
                              adminNickname,
                              domain,
-                             domainFull,
+                             domain_full,
                              registration,
                              system_language,
                              project_version)
@@ -238,7 +238,7 @@ def mastoApiV1Response(path: str, callingDomain: str,
         # On a large instance you are somewhat lost in the crowd, but on
         # small instances a full list of peers would convey a lot of
         # information about the interests of a small number of accounts
-        sendJson = ['mastodon.social', domainFull]
+        sendJson = ['mastodon.social', domain_full]
         sendJsonStr = 'masto API peers metadata sent ' + uaStr
     elif path.startswith('/api/v1/instance/activity'):
         sendJson = []

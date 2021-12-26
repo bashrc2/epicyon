@@ -357,7 +357,7 @@ def _htmlTimelineKeyboard(moderator: bool, text_mode_banner: str,
                                   None, usersPath, translate, followApprovals)
 
 
-def _htmlTimelineEnd(base_dir: str, nickname: str, domainFull: str,
+def _htmlTimelineEnd(base_dir: str, nickname: str, domain_full: str,
                      http_prefix: str, translate: {},
                      moderator: bool, editor: bool,
                      newswire: {}, positive_voting: bool,
@@ -376,7 +376,7 @@ def _htmlTimelineEnd(base_dir: str, nickname: str, domainFull: str,
     tlStr += '  </td>\n'
 
     # right column
-    rightColumnStr = getRightColumnContent(base_dir, nickname, domainFull,
+    rightColumnStr = getRightColumnContent(base_dir, nickname, domain_full,
                                            http_prefix, translate,
                                            moderator, editor,
                                            newswire, positive_voting,
@@ -741,11 +741,11 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         '  <tbody>\n' + \
         '    <tr>\n'
 
-    domainFull = getFullDomain(domain, port)
+    domain_full = getFullDomain(domain, port)
 
     # left column
     leftColumnStr = \
-        getLeftColumnContent(base_dir, nickname, domainFull,
+        getLeftColumnContent(base_dir, nickname, domain_full,
                              http_prefix, translate,
                              editor, artist, False, None, rss_icon_at_top,
                              True, False, theme, accessKeys,
@@ -789,7 +789,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                     base_dir, actor, nickname, domain, port,
                                     maxSharesPerAccount, http_prefix,
                                     shared_items_federated_domains, 'shares') +
-                _htmlTimelineEnd(base_dir, nickname, domainFull,
+                _htmlTimelineEnd(base_dir, nickname, domain_full,
                                  http_prefix, translate,
                                  moderator, editor,
                                  newswire, positive_voting,
@@ -807,7 +807,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                     base_dir, actor, nickname, domain, port,
                                     maxSharesPerAccount, http_prefix,
                                     shared_items_federated_domains, 'wanted') +
-                _htmlTimelineEnd(base_dir, nickname, domainFull,
+                _htmlTimelineEnd(base_dir, nickname, domain_full,
                                  http_prefix, translate,
                                  moderator, editor,
                                  newswire, positive_voting,
@@ -955,7 +955,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         tlStr += _getHelpForTimeline(base_dir, boxName)
 
     tlStr += \
-        _htmlTimelineEnd(base_dir, nickname, domainFull,
+        _htmlTimelineEnd(base_dir, nickname, domain_full,
                          http_prefix, translate,
                          moderator, editor,
                          newswire, positive_voting,
@@ -1053,13 +1053,13 @@ def _htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
         sharesTimelineJson(actor, pageNumber, itemsPerPage,
                            base_dir, domain, nickname, maxSharesPerAccount,
                            shared_items_federated_domains, sharesFileType)
-    domainFull = getFullDomain(domain, port)
-    actor = localActorUrl(http_prefix, nickname, domainFull)
+    domain_full = getFullDomain(domain, port)
+    actor = localActorUrl(http_prefix, nickname, domain_full)
     adminNickname = getConfigParam(base_dir, 'admin')
     adminActor = ''
     if adminNickname:
         adminActor = \
-            localActorUrl(http_prefix, adminNickname, domainFull)
+            localActorUrl(http_prefix, adminNickname, domain_full)
     timelineStr = ''
 
     if pageNumber > 1:

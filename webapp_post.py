@@ -331,7 +331,7 @@ def _getPostFromRecentCache(session,
 
 
 def _getAvatarImageHtml(showAvatarOptions: bool,
-                        nickname: str, domainFull: str,
+                        nickname: str, domain_full: str,
                         avatarUrl: str, postActor: str,
                         translate: {}, avatarPosition: str,
                         pageNumber: int, messageIdStr: str) -> str:
@@ -349,7 +349,7 @@ def _getAvatarImageHtml(showAvatarOptions: bool,
             getBrokenLinkSubstitute() + '/></a>\n'
 
     if showAvatarOptions and \
-       domainFull + '/users/' + nickname not in postActor:
+       domain_full + '/users/' + nickname not in postActor:
         showOptionsForThisPersonStr = 'Show options for this person'
         if translate.get(showOptionsForThisPersonStr):
             showOptionsForThisPersonStr = \
@@ -460,7 +460,7 @@ def _getReplyIconHtml(base_dir: str, nickname: str, domain: str,
     return replyStr
 
 
-def _getEditIconHtml(base_dir: str, nickname: str, domainFull: str,
+def _getEditIconHtml(base_dir: str, nickname: str, domain_full: str,
                      post_json_object: {}, actorNickname: str,
                      translate: {}, isEvent: bool) -> str:
     """Returns html for the edit icon/button
@@ -471,9 +471,9 @@ def _getEditIconHtml(base_dir: str, nickname: str, domainFull: str,
     # or it could be generated from the newswire (see
     # _addBlogsToNewswire) in which case anyone with
     # editor status should be able to alter it
-    if (actor.endswith('/' + domainFull + '/users/' + nickname) or
+    if (actor.endswith('/' + domain_full + '/users/' + nickname) or
         (isEditor(base_dir, nickname) and
-         actor.endswith('/' + domainFull + '/users/news'))):
+         actor.endswith('/' + domain_full + '/users/news'))):
 
         postId = removeIdEnding(post_json_object['object']['id'])
 
@@ -526,7 +526,7 @@ def _getEditIconHtml(base_dir: str, nickname: str, domainFull: str,
 
 def _getAnnounceIconHtml(isAnnounced: bool,
                          postActor: str,
-                         nickname: str, domainFull: str,
+                         nickname: str, domain_full: str,
                          announceJsonObject: {},
                          post_json_object: {},
                          isPublicRepeat: bool,
@@ -559,7 +559,7 @@ def _getAnnounceIconHtml(isAnnounced: bool,
     unannounceLinkStr = ''
 
     if announcedByPerson(isAnnounced,
-                         postActor, nickname, domainFull):
+                         postActor, nickname, domain_full):
         announceIcon = 'repeat.png'
         announceEmoji = '🔁 '
         announceLink = 'unrepeat'
@@ -592,7 +592,7 @@ def _getAnnounceIconHtml(isAnnounced: bool,
     return announceStr
 
 
-def _getLikeIconHtml(nickname: str, domainFull: str,
+def _getLikeIconHtml(nickname: str, domain_full: str,
                      isModerationPost: bool,
                      showLikeButton: bool,
                      post_json_object: {},
@@ -623,7 +623,7 @@ def _getLikeIconHtml(nickname: str, domainFull: str,
             likeCountStr = ' (' + str(likeCount) + ')'
         else:
             likeCountStr = ' (' + str(max_like_count) + '+)'
-        if likedByPerson(post_json_object, nickname, domainFull):
+        if likedByPerson(post_json_object, nickname, domain_full):
             if likeCount == 1:
                 # liked by the reader only
                 likeCountStr = ''
@@ -660,7 +660,7 @@ def _getLikeIconHtml(nickname: str, domainFull: str,
     return likeStr
 
 
-def _getBookmarkIconHtml(nickname: str, domainFull: str,
+def _getBookmarkIconHtml(nickname: str, domain_full: str,
                          post_json_object: {},
                          isModerationPost: bool,
                          translate: {},
@@ -681,7 +681,7 @@ def _getBookmarkIconHtml(nickname: str, domainFull: str,
     bookmarkTitle = 'Bookmark this post'
     if translate.get(bookmarkTitle):
         bookmarkTitle = translate[bookmarkTitle]
-    if bookmarkedByPerson(post_json_object, nickname, domainFull):
+    if bookmarkedByPerson(post_json_object, nickname, domain_full):
         bookmarkIcon = 'bookmark.png'
         bookmarkLink = 'unbookmark'
         bookmarkEmoji = '🔖 '
@@ -706,7 +706,7 @@ def _getBookmarkIconHtml(nickname: str, domainFull: str,
     return bookmarkStr
 
 
-def _getReactionIconHtml(nickname: str, domainFull: str,
+def _getReactionIconHtml(nickname: str, domain_full: str,
                          post_json_object: {},
                          isModerationPost: bool,
                          showReactionButton: bool,
@@ -746,7 +746,7 @@ def _getReactionIconHtml(nickname: str, domainFull: str,
 def _getMuteIconHtml(isMuted: bool,
                      postActor: str,
                      messageId: str,
-                     nickname: str, domainFull: str,
+                     nickname: str, domain_full: str,
                      allow_deletion: bool,
                      pageNumberParam: str,
                      boxName: str,
@@ -756,7 +756,7 @@ def _getMuteIconHtml(isMuted: bool,
     """
     muteStr = ''
     if (allow_deletion or
-        ('/' + domainFull + '/' in postActor and
+        ('/' + domain_full + '/' in postActor and
          messageId.startswith(postActor))):
         return muteStr
 
@@ -792,7 +792,7 @@ def _getMuteIconHtml(isMuted: bool,
     return muteStr
 
 
-def _getDeleteIconHtml(nickname: str, domainFull: str,
+def _getDeleteIconHtml(nickname: str, domain_full: str,
                        allow_deletion: bool,
                        postActor: str,
                        messageId: str,
@@ -803,7 +803,7 @@ def _getDeleteIconHtml(nickname: str, domainFull: str,
     """
     deleteStr = ''
     if (allow_deletion or
-        ('/' + domainFull + '/' in postActor and
+        ('/' + domain_full + '/' in postActor and
          messageId.startswith(postActor))):
         if '/users/' + nickname + '/' in messageId:
             if not isNewsPost(post_json_object):
@@ -1381,7 +1381,7 @@ def individualPostAsHtml(signing_priv_key_pem: str,
     if messageId:
         messageIdStr = ';' + messageId
 
-    domainFull = getFullDomain(domain, port)
+    domain_full = getFullDomain(domain, port)
 
     pageNumberParam = ''
     if pageNumber:
@@ -1422,7 +1422,7 @@ def individualPostAsHtml(signing_priv_key_pem: str,
     _logPostTiming(enableTimingLog, postStartTime, '5')
 
     # get the display name
-    if domainFull not in postActor:
+    if domain_full not in postActor:
         # lookup the correct webfinger for the postActor
         postActorNickname = getNicknameFromActor(postActor)
         postActorDomain, postActorPort = getDomainFromActor(postActor)
@@ -1465,7 +1465,7 @@ def individualPostAsHtml(signing_priv_key_pem: str,
 
     avatarLink = \
         _getAvatarImageHtml(showAvatarOptions,
-                            nickname, domainFull,
+                            nickname, domain_full,
                             avatarUrl, postActor,
                             translate, avatarPosition,
                             pageNumber, messageIdStr)
@@ -1504,7 +1504,7 @@ def individualPostAsHtml(signing_priv_key_pem: str,
                              allow_local_network_access,
                              recentPostsCache, False,
                              system_language,
-                             domainFull, person_cache,
+                             domain_full, person_cache,
                              signing_priv_key_pem,
                              blockedCache)
         if not postJsonAnnounce:
@@ -1541,14 +1541,14 @@ def individualPostAsHtml(signing_priv_key_pem: str,
         if announceFilename:
             updateAnnounceCollection(recentPostsCache,
                                      base_dir, announceFilename,
-                                     postActor, nickname, domainFull, False)
+                                     postActor, nickname, domain_full, False)
 
             # create a file for use by text-to-speech
             if isRecentPost(post_json_object, 3):
                 if post_json_object.get('actor'):
                     if not os.path.isfile(announceFilename + '.tts'):
                         updateSpeaker(base_dir, http_prefix,
-                                      nickname, domain, domainFull,
+                                      nickname, domain, domain_full,
                                       post_json_object, person_cache,
                                       translate, post_json_object['actor'],
                                       theme_name)
@@ -1644,7 +1644,7 @@ def individualPostAsHtml(signing_priv_key_pem: str,
 
     _logPostTiming(enableTimingLog, postStartTime, '10')
 
-    editStr = _getEditIconHtml(base_dir, nickname, domainFull,
+    editStr = _getEditIconHtml(base_dir, nickname, domain_full,
                                post_json_object, actorNickname,
                                translate, False)
 
@@ -1653,7 +1653,7 @@ def individualPostAsHtml(signing_priv_key_pem: str,
     announceStr = \
         _getAnnounceIconHtml(isAnnounced,
                              postActor,
-                             nickname, domainFull,
+                             nickname, domain_full,
                              announceJsonObject,
                              post_json_object,
                              isPublicRepeat,
@@ -1683,7 +1683,7 @@ def individualPostAsHtml(signing_priv_key_pem: str,
     likeJsonObject = post_json_object
     if announceJsonObject:
         likeJsonObject = announceJsonObject
-    likeStr = _getLikeIconHtml(nickname, domainFull,
+    likeStr = _getLikeIconHtml(nickname, domain_full,
                                isModerationPost,
                                showLikeButton,
                                likeJsonObject,
@@ -1696,7 +1696,7 @@ def individualPostAsHtml(signing_priv_key_pem: str,
     _logPostTiming(enableTimingLog, postStartTime, '12.5')
 
     bookmarkStr = \
-        _getBookmarkIconHtml(nickname, domainFull,
+        _getBookmarkIconHtml(nickname, domain_full,
                              post_json_object,
                              isModerationPost,
                              translate,
@@ -1708,7 +1708,7 @@ def individualPostAsHtml(signing_priv_key_pem: str,
     _logPostTiming(enableTimingLog, postStartTime, '12.9')
 
     reactionStr = \
-        _getReactionIconHtml(nickname, domainFull,
+        _getReactionIconHtml(nickname, domain_full,
                              post_json_object,
                              isModerationPost,
                              showReactionButton,
@@ -1729,7 +1729,7 @@ def individualPostAsHtml(signing_priv_key_pem: str,
         _getMuteIconHtml(isMuted,
                          postActor,
                          messageId,
-                         nickname, domainFull,
+                         nickname, domain_full,
                          allow_deletion,
                          pageNumberParam,
                          boxName,
@@ -1737,7 +1737,7 @@ def individualPostAsHtml(signing_priv_key_pem: str,
                          translate)
 
     deleteStr = \
-        _getDeleteIconHtml(nickname, domainFull,
+        _getDeleteIconHtml(nickname, domain_full,
                            allow_deletion,
                            postActor,
                            messageId,
@@ -1848,8 +1848,8 @@ def individualPostAsHtml(signing_priv_key_pem: str,
         post_json_object['object']['contentMap'][system_language] = \
             post_json_object['object']['content']
 
-    domainFull = getFullDomain(domain, port)
-    personUrl = localActorUrl(http_prefix, nickname, domainFull)
+    domain_full = getFullDomain(domain, port)
+    personUrl = localActorUrl(http_prefix, nickname, domain_full)
     actorJson = \
         getPersonFromCache(base_dir, personUrl, person_cache, False)
     languagesUnderstood = []
@@ -2033,7 +2033,7 @@ def htmlIndividualPost(cssCache: {},
             '<p>' + byText + ' <a href="' + byStr + '">@' + \
             byStrHandle + '</a>' + byTextExtra + '\n'
 
-        domainFull = getFullDomain(domain, port)
+        domain_full = getFullDomain(domain, port)
         actor = '/users/' + nickname
         followStr = '  <form method="POST" ' + \
             'accept-charset="UTF-8" action="' + actor + '/searchhandle">\n'
@@ -2042,7 +2042,7 @@ def htmlIndividualPost(cssCache: {},
         followStr += \
             '    <input type="hidden" name="searchtext" value="' + \
             byStrHandle + '">\n'
-        if not isFollowingActor(base_dir, nickname, domainFull, byStr):
+        if not isFollowingActor(base_dir, nickname, domain_full, byStr):
             translateFollowStr = 'Follow'
             if translate.get(translateFollowStr):
                 translateFollowStr = translate[translateFollowStr]

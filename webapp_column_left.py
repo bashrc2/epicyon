@@ -33,7 +33,7 @@ def _linksExist(base_dir: str) -> bool:
 
 
 def _getLeftColumnShares(base_dir: str,
-                         http_prefix: str, domain: str, domainFull: str,
+                         http_prefix: str, domain: str, domain_full: str,
                          nickname: str,
                          maxSharesInLeftColumn: int,
                          translate: {},
@@ -41,7 +41,7 @@ def _getLeftColumnShares(base_dir: str,
     """get any shares and turn them into the left column links format
     """
     pageNumber = 1
-    actor = localActorUrl(http_prefix, nickname, domainFull)
+    actor = localActorUrl(http_prefix, nickname, domain_full)
     # NOTE: this could potentially be slow if the number of federated
     # shared items is large
     sharesJson, lastPage = \
@@ -75,7 +75,7 @@ def _getLeftColumnShares(base_dir: str,
 
 
 def _getLeftColumnWanted(base_dir: str,
-                         http_prefix: str, domain: str, domainFull: str,
+                         http_prefix: str, domain: str, domain_full: str,
                          nickname: str,
                          maxSharesInLeftColumn: int,
                          translate: {},
@@ -83,7 +83,7 @@ def _getLeftColumnWanted(base_dir: str,
     """get any wanted items and turn them into the left column links format
     """
     pageNumber = 1
-    actor = localActorUrl(http_prefix, nickname, domainFull)
+    actor = localActorUrl(http_prefix, nickname, domain_full)
     # NOTE: this could potentially be slow if the number of federated
     # wanted items is large
     sharesJson, lastPage = \
@@ -112,7 +112,7 @@ def _getLeftColumnWanted(base_dir: str,
     return linksList
 
 
-def getLeftColumnContent(base_dir: str, nickname: str, domainFull: str,
+def getLeftColumnContent(base_dir: str, nickname: str, domain_full: str,
                          http_prefix: str, translate: {},
                          editor: bool, artist: bool,
                          showBackButton: bool, timelinePath: str,
@@ -125,7 +125,7 @@ def getLeftColumnContent(base_dir: str, nickname: str, domainFull: str,
     htmlStr = ''
 
     separatorStr = htmlPostSeparator(base_dir, 'left')
-    domain = removeDomainPort(domainFull)
+    domain = removeDomainPort(domain_full)
 
     editImageClass = ''
     if showHeaderImage:
@@ -177,11 +177,11 @@ def getLeftColumnContent(base_dir: str, nickname: str, domainFull: str,
     # RSS icon
     if nickname != 'news':
         # rss feed for this account
-        rssUrl = http_prefix + '://' + domainFull + \
+        rssUrl = http_prefix + '://' + domain_full + \
             '/blog/' + nickname + '/rss.xml'
     else:
         # rss feed for all accounts on the instance
-        rssUrl = http_prefix + '://' + domainFull + '/blog/rss.xml'
+        rssUrl = http_prefix + '://' + domain_full + '/blog/rss.xml'
     if not frontPage:
         rssTitle = translate['RSS feed for your blog']
     else:
@@ -218,7 +218,7 @@ def getLeftColumnContent(base_dir: str, nickname: str, domainFull: str,
         maxSharesInLeftColumn = 3
         sharesList = \
             _getLeftColumnShares(base_dir,
-                                 http_prefix, domain, domainFull, nickname,
+                                 http_prefix, domain, domain_full, nickname,
                                  maxSharesInLeftColumn, translate,
                                  shared_items_federated_domains)
         if linksList and sharesList:
@@ -226,7 +226,7 @@ def getLeftColumnContent(base_dir: str, nickname: str, domainFull: str,
 
         wantedList = \
             _getLeftColumnWanted(base_dir,
-                                 http_prefix, domain, domainFull, nickname,
+                                 http_prefix, domain, domain_full, nickname,
                                  maxSharesInLeftColumn, translate,
                                  shared_items_federated_domains)
         if linksList and wantedList:
@@ -349,7 +349,7 @@ def getLeftColumnContent(base_dir: str, nickname: str, domainFull: str,
 
 
 def htmlLinksMobile(cssCache: {}, base_dir: str,
-                    nickname: str, domainFull: str,
+                    nickname: str, domain_full: str,
                     http_prefix: str, translate,
                     timelinePath: str, authorized: bool,
                     rss_icon_at_top: bool,
@@ -374,7 +374,7 @@ def htmlLinksMobile(cssCache: {}, base_dir: str,
         editor = isEditor(base_dir, nickname)
         artist = isArtist(base_dir, nickname)
 
-    domain = removeDomainPort(domainFull)
+    domain = removeDomainPort(domain_full)
 
     instanceTitle = \
         getConfigParam(base_dir, 'instanceTitle')
@@ -394,7 +394,7 @@ def htmlLinksMobile(cssCache: {}, base_dir: str,
                                  'links', authorized,
                                  icons_as_buttons) + '</center>'
     htmlStr += \
-        getLeftColumnContent(base_dir, nickname, domainFull,
+        getLeftColumnContent(base_dir, nickname, domain_full,
                              http_prefix, translate,
                              editor, artist,
                              False, timelinePath,

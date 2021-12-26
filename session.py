@@ -86,7 +86,7 @@ def urlExists(session, url: str, timeoutSec: int = 3,
     return False
 
 
-def _getJsonRequest(session, url: str, domainFull: str, sessionHeaders: {},
+def _getJsonRequest(session, url: str, domain_full: str, sessionHeaders: {},
                     sessionParams: {}, timeoutSec: int,
                     signing_priv_key_pem: str, quiet: bool, debug: bool,
                     returnJson: bool) -> {}:
@@ -136,12 +136,12 @@ def _getJsonRequest(session, url: str, domainFull: str, sessionHeaders: {},
     return None
 
 
-def _getJsonSigned(session, url: str, domainFull: str, sessionHeaders: {},
+def _getJsonSigned(session, url: str, domain_full: str, sessionHeaders: {},
                    sessionParams: {}, timeoutSec: int,
                    signing_priv_key_pem: str, quiet: bool, debug: bool) -> {}:
     """Authorized fetch - a signed version of GET
     """
-    if not domainFull:
+    if not domain_full:
         if debug:
             print('No sending domain for signed GET')
         return None
@@ -153,11 +153,11 @@ def _getJsonSigned(session, url: str, domainFull: str, sessionHeaders: {},
     if '/' in toDomainFull:
         toDomainFull = toDomainFull.split('/')[0]
 
-    if ':' in domainFull:
-        domain = domainFull.split(':')[0]
-        port = domainFull.split(':')[1]
+    if ':' in domain_full:
+        domain = domain_full.split(':')[0]
+        port = domain_full.split(':')[1]
     else:
-        domain = domainFull
+        domain = domain_full
         if http_prefix == 'https':
             port = 443
         else:
@@ -205,7 +205,7 @@ def _getJsonSigned(session, url: str, domainFull: str, sessionHeaders: {},
     returnJson = True
     if 'json' not in contentType:
         returnJson = False
-    return _getJsonRequest(session, url, domainFull, sessionHeaders,
+    return _getJsonRequest(session, url, domain_full, sessionHeaders,
                            sessionParams, timeoutSec, None, quiet,
                            debug, returnJson)
 
@@ -290,7 +290,7 @@ def downloadHtml(signing_priv_key_pem: str,
                                None, quiet, debug, False)
 
 
-def postJson(http_prefix: str, domainFull: str,
+def postJson(http_prefix: str, domain_full: str,
              session, post_json_object: {}, federation_list: [],
              inboxUrl: str, headers: {}, timeoutSec: int = 60,
              quiet: bool = False) -> str:
@@ -305,7 +305,7 @@ def postJson(http_prefix: str, domainFull: str,
     sessionHeaders = headers
     sessionHeaders['User-Agent'] = 'Epicyon/' + __version__
     sessionHeaders['User-Agent'] += \
-        '; +' + http_prefix + '://' + domainFull + '/'
+        '; +' + http_prefix + '://' + domain_full + '/'
 
     try:
         postResult = \

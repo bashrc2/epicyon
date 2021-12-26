@@ -90,9 +90,9 @@ def sendAvailabilityViaServer(base_dir: str, session,
         print('WARN: No session for sendAvailabilityViaServer')
         return 6
 
-    domainFull = getFullDomain(domain, port)
+    domain_full = getFullDomain(domain, port)
 
-    toUrl = localActorUrl(http_prefix, nickname, domainFull)
+    toUrl = localActorUrl(http_prefix, nickname, domain_full)
     ccUrl = toUrl + '/followers'
 
     newAvailabilityJson = {
@@ -103,7 +103,7 @@ def sendAvailabilityViaServer(base_dir: str, session,
         'cc': [ccUrl]
     }
 
-    handle = http_prefix + '://' + domainFull + '/@' + nickname
+    handle = http_prefix + '://' + domain_full + '/@' + nickname
 
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, http_prefix,
@@ -148,7 +148,7 @@ def sendAvailabilityViaServer(base_dir: str, session,
         'Content-type': 'application/json',
         'Authorization': authHeader
     }
-    postResult = postJson(http_prefix, domainFull,
+    postResult = postJson(http_prefix, domain_full,
                           session, newAvailabilityJson, [],
                           inboxUrl, headers, 30, True)
     if not postResult:

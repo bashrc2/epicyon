@@ -480,17 +480,17 @@ def pgpPublicKeyUpload(base_dir: str, session,
         PGPpubKey = test
         PGPpubKeyId = None
 
-    domainFull = getFullDomain(domain, port)
+    domain_full = getFullDomain(domain, port)
     if debug:
-        print('PGP test domain: ' + domainFull)
+        print('PGP test domain: ' + domain_full)
 
-    handle = nickname + '@' + domainFull
+    handle = nickname + '@' + domain_full
 
     if debug:
         print('Getting actor for ' + handle)
 
     actorJson, asHeader = \
-        getActorJson(domainFull, handle, False, False, debug, True,
+        getActorJson(domain_full, handle, False, False, debug, True,
                      signing_priv_key_pem, session)
     if not actorJson:
         if debug:
@@ -500,7 +500,7 @@ def pgpPublicKeyUpload(base_dir: str, session,
     if debug:
         print('Actor for ' + handle + ' obtained')
 
-    actor = localActorUrl(http_prefix, nickname, domainFull)
+    actor = localActorUrl(http_prefix, nickname, domain_full)
     handle = replaceUsersWithAt(actor)
 
     # check that this looks like the correct actor
@@ -601,7 +601,7 @@ def pgpPublicKeyUpload(base_dir: str, session,
     tries = 0
     while tries < 4:
         postResult = \
-            postJson(http_prefix, domainFull,
+            postJson(http_prefix, domain_full,
                      session, actorUpdate, [], inboxUrl,
                      headers, 5, quiet)
         if postResult:

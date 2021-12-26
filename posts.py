@@ -1151,9 +1151,9 @@ def _createPostC2S(base_dir: str, nickname: str, domain: str, port: int,
                    content_license_url: str) -> {}:
     """Creates a new client-to-server post
     """
-    domainFull = getFullDomain(domain, port)
+    domain_full = getFullDomain(domain, port)
     idStr = \
-        localActorUrl(http_prefix, nickname, domainFull) + \
+        localActorUrl(http_prefix, nickname, domain_full) + \
         '/statuses/' + statusNumber + '/replies'
     newPostUrl = \
         http_prefix + '://' + domain + '/@' + nickname + '/' + statusNumber
@@ -1168,7 +1168,7 @@ def _createPostC2S(base_dir: str, nickname: str, domain: str, port: int,
         'inReplyTo': inReplyTo,
         'published': published,
         'url': newPostUrl,
-        'attributedTo': localActorUrl(http_prefix, nickname, domainFull),
+        'attributedTo': localActorUrl(http_prefix, nickname, domain_full),
         'to': toRecipients,
         'cc': toCC,
         'sensitive': sensitive,
@@ -1604,7 +1604,7 @@ def _postIsAddressedToFollowers(base_dir: str,
                                 post_json_object: {}) -> bool:
     """Returns true if the given post is addressed to followers of the nickname
     """
-    domainFull = getFullDomain(domain, port)
+    domain_full = getFullDomain(domain, port)
 
     if not post_json_object.get('object'):
         return False
@@ -1623,7 +1623,7 @@ def _postIsAddressedToFollowers(base_dir: str,
             ccList = post_json_object['cc']
 
     followersUrl = \
-        localActorUrl(http_prefix, nickname, domainFull) + '/followers'
+        localActorUrl(http_prefix, nickname, domain_full) + '/followers'
 
     # does the followers url exist in 'to' or 'cc' lists?
     addressedToFollowers = False
@@ -1661,13 +1661,13 @@ def undoPinnedPost(base_dir: str, nickname: str, domain: str) -> None:
 
 def getPinnedPostAsJson(base_dir: str, http_prefix: str,
                         nickname: str, domain: str,
-                        domainFull: str, system_language: str) -> {}:
+                        domain_full: str, system_language: str) -> {}:
     """Returns the pinned profile post as json
     """
     accountDir = acctDir(base_dir, nickname, domain)
     pinnedFilename = accountDir + '/pinToProfile.txt'
     pinnedPostJson = {}
-    actor = localActorUrl(http_prefix, nickname, domainFull)
+    actor = localActorUrl(http_prefix, nickname, domain_full)
     if os.path.isfile(pinnedFilename):
         pinnedContent = None
         with open(pinnedFilename, 'r') as pinFile:
@@ -1701,18 +1701,18 @@ def getPinnedPostAsJson(base_dir: str, http_prefix: str,
 
 def jsonPinPost(base_dir: str, http_prefix: str,
                 nickname: str, domain: str,
-                domainFull: str, system_language: str) -> {}:
+                domain_full: str, system_language: str) -> {}:
     """Returns a pinned post as json
     """
     pinnedPostJson = \
         getPinnedPostAsJson(base_dir, http_prefix,
                             nickname, domain,
-                            domainFull, system_language)
+                            domain_full, system_language)
     itemsList = []
     if pinnedPostJson:
         itemsList = [pinnedPostJson]
 
-    actor = localActorUrl(http_prefix, nickname, domainFull)
+    actor = localActorUrl(http_prefix, nickname, domain_full)
     postContext = getIndividualPostContext()
     return {
         '@context': postContext,
@@ -1771,7 +1771,7 @@ def createPublicPost(base_dir: str,
                      content_license_url: str) -> {}:
     """Public post
     """
-    domainFull = getFullDomain(domain, port)
+    domain_full = getFullDomain(domain, port)
     isModerationReport = False
     eventUUID = None
     category = None
@@ -1783,7 +1783,7 @@ def createPublicPost(base_dir: str,
     anonymousParticipationEnabled = None
     eventStatus = None
     ticketUrl = None
-    localActor = localActorUrl(http_prefix, nickname, domainFull)
+    localActor = localActorUrl(http_prefix, nickname, domain_full)
     return _createPostBase(base_dir, nickname, domain, port,
                            'https://www.w3.org/ns/activitystreams#Public',
                            localActor + '/followers',
@@ -1907,8 +1907,8 @@ def createQuestionPost(base_dir: str,
                        content_license_url: str) -> {}:
     """Question post with multiple choice options
     """
-    domainFull = getFullDomain(domain, port)
-    localActor = localActorUrl(http_prefix, nickname, domainFull)
+    domain_full = getFullDomain(domain, port)
+    localActor = localActorUrl(http_prefix, nickname, domain_full)
     message_json = \
         _createPostBase(base_dir, nickname, domain, port,
                         'https://www.w3.org/ns/activitystreams#Public',
@@ -1957,8 +1957,8 @@ def createUnlistedPost(base_dir: str,
                        content_license_url: str) -> {}:
     """Unlisted post. This has the #Public and followers links inverted.
     """
-    domainFull = getFullDomain(domain, port)
-    localActor = localActorUrl(http_prefix, nickname, domainFull)
+    domain_full = getFullDomain(domain, port)
+    localActor = localActorUrl(http_prefix, nickname, domain_full)
     return _createPostBase(base_dir, nickname, domain, port,
                            localActor + '/followers',
                            'https://www.w3.org/ns/activitystreams#Public',
@@ -1992,8 +1992,8 @@ def createFollowersOnlyPost(base_dir: str,
                             content_license_url: str) -> {}:
     """Followers only post
     """
-    domainFull = getFullDomain(domain, port)
-    localActor = localActorUrl(http_prefix, nickname, domainFull)
+    domain_full = getFullDomain(domain, port)
+    localActor = localActorUrl(http_prefix, nickname, domain_full)
     return _createPostBase(base_dir, nickname, domain, port,
                            localActor + '/followers',
                            None,
@@ -2109,7 +2109,7 @@ def createReportPost(base_dir: str,
                      content_license_url: str) -> {}:
     """Send a report to moderators
     """
-    domainFull = getFullDomain(domain, port)
+    domain_full = getFullDomain(domain, port)
 
     # add a title to distinguish moderation reports from other posts
     reportTitle = 'Moderation Report'
@@ -2135,26 +2135,26 @@ def createReportPost(base_dir: str,
                 if '@' in line:
                     nick = line.split('@')[0]
                     moderatorActor = \
-                        localActorUrl(http_prefix, nick, domainFull)
+                        localActorUrl(http_prefix, nick, domain_full)
                     if moderatorActor not in moderatorsList:
                         moderatorsList.append(moderatorActor)
                     continue
                 if line.startswith('http') or line.startswith('hyper'):
                     # must be a local address - no remote moderators
-                    if '://' + domainFull + '/' in line:
+                    if '://' + domain_full + '/' in line:
                         if line not in moderatorsList:
                             moderatorsList.append(line)
                 else:
                     if '/' not in line:
                         moderatorActor = \
-                            localActorUrl(http_prefix, line, domainFull)
+                            localActorUrl(http_prefix, line, domain_full)
                         if moderatorActor not in moderatorsList:
                             moderatorsList.append(moderatorActor)
     if len(moderatorsList) == 0:
         # if there are no moderators then the admin becomes the moderator
         adminNickname = getConfigParam(base_dir, 'admin')
         if adminNickname:
-            localActor = localActorUrl(http_prefix, adminNickname, domainFull)
+            localActor = localActorUrl(http_prefix, adminNickname, domain_full)
             moderatorsList.append(localActor)
     if not moderatorsList:
         return None
@@ -2378,15 +2378,15 @@ def sendPost(signing_priv_key_pem: str, project_version: str,
     # federation list then send the token for this domain
     # so that it can request a catalog
     if toDomain in shared_items_federated_domains:
-        domainFull = getFullDomain(domain, port)
-        if sharedItemFederationTokens.get(domainFull):
-            signatureHeaderJson['Origin'] = domainFull
+        domain_full = getFullDomain(domain, port)
+        if sharedItemFederationTokens.get(domain_full):
+            signatureHeaderJson['Origin'] = domain_full
             signatureHeaderJson['SharesCatalog'] = \
-                sharedItemFederationTokens[domainFull]
+                sharedItemFederationTokens[domain_full]
             if debug:
                 print('SharesCatalog added to header')
         elif debug:
-            print(domainFull + ' not in sharedItemFederationTokens')
+            print(domain_full + ' not in sharedItemFederationTokens')
     elif debug:
         print(toDomain + ' not in shared_items_federated_domains ' +
               str(shared_items_federated_domains))
@@ -2958,18 +2958,18 @@ def _sendToNamedAddresses(session, base_dir: str,
             continue
         # Don't send profile/actor updates to yourself
         if isProfileUpdate:
-            domainFull = getFullDomain(domain, port)
+            domain_full = getFullDomain(domain, port)
             toDomainFull = getFullDomain(toDomain, toPort)
             if nickname == toNickname and \
-               domainFull == toDomainFull:
+               domain_full == toDomainFull:
                 if debug:
                     print('Not sending profile update to self. ' +
-                          nickname + '@' + domainFull)
+                          nickname + '@' + domain_full)
                 continue
         if debug:
-            domainFull = getFullDomain(domain, port)
+            domain_full = getFullDomain(domain, port)
             toDomainFull = getFullDomain(toDomain, toPort)
-            print('DEBUG: Post sending s2s: ' + nickname + '@' + domainFull +
+            print('DEBUG: Post sending s2s: ' + nickname + '@' + domain_full +
                   ' to ' + toNickname + '@' + toDomainFull)
 
         # if we have an alt onion domain and we are sending to
@@ -3142,9 +3142,9 @@ def sendToFollowers(session, base_dir: str,
         # so that it can request a catalog
         sharedItemsToken = None
         if followerDomain in shared_items_federated_domains:
-            domainFull = getFullDomain(domain, port)
-            if sharedItemFederationTokens.get(domainFull):
-                sharedItemsToken = sharedItemFederationTokens[domainFull]
+            domain_full = getFullDomain(domain, port)
+            if sharedItemFederationTokens.get(domain_full):
+                sharedItemsToken = sharedItemFederationTokens[domain_full]
 
         # check that the follower's domain is active
         followerDomainUrl = http_prefix + '://' + followerDomain
@@ -3462,7 +3462,7 @@ def isImageMedia(session, base_dir: str, http_prefix: str,
                  allow_local_network_access: bool,
                  recentPostsCache: {}, debug: bool,
                  system_language: str,
-                 domainFull: str, person_cache: {},
+                 domain_full: str, person_cache: {},
                  signing_priv_key_pem: str) -> bool:
     """Returns true if the given post has attached image media
     """
@@ -3477,7 +3477,7 @@ def isImageMedia(session, base_dir: str, http_prefix: str,
                              allow_local_network_access,
                              recentPostsCache, debug,
                              system_language,
-                             domainFull, person_cache,
+                             domain_full, person_cache,
                              signing_priv_key_pem,
                              blockedCache)
         if postJsonAnnounce:
@@ -4086,8 +4086,8 @@ def getPublicPostsOfPerson(base_dir: str, nickname: str, domain: str,
     if nickname.startswith('!'):
         nickname = nickname[1:]
         group_account = True
-    domainFull = getFullDomain(domain, port)
-    handle = http_prefix + "://" + domainFull + "/@" + nickname
+    domain_full = getFullDomain(domain, port)
+    handle = http_prefix + "://" + domain_full + "/@" + nickname
 
     wfRequest = \
         webfingerHandle(session, handle, http_prefix, cached_webfingers,
@@ -4144,8 +4144,8 @@ def getPublicPostDomains(session, base_dir: str, nickname: str, domain: str,
     cached_webfingers = {}
     federation_list = []
 
-    domainFull = getFullDomain(domain, port)
-    handle = http_prefix + "://" + domainFull + "/@" + nickname
+    domain_full = getFullDomain(domain, port)
+    handle = http_prefix + "://" + domain_full + "/@" + nickname
     wfRequest = \
         webfingerHandle(session, handle, http_prefix, cached_webfingers,
                         domain, project_version, debug, False,
@@ -4240,8 +4240,8 @@ def getPublicPostInfo(session, base_dir: str, nickname: str, domain: str,
     cached_webfingers = {}
     federation_list = []
 
-    domainFull = getFullDomain(domain, port)
-    handle = http_prefix + "://" + domainFull + "/@" + nickname
+    domain_full = getFullDomain(domain, port)
+    handle = http_prefix + "://" + domain_full + "/@" + nickname
     wfRequest = \
         webfingerHandle(session, handle, http_prefix, cached_webfingers,
                         domain, project_version, debug, False,
@@ -4515,7 +4515,7 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
                      allow_local_network_access: bool,
                      recentPostsCache: {}, debug: bool,
                      system_language: str,
-                     domainFull: str, person_cache: {},
+                     domain_full: str, person_cache: {},
                      signing_priv_key_pem: str,
                      blockedCache: {}) -> {}:
     """Download the post referenced by an announce
@@ -4664,7 +4664,7 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
             return None
         if not understoodPostLanguage(base_dir, nickname, domain,
                                       announcedJson, system_language,
-                                      http_prefix, domainFull,
+                                      http_prefix, domain_full,
                                       person_cache):
             return None
         # Check the content of the announce
@@ -5137,8 +5137,8 @@ def c2sBoxJson(base_dir: str, session,
         print('WARN: No session for c2sBoxJson')
         return None
 
-    domainFull = getFullDomain(domain, port)
-    actor = localActorUrl(http_prefix, nickname, domainFull)
+    domain_full = getFullDomain(domain, port)
+    actor = localActorUrl(http_prefix, nickname, domain_full)
 
     authHeader = createBasicAuthHeader(nickname, password)
 

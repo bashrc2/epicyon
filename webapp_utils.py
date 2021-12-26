@@ -652,8 +652,8 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
 
     description = removeHtml(actorJson['summary'])
     nameStr = removeHtml(actorJson['name'])
-    domainFull = actorJson['id'].split('://')[1].split('/')[0]
-    handle = actorJson['preferredUsername'] + '@' + domainFull
+    domain_full = actorJson['id'].split('://')[1].split('/')[0]
+    handle = actorJson['preferredUsername'] + '@' + domain_full
 
     personMarkup = \
         '      "about": {\n' + \
@@ -696,7 +696,7 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
         "\" name='description'>\n" + \
         "    <meta content=\"" + actorJson['url'] + \
         "\" property=\"og:url\" />\n" + \
-        "    <meta content=\"" + domainFull + \
+        "    <meta content=\"" + domain_full + \
         "\" property=\"og:site_name\" />\n" + \
         "    <meta content=\"" + nameStr + " (@" + handle + \
         ")\" property=\"og:title\" />\n" + \
@@ -1406,7 +1406,7 @@ def editTextArea(label: str, name: str, value: str,
 
 
 def htmlSearchResultShare(base_dir: str, sharedItem: {}, translate: {},
-                          http_prefix: str, domainFull: str,
+                          http_prefix: str, domain_full: str,
                           contactNickname: str, itemID: str,
                           actor: str, sharesFileType: str,
                           category: str) -> str:
@@ -1448,7 +1448,7 @@ def htmlSearchResultShare(base_dir: str, sharedItem: {}, translate: {},
                 contactTitleStr = translate['Buy']
     sharedItemsForm += '</p>\n'
     contactActor = \
-        localActorUrl(http_prefix, contactNickname, domainFull)
+        localActorUrl(http_prefix, contactNickname, domain_full)
     buttonStyleStr = 'button'
     if category == 'accommodation':
         contactTitleStr = translate['Request to stay']
@@ -1493,7 +1493,7 @@ def htmlSearchResultShare(base_dir: str, sharedItem: {}, translate: {},
 
 
 def htmlShowShare(base_dir: str, domain: str, nickname: str,
-                  http_prefix: str, domainFull: str,
+                  http_prefix: str, domain_full: str,
                   itemID: str, translate: {},
                   shared_items_federated_domains: [],
                   defaultTimeline: str, theme: str,
@@ -1507,7 +1507,7 @@ def htmlShowShare(base_dir: str, domain: str, nickname: str,
     if not contactNickname:
         return None
 
-    if '://' + domainFull + '/' in shareUrl:
+    if '://' + domain_full + '/' in shareUrl:
         # shared item on this instance
         sharesFilename = \
             acctDir(base_dir, contactNickname, domain) + '/' + \
@@ -1545,7 +1545,7 @@ def htmlShowShare(base_dir: str, domain: str, nickname: str,
     if not sharesJson.get(itemID):
         return None
     sharedItem = sharesJson[itemID]
-    actor = localActorUrl(http_prefix, nickname, domainFull)
+    actor = localActorUrl(http_prefix, nickname, domain_full)
 
     # filename of the banner shown at the top
     bannerFile, bannerFilename = \
@@ -1561,7 +1561,7 @@ def htmlShowShare(base_dir: str, domain: str, nickname: str,
         '</header><br>\n'
     shareStr += \
         htmlSearchResultShare(base_dir, sharedItem, translate, http_prefix,
-                              domainFull, contactNickname, itemID,
+                              domain_full, contactNickname, itemID,
                               actor, sharesFileType, category)
 
     cssFilename = base_dir + '/epicyon-profile.css'

@@ -196,21 +196,21 @@ def speakerReplaceLinks(sayText: str, translate: {},
         prevWord = word
 
         domain = None
-        domainFull = None
+        domain_full = None
         if 'https://' in word:
             domain = word.split('https://')[1]
-            domainFull = 'https://' + domain
+            domain_full = 'https://' + domain
         elif 'http://' in word:
             domain = word.split('http://')[1]
-            domainFull = 'http://' + domain
+            domain_full = 'http://' + domain
         if not domain:
             continue
         if '/' in domain:
             domain = domain.split('/')[0]
         if domain.startswith('www.'):
             domain = domain.replace('www.', '')
-        replacements[domainFull] = '. ' + linkedStr + ' ' + domain + '.'
-        detectedLinks.append(domainFull)
+        replacements[domain_full] = '. ' + linkedStr + ' ' + domain + '.'
+        detectedLinks.append(domain_full)
     for replaceStr, newStr in replacements.items():
         sayText = sayText.replace(replaceStr, newStr)
     return sayText.replace('..', '.')
@@ -403,7 +403,7 @@ def speakableText(base_dir: str, content: str, translate: {}) -> (str, []):
 
 
 def _postToSpeakerJson(base_dir: str, http_prefix: str,
-                       nickname: str, domain: str, domainFull: str,
+                       nickname: str, domain: str, domain_full: str,
                        post_json_object: {}, person_cache: {},
                        translate: {}, announcingActor: str,
                        theme_name: str) -> {}:
@@ -454,7 +454,7 @@ def _postToSpeakerJson(base_dir: str, http_prefix: str,
                             img['name'] + '. '
 
     isDirect = isDM(post_json_object)
-    actor = localActorUrl(http_prefix, nickname, domainFull)
+    actor = localActorUrl(http_prefix, nickname, domain_full)
     replyToYou = isReply(post_json_object, actor)
 
     published = ''
@@ -495,7 +495,7 @@ def _postToSpeakerJson(base_dir: str, http_prefix: str,
 
     followRequestsExist = False
     followRequestsList = []
-    accountsDir = acctDir(base_dir, nickname, domainFull)
+    accountsDir = acctDir(base_dir, nickname, domain_full)
     approveFollowsFilename = accountsDir + '/followrequests.txt'
     if os.path.isfile(approveFollowsFilename):
         with open(approveFollowsFilename, 'r') as fp:
@@ -535,7 +535,7 @@ def _postToSpeakerJson(base_dir: str, http_prefix: str,
 
 
 def updateSpeaker(base_dir: str, http_prefix: str,
-                  nickname: str, domain: str, domainFull: str,
+                  nickname: str, domain: str, domain_full: str,
                   post_json_object: {}, person_cache: {},
                   translate: {}, announcingActor: str,
                   theme_name: str) -> None:
@@ -544,7 +544,7 @@ def updateSpeaker(base_dir: str, http_prefix: str,
     """
     speakerJson = \
         _postToSpeakerJson(base_dir, http_prefix,
-                           nickname, domain, domainFull,
+                           nickname, domain, domain_full,
                            post_json_object, person_cache,
                            translate, announcingActor,
                            theme_name)

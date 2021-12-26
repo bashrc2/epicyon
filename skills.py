@@ -185,9 +185,9 @@ def sendSkillViaServer(base_dir: str, session, nickname: str, password: str,
         print('WARN: No session for sendSkillViaServer')
         return 6
 
-    domainFull = getFullDomain(domain, port)
+    domain_full = getFullDomain(domain, port)
 
-    actor = localActorUrl(http_prefix, nickname, domainFull)
+    actor = localActorUrl(http_prefix, nickname, domain_full)
     toUrl = actor
     ccUrl = actor + '/followers'
 
@@ -204,7 +204,7 @@ def sendSkillViaServer(base_dir: str, session, nickname: str, password: str,
         'cc': [ccUrl]
     }
 
-    handle = http_prefix + '://' + domainFull + '/@' + nickname
+    handle = http_prefix + '://' + domain_full + '/@' + nickname
 
     # lookup the inbox for the To handle
     wfRequest = \
@@ -251,7 +251,7 @@ def sendSkillViaServer(base_dir: str, session, nickname: str, password: str,
         'Authorization': authHeader
     }
     postResult = \
-        postJson(http_prefix, domainFull,
+        postJson(http_prefix, domain_full,
                  session, newSkillJson, [], inboxUrl,
                  headers, 30, True)
     if not postResult:

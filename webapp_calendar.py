@@ -33,13 +33,13 @@ from webapp_utils import htmlKeyboardNavigation
 
 def htmlCalendarDeleteConfirm(cssCache: {}, translate: {}, base_dir: str,
                               path: str, http_prefix: str,
-                              domainFull: str, postId: str, postTime: str,
+                              domain_full: str, postId: str, postTime: str,
                               year: int, monthNumber: int,
                               dayNumber: int, callingDomain: str) -> str:
     """Shows a screen asking to confirm the deletion of a calendar event
     """
     nickname = getNicknameFromActor(path)
-    actor = localActorUrl(http_prefix, nickname, domainFull)
+    actor = localActorUrl(http_prefix, nickname, domain_full)
     domain, port = getDomainFromActor(actor)
     messageId = actor + '/statuses/' + postId
 
@@ -68,7 +68,7 @@ def htmlCalendarDeleteConfirm(cssCache: {}, translate: {}, base_dir: str,
     deletePostStr += '  <p class="followText">' + \
         translate['Delete this event'] + '</p>'
 
-    postActor = getAltPath(actor, domainFull, callingDomain)
+    postActor = getAltPath(actor, domain_full, callingDomain)
     deletePostStr += \
         '  <form method="POST" action="' + postActor + '/rmpost">\n'
     deletePostStr += '    <input type="hidden" name="year" value="' + \
@@ -245,16 +245,16 @@ def _htmlCalendarDay(person_cache: {}, cssCache: {}, translate: {},
 
 def htmlCalendar(person_cache: {}, cssCache: {}, translate: {},
                  base_dir: str, path: str,
-                 http_prefix: str, domainFull: str,
+                 http_prefix: str, domain_full: str,
                  text_mode_banner: str, accessKeys: {}) -> str:
     """Show the calendar for a person
     """
-    domain = removeDomainPort(domainFull)
+    domain = removeDomainPort(domain_full)
 
     monthNumber = 0
     dayNumber = None
     year = 1970
-    actor = http_prefix + '://' + domainFull + path.replace('/calendar', '')
+    actor = http_prefix + '://' + domain_full + path.replace('/calendar', '')
     if '?' in actor:
         first = True
         for p in actor.split('?'):
