@@ -1069,8 +1069,8 @@ def saveMediaInFormPOST(mediaBytes, debug: bool,
         'zip': 'application/zip'
     }
     detectedExtension = None
-    for extension, contentType in extensionList.items():
-        searchStr = b'Content-Type: ' + contentType.encode('utf8', 'ignore')
+    for extension, content_type in extensionList.items():
+        searchStr = b'Content-Type: ' + content_type.encode('utf8', 'ignore')
         mediaLocation = mediaBytes.find(searchStr)
         if mediaLocation > -1:
             # image/video/audio binaries

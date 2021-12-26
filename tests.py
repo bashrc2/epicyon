@@ -409,7 +409,7 @@ def _testHttpSigNew(algorithm: str, digestAlgorithm: str):
     bodyDigest = messageContentDigest(messageBodyJsonStr, digestAlgorithm)
     assert bodyDigest in digestStr
     contentLength = 18
-    contentType = 'application/activity+json'
+    content_type = 'application/activity+json'
     publicKeyPem = \
         '-----BEGIN RSA PUBLIC KEY-----\n' + \
         'MIIBCgKCAQEAhAKYdtoeoy8zcAcR874L8' + \
@@ -482,7 +482,7 @@ def _testHttpSigNew(algorithm: str, digestAlgorithm: str):
         "host": domain,
         "date": dateStr,
         "digest": f'{digestPrefix}={bodyDigest}',
-        "content-type": contentType,
+        "content-type": content_type,
         "content-length": str(contentLength)
     }
     signatureIndexHeader, signatureHeader = \
@@ -534,7 +534,7 @@ def _testHttpsigBase(withDigest: bool, base_dir: str):
 
     algorithm = 'rsa-sha256'
     digestAlgorithm = 'rsa-sha256'
-    contentType = 'application/activity+json'
+    content_type = 'application/activity+json'
     nickname = 'socrates'
     hostDomain = 'someother.instance'
     domain = 'argumentative.social'
@@ -563,13 +563,13 @@ def _testHttpsigBase(withDigest: bool, base_dir: str):
         headers = {
             'host': headersDomain,
             'date': dateStr,
-            'accept': contentType
+            'accept': content_type
         }
         signatureHeader = \
             signPostHeaders(dateStr, privateKeyPem, nickname,
                             domain, port,
                             hostDomain, port,
-                            boxpath, http_prefix, None, contentType,
+                            boxpath, http_prefix, None, content_type,
                             algorithm, None)
     else:
         digestPrefix = getDigestPrefix(digestAlgorithm)
@@ -579,7 +579,7 @@ def _testHttpsigBase(withDigest: bool, base_dir: str):
             'host': headersDomain,
             'date': dateStr,
             'digest': f'{digestPrefix}={bodyDigest}',
-            'content-type': contentType,
+            'content-type': content_type,
             'content-length': str(contentLength)
         }
         assert getDigestAlgorithmFromHeaders(headers) == digestAlgorithm
@@ -588,7 +588,7 @@ def _testHttpsigBase(withDigest: bool, base_dir: str):
                             domain, port,
                             hostDomain, port,
                             boxpath, http_prefix, messageBodyJsonStr,
-                            contentType, algorithm, digestAlgorithm)
+                            content_type, algorithm, digestAlgorithm)
 
     headers['signature'] = signatureHeader
     GETmethod = not withDigest
@@ -613,7 +613,7 @@ def _testHttpsigBase(withDigest: bool, base_dir: str):
         headers = {
             'host': 'bogon.domain',
             'date': dateStr,
-            'content-type': contentType
+            'content-type': content_type
         }
     else:
         # correct domain but fake message
@@ -627,7 +627,7 @@ def _testHttpsigBase(withDigest: bool, base_dir: str):
             'host': domain,
             'date': dateStr,
             'digest': f'{digestPrefix}={bodyDigest}',
-            'content-type': contentType,
+            'content-type': content_type,
             'content-length': str(contentLength)
         }
         assert getDigestAlgorithmFromHeaders(headers) == digestAlgorithm
@@ -5918,7 +5918,7 @@ def _testHttpsigBaseNew(withDigest: bool, base_dir: str,
     os.mkdir(path)
     os.chdir(path)
 
-    contentType = 'application/activity+json'
+    content_type = 'application/activity+json'
     nickname = 'socrates'
     hostDomain = 'someother.instance'
     domain = 'argumentative.social'
@@ -5947,7 +5947,7 @@ def _testHttpsigBaseNew(withDigest: bool, base_dir: str,
         headers = {
             'host': headersDomain,
             'date': dateStr,
-            'accept': contentType
+            'accept': content_type
         }
         signatureIndexHeader, signatureHeader = \
             signPostHeadersNew(dateStr, privateKeyPem, nickname,
@@ -5963,7 +5963,7 @@ def _testHttpsigBaseNew(withDigest: bool, base_dir: str,
             'host': headersDomain,
             'date': dateStr,
             'digest': f'{digestPrefix}={bodyDigest}',
-            'content-type': contentType,
+            'content-type': content_type,
             'content-length': str(contentLength)
         }
         assert getDigestAlgorithmFromHeaders(headers) == digestAlgorithm
@@ -6001,7 +6001,7 @@ def _testHttpsigBaseNew(withDigest: bool, base_dir: str,
         headers = {
             'host': 'bogon.domain',
             'date': dateStr,
-            'content-type': contentType
+            'content-type': content_type
         }
     else:
         # correct domain but fake message
@@ -6015,7 +6015,7 @@ def _testHttpsigBaseNew(withDigest: bool, base_dir: str,
             'host': domain,
             'date': dateStr,
             'digest': f'{digestPrefix}={bodyDigest}',
-            'content-type': contentType,
+            'content-type': content_type,
             'content-length': str(contentLength)
         }
         assert getDigestAlgorithmFromHeaders(headers) == digestAlgorithm

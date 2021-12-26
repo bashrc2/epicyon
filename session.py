@@ -184,13 +184,13 @@ def _getJsonSigned(session, url: str, domain_full: str, sessionHeaders: {},
         path = '/' + url.split(toDomainFull + '/')[1]
     else:
         path = '/actor'
-    contentType = 'application/activity+json'
+    content_type = 'application/activity+json'
     if sessionHeaders.get('Accept'):
-        contentType = sessionHeaders['Accept']
+        content_type = sessionHeaders['Accept']
     signatureHeaderJson = \
         createSignedHeader(None, signing_priv_key_pem, 'actor', domain, port,
                            toDomain, toPort, path, http_prefix, withDigest,
-                           messageStr, contentType)
+                           messageStr, content_type)
     if debug:
         print('Signed GET signatureHeaderJson ' + str(signatureHeaderJson))
     # update the session headers from the signature headers
@@ -203,7 +203,7 @@ def _getJsonSigned(session, url: str, domain_full: str, sessionHeaders: {},
         print('Signed GET sessionHeaders ' + str(sessionHeaders))
 
     returnJson = True
-    if 'json' not in contentType:
+    if 'json' not in content_type:
         returnJson = False
     return _getJsonRequest(session, url, domain_full, sessionHeaders,
                            sessionParams, timeoutSec, None, quiet,
@@ -404,18 +404,18 @@ def postImage(session, attachImageFilename: str, federation_list: [],
     if not os.path.isfile(attachImageFilename):
         print('Image not found: ' + attachImageFilename)
         return None
-    contentType = 'image/jpeg'
+    content_type = 'image/jpeg'
     if attachImageFilename.endswith('.png'):
-        contentType = 'image/png'
+        content_type = 'image/png'
     elif attachImageFilename.endswith('.gif'):
-        contentType = 'image/gif'
+        content_type = 'image/gif'
     elif attachImageFilename.endswith('.webp'):
-        contentType = 'image/webp'
+        content_type = 'image/webp'
     elif attachImageFilename.endswith('.avif'):
-        contentType = 'image/avif'
+        content_type = 'image/avif'
     elif attachImageFilename.endswith('.svg'):
-        contentType = 'image/svg+xml'
-    headers['Content-type'] = contentType
+        content_type = 'image/svg+xml'
+    headers['Content-type'] = content_type
 
     with open(attachImageFilename, 'rb') as avFile:
         mediaBinary = avFile.read()
@@ -507,7 +507,7 @@ def downloadImageAnyMimeType(session, url: str, timeoutSec: int, debug: bool):
     """http GET for an image with any mime type
     """
     mimeType = None
-    contentType = None
+    content_type = None
     result = None
     sessionHeaders = {
         'Accept': 'image/x-icon, image/png, image/webp, image/jpeg, image/gif'
@@ -537,13 +537,13 @@ def downloadImageAnyMimeType(session, url: str, timeoutSec: int, debug: bool):
         return None, None
 
     if result.headers.get('content-type'):
-        contentType = result.headers['content-type']
+        content_type = result.headers['content-type']
     elif result.headers.get('Content-type'):
-        contentType = result.headers['Content-type']
+        content_type = result.headers['Content-type']
     elif result.headers.get('Content-Type'):
-        contentType = result.headers['Content-Type']
+        content_type = result.headers['Content-Type']
 
-    if not contentType:
+    if not content_type:
         return None, None
 
     imageFormats = {
@@ -557,6 +557,6 @@ def downloadImageAnyMimeType(session, url: str, timeoutSec: int, debug: bool):
         'avif': 'avif'
     }
     for imFormat, mType in imageFormats.items():
-        if 'image/' + mType in contentType:
+        if 'image/' + mType in content_type:
             mimeType = 'image/' + mType
     return result.content, mimeType

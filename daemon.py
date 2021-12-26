@@ -18135,10 +18135,10 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         # refuse to receive non-json content
-        contentTypeStr = self.headers['Content-type']
-        if not contentTypeStr.startswith('application/json') and \
-           not contentTypeStr.startswith('application/activity+json') and \
-           not contentTypeStr.startswith('application/ld+json'):
+        content_typeStr = self.headers['Content-type']
+        if not content_typeStr.startswith('application/json') and \
+           not content_typeStr.startswith('application/activity+json') and \
+           not content_typeStr.startswith('application/ld+json'):
             print("POST is not json: " + self.headers['Content-type'])
             if self.server.debug:
                 print(str(self.headers))

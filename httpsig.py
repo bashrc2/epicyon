@@ -70,7 +70,7 @@ def signPostHeaders(dateStr: str, privateKeyPem: str,
                     path: str,
                     http_prefix: str,
                     messageBodyJsonStr: str,
-                    contentType: str,
+                    content_type: str,
                     algorithm: str,
                     digestAlgorithm: str) -> str:
     """Returns a raw signature string that can be plugged into a header and
@@ -93,7 +93,7 @@ def signPostHeaders(dateStr: str, privateKeyPem: str,
             '(request-target)': f'get {path}',
             'host': toDomain,
             'date': dateStr,
-            'accept': contentType
+            'accept': content_type
         }
     else:
         bodyDigest = \
@@ -242,7 +242,7 @@ def createSignedHeader(dateStr: str, privateKeyPem: str, nickname: str,
                        toDomain: str, toPort: int,
                        path: str, http_prefix: str, withDigest: bool,
                        messageBodyJsonStr: str,
-                       contentType: str) -> {}:
+                       content_type: str) -> {}:
     """Note that the domain is the destination, not the sender
     """
     algorithm = 'rsa-sha256'
@@ -254,20 +254,20 @@ def createSignedHeader(dateStr: str, privateKeyPem: str, nickname: str,
         dateStr = strftime("%a, %d %b %Y %H:%M:%S %Z", gmtime())
 
     # Content-Type or Accept header
-    if not contentType:
-        contentType = 'application/activity+json'
+    if not content_type:
+        content_type = 'application/activity+json'
 
     if not withDigest:
         headers = {
             '(request-target)': f'get {path}',
             'host': headerDomain,
             'date': dateStr,
-            'accept': contentType
+            'accept': content_type
         }
         signatureHeader = \
             signPostHeaders(dateStr, privateKeyPem, nickname,
                             domain, port, toDomain, toPort,
-                            path, http_prefix, None, contentType,
+                            path, http_prefix, None, content_type,
                             algorithm, None)
     else:
         bodyDigest = messageContentDigest(messageBodyJsonStr, digestAlgorithm)
@@ -279,14 +279,14 @@ def createSignedHeader(dateStr: str, privateKeyPem: str, nickname: str,
             'date': dateStr,
             'digest': f'{digestPrefix}={bodyDigest}',
             'content-length': str(contentLength),
-            'content-type': contentType
+            'content-type': content_type
         }
         signatureHeader = \
             signPostHeaders(dateStr, privateKeyPem, nickname,
                             domain, port,
                             toDomain, toPort,
                             path, http_prefix, messageBodyJsonStr,
-                            contentType, algorithm, digestAlgorithm)
+                            content_type, algorithm, digestAlgorithm)
     headers['signature'] = signatureHeader
     return headers
 
