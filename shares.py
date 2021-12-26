@@ -30,7 +30,7 @@ from utils import get_full_domain
 from utils import validNickname
 from utils import loadJson
 from utils import saveJson
-from utils import getImageExtensions
+from utils import get_image_extensions
 from utils import removeDomainPort
 from utils import isAccountDir
 from utils import acct_dir
@@ -142,7 +142,7 @@ def removeSharedItem(base_dir: str, nickname: str, domain: str,
         # remove any image for the item
         itemIDfile = base_dir + '/sharefiles/' + nickname + '/' + itemID
         if sharesJson[itemID]['imageUrl']:
-            formats = getImageExtensions()
+            formats = get_image_extensions()
             for ext in formats:
                 if sharesJson[itemID]['imageUrl'].endswith('.' + ext):
                     if os.path.isfile(itemIDfile + '.' + ext):
@@ -339,7 +339,7 @@ def addShare(base_dir: str,
     if not imageFilename:
         sharesImageFilename = \
             acct_dir(base_dir, nickname, domain) + '/upload'
-        formats = getImageExtensions()
+        formats = get_image_extensions()
         for ext in formats:
             if os.path.isfile(sharesImageFilename + '.' + ext):
                 imageFilename = sharesImageFilename + '.' + ext
@@ -355,7 +355,7 @@ def addShare(base_dir: str,
             if not os.path.isdir(base_dir + '/sharefiles/' + nickname):
                 os.mkdir(base_dir + '/sharefiles/' + nickname)
             itemIDfile = base_dir + '/sharefiles/' + nickname + '/' + itemID
-            formats = getImageExtensions()
+            formats = get_image_extensions()
             for ext in formats:
                 if not imageFilename.endswith('.' + ext):
                     continue
@@ -435,7 +435,7 @@ def _expireSharesForAccount(base_dir: str, nickname: str, domain: str,
         del sharesJson[itemID]
         # remove any associated images
         itemIDfile = base_dir + '/sharefiles/' + nickname + '/' + itemID
-        formats = getImageExtensions()
+        formats = get_image_extensions()
         for ext in formats:
             if os.path.isfile(itemIDfile + '.' + ext):
                 try:

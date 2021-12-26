@@ -22,7 +22,7 @@ from utils import getNicknameFromActor
 from utils import isfloat
 from utils import get_audio_extensions
 from utils import get_video_extensions
-from utils import getImageExtensions
+from utils import get_image_extensions
 from utils import local_actor_url
 from cache import storePersonInCache
 from content import addHtmlTags
@@ -471,7 +471,7 @@ def _getImageFile(base_dir: str, name: str, directory: str,
     """
     returns the filenames for an image with the given name
     """
-    bannerExtensions = getImageExtensions()
+    bannerExtensions = get_image_extensions()
     bannerFile = ''
     bannerFilename = ''
     for ext in bannerExtensions:
@@ -943,7 +943,7 @@ def _isImageMimeType(mimeType: str) -> bool:
         return True
     if not mimeType.startswith('image/'):
         return False
-    extensions = getImageExtensions()
+    extensions = get_image_extensions()
     ext = mimeType.split('/')[1]
     if ext in extensions:
         return True

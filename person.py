@@ -53,7 +53,7 @@ from utils import get_config_param
 from utils import refresh_newswire
 from utils import getProtocolPrefixes
 from utils import has_users_path
-from utils import getImageExtensions
+from utils import get_image_extensions
 from utils import isImageFile
 from utils import acct_dir
 from utils import get_user_paths
@@ -1619,7 +1619,7 @@ def getPersonAvatarUrl(base_dir: str, personUrl: str, person_cache: {},
     actorStr = personJson['id'].replace('/', '-')
     avatarImagePath = base_dir + '/cache/avatars/' + actorStr
 
-    imageExtension = getImageExtensions()
+    imageExtension = get_image_extensions()
     for ext in imageExtension:
         imFilename = avatarImagePath + '.' + ext
         imPath = '/avatars/' + actorStr + '.' + ext

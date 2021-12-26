@@ -17,7 +17,7 @@ from hashlib import sha1
 from auth import createPassword
 from utils import get_base_content_from_post
 from utils import get_full_domain
-from utils import getImageExtensions
+from utils import get_image_extensions
 from utils import get_video_extensions
 from utils import get_audio_extensions
 from utils import getMediaExtensions
@@ -246,7 +246,7 @@ def getAttachmentMediaType(filename: str) -> str:
     image, video or audio
     """
     mediaType = None
-    imageTypes = getImageExtensions()
+    imageTypes = get_image_extensions()
     for mType in imageTypes:
         if filename.endswith('.' + mType):
             return 'image'

@@ -12,7 +12,7 @@ from shutil import copyfile
 from utils import removeHtml
 from utils import loadJson
 from utils import get_config_param
-from utils import getImageExtensions
+from utils import get_image_extensions
 from utils import getImageFormats
 from utils import acct_dir
 from utils import local_actor_url
@@ -70,7 +70,7 @@ def htmlWelcomeProfile(base_dir: str, nickname: str, domain: str,
     profileForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
 
     # get the url of the avatar
-    for ext in getImageExtensions():
+    for ext in get_image_extensions():
         avatarFilename = \
             acct_dir(base_dir, nickname, domain) + '/avatar.' + ext
         if os.path.isfile(avatarFilename):

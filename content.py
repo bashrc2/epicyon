@@ -14,7 +14,7 @@ from shutil import copyfile
 from utils import dangerousSVG
 from utils import removeDomainPort
 from utils import isValidLanguage
-from utils import getImageExtensions
+from utils import get_image_extensions
 from utils import loadJson
 from utils import saveJson
 from utils import fileLastModified
@@ -1024,7 +1024,7 @@ def saveMediaInFormPOST(mediaBytes, debug: bool,
     if not mediaBytes:
         if filenameBase:
             # remove any existing files
-            extensionTypes = getImageExtensions()
+            extensionTypes = get_image_extensions()
             for ex in extensionTypes:
                 possibleOtherFormat = filenameBase + '.' + ex
                 if os.path.isfile(possibleOtherFormat):
@@ -1099,7 +1099,7 @@ def saveMediaInFormPOST(mediaBytes, debug: bool,
 
     # remove any existing image files with a different format
     if detectedExtension != 'zip':
-        extensionTypes = getImageExtensions()
+        extensionTypes = get_image_extensions()
         for ex in extensionTypes:
             if ex == detectedExtension:
                 continue

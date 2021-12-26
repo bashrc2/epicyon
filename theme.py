@@ -11,7 +11,7 @@ import os
 from utils import isAccountDir
 from utils import loadJson
 from utils import saveJson
-from utils import getImageExtensions
+from utils import get_image_extensions
 from utils import copytree
 from utils import acct_dir
 from utils import dangerousSVG
@@ -679,7 +679,7 @@ def _setThemeImages(base_dir: str, name: str) -> None:
     backgroundNames = ('login', 'shares', 'delete', 'follow',
                        'options', 'block', 'search', 'calendar',
                        'welcome')
-    extensions = getImageExtensions()
+    extensions = get_image_extensions()
 
     for subdir, dirs, files in os.walk(base_dir + '/accounts'):
         for acct in dirs:

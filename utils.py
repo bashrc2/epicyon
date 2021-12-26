@@ -354,7 +354,7 @@ def get_audio_extensions() -> []:
     return ('mp3', 'ogg', 'flac')
 
 
-def getImageExtensions() -> []:
+def get_image_extensions() -> []:
     """Returns a list of the possible image file extensions
     """
     return ('png', 'jpg', 'jpeg', 'gif', 'webp', 'avif', 'svg', 'ico')
@@ -399,7 +399,7 @@ def getImageExtensionFromMimeType(contentType: str) -> str:
 def getMediaExtensions() -> []:
     """Returns a list of the possible media file extensions
     """
-    return getImageExtensions() + \
+    return get_image_extensions() + \
         get_video_extensions() + get_audio_extensions()
 
 
@@ -407,7 +407,7 @@ def getImageFormats() -> str:
     """Returns a string of permissable image formats
     used when selecting an image for a new post
     """
-    imageExt = getImageExtensions()
+    imageExt = get_image_extensions()
 
     imageFormats = ''
     for ext in imageExt:
@@ -420,7 +420,7 @@ def getImageFormats() -> str:
 def isImageFile(filename: str) -> bool:
     """Is the given filename an image?
     """
-    for ext in getImageExtensions():
+    for ext in get_image_extensions():
         if filename.endswith('.' + ext):
             return True
     return False
@@ -642,7 +642,7 @@ def removeAvatarFromCache(base_dir: str, actorStr: str) -> None:
     """Removes any existing avatar entries from the cache
     This avoids duplicate entries with differing extensions
     """
-    avatarFilenameExtensions = getImageExtensions()
+    avatarFilenameExtensions = get_image_extensions()
     for extension in avatarFilenameExtensions:
         avatarFilename = \
             base_dir + '/cache/avatars/' + actorStr + '.' + extension

@@ -276,7 +276,7 @@ from utils import get_full_domain
 from utils import removeHtml
 from utils import is_editor
 from utils import is_artist
-from utils import getImageExtensions
+from utils import get_image_extensions
 from utils import mediaFileMimeType
 from utils import getCSS
 from utils import firstParagraphFromString
@@ -12647,7 +12647,7 @@ class PubServer(BaseHTTPRequestHandler):
                              base_dir: str, GETstartTime) -> bool:
         """Show a background image
         """
-        imageExtensions = getImageExtensions()
+        imageExtensions = get_image_extensions()
         for ext in imageExtensions:
             for bg in ('follow', 'options', 'login', 'welcome'):
                 # follow screen background image
@@ -12696,7 +12696,7 @@ class PubServer(BaseHTTPRequestHandler):
         """If a background image is missing after searching for a handle
         then substitute this image
         """
-        imageExtensions = getImageExtensions()
+        imageExtensions = get_image_extensions()
         for ext in imageExtensions:
             bgFilename = \
                 base_dir + '/theme/' + theme_name + '/image.' + ext
@@ -12823,7 +12823,7 @@ class PubServer(BaseHTTPRequestHandler):
         if not os.path.isfile(avatarFilename):
             originalExt = avatarFileExt
             originalAvatarFile = avatarFile
-            altExt = getImageExtensions()
+            altExt = get_image_extensions()
             altFound = False
             for alt in altExt:
                 if alt == originalExt:
