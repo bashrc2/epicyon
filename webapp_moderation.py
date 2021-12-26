@@ -11,7 +11,7 @@ import os
 from utils import isArtist
 from utils import isAccountDir
 from utils import get_full_domain
-from utils import isEditor
+from utils import is_editor
 from utils import loadJson
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
@@ -344,7 +344,7 @@ def htmlModerationInfo(cssCache: {}, translate: {},
             infoForm += '<b><u>' + acctNickname + '</u></b>'
         else:
             infoForm += acctNickname
-        if isEditor(base_dir, acctNickname):
+        if is_editor(base_dir, acctNickname):
             infoForm += ' ✍'
         infoForm += '</center></a>\n</td>\n'
         col += 1

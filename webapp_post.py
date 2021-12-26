@@ -36,7 +36,7 @@ from utils import rejectPostId
 from utils import isRecentPost
 from utils import getConfigParam
 from utils import get_full_domain
-from utils import isEditor
+from utils import is_editor
 from utils import locatePost
 from utils import loadJson
 from utils import getCachedPostDirectory
@@ -472,7 +472,7 @@ def _getEditIconHtml(base_dir: str, nickname: str, domain_full: str,
     # _addBlogsToNewswire) in which case anyone with
     # editor status should be able to alter it
     if (actor.endswith('/' + domain_full + '/users/' + nickname) or
-        (isEditor(base_dir, nickname) and
+        (is_editor(base_dir, nickname) and
          actor.endswith('/' + domain_full + '/users/news'))):
 
         postId = removeIdEnding(post_json_object['object']['id'])

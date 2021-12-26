@@ -286,7 +286,7 @@ def is_dormant(base_dir: str, nickname: str, domain: str, actor: str,
     return False
 
 
-def isEditor(base_dir: str, nickname: str) -> bool:
+def is_editor(base_dir: str, nickname: str) -> bool:
     """Returns true if the given nickname is an editor
     """
     editorsFile = base_dir + '/accounts/editors.txt'

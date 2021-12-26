@@ -14,7 +14,7 @@ from utils import isArtist
 from utils import dangerousMarkup
 from utils import getConfigParam
 from utils import get_full_domain
-from utils import isEditor
+from utils import is_editor
 from utils import removeIdEnding
 from utils import acct_dir
 from utils import isfloat
@@ -547,7 +547,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
 
     # is the user a site editor?
     if not editor:
-        editor = isEditor(base_dir, nickname)
+        editor = is_editor(base_dir, nickname)
 
     _logTimelineTiming(enableTimingLog, timelineStartTime, boxName, '2')
 

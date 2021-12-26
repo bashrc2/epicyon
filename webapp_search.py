@@ -15,7 +15,7 @@ from utils import get_base_content_from_post
 from utils import isAccountDir
 from utils import getConfigParam
 from utils import get_full_domain
-from utils import isEditor
+from utils import is_editor
 from utils import loadJson
 from utils import getDomainFromActor
 from utils import getNicknameFromActor
@@ -785,7 +785,7 @@ def htmlHashtagSearch(cssCache: {},
         'icons/logorss.png" /></a></center>\n'
 
     # edit the category for this hashtag
-    if isEditor(base_dir, nickname):
+    if is_editor(base_dir, nickname):
         category = getHashtagCategory(base_dir, hashtag)
         hashtagSearchForm += '<div class="hashtagCategoryContainer">\n'
         hashtagSearchForm += '  <form enctype="multipart/form-data" ' + \

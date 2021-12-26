@@ -274,7 +274,7 @@ from utils import get_locked_account
 from utils import has_users_path
 from utils import get_full_domain
 from utils import removeHtml
-from utils import isEditor
+from utils import is_editor
 from utils import isArtist
 from utils import getImageExtensions
 from utils import mediaFileMimeType
@@ -4075,7 +4075,7 @@ class PubServer(BaseHTTPRequestHandler):
             nickname = getNicknameFromActor(actorStr)
             editor = None
             if nickname:
-                editor = isEditor(base_dir, nickname)
+                editor = is_editor(base_dir, nickname)
             if not nickname or not editor:
                 if not nickname:
                     print('WARN: nickname not found in ' + actorStr)
@@ -4234,7 +4234,7 @@ class PubServer(BaseHTTPRequestHandler):
             nickname = getNicknameFromActor(actorStr)
             editor = None
             if nickname:
-                editor = isEditor(base_dir, nickname)
+                editor = is_editor(base_dir, nickname)
             if not hashtag or not editor:
                 if not nickname:
                     print('WARN: nickname not found in ' + actorStr)
@@ -4562,7 +4562,7 @@ class PubServer(BaseHTTPRequestHandler):
             nickname = getNicknameFromActor(actorStr)
             editorRole = None
             if nickname:
-                editorRole = isEditor(base_dir, nickname)
+                editorRole = is_editor(base_dir, nickname)
             if not nickname or not editorRole:
                 if not nickname:
                     print('WARN: nickname not found in ' + actorStr)
@@ -10954,7 +10954,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if '/' in currNickname:
                         currNickname = currNickname.split('/')[0]
                     moderator = isModerator(base_dir, currNickname)
-                    editor = isEditor(base_dir, currNickname)
+                    editor = is_editor(base_dir, currNickname)
                     artist = isArtist(base_dir, currNickname)
                     full_width_tl_button_header = \
                         self.server.full_width_tl_button_header

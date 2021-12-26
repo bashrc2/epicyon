@@ -18,7 +18,7 @@ from utils import locatePost
 from utils import loadJson
 from utils import votesOnNewswireItem
 from utils import getNicknameFromActor
-from utils import isEditor
+from utils import is_editor
 from utils import getConfigParam
 from utils import removeDomainPort
 from utils import acct_dir
@@ -474,7 +474,7 @@ def htmlNewswireMobile(cssCache: {}, base_dir: str, nickname: str,
         moderator = isModerator(base_dir, nickname)
 
         # is the user a site editor?
-        editor = isEditor(base_dir, nickname)
+        editor = is_editor(base_dir, nickname)
 
     showPublishButton = editor
 
@@ -655,7 +655,7 @@ def htmlEditNewsPost(cssCache: {}, translate: {}, base_dir: str, path: str,
         return ''
 
     # is the user an editor?
-    if not isEditor(base_dir, nickname):
+    if not is_editor(base_dir, nickname):
         return ''
 
     postUrl = postUrl.replace('/', '#')

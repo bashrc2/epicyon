@@ -10,7 +10,7 @@ __module_group__ = "Web Interface Columns"
 import os
 from utils import getConfigParam
 from utils import getNicknameFromActor
-from utils import isEditor
+from utils import is_editor
 from utils import isArtist
 from utils import removeDomainPort
 from utils import local_actor_url
@@ -371,7 +371,7 @@ def htmlLinksMobile(cssCache: {}, base_dir: str,
         editor = False
         artist = False
     else:
-        editor = isEditor(base_dir, nickname)
+        editor = is_editor(base_dir, nickname)
         artist = isArtist(base_dir, nickname)
 
     domain = removeDomainPort(domain_full)
@@ -429,7 +429,7 @@ def htmlEditLinks(cssCache: {}, translate: {}, base_dir: str, path: str,
         return ''
 
     # is the user a moderator?
-    if not isEditor(base_dir, nickname):
+    if not is_editor(base_dir, nickname):
         return ''
 
     cssFilename = base_dir + '/epicyon-links.css'
