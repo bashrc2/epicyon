@@ -3151,15 +3151,15 @@ def getSharesFilesList() -> []:
 def replaceUsersWithAt(actor: str) -> str:
     """ https://domain/users/nick becomes https://domain/@nick
     """
-    uPaths = get_user_paths()
-    for path in uPaths:
+    u_paths = get_user_paths()
+    for path in u_paths:
         if path in actor:
             actor = actor.replace(path, '/@')
             break
     return actor
 
 
-def hasActor(post_json_object: {}, debug: bool) -> bool:
+def has_actor(post_json_object: {}, debug: bool) -> bool:
     """Does the given post have an actor?
     """
     if post_json_object.get('actor'):

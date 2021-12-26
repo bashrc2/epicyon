@@ -21,7 +21,7 @@ from utils import getOccupationSkills
 from utils import setOccupationSkillsList
 from utils import acct_dir
 from utils import local_actor_url
-from utils import hasActor
+from utils import has_actor
 
 
 def setSkillsFromDict(actor_json: {}, skillsDict: {}) -> []:
@@ -152,7 +152,7 @@ def outboxSkills(base_dir: str, nickname: str, message_json: {},
         return False
     if not message_json['type'] == 'Skill':
         return False
-    if not hasActor(message_json, debug):
+    if not has_actor(message_json, debug):
         return False
     if not has_object_string(message_json, debug):
         return False

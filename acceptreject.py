@@ -19,7 +19,7 @@ from utils import followPerson
 from utils import acct_dir
 from utils import hasGroupType
 from utils import local_actor_url
-from utils import hasActor
+from utils import has_actor
 from utils import has_object_stringType
 
 
@@ -194,7 +194,7 @@ def receiveAcceptReject(session, base_dir: str,
     """
     if message_json['type'] != 'Accept' and message_json['type'] != 'Reject':
         return False
-    if not hasActor(message_json, debug):
+    if not has_actor(message_json, debug):
         return False
     if not has_users_path(message_json['actor']):
         if debug:

@@ -24,7 +24,7 @@ from utils import undoAnnounceCollectionEntry
 from utils import updateAnnounceCollection
 from utils import local_actor_url
 from utils import replaceUsersWithAt
-from utils import hasActor
+from utils import has_actor
 from utils import has_object_stringType
 from posts import sendSignedJson
 from posts import getPersonBox
@@ -56,7 +56,7 @@ def outboxAnnounce(recentPostsCache: {},
     """ Adds or removes announce entries from the shares collection
     within a given post
     """
-    if not hasActor(message_json, debug):
+    if not has_actor(message_json, debug):
         return False
     if not isinstance(message_json['actor'], str):
         return False

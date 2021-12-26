@@ -20,7 +20,7 @@ from utils import load_json
 from utils import save_json
 from utils import acct_dir
 from utils import local_actor_url
-from utils import hasActor
+from utils import has_actor
 
 
 def setAvailability(base_dir: str, nickname: str, domain: str,
@@ -62,7 +62,7 @@ def outboxAvailability(base_dir: str, nickname: str, message_json: {},
         return False
     if not message_json['type'] == 'Availability':
         return False
-    if not hasActor(message_json, debug):
+    if not has_actor(message_json, debug):
         return False
     if not has_object_string(message_json, debug):
         return False

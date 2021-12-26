@@ -245,7 +245,7 @@ from like import updateLikesCollection
 from reaction import updateReactionCollection
 from utils import undoReactionCollectionEntry
 from utils import get_new_post_endpoints
-from utils import hasActor
+from utils import has_actor
 from utils import setReplyIntervalHours
 from utils import canReplyTo
 from utils import isDM
@@ -1382,7 +1382,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # check for blocked domains so that they can be rejected early
         messageDomain = None
-        if not hasActor(message_json, self.server.debug):
+        if not has_actor(message_json, self.server.debug):
             print('Message arriving at inbox queue has no actor')
             self._400()
             self.server.POSTbusy = False
