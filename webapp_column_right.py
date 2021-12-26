@@ -12,7 +12,7 @@ from datetime import datetime
 from content import removeLongWords
 from content import limitRepeatedWords
 from utils import getFavFilenameFromUrl
-from utils import getBaseContentFromPost
+from utils import get_base_content_from_post
 from utils import removeHtml
 from utils import locatePost
 from utils import loadJson
@@ -704,7 +704,8 @@ def htmlEditNewsPost(cssCache: {}, translate: {}, base_dir: str, path: str,
         '  <input type="text" name="newsPostTitle" value="' + \
         newsPostTitle + '"><br>\n'
 
-    newsPostContent = getBaseContentFromPost(post_json_object, system_language)
+    newsPostContent = get_base_content_from_post(post_json_object,
+                                                 system_language)
     editNewsPostForm += \
         '  <textarea id="message" name="editedNewsPost" ' + \
         'style="height:600px" spellcheck="true">' + \

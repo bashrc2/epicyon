@@ -254,7 +254,7 @@ from utils import local_actor_url
 from utils import isfloat
 from utils import validPassword
 from utils import removeLineEndings
-from utils import getBaseContentFromPost
+from utils import get_base_content_from_post
 from utils import acctDir
 from utils import getImageExtensionFromMimeType
 from utils import getImageMimeType
@@ -16640,9 +16640,10 @@ class PubServer(BaseHTTPRequestHandler):
                     if fields['schedulePost']:
                         return 1
                     if pinToProfile:
+                        sys_language = self.server.system_language
                         contentStr = \
-                            getBaseContentFromPost(message_json,
-                                                   self.server.system_language)
+                            get_base_content_from_post(message_json,
+                                                       sys_language)
                         followersOnly = False
                         pinPost(self.server.base_dir,
                                 nickname, self.server.domain, contentStr,

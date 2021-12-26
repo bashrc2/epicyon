@@ -26,7 +26,7 @@ from posts import populateRepliesJson
 from utils import removeHashFromPostId
 from utils import removeHtml
 from utils import get_actor_languages_list
-from utils import getBaseContentFromPost
+from utils import get_base_content_from_post
 from utils import get_content_from_post
 from utils import has_object_dict
 from utils import updateAnnounceCollection
@@ -409,7 +409,7 @@ def _getReplyIconHtml(base_dir: str, nickname: str, domain: str,
         if isinstance(post_json_object['object']['attributedTo'], str):
             replyToLink += \
                 '?mention=' + post_json_object['object']['attributedTo']
-    content = getBaseContentFromPost(post_json_object, system_language)
+    content = get_base_content_from_post(post_json_object, system_language)
     if content:
         mentionedActors = getMentionsFromHtml(content)
         if mentionedActors:

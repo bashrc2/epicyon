@@ -106,7 +106,8 @@ def get_content_from_post(post_json_object: {}, system_language: str,
     return content
 
 
-def getBaseContentFromPost(post_json_object: {}, system_language: str) -> str:
+def get_base_content_from_post(post_json_object: {},
+                               system_language: str) -> str:
     """Returns the content from the post in the given language
     """
     this_post_json = post_json_object

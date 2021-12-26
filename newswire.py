@@ -20,7 +20,7 @@ from utils import validPostDate
 from categories import setHashtagCategory
 from utils import dangerousSVG
 from utils import getFavFilenameFromUrl
-from utils import getBaseContentFromPost
+from utils import get_base_content_from_post
 from utils import has_object_dict
 from utils import firstParagraphFromString
 from utils import isPublicPost
@@ -1062,8 +1062,8 @@ def _addAccountBlogsToNewswire(base_dir: str, nickname: str, domain: str,
                     if os.path.isfile(fullPostFilename + '.votes'):
                         votes = loadJson(fullPostFilename + '.votes')
                     content = \
-                        getBaseContentFromPost(post_json_object,
-                                               system_language)
+                        get_base_content_from_post(post_json_object,
+                                                   system_language)
                     description = firstParagraphFromString(content)
                     description = removeHtml(description)
                     tagsFromPost = _getHashtagsFromPost(post_json_object)

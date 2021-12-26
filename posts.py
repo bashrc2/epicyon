@@ -38,7 +38,7 @@ from utils import hasObjectStringType
 from utils import removeIdEnding
 from utils import replaceUsersWithAt
 from utils import hasGroupType
-from utils import getBaseContentFromPost
+from utils import get_base_content_from_post
 from utils import removeDomainPort
 from utils import getPortFromDomain
 from utils import has_object_dict
@@ -591,7 +591,7 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
         if item['type'] != 'Note' and item['type'] != 'Page':
             thisItem = item['object']
 
-        content = getBaseContentFromPost(item, system_language)
+        content = get_base_content_from_post(item, system_language)
         content = content.replace('&apos;', "'")
 
         mentions = []
@@ -784,7 +784,7 @@ def getPostDomains(session, outboxUrl: str, maxPosts: int,
             break
         if not has_object_dict(item):
             continue
-        contentStr = getBaseContentFromPost(item, system_language)
+        contentStr = get_base_content_from_post(item, system_language)
         if contentStr:
             _updateWordFrequency(contentStr, wordFrequency)
         if item['object'].get('inReplyTo'):

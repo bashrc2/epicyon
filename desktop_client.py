@@ -16,7 +16,7 @@ import webbrowser
 import urllib.parse
 from pathlib import Path
 from random import randint
-from utils import getBaseContentFromPost
+from utils import get_base_content_from_post
 from utils import has_object_dict
 from utils import getFullDomain
 from utils import isDM
@@ -720,8 +720,8 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
                    post_json_object2['object'].get('content'):
                     attributedTo = post_json_object2['object']['attributedTo']
                     content = \
-                        getBaseContentFromPost(post_json_object2,
-                                               system_language)
+                        get_base_content_from_post(post_json_object2,
+                                                   system_language)
                     if isinstance(attributedTo, str) and content:
                         actor = attributedTo
                         nameStr += ' ' + translate['announces'] + ' ' + \
@@ -746,7 +746,7 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
     attributedTo = post_json_object['object']['attributedTo']
     if not attributedTo:
         return {}
-    content = getBaseContentFromPost(post_json_object, system_language)
+    content = get_base_content_from_post(post_json_object, system_language)
     if not isinstance(attributedTo, str) or \
        not isinstance(content, str):
         return {}
@@ -1072,7 +1072,8 @@ def _desktopShowBox(indent: str,
 
         published = _formatPublished(post_json_object['published'])
 
-        contentStr = getBaseContentFromPost(post_json_object, system_language)
+        contentStr = get_base_content_from_post(post_json_object,
+                                                system_language)
         content = _textOnlyContent(contentStr)
         if boxName != 'dm':
             if isDM(post_json_object):
@@ -2423,8 +2424,8 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                             post_json_object = post_json_object2
                 if post_json_object:
                     content = \
-                        getBaseContentFromPost(post_json_object,
-                                               system_language)
+                        get_base_content_from_post(post_json_object,
+                                                   system_language)
                     messageStr, detectedLinks = \
                         speakableText(base_dir, content, translate)
                     linkOpened = False
@@ -2481,8 +2482,8 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                             if post_json_object['object'].get('summary'):
                                 print(post_json_object['object']['summary'])
                             contentStr = \
-                                getBaseContentFromPost(post_json_object,
-                                                       system_language)
+                                get_base_content_from_post(post_json_object,
+                                                           system_language)
                             print(contentStr)
                             print('')
                             sayStr = 'Confirm delete, yes or no?'

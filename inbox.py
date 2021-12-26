@@ -28,7 +28,7 @@ from utils import hasObjectStringObject
 from utils import getReplyIntervalHours
 from utils import canReplyTo
 from utils import getUserPaths
-from utils import getBaseContentFromPost
+from utils import get_base_content_from_post
 from utils import acctDir
 from utils import removeDomainPort
 from utils import getPortFromDomain
@@ -521,7 +521,7 @@ def savePostToInboxQueue(base_dir: str, http_prefix: str,
                             return None
         if post_json_object['object'].get('content'):
             contentStr = \
-                getBaseContentFromPost(post_json_object, system_language)
+                get_base_content_from_post(post_json_object, system_language)
             if contentStr:
                 if isFiltered(base_dir, nickname, domain, contentStr):
                     if debug:
@@ -2237,7 +2237,7 @@ def _validPostContent(base_dir: str, nickname: str, domain: str,
                   message_json['object']['content']):
         return True
 
-    contentStr = getBaseContentFromPost(message_json, system_language)
+    contentStr = get_base_content_from_post(message_json, system_language)
     if dangerousMarkup(contentStr, allow_local_network_access):
         if message_json['object'].get('id'):
             print('REJECT ARBITRARY HTML: ' + message_json['object']['id'])

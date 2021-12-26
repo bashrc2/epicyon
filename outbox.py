@@ -17,7 +17,7 @@ from posts import savePostToBox
 from posts import sendToFollowersThread
 from posts import sendToNamedAddressesThread
 from utils import hasObjectStringType
-from utils import getBaseContentFromPost
+from utils import get_base_content_from_post
 from utils import has_object_dict
 from utils import getLocalNetworkAddresses
 from utils import getFullDomain
@@ -223,7 +223,7 @@ def postMessageToOutbox(session, translate: {},
     # check that the outgoing post doesn't contain any markup
     # which can be used to implement exploits
     if has_object_dict(message_json):
-        contentStr = getBaseContentFromPost(message_json, system_language)
+        contentStr = get_base_content_from_post(message_json, system_language)
         if contentStr:
             if dangerousMarkup(contentStr, allow_local_network_access):
                 print('POST to outbox contains dangerous markup: ' +

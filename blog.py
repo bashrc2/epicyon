@@ -19,7 +19,7 @@ from webapp_utils import editTextArea
 from webapp_media import addEmbeddedElements
 from utils import local_actor_url
 from utils import get_actor_languages_list
-from utils import getBaseContentFromPost
+from utils import get_base_content_from_post
 from utils import get_content_from_post
 from utils import isAccountDir
 from utils import removeHtml
@@ -368,7 +368,8 @@ def _htmlBlogPostRSS2(authorized: bool,
                 titleStr = post_json_object['object']['summary']
                 rssDateStr = pubDate.strftime("%a, %d %b %Y %H:%M:%S UT")
                 content = \
-                    getBaseContentFromPost(post_json_object, system_language)
+                    get_base_content_from_post(post_json_object,
+                                               system_language)
                 description = firstParagraphFromString(content)
                 rssStr = '     <item>'
                 rssStr += '         <title>' + titleStr + '</title>'
@@ -402,7 +403,8 @@ def _htmlBlogPostRSS3(authorized: bool,
                 titleStr = post_json_object['object']['summary']
                 rssDateStr = pubDate.strftime("%a, %d %b %Y %H:%M:%S UT")
                 content = \
-                    getBaseContentFromPost(post_json_object, system_language)
+                    get_base_content_from_post(post_json_object,
+                                               system_language)
                 description = firstParagraphFromString(content)
                 rssStr = 'title: ' + titleStr + '\n'
                 rssStr += 'link: ' + messageLink + '\n'
@@ -427,7 +429,7 @@ def _getSnippetFromBlogContent(post_json_object: {},
                                system_language: str) -> str:
     """Returns a snippet of text from the blog post as a preview
     """
-    content = getBaseContentFromPost(post_json_object, system_language)
+    content = get_base_content_from_post(post_json_object, system_language)
     if '<p>' in content:
         content = content.split('<p>', 1)[1]
         if '</p>' in content:
@@ -896,7 +898,7 @@ def htmlEditBlog(media_instance: bool, translate: {},
     editBlogForm += '    <br>'
     messageBoxHeight = 800
 
-    contentStr = getBaseContentFromPost(post_json_object, system_language)
+    contentStr = get_base_content_from_post(post_json_object, system_language)
     contentStr = contentStr.replace('<p>', '').replace('</p>', '\n')
 
     editBlogForm += \

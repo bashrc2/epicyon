@@ -25,7 +25,7 @@ from newswire import getDictFromNewswire
 from posts import createNewsPost
 from posts import archivePostsForPerson
 from content import validHashTag
-from utils import getBaseContentFromPost
+from utils import get_base_content_from_post
 from utils import removeHtml
 from utils import getFullDomain
 from utils import loadJson
@@ -322,7 +322,7 @@ def _hashtagAdd(base_dir: str, http_prefix: str, domain_full: str,
     hashtagHtml = \
         " <a href=\"" + hashtagUrl + "\" class=\"addedHashtag\" " + \
         "rel=\"tag\">#<span>" + htId + "</span></a>"
-    content = getBaseContentFromPost(post_json_object, system_language)
+    content = get_base_content_from_post(post_json_object, system_language)
     if hashtagHtml in content:
         return
 
@@ -357,7 +357,7 @@ def _hashtagRemove(http_prefix: str, domain_full: str, post_json_object: {},
     hashtagHtml = \
         "<a href=\"" + hashtagUrl + "\" class=\"addedHashtag\" " + \
         "rel=\"tag\">#<span>" + htId + "</span></a>"
-    content = getBaseContentFromPost(post_json_object, system_language)
+    content = get_base_content_from_post(post_json_object, system_language)
     if hashtagHtml in content:
         content = content.replace(hashtagHtml, '').replace('  ', ' ')
         post_json_object['object']['content'] = content
@@ -399,7 +399,8 @@ def _newswireHashtagProcessing(session, base_dir: str, post_json_object: {},
     # get the full text content of the post
     content = ''
     if post_json_object['object'].get('content'):
-        content += getBaseContentFromPost(post_json_object, system_language)
+        content += get_base_content_from_post(post_json_object,
+                                              system_language)
     if post_json_object['object'].get('summary'):
         content += ' ' + post_json_object['object']['summary']
     content = content.lower()
@@ -708,7 +709,7 @@ def _convertRSStoActivityPub(base_dir: str, http_prefix: str,
                     "\" class=\"addedHashtag\" " + \
                     "rel=\"tag\">#<span>" + \
                     htId + "</span></a>"
-                content = getBaseContentFromPost(blog, system_language)
+                content = get_base_content_from_post(blog, system_language)
                 if hashtagHtml not in content:
                     if content.endswith('</p>'):
                         content = \

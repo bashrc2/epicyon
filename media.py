@@ -15,7 +15,7 @@ import random
 from random import randint
 from hashlib import sha1
 from auth import createPassword
-from utils import getBaseContentFromPost
+from utils import get_base_content_from_post
 from utils import getFullDomain
 from utils import getImageExtensions
 from utils import getVideoExtensions
@@ -63,7 +63,7 @@ def _replaceSiloDomain(post_json_object: {},
         return
     if not post_json_object['object'].get('content'):
         return
-    contentStr = getBaseContentFromPost(post_json_object, system_language)
+    contentStr = get_base_content_from_post(post_json_object, system_language)
     if siloDomain not in contentStr:
         return
     contentStr = contentStr.replace(siloDomain, replacementDomain)
