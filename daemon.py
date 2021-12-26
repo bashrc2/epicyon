@@ -403,7 +403,7 @@ def saveDomainQrcode(base_dir: str, http_prefix: str,
 class PubServer(BaseHTTPRequestHandler):
     protocol_version = 'HTTP/1.1'
 
-    def _updateKnownCrawlers(self, uaStr: str) -> None:
+    def _update_known_crawlers(self, uaStr: str) -> None:
         """Updates a dictionary of known crawlers accessing nodeinfo
         or the masto API
         """
@@ -1059,7 +1059,7 @@ class PubServer(BaseHTTPRequestHandler):
         print('mastodon api v1: ' + path)
         print('mastodon api v1: authorized ' + str(authorized))
         print('mastodon api v1: nickname ' + str(nickname))
-        self._updateKnownCrawlers(uaStr)
+        self._update_known_crawlers(uaStr)
 
         broch_mode = broch_modeIsActive(base_dir)
         sendJson, sendJsonStr = mastoApiV1Response(path,
@@ -1126,7 +1126,7 @@ class PubServer(BaseHTTPRequestHandler):
             return False
         if self.server.debug:
             print('DEBUG: nodeinfo ' + self.path)
-        self._updateKnownCrawlers(uaStr)
+        self._update_known_crawlers(uaStr)
 
         # If we are in broch mode then don't show potentially
         # sensitive metadata.
