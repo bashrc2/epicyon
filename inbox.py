@@ -34,7 +34,7 @@ from utils import remove_domain_port
 from utils import get_port_from_domain
 from utils import has_object_dict
 from utils import dm_allowed_from_domain
-from utils import isRecentPost
+from utils import is_recent_post
 from utils import get_config_param
 from utils import has_users_path
 from utils import valid_post_date
@@ -1990,7 +1990,7 @@ def _receiveAnnounce(recent_posts_cache: {},
                 if '/statuses/' in lookupActor:
                     lookupActor = lookupActor.split('/statuses/')[0]
 
-                if isRecentPost(post_json_object, 3):
+                if is_recent_post(post_json_object, 3):
                     if not os.path.isfile(postFilename + '.tts'):
                         domain_full = get_full_domain(domain, port)
                         updateSpeaker(base_dir, http_prefix,
@@ -3551,7 +3551,7 @@ def _inboxAfterInitial(recent_posts_cache: {}, max_recent_posts: int,
                     print('ERROR: unable to update ' + boxname + ' index')
                 else:
                     if boxname == 'inbox':
-                        if isRecentPost(post_json_object, 3):
+                        if is_recent_post(post_json_object, 3):
                             domain_full = get_full_domain(domain, port)
                             updateSpeaker(base_dir, http_prefix,
                                           nickname, domain, domain_full,

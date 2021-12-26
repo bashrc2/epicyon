@@ -2511,7 +2511,7 @@ def mediaFileMimeType(filename: str) -> str:
     return extensions[fileExt]
 
 
-def isRecentPost(post_json_object: {}, maxDays: int) -> bool:
+def is_recent_post(post_json_object: {}, maxDays: int) -> bool:
     """ Is the given post recent?
     """
     if not has_object_dict(post_json_object):
@@ -2530,7 +2530,7 @@ def isRecentPost(post_json_object: {}, maxDays: int) -> bool:
             datetime.datetime.strptime(publishedDateStr,
                                        "%Y-%m-%dT%H:%M:%SZ")
     except BaseException:
-        print('EX: isRecentPost unrecognized published date ' +
+        print('EX: is_recent_post unrecognized published date ' +
               str(publishedDateStr))
         return False
 
@@ -2559,21 +2559,21 @@ def reject_post_id(base_dir: str, nickname: str, domain: str,
     """ Marks the given post as rejected,
     for example an announce which is too old
     """
-    postFilename = locate_post(base_dir, nickname, domain, post_id)
-    if not postFilename:
+    post_filename = locate_post(base_dir, nickname, domain, post_id)
+    if not post_filename:
         return
 
     if recent_posts_cache.get('index'):
         # if this is a full path then remove the directories
-        indexFilename = postFilename
-        if '/' in postFilename:
-            indexFilename = postFilename.split('/')[-1]
+        index_filename = post_filename
+        if '/' in post_filename:
+            index_filename = post_filename.split('/')[-1]
 
         # filename of the post without any extension or path
         # This should also correspond to any index entry in
         # the posts cache
         postUrl = \
-            indexFilename.replace('\n', '').replace('\r', '')
+            index_filename.replace('\n', '').replace('\r', '')
         postUrl = postUrl.replace('.json', '').strip()
 
         if postUrl in recent_posts_cache['index']:
@@ -2582,7 +2582,7 @@ def reject_post_id(base_dir: str, nickname: str, domain: str,
             if recent_posts_cache['html'].get(postUrl):
                 del recent_posts_cache['html'][postUrl]
 
-    with open(postFilename + '.reject', 'w+') as rejectFile:
+    with open(post_filename + '.reject', 'w+') as rejectFile:
         rejectFile.write('\n')
 
 

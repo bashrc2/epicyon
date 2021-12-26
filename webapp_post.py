@@ -33,7 +33,7 @@ from utils import updateAnnounceCollection
 from utils import is_pgp_encrypted
 from utils import is_dm
 from utils import reject_post_id
-from utils import isRecentPost
+from utils import is_recent_post
 from utils import get_config_param
 from utils import get_full_domain
 from utils import is_editor
@@ -1544,7 +1544,7 @@ def individualPostAsHtml(signing_priv_key_pem: str,
                                      postActor, nickname, domain_full, False)
 
             # create a file for use by text-to-speech
-            if isRecentPost(post_json_object, 3):
+            if is_recent_post(post_json_object, 3):
                 if post_json_object.get('actor'):
                     if not os.path.isfile(announceFilename + '.tts'):
                         updateSpeaker(base_dir, http_prefix,
