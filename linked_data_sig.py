@@ -20,7 +20,7 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import utils as hazutils
 from pyjsonld import normalize
 from context import hasValidContext
-from utils import getSHA256
+from utils import get_sha_256
 
 
 def _options_hash(doc: {}) -> str:
@@ -76,7 +76,7 @@ def verifyJsonSignature(doc: {}, publicKeyPem: str) -> bool:
     to_be_signed = _options_hash(doc) + _doc_hash(doc)
     signature = doc["signature"]["signatureValue"]
 
-    digest = getSHA256(to_be_signed.encode("utf-8"))
+    digest = get_sha_256(to_be_signed.encode("utf-8"))
     base64sig = base64.b64decode(signature)
 
     try:
@@ -108,7 +108,7 @@ def generateJsonSignature(doc: {}, privateKeyPem: str) -> None:
 
     key = load_pem_private_key(privateKeyPem.encode('utf-8'),
                                None, backend=default_backend())
-    digest = getSHA256(to_be_signed.encode("utf-8"))
+    digest = get_sha_256(to_be_signed.encode("utf-8"))
     signature = key.sign(digest,
                          padding.PKCS1v15(),
                          hazutils.Prehashed(hashes.SHA256()))

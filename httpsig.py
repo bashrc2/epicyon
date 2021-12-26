@@ -23,8 +23,8 @@ import base64
 from time import gmtime, strftime
 import datetime
 from utils import getFullDomain
-from utils import getSHA256
-from utils import getSHA512
+from utils import get_sha_256
+from utils import get_sha_512
 from utils import local_actor_url
 
 
@@ -34,9 +34,9 @@ def messageContentDigest(messageBodyJsonStr: str, digestAlgorithm: str) -> str:
     msg = messageBodyJsonStr.encode('utf-8')
     if digestAlgorithm == 'rsa-sha512' or \
        digestAlgorithm == 'rsa-pss-sha512':
-        hashResult = getSHA512(msg)
+        hashResult = get_sha_512(msg)
     else:
-        hashResult = getSHA256(msg)
+        hashResult = get_sha_256(msg)
     return base64.b64encode(hashResult).decode('utf-8')
 
 
@@ -121,7 +121,7 @@ def signPostHeaders(dateStr: str, privateKeyPem: str,
     # strip the trailing linefeed
     signedHeaderText = signedHeaderText.rstrip('\n')
     # signedHeaderText.encode('ascii') matches
-    headerDigest = getSHA256(signedHeaderText.encode('ascii'))
+    headerDigest = get_sha_256(signedHeaderText.encode('ascii'))
     # print('headerDigest2: ' + str(headerDigest))
 
     # Sign the digest
@@ -205,14 +205,14 @@ def signPostHeadersNew(dateStr: str, privateKeyPem: str,
     # Sign the digest. Potentially other signing algorithms can be added here.
     signature = ''
     if algorithm == 'rsa-sha512':
-        headerDigest = getSHA512(signedHeaderText.encode('ascii'))
+        headerDigest = get_sha_512(signedHeaderText.encode('ascii'))
         rawSignature = key.sign(headerDigest,
                                 padding.PKCS1v15(),
                                 hazutils.Prehashed(hashes.SHA512()))
         signature = base64.b64encode(rawSignature).decode('ascii')
     else:
         # default rsa-sha256
-        headerDigest = getSHA256(signedHeaderText.encode('ascii'))
+        headerDigest = get_sha_256(signedHeaderText.encode('ascii'))
         rawSignature = key.sign(headerDigest,
                                 padding.PKCS1v15(),
                                 hazutils.Prehashed(hashes.SHA256()))
@@ -539,9 +539,9 @@ def verifyPostHeaders(http_prefix: str,
         alg = hazutils.Prehashed(hashes.SHA256())
 
     if digestAlgorithm == 'rsa-sha256':
-        headerDigest = getSHA256(signedHeaderText.encode('ascii'))
+        headerDigest = get_sha_256(signedHeaderText.encode('ascii'))
     elif digestAlgorithm == 'rsa-sha512':
-        headerDigest = getSHA512(signedHeaderText.encode('ascii'))
+        headerDigest = get_sha_512(signedHeaderText.encode('ascii'))
     else:
         print('Unknown http digest algorithm: ' + digestAlgorithm)
         headerDigest = ''

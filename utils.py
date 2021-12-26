@@ -134,14 +134,14 @@ def is_featured_writer(base_dir: str, nickname: str, domain: str) -> bool:
 def refresh_newswire(base_dir: str):
     """Causes the newswire to be updates after a change to user accounts
     """
-    refresh_newswireFilename = base_dir + '/accounts/.refresh_newswire'
-    if os.path.isfile(refresh_newswireFilename):
+    refresh_newswire_filename = base_dir + '/accounts/.refresh_newswire'
+    if os.path.isfile(refresh_newswire_filename):
         return
-    with open(refresh_newswireFilename, 'w+') as refreshFile:
-        refreshFile.write('\n')
+    with open(refresh_newswire_filename, 'w+') as refresh_file:
+        refresh_file.write('\n')
 
 
-def getSHA256(msg: str):
+def get_sha_256(msg: str):
     """Returns a SHA256 hash of the given string
     """
     digest = hashes.Hash(hashes.SHA256(), backend=default_backend())
@@ -149,7 +149,7 @@ def getSHA256(msg: str):
     return digest.finalize()
 
 
-def getSHA512(msg: str):
+def get_sha_512(msg: str):
     """Returns a SHA512 hash of the given string
     """
     digest = hashes.Hash(hashes.SHA512(), backend=default_backend())

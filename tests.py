@@ -54,7 +54,7 @@ from follow import clearFollowers
 from follow import sendFollowRequestViaServer
 from follow import sendUnfollowRequestViaServer
 from siteactive import siteIsActive
-from utils import getSHA256
+from utils import get_sha_256
 from utils import dangerousSVG
 from utils import canReplyTo
 from utils import isGroupAccount
@@ -376,7 +376,7 @@ def _testSignAndVerify() -> None:
         'host: octodon.social\n' + \
         'date: Tue, 14 Sep 2021 16:19:00 GMT\n' + \
         'accept: application/json'
-    headerDigest = getSHA256(signedHeaderText.encode('ascii'))
+    headerDigest = get_sha_256(signedHeaderText.encode('ascii'))
     key = load_pem_private_key(privateKeyPem.encode('utf-8'),
                                None, backend=default_backend())
     rawSignature = key.sign(headerDigest,
