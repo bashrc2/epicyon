@@ -2815,7 +2815,7 @@ def isAccountDir(dirName: str) -> bool:
     return True
 
 
-def permittedDir(path: str) -> bool:
+def permitted_dir(path: str) -> bool:
     """These are special paths which should not be accessible
        directly via GET or POST
     """

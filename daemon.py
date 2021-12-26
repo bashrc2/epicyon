@@ -261,7 +261,7 @@ from utils import get_image_mime_type
 from utils import has_object_dict
 from utils import user_agent_domain
 from utils import isLocalNetworkAddress
-from utils import permittedDir
+from utils import permitted_dir
 from utils import isAccountDir
 from utils import getOccupationSkills
 from utils import getOccupationName
@@ -14897,7 +14897,7 @@ class PubServer(BaseHTTPRequestHandler):
                            '_GET', 'GET busy time',
                            self.server.debug)
 
-        if not permittedDir(self.path):
+        if not permitted_dir(self.path):
             if self.server.debug:
                 print('DEBUG: GET Not permitted')
             self._404()
