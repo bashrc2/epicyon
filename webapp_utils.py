@@ -21,7 +21,7 @@ from utils import acct_dir
 from utils import getNicknameFromActor
 from utils import isfloat
 from utils import getAudioExtensions
-from utils import getVideoExtensions
+from utils import get_video_extensions
 from utils import getImageExtensions
 from utils import local_actor_url
 from cache import storePersonInCache
@@ -955,7 +955,7 @@ def _isVideoMimeType(mimeType: str) -> bool:
     """
     if not mimeType.startswith('video/'):
         return False
-    extensions = getVideoExtensions()
+    extensions = get_video_extensions()
     ext = mimeType.split('/')[1]
     if ext in extensions:
         return True

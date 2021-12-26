@@ -317,9 +317,9 @@ def is_editor(base_dir: str, nickname: str) -> bool:
 def is_artist(base_dir: str, nickname: str) -> bool:
     """Returns true if the given nickname is an artist
     """
-    artistsFile = base_dir + '/accounts/artists.txt'
+    artists_file = base_dir + '/accounts/artists.txt'
 
-    if not os.path.isfile(artistsFile):
+    if not os.path.isfile(artists_file):
         admin_name = get_config_param(base_dir, 'admin')
         if not admin_name:
             return False
@@ -327,7 +327,7 @@ def is_artist(base_dir: str, nickname: str) -> bool:
             return True
         return False
 
-    with open(artistsFile, 'r') as f:
+    with open(artists_file, 'r') as f:
         lines = f.readlines()
         if len(lines) == 0:
             admin_name = get_config_param(base_dir, 'admin')
@@ -342,7 +342,7 @@ def is_artist(base_dir: str, nickname: str) -> bool:
     return False
 
 
-def getVideoExtensions() -> []:
+def get_video_extensions() -> []:
     """Returns a list of the possible video file extensions
     """
     return ('mp4', 'webm', 'ogv')
@@ -399,7 +399,7 @@ def getImageExtensionFromMimeType(contentType: str) -> str:
 def getMediaExtensions() -> []:
     """Returns a list of the possible media file extensions
     """
-    return getImageExtensions() + getVideoExtensions() + getAudioExtensions()
+    return getImageExtensions() + get_video_extensions() + getAudioExtensions()
 
 
 def getImageFormats() -> str:
