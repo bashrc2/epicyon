@@ -2719,26 +2719,26 @@ def dmAllowedFromDomain(base_dir: str,
     return False
 
 
-def getOccupationSkills(actor_json: {}) -> []:
+def get_occupation_skills(actor_json: {}) -> []:
     """Returns the list of skills for an actor
     """
     if 'hasOccupation' not in actor_json:
         return []
     if not isinstance(actor_json['hasOccupation'], list):
         return []
-    for occupationItem in actor_json['hasOccupation']:
-        if not isinstance(occupationItem, dict):
+    for occupation_item in actor_json['hasOccupation']:
+        if not isinstance(occupation_item, dict):
             continue
-        if not occupationItem.get('@type'):
+        if not occupation_item.get('@type'):
             continue
-        if not occupationItem['@type'] == 'Occupation':
+        if not occupation_item['@type'] == 'Occupation':
             continue
-        if not occupationItem.get('skills'):
+        if not occupation_item.get('skills'):
             continue
-        if isinstance(occupationItem['skills'], list):
-            return occupationItem['skills']
-        elif isinstance(occupationItem['skills'], str):
-            return [occupationItem['skills']]
+        if isinstance(occupation_item['skills'], list):
+            return occupation_item['skills']
+        elif isinstance(occupation_item['skills'], str):
+            return [occupation_item['skills']]
         break
     return []
 

@@ -17,7 +17,7 @@ from utils import get_full_domain
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import load_json
-from utils import getOccupationSkills
+from utils import get_occupation_skills
 from utils import set_occupation_skills_list
 from utils import acct_dir
 from utils import local_actor_url
@@ -57,7 +57,7 @@ def getSkillsFromList(skillsList: []) -> {}:
 def actorSkillValue(actor_json: {}, skillName: str) -> int:
     """Returns The skill level from an actor
     """
-    ocSkillsList = getOccupationSkills(actor_json)
+    ocSkillsList = get_occupation_skills(actor_json)
     skillsDict = getSkillsFromList(ocSkillsList)
     if not skillsDict:
         return 0
@@ -71,7 +71,7 @@ def noOfActorSkills(actor_json: {}) -> int:
     """Returns the number of skills that an actor has
     """
     if actor_json.get('hasOccupation'):
-        skillsList = getOccupationSkills(actor_json)
+        skillsList = get_occupation_skills(actor_json)
         return len(skillsList)
     return 0
 
@@ -96,7 +96,7 @@ def setActorSkillLevel(actor_json: {},
             },
             'skills': []
         }]
-    ocSkillsList = getOccupationSkills(actor_json)
+    ocSkillsList = get_occupation_skills(actor_json)
     skillsDict = getSkillsFromList(ocSkillsList)
     if not skillsDict.get(skill):
         if len(skillsDict.items()) >= 32:
@@ -139,7 +139,7 @@ def getSkills(base_dir: str, nickname: str, domain: str) -> []:
     if actor_json:
         if not actor_json.get('hasOccupation'):
             return None
-        ocSkillsList = getOccupationSkills(actor_json)
+        ocSkillsList = get_occupation_skills(actor_json)
         return getSkillsFromList(ocSkillsList)
     return None
 
@@ -268,7 +268,7 @@ def sendSkillViaServer(base_dir: str, session, nickname: str, password: str,
 def actorHasSkill(actor_json: {}, skillName: str) -> bool:
     """Returns true if the given actor has the given skill
     """
-    ocSkillsList = getOccupationSkills(actor_json)
+    ocSkillsList = get_occupation_skills(actor_json)
     for skillStr in ocSkillsList:
         if skillName + ':' in skillStr:
             return True

@@ -263,7 +263,7 @@ from utils import user_agent_domain
 from utils import isLocalNetworkAddress
 from utils import permitted_dir
 from utils import is_account_dir
-from utils import getOccupationSkills
+from utils import get_occupation_skills
 from utils import get_occupation_name
 from utils import set_occupation_name
 from utils import loadTranslationsFromFile
@@ -9803,7 +9803,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     accessKeys = \
                                         self.server.keyShortcuts[nickname]
                                 actorSkillsList = \
-                                    getOccupationSkills(actor_json)
+                                    get_occupation_skills(actor_json)
                                 skills = getSkillsFromList(actorSkillsList)
                                 city = getSpoofedCity(self.server.city,
                                                       base_dir,
@@ -9861,7 +9861,7 @@ class PubServer(BaseHTTPRequestHandler):
                         else:
                             if self._secure_mode():
                                 actorSkillsList = \
-                                    getOccupationSkills(actor_json)
+                                    get_occupation_skills(actor_json)
                                 skills = getSkillsFromList(actorSkillsList)
                                 msg = json.dumps(skills,
                                                  ensure_ascii=False)
