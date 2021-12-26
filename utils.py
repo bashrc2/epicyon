@@ -2969,16 +2969,17 @@ def isfloat(value):
         return False
 
 
-def dateStringToSeconds(dateStr: str) -> int:
+def date_string_to_seconds(date_str: str) -> int:
     """Converts a date string (eg "published") into seconds since epoch
     """
     try:
-        expiryTime = \
-            datetime.datetime.strptime(dateStr, '%Y-%m-%dT%H:%M:%SZ')
+        expiry_time = \
+            datetime.datetime.strptime(date_str, '%Y-%m-%dT%H:%M:%SZ')
     except BaseException:
-        print('EX: dateStringToSeconds unable to parse date ' + str(dateStr))
+        print('EX: date_string_to_seconds unable to parse date ' +
+              str(date_str))
         return None
-    return int(datetime.datetime.timestamp(expiryTime))
+    return int(datetime.datetime.timestamp(expiry_time))
 
 
 def date_seconds_to_string(date_sec: int) -> str:

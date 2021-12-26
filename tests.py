@@ -63,7 +63,7 @@ from utils import get_category_types
 from utils import get_supported_languages
 from utils import setConfigParam
 from utils import is_group_actor
-from utils import dateStringToSeconds
+from utils import date_string_to_seconds
 from utils import date_seconds_to_string
 from utils import validPassword
 from utils import userAgentDomain
@@ -5674,7 +5674,7 @@ def _testAuthorizeSharedItems():
 def _testDateConversions() -> None:
     print('testDateConversions')
     dateStr = "2021-05-16T14:37:41Z"
-    dateSec = dateStringToSeconds(dateStr)
+    dateSec = date_string_to_seconds(dateStr)
     dateStr2 = date_seconds_to_string(dateSec)
     assert dateStr == dateStr2
 

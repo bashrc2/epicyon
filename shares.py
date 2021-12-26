@@ -23,7 +23,7 @@ from session import postJson
 from session import postImage
 from session import createSession
 from utils import has_object_stringType
-from utils import dateStringToSeconds
+from utils import date_string_to_seconds
 from utils import date_seconds_to_string
 from utils import get_config_param
 from utils import get_full_domain
@@ -1787,10 +1787,10 @@ def _dfcToSharesFormat(catalogJson: {},
         if ':' not in item['DFC:hasType']:
             continue
 
-        startTimeSec = dateStringToSeconds(item['DFC:startDate'])
+        startTimeSec = date_string_to_seconds(item['DFC:startDate'])
         if not startTimeSec:
             continue
-        expiryTimeSec = dateStringToSeconds(item['DFC:expiryDate'])
+        expiryTimeSec = date_string_to_seconds(item['DFC:expiryDate'])
         if not expiryTimeSec:
             continue
         if expiryTimeSec < curr_time:
