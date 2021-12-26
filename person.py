@@ -822,8 +822,8 @@ def personUpgradeActor(base_dir: str, personJson: {},
     # roles are configured
     rolesList = getActorRolesList(personJson)
     if not rolesList:
-        adminName = get_config_param(base_dir, 'admin')
-        if personJson['id'].endswith('/users/' + adminName):
+        admin_name = get_config_param(base_dir, 'admin')
+        if personJson['id'].endswith('/users/' + admin_name):
             rolesList = ["admin", "moderator", "editor"]
             setRolesFromList(personJson, rolesList)
             updateActor = True

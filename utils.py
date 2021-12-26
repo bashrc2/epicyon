@@ -292,20 +292,20 @@ def is_editor(base_dir: str, nickname: str) -> bool:
     editorsFile = base_dir + '/accounts/editors.txt'
 
     if not os.path.isfile(editorsFile):
-        adminName = get_config_param(base_dir, 'admin')
-        if not adminName:
+        admin_name = get_config_param(base_dir, 'admin')
+        if not admin_name:
             return False
-        if adminName == nickname:
+        if admin_name == nickname:
             return True
         return False
 
     with open(editorsFile, 'r') as f:
         lines = f.readlines()
         if len(lines) == 0:
-            adminName = get_config_param(base_dir, 'admin')
-            if not adminName:
+            admin_name = get_config_param(base_dir, 'admin')
+            if not admin_name:
                 return False
-            if adminName == nickname:
+            if admin_name == nickname:
                 return True
         for editor in lines:
             editor = editor.strip('\n').strip('\r')
@@ -320,20 +320,20 @@ def isArtist(base_dir: str, nickname: str) -> bool:
     artistsFile = base_dir + '/accounts/artists.txt'
 
     if not os.path.isfile(artistsFile):
-        adminName = get_config_param(base_dir, 'admin')
-        if not adminName:
+        admin_name = get_config_param(base_dir, 'admin')
+        if not admin_name:
             return False
-        if adminName == nickname:
+        if admin_name == nickname:
             return True
         return False
 
     with open(artistsFile, 'r') as f:
         lines = f.readlines()
         if len(lines) == 0:
-            adminName = get_config_param(base_dir, 'admin')
-            if not adminName:
+            admin_name = get_config_param(base_dir, 'admin')
+            if not admin_name:
                 return False
-            if adminName == nickname:
+            if admin_name == nickname:
                 return True
         for artist in lines:
             artist = artist.strip('\n').strip('\r')
