@@ -360,7 +360,7 @@ def get_image_extensions() -> []:
     return ('png', 'jpg', 'jpeg', 'gif', 'webp', 'avif', 'svg', 'ico')
 
 
-def getImageMimeType(imageFilename: str) -> str:
+def get_image_mime_type(imageFilename: str) -> str:
     """Returns the mime type for the given image
     """
     extensionsToMime = {

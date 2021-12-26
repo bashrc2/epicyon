@@ -257,7 +257,7 @@ from utils import removeLineEndings
 from utils import get_base_content_from_post
 from utils import acct_dir
 from utils import getImageExtensionFromMimeType
-from utils import getImageMimeType
+from utils import get_image_mime_type
 from utils import has_object_dict
 from utils import userAgentDomain
 from utils import isLocalNetworkAddress
@@ -7304,7 +7304,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._304()
                     return
 
-                mediaImageType = getImageMimeType(emojiFilename)
+                mediaImageType = get_image_mime_type(emojiFilename)
                 mediaBinary = None
                 try:
                     with open(emojiFilename, 'rb') as avFile:
@@ -12757,7 +12757,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._304()
             return True
 
-        mediaFileType = getImageMimeType(mediaFilename)
+        mediaFileType = get_image_mime_type(mediaFilename)
         mediaBinary = None
         try:
             with open(mediaFilename, 'rb') as avFile:
@@ -12849,7 +12849,7 @@ class PubServer(BaseHTTPRequestHandler):
         lastModifiedTimeStr = \
             lastModifiedTime.strftime('%a, %d %b %Y %H:%M:%S GMT')
 
-        mediaImageType = getImageMimeType(avatarFile)
+        mediaImageType = get_image_mime_type(avatarFile)
         mediaBinary = None
         try:
             with open(avatarFilename, 'rb') as avFile:
