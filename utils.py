@@ -82,39 +82,39 @@ def get_content_from_post(post_json_object: {}, system_language: str,
     """Returns the content from the post in the given language
     including searching for a matching entry within contentMap
     """
-    thisPostJson = post_json_object
+    this_post_json = post_json_object
     if hasObjectDict(post_json_object):
-        thisPostJson = post_json_object['object']
-    if not thisPostJson.get('content'):
+        this_post_json = post_json_object['object']
+    if not this_post_json.get('content'):
         return ''
     content = ''
-    if thisPostJson.get('contentMap'):
-        if isinstance(thisPostJson['contentMap'], dict):
-            if thisPostJson['contentMap'].get(system_language):
-                sys_lang = thisPostJson['contentMap'][system_language]
+    if this_post_json.get('contentMap'):
+        if isinstance(this_post_json['contentMap'], dict):
+            if this_post_json['contentMap'].get(system_language):
+                sys_lang = this_post_json['contentMap'][system_language]
                 if isinstance(sys_lang, str):
-                    return thisPostJson['contentMap'][system_language]
+                    return this_post_json['contentMap'][system_language]
             else:
                 # is there a contentMap entry for one of
                 # the understood languages?
                 for lang in languages_understood:
-                    if thisPostJson['contentMap'].get(lang):
-                        return thisPostJson['contentMap'][lang]
+                    if this_post_json['contentMap'].get(lang):
+                        return this_post_json['contentMap'][lang]
     else:
-        if isinstance(thisPostJson['content'], str):
-            content = thisPostJson['content']
+        if isinstance(this_post_json['content'], str):
+            content = this_post_json['content']
     return content
 
 
 def getBaseContentFromPost(post_json_object: {}, system_language: str) -> str:
     """Returns the content from the post in the given language
     """
-    thisPostJson = post_json_object
+    this_post_json = post_json_object
     if hasObjectDict(post_json_object):
-        thisPostJson = post_json_object['object']
-    if not thisPostJson.get('content'):
+        this_post_json = post_json_object['object']
+    if not this_post_json.get('content'):
         return ''
-    return thisPostJson['content']
+    return this_post_json['content']
 
 
 def acctDir(base_dir: str, nickname: str, domain: str) -> str:
