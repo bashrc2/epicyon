@@ -27,7 +27,7 @@ from posts import archivePostsForPerson
 from content import validHashTag
 from utils import get_base_content_from_post
 from utils import removeHtml
-from utils import getFullDomain
+from utils import get_full_domain
 from utils import loadJson
 from utils import saveJson
 from utils import getStatusNumber
@@ -394,7 +394,7 @@ def _newswireHashtagProcessing(session, base_dir: str, post_json_object: {},
     with open(rulesFilename, 'r') as f:
         rules = f.readlines()
 
-    domain_full = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
 
     # get the full text content of the post
     content = ''
@@ -672,7 +672,7 @@ def _convertRSStoActivityPub(base_dir: str, http_prefix: str,
         blog['object']['content'] = rssDescription
         blog['object']['contentMap'][system_language] = rssDescription
 
-        domain_full = getFullDomain(domain, port)
+        domain_full = get_full_domain(domain, port)
 
         hashtags = item[6]
 

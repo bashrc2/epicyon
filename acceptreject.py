@@ -10,7 +10,7 @@ __module_group__ = "ActivityPub"
 import os
 from utils import hasObjectStringObject
 from utils import has_users_path
-from utils import getFullDomain
+from utils import get_full_domain
 from utils import urlPermitted
 from utils import getDomainFromActor
 from utils import getNicknameFromActor
@@ -39,7 +39,7 @@ def _create_accept_reject(base_dir: str, federation_list: [],
     if not urlPermitted(objectJson['actor'], federation_list):
         return None
 
-    domain = getFullDomain(domain, port)
+    domain = get_full_domain(domain, port)
 
     new_accept = {
         "@context": "https://www.w3.org/ns/activitystreams",

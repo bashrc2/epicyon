@@ -26,7 +26,7 @@ from utils import hasObjectStringType
 from utils import dateStringToSeconds
 from utils import dateSecondsToString
 from utils import getConfigParam
-from utils import getFullDomain
+from utils import get_full_domain
 from utils import validNickname
 from utils import loadJson
 from utils import saveJson
@@ -326,7 +326,7 @@ def addShare(base_dir: str,
     published = int(time.time())
     durationSec = _addShareDurationSec(duration, published)
 
-    domain_full = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
     actor = local_actor_url(http_prefix, nickname, domain_full)
     itemID = _getValidSharedItemID(actor, displayName)
     dfcId = _getshareDfcId(base_dir, system_language,
@@ -345,7 +345,7 @@ def addShare(base_dir: str,
                 imageFilename = sharesImageFilename + '.' + ext
                 moveImage = True
 
-    domain_full = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
 
     # copy or move the image for the shared item to its destination
     if imageFilename:
@@ -486,7 +486,7 @@ def getSharesFeedForPerson(base_dir: str,
     if not validNickname(domain, nickname):
         return None
 
-    domain = getFullDomain(domain, port)
+    domain = get_full_domain(domain, port)
 
     handleDomain = removeDomainPort(domain)
     sharesFilename = \
@@ -576,7 +576,7 @@ def sendShareViaServer(base_dir, session,
             if newItemCurrency != itemCurrency:
                 itemCurrency = newItemCurrency
 
-    fromDomainFull = getFullDomain(fromDomain, fromPort)
+    fromDomainFull = get_full_domain(fromDomain, fromPort)
 
     actor = local_actor_url(http_prefix, fromNickname, fromDomainFull)
     toUrl = 'https://www.w3.org/ns/activitystreams#Public'
@@ -689,7 +689,7 @@ def sendUndoShareViaServer(base_dir: str, session,
         print('WARN: No session for sendUndoShareViaServer')
         return 6
 
-    fromDomainFull = getFullDomain(fromDomain, fromPort)
+    fromDomainFull = get_full_domain(fromDomain, fromPort)
 
     actor = local_actor_url(http_prefix, fromNickname, fromDomainFull)
     toUrl = 'https://www.w3.org/ns/activitystreams#Public'
@@ -796,7 +796,7 @@ def sendWantedViaServer(base_dir, session,
             if newItemCurrency != itemCurrency:
                 itemCurrency = newItemCurrency
 
-    fromDomainFull = getFullDomain(fromDomain, fromPort)
+    fromDomainFull = get_full_domain(fromDomain, fromPort)
 
     actor = local_actor_url(http_prefix, fromNickname, fromDomainFull)
     toUrl = 'https://www.w3.org/ns/activitystreams#Public'
@@ -909,7 +909,7 @@ def sendUndoWantedViaServer(base_dir: str, session,
         print('WARN: No session for sendUndoWantedViaServer')
         return 6
 
-    fromDomainFull = getFullDomain(fromDomain, fromPort)
+    fromDomainFull = get_full_domain(fromDomain, fromPort)
 
     actor = local_actor_url(http_prefix, fromNickname, fromDomainFull)
     toUrl = 'https://www.w3.org/ns/activitystreams#Public'
@@ -1010,7 +1010,7 @@ def getSharedItemsCatalogViaServer(base_dir, session,
         'Authorization': authHeader,
         'Accept': 'application/json'
     }
-    domain_full = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
     url = local_actor_url(http_prefix, nickname, domain_full) + '/catalog'
     if debug:
         print('Shared items catalog request to: ' + url)
@@ -1118,7 +1118,7 @@ def outboxUndoShareUpload(base_dir: str, http_prefix: str,
         if debug:
             print('DEBUG: displayName missing from Offer')
         return
-    domain_full = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
     removeSharedItem(base_dir, nickname, domain,
                      message_json['object']['displayName'],
                      http_prefix, domain_full, 'shares')

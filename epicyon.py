@@ -68,7 +68,7 @@ from auth import createPassword
 from utils import removeDomainPort
 from utils import getPortFromDomain
 from utils import has_users_path
-from utils import getFullDomain
+from utils import get_full_domain
 from utils import setConfigParam
 from utils import getConfigParam
 from utils import getDomainFromActor
@@ -704,7 +704,7 @@ if args.posts:
             postsNickname = getNicknameFromActor(args.posts)
             postsDomain, postsPort = getDomainFromActor(args.posts)
             args.posts = \
-                getFullDomain(postsNickname + '@' + postsDomain, postsPort)
+                get_full_domain(postsNickname + '@' + postsDomain, postsPort)
         else:
             print('Syntax: --posts nickname@domain')
             sys.exit()
@@ -738,7 +738,7 @@ if args.postDomains:
             postsNickname = getNicknameFromActor(args.postDomains)
             postsDomain, postsPort = getDomainFromActor(args.postDomains)
             args.postDomains = \
-                getFullDomain(postsNickname + '@' + postsDomain, postsPort)
+                get_full_domain(postsNickname + '@' + postsDomain, postsPort)
         else:
             print('Syntax: --postDomains nickname@domain')
             sys.exit()
@@ -790,7 +790,7 @@ if args.postDomainsBlocked:
             postsDomain, postsPort = \
                 getDomainFromActor(args.postDomainsBlocked)
             args.postDomainsBlocked = \
-                getFullDomain(postsNickname + '@' + postsDomain, postsPort)
+                get_full_domain(postsNickname + '@' + postsDomain, postsPort)
         else:
             print('Syntax: --postDomainsBlocked nickname@domain')
             sys.exit()
@@ -836,7 +836,7 @@ if args.checkDomains:
             postsNickname = getNicknameFromActor(args.posts)
             postsDomain, postsPort = getDomainFromActor(args.posts)
             args.checkDomains = \
-                getFullDomain(postsNickname + '@' + postsDomain, postsPort)
+                get_full_domain(postsNickname + '@' + postsDomain, postsPort)
         else:
             print('Syntax: --checkDomains nickname@domain')
             sys.exit()

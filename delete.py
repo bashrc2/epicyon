@@ -12,7 +12,7 @@ from datetime import datetime
 from utils import hasObjectString
 from utils import removeDomainPort
 from utils import has_users_path
-from utils import getFullDomain
+from utils import get_full_domain
 from utils import removeIdEnding
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
@@ -39,7 +39,7 @@ def sendDeleteViaServer(base_dir: str, session,
         print('WARN: No session for sendDeleteViaServer')
         return 6
 
-    fromDomainFull = getFullDomain(fromDomain, fromPort)
+    fromDomainFull = get_full_domain(fromDomain, fromPort)
 
     actor = local_actor_url(http_prefix, fromNickname, fromDomainFull)
     toUrl = 'https://www.w3.org/ns/activitystreams#Public'

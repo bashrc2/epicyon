@@ -18,7 +18,7 @@ from pathlib import Path
 from random import randint
 from utils import get_base_content_from_post
 from utils import has_object_dict
-from utils import getFullDomain
+from utils import get_full_domain
 from utils import isDM
 from utils import loadTranslationsFromFile
 from utils import removeHtml
@@ -806,7 +806,7 @@ def _desktopShowActor(base_dir: str, actor_json: {}, translate: {},
     actor = actor_json['id']
     actorNickname = getNicknameFromActor(actor)
     actorDomain, actorPort = getDomainFromActor(actor)
-    actorDomainFull = getFullDomain(actorDomain, actorPort)
+    actorDomainFull = get_full_domain(actorDomain, actorPort)
     handle = '@' + actorNickname + '@' + actorDomainFull
 
     sayStr = 'Profile for ' + html.unescape(handle)
@@ -1284,7 +1284,7 @@ def _desktopShowFollowRequests(followRequestsJson: {}, translate: {}) -> None:
         handleNickname = getNicknameFromActor(item)
         handleDomain, handlePort = getDomainFromActor(item)
         handleDomainFull = \
-            getFullDomain(handleDomain, handlePort)
+            get_full_domain(handleDomain, handlePort)
         print(indent + '  👤 ' +
               handleNickname + '@' + handleDomainFull)
 
@@ -1310,7 +1310,7 @@ def _desktopShowFollowing(followingJson: {}, translate: {},
         handleNickname = getNicknameFromActor(item)
         handleDomain, handlePort = getDomainFromActor(item)
         handleDomainFull = \
-            getFullDomain(handleDomain, handlePort)
+            get_full_domain(handleDomain, handlePort)
         print(indent + '  👤 ' +
               handleNickname + '@' + handleDomainFull)
 
@@ -1409,7 +1409,7 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
     _sayCommand(sayStr, sayStr, screenreader,
                 system_language, espeak)
 
-    domain_full = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
     yourActor = local_actor_url(http_prefix, nickname, domain_full)
     actor_json = None
 

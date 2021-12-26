@@ -35,7 +35,7 @@ from utils import isDM
 from utils import rejectPostId
 from utils import isRecentPost
 from utils import getConfigParam
-from utils import getFullDomain
+from utils import get_full_domain
 from utils import isEditor
 from utils import locatePost
 from utils import loadJson
@@ -1381,7 +1381,7 @@ def individualPostAsHtml(signing_priv_key_pem: str,
     if messageId:
         messageIdStr = ';' + messageId
 
-    domain_full = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
 
     pageNumberParam = ''
     if pageNumber:
@@ -1426,7 +1426,7 @@ def individualPostAsHtml(signing_priv_key_pem: str,
         # lookup the correct webfinger for the postActor
         postActorNickname = getNicknameFromActor(postActor)
         postActorDomain, postActorPort = getDomainFromActor(postActor)
-        postActorDomainFull = getFullDomain(postActorDomain, postActorPort)
+        postActorDomainFull = get_full_domain(postActorDomain, postActorPort)
         postActorHandle = postActorNickname + '@' + postActorDomainFull
         postActorWf = \
             webfingerHandle(session, postActorHandle, http_prefix,
@@ -1848,7 +1848,7 @@ def individualPostAsHtml(signing_priv_key_pem: str,
         post_json_object['object']['contentMap'][system_language] = \
             post_json_object['object']['content']
 
-    domain_full = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
     personUrl = local_actor_url(http_prefix, nickname, domain_full)
     actor_json = \
         getPersonFromCache(base_dir, personUrl, person_cache, False)
@@ -2025,7 +2025,7 @@ def htmlIndividualPost(cssCache: {},
     if byStr:
         byStrNickname = getNicknameFromActor(byStr)
         byStrDomain, byStrPort = getDomainFromActor(byStr)
-        byStrDomain = getFullDomain(byStrDomain, byStrPort)
+        byStrDomain = get_full_domain(byStrDomain, byStrPort)
         byStrHandle = byStrNickname + '@' + byStrDomain
         if translate.get(byText):
             byText = translate[byText]
@@ -2033,7 +2033,7 @@ def htmlIndividualPost(cssCache: {},
             '<p>' + byText + ' <a href="' + byStr + '">@' + \
             byStrHandle + '</a>' + byTextExtra + '\n'
 
-        domain_full = getFullDomain(domain, port)
+        domain_full = get_full_domain(domain, port)
         actor = '/users/' + nickname
         followStr = '  <form method="POST" ' + \
             'accept-charset="UTF-8" action="' + actor + '/searchhandle">\n'

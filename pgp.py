@@ -13,7 +13,7 @@ from pathlib import Path
 from person import getActorJson
 from utils import containsPGPPublicKey
 from utils import isPGPEncrypted
-from utils import getFullDomain
+from utils import get_full_domain
 from utils import getStatusNumber
 from utils import local_actor_url
 from utils import replaceUsersWithAt
@@ -480,7 +480,7 @@ def pgpPublicKeyUpload(base_dir: str, session,
         PGPpubKey = test
         PGPpubKeyId = None
 
-    domain_full = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
     if debug:
         print('PGP test domain: ' + domain_full)
 

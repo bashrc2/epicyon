@@ -13,7 +13,7 @@ from auth import createBasicAuthHeader
 from posts import getPersonBox
 from session import postJson
 from utils import hasObjectString
-from utils import getFullDomain
+from utils import get_full_domain
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import loadJson
@@ -90,7 +90,7 @@ def sendAvailabilityViaServer(base_dir: str, session,
         print('WARN: No session for sendAvailabilityViaServer')
         return 6
 
-    domain_full = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
 
     toUrl = local_actor_url(http_prefix, nickname, domain_full)
     ccUrl = toUrl + '/followers'

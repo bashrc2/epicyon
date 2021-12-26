@@ -44,7 +44,7 @@ from utils import replaceUsersWithAt
 from utils import removeLineEndings
 from utils import removeDomainPort
 from utils import getStatusNumber
-from utils import getFullDomain
+from utils import get_full_domain
 from utils import validNickname
 from utils import loadJson
 from utils import saveJson
@@ -108,7 +108,7 @@ def setProfileImage(base_dir: str, http_prefix: str,
         imageFilename = imageFilename.replace('~/', str(Path.home()) + '/')
 
     domain = removeDomainPort(domain)
-    fullDomain = getFullDomain(domain, port)
+    fullDomain = get_full_domain(domain, port)
 
     handle = nickname + '@' + domain
     personFilename = base_dir + '/accounts/' + handle + '.json'
@@ -366,7 +366,7 @@ def _createPersonBase(base_dir: str, nickname: str, domain: str, port: int,
 
     handle = nickname + '@' + domain
     originalDomain = domain
-    domain = getFullDomain(domain, port)
+    domain = get_full_domain(domain, port)
 
     personType = 'Person'
     if group_account:
@@ -586,7 +586,7 @@ def savePersonQrcode(base_dir: str,
     qrcodeFilename = acct_dir(base_dir, nickname, domain) + '/qrcode.png'
     if os.path.isfile(qrcodeFilename):
         return
-    handle = getFullDomain('@' + nickname + '@' + domain, port)
+    handle = get_full_domain('@' + nickname + '@' + domain, port)
     url = pyqrcode.create(handle)
     url.png(qrcodeFilename, scale)
 
@@ -1115,7 +1115,7 @@ def canRemovePost(base_dir: str, nickname: str,
     if '/statuses/' not in postId:
         return False
 
-    domain_full = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
 
     # is the post by the admin?
     adminNickname = getConfigParam(base_dir, 'admin')
@@ -1141,7 +1141,7 @@ def _removeTagsForNickname(base_dir: str, nickname: str,
     """
     if not os.path.isdir(base_dir + '/tags'):
         return
-    domain_full = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
     matchStr = domain_full + '/users/' + nickname + '/'
     directory = os.fsencode(base_dir + '/tags/')
     for f in os.scandir(directory):

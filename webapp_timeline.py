@@ -13,7 +13,7 @@ from shutil import copyfile
 from utils import isArtist
 from utils import dangerousMarkup
 from utils import getConfigParam
-from utils import getFullDomain
+from utils import get_full_domain
 from utils import isEditor
 from utils import removeIdEnding
 from utils import acct_dir
@@ -611,7 +611,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         bookmarksButton = 'buttonselected'
 
     # get the full domain, including any port number
-    fullDomain = getFullDomain(domain, port)
+    fullDomain = get_full_domain(domain, port)
 
     usersPath = '/users/' + nickname
     actor = http_prefix + '://' + fullDomain + usersPath
@@ -741,7 +741,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         '  <tbody>\n' + \
         '    <tr>\n'
 
-    domain_full = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
 
     # left column
     leftColumnStr = \
@@ -1053,7 +1053,7 @@ def _htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
         sharesTimelineJson(actor, pageNumber, itemsPerPage,
                            base_dir, domain, nickname, maxSharesPerAccount,
                            shared_items_federated_domains, sharesFileType)
-    domain_full = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
     actor = local_actor_url(http_prefix, nickname, domain_full)
     adminNickname = getConfigParam(base_dir, 'admin')
     adminActor = ''

@@ -16,7 +16,7 @@ from random import randint
 from hashlib import sha1
 from auth import createPassword
 from utils import get_base_content_from_post
-from utils import getFullDomain
+from utils import get_full_domain
 from utils import getImageExtensions
 from utils import getVideoExtensions
 from utils import getAudioExtensions
@@ -324,7 +324,7 @@ def attachMedia(base_dir: str, http_prefix: str,
     if mediaType == 'audio/mpeg':
         fileExtension = 'mp3'
 
-    domain = getFullDomain(domain, port)
+    domain = get_full_domain(domain, port)
 
     mPath = getMediaPath()
     mediaPath = mPath + '/' + createPassword(32) + '.' + fileExtension

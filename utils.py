@@ -228,22 +228,22 @@ def valid_post_date(published: str, max_age_days: int, debug: bool) -> bool:
                   str(published))
         return False
 
-    daysDiff = post_time_object - baseline_time
-    postDaysSinceEpoch = daysDiff.days
+    days_diff = post_time_object - baseline_time
+    post_days_since_epoch = days_diff.days
 
-    if postDaysSinceEpoch > now_days_since_epoch:
+    if post_days_since_epoch > now_days_since_epoch:
         if debug:
             print("Inbox post has a published date in the future!")
         return False
 
-    if now_days_since_epoch - postDaysSinceEpoch >= max_age_days:
+    if now_days_since_epoch - post_days_since_epoch >= max_age_days:
         if debug:
             print("Inbox post is not recent enough")
         return False
     return True
 
 
-def getFullDomain(domain: str, port: int) -> str:
+def get_full_domain(domain: str, port: int) -> str:
     """Returns the full domain name, including port number
     """
     if not port:

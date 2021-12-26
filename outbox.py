@@ -20,7 +20,7 @@ from utils import hasObjectStringType
 from utils import get_base_content_from_post
 from utils import has_object_dict
 from utils import getLocalNetworkAddresses
-from utils import getFullDomain
+from utils import get_full_domain
 from utils import removeIdEnding
 from utils import getDomainFromActor
 from utils import dangerousMarkup
@@ -100,7 +100,7 @@ def _outboxPersonReceiveUpdate(recentPostsCache: {},
         if debug:
             print('DEBUG: c2s actor update id is not a string')
         return
-    domain_full = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
     actor = local_actor_url(http_prefix, nickname, domain_full)
     if len(message_json['to']) != 1:
         if debug:
@@ -280,7 +280,7 @@ def postMessageToOutbox(session, translate: {},
                     return False
 
         testDomain, testPort = getDomainFromActor(message_json['actor'])
-        testDomain = getFullDomain(testDomain, testPort)
+        testDomain = get_full_domain(testDomain, testPort)
         if isBlockedDomain(base_dir, testDomain):
             if debug:
                 print('DEBUG: domain is blocked: ' + message_json['actor'])

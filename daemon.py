@@ -272,7 +272,7 @@ from utils import decoded_host
 from utils import isPublicPost
 from utils import get_locked_account
 from utils import has_users_path
-from utils import getFullDomain
+from utils import get_full_domain
 from utils import removeHtml
 from utils import isEditor
 from utils import isArtist
@@ -1969,7 +1969,8 @@ class PubServer(BaseHTTPRequestHandler):
                         # https://domain
                         blockDomain, blockPort = \
                             getDomainFromActor(moderationText)
-                        fullBlockDomain = getFullDomain(blockDomain, blockPort)
+                        fullBlockDomain = \
+                            get_full_domain(blockDomain, blockPort)
                     if '@' in moderationText:
                         # nick@domain or *@domain
                         fullBlockDomain = moderationText.split('@')[1]
@@ -1987,7 +1988,8 @@ class PubServer(BaseHTTPRequestHandler):
                         # https://domain
                         blockDomain, blockPort = \
                             getDomainFromActor(moderationText)
-                        fullBlockDomain = getFullDomain(blockDomain, blockPort)
+                        fullBlockDomain = \
+                            get_full_domain(blockDomain, blockPort)
                     if '@' in moderationText:
                         # nick@domain or *@domain
                         fullBlockDomain = moderationText.split('@')[1]
@@ -2368,7 +2370,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         optionsDomain, optionsPort = getDomainFromActor(optionsActor)
-        optionsDomainFull = getFullDomain(optionsDomain, optionsPort)
+        optionsDomainFull = get_full_domain(optionsDomain, optionsPort)
         if chooserNickname == optionsNickname and \
            optionsDomain == domain and \
            optionsPort == port:
@@ -2926,7 +2928,8 @@ class PubServer(BaseHTTPRequestHandler):
             followingNickname = getNicknameFromActor(followingActor)
             followingDomain, followingPort = \
                 getDomainFromActor(followingActor)
-            followingDomainFull = getFullDomain(followingDomain, followingPort)
+            followingDomainFull = \
+                get_full_domain(followingDomain, followingPort)
             if followerNickname == followingNickname and \
                followingDomain == domain and \
                followingPort == port:
@@ -3123,7 +3126,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return
             blockingDomain, blockingPort = \
                 getDomainFromActor(blockingActor)
-            blockingDomainFull = getFullDomain(blockingDomain, blockingPort)
+            blockingDomainFull = get_full_domain(blockingDomain, blockingPort)
             if blockerNickname == blockingNickname and \
                blockingDomain == domain and \
                blockingPort == port:
@@ -3210,7 +3213,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return
             blockingDomain, blockingPort = \
                 getDomainFromActor(blockingActor)
-            blockingDomainFull = getFullDomain(blockingDomain, blockingPort)
+            blockingDomainFull = get_full_domain(blockingDomain, blockingPort)
             if blockerNickname == blockingNickname and \
                blockingDomain == domain and \
                blockingPort == port:
@@ -3513,7 +3516,7 @@ class PubServer(BaseHTTPRequestHandler):
                         searchDomain, searchPort = \
                             getDomainFromActor(searchStr)
                         searchDomainFull = \
-                            getFullDomain(searchDomain, searchPort)
+                            get_full_domain(searchDomain, searchPort)
                         actor = \
                             local_actor_url(http_prefix, searchNickname,
                                             searchDomainFull)
@@ -7902,7 +7905,8 @@ class PubServer(BaseHTTPRequestHandler):
             handleNickname = getNicknameFromActor(followingHandle)
             handleDomain, handlePort = getDomainFromActor(followingHandle)
             followingHandle = \
-                handleNickname + '@' + getFullDomain(handleDomain, handlePort)
+                handleNickname + '@' + \
+                get_full_domain(handleDomain, handlePort)
         if '@' in followingHandle:
             if not self._establishSession("followApproveButton"):
                 self._404()
@@ -8060,7 +8064,8 @@ class PubServer(BaseHTTPRequestHandler):
             handleNickname = getNicknameFromActor(followingHandle)
             handleDomain, handlePort = getDomainFromActor(followingHandle)
             followingHandle = \
-                handleNickname + '@' + getFullDomain(handleDomain, handlePort)
+                handleNickname + '@' + \
+                get_full_domain(handleDomain, handlePort)
         if '@' in followingHandle:
             manualDenyFollowRequestThread(self.server.session,
                                           base_dir, http_prefix,
@@ -13258,11 +13263,11 @@ class PubServer(BaseHTTPRequestHandler):
         if self.headers.get('referer'):
             refererDomain, refererPort = \
                 getDomainFromActor(self.headers['referer'])
-            refererDomain = getFullDomain(refererDomain, refererPort)
+            refererDomain = get_full_domain(refererDomain, refererPort)
         elif self.headers.get('Referer'):
             refererDomain, refererPort = \
                 getDomainFromActor(self.headers['Referer'])
-            refererDomain = getFullDomain(refererDomain, refererPort)
+            refererDomain = get_full_domain(refererDomain, refererPort)
         elif self.headers.get('Signature'):
             if 'keyId="' in self.headers['Signature']:
                 refererDomain = self.headers['Signature'].split('keyId="')[1]
@@ -18735,7 +18740,7 @@ def runDaemon(content_license_url: str,
     httpd.maxPostsInBox = 32000
     httpd.domain = domain
     httpd.port = port
-    httpd.domain_full = getFullDomain(domain, port)
+    httpd.domain_full = get_full_domain(domain, port)
     save_domain_qrcode(base_dir, http_prefix, httpd.domain_full)
     httpd.http_prefix = http_prefix
     httpd.debug = debug

@@ -48,7 +48,7 @@ from utils import fileLastModified
 from utils import isPublicPost
 from utils import has_users_path
 from utils import valid_post_date
-from utils import getFullDomain
+from utils import get_full_domain
 from utils import getFollowersList
 from utils import isEvil
 from utils import getStatusNumber
@@ -1151,7 +1151,7 @@ def _createPostC2S(base_dir: str, nickname: str, domain: str, port: int,
                    content_license_url: str) -> {}:
     """Creates a new client-to-server post
     """
-    domain_full = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
     idStr = \
         local_actor_url(http_prefix, nickname, domain_full) + \
         '/statuses/' + statusNumber + '/replies'
@@ -1398,7 +1398,7 @@ def _createPostBase(base_dir: str,
     tags = []
     hashtagsDict = {}
 
-    domain = getFullDomain(domain, port)
+    domain = get_full_domain(domain, port)
 
     # add tags
     if nickname != 'news':
@@ -1569,7 +1569,7 @@ def outboxMessageCreateWrap(http_prefix: str,
     https://www.w3.org/TR/activitypub/#object-without-create
     """
 
-    domain = getFullDomain(domain, port)
+    domain = get_full_domain(domain, port)
     statusNumber, published = getStatusNumber()
     if message_json.get('published'):
         published = message_json['published']
@@ -1604,7 +1604,7 @@ def _postIsAddressedToFollowers(base_dir: str,
                                 post_json_object: {}) -> bool:
     """Returns true if the given post is addressed to followers of the nickname
     """
-    domain_full = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
 
     if not post_json_object.get('object'):
         return False
@@ -1771,7 +1771,7 @@ def createPublicPost(base_dir: str,
                      content_license_url: str) -> {}:
     """Public post
     """
-    domain_full = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
     isModerationReport = False
     eventUUID = None
     category = None
@@ -1907,7 +1907,7 @@ def createQuestionPost(base_dir: str,
                        content_license_url: str) -> {}:
     """Question post with multiple choice options
     """
-    domain_full = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
     localActor = local_actor_url(http_prefix, nickname, domain_full)
     message_json = \
         _createPostBase(base_dir, nickname, domain, port,
@@ -1957,7 +1957,7 @@ def createUnlistedPost(base_dir: str,
                        content_license_url: str) -> {}:
     """Unlisted post. This has the #Public and followers links inverted.
     """
-    domain_full = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
     localActor = local_actor_url(http_prefix, nickname, domain_full)
     return _createPostBase(base_dir, nickname, domain, port,
                            localActor + '/followers',
@@ -1992,7 +1992,7 @@ def createFollowersOnlyPost(base_dir: str,
                             content_license_url: str) -> {}:
     """Followers only post
     """
-    domain_full = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
     localActor = local_actor_url(http_prefix, nickname, domain_full)
     return _createPostBase(base_dir, nickname, domain, port,
                            localActor + '/followers',
@@ -2110,7 +2110,7 @@ def createReportPost(base_dir: str,
                      content_license_url: str) -> {}:
     """Send a report to moderators
     """
-    domain_full = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
 
     # add a title to distinguish moderation reports from other posts
     reportTitle = 'Moderation Report'
@@ -2290,7 +2290,7 @@ def sendPost(signing_priv_key_pem: str, project_version: str,
         # shared inbox actor on @domain@domain
         toNickname = toDomain
 
-    toDomain = getFullDomain(toDomain, toPort)
+    toDomain = get_full_domain(toDomain, toPort)
 
     handle = http_prefix + '://' + toDomain + '/@' + toNickname
 
@@ -2380,7 +2380,7 @@ def sendPost(signing_priv_key_pem: str, project_version: str,
     # federation list then send the token for this domain
     # so that it can request a catalog
     if toDomain in shared_items_federated_domains:
-        domain_full = getFullDomain(domain, port)
+        domain_full = get_full_domain(domain, port)
         if sharedItemFederationTokens.get(domain_full):
             signatureHeaderJson['Origin'] = domain_full
             signatureHeaderJson['SharesCatalog'] = \
@@ -2439,7 +2439,7 @@ def sendPostViaServer(signing_priv_key_pem: str, project_version: str,
         print('WARN: No session for sendPostViaServer')
         return 6
 
-    fromDomainFull = getFullDomain(fromDomain, fromPort)
+    fromDomainFull = get_full_domain(fromDomain, fromPort)
 
     handle = http_prefix + '://' + fromDomainFull + '/@' + fromNickname
 
@@ -2497,7 +2497,7 @@ def sendPostViaServer(signing_priv_key_pem: str, project_version: str,
                 local_actor_url(http_prefix, fromNickname, fromDomainFull) + \
                 '/followers'
         else:
-            toDomainFull = getFullDomain(toDomain, toPort)
+            toDomainFull = get_full_domain(toDomain, toPort)
             toPersonId = local_actor_url(http_prefix, toNickname, toDomainFull)
 
     post_json_object = \
@@ -2636,7 +2636,7 @@ def sendSignedJson(post_json_object: {}, session, base_dir: str,
         # shared inbox actor on @domain@domain
         toNickname = toDomain
 
-    toDomain = getFullDomain(toDomain, toPort)
+    toDomain = get_full_domain(toDomain, toPort)
 
     toDomainUrl = http_prefix + '://' + toDomain
     if not siteIsActive(toDomainUrl, 10):
@@ -2752,7 +2752,7 @@ def sendSignedJson(post_json_object: {}, session, base_dir: str,
     # optionally add a token so that the receiving instance may access
     # your shared items catalog
     if sharedItemsToken:
-        signatureHeaderJson['Origin'] = getFullDomain(domain, port)
+        signatureHeaderJson['Origin'] = get_full_domain(domain, port)
         signatureHeaderJson['SharesCatalog'] = sharedItemsToken
     elif debug:
         print('Not sending shared items federation token')
@@ -2960,8 +2960,8 @@ def _sendToNamedAddresses(session, base_dir: str,
             continue
         # Don't send profile/actor updates to yourself
         if isProfileUpdate:
-            domain_full = getFullDomain(domain, port)
-            toDomainFull = getFullDomain(toDomain, toPort)
+            domain_full = get_full_domain(domain, port)
+            toDomainFull = get_full_domain(toDomain, toPort)
             if nickname == toNickname and \
                domain_full == toDomainFull:
                 if debug:
@@ -2969,8 +2969,8 @@ def _sendToNamedAddresses(session, base_dir: str,
                           nickname + '@' + domain_full)
                 continue
         if debug:
-            domain_full = getFullDomain(domain, port)
-            toDomainFull = getFullDomain(toDomain, toPort)
+            domain_full = get_full_domain(domain, port)
+            toDomainFull = get_full_domain(toDomain, toPort)
             print('DEBUG: Post sending s2s: ' + nickname + '@' + domain_full +
                   ' to ' + toNickname + '@' + toDomainFull)
 
@@ -2978,7 +2978,7 @@ def _sendToNamedAddresses(session, base_dir: str,
         # another onion domain then switch the clearnet
         # domain for the onion one
         fromDomain = domain
-        fromDomainFull = getFullDomain(domain, port)
+        fromDomainFull = get_full_domain(domain, port)
         fromHttpPrefix = http_prefix
         if onion_domain:
             if toDomain.endswith('.onion'):
@@ -3144,7 +3144,7 @@ def sendToFollowers(session, base_dir: str,
         # so that it can request a catalog
         sharedItemsToken = None
         if followerDomain in shared_items_federated_domains:
-            domain_full = getFullDomain(domain, port)
+            domain_full = get_full_domain(domain, port)
             if sharedItemFederationTokens.get(domain_full):
                 sharedItemsToken = sharedItemFederationTokens[domain_full]
 
@@ -3396,7 +3396,7 @@ def createModeration(base_dir: str, nickname: str, domain: str, port: int,
     boxDir = createPersonDir(nickname, domain, base_dir, 'inbox')
     boxname = 'moderation'
 
-    domain = getFullDomain(domain, port)
+    domain = get_full_domain(domain, port)
 
     if not pageNumber:
         pageNumber = 1
@@ -3688,7 +3688,7 @@ def _createBoxIndexed(recentPostsCache: {},
         timelineNickname = 'news'
 
     originalDomain = domain
-    domain = getFullDomain(domain, port)
+    domain = get_full_domain(domain, port)
 
     boxActor = local_actor_url(http_prefix, nickname, domain)
 
@@ -4088,7 +4088,7 @@ def getPublicPostsOfPerson(base_dir: str, nickname: str, domain: str,
     if nickname.startswith('!'):
         nickname = nickname[1:]
         group_account = True
-    domain_full = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
     handle = http_prefix + "://" + domain_full + "/@" + nickname
 
     wfRequest = \
@@ -4146,7 +4146,7 @@ def getPublicPostDomains(session, base_dir: str, nickname: str, domain: str,
     cached_webfingers = {}
     federation_list = []
 
-    domain_full = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
     handle = http_prefix + "://" + domain_full + "/@" + nickname
     wfRequest = \
         webfingerHandle(session, handle, http_prefix, cached_webfingers,
@@ -4242,7 +4242,7 @@ def getPublicPostInfo(session, base_dir: str, nickname: str, domain: str,
     cached_webfingers = {}
     federation_list = []
 
-    domain_full = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
     handle = http_prefix + "://" + domain_full + "/@" + nickname
     wfRequest = \
         webfingerHandle(session, handle, http_prefix, cached_webfingers,
@@ -4725,7 +4725,8 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
         attributedDomain, attributedPort = \
             getDomainFromActor(announcedJson['object']['id'])
         if attributedNickname and attributedDomain:
-            attributedDomain = getFullDomain(attributedDomain, attributedPort)
+            attributedDomain = \
+                get_full_domain(attributedDomain, attributedPort)
             if isBlocked(base_dir, nickname, domain,
                          attributedNickname, attributedDomain):
                 _rejectAnnounce(announceFilename,
@@ -4772,7 +4773,7 @@ def sendBlockViaServer(base_dir: str, session,
         print('WARN: No session for sendBlockViaServer')
         return 6
 
-    fromDomainFull = getFullDomain(fromDomain, fromPort)
+    fromDomainFull = get_full_domain(fromDomain, fromPort)
 
     blockActor = local_actor_url(http_prefix, fromNickname, fromDomainFull)
     toUrl = 'https://www.w3.org/ns/activitystreams#Public'
@@ -4856,7 +4857,7 @@ def sendMuteViaServer(base_dir: str, session,
         print('WARN: No session for sendMuteViaServer')
         return 6
 
-    fromDomainFull = getFullDomain(fromDomain, fromPort)
+    fromDomainFull = get_full_domain(fromDomain, fromPort)
 
     actor = local_actor_url(http_prefix, fromNickname, fromDomainFull)
     handle = replaceUsersWithAt(actor)
@@ -4936,7 +4937,7 @@ def sendUndoMuteViaServer(base_dir: str, session,
         print('WARN: No session for sendUndoMuteViaServer')
         return 6
 
-    fromDomainFull = getFullDomain(fromDomain, fromPort)
+    fromDomainFull = get_full_domain(fromDomain, fromPort)
 
     actor = local_actor_url(http_prefix, fromNickname, fromDomainFull)
     handle = replaceUsersWithAt(actor)
@@ -5022,7 +5023,7 @@ def sendUndoBlockViaServer(base_dir: str, session,
         print('WARN: No session for sendBlockViaServer')
         return 6
 
-    fromDomainFull = getFullDomain(fromDomain, fromPort)
+    fromDomainFull = get_full_domain(fromDomain, fromPort)
 
     blockActor = local_actor_url(http_prefix, fromNickname, fromDomainFull)
     toUrl = 'https://www.w3.org/ns/activitystreams#Public'
@@ -5139,7 +5140,7 @@ def c2sBoxJson(base_dir: str, session,
         print('WARN: No session for c2sBoxJson')
         return None
 
-    domain_full = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
     actor = local_actor_url(http_prefix, nickname, domain_full)
 
     authHeader = createBasicAuthHeader(nickname, password)

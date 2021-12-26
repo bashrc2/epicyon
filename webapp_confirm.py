@@ -9,7 +9,7 @@ __module_group__ = "Web Interface"
 
 import os
 from shutil import copyfile
-from utils import getFullDomain
+from utils import get_full_domain
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import locatePost
@@ -45,7 +45,7 @@ def htmlConfirmDelete(cssCache: {},
     actor = messageId.split('/statuses/')[0]
     nickname = getNicknameFromActor(actor)
     domain, port = getDomainFromActor(actor)
-    domain_full = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
 
     postFilename = locatePost(base_dir, nickname, domain, messageId)
     if not postFilename:
@@ -114,7 +114,7 @@ def htmlConfirmRemoveSharedItem(cssCache: {}, translate: {}, base_dir: str,
     """
     nickname = getNicknameFromActor(actor)
     domain, port = getDomainFromActor(actor)
-    domain_full = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
     sharesFile = \
         acct_dir(base_dir, nickname, domain) + '/' + sharesFileType + '.json'
     if not os.path.isfile(sharesFile):

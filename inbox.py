@@ -38,7 +38,7 @@ from utils import isRecentPost
 from utils import getConfigParam
 from utils import has_users_path
 from utils import valid_post_date
-from utils import getFullDomain
+from utils import get_full_domain
 from utils import removeIdEnding
 from utils import getProtocolPrefixes
 from utils import isBlogPost
@@ -491,7 +491,7 @@ def savePostToInboxQueue(base_dir: str, http_prefix: str,
             if debug:
                 print('DEBUG: post from ' + postNickname + ' blocked')
             return None
-        postDomain = getFullDomain(postDomain, postPort)
+        postDomain = get_full_domain(postDomain, postPort)
 
     if has_object_dict(post_json_object):
         if post_json_object['object'].get('inReplyTo'):
@@ -646,7 +646,7 @@ def _inboxPostRecipients(base_dir: str, post_json_object: {},
 
     domain = removeDomainPort(domain)
     domainBase = domain
-    domain = getFullDomain(domain, port)
+    domain = get_full_domain(domain, port)
     domainMatch = '/' + domain + '/users/'
 
     actor = post_json_object['actor']
@@ -764,7 +764,7 @@ def _receiveUndoFollow(session, base_dir: str, http_prefix: str,
         return False
     domainFollower, portFollower = \
         getDomainFromActor(message_json['object']['actor'])
-    domainFollowerFull = getFullDomain(domainFollower, portFollower)
+    domainFollowerFull = get_full_domain(domainFollower, portFollower)
 
     nicknameFollowing = \
         getNicknameFromActor(message_json['object']['object'])
@@ -774,7 +774,7 @@ def _receiveUndoFollow(session, base_dir: str, http_prefix: str,
         return False
     domainFollowing, portFollowing = \
         getDomainFromActor(message_json['object']['object'])
-    domainFollowingFull = getFullDomain(domainFollowing, portFollowing)
+    domainFollowingFull = get_full_domain(domainFollowing, portFollowing)
 
     group_account = \
         hasGroupType(base_dir, message_json['object']['actor'], None)
@@ -834,8 +834,8 @@ def _personReceiveUpdate(base_dir: str,
     if debug:
         print('Receiving actor update for ' + personJson['url'] +
               ' ' + str(personJson))
-    domain_full = getFullDomain(domain, port)
-    updateDomainFull = getFullDomain(updateDomain, updatePort)
+    domain_full = get_full_domain(domain, port)
+    updateDomainFull = get_full_domain(updateDomain, updatePort)
     usersPaths = get_user_paths()
     usersStrFound = False
     for usersStr in usersPaths:
@@ -1536,7 +1536,7 @@ def _receiveBookmark(recentPostsCache: {},
         if debug:
             print('DEBUG: inbox bookmark Add target is not string')
         return False
-    domain_full = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
     nickname = handle.split('@')[0]
     if not message_json['actor'].endswith(domain_full + '/users/' + nickname):
         if debug:
@@ -1648,7 +1648,7 @@ def _receiveUndoBookmark(recentPostsCache: {},
         if debug:
             print('DEBUG: inbox Remove bookmark target is not string')
         return False
-    domain_full = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
     nickname = handle.split('@')[0]
     if not message_json['actor'].endswith(domain_full + '/users/' + nickname):
         if debug:
@@ -1741,7 +1741,7 @@ def _receiveDelete(session, handle: str, isGroup: bool, base_dir: str,
         print('DEBUG: Delete activity arrived')
     if not hasObjectString(message_json, debug):
         return False
-    domain_full = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
     deletePrefix = http_prefix + '://' + domain_full + '/'
     if (not allow_deletion and
         (not message_json['object'].startswith(deletePrefix) or
@@ -1899,7 +1899,7 @@ def _receiveAnnounce(recentPostsCache: {},
     if debug:
         print('DEBUG: Downloading announce post ' + message_json['actor'] +
               ' -> ' + message_json['object'])
-    domain_full = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
 
     # Generate html. This also downloads the announced post.
     pageNumber = 1
@@ -1990,7 +1990,7 @@ def _receiveAnnounce(recentPostsCache: {},
 
                 if isRecentPost(post_json_object, 3):
                     if not os.path.isfile(postFilename + '.tts'):
-                        domain_full = getFullDomain(domain, port)
+                        domain_full = get_full_domain(domain, port)
                         updateSpeaker(base_dir, http_prefix,
                                       nickname, domain, domain_full,
                                       post_json_object, person_cache,
@@ -2650,7 +2650,7 @@ def _sendToGroupMembers(session, base_dir: str, handle: str, port: int,
         return
     nickname = handle.split('@')[0].replace('!', '')
     domain = handle.split('@')[1]
-    domain_full = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
     groupActor = local_actor_url(http_prefix, nickname, domain_full)
     if groupActor not in post_json_object['to']:
         return
@@ -3142,11 +3142,11 @@ def _lowFrequencyPostNotification(base_dir: str, http_prefix: str,
         return
     fromNickname = getNicknameFromActor(attributedTo)
     fromDomain, fromPort = getDomainFromActor(attributedTo)
-    fromDomainFull = getFullDomain(fromDomain, fromPort)
+    fromDomainFull = get_full_domain(fromDomain, fromPort)
     if notifyWhenPersonPosts(base_dir, nickname, domain,
                              fromNickname, fromDomainFull):
         postId = removeIdEnding(jsonObj['id'])
-        domFull = getFullDomain(domain, port)
+        domFull = get_full_domain(domain, port)
         postLink = \
             local_actor_url(http_prefix, nickname, domFull) + \
             '?notifypost=' + postId.replace('/', '-')
@@ -3170,7 +3170,7 @@ def _checkForGitPatches(base_dir: str, nickname: str, domain: str,
         return 0
     fromNickname = getNicknameFromActor(attributedTo)
     fromDomain, fromPort = getDomainFromActor(attributedTo)
-    fromDomainFull = getFullDomain(fromDomain, fromPort)
+    fromDomainFull = get_full_domain(fromDomain, fromPort)
     if receiveGitPatch(base_dir, nickname, domain,
                        jsonObj['type'], jsonObj['summary'],
                        jsonObj['content'],
@@ -3422,7 +3422,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
 
     nickname = handle.split('@')[0]
     jsonObj = None
-    domain_full = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
     if _validPostContent(base_dir, nickname, domain,
                          post_json_object, max_mentions, max_emoji,
                          allow_local_network_access, debug,
@@ -3550,7 +3550,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                 else:
                     if boxname == 'inbox':
                         if isRecentPost(post_json_object, 3):
-                            domain_full = getFullDomain(domain, port)
+                            domain_full = get_full_domain(domain, port)
                             updateSpeaker(base_dir, http_prefix,
                                           nickname, domain, domain_full,
                                           post_json_object, person_cache,
@@ -3874,7 +3874,7 @@ def _receiveFollowRequest(session, base_dir: str, http_prefix: str,
         return False
     domain, tempPort = getDomainFromActor(message_json['actor'])
     fromPort = port
-    domain_full = getFullDomain(domain, tempPort)
+    domain_full = get_full_domain(domain, tempPort)
     if tempPort:
         fromPort = tempPort
     if not domainPermitted(domain, federation_list):
@@ -3900,7 +3900,7 @@ def _receiveFollowRequest(session, base_dir: str, http_prefix: str,
         if debug:
             print('DEBUG: follow domain not permitted ' + domainToFollow)
         return True
-    domainToFollowFull = getFullDomain(domainToFollow, tempPort)
+    domainToFollowFull = get_full_domain(domainToFollow, tempPort)
     nicknameToFollow = getNicknameFromActor(message_json['object'])
     if not nicknameToFollow:
         if debug:

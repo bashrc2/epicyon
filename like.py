@@ -15,7 +15,7 @@ from utils import hasObjectStringType
 from utils import removeDomainPort
 from utils import has_object_dict
 from utils import has_users_path
-from utils import getFullDomain
+from utils import get_full_domain
 from utils import removeIdEnding
 from utils import urlPermitted
 from utils import getNicknameFromActor
@@ -86,7 +86,7 @@ def _like(recentPostsCache: {},
     if not urlPermitted(objectUrl, federation_list):
         return None
 
-    fullDomain = getFullDomain(domain, port)
+    fullDomain = get_full_domain(domain, port)
 
     newLikeJson = {
         "@context": "https://www.w3.org/ns/activitystreams",
@@ -156,7 +156,7 @@ def likePost(recentPostsCache: {},
              signing_priv_key_pem: str) -> {}:
     """Likes a given status post. This is only used by unit tests
     """
-    likeDomain = getFullDomain(likeDomain, likePort)
+    likeDomain = get_full_domain(likeDomain, likePort)
 
     actorLiked = local_actor_url(http_prefix, likeNickname, likeDomain)
     objectUrl = actorLiked + '/statuses/' + str(likeStatusNumber)
@@ -181,7 +181,7 @@ def sendLikeViaServer(base_dir: str, session,
         print('WARN: No session for sendLikeViaServer')
         return 6
 
-    fromDomainFull = getFullDomain(fromDomain, fromPort)
+    fromDomainFull = get_full_domain(fromDomain, fromPort)
 
     actor = local_actor_url(http_prefix, fromNickname, fromDomainFull)
 
@@ -264,7 +264,7 @@ def sendUndoLikeViaServer(base_dir: str, session,
         print('WARN: No session for sendUndoLikeViaServer')
         return 6
 
-    fromDomainFull = getFullDomain(fromDomain, fromPort)
+    fromDomainFull = get_full_domain(fromDomain, fromPort)
 
     actor = local_actor_url(http_prefix, fromNickname, fromDomainFull)
 

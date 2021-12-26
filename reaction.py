@@ -17,7 +17,7 @@ from utils import hasObjectStringType
 from utils import removeDomainPort
 from utils import has_object_dict
 from utils import has_users_path
-from utils import getFullDomain
+from utils import get_full_domain
 from utils import removeIdEnding
 from utils import urlPermitted
 from utils import getNicknameFromActor
@@ -82,7 +82,7 @@ def _reaction(recentPostsCache: {},
         print('_reaction: Invalid emoji reaction: "' + emojiContent + '"')
         return
 
-    fullDomain = getFullDomain(domain, port)
+    fullDomain = get_full_domain(domain, port)
 
     newReactionJson = {
         "@context": "https://www.w3.org/ns/activitystreams",
@@ -158,7 +158,7 @@ def reactionPost(recentPostsCache: {},
                  signing_priv_key_pem: str) -> {}:
     """Adds a reaction to a given status post. This is only used by unit tests
     """
-    reactionDomain = getFullDomain(reactionDomain, reactionPort)
+    reactionDomain = get_full_domain(reactionDomain, reactionPort)
 
     actorReaction = \
         local_actor_url(http_prefix, reactionNickname, reactionDomain)
@@ -191,7 +191,7 @@ def sendReactionViaServer(base_dir: str, session,
               emojiContent + '"')
         return 7
 
-    fromDomainFull = getFullDomain(fromDomain, fromPort)
+    fromDomainFull = get_full_domain(fromDomain, fromPort)
 
     actor = local_actor_url(http_prefix, fromNickname, fromDomainFull)
 
@@ -277,7 +277,7 @@ def sendUndoReactionViaServer(base_dir: str, session,
         print('WARN: No session for sendUndoReactionViaServer')
         return 6
 
-    fromDomainFull = getFullDomain(fromDomain, fromPort)
+    fromDomainFull = get_full_domain(fromDomain, fromPort)
 
     actor = local_actor_url(http_prefix, fromNickname, fromDomainFull)
 

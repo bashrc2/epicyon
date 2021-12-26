@@ -12,7 +12,7 @@ from utils import hasGroupType
 from utils import removeDomainPort
 from utils import removeIdEnding
 from utils import has_users_path
-from utils import getFullDomain
+from utils import get_full_domain
 from utils import getStatusNumber
 from utils import createOutboxDir
 from utils import urlPermitted
@@ -134,7 +134,7 @@ def createAnnounce(session, base_dir: str, federation_list: [],
         return None
 
     domain = removeDomainPort(domain)
-    fullDomain = getFullDomain(domain, port)
+    fullDomain = get_full_domain(domain, port)
 
     statusNumber, published = getStatusNumber()
     newAnnounceId = http_prefix + '://' + fullDomain + \
@@ -195,7 +195,7 @@ def announcePublic(session, base_dir: str, federation_list: [],
                    signing_priv_key_pem: str) -> {}:
     """Makes a public announcement
     """
-    fromDomain = getFullDomain(domain, port)
+    fromDomain = get_full_domain(domain, port)
 
     toUrl = 'https://www.w3.org/ns/activitystreams#Public'
     ccUrl = local_actor_url(http_prefix, nickname, fromDomain) + '/followers'
@@ -222,7 +222,7 @@ def sendAnnounceViaServer(base_dir: str, session,
         print('WARN: No session for sendAnnounceViaServer')
         return 6
 
-    fromDomainFull = getFullDomain(fromDomain, fromPort)
+    fromDomainFull = get_full_domain(fromDomain, fromPort)
 
     toUrl = 'https://www.w3.org/ns/activitystreams#Public'
     actorStr = local_actor_url(http_prefix, fromNickname, fromDomainFull)
@@ -315,7 +315,7 @@ def sendUndoAnnounceViaServer(base_dir: str, session,
         print('WARN: No session for sendUndoAnnounceViaServer')
         return 6
 
-    domain_full = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
 
     actor = local_actor_url(http_prefix, nickname, domain_full)
     handle = replaceUsersWithAt(actor)

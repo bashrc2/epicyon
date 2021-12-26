@@ -23,7 +23,7 @@ from utils import saveJson
 from utils import fileLastModified
 from utils import setConfigParam
 from utils import has_users_path
-from utils import getFullDomain
+from utils import get_full_domain
 from utils import removeIdEnding
 from utils import isEvil
 from utils import locatePost
@@ -453,7 +453,7 @@ def outboxBlock(base_dir: str, http_prefix: str,
         print('WARN: unable to find nickname in ' + message_json['object'])
         return False
     domainBlocked, portBlocked = getDomainFromActor(message_json['object'])
-    domainBlockedFull = getFullDomain(domainBlocked, portBlocked)
+    domainBlockedFull = get_full_domain(domainBlocked, portBlocked)
 
     addBlock(base_dir, nickname, domain,
              nicknameBlocked, domainBlockedFull)
@@ -511,7 +511,7 @@ def outboxUndoBlock(base_dir: str, http_prefix: str,
         return
     domainObject = message_json['object']['object']
     domainBlocked, portBlocked = getDomainFromActor(domainObject)
-    domainBlockedFull = getFullDomain(domainBlocked, portBlocked)
+    domainBlockedFull = get_full_domain(domainBlocked, portBlocked)
 
     removeBlock(base_dir, nickname, domain,
                 nicknameBlocked, domainBlockedFull)
@@ -543,7 +543,7 @@ def mutePost(base_dir: str, nickname: str, domain: str, port: int,
         if hasObjectString(post_json_object, debug):
             alsoUpdatePostId = removeIdEnding(post_json_object['object'])
 
-    domain_full = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
     actor = local_actor_url(http_prefix, nickname, domain_full)
 
     if postJsonObj.get('conversation'):
@@ -687,7 +687,7 @@ def unmutePost(base_dir: str, nickname: str, domain: str, port: int,
                            postJsonObj['conversation'])
 
     if postJsonObj.get('ignores'):
-        domain_full = getFullDomain(domain, port)
+        domain_full = get_full_domain(domain, port)
         actor = local_actor_url(http_prefix, nickname, domain_full)
         totalItems = 0
         if postJsonObj['ignores'].get('totalItems'):
@@ -778,7 +778,7 @@ def outboxMute(base_dir: str, http_prefix: str,
         return
     if not hasActor(message_json, debug):
         return
-    domain_full = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
     if not message_json['actor'].endswith(domain_full + '/users/' + nickname):
         return
     if not message_json['type'] == 'Ignore':
@@ -827,7 +827,7 @@ def outboxUndoMute(base_dir: str, http_prefix: str,
         return
     if not hasActor(message_json, debug):
         return
-    domain_full = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
     if not message_json['actor'].endswith(domain_full + '/users/' + nickname):
         return
     if not message_json['type'] == 'Undo':

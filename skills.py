@@ -13,7 +13,7 @@ from auth import createBasicAuthHeader
 from posts import getPersonBox
 from session import postJson
 from utils import hasObjectString
-from utils import getFullDomain
+from utils import get_full_domain
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import loadJson
@@ -185,7 +185,7 @@ def sendSkillViaServer(base_dir: str, session, nickname: str, password: str,
         print('WARN: No session for sendSkillViaServer')
         return 6
 
-    domain_full = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
 
     actor = local_actor_url(http_prefix, nickname, domain_full)
     toUrl = actor

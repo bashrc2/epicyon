@@ -10,7 +10,7 @@ __module_group__ = "Moderation"
 import os
 from utils import isArtist
 from utils import isAccountDir
-from utils import getFullDomain
+from utils import get_full_domain
 from utils import isEditor
 from utils import loadJson
 from utils import getNicknameFromActor
@@ -143,7 +143,7 @@ def htmlAccountInfo(cssCache: {}, translate: {},
     for followerActor in followersList:
         followerNickname = getNicknameFromActor(followerActor)
         followerDomain, followerPort = getDomainFromActor(followerActor)
-        followerDomainFull = getFullDomain(followerDomain, followerPort)
+        followerDomainFull = get_full_domain(followerDomain, followerPort)
         if isBlocked(base_dir, nickname, domain,
                      followerNickname, followerDomainFull):
             blockedFollowers.append(followerActor)
@@ -157,7 +157,7 @@ def htmlAccountInfo(cssCache: {}, translate: {},
     for followingActor in followingList:
         followingNickname = getNicknameFromActor(followingActor)
         followingDomain, followingPort = getDomainFromActor(followingActor)
-        followingDomainFull = getFullDomain(followingDomain, followingPort)
+        followingDomainFull = get_full_domain(followingDomain, followingPort)
         if isBlocked(base_dir, nickname, domain,
                      followingNickname, followingDomainFull):
             blockedFollowing.append(followingActor)
@@ -219,7 +219,7 @@ def htmlAccountInfo(cssCache: {}, translate: {},
             followingNickname = getNicknameFromActor(actor)
             followingDomain, followingPort = getDomainFromActor(actor)
             followingDomainFull = \
-                getFullDomain(followingDomain, followingPort)
+                get_full_domain(followingDomain, followingPort)
             infoForm += '<a href="' + actor + '" ' + \
                 'target="_blank" rel="nofollow noopener noreferrer">' + \
                 followingNickname + '@' + followingDomainFull + \
@@ -237,7 +237,7 @@ def htmlAccountInfo(cssCache: {}, translate: {},
         for actor in blockedFollowers:
             followerNickname = getNicknameFromActor(actor)
             followerDomain, followerPort = getDomainFromActor(actor)
-            followerDomainFull = getFullDomain(followerDomain, followerPort)
+            followerDomainFull = get_full_domain(followerDomain, followerPort)
             infoForm += '<a href="' + actor + '" ' + \
                 'target="_blank" rel="nofollow noopener noreferrer">' + \
                 followerNickname + '@' + followerDomainFull + '</a><br><br>\n'

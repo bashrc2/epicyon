@@ -13,7 +13,7 @@ from webfinger import webfingerHandle
 from auth import createBasicAuthHeader
 from utils import removeDomainPort
 from utils import has_users_path
-from utils import getFullDomain
+from utils import get_full_domain
 from utils import removeIdEnding
 from utils import removePostFromCache
 from utils import urlPermitted
@@ -265,7 +265,7 @@ def bookmark(recentPostsCache: {},
     if not urlPermitted(objectUrl, federation_list):
         return None
 
-    fullDomain = getFullDomain(domain, port)
+    fullDomain = get_full_domain(domain, port)
 
     newBookmarkJson = {
         "@context": "https://www.w3.org/ns/activitystreams",
@@ -324,7 +324,7 @@ def undoBookmark(recentPostsCache: {},
     if not urlPermitted(objectUrl, federation_list):
         return None
 
-    fullDomain = getFullDomain(domain, port)
+    fullDomain = get_full_domain(domain, port)
 
     newUndoBookmarkJson = {
         "@context": "https://www.w3.org/ns/activitystreams",
@@ -383,7 +383,7 @@ def sendBookmarkViaServer(base_dir: str, session,
         print('WARN: No session for sendBookmarkViaServer')
         return 6
 
-    domain_full = getFullDomain(domain, fromPort)
+    domain_full = get_full_domain(domain, fromPort)
 
     actor = local_actor_url(http_prefix, nickname, domain_full)
 
@@ -473,7 +473,7 @@ def sendUndoBookmarkViaServer(base_dir: str, session,
         print('WARN: No session for sendUndoBookmarkViaServer')
         return 6
 
-    domain_full = getFullDomain(domain, fromPort)
+    domain_full = get_full_domain(domain, fromPort)
 
     actor = local_actor_url(http_prefix, nickname, domain_full)
 
@@ -572,7 +572,7 @@ def outboxBookmark(recentPostsCache: {},
         if debug:
             print('DEBUG: bookmark Add target is not string')
         return
-    domain_full = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
     if not message_json['target'].endswith('://' + domain_full +
                                            '/users/' + nickname +
                                            '/tlbookmarks'):
@@ -628,7 +628,7 @@ def outboxUndoBookmark(recentPostsCache: {},
         if debug:
             print('DEBUG: unbookmark Remove target is not string')
         return
-    domain_full = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
     if not message_json['target'].endswith('://' + domain_full +
                                            '/users/' + nickname +
                                            '/tlbookmarks'):

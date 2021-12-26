@@ -69,7 +69,7 @@ from utils import validPassword
 from utils import userAgentDomain
 from utils import camelCaseSplit
 from utils import decoded_host
-from utils import getFullDomain
+from utils import get_full_domain
 from utils import validNickname
 from utils import firstParagraphFromString
 from utils import removeIdEnding
@@ -270,7 +270,7 @@ def _testHttpSignedGET(base_dir: str):
     assert publicKeyPem
     messageBodyJsonStr = ''
 
-    headersDomain = getFullDomain(hostDomain, port)
+    headersDomain = get_full_domain(hostDomain, port)
 
     dateStr = 'Tue, 14 Sep 2021 16:19:00 GMT'
     boxpath = '/inbox'
@@ -555,7 +555,7 @@ def _testHttpsigBase(withDigest: bool, base_dir: str):
     else:
         messageBodyJsonStr = ''
 
-    headersDomain = getFullDomain(hostDomain, port)
+    headersDomain = get_full_domain(hostDomain, port)
 
     dateStr = strftime("%a, %d %b %Y %H:%M:%S %Z", gmtime())
     boxpath = '/inbox'
@@ -5939,7 +5939,7 @@ def _testHttpsigBaseNew(withDigest: bool, base_dir: str,
     else:
         messageBodyJsonStr = ''
 
-    headersDomain = getFullDomain(hostDomain, port)
+    headersDomain = get_full_domain(hostDomain, port)
 
     dateStr = strftime("%a, %d %b %Y %H:%M:%S %Z", gmtime())
     boxpath = '/inbox'

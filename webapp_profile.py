@@ -15,7 +15,7 @@ from utils import isGroupAccount
 from utils import has_object_dict
 from utils import getOccupationName
 from utils import get_locked_account
-from utils import getFullDomain
+from utils import get_full_domain
 from utils import isArtist
 from utils import isDormant
 from utils import getNicknameFromActor
@@ -162,7 +162,7 @@ def htmlProfileAfterSearch(cssCache: {},
     searchNickname = getNicknameFromActor(personUrl)
     if not searchNickname:
         return None
-    searchDomainFull = getFullDomain(searchDomain, searchPort)
+    searchDomainFull = get_full_domain(searchDomain, searchPort)
 
     profileStr = ''
     cssFilename = base_dir + '/epicyon-profile.css'
@@ -271,7 +271,7 @@ def htmlProfileAfterSearch(cssCache: {},
                                      alsoKnownAs, accessKeys,
                                      joinedDate)
 
-    domain_full = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
 
     followIsPermitted = True
     if not profile_json.get('followers'):
@@ -409,7 +409,7 @@ def _getProfileHeader(base_dir: str, http_prefix: str,
     if movedTo:
         newNickname = getNicknameFromActor(movedTo)
         newDomain, newPort = getDomainFromActor(movedTo)
-        newDomainFull = getFullDomain(newDomain, newPort)
+        newDomainFull = get_full_domain(newDomain, newPort)
         if newNickname and newDomain:
             htmlStr += \
                 '    <p>' + translate['New account'] + ': ' + \
@@ -503,7 +503,7 @@ def _getProfileHeaderAfterSearch(base_dir: str,
     if movedTo:
         newNickname = getNicknameFromActor(movedTo)
         newDomain, newPort = getDomainFromActor(movedTo)
-        newDomainFull = getFullDomain(newDomain, newPort)
+        newDomainFull = get_full_domain(newDomain, newPort)
         if newNickname and newDomain:
             newHandle = newNickname + '@' + newDomainFull
             htmlStr += '        <p>' + translate['New account'] + \
@@ -596,7 +596,7 @@ def htmlProfile(signing_priv_key_pem: str,
         addEmojiToDisplayName(session, base_dir, http_prefix,
                               nickname, domain,
                               profile_json['name'], True)
-    domain_full = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
     profileDescription = \
         addEmojiToDisplayName(session, base_dir, http_prefix,
                               nickname, domain,
@@ -2105,7 +2105,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, base_dir: str, path: str,
     nickname = getNicknameFromActor(path)
     if not nickname:
         return ''
-    domain_full = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
 
     actorFilename = acct_dir(base_dir, nickname, domain) + '.json'
     if not os.path.isfile(actorFilename):
@@ -2355,7 +2355,7 @@ def _individualFollowAsHtml(signing_priv_key_pem: str,
     """
     followUrlNickname = getNicknameFromActor(followUrl)
     followUrlDomain, followUrlPort = getDomainFromActor(followUrl)
-    followUrlDomainFull = getFullDomain(followUrlDomain, followUrlPort)
+    followUrlDomainFull = get_full_domain(followUrlDomain, followUrlPort)
     titleStr = '@' + followUrlNickname + '@' + followUrlDomainFull
     avatarUrl = getPersonAvatarUrl(base_dir, followUrl, person_cache, True)
     if not avatarUrl:

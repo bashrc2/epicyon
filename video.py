@@ -7,7 +7,7 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Timeline"
 
-from utils import getFullDomain
+from utils import get_full_domain
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import removeIdEnding
@@ -67,7 +67,7 @@ def convertVideoToNote(base_dir: str, nickname: str, domain: str,
     postDomain, postDomainPort = getDomainFromActor(attributedTo)
     if not postDomain:
         return None
-    postDomainFull = getFullDomain(postDomain, postDomainPort)
+    postDomainFull = get_full_domain(postDomain, postDomainPort)
     if isBlocked(base_dir, nickname, domain,
                  postNickname, postDomainFull, blockedCache):
         return None

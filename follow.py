@@ -13,7 +13,7 @@ from utils import hasObjectStringObject
 from utils import hasObjectStringType
 from utils import removeDomainPort
 from utils import has_users_path
-from utils import getFullDomain
+from utils import get_full_domain
 from utils import getFollowersList
 from utils import validNickname
 from utils import domainPermitted
@@ -184,7 +184,8 @@ def isFollowingActor(base_dir: str,
         return False
     followingDomain, followingPort = getDomainFromActor(actor)
     followingHandle = \
-        getFullDomain(followingNickname + '@' + followingDomain, followingPort)
+        get_full_domain(followingNickname + '@' + followingDomain,
+                        followingPort)
     if followingHandle.lower() in open(followingFile).read().lower():
         return True
     return False
@@ -464,7 +465,7 @@ def getFollowingFeed(base_dir: str, domain: str, port: int, path: str,
     if not validNickname(domain, nickname):
         return None
 
-    domain = getFullDomain(domain, port)
+    domain = get_full_domain(domain, port)
 
     if headerOnly:
         firstStr = \
@@ -632,8 +633,8 @@ def storeFollowRequest(base_dir: str,
     if not os.path.isdir(accountsDir):
         return False
 
-    domain_full = getFullDomain(domain, fromPort)
-    approveHandle = getFullDomain(nickname + '@' + domain, fromPort)
+    domain_full = get_full_domain(domain, fromPort)
+    approveHandle = get_full_domain(nickname + '@' + domain, fromPort)
 
     if group_account:
         approveHandle = '!' + approveHandle
@@ -819,7 +820,7 @@ def followedAccountRejects(session, base_dir: str, http_prefix: str,
               ' port ' + str(port) + ' to ' +
               nickname + '@' + domain + ' port ' + str(fromPort))
     client_to_server = False
-    denyHandle = getFullDomain(nickname + '@' + domain, fromPort)
+    denyHandle = get_full_domain(nickname + '@' + domain, fromPort)
     group_account = False
     if hasGroupType(base_dir, personUrl, person_cache):
         group_account = True
@@ -862,10 +863,10 @@ def sendFollowRequest(session, base_dir: str,
         print('You are not permitted to follow the domain ' + followDomain)
         return None
 
-    fullDomain = getFullDomain(domain, port)
+    fullDomain = get_full_domain(domain, port)
     followActor = local_actor_url(http_prefix, nickname, fullDomain)
 
-    requestDomain = getFullDomain(followDomain, followPort)
+    requestDomain = get_full_domain(followDomain, followPort)
 
     statusNumber, published = getStatusNumber()
 
@@ -952,9 +953,9 @@ def sendFollowRequestViaServer(base_dir: str, session,
         print('WARN: No session for sendFollowRequestViaServer')
         return 6
 
-    fromDomainFull = getFullDomain(fromDomain, fromPort)
+    fromDomainFull = get_full_domain(fromDomain, fromPort)
 
-    followDomainFull = getFullDomain(followDomain, followPort)
+    followDomainFull = get_full_domain(followDomain, followPort)
 
     followActor = local_actor_url(http_prefix, fromNickname, fromDomainFull)
     followedId = \
@@ -1042,8 +1043,8 @@ def sendUnfollowRequestViaServer(base_dir: str, session,
         print('WARN: No session for sendUnfollowRequestViaServer')
         return 6
 
-    fromDomainFull = getFullDomain(fromDomain, fromPort)
-    followDomainFull = getFullDomain(followDomain, followPort)
+    fromDomainFull = get_full_domain(fromDomain, fromPort)
+    followDomainFull = get_full_domain(followDomain, followPort)
 
     followActor = local_actor_url(http_prefix, fromNickname, fromDomainFull)
     followedId = \
@@ -1137,7 +1138,7 @@ def getFollowingViaServer(base_dir: str, session,
         print('WARN: No session for getFollowingViaServer')
         return 6
 
-    domain_full = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
     followActor = local_actor_url(http_prefix, nickname, domain_full)
 
     authHeader = createBasicAuthHeader(nickname, password)
@@ -1178,7 +1179,7 @@ def getFollowersViaServer(base_dir: str, session,
         print('WARN: No session for getFollowersViaServer')
         return 6
 
-    domain_full = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
     followActor = local_actor_url(http_prefix, nickname, domain_full)
 
     authHeader = createBasicAuthHeader(nickname, password)
@@ -1219,7 +1220,7 @@ def getFollowRequestsViaServer(base_dir: str, session,
         print('WARN: No session for getFollowRequestsViaServer')
         return 6
 
-    domain_full = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
 
     followActor = local_actor_url(http_prefix, nickname, domain_full)
     authHeader = createBasicAuthHeader(nickname, password)
@@ -1262,7 +1263,7 @@ def approveFollowRequestViaServer(base_dir: str, session,
         print('WARN: No session for approveFollowRequestViaServer')
         return 6
 
-    domain_full = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
     actor = local_actor_url(http_prefix, nickname, domain_full)
 
     authHeader = createBasicAuthHeader(nickname, password)
@@ -1303,7 +1304,7 @@ def denyFollowRequestViaServer(base_dir: str, session,
         print('WARN: No session for denyFollowRequestViaServer')
         return 6
 
-    domain_full = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
     actor = local_actor_url(http_prefix, nickname, domain_full)
 
     authHeader = createBasicAuthHeader(nickname, password)
@@ -1403,7 +1404,7 @@ def outboxUndoFollow(base_dir: str, message_json: {}, debug: bool) -> None:
         return
     domainFollower, portFollower = \
         getDomainFromActor(message_json['object']['actor'])
-    domainFollowerFull = getFullDomain(domainFollower, portFollower)
+    domainFollowerFull = get_full_domain(domainFollower, portFollower)
 
     nicknameFollowing = getNicknameFromActor(message_json['object']['object'])
     if not nicknameFollowing:
@@ -1412,7 +1413,7 @@ def outboxUndoFollow(base_dir: str, message_json: {}, debug: bool) -> None:
         return
     domainFollowing, portFollowing = \
         getDomainFromActor(message_json['object']['object'])
-    domainFollowingFull = getFullDomain(domainFollowing, portFollowing)
+    domainFollowingFull = get_full_domain(domainFollowing, portFollowing)
 
     group_account = \
         hasGroupType(base_dir, message_json['object']['object'], None)

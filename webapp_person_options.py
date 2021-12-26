@@ -12,7 +12,7 @@ from shutil import copyfile
 from petnames import getPetName
 from person import isPersonSnoozed
 from posts import isModerator
-from utils import getFullDomain
+from utils import get_full_domain
 from utils import getConfigParam
 from utils import isDormant
 from utils import removeHtml
@@ -66,7 +66,7 @@ def htmlPersonOptions(defaultTimeline: str,
     """Show options for a person: view/follow/block/report
     """
     optionsDomain, optionsPort = getDomainFromActor(optionsActor)
-    optionsDomainFull = getFullDomain(optionsDomain, optionsPort)
+    optionsDomainFull = get_full_domain(optionsDomain, optionsPort)
 
     if os.path.isfile(base_dir + '/accounts/options-background-custom.jpg'):
         if not os.path.isfile(base_dir + '/accounts/options-background.jpg'):
@@ -97,7 +97,7 @@ def htmlPersonOptions(defaultTimeline: str,
                           dormant_months)
 
         optionsNickname = getNicknameFromActor(optionsActor)
-        optionsDomainFull = getFullDomain(optionsDomain, optionsPort)
+        optionsDomainFull = get_full_domain(optionsDomain, optionsPort)
         followsYou = \
             isFollowerOfPerson(base_dir,
                                nickname, domain,

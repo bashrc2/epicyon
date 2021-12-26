@@ -14,7 +14,7 @@ from datetime import datetime
 from utils import get_base_content_from_post
 from utils import isAccountDir
 from utils import getConfigParam
-from utils import getFullDomain
+from utils import get_full_domain
 from utils import isEditor
 from utils import loadJson
 from utils import getDomainFromActor
@@ -629,7 +629,7 @@ def htmlHistorySearch(cssCache: {}, translate: {}, base_dir: str,
         htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
 
     # add the page title
-    domain_full = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
     actor = local_actor_url(http_prefix, nickname, domain_full)
     historySearchTitle = '🔍 ' + translate['Your Posts']
     if boxName == 'bookmarks':
@@ -933,7 +933,7 @@ def rssHashtagSearch(nickname: str, domain: str, port: int,
     if not lines:
         return None
 
-    domain_full = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
 
     maxFeedLength = 10
     hashtagFeed = \

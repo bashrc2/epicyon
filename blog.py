@@ -24,7 +24,7 @@ from utils import get_content_from_post
 from utils import isAccountDir
 from utils import removeHtml
 from utils import getConfigParam
-from utils import getFullDomain
+from utils import get_full_domain
 from utils import getMediaFormats
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
@@ -538,7 +538,7 @@ def htmlBlogPage(authorized: bool, session,
     if not timelineJson:
         return blogStr + htmlFooter()
 
-    domain_full = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
 
     # show previous and next buttons
     if pageNumber is not None:
@@ -608,7 +608,7 @@ def htmlBlogPageRSS2(authorized: bool, session,
        '\n' in nickname or '\r' in nickname:
         return None
 
-    domain_full = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
 
     blogRSS2 = ''
     if includeHeader:
@@ -663,7 +663,7 @@ def htmlBlogPageRSS3(authorized: bool, session,
        '\n' in nickname or '\r' in nickname:
         return None
 
-    domain_full = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
 
     blogRSS3 = ''
 
@@ -753,7 +753,7 @@ def htmlBlogView(authorized: bool,
                                 noOfItems, 1, peertube_instances,
                                 system_language, person_cache, debug)
 
-    domain_full = getFullDomain(domain, port)
+    domain_full = get_full_domain(domain, port)
 
     for subdir, dirs, files in os.walk(base_dir + '/accounts'):
         for acct in dirs:

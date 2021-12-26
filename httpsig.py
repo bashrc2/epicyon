@@ -22,7 +22,7 @@ from cryptography.hazmat.primitives.asymmetric import utils as hazutils
 import base64
 from time import gmtime, strftime
 import datetime
-from utils import getFullDomain
+from utils import get_full_domain
 from utils import get_sha_256
 from utils import get_sha_512
 from utils import local_actor_url
@@ -76,9 +76,9 @@ def signPostHeaders(dateStr: str, privateKeyPem: str,
     """Returns a raw signature string that can be plugged into a header and
     used to verify the authenticity of an HTTP transmission.
     """
-    domain = getFullDomain(domain, port)
+    domain = get_full_domain(domain, port)
 
-    toDomain = getFullDomain(toDomain, toPort)
+    toDomain = get_full_domain(toDomain, toPort)
 
     if not dateStr:
         dateStr = strftime("%a, %d %b %Y %H:%M:%S %Z", gmtime())
@@ -156,9 +156,9 @@ def signPostHeadersNew(dateStr: str, privateKeyPem: str,
     used to verify the authenticity of an HTTP transmission.
     See https://tools.ietf.org/html/draft-ietf-httpbis-message-signatures
     """
-    domain = getFullDomain(domain, port)
+    domain = get_full_domain(domain, port)
 
-    toDomain = getFullDomain(toDomain, toPort)
+    toDomain = get_full_domain(toDomain, toPort)
 
     timeFormat = "%a, %d %b %Y %H:%M:%S %Z"
     if not dateStr:
@@ -247,7 +247,7 @@ def createSignedHeader(dateStr: str, privateKeyPem: str, nickname: str,
     """
     algorithm = 'rsa-sha256'
     digestAlgorithm = 'rsa-sha256'
-    headerDomain = getFullDomain(toDomain, toPort)
+    headerDomain = get_full_domain(toDomain, toPort)
 
     # if no date is given then create one
     if not dateStr:
