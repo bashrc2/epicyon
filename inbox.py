@@ -31,7 +31,7 @@ from utils import get_user_paths
 from utils import get_base_content_from_post
 from utils import acct_dir
 from utils import removeDomainPort
-from utils import getPortFromDomain
+from utils import get_port_from_domain
 from utils import has_object_dict
 from utils import dmAllowedFromDomain
 from utils import isRecentPost
@@ -2830,7 +2830,7 @@ def _bounceDM(senderPostId: str, session, http_prefix: str,
     senderDomain = sendingHandle.split('@')[1]
     senderPort = port
     if ':' in senderDomain:
-        senderPort = getPortFromDomain(senderDomain)
+        senderPort = get_port_from_domain(senderDomain)
         senderDomain = removeDomainPort(senderDomain)
     cc = []
 

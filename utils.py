@@ -1097,7 +1097,7 @@ def getDomainFromActor(actor: str) -> (str, int):
         if '/' in actor:
             domain = domain.split('/')[0]
     if ':' in domain:
-        port = getPortFromDomain(domain)
+        port = get_port_from_domain(domain)
         domain = removeDomainPort(domain)
     return domain, port
 
@@ -2920,7 +2920,7 @@ def removeDomainPort(domain: str) -> str:
     return domain
 
 
-def getPortFromDomain(domain: str) -> int:
+def get_port_from_domain(domain: str) -> int:
     """If the domain has a port number appended then return it
     eg. mydomain.com:80 returns 80
     """

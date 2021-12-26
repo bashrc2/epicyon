@@ -66,7 +66,7 @@ from tests import runAllTests
 from auth import storeBasicCredentials
 from auth import createPassword
 from utils import removeDomainPort
-from utils import getPortFromDomain
+from utils import get_port_from_domain
 from utils import has_users_path
 from utils import get_full_domain
 from utils import setConfigParam
@@ -1277,7 +1277,7 @@ if args.message:
         toDomain = toDomain.replace('\n', '').replace('\r', '')
         toPort = 443
         if ':' in toDomain:
-            toPort = getPortFromDomain(toDomain)
+            toPort = get_port_from_domain(toDomain)
             toDomain = removeDomainPort(toDomain)
     else:
         if args.sendto.endswith('followers'):

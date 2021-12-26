@@ -40,7 +40,7 @@ from utils import replace_users_with_at
 from utils import has_group_type
 from utils import get_base_content_from_post
 from utils import removeDomainPort
-from utils import getPortFromDomain
+from utils import get_port_from_domain
 from utils import has_object_dict
 from utils import rejectPostId
 from utils import removeInvalidChars
@@ -3171,7 +3171,7 @@ def sendToFollowers(session, base_dir: str,
         index = 0
         toDomain = followerHandles[index].split('@')[1]
         if ':' in toDomain:
-            toPort = getPortFromDomain(toDomain)
+            toPort = get_port_from_domain(toDomain)
             toDomain = removeDomainPort(toDomain)
 
         cc = ''

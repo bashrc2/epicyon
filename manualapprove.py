@@ -13,7 +13,7 @@ from follow import followedAccountRejects
 from follow import removeFromFollowRequests
 from utils import load_json
 from utils import removeDomainPort
-from utils import getPortFromDomain
+from utils import get_port_from_domain
 from utils import get_user_paths
 from utils import acct_dir
 from threads import threadWithTrace
@@ -57,7 +57,7 @@ def manualDenyFollowRequest(session, base_dir: str,
         denyHandle.split('@')[1].replace('\n', '').replace('\r', '')
     denyPort = port
     if ':' in denyDomain:
-        denyPort = getPortFromDomain(denyDomain)
+        denyPort = get_port_from_domain(denyDomain)
         denyDomain = removeDomainPort(denyDomain)
     followedAccountRejects(session, base_dir, http_prefix,
                            nickname, domain, port,
@@ -185,7 +185,7 @@ def manualApproveFollowRequest(session, base_dir: str,
                         handleOfFollowRequester.replace('\r', '')
                     port2 = port
                     if ':' in handleOfFollowRequester:
-                        port2 = getPortFromDomain(handleOfFollowRequester)
+                        port2 = get_port_from_domain(handleOfFollowRequester)
                     requestsDir = accountDir + '/requests'
                     followActivityfilename = \
                         requestsDir + '/' + handleOfFollowRequester + '.follow'
@@ -200,7 +200,8 @@ def manualApproveFollowRequest(session, base_dir: str,
                                 approveDomain.replace('\r', '')
                             approvePort = port2
                             if ':' in approveDomain:
-                                approvePort = getPortFromDomain(approveDomain)
+                                approvePort = \
+                                    get_port_from_domain(approveDomain)
                                 approveDomain = removeDomainPort(approveDomain)
                             print('Manual follow accept: Sending Accept for ' +
                                   handle + ' follow request from ' +
