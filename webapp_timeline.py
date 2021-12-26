@@ -10,7 +10,7 @@ __module_group__ = "Timeline"
 import os
 import time
 from shutil import copyfile
-from utils import isArtist
+from utils import is_artist
 from utils import dangerousMarkup
 from utils import get_config_param
 from utils import get_full_domain
@@ -1149,7 +1149,7 @@ def htmlShares(cssCache: {}, defaultTimeline: str,
     """
     manuallyApproveFollowers = \
         followerApprovalActive(base_dir, nickname, domain)
-    artist = isArtist(base_dir, nickname)
+    artist = is_artist(base_dir, nickname)
 
     return htmlTimeline(cssCache, defaultTimeline,
                         recentPostsCache, max_recent_posts,
@@ -1207,7 +1207,7 @@ def htmlWanted(cssCache: {}, defaultTimeline: str,
     """
     manuallyApproveFollowers = \
         followerApprovalActive(base_dir, nickname, domain)
-    artist = isArtist(base_dir, nickname)
+    artist = is_artist(base_dir, nickname)
 
     return htmlTimeline(cssCache, defaultTimeline,
                         recentPostsCache, max_recent_posts,
@@ -1266,7 +1266,7 @@ def htmlInbox(cssCache: {}, defaultTimeline: str,
     """
     manuallyApproveFollowers = \
         followerApprovalActive(base_dir, nickname, domain)
-    artist = isArtist(base_dir, nickname)
+    artist = is_artist(base_dir, nickname)
 
     return htmlTimeline(cssCache, defaultTimeline,
                         recentPostsCache, max_recent_posts,
@@ -1325,7 +1325,7 @@ def htmlBookmarks(cssCache: {}, defaultTimeline: str,
     """
     manuallyApproveFollowers = \
         followerApprovalActive(base_dir, nickname, domain)
-    artist = isArtist(base_dir, nickname)
+    artist = is_artist(base_dir, nickname)
 
     return htmlTimeline(cssCache, defaultTimeline,
                         recentPostsCache, max_recent_posts,
@@ -1381,7 +1381,7 @@ def htmlInboxDMs(cssCache: {}, defaultTimeline: str,
                  cw_lists: {}, lists_enabled: str) -> str:
     """Show the DM timeline as html
     """
-    artist = isArtist(base_dir, nickname)
+    artist = is_artist(base_dir, nickname)
     return htmlTimeline(cssCache, defaultTimeline,
                         recentPostsCache, max_recent_posts,
                         translate, pageNumber,
@@ -1435,7 +1435,7 @@ def htmlInboxReplies(cssCache: {}, defaultTimeline: str,
                      cw_lists: {}, lists_enabled: str) -> str:
     """Show the replies timeline as html
     """
-    artist = isArtist(base_dir, nickname)
+    artist = is_artist(base_dir, nickname)
     return htmlTimeline(cssCache, defaultTimeline,
                         recentPostsCache, max_recent_posts,
                         translate, pageNumber,
@@ -1488,7 +1488,7 @@ def htmlInboxMedia(cssCache: {}, defaultTimeline: str,
                    cw_lists: {}, lists_enabled: str) -> str:
     """Show the media timeline as html
     """
-    artist = isArtist(base_dir, nickname)
+    artist = is_artist(base_dir, nickname)
     return htmlTimeline(cssCache, defaultTimeline,
                         recentPostsCache, max_recent_posts,
                         translate, pageNumber,
@@ -1541,7 +1541,7 @@ def htmlInboxBlogs(cssCache: {}, defaultTimeline: str,
                    cw_lists: {}, lists_enabled: str) -> str:
     """Show the blogs timeline as html
     """
-    artist = isArtist(base_dir, nickname)
+    artist = is_artist(base_dir, nickname)
     return htmlTimeline(cssCache, defaultTimeline,
                         recentPostsCache, max_recent_posts,
                         translate, pageNumber,
@@ -1701,7 +1701,7 @@ def htmlOutbox(cssCache: {}, defaultTimeline: str,
     """
     manuallyApproveFollowers = \
         followerApprovalActive(base_dir, nickname, domain)
-    artist = isArtist(base_dir, nickname)
+    artist = is_artist(base_dir, nickname)
     return htmlTimeline(cssCache, defaultTimeline,
                         recentPostsCache, max_recent_posts,
                         translate, pageNumber,

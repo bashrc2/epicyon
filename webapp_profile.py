@@ -16,7 +16,7 @@ from utils import has_object_dict
 from utils import getOccupationName
 from utils import get_locked_account
 from utils import get_full_domain
-from utils import isArtist
+from utils import is_artist
 from utils import is_dormant
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
@@ -888,7 +888,7 @@ def htmlProfile(signing_priv_key_pem: str,
         menuSkills: userPathStr + '/skills#timeline',
         menuLogout: '/logout'
     }
-    if isArtist(base_dir, nickname):
+    if is_artist(base_dir, nickname):
         menuThemeDesigner = \
             htmlHideFromScreenReader('🎨') + ' ' + translate['Theme Designer']
         navLinks[menuThemeDesigner] = userPathStr + '/themedesigner'
@@ -2210,7 +2210,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, base_dir: str, path: str,
 
     adminNickname = get_config_param(base_dir, 'admin')
 
-    if isArtist(base_dir, nickname) or \
+    if is_artist(base_dir, nickname) or \
        path.startswith('/users/' + str(adminNickname) + '/'):
         graphicsStr = _htmlEditProfileGraphicDesign(base_dir, translate)
 

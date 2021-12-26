@@ -11,7 +11,7 @@ import os
 from utils import get_config_param
 from utils import getNicknameFromActor
 from utils import is_editor
-from utils import isArtist
+from utils import is_artist
 from utils import removeDomainPort
 from utils import local_actor_url
 from webapp_utils import sharesTimelineJson
@@ -372,7 +372,7 @@ def htmlLinksMobile(cssCache: {}, base_dir: str,
         artist = False
     else:
         editor = is_editor(base_dir, nickname)
-        artist = isArtist(base_dir, nickname)
+        artist = is_artist(base_dir, nickname)
 
     domain = removeDomainPort(domain_full)
 

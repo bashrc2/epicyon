@@ -275,7 +275,7 @@ from utils import has_users_path
 from utils import get_full_domain
 from utils import removeHtml
 from utils import is_editor
-from utils import isArtist
+from utils import is_artist
 from utils import getImageExtensions
 from utils import mediaFileMimeType
 from utils import getCSS
@@ -4802,7 +4802,7 @@ class PubServer(BaseHTTPRequestHandler):
 
                 if mType == 'submitImportTheme':
                     if nickname == adminNickname or \
-                       isArtist(base_dir, nickname):
+                       is_artist(base_dir, nickname):
                         if importTheme(base_dir, filename):
                             print(nickname + ' uploaded a theme')
                     else:
@@ -5012,7 +5012,7 @@ class PubServer(BaseHTTPRequestHandler):
                             redirectPath = 'previewAvatar'
 
                     if nickname == adminNickname or \
-                       isArtist(base_dir, nickname):
+                       is_artist(base_dir, nickname):
                         # change theme
                         if fields.get('themeDropdown'):
                             self.server.theme_name = fields['themeDropdown']
@@ -5924,7 +5924,7 @@ class PubServer(BaseHTTPRequestHandler):
                     # remove a custom font
                     if fields.get('removeCustomFont'):
                         if (fields['removeCustomFont'] == 'on' and
-                            (isArtist(base_dir, nickname) or
+                            (is_artist(base_dir, nickname) or
                              path.startswith('/users/' +
                                              adminNickname + '/'))):
                             fontExt = ('woff', 'woff2', 'otf', 'ttf')
@@ -6198,7 +6198,7 @@ class PubServer(BaseHTTPRequestHandler):
 
                     # grayscale theme
                     if path.startswith('/users/' + adminNickname + '/') or \
-                       isArtist(base_dir, nickname):
+                       is_artist(base_dir, nickname):
                         grayscale = False
                         if fields.get('grayscale'):
                             if fields['grayscale'] == 'on':
@@ -6210,7 +6210,7 @@ class PubServer(BaseHTTPRequestHandler):
 
                     # low bandwidth images checkbox
                     if path.startswith('/users/' + adminNickname + '/') or \
-                       isArtist(base_dir, nickname):
+                       is_artist(base_dir, nickname):
                         currLowBandwidth = \
                             get_config_param(base_dir, 'low_bandwidth')
                         low_bandwidth = False
@@ -10955,7 +10955,7 @@ class PubServer(BaseHTTPRequestHandler):
                         currNickname = currNickname.split('/')[0]
                     moderator = isModerator(base_dir, currNickname)
                     editor = is_editor(base_dir, currNickname)
-                    artist = isArtist(base_dir, currNickname)
+                    artist = is_artist(base_dir, currNickname)
                     full_width_tl_button_header = \
                         self.server.full_width_tl_button_header
                     minimalNick = isMinimal(base_dir, domain, nickname)
@@ -14465,7 +14465,7 @@ class PubServer(BaseHTTPRequestHandler):
             if '/' in nickname:
                 nickname = nickname.split('/')[0]
 
-            if not isArtist(self.server.base_dir, nickname):
+            if not is_artist(self.server.base_dir, nickname):
                 self._403()
                 return
 

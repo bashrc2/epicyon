@@ -314,7 +314,7 @@ def is_editor(base_dir: str, nickname: str) -> bool:
     return False
 
 
-def isArtist(base_dir: str, nickname: str) -> bool:
+def is_artist(base_dir: str, nickname: str) -> bool:
     """Returns true if the given nickname is an artist
     """
     artistsFile = base_dir + '/accounts/artists.txt'
