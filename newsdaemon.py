@@ -29,7 +29,7 @@ from utils import get_base_content_from_post
 from utils import removeHtml
 from utils import get_full_domain
 from utils import loadJson
-from utils import saveJson
+from utils import save_json
 from utils import getStatusNumber
 from utils import clearFromPostCaches
 from utils import dangerousMarkup
@@ -731,7 +731,7 @@ def _convertRSStoActivityPub(base_dir: str, http_prefix: str,
                           blog, translate)
 
             clearFromPostCaches(base_dir, recentPostsCache, postId)
-            if saveJson(blog, filename):
+            if save_json(blog, filename):
                 _updateFeedsOutboxIndex(base_dir, domain, postId + '.json')
 
                 # Save a file containing the time when the post arrived
@@ -817,7 +817,7 @@ def runNewswireDaemon(base_dir: str, httpd,
 
         httpd.newswire = newNewswire
         if newNewswire:
-            saveJson(httpd.newswire, newswireStateFilename)
+            save_json(httpd.newswire, newswireStateFilename)
             print('Newswire updated')
         else:
             print('No new newswire')

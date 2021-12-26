@@ -10,7 +10,7 @@ __module_group__ = "ActivityPub"
 import os
 from utils import locatePost
 from utils import loadJson
-from utils import saveJson
+from utils import save_json
 from utils import has_object_dict
 
 
@@ -116,7 +116,7 @@ def questionUpdateVotes(base_dir: str, nickname: str, domain: str,
     if not questionTotalsChanged:
         return None, None
     # save the question with altered totals
-    saveJson(questionJson, questionPostFilename)
+    save_json(questionJson, questionPostFilename)
     return questionJson, questionPostFilename
 
 

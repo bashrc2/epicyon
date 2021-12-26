@@ -502,7 +502,7 @@ def _create_config(base_dir: str) -> None:
         return
     config_json = {
     }
-    saveJson(config_json, config_filename)
+    save_json(config_json, config_filename)
 
 
 def setConfigParam(base_dir: str, variableName: str, variableValue) -> None:
@@ -514,7 +514,7 @@ def setConfigParam(base_dir: str, variableName: str, variableValue) -> None:
     if os.path.isfile(config_filename):
         configJson = loadJson(config_filename)
     configJson[variableName] = variableValue
-    saveJson(configJson, config_filename)
+    save_json(configJson, config_filename)
 
 
 def get_config_param(base_dir: str, variableName: str):
@@ -654,7 +654,7 @@ def removeAvatarFromCache(base_dir: str, actorStr: str) -> None:
                       'unable to delete cached avatar ' + str(avatarFilename))
 
 
-def saveJson(jsonObject: {}, filename: str) -> bool:
+def save_json(jsonObject: {}, filename: str) -> bool:
     """Saves json to a file
     """
     tries = 0
@@ -664,7 +664,7 @@ def saveJson(jsonObject: {}, filename: str) -> bool:
                 fp.write(json.dumps(jsonObject))
                 return True
         except OSError:
-            print('EX: saveJson ' + str(tries))
+            print('EX: save_json ' + str(tries))
             time.sleep(1)
             tries += 1
     return False
@@ -2267,7 +2267,7 @@ def undoLikesCollectionEntry(recentPostsCache: {},
         itlen = len(obj['likes']['items'])
         obj['likes']['totalItems'] = itlen
 
-    saveJson(post_json_object, postFilename)
+    save_json(post_json_object, postFilename)
 
 
 def undoReactionCollectionEntry(recentPostsCache: {},
@@ -2333,7 +2333,7 @@ def undoReactionCollectionEntry(recentPostsCache: {},
         itlen = len(obj['reactions']['items'])
         obj['reactions']['totalItems'] = itlen
 
-    saveJson(post_json_object, postFilename)
+    save_json(post_json_object, postFilename)
 
 
 def undoAnnounceCollectionEntry(recentPostsCache: {},
@@ -2400,7 +2400,7 @@ def undoAnnounceCollectionEntry(recentPostsCache: {},
         itlen = len(post_json_object['object']['shares']['items'])
         post_json_object['object']['shares']['totalItems'] = itlen
 
-    saveJson(post_json_object, postFilename)
+    save_json(post_json_object, postFilename)
 
 
 def updateAnnounceCollection(recentPostsCache: {},
@@ -2473,7 +2473,7 @@ def updateAnnounceCollection(recentPostsCache: {},
     if debug:
         print('DEBUG: saving post with shares (announcements) added')
         pprint(post_json_object)
-    saveJson(post_json_object, postFilename)
+    save_json(post_json_object, postFilename)
 
 
 def weekDayOfMonthStart(monthNumber: int, year: int) -> int:

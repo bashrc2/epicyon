@@ -9,7 +9,7 @@ __module_group__ = "Profile Metadata"
 
 import os
 from utils import loadJson
-from utils import saveJson
+from utils import save_json
 from utils import getStatusNumber
 from utils import removeDomainPort
 from utils import acct_dir
@@ -38,7 +38,7 @@ def _clearRoleStatus(base_dir: str, role: str) -> None:
         if role in rolesList:
             rolesList.remove(role)
             setRolesFromList(actor_json, rolesList)
-            saveJson(actor_json, filename)
+            save_json(actor_json, filename)
 
 
 def clearEditorStatus(base_dir: str) -> None:
@@ -266,7 +266,7 @@ def setRole(base_dir: str, nickname: str, domain: str,
                 setRolesFromList(actor_json, rolesList)
                 actorChanged = True
         if actorChanged:
-            saveJson(actor_json, actorFilename)
+            save_json(actor_json, actorFilename)
     return True
 
 

@@ -15,7 +15,7 @@ from cache import getWebfingerFromCache
 from utils import get_full_domain
 from utils import loadJson
 from utils import loadJsonOnionify
-from utils import saveJson
+from utils import save_json
 from utils import getProtocolPrefixes
 from utils import removeDomainPort
 from utils import get_user_paths
@@ -122,11 +122,11 @@ def storeWebfingerEndpoint(nickname: str, domain: str, port: int,
     if not os.path.isdir(base_dir + wfSubdir):
         os.mkdir(base_dir + wfSubdir)
     filename = base_dir + wfSubdir + '/' + handle + '.json'
-    saveJson(wfJson, filename)
+    save_json(wfJson, filename)
     if nickname == 'inbox':
         handle = originalDomain + '@' + domain
         filename = base_dir + wfSubdir + '/' + handle + '.json'
-        saveJson(wfJson, filename)
+        save_json(wfJson, filename)
     return True
 
 
@@ -447,5 +447,5 @@ def webfingerUpdate(base_dir: str, nickname: str, domain: str,
         return
 
     if _webfingerUpdateFromProfile(wfJson, actor_json):
-        if saveJson(wfJson, filename):
+        if save_json(wfJson, filename):
             storeWebfingerInCache(handle, wfJson, cached_webfingers)

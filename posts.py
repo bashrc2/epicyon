@@ -60,7 +60,7 @@ from utils import deletePost
 from utils import validNickname
 from utils import locatePost
 from utils import loadJson
-from utils import saveJson
+from utils import save_json
 from utils import get_config_param
 from utils import locateNewsVotes
 from utils import locateNewsArrival
@@ -931,7 +931,7 @@ def savePostToBox(base_dir: str, http_prefix: str, postId: str,
     boxDir = createPersonDir(nickname, domain, base_dir, boxname)
     filename = boxDir + '/' + postId.replace('/', '#') + '.json'
 
-    saveJson(post_json_object, filename)
+    save_json(post_json_object, filename)
     return filename
 
 
@@ -4737,7 +4737,7 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
         replaceYouTube(post_json_object, yt_replace_domain, system_language)
         replaceTwitter(post_json_object, twitter_replacement_domain,
                        system_language)
-        if saveJson(post_json_object, announceFilename):
+        if save_json(post_json_object, announceFilename):
             return post_json_object
     return None
 

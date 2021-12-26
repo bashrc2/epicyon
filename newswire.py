@@ -26,7 +26,7 @@ from utils import firstParagraphFromString
 from utils import isPublicPost
 from utils import locatePost
 from utils import loadJson
-from utils import saveJson
+from utils import save_json
 from utils import isSuspended
 from utils import containsInvalidChars
 from utils import removeHtml
@@ -1124,7 +1124,7 @@ def _addBlogsToNewswire(base_dir: str, domain: str, newswire: {},
     # save the moderation queue details for later display
     newswireModerationFilename = base_dir + '/accounts/newswiremoderation.txt'
     if sortedModerationDict:
-        saveJson(sortedModerationDict, newswireModerationFilename)
+        save_json(sortedModerationDict, newswireModerationFilename)
     else:
         # remove the file if there is nothing to moderate
         if os.path.isfile(newswireModerationFilename):

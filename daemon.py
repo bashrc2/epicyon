@@ -298,7 +298,7 @@ from utils import getDomainFromActor
 from utils import getStatusNumber
 from utils import urlPermitted
 from utils import loadJson
-from utils import saveJson
+from utils import save_json
 from utils import isSuspended
 from utils import dangerousMarkup
 from utils import refresh_newswire
@@ -429,8 +429,8 @@ class PubServer(BaseHTTPRequestHandler):
             for ua in removeCrawlers:
                 del self.server.knownCrawlers[ua]
             # save the list of crawlers
-            saveJson(self.server.knownCrawlers,
-                     self.server.base_dir + '/accounts/knownCrawlers.json')
+            save_json(self.server.knownCrawlers,
+                      self.server.base_dir + '/accounts/knownCrawlers.json')
         self.server.lastKnownCrawler = curr_time
 
     def _get_instance_url(self, callingDomain: str) -> str:
@@ -2112,7 +2112,7 @@ class PubServer(BaseHTTPRequestHandler):
         if saveKeys:
             accessKeysFilename = \
                 acct_dir(base_dir, nickname, domain) + '/accessKeys.json'
-            saveJson(accessKeys, accessKeysFilename)
+            save_json(accessKeys, accessKeysFilename)
             if not self.server.keyShortcuts.get(nickname):
                 self.server.keyShortcuts[nickname] = accessKeys.copy()
 
@@ -4653,8 +4653,8 @@ class PubServer(BaseHTTPRequestHandler):
                         newswireStateFilename = \
                             base_dir + '/accounts/.newswirestate.json'
                         try:
-                            saveJson(self.server.newswire,
-                                     newswireStateFilename)
+                            save_json(self.server.newswire,
+                                      newswireStateFilename)
                         except Exception as ex:
                             print('ERROR: saving newswire state, ' + str(ex))
 
@@ -4665,7 +4665,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         newsId)
 
                     # save the news post
-                    saveJson(post_json_object, postFilename)
+                    save_json(post_json_object, postFilename)
 
         # redirect back to the default timeline
         if self.server.news_instance:
@@ -6497,7 +6497,7 @@ class PubServer(BaseHTTPRequestHandler):
                         randomizeActorImages(actor_json)
                         addActorUpdateTimestamp(actor_json)
                         # save the actor
-                        saveJson(actor_json, actorFilename)
+                        save_json(actor_json, actorFilename)
                         webfingerUpdate(base_dir,
                                         nickname, domain,
                                         onion_domain,
@@ -6515,7 +6515,7 @@ class PubServer(BaseHTTPRequestHandler):
                         actorCacheFilename = \
                             base_dir + '/cache/actors/' + \
                             actor_json['id'].replace('/', '#') + '.json'
-                        saveJson(actor_json, actorCacheFilename)
+                        save_json(actor_json, actorCacheFilename)
                         # send profile update to followers
                         pubNumber, pubDate = getStatusNumber()
                         updateActorJson = getActorUpdateJson(actor_json)
@@ -7969,12 +7969,12 @@ class PubServer(BaseHTTPRequestHandler):
                     newswireStateFilename = \
                         base_dir + '/accounts/.newswirestate.json'
                     try:
-                        saveJson(newswire, newswireStateFilename)
+                        save_json(newswire, newswireStateFilename)
                     except Exception as ex:
                         print('ERROR: saving newswire state, ' + str(ex))
                     if filename:
-                        saveJson(newswireItem[votesIndex],
-                                 filename + '.votes')
+                        save_json(newswireItem[votesIndex],
+                                  filename + '.votes')
         else:
             print('No newswire item with date: ' + dateStr + ' ' +
                   str(newswire))
@@ -8023,12 +8023,12 @@ class PubServer(BaseHTTPRequestHandler):
                     newswireStateFilename = \
                         base_dir + '/accounts/.newswirestate.json'
                     try:
-                        saveJson(newswire, newswireStateFilename)
+                        save_json(newswire, newswireStateFilename)
                     except Exception as ex:
                         print('ERROR: saving newswire state, ' + str(ex))
                     if filename:
-                        saveJson(newswireItem[votesIndex],
-                                 filename + '.votes')
+                        save_json(newswireItem[votesIndex],
+                                  filename + '.votes')
         else:
             print('No newswire item with date: ' + dateStr + ' ' +
                   str(newswire))
@@ -16829,14 +16829,14 @@ class PubServer(BaseHTTPRequestHandler):
                         replaceTwitter(post_json_object,
                                        self.server.twitter_replacement_domain,
                                        self.server.system_language)
-                        saveJson(post_json_object, postFilename)
+                        save_json(post_json_object, postFilename)
                         # also save to the news actor
                         if nickname != 'news':
                             postFilename = \
                                 postFilename.replace('#users#' +
                                                      nickname + '#',
                                                      '#users#news#')
-                            saveJson(post_json_object, postFilename)
+                            save_json(post_json_object, postFilename)
                         print('Edited blog post, resaved ' + postFilename)
                         return 1
                     else:

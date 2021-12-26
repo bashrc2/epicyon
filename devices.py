@@ -32,7 +32,7 @@ __module_group__ = "Security"
 
 import os
 from utils import loadJson
-from utils import saveJson
+from utils import save_json
 from utils import acct_dir
 from utils import local_actor_url
 
@@ -136,7 +136,7 @@ def E2EEaddDevice(base_dir: str, nickname: str, domain: str,
         }
     }
     deviceFilename = personDir + '/devices/' + deviceId + '.json'
-    return saveJson(deviceDict, deviceFilename)
+    return save_json(deviceDict, deviceFilename)
 
 
 def E2EEdevicesCollection(base_dir: str, nickname: str, domain: str,

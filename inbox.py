@@ -55,7 +55,7 @@ from utils import locatePost
 from utils import deletePost
 from utils import removeModerationPostFromIndex
 from utils import loadJson
-from utils import saveJson
+from utils import save_json
 from utils import undoLikesCollectionEntry
 from utils import undoReactionCollectionEntry
 from utils import hasGroupType
@@ -591,7 +591,7 @@ def savePostToInboxQueue(base_dir: str, http_prefix: str,
 
     if debug:
         print('Inbox queue item created')
-    saveJson(newQueueItem, filename)
+    save_json(newQueueItem, filename)
     return filename
 
 
@@ -887,7 +887,7 @@ def _personReceiveUpdate(base_dir: str,
     storePersonInCache(base_dir, personJson['id'], personJson,
                        person_cache, True)
     # save to cache on file
-    if saveJson(personJson, actorFilename):
+    if save_json(personJson, actorFilename):
         if debug:
             print('actor updated for ' + personJson['id'])
 
@@ -924,7 +924,7 @@ def _receiveUpdateToQuestion(recentPostsCache: {}, message_json: {},
     # does the actor match?
     if post_json_object['actor'] != message_json['actor']:
         return
-    saveJson(message_json, postFilename)
+    save_json(message_json, postFilename)
     # ensure that the cached post is removed if it exists, so
     # that it then will be recreated
     cachedPostFilename = \
@@ -3526,7 +3526,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                                   signing_priv_key_pem)
 
         # save the post to file
-        if saveJson(post_json_object, destinationFilename):
+        if save_json(post_json_object, destinationFilename):
             _lowFrequencyPostNotification(base_dir, http_prefix,
                                           nickname, domain, port,
                                           handle, postIsDM, jsonObj)
@@ -4487,7 +4487,7 @@ def runInboxQueue(recentPostsCache: {}, max_recent_posts: int,
             sharedInboxPostFilename = \
                 queueJson['destination'].replace(inboxHandle, inboxHandle)
             if not os.path.isfile(sharedInboxPostFilename):
-                saveJson(queueJson['post'], sharedInboxPostFilename)
+                save_json(queueJson['post'], sharedInboxPostFilename)
 
         lists_enabled = get_config_param(base_dir, "lists_enabled")
         content_license_url = get_config_param(base_dir, "content_license_url")

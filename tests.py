@@ -79,7 +79,7 @@ from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import copytree
 from utils import loadJson
-from utils import saveJson
+from utils import save_json
 from utils import getStatusNumber
 from utils import getFollowersOfPerson
 from utils import removeHtml
@@ -3473,7 +3473,7 @@ def _testJsonString() -> None:
     testJson = {
         "content": messageStr
     }
-    assert saveJson(testJson, filename)
+    assert save_json(testJson, filename)
     receivedJson = loadJson(filename, 0)
     assert receivedJson
     assert receivedJson['content'] == messageStr
@@ -3497,7 +3497,7 @@ def _testSaveLoadJson():
             os.remove(testFilename)
         except OSError:
             pass
-    assert saveJson(testJson, testFilename)
+    assert save_json(testJson, testFilename)
     assert os.path.isfile(testFilename)
     testLoadJson = loadJson(testFilename)
     assert(testLoadJson)
@@ -5754,7 +5754,7 @@ def _translateOntology(base_dir: str) -> None:
                     changed = True
         if not changed:
             continue
-        saveJson(ontologyJson, filename + '.new')
+        save_json(ontologyJson, filename + '.new')
 
 
 def _testCanReplyTo(base_dir: str) -> None:

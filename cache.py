@@ -12,7 +12,7 @@ import datetime
 from session import urlExists
 from session import getJson
 from utils import loadJson
-from utils import saveJson
+from utils import save_json
 from utils import getFileCaseInsensitive
 from utils import get_user_paths
 
@@ -74,7 +74,7 @@ def storePersonInCache(base_dir: str, personUrl: str,
         cacheFilename = base_dir + '/cache/actors/' + \
             personUrl.replace('/', '#') + '.json'
         if not os.path.isfile(cacheFilename):
-            saveJson(personJson, cacheFilename)
+            save_json(personJson, cacheFilename)
 
 
 def getPersonFromCache(base_dir: str, personUrl: str, person_cache: {},

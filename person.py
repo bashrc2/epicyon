@@ -47,7 +47,7 @@ from utils import getStatusNumber
 from utils import get_full_domain
 from utils import validNickname
 from utils import loadJson
-from utils import saveJson
+from utils import save_json
 from utils import setConfigParam
 from utils import get_config_param
 from utils import refresh_newswire
@@ -151,7 +151,7 @@ def setProfileImage(base_dir: str, http_prefix: str,
         personJson[iconFilenameBase]['url'] = \
             local_actor_url(http_prefix, nickname, fullDomain) + \
             '/' + iconFilename
-        saveJson(personJson, personFilename)
+        save_json(personJson, personFilename)
 
         cmd = \
             '/usr/bin/convert ' + image_filename + ' -size ' + \
@@ -497,7 +497,7 @@ def _createPersonBase(base_dir: str, nickname: str, domain: str, port: int,
                              handle + '/queue'):
             os.mkdir(base_dir + peopleSubdir + '/' + handle + '/queue')
         filename = base_dir + peopleSubdir + '/' + handle + '.json'
-        saveJson(newPerson, filename)
+        save_json(newPerson, filename)
 
         # save to cache
         if not os.path.isdir(base_dir + '/cache'):
@@ -506,7 +506,7 @@ def _createPersonBase(base_dir: str, nickname: str, domain: str, port: int,
             os.mkdir(base_dir + '/cache/actors')
         cacheFilename = base_dir + '/cache/actors/' + \
             newPerson['id'].replace('/', '#') + '.json'
-        saveJson(newPerson, cacheFilename)
+        save_json(newPerson, cacheFilename)
 
         # save the private key
         privateKeysSubdir = '/keys/private'
@@ -840,14 +840,14 @@ def personUpgradeActor(base_dir: str, personJson: {},
             getDefaultPersonContext()
         ],
 
-        saveJson(personJson, filename)
+        save_json(personJson, filename)
 
         # also update the actor within the cache
         actorCacheFilename = \
             base_dir + '/accounts/cache/actors/' + \
             personJson['id'].replace('/', '#') + '.json'
         if os.path.isfile(actorCacheFilename):
-            saveJson(personJson, actorCacheFilename)
+            save_json(personJson, actorCacheFilename)
 
         # update domain/@nickname in actors cache
         actorCacheFilename = \
@@ -855,7 +855,7 @@ def personUpgradeActor(base_dir: str, personJson: {},
             replaceUsersWithAt(personJson['id']).replace('/', '#') + \
             '.json'
         if os.path.isfile(actorCacheFilename):
-            saveJson(personJson, actorCacheFilename)
+            save_json(personJson, actorCacheFilename)
 
 
 def personLookup(domain: str, path: str, base_dir: str) -> {}:
@@ -1013,7 +1013,7 @@ def setDisplayNickname(base_dir: str, nickname: str, domain: str,
     if not personJson:
         return False
     personJson['name'] = displayName
-    saveJson(personJson, filename)
+    save_json(personJson, filename)
     return True
 
 
@@ -1034,7 +1034,7 @@ def setBio(base_dir: str, nickname: str, domain: str, bio: str) -> bool:
         return False
     personJson['summary'] = bio
 
-    saveJson(personJson, filename)
+    save_json(personJson, filename)
     return True
 
 

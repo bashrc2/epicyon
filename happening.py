@@ -14,7 +14,7 @@ from datetime import timedelta
 
 from utils import isPublicPost
 from utils import loadJson
-from utils import saveJson
+from utils import save_json
 from utils import locatePost
 from utils import has_object_dict
 from utils import acct_dir
@@ -92,7 +92,7 @@ def saveEventPost(base_dir: str, handle: str, postId: str,
             eventTime.strftime("%d") + '_' + eventJson['uuid']
         eventFilename = eventsYearPath + '/' + eventId + '.json'
 
-        saveJson(eventJson, eventFilename)
+        save_json(eventJson, eventFilename)
         # save to the events timeline
         tlEventsFilename = base_dir + '/accounts/' + handle + '/events.txt'
 

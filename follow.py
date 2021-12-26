@@ -24,7 +24,7 @@ from utils import followPerson
 from posts import sendSignedJson
 from posts import getPersonBox
 from utils import loadJson
-from utils import saveJson
+from utils import save_json
 from utils import isAccountDir
 from utils import get_user_paths
 from utils import acct_dir
@@ -711,7 +711,7 @@ def storeFollowRequest(base_dir: str,
     if not os.path.isdir(requestsDir):
         os.mkdir(requestsDir)
     followActivityfilename = requestsDir + '/' + approveHandle + '.follow'
-    return saveJson(followJson, followActivityfilename)
+    return save_json(followJson, followActivityfilename)
 
 
 def followedAccountAccepts(session, base_dir: str, http_prefix: str,

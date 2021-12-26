@@ -16,7 +16,7 @@ from utils import removeDomainPort
 from utils import isValidLanguage
 from utils import get_image_extensions
 from utils import loadJson
-from utils import saveJson
+from utils import save_json
 from utils import fileLastModified
 from utils import getLinkPrefixes
 from utils import dangerousMarkup
@@ -282,7 +282,7 @@ def _saveCustomEmoji(session, base_dir: str, emojiName: str, url: str,
             emojiJson = {}
     if not emojiJson.get(emojiName):
         emojiJson[emojiName] = emojiName
-        saveJson(emojiJson, emojiJsonFilename)
+        save_json(emojiJson, emojiJsonFilename)
         if debug:
             print('EX: Saved custom emoji ' + emojiJsonFilename)
     elif debug:

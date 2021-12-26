@@ -10,7 +10,7 @@ __module_group__ = "Web Interface"
 import os
 from utils import isAccountDir
 from utils import loadJson
-from utils import saveJson
+from utils import save_json
 from utils import get_image_extensions
 from utils import copytree
 from utils import acct_dir
@@ -171,7 +171,7 @@ def _setThemeInConfig(base_dir: str, name: str) -> bool:
     if not configJson:
         return False
     configJson['theme'] = name
-    return saveJson(configJson, config_filename)
+    return save_json(configJson, config_filename)
 
 
 def _setNewswirePublishAsIcon(base_dir: str, useIcon: bool) -> bool:
@@ -184,7 +184,7 @@ def _setNewswirePublishAsIcon(base_dir: str, useIcon: bool) -> bool:
     if not configJson:
         return False
     configJson['show_publish_as_icon'] = useIcon
-    return saveJson(configJson, config_filename)
+    return save_json(configJson, config_filename)
 
 
 def _setIconsAsButtons(base_dir: str, useButtons: bool) -> bool:
@@ -198,7 +198,7 @@ def _setIconsAsButtons(base_dir: str, useButtons: bool) -> bool:
     if not configJson:
         return False
     configJson['icons_as_buttons'] = useButtons
-    return saveJson(configJson, config_filename)
+    return save_json(configJson, config_filename)
 
 
 def _setRssIconAtTop(base_dir: str, atTop: bool) -> bool:
@@ -211,7 +211,7 @@ def _setRssIconAtTop(base_dir: str, atTop: bool) -> bool:
     if not configJson:
         return False
     configJson['rss_icon_at_top'] = atTop
-    return saveJson(configJson, config_filename)
+    return save_json(configJson, config_filename)
 
 
 def _setPublishButtonAtTop(base_dir: str, atTop: bool) -> bool:
@@ -225,7 +225,7 @@ def _setPublishButtonAtTop(base_dir: str, atTop: bool) -> bool:
     if not configJson:
         return False
     configJson['publish_button_at_top'] = atTop
-    return saveJson(configJson, config_filename)
+    return save_json(configJson, config_filename)
 
 
 def _setFullWidthTimelineButtonHeader(base_dir: str, fullWidth: bool) -> bool:
@@ -239,7 +239,7 @@ def _setFullWidthTimelineButtonHeader(base_dir: str, fullWidth: bool) -> bool:
     if not configJson:
         return False
     configJson['full_width_tl_button_header'] = fullWidth
-    return saveJson(configJson, config_filename)
+    return save_json(configJson, config_filename)
 
 
 def getTheme(base_dir: str) -> str:
@@ -497,7 +497,7 @@ def setThemeFromDesigner(base_dir: str, theme_name: str, domain: str,
                          allow_local_network_access: bool,
                          system_language: str):
     customThemeFilename = base_dir + '/accounts/theme.json'
-    saveJson(themeParams, customThemeFilename)
+    save_json(themeParams, customThemeFilename)
     setTheme(base_dir, theme_name, domain,
              allow_local_network_access, system_language)
 

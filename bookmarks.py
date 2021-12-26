@@ -22,7 +22,7 @@ from utils import getDomainFromActor
 from utils import locatePost
 from utils import getCachedPostFilename
 from utils import loadJson
-from utils import saveJson
+from utils import save_json
 from utils import has_object_dict
 from utils import acct_dir
 from utils import local_actor_url
@@ -122,7 +122,7 @@ def undoBookmarksCollectionEntry(recentPostsCache: {},
     else:
         bmItLen = len(post_json_object['object']['bookmarks']['items'])
         post_json_object['object']['bookmarks']['totalItems'] = bmItLen
-    saveJson(post_json_object, postFilename)
+    save_json(post_json_object, postFilename)
 
 
 def bookmarkedByPerson(post_json_object: {},
@@ -220,7 +220,7 @@ def updateBookmarksCollection(recentPostsCache: {},
             print('DEBUG: saving post with bookmarks added')
             pprint(post_json_object)
 
-        saveJson(post_json_object, postFilename)
+        save_json(post_json_object, postFilename)
 
         # prepend to the index
         bookmarksIndexFilename = \

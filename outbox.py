@@ -26,7 +26,7 @@ from utils import getDomainFromActor
 from utils import dangerousMarkup
 from utils import is_featured_writer
 from utils import loadJson
-from utils import saveJson
+from utils import save_json
 from utils import acct_dir
 from utils import local_actor_url
 from utils import hasActor
@@ -167,7 +167,7 @@ def _outboxPersonReceiveUpdate(recentPostsCache: {},
                 actorChanged = True
     # save actor to file
     if actorChanged:
-        saveJson(actor_json, actorFilename)
+        save_json(actor_json, actorFilename)
         if debug:
             print('actor saved: ' + actorFilename)
     if debug:

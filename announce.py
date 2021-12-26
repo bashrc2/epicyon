@@ -19,7 +19,7 @@ from utils import urlPermitted
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import locatePost
-from utils import saveJson
+from utils import save_json
 from utils import undoAnnounceCollectionEntry
 from utils import updateAnnounceCollection
 from utils import local_actor_url
@@ -158,7 +158,7 @@ def createAnnounce(session, base_dir: str, federation_list: [],
     if saveToFile:
         outboxDir = createOutboxDir(nickname, domain, base_dir)
         filename = outboxDir + '/' + newAnnounceId.replace('/', '#') + '.json'
-        saveJson(newAnnounce, filename)
+        save_json(newAnnounce, filename)
 
     announceNickname = None
     announceDomain = None

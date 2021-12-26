@@ -19,7 +19,7 @@ from utils import has_object_dict
 from utils import isAccountDir
 from utils import getCachedPostFilename
 from utils import loadJson
-from utils import saveJson
+from utils import save_json
 from utils import fileLastModified
 from utils import setConfigParam
 from utils import has_users_path
@@ -581,7 +581,7 @@ def mutePost(base_dir: str, nickname: str, domain: str, port: int,
         itemsList.append(newIgnore)
         postJsonObj['ignores']['totalItems'] = igIt
     postJsonObj['muted'] = True
-    if saveJson(post_json_object, postFilename):
+    if save_json(post_json_object, postFilename):
         print('mutePost: saved ' + postFilename)
 
     # remove cached post so that the muted version gets recreated
@@ -708,7 +708,7 @@ def unmutePost(base_dir: str, nickname: str, domain: str, port: int,
             igItLen = len(postJsonObj['ignores']['items'])
             postJsonObj['ignores']['totalItems'] = igItLen
     postJsonObj['muted'] = False
-    saveJson(post_json_object, postFilename)
+    save_json(post_json_object, postFilename)
 
     # remove cached post so that the muted version gets recreated
     # with its content text and/or image

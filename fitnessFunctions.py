@@ -12,7 +12,7 @@ import time
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from utils import get_config_param
-from utils import saveJson
+from utils import save_json
 
 
 def fitnessPerformance(startTime, fitnessState: {},
@@ -124,4 +124,4 @@ def fitnessThread(base_dir: str, fitness: {}):
     while True:
         # every 10 mins
         time.sleep(60 * 10)
-        saveJson(fitness, fitness_filename)
+        save_json(fitness, fitness_filename)

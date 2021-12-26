@@ -27,7 +27,7 @@ from utils import undoReactionCollectionEntry
 from utils import hasGroupType
 from utils import local_actor_url
 from utils import loadJson
-from utils import saveJson
+from utils import save_json
 from utils import removePostFromCache
 from utils import getCachedPostFilename
 from utils import containsInvalidChars
@@ -510,7 +510,7 @@ def updateReactionCollection(recentPostsCache: {},
     if debug:
         print('DEBUG: saving post with emoji reaction added')
         pprint(post_json_object)
-    saveJson(post_json_object, postFilename)
+    save_json(post_json_object, postFilename)
 
 
 def htmlEmojiReactions(post_json_object: {}, interactive: bool,

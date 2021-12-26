@@ -29,7 +29,7 @@ from utils import get_config_param
 from utils import get_full_domain
 from utils import validNickname
 from utils import loadJson
-from utils import saveJson
+from utils import save_json
 from utils import get_image_extensions
 from utils import removeDomainPort
 from utils import isAccountDir
@@ -153,7 +153,7 @@ def removeSharedItem(base_dir: str, nickname: str, domain: str,
                                   itemIDfile + '.' + ext)
         # remove the item itself
         del sharesJson[itemID]
-        saveJson(sharesJson, sharesFilename)
+        save_json(sharesJson, sharesFilename)
     else:
         print('ERROR: share index "' + itemID +
               '" does not exist in ' + sharesFilename)
@@ -389,7 +389,7 @@ def addShare(base_dir: str,
         "itemCurrency": currency
     }
 
-    saveJson(sharesJson, sharesFilename)
+    save_json(sharesJson, sharesFilename)
 
     _indicateNewShareAvailable(base_dir, http_prefix,
                                nickname, domain, domain_full,
@@ -443,7 +443,7 @@ def _expireSharesForAccount(base_dir: str, nickname: str, domain: str,
                 except OSError:
                     print('EX: _expireSharesForAccount unable to delete ' +
                           itemIDfile + '.' + ext)
-    saveJson(sharesJson, sharesFilename)
+    save_json(sharesJson, sharesFilename)
 
 
 def getSharesFeedForPerson(base_dir: str,
@@ -1394,7 +1394,7 @@ def generateSharedItemFederationTokens(shared_items_federated_domains: [],
     if not tokensAdded:
         return tokensJson
     if base_dir:
-        saveJson(tokensJson, tokensFilename)
+        save_json(tokensJson, tokensFilename)
     return tokensJson
 
 
@@ -1426,7 +1426,7 @@ def updateSharedItemFederationToken(base_dir: str,
     if updateRequired:
         tokensJson[tokenDomainFull] = newToken
         if base_dir:
-            saveJson(tokensJson, tokensFilename)
+            save_json(tokensJson, tokensFilename)
     return tokensJson
 
 
@@ -1456,7 +1456,7 @@ def mergeSharedItemTokens(base_dir: str, domain_full: str,
     if base_dir and changed:
         tokensFilename = \
             base_dir + '/accounts/sharedItemsFederationTokens.json'
-        saveJson(tokensJson, tokensFilename)
+        save_json(tokensJson, tokensFilename)
     return tokensJson
 
 
@@ -1478,7 +1478,7 @@ def createSharedItemFederationToken(base_dir: str,
     if force or not tokensJson.get(tokenDomainFull):
         tokensJson[tokenDomainFull] = secrets.token_urlsafe(64)
         if base_dir:
-            saveJson(tokensJson, tokensFilename)
+            save_json(tokensJson, tokensFilename)
     return tokensJson
 
 
@@ -1587,7 +1587,7 @@ def _updateFederatedSharesCache(session, shared_items_federated_domains: [],
                   federatedDomainFull)
             continue
         catalogFilename = catalogsDir + '/' + federatedDomainFull + '.json'
-        if saveJson(catalogJson, catalogFilename):
+        if save_json(catalogJson, catalogFilename):
             print('Downloaded shared items catalog for ' + federatedDomainFull)
             sharesJson = _dfcToSharesFormat(catalogJson,
                                             base_dir, system_language,
@@ -1596,7 +1596,7 @@ def _updateFederatedSharesCache(session, shared_items_federated_domains: [],
                 sharesFilename = \
                     catalogsDir + '/' + federatedDomainFull + '.' + \
                     sharesFileType + '.json'
-                saveJson(sharesJson, sharesFilename)
+                save_json(sharesJson, sharesFilename)
                 print('Converted shares catalog for ' + federatedDomainFull)
         else:
             time.sleep(2)

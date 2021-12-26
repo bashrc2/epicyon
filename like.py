@@ -25,7 +25,7 @@ from utils import undoLikesCollectionEntry
 from utils import hasGroupType
 from utils import local_actor_url
 from utils import loadJson
-from utils import saveJson
+from utils import save_json
 from utils import removePostFromCache
 from utils import getCachedPostFilename
 from posts import sendSignedJson
@@ -474,4 +474,4 @@ def updateLikesCollection(recentPostsCache: {},
     if debug:
         print('DEBUG: saving post with likes added')
         pprint(post_json_object)
-    saveJson(post_json_object, postFilename)
+    save_json(post_json_object, postFilename)

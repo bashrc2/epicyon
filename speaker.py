@@ -21,7 +21,7 @@ from utils import getGenderFromBio
 from utils import getDisplayName
 from utils import removeHtml
 from utils import loadJson
-from utils import saveJson
+from utils import save_json
 from utils import isPGPEncrypted
 from utils import has_object_dict
 from utils import acct_dir
@@ -549,4 +549,4 @@ def updateSpeaker(base_dir: str, http_prefix: str,
                            translate, announcingActor,
                            theme_name)
     speakerFilename = acct_dir(base_dir, nickname, domain) + '/speaker.json'
-    saveJson(speakerJson, speakerFilename)
+    save_json(speakerJson, speakerFilename)
