@@ -20,7 +20,7 @@ from webapp_media import addEmbeddedElements
 from utils import local_actor_url
 from utils import get_actor_languages_list
 from utils import getBaseContentFromPost
-from utils import getContentFromPost
+from utils import get_content_from_post
 from utils import isAccountDir
 from utils import removeHtml
 from utils import getConfigParam
@@ -271,8 +271,8 @@ def _htmlBlogPostContent(debug: bool, session, authorized: bool,
     languagesUnderstood = []
     if actor_json:
         languagesUnderstood = get_actor_languages_list(actor_json)
-    jsonContent = getContentFromPost(post_json_object, system_language,
-                                     languagesUnderstood)
+    jsonContent = get_content_from_post(post_json_object, system_language,
+                                        languagesUnderstood)
     if jsonContent:
         contentStr = addEmbeddedElements(translate, jsonContent,
                                          peertube_instances)

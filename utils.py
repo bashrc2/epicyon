@@ -77,8 +77,8 @@ def get_actor_languages_list(actor_json: {}) -> []:
     return []
 
 
-def getContentFromPost(post_json_object: {}, system_language: str,
-                       languagesUnderstood: []) -> str:
+def get_content_from_post(post_json_object: {}, system_language: str,
+                          languagesUnderstood: []) -> str:
     """Returns the content from the post in the given language
     including searching for a matching entry within contentMap
     """

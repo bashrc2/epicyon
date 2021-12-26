@@ -27,7 +27,7 @@ from utils import removeHashFromPostId
 from utils import removeHtml
 from utils import get_actor_languages_list
 from utils import getBaseContentFromPost
-from utils import getContentFromPost
+from utils import get_content_from_post
 from utils import hasObjectDict
 from utils import updateAnnounceCollection
 from utils import isPGPEncrypted
@@ -1855,8 +1855,8 @@ def individualPostAsHtml(signing_priv_key_pem: str,
     languagesUnderstood = []
     if actor_json:
         languagesUnderstood = get_actor_languages_list(actor_json)
-    contentStr = getContentFromPost(post_json_object, system_language,
-                                    languagesUnderstood)
+    contentStr = get_content_from_post(post_json_object, system_language,
+                                       languagesUnderstood)
     if not contentStr:
         contentStr = \
             autoTranslatePost(base_dir, post_json_object,
