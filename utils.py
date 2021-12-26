@@ -360,7 +360,7 @@ def get_image_extensions() -> []:
     return ('png', 'jpg', 'jpeg', 'gif', 'webp', 'avif', 'svg', 'ico')
 
 
-def get_image_mime_type(imageFilename: str) -> str:
+def get_image_mime_type(image_filename: str) -> str:
     """Returns the mime type for the given image
     """
     extensionsToMime = {
@@ -373,7 +373,7 @@ def get_image_mime_type(imageFilename: str) -> str:
         'ico': 'x-icon'
     }
     for ext, mimeExt in extensionsToMime.items():
-        if imageFilename.endswith('.' + ext):
+        if image_filename.endswith('.' + ext):
             return 'image/' + mimeExt
     return 'image/png'
 

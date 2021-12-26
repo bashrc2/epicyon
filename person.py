@@ -93,19 +93,19 @@ def generateRSAKey() -> (str, str):
 
 def setProfileImage(base_dir: str, http_prefix: str,
                     nickname: str, domain: str,
-                    port: int, imageFilename: str, imageType: str,
+                    port: int, image_filename: str, imageType: str,
                     resolution: str, city: str,
                     content_license_url: str) -> bool:
     """Saves the given image file as an avatar or background
     image for the given person
     """
-    imageFilename = imageFilename.replace('\n', '').replace('\r', '')
-    if not isImageFile(imageFilename):
+    image_filename = image_filename.replace('\n', '').replace('\r', '')
+    if not isImageFile(image_filename):
         print('Profile image must be png, jpg, gif or svg format')
         return False
 
-    if imageFilename.startswith('~/'):
-        imageFilename = imageFilename.replace('~/', str(Path.home()) + '/')
+    if image_filename.startswith('~/'):
+        image_filename = image_filename.replace('~/', str(Path.home()) + '/')
 
     domain = removeDomainPort(domain)
     fullDomain = get_full_domain(domain, port)
@@ -127,20 +127,20 @@ def setProfileImage(base_dir: str, http_prefix: str,
 
     mediaType = 'image/png'
     iconFilename = iconFilenameBase + '.png'
-    if imageFilename.endswith('.jpg') or \
-       imageFilename.endswith('.jpeg'):
+    if image_filename.endswith('.jpg') or \
+       image_filename.endswith('.jpeg'):
         mediaType = 'image/jpeg'
         iconFilename = iconFilenameBase + '.jpg'
-    elif imageFilename.endswith('.gif'):
+    elif image_filename.endswith('.gif'):
         mediaType = 'image/gif'
         iconFilename = iconFilenameBase + '.gif'
-    elif imageFilename.endswith('.webp'):
+    elif image_filename.endswith('.webp'):
         mediaType = 'image/webp'
         iconFilename = iconFilenameBase + '.webp'
-    elif imageFilename.endswith('.avif'):
+    elif image_filename.endswith('.avif'):
         mediaType = 'image/avif'
         iconFilename = iconFilenameBase + '.avif'
-    elif imageFilename.endswith('.svg'):
+    elif image_filename.endswith('.svg'):
         mediaType = 'image/svg+xml'
         iconFilename = iconFilenameBase + '.svg'
     profileFilename = base_dir + '/accounts/' + handle + '/' + iconFilename
@@ -154,7 +154,7 @@ def setProfileImage(base_dir: str, http_prefix: str,
         saveJson(personJson, personFilename)
 
         cmd = \
-            '/usr/bin/convert ' + imageFilename + ' -size ' + \
+            '/usr/bin/convert ' + image_filename + ' -size ' + \
             resolution + ' -quality 50 ' + profileFilename
         subprocess.call(cmd, shell=True)
         processMetaData(base_dir, nickname, domain,

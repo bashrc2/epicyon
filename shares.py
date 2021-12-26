@@ -302,7 +302,7 @@ def _indicateNewShareAvailable(base_dir: str, http_prefix: str,
 
 def addShare(base_dir: str,
              http_prefix: str, nickname: str, domain: str, port: int,
-             displayName: str, summary: str, imageFilename: str,
+             displayName: str, summary: str, image_filename: str,
              itemQty: float, itemType: str, itemCategory: str, location: str,
              duration: str, debug: bool, city: str,
              price: str, currency: str,
@@ -336,20 +336,20 @@ def addShare(base_dir: str,
     # has an image for this share been uploaded?
     imageUrl = None
     moveImage = False
-    if not imageFilename:
+    if not image_filename:
         sharesImageFilename = \
             acct_dir(base_dir, nickname, domain) + '/upload'
         formats = get_image_extensions()
         for ext in formats:
             if os.path.isfile(sharesImageFilename + '.' + ext):
-                imageFilename = sharesImageFilename + '.' + ext
+                image_filename = sharesImageFilename + '.' + ext
                 moveImage = True
 
     domain_full = get_full_domain(domain, port)
 
     # copy or move the image for the shared item to its destination
-    if imageFilename:
-        if os.path.isfile(imageFilename):
+    if image_filename:
+        if os.path.isfile(image_filename):
             if not os.path.isdir(base_dir + '/sharefiles'):
                 os.mkdir(base_dir + '/sharefiles')
             if not os.path.isdir(base_dir + '/sharefiles/' + nickname):
@@ -357,19 +357,19 @@ def addShare(base_dir: str,
             itemIDfile = base_dir + '/sharefiles/' + nickname + '/' + itemID
             formats = get_image_extensions()
             for ext in formats:
-                if not imageFilename.endswith('.' + ext):
+                if not image_filename.endswith('.' + ext):
                     continue
                 if low_bandwidth:
-                    convertImageToLowBandwidth(imageFilename)
+                    convertImageToLowBandwidth(image_filename)
                 processMetaData(base_dir, nickname, domain,
-                                imageFilename, itemIDfile + '.' + ext,
+                                image_filename, itemIDfile + '.' + ext,
                                 city, content_license_url)
                 if moveImage:
                     try:
-                        os.remove(imageFilename)
+                        os.remove(image_filename)
                     except OSError:
                         print('EX: addShare unable to delete ' +
-                              str(imageFilename))
+                              str(image_filename))
                 imageUrl = \
                     http_prefix + '://' + domain_full + \
                     '/sharefiles/' + nickname + '/' + itemID + '.' + ext
@@ -555,7 +555,7 @@ def sendShareViaServer(base_dir, session,
                        fromNickname: str, password: str,
                        fromDomain: str, fromPort: int,
                        http_prefix: str, displayName: str,
-                       summary: str, imageFilename: str,
+                       summary: str, image_filename: str,
                        itemQty: float, itemType: str, itemCategory: str,
                        location: str, duration: str,
                        cached_webfingers: {}, person_cache: {},
@@ -647,13 +647,13 @@ def sendShareViaServer(base_dir, session,
 
     authHeader = createBasicAuthHeader(fromNickname, password)
 
-    if imageFilename:
+    if image_filename:
         headers = {
             'host': fromDomain,
             'Authorization': authHeader
         }
         postResult = \
-            postImage(session, imageFilename, [],
+            postImage(session, image_filename, [],
                       inboxUrl.replace('/' + postToBox, '/shares'),
                       headers)
 
@@ -775,7 +775,7 @@ def sendWantedViaServer(base_dir, session,
                         fromNickname: str, password: str,
                         fromDomain: str, fromPort: int,
                         http_prefix: str, displayName: str,
-                        summary: str, imageFilename: str,
+                        summary: str, image_filename: str,
                         itemQty: float, itemType: str, itemCategory: str,
                         location: str, duration: str,
                         cached_webfingers: {}, person_cache: {},
@@ -867,13 +867,13 @@ def sendWantedViaServer(base_dir, session,
 
     authHeader = createBasicAuthHeader(fromNickname, password)
 
-    if imageFilename:
+    if image_filename:
         headers = {
             'host': fromDomain,
             'Authorization': authHeader
         }
         postResult = \
-            postImage(session, imageFilename, [],
+            postImage(session, image_filename, [],
                       inboxUrl.replace('/' + postToBox, '/wanted'),
                       headers)
 
@@ -1073,9 +1073,9 @@ def outboxShareUpload(base_dir: str, http_prefix: str,
     location = ''
     if message_json['object'].get('location'):
         location = message_json['object']['location']
-    imageFilename = None
-    if message_json['object'].get('imageFilename'):
-        imageFilename = message_json['object']['imageFilename']
+    image_filename = None
+    if message_json['object'].get('image_filename'):
+        image_filename = message_json['object']['image_filename']
     if debug:
         print('Adding shared item')
         pprint(message_json)
@@ -1084,7 +1084,7 @@ def outboxShareUpload(base_dir: str, http_prefix: str,
              http_prefix, nickname, domain, port,
              message_json['object']['displayName'],
              message_json['object']['summary'],
-             imageFilename,
+             image_filename,
              itemQty,
              message_json['object']['itemType'],
              message_json['object']['category'],

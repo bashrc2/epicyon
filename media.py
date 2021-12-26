@@ -90,13 +90,13 @@ def replaceTwitter(post_json_object: {}, replacementDomain: str,
                        replacementDomain, system_language)
 
 
-def _removeMetaData(imageFilename: str, outputFilename: str) -> None:
+def _removeMetaData(image_filename: str, outputFilename: str) -> None:
     """Attempts to do this with pure python didn't work well,
     so better to use a dedicated tool if one is installed
     """
-    copyfile(imageFilename, outputFilename)
+    copyfile(image_filename, outputFilename)
     if not os.path.isfile(outputFilename):
-        print('ERROR: unable to remove metadata from ' + imageFilename)
+        print('ERROR: unable to remove metadata from ' + image_filename)
         return
     if os.path.isfile('/usr/bin/exiftool'):
         print('Removing metadata from ' + outputFilename + ' using exiftool')
@@ -160,10 +160,10 @@ def _spoofMetaData(base_dir: str, nickname: str, domain: str,
         return
 
 
-def convertImageToLowBandwidth(imageFilename: str) -> None:
+def convertImageToLowBandwidth(image_filename: str) -> None:
     """Converts an image to a low bandwidth version
     """
-    low_bandwidthFilename = imageFilename + '.low'
+    low_bandwidthFilename = image_filename + '.low'
     if os.path.isfile(low_bandwidthFilename):
         try:
             os.remove(low_bandwidthFilename)
@@ -174,7 +174,7 @@ def convertImageToLowBandwidth(imageFilename: str) -> None:
     cmd = \
         '/usr/bin/convert +noise Multiplicative ' + \
         '-evaluate median 10% -dither Floyd-Steinberg ' + \
-        '-monochrome  ' + imageFilename + ' ' + low_bandwidthFilename
+        '-monochrome  ' + image_filename + ' ' + low_bandwidthFilename
     print('Low bandwidth image conversion: ' + cmd)
     subprocess.call(cmd, shell=True)
     # wait for conversion to happen
@@ -188,43 +188,43 @@ def convertImageToLowBandwidth(imageFilename: str) -> None:
             break
     if os.path.isfile(low_bandwidthFilename):
         try:
-            os.remove(imageFilename)
+            os.remove(image_filename)
         except OSError:
             print('EX: convertImageToLowBandwidth unable to delete ' +
-                  imageFilename)
-        os.rename(low_bandwidthFilename, imageFilename)
-        if os.path.isfile(imageFilename):
-            print('Image converted to low bandwidth ' + imageFilename)
+                  image_filename)
+        os.rename(low_bandwidthFilename, image_filename)
+        if os.path.isfile(image_filename):
+            print('Image converted to low bandwidth ' + image_filename)
     else:
         print('Low bandwidth converted image not found: ' +
               low_bandwidthFilename)
 
 
 def processMetaData(base_dir: str, nickname: str, domain: str,
-                    imageFilename: str, outputFilename: str,
+                    image_filename: str, outputFilename: str,
                     city: str, content_license_url: str) -> None:
     """Handles image metadata. This tries to spoof the metadata
     if possible, but otherwise just removes it
     """
     # first remove the metadata
-    _removeMetaData(imageFilename, outputFilename)
+    _removeMetaData(image_filename, outputFilename)
 
     # now add some spoofed data to misdirect surveillance capitalists
     _spoofMetaData(base_dir, nickname, domain, outputFilename, city,
                    content_license_url)
 
 
-def _isMedia(imageFilename: str) -> bool:
+def _isMedia(image_filename: str) -> bool:
     """Is the given file a media file?
     """
-    if not os.path.isfile(imageFilename):
-        print('WARN: Media file does not exist ' + imageFilename)
+    if not os.path.isfile(image_filename):
+        print('WARN: Media file does not exist ' + image_filename)
         return False
     permittedMedia = get_media_extensions()
     for m in permittedMedia:
-        if imageFilename.endswith('.' + m):
+        if image_filename.endswith('.' + m):
             return True
-    print('WARN: ' + imageFilename + ' is not a permitted media type')
+    print('WARN: ' + image_filename + ' is not a permitted media type')
     return False
 
 
@@ -295,20 +295,20 @@ def _updateEtag(mediaFilename: str) -> None:
 
 def attachMedia(base_dir: str, http_prefix: str,
                 nickname: str, domain: str, port: int,
-                postJson: {}, imageFilename: str,
+                postJson: {}, image_filename: str,
                 mediaType: str, description: str,
                 city: str, low_bandwidth: bool,
                 content_license_url: str) -> {}:
     """Attaches media to a json object post
     The description can be None
     """
-    if not _isMedia(imageFilename):
+    if not _isMedia(image_filename):
         return postJson
 
     fileExtension = None
     acceptedTypes = get_media_extensions()
     for mType in acceptedTypes:
-        if imageFilename.endswith('.' + mType):
+        if image_filename.endswith('.' + mType):
             if mType == 'jpg':
                 mType = 'jpeg'
             if mType == 'mp3':
@@ -344,7 +344,7 @@ def attachMedia(base_dir: str, http_prefix: str,
         attachmentJson['blurhash'] = _getBlurHash()
         # find the dimensions of the image and add them as metadata
         attachImageWidth, attachImageHeight = \
-            getImageDimensions(imageFilename)
+            getImageDimensions(image_filename)
         if attachImageWidth and attachImageHeight:
             attachmentJson['width'] = attachImageWidth
             attachmentJson['height'] = attachImageHeight
@@ -354,12 +354,12 @@ def attachMedia(base_dir: str, http_prefix: str,
     if base_dir:
         if mediaType.startswith('image/'):
             if low_bandwidth:
-                convertImageToLowBandwidth(imageFilename)
+                convertImageToLowBandwidth(image_filename)
             processMetaData(base_dir, nickname, domain,
-                            imageFilename, mediaFilename, city,
+                            image_filename, mediaFilename, city,
                             content_license_url)
         else:
-            copyfile(imageFilename, mediaFilename)
+            copyfile(image_filename, mediaFilename)
         _updateEtag(mediaFilename)
 
     return postJson
@@ -408,12 +408,12 @@ def pathIsAudio(path: str) -> bool:
     return False
 
 
-def getImageDimensions(imageFilename: str) -> (int, int):
+def getImageDimensions(image_filename: str) -> (int, int):
     """Returns the dimensions of an image file
     """
     try:
         result = subprocess.run(['identify', '-format', '"%wx%h"',
-                                 imageFilename], stdout=subprocess.PIPE)
+                                 image_filename], stdout=subprocess.PIPE)
     except BaseException:
         print('EX: getImageDimensions unable to run identify command')
         return None, None

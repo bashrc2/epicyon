@@ -440,7 +440,7 @@ def postImage(session, attachImageFilename: str, federation_list: [],
 
 
 def downloadImage(session, base_dir: str, url: str,
-                  imageFilename: str, debug: bool,
+                  image_filename: str, debug: bool,
                   force: bool = False) -> bool:
     """Downloads an image with an expected mime type
     """
@@ -472,7 +472,7 @@ def downloadImage(session, base_dir: str, url: str,
             print('downloadImage: no session headers')
         return False
 
-    if not os.path.isfile(imageFilename) or force:
+    if not os.path.isfile(image_filename) or force:
         try:
             if debug:
                 print('Downloading image url: ' + url)
@@ -485,14 +485,14 @@ def downloadImage(session, base_dir: str, url: str,
                     print('Image download failed with status ' +
                           str(result.status_code))
                 # remove partial download
-                if os.path.isfile(imageFilename):
+                if os.path.isfile(image_filename):
                     try:
-                        os.remove(imageFilename)
+                        os.remove(image_filename)
                     except OSError:
                         print('EX: downloadImage unable to delete ' +
-                              imageFilename)
+                              image_filename)
             else:
-                with open(imageFilename, 'wb') as f:
+                with open(image_filename, 'wb') as f:
                     f.write(result.content)
                     if debug:
                         print('Image downloaded from ' + url)
