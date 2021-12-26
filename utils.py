@@ -2826,28 +2826,28 @@ def permittedDir(path: str) -> bool:
     return True
 
 
-def userAgentDomain(userAgent: str, debug: bool) -> str:
+def user_agent_domain(user_agent: str, debug: bool) -> str:
     """If the User-Agent string contains a domain
     then return it
     """
-    if '+http' not in userAgent:
+    if '+http' not in user_agent:
         return None
-    agentDomain = userAgent.split('+http')[1].strip()
-    if '://' in agentDomain:
-        agentDomain = agentDomain.split('://')[1]
-    if '/' in agentDomain:
-        agentDomain = agentDomain.split('/')[0]
-    if ')' in agentDomain:
-        agentDomain = agentDomain.split(')')[0].strip()
-    if ' ' in agentDomain:
-        agentDomain = agentDomain.replace(' ', '')
-    if ';' in agentDomain:
-        agentDomain = agentDomain.replace(';', '')
-    if '.' not in agentDomain:
+    agent_domain = user_agent.split('+http')[1].strip()
+    if '://' in agent_domain:
+        agent_domain = agent_domain.split('://')[1]
+    if '/' in agent_domain:
+        agent_domain = agent_domain.split('/')[0]
+    if ')' in agent_domain:
+        agent_domain = agent_domain.split(')')[0].strip()
+    if ' ' in agent_domain:
+        agent_domain = agent_domain.replace(' ', '')
+    if ';' in agent_domain:
+        agent_domain = agent_domain.replace(';', '')
+    if '.' not in agent_domain:
         return None
     if debug:
-        print('User-Agent Domain: ' + agentDomain)
-    return agentDomain
+        print('User-Agent Domain: ' + agent_domain)
+    return agent_domain
 
 
 def has_object_dict(post_json_object: {}) -> bool:

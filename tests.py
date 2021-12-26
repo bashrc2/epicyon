@@ -66,7 +66,7 @@ from utils import is_group_actor
 from utils import date_string_to_seconds
 from utils import date_seconds_to_string
 from utils import valid_password
-from utils import userAgentDomain
+from utils import user_agent_domain
 from utils import camelCaseSplit
 from utils import decoded_host
 from utils import get_full_domain
@@ -5507,10 +5507,10 @@ def _testUserAgentDomain() -> None:
     print('testUserAgentDomain')
     userAgent = \
         'http.rb/4.4.1 (Mastodon/9.10.11; +https://mastodon.something/)'
-    assert userAgentDomain(userAgent, False) == 'mastodon.something'
+    assert user_agent_domain(userAgent, False) == 'mastodon.something'
     userAgent = \
         'Mozilla/70.0 (X11; Linux x86_64; rv:1.0) Gecko/20450101 Firefox/1.0'
-    assert userAgentDomain(userAgent, False) is None
+    assert user_agent_domain(userAgent, False) is None
 
 
 def _testSwitchWords(base_dir: str) -> None:

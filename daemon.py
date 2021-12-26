@@ -259,7 +259,7 @@ from utils import acct_dir
 from utils import getImageExtensionFromMimeType
 from utils import get_image_mime_type
 from utils import has_object_dict
-from utils import userAgentDomain
+from utils import user_agent_domain
 from utils import isLocalNetworkAddress
 from utils import permittedDir
 from utils import isAccountDir
@@ -592,7 +592,7 @@ class PubServer(BaseHTTPRequestHandler):
                 print('Blocked Crawler: ' + agentStr)
                 return True
             # get domain name from User-Agent
-            agentDomain = userAgentDomain(agentStr, self.server.debug)
+            agentDomain = user_agent_domain(agentStr, self.server.debug)
         else:
             # no User-Agent header is present
             return True
