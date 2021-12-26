@@ -3106,20 +3106,20 @@ def getCurrencies() -> {}:
     }
 
 
-def getSupportedLanguages(base_dir: str) -> []:
+def get_supported_languages(base_dir: str) -> []:
     """Returns a list of supported languages
     """
-    translationsDir = base_dir + '/translations'
-    languagesStr = []
-    for _, _, files in os.walk(translationsDir):
+    translations_dir = base_dir + '/translations'
+    languages_str = []
+    for _, _, files in os.walk(translations_dir):
         for f in files:
             if not f.endswith('.json'):
                 continue
             lang = f.split('.')[0]
             if len(lang) == 2:
-                languagesStr.append(lang)
+                languages_str.append(lang)
         break
-    return languagesStr
+    return languages_str
 
 
 def get_category_types(base_dir: str) -> []:

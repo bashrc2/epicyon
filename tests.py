@@ -60,7 +60,7 @@ from utils import canReplyTo
 from utils import isGroupAccount
 from utils import get_actor_languages_list
 from utils import get_category_types
-from utils import getSupportedLanguages
+from utils import get_supported_languages
 from utils import setConfigParam
 from utils import isGroupActor
 from utils import dateStringToSeconds
@@ -3874,7 +3874,7 @@ def _testValidContentWarning():
 
 def _testTranslations(base_dir: str) -> None:
     print('testTranslations')
-    languagesStr = getSupportedLanguages(base_dir)
+    languagesStr = get_supported_languages(base_dir)
     assert languagesStr
 
     # load all translations into a dict
@@ -5708,7 +5708,7 @@ def _translateOntology(base_dir: str) -> None:
     apiKey = None
     ltLangList = libretranslateLanguages(url, apiKey)
 
-    languagesStr = getSupportedLanguages(base_dir)
+    languagesStr = get_supported_languages(base_dir)
     assert languagesStr
 
     for oType in ontologyTypes:

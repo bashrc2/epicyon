@@ -26,7 +26,7 @@ from utils import load_json
 from utils import get_config_param
 from utils import get_image_formats
 from utils import acct_dir
-from utils import getSupportedLanguages
+from utils import get_supported_languages
 from utils import local_actor_url
 from utils import getReplyIntervalHours
 from languages import getActorLanguages
@@ -1967,10 +1967,10 @@ def _htmlEditProfileOptions(isAdmin: bool,
     return editProfileForm
 
 
-def _getSupportedLanguagesSorted(base_dir: str) -> str:
+def _get_supported_languagesSorted(base_dir: str) -> str:
     """Returns a list of supported languages
     """
-    lang_list = getSupportedLanguages(base_dir)
+    lang_list = get_supported_languages(base_dir)
     if not lang_list:
         return ''
     lang_list.sort()
@@ -2043,7 +2043,7 @@ def _htmlEditProfileMain(base_dir: str, displayNickname: str, bioStr: str,
     editProfileForm += \
         editTextField('Blog', 'blogAddress', blogAddress, 'https://...')
 
-    languagesListStr = _getSupportedLanguagesSorted(base_dir)
+    languagesListStr = _get_supported_languagesSorted(base_dir)
     showLanguages = getActorLanguages(actor_json)
     editProfileForm += \
         editTextField(translate['Languages'], 'showLanguages',
