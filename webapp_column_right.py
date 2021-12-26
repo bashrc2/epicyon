@@ -11,7 +11,7 @@ import os
 from datetime import datetime
 from content import removeLongWords
 from content import limitRepeatedWords
-from utils import getFavFilenameFromUrl
+from utils import get_fav_filename_from_url
 from utils import get_base_content_from_post
 from utils import removeHtml
 from utils import locatePost
@@ -243,7 +243,8 @@ def _htmlNewswire(base_dir: str, newswire: {}, nickname: str, moderator: bool,
         faviconUrl = getNewswireFaviconUrl(url)
         faviconLink = ''
         if faviconUrl:
-            cachedFaviconFilename = getFavFilenameFromUrl(base_dir, faviconUrl)
+            cachedFaviconFilename = \
+                get_fav_filename_from_url(base_dir, faviconUrl)
             if os.path.isfile(cachedFaviconFilename):
                 faviconUrl = \
                     cachedFaviconFilename.replace(base_dir, '')
@@ -251,7 +252,7 @@ def _htmlNewswire(base_dir: str, newswire: {}, nickname: str, moderator: bool,
                 extensions = ('png', 'jpg', 'gif', 'avif', 'svg', 'webp')
                 for ext in extensions:
                     cachedFaviconFilename = \
-                        getFavFilenameFromUrl(base_dir, faviconUrl)
+                        get_fav_filename_from_url(base_dir, faviconUrl)
                     cachedFaviconFilename = \
                         cachedFaviconFilename.replace('.ico', '.' + ext)
                     if os.path.isfile(cachedFaviconFilename):

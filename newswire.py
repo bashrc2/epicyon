@@ -19,7 +19,7 @@ from collections import OrderedDict
 from utils import valid_post_date
 from categories import setHashtagCategory
 from utils import dangerousSVG
-from utils import getFavFilenameFromUrl
+from utils import get_fav_filename_from_url
 from utils import get_base_content_from_post
 from utils import has_object_dict
 from utils import firstParagraphFromString
@@ -184,7 +184,7 @@ def _downloadNewswireFeedFavicon(session, base_dir: str,
             return False
 
     # save to the cache
-    favFilename = getFavFilenameFromUrl(base_dir, favUrl)
+    favFilename = get_fav_filename_from_url(base_dir, favUrl)
     if os.path.isfile(favFilename):
         return True
     try:

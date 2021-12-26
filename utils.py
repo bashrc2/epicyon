@@ -3238,7 +3238,7 @@ def getNewPostEndpoints() -> []:
     )
 
 
-def getFavFilenameFromUrl(base_dir: str, faviconUrl: str) -> str:
+def get_fav_filename_from_url(base_dir: str, faviconUrl: str) -> str:
     """Returns the cached filename for a favicon based upon its url
     """
     if '://' in faviconUrl:
