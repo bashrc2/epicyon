@@ -372,9 +372,9 @@ def get_image_mime_type(image_filename: str) -> str:
         'webp': 'webp',
         'ico': 'x-icon'
     }
-    for ext, mimeExt in extensionsToMime.items():
+    for ext, mime_ext in extensionsToMime.items():
         if image_filename.endswith('.' + ext):
-            return 'image/' + mimeExt
+            return 'image/' + mime_ext
     return 'image/png'
 
 
@@ -403,7 +403,7 @@ def get_media_extensions() -> []:
         get_video_extensions() + get_audio_extensions()
 
 
-def getImageFormats() -> str:
+def get_image_formats() -> str:
     """Returns a string of permissable image formats
     used when selecting an image for a new post
     """
@@ -430,10 +430,10 @@ def getMediaFormats() -> str:
     """Returns a string of permissable media formats
     used when selecting an attachment for a new post
     """
-    mediaExt = get_media_extensions()
+    media_ext = get_media_extensions()
 
     mediaFormats = ''
-    for ext in mediaExt:
+    for ext in media_ext:
         if mediaFormats:
             mediaFormats += ', '
         mediaFormats += '.' + ext

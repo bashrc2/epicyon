@@ -13,7 +13,7 @@ from utils import removeHtml
 from utils import load_json
 from utils import get_config_param
 from utils import get_image_extensions
-from utils import getImageFormats
+from utils import get_image_formats
 from utils import acct_dir
 from utils import local_actor_url
 from webapp_utils import htmlHeaderWithExternalStyle
@@ -78,7 +78,7 @@ def htmlWelcomeProfile(base_dir: str, nickname: str, domain: str,
     avatarUrl = \
         local_actor_url(http_prefix, nickname, domain_full) + '/avatar.' + ext
 
-    imageFormats = getImageFormats()
+    imageFormats = get_image_formats()
     profileForm += '<div class="container">' + profileText + '</div>\n'
     profileForm += \
         '<form enctype="multipart/form-data" method="POST" ' + \

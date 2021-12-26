@@ -24,7 +24,7 @@ from utils import isSystemAccount
 from utils import removeHtml
 from utils import load_json
 from utils import get_config_param
-from utils import getImageFormats
+from utils import get_image_formats
 from utils import acct_dir
 from utils import getSupportedLanguages
 from utils import local_actor_url
@@ -1307,7 +1307,7 @@ def _htmlEditProfileInstance(base_dir: str, translate: {},
                              news_instanceStr: str) -> (str, str, str, str):
     """Edit profile instance settings
     """
-    imageFormats = getImageFormats()
+    imageFormats = get_image_formats()
 
     # Instance details section
     instanceDescription = \
@@ -1838,7 +1838,7 @@ def _htmlEditProfileBackground(news_instance: bool, translate: {}) -> str:
         '      <label class="labels">' + translate[idx] + '</label><br><br>\n'
 
     if not news_instance:
-        imageFormats = getImageFormats()
+        imageFormats = get_image_formats()
         editProfileForm += \
             '      <label class="labels">' + \
             translate['Background image'] + '</label>\n' + \
@@ -1989,7 +1989,7 @@ def _htmlEditProfileMain(base_dir: str, displayNickname: str, bioStr: str,
                          translate: {}) -> str:
     """main info on edit profile screen
     """
-    imageFormats = getImageFormats()
+    imageFormats = get_image_formats()
 
     editProfileForm = '    <div class="container">\n'
 
