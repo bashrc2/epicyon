@@ -149,13 +149,13 @@ def htmlProfileAfterSearch(cssCache: {},
         http = True
     elif http_prefix == 'gnunet':
         gnunet = True
-    profileJson, asHeader = \
+    profile_json, asHeader = \
         getActorJson(domain, profileHandle, http, gnunet, debug, False,
                      signing_priv_key_pem, session)
-    if not profileJson:
+    if not profile_json:
         return None
 
-    personUrl = profileJson['id']
+    personUrl = profile_json['id']
     searchDomain, searchPort = getDomainFromActor(personUrl)
     if not searchDomain:
         return None
@@ -170,27 +170,27 @@ def htmlProfileAfterSearch(cssCache: {},
         cssFilename = base_dir + '/epicyon.css'
 
     isGroup = False
-    if profileJson.get('type'):
-        if profileJson['type'] == 'Group':
+    if profile_json.get('type'):
+        if profile_json['type'] == 'Group':
             isGroup = True
 
     avatarUrl = ''
-    if profileJson.get('icon'):
-        if profileJson['icon'].get('url'):
-            avatarUrl = profileJson['icon']['url']
+    if profile_json.get('icon'):
+        if profile_json['icon'].get('url'):
+            avatarUrl = profile_json['icon']['url']
     if not avatarUrl:
         avatarUrl = getPersonAvatarUrl(base_dir, personUrl,
                                        person_cache, True)
     displayName = searchNickname
-    if profileJson.get('name'):
-        displayName = profileJson['name']
+    if profile_json.get('name'):
+        displayName = profile_json['name']
 
-    lockedAccount = getLockedAccount(profileJson)
+    lockedAccount = getLockedAccount(profile_json)
     if lockedAccount:
         displayName += '🔒'
     movedTo = ''
-    if profileJson.get('movedTo'):
-        movedTo = profileJson['movedTo']
+    if profile_json.get('movedTo'):
+        movedTo = profile_json['movedTo']
         if '"' in movedTo:
             movedTo = movedTo.split('"')[1]
         displayName += ' ⌂'
@@ -202,20 +202,20 @@ def htmlProfileAfterSearch(cssCache: {},
                            searchDomainFull)
 
     profileDescription = ''
-    if profileJson.get('summary'):
-        profileDescription = profileJson['summary']
+    if profile_json.get('summary'):
+        profileDescription = profile_json['summary']
     outboxUrl = None
-    if not profileJson.get('outbox'):
+    if not profile_json.get('outbox'):
         if debug:
-            pprint(profileJson)
+            pprint(profile_json)
             print('DEBUG: No outbox found')
         return None
-    outboxUrl = profileJson['outbox']
+    outboxUrl = profile_json['outbox']
 
     # profileBackgroundImage = ''
-    # if profileJson.get('image'):
-    #     if profileJson['image'].get('url'):
-    #         profileBackgroundImage = profileJson['image']['url']
+    # if profile_json.get('image'):
+    #     if profile_json['image'].get('url'):
+    #         profileBackgroundImage = profile_json['image']['url']
 
     # url to return to
     backUrl = path
@@ -235,28 +235,28 @@ def htmlProfileAfterSearch(cssCache: {},
         profileDescriptionShort = ''
     # remove formatting from profile description used on title
     avatarDescription = ''
-    if profileJson.get('summary'):
-        if isinstance(profileJson['summary'], str):
+    if profile_json.get('summary'):
+        if isinstance(profile_json['summary'], str):
             avatarDescription = \
-                profileJson['summary'].replace('<br>', '\n')
+                profile_json['summary'].replace('<br>', '\n')
             avatarDescription = avatarDescription.replace('<p>', '')
             avatarDescription = avatarDescription.replace('</p>', '')
             if '<' in avatarDescription:
                 avatarDescription = removeHtml(avatarDescription)
 
     imageUrl = ''
-    if profileJson.get('image'):
-        if profileJson['image'].get('url'):
-            imageUrl = profileJson['image']['url']
+    if profile_json.get('image'):
+        if profile_json['image'].get('url'):
+            imageUrl = profile_json['image']['url']
 
     alsoKnownAs = None
-    if profileJson.get('alsoKnownAs'):
-        alsoKnownAs = profileJson['alsoKnownAs']
+    if profile_json.get('alsoKnownAs'):
+        alsoKnownAs = profile_json['alsoKnownAs']
 
     joinedDate = None
-    if profileJson.get('published'):
-        if 'T' in profileJson['published']:
-            joinedDate = profileJson['published']
+    if profile_json.get('published'):
+        if 'T' in profile_json['published']:
+            joinedDate = profile_json['published']
 
     profileStr = \
         _getProfileHeaderAfterSearch(base_dir,
@@ -267,14 +267,14 @@ def htmlProfileAfterSearch(cssCache: {},
                                      displayName, followsYou,
                                      profileDescriptionShort,
                                      avatarUrl, imageUrl,
-                                     movedTo, profileJson['id'],
+                                     movedTo, profile_json['id'],
                                      alsoKnownAs, accessKeys,
                                      joinedDate)
 
     domain_full = getFullDomain(domain, port)
 
     followIsPermitted = True
-    if not profileJson.get('followers'):
+    if not profile_json.get('followers'):
         # no followers collection specified within actor
         followIsPermitted = False
     elif searchNickname == 'news' and searchDomainFull == domain_full:
@@ -548,7 +548,7 @@ def htmlProfile(signing_priv_key_pem: str,
                 recentPostsCache: {}, max_recent_posts: int,
                 translate: {}, project_version: str,
                 base_dir: str, http_prefix: str, authorized: bool,
-                profileJson: {}, selected: str,
+                profile_json: {}, selected: str,
                 session, cached_webfingers: {}, person_cache: {},
                 yt_replace_domain: str,
                 twitter_replacement_domain: str,
@@ -566,7 +566,7 @@ def htmlProfile(signing_priv_key_pem: str,
                 content_license_url: str) -> str:
     """Show the profile page as html
     """
-    nickname = profileJson['preferredUsername']
+    nickname = profile_json['preferredUsername']
     if not nickname:
         return ""
     if isSystemAccount(nickname):
@@ -577,7 +577,7 @@ def htmlProfile(signing_priv_key_pem: str,
                                recentPostsCache, max_recent_posts,
                                translate, project_version,
                                base_dir, http_prefix, authorized,
-                               profileJson, selected,
+                               profile_json, selected,
                                session, cached_webfingers, person_cache,
                                yt_replace_domain,
                                twitter_replacement_domain,
@@ -589,18 +589,18 @@ def htmlProfile(signing_priv_key_pem: str,
                                pageNumber, maxItemsPerPage, cw_lists,
                                lists_enabled)
 
-    domain, port = getDomainFromActor(profileJson['id'])
+    domain, port = getDomainFromActor(profile_json['id'])
     if not domain:
         return ""
     displayName = \
         addEmojiToDisplayName(session, base_dir, http_prefix,
                               nickname, domain,
-                              profileJson['name'], True)
+                              profile_json['name'], True)
     domain_full = getFullDomain(domain, port)
     profileDescription = \
         addEmojiToDisplayName(session, base_dir, http_prefix,
                               nickname, domain,
-                              profileJson['summary'], False)
+                              profile_json['summary'], False)
     postsButton = 'button'
     followingButton = 'button'
     followersButton = 'button'
@@ -628,24 +628,24 @@ def htmlProfile(signing_priv_key_pem: str,
     followApprovals = False
     editProfileStr = ''
     logoutStr = ''
-    actor = profileJson['id']
+    actor = profile_json['id']
     usersPath = '/users/' + actor.split('/users/')[1]
 
     donateSection = ''
-    donateUrl = getDonationUrl(profileJson)
-    websiteUrl = getWebsite(profileJson, translate)
-    blogAddress = getBlogAddress(profileJson)
-    EnigmaPubKey = getEnigmaPubKey(profileJson)
-    PGPpubKey = getPGPpubKey(profileJson)
-    PGPfingerprint = getPGPfingerprint(profileJson)
-    emailAddress = getEmailAddress(profileJson)
-    xmppAddress = getXmppAddress(profileJson)
-    matrixAddress = getMatrixAddress(profileJson)
-    ssbAddress = getSSBAddress(profileJson)
-    toxAddress = getToxAddress(profileJson)
-    briarAddress = getBriarAddress(profileJson)
-    jamiAddress = getJamiAddress(profileJson)
-    cwtchAddress = getCwtchAddress(profileJson)
+    donateUrl = getDonationUrl(profile_json)
+    websiteUrl = getWebsite(profile_json, translate)
+    blogAddress = getBlogAddress(profile_json)
+    EnigmaPubKey = getEnigmaPubKey(profile_json)
+    PGPpubKey = getPGPpubKey(profile_json)
+    PGPfingerprint = getPGPfingerprint(profile_json)
+    emailAddress = getEmailAddress(profile_json)
+    xmppAddress = getXmppAddress(profile_json)
+    matrixAddress = getMatrixAddress(profile_json)
+    ssbAddress = getSSBAddress(profile_json)
+    toxAddress = getToxAddress(profile_json)
+    briarAddress = getBriarAddress(profile_json)
+    jamiAddress = getJamiAddress(profile_json)
+    cwtchAddress = getCwtchAddress(profile_json)
     if donateUrl or websiteUrl or xmppAddress or matrixAddress or \
        ssbAddress or toxAddress or briarAddress or \
        jamiAddress or cwtchAddress or PGPpubKey or EnigmaPubKey or \
@@ -803,30 +803,30 @@ def htmlProfile(signing_priv_key_pem: str,
         profileDescriptionShort = ''
     # remove formatting from profile description used on title
     avatarDescription = ''
-    if profileJson.get('summary'):
-        avatarDescription = profileJson['summary'].replace('<br>', '\n')
+    if profile_json.get('summary'):
+        avatarDescription = profile_json['summary'].replace('<br>', '\n')
         avatarDescription = avatarDescription.replace('<p>', '')
         avatarDescription = avatarDescription.replace('</p>', '')
 
     movedTo = ''
-    if profileJson.get('movedTo'):
-        movedTo = profileJson['movedTo']
+    if profile_json.get('movedTo'):
+        movedTo = profile_json['movedTo']
         if '"' in movedTo:
             movedTo = movedTo.split('"')[1]
 
     alsoKnownAs = None
-    if profileJson.get('alsoKnownAs'):
-        alsoKnownAs = profileJson['alsoKnownAs']
+    if profile_json.get('alsoKnownAs'):
+        alsoKnownAs = profile_json['alsoKnownAs']
 
     joinedDate = None
-    if profileJson.get('published'):
-        if 'T' in profileJson['published']:
-            joinedDate = profileJson['published']
+    if profile_json.get('published'):
+        if 'T' in profile_json['published']:
+            joinedDate = profile_json['published']
     occupationName = None
-    if profileJson.get('hasOccupation'):
-        occupationName = getOccupationName(profileJson)
+    if profile_json.get('hasOccupation'):
+        occupationName = getOccupationName(profile_json)
 
-    avatarUrl = profileJson['icon']['url']
+    avatarUrl = profile_json['icon']['url']
     # use alternate path for local avatars to avoid any caching issues
     if '://' + domain_full + '/system/accounts/avatars/' in avatarUrl:
         avatarUrl = \
@@ -1019,7 +1019,7 @@ def htmlProfile(signing_priv_key_pem: str,
         getConfigParam(base_dir, 'instanceTitle')
     profileStr = \
         htmlHeaderWithPersonMarkup(cssFilename, instanceTitle,
-                                   profileJson, city,
+                                   profile_json, city,
                                    content_license_url) + \
         profileStr + htmlFooter()
     return profileStr

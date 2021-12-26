@@ -100,7 +100,7 @@ def htmlFrontScreen(signing_priv_key_pem: str,
                     recentPostsCache: {}, max_recent_posts: int,
                     translate: {}, project_version: str,
                     base_dir: str, http_prefix: str, authorized: bool,
-                    profileJson: {}, selected: str,
+                    profile_json: {}, selected: str,
                     session, cached_webfingers: {}, person_cache: {},
                     yt_replace_domain: str,
                     twitter_replacement_domain: str,
@@ -117,12 +117,12 @@ def htmlFrontScreen(signing_priv_key_pem: str,
                     cw_lists: {}, lists_enabled: str) -> str:
     """Show the news instance front screen
     """
-    nickname = profileJson['preferredUsername']
+    nickname = profile_json['preferredUsername']
     if not nickname:
         return ""
     if not isSystemAccount(nickname):
         return ""
-    domain, port = getDomainFromActor(profileJson['id'])
+    domain, port = getDomainFromActor(profile_json['id'])
     if not domain:
         return ""
     domain_full = domain
