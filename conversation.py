@@ -9,7 +9,7 @@ __module_group__ = "Timeline"
 
 import os
 from utils import has_object_dict
-from utils import acctDir
+from utils import acct_dir
 from utils import removeIdEnding
 
 
@@ -23,7 +23,7 @@ def _getConversationFilename(base_dir: str, nickname: str, domain: str,
         return None
     if not post_json_object['object'].get('id'):
         return None
-    conversationDir = acctDir(base_dir, nickname, domain) + '/conversation'
+    conversationDir = acct_dir(base_dir, nickname, domain) + '/conversation'
     if not os.path.isdir(conversationDir):
         os.mkdir(conversationDir)
     conversationId = post_json_object['object']['conversation']
@@ -63,7 +63,7 @@ def muteConversation(base_dir: str, nickname: str, domain: str,
                      conversationId: str) -> None:
     """Mutes the given conversation
     """
-    conversationDir = acctDir(base_dir, nickname, domain) + '/conversation'
+    conversationDir = acct_dir(base_dir, nickname, domain) + '/conversation'
     conversationFilename = \
         conversationDir + '/' + conversationId.replace('/', '#')
     if not os.path.isfile(conversationFilename):
@@ -81,7 +81,7 @@ def unmuteConversation(base_dir: str, nickname: str, domain: str,
                        conversationId: str) -> None:
     """Unmutes the given conversation
     """
-    conversationDir = acctDir(base_dir, nickname, domain) + '/conversation'
+    conversationDir = acct_dir(base_dir, nickname, domain) + '/conversation'
     conversationFilename = \
         conversationDir + '/' + conversationId.replace('/', '#')
     if not os.path.isfile(conversationFilename):

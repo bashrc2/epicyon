@@ -24,7 +24,7 @@ from utils import loadJson
 from utils import saveJson
 from utils import isPGPEncrypted
 from utils import has_object_dict
-from utils import acctDir
+from utils import acct_dir
 from utils import local_actor_url
 from content import htmlReplaceQuoteMarks
 
@@ -359,7 +359,7 @@ def getSSMLbox(base_dir: str, path: str,
     if '/' in nickname:
         nickname = nickname.split('/')[0]
     speakerFilename = \
-        acctDir(base_dir, nickname, domain) + '/speaker.json'
+        acct_dir(base_dir, nickname, domain) + '/speaker.json'
     if not os.path.isfile(speakerFilename):
         return None
     speakerJson = loadJson(speakerFilename)
@@ -495,7 +495,7 @@ def _postToSpeakerJson(base_dir: str, http_prefix: str,
 
     followRequestsExist = False
     followRequestsList = []
-    accountsDir = acctDir(base_dir, nickname, domain_full)
+    accountsDir = acct_dir(base_dir, nickname, domain_full)
     approveFollowsFilename = accountsDir + '/followrequests.txt'
     if os.path.isfile(approveFollowsFilename):
         with open(approveFollowsFilename, 'r') as fp:
@@ -548,5 +548,5 @@ def updateSpeaker(base_dir: str, http_prefix: str,
                            post_json_object, person_cache,
                            translate, announcingActor,
                            theme_name)
-    speakerFilename = acctDir(base_dir, nickname, domain) + '/speaker.json'
+    speakerFilename = acct_dir(base_dir, nickname, domain) + '/speaker.json'
     saveJson(speakerJson, speakerFilename)

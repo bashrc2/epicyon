@@ -16,7 +16,7 @@ from utils import getDomainFromActor
 from utils import getNicknameFromActor
 from utils import domainPermitted
 from utils import followPerson
-from utils import acctDir
+from utils import acct_dir
 from utils import hasGroupType
 from utils import local_actor_url
 from utils import hasActor
@@ -150,7 +150,7 @@ def _accept_follow(base_dir: str, domain: str, message_json: {},
 
     # has this person already been unfollowed?
     unfollowed_filename = \
-        acctDir(base_dir, nickname, accepted_domain_full) + '/unfollowed.txt'
+        acct_dir(base_dir, nickname, accepted_domain_full) + '/unfollowed.txt'
     if os.path.isfile(unfollowed_filename):
         if followed_nickname + '@' + followed_domain_full in \
            open(unfollowed_filename).read():

@@ -76,7 +76,7 @@ from utils import getNicknameFromActor
 from utils import followPerson
 from utils import validNickname
 from utils import getProtocolPrefixes
-from utils import acctDir
+from utils import acct_dir
 from media import archiveMedia
 from media import getAttachmentMediaType
 from delete import sendDeleteViaServer
@@ -1235,7 +1235,7 @@ if args.followerspending:
         print('Specify a nickname with the --nickname option')
         sys.exit()
 
-    accountsDir = acctDir(base_dir, args.nickname, domain)
+    accountsDir = acct_dir(base_dir, args.nickname, domain)
     approveFollowsFilename = accountsDir + '/followrequests.txt'
     approveCtr = 0
     if os.path.isfile(approveFollowsFilename):
@@ -2283,7 +2283,7 @@ if args.addaccount:
     if len(args.password.strip()) < 8:
         print('Password should be at least 8 characters')
         sys.exit()
-    accountDir = acctDir(base_dir, nickname, domain)
+    accountDir = acct_dir(base_dir, nickname, domain)
     if os.path.isdir(accountDir):
         print('Account already exists')
         sys.exit()
@@ -2326,7 +2326,7 @@ if args.addgroup:
     if len(args.password.strip()) < 8:
         print('Password should be at least 8 characters')
         sys.exit()
-    accountDir = acctDir(base_dir, nickname, domain)
+    accountDir = acct_dir(base_dir, nickname, domain)
     if os.path.isdir(accountDir):
         print('Group already exists')
         sys.exit()
@@ -2410,7 +2410,7 @@ if args.changepassword:
     if len(newPassword) < 8:
         print('Password should be at least 8 characters')
         sys.exit()
-    accountDir = acctDir(base_dir, nickname, domain)
+    accountDir = acct_dir(base_dir, nickname, domain)
     if not os.path.isdir(accountDir):
         print('Account ' + nickname + '@' + domain + ' not found')
         sys.exit()

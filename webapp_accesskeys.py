@@ -11,7 +11,7 @@ import os
 from utils import isAccountDir
 from utils import loadJson
 from utils import getConfigParam
-from utils import acctDir
+from utils import acct_dir
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 
@@ -47,7 +47,7 @@ def htmlAccessKeys(cssCache: {}, base_dir: str,
     """Show and edit key shortcuts
     """
     accessKeysFilename = \
-        acctDir(base_dir, nickname, domain) + '/accessKeys.json'
+        acct_dir(base_dir, nickname, domain) + '/accessKeys.json'
     if os.path.isfile(accessKeysFilename):
         accessKeysFromFile = loadJson(accessKeysFilename)
         if accessKeysFromFile:

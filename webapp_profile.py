@@ -25,7 +25,7 @@ from utils import removeHtml
 from utils import loadJson
 from utils import getConfigParam
 from utils import getImageFormats
-from utils import acctDir
+from utils import acct_dir
 from utils import getSupportedLanguages
 from utils import local_actor_url
 from utils import getReplyIntervalHours
@@ -731,7 +731,7 @@ def htmlProfile(signing_priv_key_pem: str,
 
         # are there any follow requests?
         followRequestsFilename = \
-            acctDir(base_dir, nickname, domain) + '/followrequests.txt'
+            acct_dir(base_dir, nickname, domain) + '/followrequests.txt'
         if os.path.isfile(followRequestsFilename):
             with open(followRequestsFilename, 'r') as f:
                 for line in f:
@@ -835,7 +835,7 @@ def htmlProfile(signing_priv_key_pem: str,
                               '://' + domain_full + '/users/')
 
     # get pinned post content
-    accountDir = acctDir(base_dir, nickname, domain)
+    accountDir = acct_dir(base_dir, nickname, domain)
     pinnedFilename = accountDir + '/pinToProfile.txt'
     pinnedContent = None
     if os.path.isfile(pinnedFilename):
@@ -1561,7 +1561,7 @@ def _htmlEditProfileGitProjects(base_dir: str, nickname: str, domain: str,
     """
     gitProjectsStr = ''
     gitProjectsFilename = \
-        acctDir(base_dir, nickname, domain) + '/gitprojects.txt'
+        acct_dir(base_dir, nickname, domain) + '/gitprojects.txt'
     if os.path.isfile(gitProjectsFilename):
         with open(gitProjectsFilename, 'r') as gitProjectsFile:
             gitProjectsStr = gitProjectsFile.read()
@@ -1605,56 +1605,56 @@ def _htmlEditProfileFiltering(base_dir: str, nickname: str, domain: str,
     """
     filterStr = ''
     filterFilename = \
-        acctDir(base_dir, nickname, domain) + '/filters.txt'
+        acct_dir(base_dir, nickname, domain) + '/filters.txt'
     if os.path.isfile(filterFilename):
         with open(filterFilename, 'r') as filterfile:
             filterStr = filterfile.read()
 
     filterBioStr = ''
     filterBioFilename = \
-        acctDir(base_dir, nickname, domain) + '/filters_bio.txt'
+        acct_dir(base_dir, nickname, domain) + '/filters_bio.txt'
     if os.path.isfile(filterBioFilename):
         with open(filterBioFilename, 'r') as filterfile:
             filterBioStr = filterfile.read()
 
     switchStr = ''
     switchFilename = \
-        acctDir(base_dir, nickname, domain) + '/replacewords.txt'
+        acct_dir(base_dir, nickname, domain) + '/replacewords.txt'
     if os.path.isfile(switchFilename):
         with open(switchFilename, 'r') as switchfile:
             switchStr = switchfile.read()
 
     autoTags = ''
     autoTagsFilename = \
-        acctDir(base_dir, nickname, domain) + '/autotags.txt'
+        acct_dir(base_dir, nickname, domain) + '/autotags.txt'
     if os.path.isfile(autoTagsFilename):
         with open(autoTagsFilename, 'r') as autoTagsFile:
             autoTags = autoTagsFile.read()
 
     autoCW = ''
     autoCWFilename = \
-        acctDir(base_dir, nickname, domain) + '/autocw.txt'
+        acct_dir(base_dir, nickname, domain) + '/autocw.txt'
     if os.path.isfile(autoCWFilename):
         with open(autoCWFilename, 'r') as autoCWFile:
             autoCW = autoCWFile.read()
 
     blockedStr = ''
     blockedFilename = \
-        acctDir(base_dir, nickname, domain) + '/blocking.txt'
+        acct_dir(base_dir, nickname, domain) + '/blocking.txt'
     if os.path.isfile(blockedFilename):
         with open(blockedFilename, 'r') as blockedfile:
             blockedStr = blockedfile.read()
 
     dmAllowedInstancesStr = ''
     dmAllowedInstancesFilename = \
-        acctDir(base_dir, nickname, domain) + '/dmAllowedInstances.txt'
+        acct_dir(base_dir, nickname, domain) + '/dmAllowedInstances.txt'
     if os.path.isfile(dmAllowedInstancesFilename):
         with open(dmAllowedInstancesFilename, 'r') as dmAllowedInstancesFile:
             dmAllowedInstancesStr = dmAllowedInstancesFile.read()
 
     allowedInstancesStr = ''
     allowedInstancesFilename = \
-        acctDir(base_dir, nickname, domain) + '/allowedinstances.txt'
+        acct_dir(base_dir, nickname, domain) + '/allowedinstances.txt'
     if os.path.isfile(allowedInstancesFilename):
         with open(allowedInstancesFilename, 'r') as allowedInstancesFile:
             allowedInstancesStr = allowedInstancesFile.read()
@@ -1675,7 +1675,7 @@ def _htmlEditProfileFiltering(base_dir: str, nickname: str, domain: str,
         '</label><br>\n'
 
     city = ''
-    cityFilename = acctDir(base_dir, nickname, domain) + '/city.txt'
+    cityFilename = acct_dir(base_dir, nickname, domain) + '/city.txt'
     if os.path.isfile(cityFilename):
         with open(cityFilename, 'r') as fp:
             city = fp.read().replace('\n', '')
@@ -2107,7 +2107,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, base_dir: str, path: str,
         return ''
     domain_full = getFullDomain(domain, port)
 
-    actorFilename = acctDir(base_dir, nickname, domain) + '.json'
+    actorFilename = acct_dir(base_dir, nickname, domain) + '.json'
     if not os.path.isfile(actorFilename):
         return ''
 
@@ -2164,7 +2164,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, base_dir: str, path: str,
             elif actor_json['type'] == 'Group':
                 isGroup = 'checked'
                 isBot = ''
-    accountDir = acctDir(base_dir, nickname, domain)
+    accountDir = acct_dir(base_dir, nickname, domain)
     if os.path.isfile(accountDir + '/.followDMs'):
         followDMs = 'checked'
     if os.path.isfile(accountDir + '/.removeTwitter'):

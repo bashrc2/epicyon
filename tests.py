@@ -84,7 +84,7 @@ from utils import getStatusNumber
 from utils import getFollowersOfPerson
 from utils import removeHtml
 from utils import dangerousMarkup
-from utils import acctDir
+from utils import acct_dir
 from pgp import extractPGPPublicKey
 from pgp import pgpPublicKeyUpload
 from utils import containsPGPPublicKey
@@ -2618,7 +2618,7 @@ def _testFollows(base_dir: str) -> None:
     followPerson(base_dir, nickname, domain, 'giraffe', 'trees.com',
                  federation_list, False, False)
 
-    accountDir = acctDir(base_dir, nickname, domain)
+    accountDir = acct_dir(base_dir, nickname, domain)
     f = open(accountDir + '/following.txt', 'r')
     domainFound = False
     for followingDomain in f:
@@ -2654,7 +2654,7 @@ def _testFollows(base_dir: str) -> None:
     followerOfPerson(base_dir, nickname, domain, 'giraffe', 'trees.com',
                      federation_list, False, False)
 
-    accountDir = acctDir(base_dir, nickname, domain)
+    accountDir = acct_dir(base_dir, nickname, domain)
     f = open(accountDir + '/followers.txt', 'r')
     for followerDomain in f:
         testDomain = followerDomain.split('@')[1]

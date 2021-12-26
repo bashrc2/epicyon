@@ -24,7 +24,7 @@ from utils import isPublicPost
 from utils import firstParagraphFromString
 from utils import searchBoxPosts
 from utils import getAltPath
-from utils import acctDir
+from utils import acct_dir
 from utils import local_actor_url
 from skills import noOfActorSkills
 from skills import getSkillsFromList
@@ -427,7 +427,7 @@ def htmlSearch(cssCache: {}, translate: {},
     followStr += '  </form>\n'
 
     cachedHashtagSwarmFilename = \
-        acctDir(base_dir, searchNickname, domain) + '/.hashtagSwarm'
+        acct_dir(base_dir, searchNickname, domain) + '/.hashtagSwarm'
     swarmStr = ''
     if os.path.isfile(cachedHashtagSwarmFilename):
         try:
@@ -738,7 +738,7 @@ def htmlHashtagSearch(cssCache: {},
 
     # check that the directory for the nickname exists
     if nickname:
-        accountDir = acctDir(base_dir, nickname, domain)
+        accountDir = acct_dir(base_dir, nickname, domain)
         if not os.path.isdir(accountDir):
             nickname = None
 
@@ -922,7 +922,7 @@ def rssHashtagSearch(nickname: str, domain: str, port: int,
 
     # check that the directory for the nickname exists
     if nickname:
-        accountDir = acctDir(base_dir, nickname, domain)
+        accountDir = acct_dir(base_dir, nickname, domain)
         if not os.path.isdir(accountDir):
             nickname = None
 

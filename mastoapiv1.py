@@ -10,7 +10,7 @@ __module_group__ = "API"
 import os
 from utils import loadJson
 from utils import getConfigParam
-from utils import acctDir
+from utils import acct_dir
 from metadata import metaDataInstance
 
 
@@ -55,7 +55,7 @@ def _getMastoApiV1Account(base_dir: str, nickname: str, domain: str) -> {}:
     blob/master/Using-the-API/API.md#account
     Authorization has already been performed
     """
-    accountFilename = acctDir(base_dir, nickname, domain) + '.json'
+    accountFilename = acct_dir(base_dir, nickname, domain) + '.json'
     if not os.path.isfile(accountFilename):
         return {}
     accountJson = loadJson(accountFilename)

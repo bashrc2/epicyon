@@ -24,7 +24,7 @@ from utils import getCachedPostFilename
 from utils import loadJson
 from utils import saveJson
 from utils import has_object_dict
-from utils import acctDir
+from utils import acct_dir
 from utils import local_actor_url
 from utils import hasActor
 from utils import hasObjectStringType
@@ -60,7 +60,7 @@ def undoBookmarksCollectionEntry(recentPostsCache: {},
 
     # remove from the index
     bookmarksIndexFilename = \
-        acctDir(base_dir, nickname, domain) + '/bookmarks.index'
+        acct_dir(base_dir, nickname, domain) + '/bookmarks.index'
     if not os.path.isfile(bookmarksIndexFilename):
         return
     if '/' in postFilename:
@@ -224,7 +224,7 @@ def updateBookmarksCollection(recentPostsCache: {},
 
         # prepend to the index
         bookmarksIndexFilename = \
-            acctDir(base_dir, nickname, domain) + '/bookmarks.index'
+            acct_dir(base_dir, nickname, domain) + '/bookmarks.index'
         bookmarkIndex = postFilename.split('/')[-1]
         if os.path.isfile(bookmarksIndexFilename):
             if bookmarkIndex not in open(bookmarksIndexFilename).read():

@@ -17,7 +17,7 @@ from utils import loadJson
 from utils import saveJson
 from utils import locatePost
 from utils import has_object_dict
-from utils import acctDir
+from utils import acct_dir
 
 
 def _validUuid(testUuid: str, version: int):
@@ -194,7 +194,7 @@ def getTodaysEvents(base_dir: str, nickname: str, domain: str,
         dayNumber = currDayOfMonth
 
     calendarFilename = \
-        acctDir(base_dir, nickname, domain) + \
+        acct_dir(base_dir, nickname, domain) + \
         '/calendar/' + str(year) + '/' + str(monthNumber) + '.txt'
     events = {}
     if not os.path.isfile(calendarFilename):
@@ -271,7 +271,7 @@ def dayEventsCheck(base_dir: str, nickname: str, domain: str,
     dayNumber = currDate.day
 
     calendarFilename = \
-        acctDir(base_dir, nickname, domain) + \
+        acct_dir(base_dir, nickname, domain) + \
         '/calendar/' + str(year) + '/' + str(monthNumber) + '.txt'
     if not os.path.isfile(calendarFilename):
         return False
@@ -324,7 +324,7 @@ def getThisWeeksEvents(base_dir: str, nickname: str, domain: str) -> {}:
     monthNumber = now.month
 
     calendarFilename = \
-        acctDir(base_dir, nickname, domain) + \
+        acct_dir(base_dir, nickname, domain) + \
         '/calendar/' + str(year) + '/' + str(monthNumber) + '.txt'
 
     events = {}
@@ -389,7 +389,7 @@ def getCalendarEvents(base_dir: str, nickname: str, domain: str,
     Event and Place activities
     """
     calendarFilename = \
-        acctDir(base_dir, nickname, domain) + \
+        acct_dir(base_dir, nickname, domain) + \
         '/calendar/' + str(year) + '/' + str(monthNumber) + '.txt'
 
     events = {}
@@ -454,7 +454,7 @@ def removeCalendarEvent(base_dir: str, nickname: str, domain: str,
     """Removes a calendar event
     """
     calendarFilename = \
-        acctDir(base_dir, nickname, domain) + \
+        acct_dir(base_dir, nickname, domain) + \
         '/calendar/' + str(year) + '/' + str(monthNumber) + '.txt'
     if not os.path.isfile(calendarFilename):
         return

@@ -22,7 +22,7 @@ from utils import getVideoExtensions
 from utils import getAudioExtensions
 from utils import getMediaExtensions
 from utils import has_object_dict
-from utils import acctDir
+from utils import acct_dir
 from shutil import copyfile
 from shutil import rmtree
 from shutil import move
@@ -116,7 +116,7 @@ def _spoofMetaData(base_dir: str, nickname: str, domain: str,
         return
 
     # get the random seed used to generate a unique pattern for this account
-    decoySeedFilename = acctDir(base_dir, nickname, domain) + '/decoyseed'
+    decoySeedFilename = acct_dir(base_dir, nickname, domain) + '/decoyseed'
     decoySeed = 63725
     if os.path.isfile(decoySeedFilename):
         with open(decoySeedFilename, 'r') as fp:

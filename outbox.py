@@ -27,7 +27,7 @@ from utils import dangerousMarkup
 from utils import isFeaturedWriter
 from utils import loadJson
 from utils import saveJson
-from utils import acctDir
+from utils import acct_dir
 from utils import local_actor_url
 from utils import hasActor
 from blocking import isBlockedDomain
@@ -119,7 +119,7 @@ def _outboxPersonReceiveUpdate(recentPostsCache: {},
         return
     updatedActorJson = message_json['object']
     # load actor from file
-    actorFilename = acctDir(base_dir, nickname, domain) + '.json'
+    actorFilename = acct_dir(base_dir, nickname, domain) + '.json'
     if not os.path.isfile(actorFilename):
         print('actorFilename not found: ' + actorFilename)
         return

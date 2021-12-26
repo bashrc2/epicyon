@@ -19,7 +19,7 @@ from utils import loadJson
 from utils import weekDayOfMonthStart
 from utils import getAltPath
 from utils import removeDomainPort
-from utils import acctDir
+from utils import acct_dir
 from utils import local_actor_url
 from utils import replaceUsersWithAt
 from happening import getTodaysEvents
@@ -103,7 +103,7 @@ def _htmlCalendarDay(person_cache: {}, cssCache: {}, translate: {},
                      monthName: str, actor: str) -> str:
     """Show a day within the calendar
     """
-    accountDir = acctDir(base_dir, nickname, domain)
+    accountDir = acct_dir(base_dir, nickname, domain)
     calendarFile = accountDir + '/.newCalendar'
     if os.path.isfile(calendarFile):
         try:

@@ -11,7 +11,7 @@ import os
 from utils import isAccountDir
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
-from utils import acctDir
+from utils import acct_dir
 from utils import hasGroupType
 from webfinger import webfingerHandle
 from blocking import isBlocked
@@ -28,7 +28,7 @@ def _moveFollowingHandlesForAccount(base_dir: str, nickname: str, domain: str,
     """Goes through all follows for an account and updates any that have moved
     """
     ctr = 0
-    followingFilename = acctDir(base_dir, nickname, domain) + '/following.txt'
+    followingFilename = acct_dir(base_dir, nickname, domain) + '/following.txt'
     if not os.path.isfile(followingFilename):
         return ctr
     with open(followingFilename, 'r') as f:
@@ -116,7 +116,7 @@ def _updateMovedHandle(base_dir: str, nickname: str, domain: str,
                         debug, group_account, 'following.txt')
         return ctr
 
-    followingFilename = acctDir(base_dir, nickname, domain) + '/following.txt'
+    followingFilename = acct_dir(base_dir, nickname, domain) + '/following.txt'
     if os.path.isfile(followingFilename):
         with open(followingFilename, 'r') as f:
             followingHandles = f.readlines()
@@ -125,7 +125,7 @@ def _updateMovedHandle(base_dir: str, nickname: str, domain: str,
             handleLower = handle.lower()
 
             refollowFilename = \
-                acctDir(base_dir, nickname, domain) + '/refollow.txt'
+                acct_dir(base_dir, nickname, domain) + '/refollow.txt'
 
             # unfollow the old handle
             with open(followingFilename, 'w+') as f:
@@ -153,7 +153,7 @@ def _updateMovedHandle(base_dir: str, nickname: str, domain: str,
                                 f.write(movedToHandle + '\n')
 
     followersFilename = \
-        acctDir(base_dir, nickname, domain) + '/followers.txt'
+        acct_dir(base_dir, nickname, domain) + '/followers.txt'
     if os.path.isfile(followersFilename):
         with open(followersFilename, 'r') as f:
             followerHandles = f.readlines()

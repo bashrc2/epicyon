@@ -16,7 +16,7 @@ from utils import getConfigParam
 from utils import getFullDomain
 from utils import isEditor
 from utils import removeIdEnding
-from utils import acctDir
+from utils import acct_dir
 from utils import isfloat
 from utils import local_actor_url
 from follow import followerApprovalActive
@@ -457,7 +457,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
 
     timelineStartTime = time.time()
 
-    accountDir = acctDir(base_dir, nickname, domain)
+    accountDir = acct_dir(base_dir, nickname, domain)
 
     # should the calendar icon be highlighted?
     newCalendarEvent = False
@@ -621,7 +621,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     # show an icon for new follow approvals
     followApprovals = ''
     followRequestsFilename = \
-        acctDir(base_dir, nickname, domain) + '/followrequests.txt'
+        acct_dir(base_dir, nickname, domain) + '/followrequests.txt'
     if os.path.isfile(followRequestsFilename):
         with open(followRequestsFilename, 'r') as f:
             for line in f:

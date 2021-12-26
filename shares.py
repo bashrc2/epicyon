@@ -33,7 +33,7 @@ from utils import saveJson
 from utils import getImageExtensions
 from utils import removeDomainPort
 from utils import isAccountDir
-from utils import acctDir
+from utils import acct_dir
 from utils import isfloat
 from utils import getCategoryTypes
 from utils import getSharesFilesList
@@ -125,7 +125,7 @@ def removeSharedItem(base_dir: str, nickname: str, domain: str,
     """Removes a share for a person
     """
     sharesFilename = \
-        acctDir(base_dir, nickname, domain) + '/' + sharesFileType + '.json'
+        acct_dir(base_dir, nickname, domain) + '/' + sharesFileType + '.json'
     if not os.path.isfile(sharesFilename):
         print('ERROR: remove shared item, missing ' +
               sharesFileType + '.json ' + sharesFilename)
@@ -317,7 +317,7 @@ def addShare(base_dir: str,
         print('Shared item was filtered due to content')
         return
     sharesFilename = \
-        acctDir(base_dir, nickname, domain) + '/' + sharesFileType + '.json'
+        acct_dir(base_dir, nickname, domain) + '/' + sharesFileType + '.json'
     sharesJson = {}
     if os.path.isfile(sharesFilename):
         sharesJson = loadJson(sharesFilename, 1, 2)
@@ -338,7 +338,7 @@ def addShare(base_dir: str,
     moveImage = False
     if not imageFilename:
         sharesImageFilename = \
-            acctDir(base_dir, nickname, domain) + '/upload'
+            acct_dir(base_dir, nickname, domain) + '/upload'
         formats = getImageExtensions()
         for ext in formats:
             if os.path.isfile(sharesImageFilename + '.' + ext):
@@ -490,7 +490,7 @@ def getSharesFeedForPerson(base_dir: str,
 
     handleDomain = removeDomainPort(domain)
     sharesFilename = \
-        acctDir(base_dir, nickname, handleDomain) + '/' + \
+        acct_dir(base_dir, nickname, handleDomain) + '/' + \
         sharesFileType + '.json'
 
     if headerOnly:
@@ -1192,7 +1192,7 @@ def sharesCatalogAccountEndpoint(base_dir: str, http_prefix: str,
     currDateStr = currDate.strftime("%Y-%m-%d")
 
     sharesFilename = \
-        acctDir(base_dir, nickname, domain) + '/' + sharesFileType + '.json'
+        acct_dir(base_dir, nickname, domain) + '/' + sharesFileType + '.json'
     if not os.path.isfile(sharesFilename):
         if debug:
             print(sharesFileType + '.json file not found: ' + sharesFilename)
@@ -1286,7 +1286,7 @@ def sharesCatalogEndpoint(base_dir: str, http_prefix: str,
             owner = local_actor_url(http_prefix, nickname, domain_full)
 
             sharesFilename = \
-                acctDir(base_dir, nickname, domain) + '/' + \
+                acct_dir(base_dir, nickname, domain) + '/' + \
                 sharesFileType + '.json'
             if not os.path.isfile(sharesFilename):
                 continue

@@ -29,7 +29,7 @@ from utils import getReplyIntervalHours
 from utils import canReplyTo
 from utils import getUserPaths
 from utils import get_base_content_from_post
-from utils import acctDir
+from utils import acct_dir
 from utils import removeDomainPort
 from utils import getPortFromDomain
 from utils import has_object_dict
@@ -143,7 +143,7 @@ def _storeLastPostId(base_dir: str, nickname: str, domain: str,
         postId = removeIdEnding(post_json_object['id'])
     if not actor:
         return
-    lastpostDir = acctDir(base_dir, nickname, domain) + '/lastpost'
+    lastpostDir = acct_dir(base_dir, nickname, domain) + '/lastpost'
     if not os.path.isdir(lastpostDir):
         os.mkdir(lastpostDir)
     actorFilename = lastpostDir + '/' + actor.replace('/', '#')
@@ -160,7 +160,7 @@ def _updateCachedHashtagSwarm(base_dir: str, nickname: str, domain: str,
     """Updates the hashtag swarm stored as a file
     """
     cachedHashtagSwarmFilename = \
-        acctDir(base_dir, nickname, domain) + '/.hashtagSwarm'
+        acct_dir(base_dir, nickname, domain) + '/.hashtagSwarm'
     saveSwarm = True
     if os.path.isfile(cachedHashtagSwarmFilename):
         lastModified = fileLastModified(cachedHashtagSwarmFilename)
@@ -325,7 +325,7 @@ def validInbox(base_dir: str, nickname: str, domain: str) -> bool:
     """Checks whether files were correctly saved to the inbox
     """
     domain = removeDomainPort(domain)
-    inboxDir = acctDir(base_dir, nickname, domain) + '/inbox'
+    inboxDir = acct_dir(base_dir, nickname, domain) + '/inbox'
     if not os.path.isdir(inboxDir):
         return True
     for subdir, dirs, files in os.walk(inboxDir):
@@ -347,7 +347,7 @@ def validInboxFilenames(base_dir: str, nickname: str, domain: str,
     domain names within saved post filenames
     """
     domain = removeDomainPort(domain)
-    inboxDir = acctDir(base_dir, nickname, domain) + '/inbox'
+    inboxDir = acct_dir(base_dir, nickname, domain) + '/inbox'
     if not os.path.isdir(inboxDir):
         print('Not an inbox directory: ' + inboxDir)
         return True
@@ -2771,7 +2771,7 @@ def _updateLastSeen(base_dir: str, handle: str, actor: str) -> None:
     nickname = handle.split('@')[0]
     domain = handle.split('@')[1]
     domain = removeDomainPort(domain)
-    accountPath = acctDir(base_dir, nickname, domain)
+    accountPath = acct_dir(base_dir, nickname, domain)
     if not os.path.isdir(accountPath):
         return
     if not isFollowingActor(base_dir, nickname, domain, actor):
@@ -2900,7 +2900,7 @@ def _isValidDM(base_dir: str, nickname: str, domain: str, port: int,
 
     # check for the flag file which indicates to
     # only receive DMs from people you are following
-    followDMsFilename = acctDir(base_dir, nickname, domain) + '/.followDMs'
+    followDMsFilename = acct_dir(base_dir, nickname, domain) + '/.followDMs'
     if not os.path.isfile(followDMsFilename):
         # dm index will be updated
         updateIndexList.append('dm')
@@ -2909,7 +2909,7 @@ def _isValidDM(base_dir: str, nickname: str, domain: str, port: int,
         return True
 
     # get the file containing following handles
-    followingFilename = acctDir(base_dir, nickname, domain) + '/following.txt'
+    followingFilename = acct_dir(base_dir, nickname, domain) + '/following.txt'
     # who is sending a DM?
     if not post_json_object.get('actor'):
         return False
@@ -4000,7 +4000,7 @@ def _receiveFollowRequest(session, base_dir: str, http_prefix: str,
         print('Follow request does not require approval ' + approveHandle)
         # update the followers
         accountToBeFollowed = \
-            acctDir(base_dir, nicknameToFollow, domainToFollow)
+            acct_dir(base_dir, nicknameToFollow, domainToFollow)
         if os.path.isdir(accountToBeFollowed):
             followersFilename = accountToBeFollowed + '/followers.txt'
 

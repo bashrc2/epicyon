@@ -14,7 +14,7 @@ from utils import has_object_dict
 from utils import getStatusNumber
 from utils import loadJson
 from utils import isAccountDir
-from utils import acctDir
+from utils import acct_dir
 from outbox import postMessageToOutbox
 
 
@@ -202,7 +202,7 @@ def removeScheduledPosts(base_dir: str, nickname: str, domain: str) -> None:
     """
     # remove the index
     scheduleIndexFilename = \
-        acctDir(base_dir, nickname, domain) + '/schedule.index'
+        acct_dir(base_dir, nickname, domain) + '/schedule.index'
     if os.path.isfile(scheduleIndexFilename):
         try:
             os.remove(scheduleIndexFilename)
@@ -210,7 +210,7 @@ def removeScheduledPosts(base_dir: str, nickname: str, domain: str) -> None:
             print('EX: removeScheduledPosts unable to delete ' +
                   scheduleIndexFilename)
     # remove the scheduled posts
-    scheduledDir = acctDir(base_dir, nickname, domain) + '/scheduled'
+    scheduledDir = acct_dir(base_dir, nickname, domain) + '/scheduled'
     if not os.path.isdir(scheduledDir):
         return
     for scheduledPostFilename in os.listdir(scheduledDir):

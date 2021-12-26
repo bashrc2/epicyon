@@ -33,7 +33,7 @@ __module_group__ = "Security"
 import os
 from utils import loadJson
 from utils import saveJson
-from utils import acctDir
+from utils import acct_dir
 from utils import local_actor_url
 
 
@@ -41,7 +41,7 @@ def E2EEremoveDevice(base_dir: str, nickname: str, domain: str,
                      deviceId: str) -> bool:
     """Unregisters a device for e2ee
     """
-    personDir = acctDir(base_dir, nickname, domain)
+    personDir = acct_dir(base_dir, nickname, domain)
     deviceFilename = personDir + '/devices/' + deviceId + '.json'
     if os.path.isfile(deviceFilename):
         try:
@@ -116,7 +116,7 @@ def E2EEaddDevice(base_dir: str, nickname: str, domain: str,
        '?' in deviceId or '#' in deviceId or \
        '.' in deviceId:
         return False
-    personDir = acctDir(base_dir, nickname, domain)
+    personDir = acct_dir(base_dir, nickname, domain)
     if not os.path.isdir(personDir):
         return False
     if not os.path.isdir(personDir + '/devices'):
@@ -143,7 +143,7 @@ def E2EEdevicesCollection(base_dir: str, nickname: str, domain: str,
                           domain_full: str, http_prefix: str) -> {}:
     """Returns a list of registered devices
     """
-    personDir = acctDir(base_dir, nickname, domain)
+    personDir = acct_dir(base_dir, nickname, domain)
     if not os.path.isdir(personDir):
         return {}
     personId = local_actor_url(http_prefix, nickname, domain_full)

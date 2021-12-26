@@ -8,7 +8,7 @@ __status__ = "Production"
 __module_group__ = "Core"
 
 import os
-from utils import acctDir
+from utils import acct_dir
 
 
 def setPetName(base_dir: str, nickname: str, domain: str,
@@ -23,7 +23,7 @@ def setPetName(base_dir: str, nickname: str, domain: str,
         handle = handle[1:]
     if petname.startswith('@'):
         petname = petname[1:]
-    petnamesFilename = acctDir(base_dir, nickname, domain) + '/petnames.txt'
+    petnamesFilename = acct_dir(base_dir, nickname, domain) + '/petnames.txt'
     entry = petname + ' ' + handle + '\n'
 
     # does this entry already exist?
@@ -75,7 +75,7 @@ def getPetName(base_dir: str, nickname: str, domain: str,
         return ''
     if handle.startswith('@'):
         handle = handle[1:]
-    petnamesFilename = acctDir(base_dir, nickname, domain) + '/petnames.txt'
+    petnamesFilename = acct_dir(base_dir, nickname, domain) + '/petnames.txt'
 
     if not os.path.isfile(petnamesFilename):
         return ''
@@ -102,7 +102,7 @@ def _getPetNameHandle(base_dir: str, nickname: str, domain: str,
     """
     if petname.startswith('@'):
         petname = petname[1:]
-    petnamesFilename = acctDir(base_dir, nickname, domain) + '/petnames.txt'
+    petnamesFilename = acct_dir(base_dir, nickname, domain) + '/petnames.txt'
 
     if not os.path.isfile(petnamesFilename):
         return ''

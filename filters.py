@@ -8,13 +8,13 @@ __status__ = "Production"
 __module_group__ = "Moderation"
 
 import os
-from utils import acctDir
+from utils import acct_dir
 
 
 def addFilter(base_dir: str, nickname: str, domain: str, words: str) -> bool:
     """Adds a filter for particular words within the content of a incoming posts
     """
-    filtersFilename = acctDir(base_dir, nickname, domain) + '/filters.txt'
+    filtersFilename = acct_dir(base_dir, nickname, domain) + '/filters.txt'
     if os.path.isfile(filtersFilename):
         if words in open(filtersFilename).read():
             return False
@@ -50,7 +50,7 @@ def removeFilter(base_dir: str, nickname: str, domain: str,
                  words: str) -> bool:
     """Removes a word filter
     """
-    filtersFilename = acctDir(base_dir, nickname, domain) + '/filters.txt'
+    filtersFilename = acct_dir(base_dir, nickname, domain) + '/filters.txt'
     if not os.path.isfile(filtersFilename):
         return False
     if words not in open(filtersFilename).read():
@@ -154,7 +154,7 @@ def isFilteredBio(base_dir: str, nickname: str, domain: str, bio: str) -> bool:
         return False
 
     accountFiltersFilename = \
-        acctDir(base_dir, nickname, domain) + '/filters_bio.txt'
+        acct_dir(base_dir, nickname, domain) + '/filters_bio.txt'
     return _isFilteredBase(accountFiltersFilename, bio)
 
 
@@ -172,11 +172,11 @@ def isFiltered(base_dir: str, nickname: str, domain: str,
         return False
 
     # optionally remove retweets
-    removeTwitter = acctDir(base_dir, nickname, domain) + '/.removeTwitter'
+    removeTwitter = acct_dir(base_dir, nickname, domain) + '/.removeTwitter'
     if os.path.isfile(removeTwitter):
         if _isTwitterPost(content):
             return True
 
     accountFiltersFilename = \
-        acctDir(base_dir, nickname, domain) + '/filters.txt'
+        acct_dir(base_dir, nickname, domain) + '/filters.txt'
     return _isFilteredBase(accountFiltersFilename, content)

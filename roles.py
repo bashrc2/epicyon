@@ -12,7 +12,7 @@ from utils import loadJson
 from utils import saveJson
 from utils import getStatusNumber
 from utils import removeDomainPort
-from utils import acctDir
+from utils import acct_dir
 
 
 def _clearRoleStatus(base_dir: str, role: str) -> None:
@@ -99,7 +99,7 @@ def _addRole(base_dir: str, nickname: str, domain: str,
                     f.write(roleNickname + '\n')
     else:
         with open(roleFile, 'w+') as f:
-            accountDir = acctDir(base_dir, nickname, domain)
+            accountDir = acct_dir(base_dir, nickname, domain)
             if os.path.isdir(accountDir):
                 f.write(nickname + '\n')
 
@@ -231,7 +231,7 @@ def setRole(base_dir: str, nickname: str, domain: str,
     # avoid giant strings
     if len(role) > 128:
         return False
-    actorFilename = acctDir(base_dir, nickname, domain) + '.json'
+    actorFilename = acct_dir(base_dir, nickname, domain) + '.json'
     if not os.path.isfile(actorFilename):
         return False
 

@@ -13,7 +13,7 @@ from utils import loadJson
 from utils import saveJson
 from utils import getImageExtensions
 from utils import copytree
-from utils import acctDir
+from utils import acct_dir
 from utils import dangerousSVG
 from utils import local_actor_url
 from shutil import copyfile
@@ -799,7 +799,7 @@ def setNewsAvatar(base_dir: str, name: str,
             print('EX: setNewsAvatar unable to delete ' + filename)
     if os.path.isdir(base_dir + '/cache/avatars'):
         copyfile(newFilename, filename)
-    accountDir = acctDir(base_dir, nickname, domain)
+    accountDir = acct_dir(base_dir, nickname, domain)
     copyfile(newFilename, accountDir + '/avatar.png')
 
 

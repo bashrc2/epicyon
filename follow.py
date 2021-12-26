@@ -27,7 +27,7 @@ from utils import loadJson
 from utils import saveJson
 from utils import isAccountDir
 from utils import getUserPaths
-from utils import acctDir
+from utils import acct_dir
 from utils import hasGroupType
 from utils import local_actor_url
 from acceptreject import createAccept
@@ -221,7 +221,7 @@ def getFollowerDomains(base_dir: str, nickname: str, domain: str) -> []:
     """Returns a list of domains for followers
     """
     domain = removeDomainPort(domain)
-    followersFile = acctDir(base_dir, nickname, domain) + '/followers.txt'
+    followersFile = acct_dir(base_dir, nickname, domain) + '/followers.txt'
     if not os.path.isfile(followersFile):
         return []
 
@@ -254,7 +254,7 @@ def isFollowerOfPerson(base_dir: str, nickname: str, domain: str,
         print('No followerNickname for ' + followerDomain)
         return False
     domain = removeDomainPort(domain)
-    followersFile = acctDir(base_dir, nickname, domain) + '/followers.txt'
+    followersFile = acct_dir(base_dir, nickname, domain) + '/followers.txt'
     if not os.path.isfile(followersFile):
         return False
     handle = followerNickname + '@' + followerDomain
@@ -749,7 +749,7 @@ def followedAccountAccepts(session, base_dir: str, http_prefix: str,
     if removeFollowActivity:
         # remove the follow request json
         followActivityfilename = \
-            acctDir(base_dir, nicknameToFollow, domainToFollow) + \
+            acct_dir(base_dir, nicknameToFollow, domainToFollow) + \
             '/requests/' + \
             nickname + '@' + domain + '.follow'
         if os.path.isfile(followActivityfilename):
@@ -797,7 +797,7 @@ def followedAccountRejects(session, base_dir: str, http_prefix: str,
 
     # get the json for the original follow request
     followActivityfilename = \
-        acctDir(base_dir, nicknameToFollow, domainToFollow) + '/requests/' + \
+        acct_dir(base_dir, nicknameToFollow, domainToFollow) + '/requests/' + \
         nickname + '@' + domain + '.follow'
     followJson = loadJson(followActivityfilename)
     if not followJson:
@@ -886,7 +886,7 @@ def sendFollowRequest(session, base_dir: str,
 
     # remove follow handle from unfollowed.txt
     unfollowedFilename = \
-        acctDir(base_dir, nickname, domain) + '/unfollowed.txt'
+        acct_dir(base_dir, nickname, domain) + '/unfollowed.txt'
     if os.path.isfile(unfollowedFilename):
         if followHandle in open(unfollowedFilename).read():
             unfollowedFile = None
@@ -1432,7 +1432,7 @@ def followerApprovalActive(base_dir: str, nickname: str, domain: str) -> bool:
     """Returns true if the given account requires follower approval
     """
     manuallyApprovesFollowers = False
-    actorFilename = acctDir(base_dir, nickname, domain) + '.json'
+    actorFilename = acct_dir(base_dir, nickname, domain) + '.json'
     if os.path.isfile(actorFilename):
         actor_json = loadJson(actorFilename)
         if actor_json:

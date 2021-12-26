@@ -30,7 +30,7 @@ from utils import locatePost
 from utils import evilIncarnate
 from utils import getDomainFromActor
 from utils import getNicknameFromActor
-from utils import acctDir
+from utils import acct_dir
 from utils import local_actor_url
 from utils import hasActor
 from conversation import muteConversation
@@ -80,14 +80,14 @@ def addBlock(base_dir: str, nickname: str, domain: str,
         return False
 
     domain = removeDomainPort(domain)
-    blockingFilename = acctDir(base_dir, nickname, domain) + '/blocking.txt'
+    blockingFilename = acct_dir(base_dir, nickname, domain) + '/blocking.txt'
     blockHandle = blockNickname + '@' + blockDomain
     if os.path.isfile(blockingFilename):
         if blockHandle + '\n' in open(blockingFilename).read():
             return False
 
     # if we are following then unfollow
-    followingFilename = acctDir(base_dir, nickname, domain) + '/following.txt'
+    followingFilename = acct_dir(base_dir, nickname, domain) + '/following.txt'
     if os.path.isfile(followingFilename):
         if blockHandle + '\n' in open(followingFilename).read():
             followingStr = ''
@@ -109,7 +109,7 @@ def addBlock(base_dir: str, nickname: str, domain: str,
                 return False
 
     # if they are a follower then remove them
-    followersFilename = acctDir(base_dir, nickname, domain) + '/followers.txt'
+    followersFilename = acct_dir(base_dir, nickname, domain) + '/followers.txt'
     if os.path.isfile(followersFilename):
         if blockHandle + '\n' in open(followersFilename).read():
             followersStr = ''
@@ -203,7 +203,7 @@ def removeBlock(base_dir: str, nickname: str, domain: str,
     """Unblock the given account
     """
     domain = removeDomainPort(domain)
-    unblockingFilename = acctDir(base_dir, nickname, domain) + '/blocking.txt'
+    unblockingFilename = acct_dir(base_dir, nickname, domain) + '/blocking.txt'
     unblockHandle = unblockNickname + '@' + unblockDomain
     if os.path.isfile(unblockingFilename):
         if unblockHandle in open(unblockingFilename).read():
@@ -397,7 +397,7 @@ def isBlocked(base_dir: str, nickname: str, domain: str,
                 return True
 
     # account level allow list
-    accountDir = acctDir(base_dir, nickname, domain)
+    accountDir = acct_dir(base_dir, nickname, domain)
     allowFilename = accountDir + '/allowedinstances.txt'
     if os.path.isfile(allowFilename):
         if blockDomain not in open(allowFilename).read():

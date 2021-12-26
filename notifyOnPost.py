@@ -9,7 +9,7 @@ __module_group__ = "Calendar"
 
 import os
 from utils import removeDomainPort
-from utils import acctDir
+from utils import acct_dir
 
 
 def _notifyOnPostArrival(base_dir: str, nickname: str, domain: str,
@@ -21,7 +21,7 @@ def _notifyOnPostArrival(base_dir: str, nickname: str, domain: str,
     """
     # check that a following file exists
     domain = removeDomainPort(domain)
-    followingFilename = acctDir(base_dir, nickname, domain) + '/following.txt'
+    followingFilename = acct_dir(base_dir, nickname, domain) + '/following.txt'
     if not os.path.isfile(followingFilename):
         print("WARN: following.txt doesn't exist for " +
               nickname + '@' + domain)
@@ -34,7 +34,7 @@ def _notifyOnPostArrival(base_dir: str, nickname: str, domain: str,
         return
 
     notifyOnPostFilename = \
-        acctDir(base_dir, nickname, domain) + '/notifyOnPost.txt'
+        acct_dir(base_dir, nickname, domain) + '/notifyOnPost.txt'
 
     # get the contents of the notifyOnPost file, which is
     # a set of handles
@@ -95,7 +95,7 @@ def notifyWhenPersonPosts(base_dir: str, nickname: str, domain: str,
     if followingNickname == nickname and followingDomain == domain:
         return False
     notifyOnPostFilename = \
-        acctDir(base_dir, nickname, domain) + '/notifyOnPost.txt'
+        acct_dir(base_dir, nickname, domain) + '/notifyOnPost.txt'
     handle = followingNickname + '@' + followingDomain
     if not os.path.isfile(notifyOnPostFilename):
         # create a new notifyOnPost file

@@ -32,7 +32,7 @@ from utils import locatePost
 from utils import loadJson
 from utils import firstParagraphFromString
 from utils import getActorPropertyUrl
-from utils import acctDir
+from utils import acct_dir
 from posts import createBlogsTimeline
 from newswire import rss2Header
 from newswire import rss2Footer
@@ -54,7 +54,7 @@ def _noOfBlogReplies(base_dir: str, http_prefix: str, translate: {},
     boxFound = False
     for postBox in tryPostBox:
         postFilename = \
-            acctDir(base_dir, nickname, domain) + '/' + postBox + '/' + \
+            acct_dir(base_dir, nickname, domain) + '/' + postBox + '/' + \
             postId.replace('/', '#') + '.replies'
         if os.path.isfile(postFilename):
             boxFound = True
@@ -63,7 +63,7 @@ def _noOfBlogReplies(base_dir: str, http_prefix: str, translate: {},
         # post may exist but has no replies
         for postBox in tryPostBox:
             postFilename = \
-                acctDir(base_dir, nickname, domain) + '/' + postBox + '/' + \
+                acct_dir(base_dir, nickname, domain) + '/' + postBox + '/' + \
                 postId.replace('/', '#')
             if os.path.isfile(postFilename):
                 return 1
@@ -123,7 +123,7 @@ def _getBlogReplies(base_dir: str, http_prefix: str, translate: {},
     boxFound = False
     for postBox in tryPostBox:
         postFilename = \
-            acctDir(base_dir, nickname, domain) + '/' + postBox + '/' + \
+            acct_dir(base_dir, nickname, domain) + '/' + postBox + '/' + \
             postId.replace('/', '#') + '.replies'
         if os.path.isfile(postFilename):
             boxFound = True
@@ -132,10 +132,10 @@ def _getBlogReplies(base_dir: str, http_prefix: str, translate: {},
         # post may exist but has no replies
         for postBox in tryPostBox:
             postFilename = \
-                acctDir(base_dir, nickname, domain) + '/' + postBox + '/' + \
+                acct_dir(base_dir, nickname, domain) + '/' + postBox + '/' + \
                 postId.replace('/', '#') + '.json'
             if os.path.isfile(postFilename):
-                postFilename = acctDir(base_dir, nickname, domain) + \
+                postFilename = acct_dir(base_dir, nickname, domain) + \
                     '/postcache/' + \
                     postId.replace('/', '#') + '.html'
                 if os.path.isfile(postFilename):
@@ -159,7 +159,7 @@ def _getBlogReplies(base_dir: str, http_prefix: str, translate: {},
             replyPostId = replyPostId.replace('\n', '').replace('\r', '')
             replyPostId = replyPostId.replace('.json', '')
             replyPostId = replyPostId.replace('.replies', '')
-            postFilename = acctDir(base_dir, nickname, domain) + \
+            postFilename = acct_dir(base_dir, nickname, domain) + \
                 '/postcache/' + \
                 replyPostId.replace('/', '#') + '.html'
             if not os.path.isfile(postFilename):
@@ -525,7 +525,7 @@ def htmlBlogPage(authorized: bool, session,
     blogStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
     _htmlBlogRemoveCwButton(blogStr, translate)
 
-    blogsIndex = acctDir(base_dir, nickname, domain) + '/tlblogs.index'
+    blogsIndex = acct_dir(base_dir, nickname, domain) + '/tlblogs.index'
     if not os.path.isfile(blogsIndex):
         return blogStr + htmlFooter()
 
@@ -615,7 +615,7 @@ def htmlBlogPageRSS2(authorized: bool, session,
         blogRSS2 = rss2Header(http_prefix, nickname, domain_full,
                               'Blog', translate)
 
-    blogsIndex = acctDir(base_dir, nickname, domain) + '/tlblogs.index'
+    blogsIndex = acct_dir(base_dir, nickname, domain) + '/tlblogs.index'
     if not os.path.isfile(blogsIndex):
         if includeHeader:
             return blogRSS2 + rss2Footer()
@@ -667,7 +667,7 @@ def htmlBlogPageRSS3(authorized: bool, session,
 
     blogRSS3 = ''
 
-    blogsIndex = acctDir(base_dir, nickname, domain) + '/tlblogs.index'
+    blogsIndex = acct_dir(base_dir, nickname, domain) + '/tlblogs.index'
     if not os.path.isfile(blogsIndex):
         return blogRSS3
 
@@ -937,7 +937,7 @@ def pathContainsBlogLink(base_dir: str,
     if not userEnding2[1].isdigit():
         return None, None
     # check for blog posts
-    blogIndexFilename = acctDir(base_dir, nickname, domain) + '/tlblogs.index'
+    blogIndexFilename = acct_dir(base_dir, nickname, domain) + '/tlblogs.index'
     if not os.path.isfile(blogIndexFilename):
         return None, None
     if '#' + userEnding2[1] + '.' not in open(blogIndexFilename).read():

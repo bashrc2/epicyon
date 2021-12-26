@@ -15,7 +15,7 @@ from utils import loadJson
 from utils import removeDomainPort
 from utils import getPortFromDomain
 from utils import getUserPaths
-from utils import acctDir
+from utils import acct_dir
 from threads import threadWithTrace
 
 
@@ -31,7 +31,7 @@ def manualDenyFollowRequest(session, base_dir: str,
                             signing_priv_key_pem: str) -> None:
     """Manually deny a follow request
     """
-    accountsDir = acctDir(base_dir, nickname, domain)
+    accountsDir = acct_dir(base_dir, nickname, domain)
 
     # has this handle already been rejected?
     rejectedFollowsFilename = accountsDir + '/followrejects.txt'

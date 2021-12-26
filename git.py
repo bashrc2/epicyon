@@ -9,7 +9,7 @@ __module_group__ = "Profile Metadata"
 
 import os
 import html
-from utils import acctDir
+from utils import acct_dir
 from utils import hasObjectStringType
 
 
@@ -33,7 +33,7 @@ def _getGitProjectName(base_dir: str, nickname: str, domain: str,
     holder wants to receive
     """
     gitProjectsFilename = \
-        acctDir(base_dir, nickname, domain) + '/gitprojects.txt'
+        acct_dir(base_dir, nickname, domain) + '/gitprojects.txt'
     if not os.path.isfile(gitProjectsFilename):
         return None
     subjectLineWords = subject.lower().split(' ')
@@ -186,7 +186,7 @@ def receiveGitPatch(base_dir: str, nickname: str, domain: str,
     patchLines = patchStr.split('\n')
     patchFilename = None
     projectDir = None
-    patchesDir = acctDir(base_dir, nickname, domain) + '/patches'
+    patchesDir = acct_dir(base_dir, nickname, domain) + '/patches'
     # get the subject line and turn it into a filename
     for line in patchLines:
         if line.startswith('Subject:'):
@@ -212,7 +212,7 @@ def receiveGitPatch(base_dir: str, nickname: str, domain: str,
         with open(patchFilename, 'w+') as patchFile:
             patchFile.write(patchStr)
             patchNotifyFilename = \
-                acctDir(base_dir, nickname, domain) + '/.newPatchContent'
+                acct_dir(base_dir, nickname, domain) + '/.newPatchContent'
             with open(patchNotifyFilename, 'w+') as patchFile:
                 patchFile.write(patchStr)
                 return True

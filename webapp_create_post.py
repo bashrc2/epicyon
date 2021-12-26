@@ -14,7 +14,7 @@ from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import getMediaFormats
 from utils import getConfigParam
-from utils import acctDir
+from utils import acct_dir
 from utils import getCurrencies
 from utils import getCategoryTypes
 from webapp_utils import getBannerFile
@@ -32,7 +32,7 @@ def _htmlFollowingDataList(base_dir: str, nickname: str,
     """
     listStr = '<datalist id="followingHandles">\n'
     followingFilename = \
-        acctDir(base_dir, nickname, domain) + '/following.txt'
+        acct_dir(base_dir, nickname, domain) + '/following.txt'
     msg = None
     if os.path.isfile(followingFilename):
         with open(followingFilename, 'r') as followingFile:
@@ -43,7 +43,7 @@ def _htmlFollowingDataList(base_dir: str, nickname: str,
     if msg:
         # include petnames
         petnamesFilename = \
-            acctDir(base_dir, nickname, domain) + '/petnames.txt'
+            acct_dir(base_dir, nickname, domain) + '/petnames.txt'
         if os.path.isfile(petnamesFilename):
             followingList = []
             with open(petnamesFilename, 'r') as petnamesFile:
@@ -572,7 +572,7 @@ def htmlNewPost(cssCache: {}, media_instance: bool, translate: {},
     citationsStr = ''
     if endpoint == 'newblog':
         citationsFilename = \
-            acctDir(base_dir, nickname, domain) + '/.citations.txt'
+            acct_dir(base_dir, nickname, domain) + '/.citations.txt'
         if os.path.isfile(citationsFilename):
             citationsStr = '<div class="container">\n'
             citationsStr += '<p><label class="labels">' + \

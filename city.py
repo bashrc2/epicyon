@@ -12,7 +12,7 @@ import datetime
 import random
 import math
 from random import randint
-from utils import acctDir
+from utils import acct_dir
 
 # states which the simulated city dweller can be in
 PERSON_SLEEP = 0
@@ -314,7 +314,7 @@ def getSpoofedCity(city: str, base_dir: str,
     image metadata
     """
     city = ''
-    cityFilename = acctDir(base_dir, nickname, domain) + '/city.txt'
+    cityFilename = acct_dir(base_dir, nickname, domain) + '/city.txt'
     if os.path.isfile(cityFilename):
         try:
             with open(cityFilename, 'r') as fp:

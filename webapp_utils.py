@@ -17,7 +17,7 @@ from utils import getProtocolPrefixes
 from utils import loadJson
 from utils import getCachedPostFilename
 from utils import getConfigParam
-from utils import acctDir
+from utils import acct_dir
 from utils import getNicknameFromActor
 from utils import isfloat
 from utils import getAudioExtensions
@@ -336,7 +336,7 @@ def scheduledPostsExist(base_dir: str, nickname: str, domain: str) -> bool:
     """Returns true if there are posts scheduled to be delivered
     """
     scheduleIndexFilename = \
-        acctDir(base_dir, nickname, domain) + '/schedule.index'
+        acct_dir(base_dir, nickname, domain) + '/schedule.index'
     if not os.path.isfile(scheduleIndexFilename):
         return False
     if '#users#' in open(scheduleIndexFilename).read():
@@ -496,28 +496,28 @@ def _getImageFile(base_dir: str, name: str, directory: str,
 
 def getBannerFile(base_dir: str,
                   nickname: str, domain: str, theme: str) -> (str, str):
-    accountDir = acctDir(base_dir, nickname, domain)
+    accountDir = acct_dir(base_dir, nickname, domain)
     return _getImageFile(base_dir, 'banner', accountDir,
                          nickname, domain, theme)
 
 
 def getSearchBannerFile(base_dir: str,
                         nickname: str, domain: str, theme: str) -> (str, str):
-    accountDir = acctDir(base_dir, nickname, domain)
+    accountDir = acct_dir(base_dir, nickname, domain)
     return _getImageFile(base_dir, 'search_banner', accountDir,
                          nickname, domain, theme)
 
 
 def getLeftImageFile(base_dir: str,
                      nickname: str, domain: str, theme: str) -> (str, str):
-    accountDir = acctDir(base_dir, nickname, domain)
+    accountDir = acct_dir(base_dir, nickname, domain)
     return _getImageFile(base_dir, 'left_col_image', accountDir,
                          nickname, domain, theme)
 
 
 def getRightImageFile(base_dir: str,
                       nickname: str, domain: str, theme: str) -> (str, str):
-    accountDir = acctDir(base_dir, nickname, domain)
+    accountDir = acct_dir(base_dir, nickname, domain)
     return _getImageFile(base_dir, 'right_col_image',
                          accountDir, nickname, domain, theme)
 
@@ -1510,7 +1510,7 @@ def htmlShowShare(base_dir: str, domain: str, nickname: str,
     if '://' + domain_full + '/' in shareUrl:
         # shared item on this instance
         sharesFilename = \
-            acctDir(base_dir, contactNickname, domain) + '/' + \
+            acct_dir(base_dir, contactNickname, domain) + '/' + \
             sharesFileType + '.json'
         if not os.path.isfile(sharesFilename):
             return None

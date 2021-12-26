@@ -22,7 +22,7 @@ from utils import getLinkPrefixes
 from utils import dangerousMarkup
 from utils import isPGPEncrypted
 from utils import containsPGPPublicKey
-from utils import acctDir
+from utils import acct_dir
 from utils import isfloat
 from utils import getCurrencies
 from utils import removeHtml
@@ -223,7 +223,7 @@ def switchWords(base_dir: str, nickname: str, domain: str, content: str,
 
     if not rules:
         switchWordsFilename = \
-            acctDir(base_dir, nickname, domain) + '/replacewords.txt'
+            acct_dir(base_dir, nickname, domain) + '/replacewords.txt'
         if not os.path.isfile(switchWordsFilename):
             return content
         try:
@@ -784,7 +784,7 @@ def _loadAutoTags(base_dir: str, nickname: str, domain: str) -> []:
     """Loads automatic tags file and returns a list containing
     the lines of the file
     """
-    filename = acctDir(base_dir, nickname, domain) + '/autotags.txt'
+    filename = acct_dir(base_dir, nickname, domain) + '/autotags.txt'
     if not os.path.isfile(filename):
         return []
     try:
@@ -856,7 +856,7 @@ def addHtmlTags(base_dir: str, http_prefix: str,
     emojiDict = {}
     originalDomain = domain
     domain = removeDomainPort(domain)
-    followingFilename = acctDir(base_dir, nickname, domain) + '/following.txt'
+    followingFilename = acct_dir(base_dir, nickname, domain) + '/following.txt'
 
     # read the following list so that we can detect just @nick
     # in addition to @nick@domain

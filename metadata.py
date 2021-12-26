@@ -23,8 +23,8 @@ def _getStatusCount(base_dir: str) -> int:
         for acct in dirs:
             if not isAccountDir(acct):
                 continue
-            acctDir = os.path.join(accountsDir, acct + '/outbox')
-            for subdir2, dirs2, files2 in os.walk(acctDir):
+            acct_dir = os.path.join(accountsDir, acct + '/outbox')
+            for subdir2, dirs2, files2 in os.walk(acct_dir):
                 statusCtr += len(files2)
                 break
         break

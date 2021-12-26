@@ -67,7 +67,7 @@ from utils import locateNewsArrival
 from utils import votesOnNewswireItem
 from utils import removeHtml
 from utils import dangerousMarkup
-from utils import acctDir
+from utils import acct_dir
 from utils import local_actor_url
 from media import attachMedia
 from media import replaceYouTube
@@ -1009,7 +1009,7 @@ def _loadAutoCW(base_dir: str, nickname: str, domain: str) -> []:
     """Loads automatic CWs file and returns a list containing
     the lines of the file
     """
-    filename = acctDir(base_dir, nickname, domain) + '/autocw.txt'
+    filename = acct_dir(base_dir, nickname, domain) + '/autocw.txt'
     if not os.path.isfile(filename):
         return []
     with open(filename, 'r') as f:
@@ -1638,7 +1638,7 @@ def pinPost(base_dir: str, nickname: str, domain: str,
             pinnedContent: str, followersOnly: bool) -> None:
     """Pins the given post Id to the profile of then given account
     """
-    accountDir = acctDir(base_dir, nickname, domain)
+    accountDir = acct_dir(base_dir, nickname, domain)
     pinnedFilename = accountDir + '/pinToProfile.txt'
     try:
         with open(pinnedFilename, 'w+') as pinFile:
@@ -1650,7 +1650,7 @@ def pinPost(base_dir: str, nickname: str, domain: str,
 def undoPinnedPost(base_dir: str, nickname: str, domain: str) -> None:
     """Removes pinned content for then given account
     """
-    accountDir = acctDir(base_dir, nickname, domain)
+    accountDir = acct_dir(base_dir, nickname, domain)
     pinnedFilename = accountDir + '/pinToProfile.txt'
     if os.path.isfile(pinnedFilename):
         try:
@@ -1664,7 +1664,7 @@ def getPinnedPostAsJson(base_dir: str, http_prefix: str,
                         domain_full: str, system_language: str) -> {}:
     """Returns the pinned profile post as json
     """
-    accountDir = acctDir(base_dir, nickname, domain)
+    accountDir = acct_dir(base_dir, nickname, domain)
     pinnedFilename = accountDir + '/pinToProfile.txt'
     pinnedPostJson = {}
     actor = local_actor_url(http_prefix, nickname, domain_full)
@@ -1728,7 +1728,7 @@ def regenerateIndexForBox(base_dir: str,
     """Generates an index for the given box if it doesn't exist
     Used by unit tests to artificially create an index
     """
-    boxDir = acctDir(base_dir, nickname, domain) + '/' + boxName
+    boxDir = acct_dir(base_dir, nickname, domain) + '/' + boxName
     boxIndexFilename = boxDir + '.index'
 
     if not os.path.isdir(boxDir):
@@ -1810,7 +1810,7 @@ def _appendCitationsToBlogPost(base_dir: str,
     """
     # append citations tags, stored in a file
     citationsFilename = \
-        acctDir(base_dir, nickname, domain) + '/.citations.txt'
+        acct_dir(base_dir, nickname, domain) + '/.citations.txt'
     if not os.path.isfile(citationsFilename):
         return
     citationsSeparator = '#####'
@@ -3724,7 +3724,7 @@ def _createBoxIndexed(recentPostsCache: {},
     postUrlsInBox = []
 
     indexFilename = \
-        acctDir(base_dir, timelineNickname, originalDomain) + \
+        acct_dir(base_dir, timelineNickname, originalDomain) + \
         '/' + indexBoxName + '.index'
     totalPostsCount = 0
     postsAddedToTimeline = 0
@@ -4444,7 +4444,7 @@ def populateRepliesJson(base_dir: str, nickname: str, domain: str,
             for boxname in repliesBoxes:
                 messageId2 = messageId.replace('\n', '').replace('\r', '')
                 searchFilename = \
-                    acctDir(base_dir, nickname, domain) + '/' + \
+                    acct_dir(base_dir, nickname, domain) + '/' + \
                     boxname + '/' + \
                     messageId2.replace('/', '#') + '.json'
                 if os.path.isfile(searchFilename):
@@ -4747,7 +4747,7 @@ def isMuted(base_dir: str, nickname: str, domain: str, postId: str,
     """
     if conversationId:
         convMutedFilename = \
-            acctDir(base_dir, nickname, domain) + '/conversation/' + \
+            acct_dir(base_dir, nickname, domain) + '/conversation/' + \
             conversationId.replace('/', '#') + '.muted'
         if os.path.isfile(convMutedFilename):
             return True
@@ -5108,7 +5108,7 @@ def postIsMuted(base_dir: str, nickname: str, domain: str,
         return isMuted
 
     isMuted = False
-    postDir = acctDir(base_dir, nickname, domain)
+    postDir = acct_dir(base_dir, nickname, domain)
     muteFilename = \
         postDir + '/inbox/' + messageId.replace('/', '#') + '.json.muted'
     if os.path.isfile(muteFilename):
@@ -5206,7 +5206,7 @@ def editedPostFilename(base_dir: str, nickname: str, domain: str,
         return ''
     actor = post_json_object['object']['attributedTo']
     actorFilename = \
-        acctDir(base_dir, nickname, domain) + '/lastpost/' + \
+        acct_dir(base_dir, nickname, domain) + '/lastpost/' + \
         actor.replace('/', '#')
     if not os.path.isfile(actorFilename):
         return ''

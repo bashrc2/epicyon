@@ -21,7 +21,7 @@ from utils import getNicknameFromActor
 from utils import isEditor
 from utils import getConfigParam
 from utils import removeDomainPort
-from utils import acctDir
+from utils import acct_dir
 from posts import isModerator
 from newswire import getNewswireFaviconUrl
 from webapp_utils import getRightImageFile
@@ -343,7 +343,7 @@ def htmlCitations(base_dir: str, nickname: str, domain: str,
     # create a list of dates for citations
     # these can then be used to re-select checkboxes later
     citationsFilename = \
-        acctDir(base_dir, nickname, domain) + '/.citations.txt'
+        acct_dir(base_dir, nickname, domain) + '/.citations.txt'
     citationsSelected = []
     if os.path.isfile(citationsFilename):
         citationsSeparator = '#####'

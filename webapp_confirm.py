@@ -16,7 +16,7 @@ from utils import locatePost
 from utils import loadJson
 from utils import getConfigParam
 from utils import getAltPath
-from utils import acctDir
+from utils import acct_dir
 from webapp_utils import setCustomBackground
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
@@ -116,7 +116,7 @@ def htmlConfirmRemoveSharedItem(cssCache: {}, translate: {}, base_dir: str,
     domain, port = getDomainFromActor(actor)
     domain_full = getFullDomain(domain, port)
     sharesFile = \
-        acctDir(base_dir, nickname, domain) + '/' + sharesFileType + '.json'
+        acct_dir(base_dir, nickname, domain) + '/' + sharesFileType + '.json'
     if not os.path.isfile(sharesFile):
         print('ERROR: no ' + sharesFileType + ' file ' + sharesFile)
         return None
