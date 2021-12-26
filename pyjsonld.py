@@ -109,7 +109,7 @@ RDF_FIRST = RDF + 'first'
 RDF_REST = RDF + 'rest'
 RDF_NIL = RDF + 'nil'
 RDF_TYPE = RDF + 'type'
-RDF_LANGSTRING = RDF + 'langString'
+RDF_LANGSTRING = RDF + 'lang_string'
 
 # JSON-LD keywords
 KEYWORDS = [
