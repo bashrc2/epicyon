@@ -1506,8 +1506,8 @@ def removeModerationPostFromIndex(base_dir: str, postUrl: str,
                                   ' from moderation index')
 
 
-def _isReplyToBlogPost(base_dir: str, nickname: str, domain: str,
-                       post_json_object: str):
+def _is_reply_to_blog_post(base_dir: str, nickname: str, domain: str,
+                           post_json_object: str):
     """Is the given post a reply to a blog post?
     """
     if not has_object_dict(post_json_object):
@@ -1516,13 +1516,13 @@ def _isReplyToBlogPost(base_dir: str, nickname: str, domain: str,
         return False
     if not isinstance(post_json_object['object']['inReplyTo'], str):
         return False
-    blogsIndexFilename = \
+    blogs_index_filename = \
         acct_dir(base_dir, nickname, domain) + '/tlblogs.index'
-    if not os.path.isfile(blogsIndexFilename):
+    if not os.path.isfile(blogs_index_filename):
         return False
-    postId = removeIdEnding(post_json_object['object']['inReplyTo'])
-    postId = postId.replace('/', '#')
-    if postId in open(blogsIndexFilename).read():
+    post_id = removeIdEnding(post_json_object['object']['inReplyTo'])
+    post_id = post_id.replace('/', '#')
+    if post_id in open(blogs_index_filename).read():
         return True
     return False
 
@@ -1736,8 +1736,8 @@ def deletePost(base_dir: str, http_prefix: str,
         return
 
     # don't remove replies to blog posts
-    if _isReplyToBlogPost(base_dir, nickname, domain,
-                          post_json_object):
+    if _is_reply_to_blog_post(base_dir, nickname, domain,
+                              post_json_object):
         return
 
     # remove from recent posts cache in memory
@@ -2613,7 +2613,7 @@ def isDM(post_json_object: {}) -> bool:
     return True
 
 
-def isReply(post_json_object: {}, actor: str) -> bool:
+def is_reply(post_json_object: {}, actor: str) -> bool:
     """Returns true if the given post is a reply to the given actor
     """
     if post_json_object['type'] != 'Create':

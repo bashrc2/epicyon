@@ -90,7 +90,7 @@ from utils import updateAnnounceCollection
 from utils import undoAnnounceCollectionEntry
 from utils import dangerousMarkup
 from utils import isDM
-from utils import isReply
+from utils import is_reply
 from utils import has_actor
 from httpsig import messageContentDigest
 from posts import editedPostFilename
@@ -3079,13 +3079,13 @@ def _createReplyNotificationFile(base_dir: str, nickname: str, domain: str,
     The file can then be used by other systems to create a notification
     xmpp, matrix, email, etc
     """
-    isReplyToMutedPost = False
+    is_replyToMutedPost = False
     if postIsDM:
-        return isReplyToMutedPost
-    if not isReply(post_json_object, actor):
-        return isReplyToMutedPost
+        return is_replyToMutedPost
+    if not is_reply(post_json_object, actor):
+        return is_replyToMutedPost
     if nickname == 'inbox':
-        return isReplyToMutedPost
+        return is_replyToMutedPost
     # replies index will be updated
     updateIndexList.append('tlreplies')
 
@@ -3094,12 +3094,12 @@ def _createReplyNotificationFile(base_dir: str, nickname: str, domain: str,
         conversationId = post_json_object['object']['conversation']
 
     if not post_json_object['object'].get('inReplyTo'):
-        return isReplyToMutedPost
+        return is_replyToMutedPost
     inReplyTo = post_json_object['object']['inReplyTo']
     if not inReplyTo:
-        return isReplyToMutedPost
+        return is_replyToMutedPost
     if not isinstance(inReplyTo, str):
-        return isReplyToMutedPost
+        return is_replyToMutedPost
     if not isMuted(base_dir, nickname, domain, inReplyTo, conversationId):
         # check if the reply is within the allowed time period
         # after publication
@@ -3117,8 +3117,8 @@ def _createReplyNotificationFile(base_dir: str, nickname: str, domain: str,
                       ' hours')
             return False
     else:
-        isReplyToMutedPost = True
-    return isReplyToMutedPost
+        is_replyToMutedPost = True
+    return is_replyToMutedPost
 
 
 def _lowFrequencyPostNotification(base_dir: str, http_prefix: str,
@@ -3474,7 +3474,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
                              max_like_count,
                              cw_lists, lists_enabled)
 
-        isReplyToMutedPost = False
+        is_replyToMutedPost = False
 
         if not isGroup:
             # create a DM notification file if needed
@@ -3498,7 +3498,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
             actor = local_actor_url(http_prefix, nickname, domain_full)
 
             # create a reply notification file if needed
-            isReplyToMutedPost = \
+            is_replyToMutedPost = \
                 _createReplyNotificationFile(base_dir, nickname, domain,
                                              handle, debug, postIsDM,
                                              post_json_object, actor,
@@ -3533,7 +3533,7 @@ def _inboxAfterInitial(recentPostsCache: {}, max_recent_posts: int,
 
             # If this is a reply to a muted post then also mute it.
             # This enables you to ignore a threat that's getting boring
-            if isReplyToMutedPost:
+            if is_replyToMutedPost:
                 print('MUTE REPLY: ' + destinationFilename)
                 destinationFilenameMuted = destinationFilename + '.muted'
                 try:
