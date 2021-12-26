@@ -2873,7 +2873,7 @@ def getAltPath(actor: str, domain_full: str, callingDomain: str) -> str:
     return postActor
 
 
-def getActorPropertyUrl(actor_json: {}, property_name: str) -> str:
+def get_actor_property_url(actor_json: {}, property_name: str) -> str:
     """Returns a url property from an actor
     """
     if not actor_json.get('attachment'):
