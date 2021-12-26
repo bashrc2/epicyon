@@ -390,8 +390,8 @@ followsPerPage = 6
 sharesPerPage = 12
 
 
-def saveDomainQrcode(base_dir: str, http_prefix: str,
-                     domainFull: str, scale=6) -> None:
+def save_domain_qrcode(base_dir: str, http_prefix: str,
+                       domainFull: str, scale=6) -> None:
     """Saves a qrcode image for the domain name
     This helps to transfer onion or i2p domains to a mobile device
     """
@@ -433,7 +433,7 @@ class PubServer(BaseHTTPRequestHandler):
                      self.server.base_dir + '/accounts/knownCrawlers.json')
         self.server.lastKnownCrawler = currTime
 
-    def _getInstanceUrl(self, callingDomain: str) -> str:
+    def _get_instance_url(self, callingDomain: str) -> str:
         """Returns the URL for this instance
         """
         if callingDomain.endswith('.onion') and \
@@ -1143,7 +1143,7 @@ class PubServer(BaseHTTPRequestHandler):
         if broch_mode:
             show_node_info_accounts = False
 
-        instanceUrl = self._getInstanceUrl(callingDomain)
+        instanceUrl = self._get_instance_url(callingDomain)
         aboutUrl = instanceUrl + '/about'
         termsOfServiceUrl = instanceUrl + '/terms'
         info = metaDataNodeInfo(self.server.base_dir,
@@ -1839,7 +1839,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         usersPath = path.replace('/moderationaction', '')
         nickname = usersPath.replace('/users/', '')
-        actorStr = self._getInstanceUrl(callingDomain) + usersPath
+        actorStr = self._get_instance_url(callingDomain) + usersPath
         if not isModerator(self.server.base_dir, nickname):
             self._redirect_headers(actorStr + '/moderation',
                                    cookie, callingDomain)
@@ -3252,7 +3252,7 @@ class PubServer(BaseHTTPRequestHandler):
             path = path.split('?page=')[0]
 
         usersPath = path.replace('/searchhandle', '')
-        actorStr = self._getInstanceUrl(callingDomain) + usersPath
+        actorStr = self._get_instance_url(callingDomain) + usersPath
         length = int(self.headers['Content-length'])
         try:
             searchParams = self.rfile.read(length).decode('utf-8')
@@ -3493,7 +3493,8 @@ class PubServer(BaseHTTPRequestHandler):
                 if searchStr.endswith(':') or \
                    searchStr.endswith(';') or \
                    searchStr.endswith('.'):
-                    actorStr = self._getInstanceUrl(callingDomain) + usersPath
+                    actorStr = \
+                        self._get_instance_url(callingDomain) + usersPath
                     self._redirect_headers(actorStr + '/search',
                                            cookie, callingDomain)
                     self.server.POSTbusy = False
@@ -3588,7 +3589,8 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.POSTbusy = False
                     return
                 else:
-                    actorStr = self._getInstanceUrl(callingDomain) + usersPath
+                    actorStr = \
+                        self._get_instance_url(callingDomain) + usersPath
                     self._redirect_headers(actorStr + '/search',
                                            cookie, callingDomain)
                     self.server.POSTbusy = False
@@ -3660,7 +3662,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._write(msg)
                     self.server.POSTbusy = False
                     return
-        actorStr = self._getInstanceUrl(callingDomain) + usersPath
+        actorStr = self._get_instance_url(callingDomain) + usersPath
         self._redirect_headers(actorStr + '/' +
                                self.server.defaultTimeline,
                                cookie, callingDomain)
@@ -4060,7 +4062,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         usersPath = path.replace('/linksdata', '')
         usersPath = usersPath.replace('/editlinks', '')
-        actorStr = self._getInstanceUrl(callingDomain) + usersPath
+        actorStr = self._get_instance_url(callingDomain) + usersPath
         if ' boundary=' in self.headers['Content-type']:
             boundary = self.headers['Content-type'].split('boundary=')[1]
             if ';' in boundary:
@@ -4218,7 +4220,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._404()
             return
         usersPath = usersPath.split('/tags/')[0]
-        actorStr = self._getInstanceUrl(callingDomain) + usersPath
+        actorStr = self._get_instance_url(callingDomain) + usersPath
         tagScreenStr = actorStr + '/tags/' + hashtag
         if ' boundary=' in self.headers['Content-type']:
             boundary = self.headers['Content-type'].split('boundary=')[1]
@@ -4302,7 +4304,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         usersPath = path.replace('/newswiredata', '')
         usersPath = usersPath.replace('/editnewswire', '')
-        actorStr = self._getInstanceUrl(callingDomain) + usersPath
+        actorStr = self._get_instance_url(callingDomain) + usersPath
         if ' boundary=' in self.headers['Content-type']:
             boundary = self.headers['Content-type'].split('boundary=')[1]
             if ';' in boundary:
@@ -4458,7 +4460,7 @@ class PubServer(BaseHTTPRequestHandler):
         update button on the citations screen
         """
         usersPath = path.replace('/citationsdata', '')
-        actorStr = self._getInstanceUrl(callingDomain) + usersPath
+        actorStr = self._get_instance_url(callingDomain) + usersPath
         nickname = getNicknameFromActor(actorStr)
 
         citationsFilename = \
@@ -4547,7 +4549,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         usersPath = path.replace('/newseditdata', '')
         usersPath = usersPath.replace('/editnewspost', '')
-        actorStr = self._getInstanceUrl(callingDomain) + usersPath
+        actorStr = self._get_instance_url(callingDomain) + usersPath
         if ' boundary=' in self.headers['Content-type']:
             boundary = self.headers['Content-type'].split('boundary=')[1]
             if ';' in boundary:
@@ -4683,7 +4685,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         usersPath = path.replace('/profiledata', '')
         usersPath = usersPath.replace('/editprofile', '')
-        actorStr = self._getInstanceUrl(callingDomain) + usersPath
+        actorStr = self._get_instance_url(callingDomain) + usersPath
         if ' boundary=' in self.headers['Content-type']:
             boundary = self.headers['Content-type'].split('boundary=')[1]
             if ';' in boundary:
@@ -7671,7 +7673,7 @@ class PubServer(BaseHTTPRequestHandler):
         self.postToNickname = getNicknameFromActor(actor)
         if not self.postToNickname:
             print('WARN: unable to find nickname in ' + actor)
-            actorAbsolute = self._getInstanceUrl(callingDomain) + actor
+            actorAbsolute = self._get_instance_url(callingDomain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
                 '?page=' + str(pageNumber)
@@ -7773,7 +7775,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.cw_lists,
                                  self.server.lists_enabled)
 
-        actorAbsolute = self._getInstanceUrl(callingDomain) + actor
+        actorAbsolute = self._get_instance_url(callingDomain) + actor
         actorPathStr = \
             actorAbsolute + '/' + timelineStr + '?page=' + \
             str(pageNumber) + timelineBookmark
@@ -7823,7 +7825,7 @@ class PubServer(BaseHTTPRequestHandler):
         self.postToNickname = getNicknameFromActor(actor)
         if not self.postToNickname:
             print('WARN: unable to find nickname in ' + actor)
-            actorAbsolute = self._getInstanceUrl(callingDomain) + actor
+            actorAbsolute = self._get_instance_url(callingDomain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + '?page=' + \
                 str(pageNumber)
@@ -7874,7 +7876,7 @@ class PubServer(BaseHTTPRequestHandler):
         self._postToOutbox(newUndoAnnounce,
                            self.server.project_version, self.postToNickname)
 
-        actorAbsolute = self._getInstanceUrl(callingDomain) + actor
+        actorAbsolute = self._get_instance_url(callingDomain) + actor
         actorPathStr = \
             actorAbsolute + '/' + timelineStr + '?page=' + \
             str(pageNumber) + timelineBookmark
@@ -8123,7 +8125,7 @@ class PubServer(BaseHTTPRequestHandler):
         self.postToNickname = getNicknameFromActor(actor)
         if not self.postToNickname:
             print('WARN: unable to find nickname in ' + actor)
-            actorAbsolute = self._getInstanceUrl(callingDomain) + actor
+            actorAbsolute = self._get_instance_url(callingDomain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
                 '?page=' + str(pageNumber) + timelineBookmark
@@ -8241,7 +8243,7 @@ class PubServer(BaseHTTPRequestHandler):
             print('WARN: unable to locate file for liked post ' +
                   likeUrl)
 
-        actorAbsolute = self._getInstanceUrl(callingDomain) + actor
+        actorAbsolute = self._get_instance_url(callingDomain) + actor
         actorPathStr = \
             actorAbsolute + '/' + timelineStr + \
             '?page=' + str(pageNumber) + timelineBookmark
@@ -8287,7 +8289,7 @@ class PubServer(BaseHTTPRequestHandler):
         self.postToNickname = getNicknameFromActor(actor)
         if not self.postToNickname:
             print('WARN: unable to find nickname in ' + actor)
-            actorAbsolute = self._getInstanceUrl(callingDomain) + actor
+            actorAbsolute = self._get_instance_url(callingDomain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
                 '?page=' + str(pageNumber)
@@ -8391,7 +8393,7 @@ class PubServer(BaseHTTPRequestHandler):
             # clear the icon from the cache so that it gets updated
             if self.server.iconsCache.get('like_inactive.png'):
                 del self.server.iconsCache['like_inactive.png']
-        actorAbsolute = self._getInstanceUrl(callingDomain) + actor
+        actorAbsolute = self._get_instance_url(callingDomain) + actor
         actorPathStr = \
             actorAbsolute + '/' + timelineStr + \
             '?page=' + str(pageNumber) + timelineBookmark
@@ -8443,7 +8445,7 @@ class PubServer(BaseHTTPRequestHandler):
                 emojiContentEncoded = emojiContentEncoded.split('?')[0]
         if not emojiContentEncoded:
             print('WARN: no emoji reaction ' + actor)
-            actorAbsolute = self._getInstanceUrl(callingDomain) + actor
+            actorAbsolute = self._get_instance_url(callingDomain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
                 '?page=' + str(pageNumber) + timelineBookmark
@@ -8454,7 +8456,7 @@ class PubServer(BaseHTTPRequestHandler):
         self.postToNickname = getNicknameFromActor(actor)
         if not self.postToNickname:
             print('WARN: unable to find nickname in ' + actor)
-            actorAbsolute = self._getInstanceUrl(callingDomain) + actor
+            actorAbsolute = self._get_instance_url(callingDomain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
                 '?page=' + str(pageNumber) + timelineBookmark
@@ -8577,7 +8579,7 @@ class PubServer(BaseHTTPRequestHandler):
             print('WARN: unable to locate file for emoji reaction post ' +
                   reactionUrl)
 
-        actorAbsolute = self._getInstanceUrl(callingDomain) + actor
+        actorAbsolute = self._get_instance_url(callingDomain) + actor
         actorPathStr = \
             actorAbsolute + '/' + timelineStr + \
             '?page=' + str(pageNumber) + timelineBookmark
@@ -8623,7 +8625,7 @@ class PubServer(BaseHTTPRequestHandler):
         self.postToNickname = getNicknameFromActor(actor)
         if not self.postToNickname:
             print('WARN: unable to find nickname in ' + actor)
-            actorAbsolute = self._getInstanceUrl(callingDomain) + actor
+            actorAbsolute = self._get_instance_url(callingDomain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
                 '?page=' + str(pageNumber)
@@ -8637,7 +8639,7 @@ class PubServer(BaseHTTPRequestHandler):
                 emojiContentEncoded = emojiContentEncoded.split('?')[0]
         if not emojiContentEncoded:
             print('WARN: no emoji reaction ' + actor)
-            actorAbsolute = self._getInstanceUrl(callingDomain) + actor
+            actorAbsolute = self._get_instance_url(callingDomain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
                 '?page=' + str(pageNumber) + timelineBookmark
@@ -8746,7 +8748,7 @@ class PubServer(BaseHTTPRequestHandler):
                 print('WARN: Unreaction post not found: ' +
                       reactionPostFilename)
 
-        actorAbsolute = self._getInstanceUrl(callingDomain) + actor
+        actorAbsolute = self._get_instance_url(callingDomain) + actor
         actorPathStr = \
             actorAbsolute + '/' + timelineStr + \
             '?page=' + str(pageNumber) + timelineBookmark
@@ -8791,7 +8793,7 @@ class PubServer(BaseHTTPRequestHandler):
         self.postToNickname = getNicknameFromActor(actor)
         if not self.postToNickname:
             print('WARN: unable to find nickname in ' + actor)
-            actorAbsolute = self._getInstanceUrl(callingDomain) + actor
+            actorAbsolute = self._get_instance_url(callingDomain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
                 '?page=' + str(pageNumber) + timelineBookmark
@@ -8806,7 +8808,7 @@ class PubServer(BaseHTTPRequestHandler):
             post_json_object = loadJson(reactionPostFilename)
         if not reactionPostFilename or not post_json_object:
             print('WARN: unable to locate reaction post ' + reactionUrl)
-            actorAbsolute = self._getInstanceUrl(callingDomain) + actor
+            actorAbsolute = self._get_instance_url(callingDomain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
                 '?page=' + str(pageNumber) + timelineBookmark
@@ -8885,7 +8887,7 @@ class PubServer(BaseHTTPRequestHandler):
         self.postToNickname = getNicknameFromActor(actor)
         if not self.postToNickname:
             print('WARN: unable to find nickname in ' + actor)
-            actorAbsolute = self._getInstanceUrl(callingDomain) + actor
+            actorAbsolute = self._get_instance_url(callingDomain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
                 '?page=' + str(pageNumber)
@@ -8965,7 +8967,7 @@ class PubServer(BaseHTTPRequestHandler):
             else:
                 print('WARN: Bookmarked post not found: ' + bookmarkFilename)
         # self._postToOutbox(bookmarkJson, self.server.project_version, None)
-        actorAbsolute = self._getInstanceUrl(callingDomain) + actor
+        actorAbsolute = self._get_instance_url(callingDomain) + actor
         actorPathStr = \
             actorAbsolute + '/' + timelineStr + \
             '?page=' + str(pageNumber) + timelineBookmark
@@ -9011,7 +9013,7 @@ class PubServer(BaseHTTPRequestHandler):
         self.postToNickname = getNicknameFromActor(actor)
         if not self.postToNickname:
             print('WARN: unable to find nickname in ' + actor)
-            actorAbsolute = self._getInstanceUrl(callingDomain) + actor
+            actorAbsolute = self._get_instance_url(callingDomain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
                 '?page=' + str(pageNumber)
@@ -9092,7 +9094,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.lists_enabled)
             else:
                 print('WARN: Unbookmarked post not found: ' + bookmarkFilename)
-        actorAbsolute = self._getInstanceUrl(callingDomain) + actor
+        actorAbsolute = self._get_instance_url(callingDomain) + actor
         actorPathStr = \
             actorAbsolute + '/' + timelineStr + \
             '?page=' + str(pageNumber) + timelineBookmark
@@ -9870,7 +9872,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self._404()
                         return True
         actor = path.replace('/skills', '')
-        actorAbsolute = self._getInstanceUrl(callingDomain) + actor
+        actorAbsolute = self._get_instance_url(callingDomain) + actor
         self._redirect_headers(actorAbsolute, cookie, callingDomain)
         return True
 
@@ -18731,7 +18733,7 @@ def runDaemon(content_license_url: str,
     httpd.domain = domain
     httpd.port = port
     httpd.domainFull = getFullDomain(domain, port)
-    saveDomainQrcode(base_dir, http_prefix, httpd.domainFull)
+    save_domain_qrcode(base_dir, http_prefix, httpd.domainFull)
     httpd.http_prefix = http_prefix
     httpd.debug = debug
     httpd.federation_list = fed_list.copy()
