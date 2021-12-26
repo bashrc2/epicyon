@@ -2476,12 +2476,12 @@ def updateAnnounceCollection(recent_posts_cache: {},
     save_json(post_json_object, postFilename)
 
 
-def weekDayOfMonthStart(monthNumber: int, year: int) -> int:
+def week_day_of_month_start(month_number: int, year: int) -> int:
     """Gets the day number of the first day of the month
     1=sun, 7=sat
     """
-    firstDayOfMonth = datetime.datetime(year, monthNumber, 1, 0, 0)
-    return int(firstDayOfMonth.strftime("%w")) + 1
+    first_day_of_month = datetime.datetime(year, month_number, 1, 0, 0)
+    return int(first_day_of_month.strftime("%w")) + 1
 
 
 def media_file_mime_type(filename: str) -> str:
@@ -2505,10 +2505,10 @@ def media_file_mime_type(filename: str) -> str:
         'mp4': 'video/mp4',
         'ogv': 'video/ogv'
     }
-    fileExt = filename.split('.')[-1]
-    if not extensions.get(fileExt):
+    file_ext = filename.split('.')[-1]
+    if not extensions.get(file_ext):
         return 'image/png'
-    return extensions[fileExt]
+    return extensions[file_ext]
 
 
 def is_recent_post(post_json_object: {}, max_days: int) -> bool:

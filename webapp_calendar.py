@@ -16,7 +16,7 @@ from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import locate_post
 from utils import load_json
-from utils import weekDayOfMonthStart
+from utils import week_day_of_month_start
 from utils import get_alt_path
 from utils import remove_domain_port
 from utils import acct_dir
@@ -322,7 +322,7 @@ def htmlCalendar(person_cache: {}, cssCache: {}, translate: {},
         nextYear = year + 1
 
     print('Calendar year=' + str(year) + ' month=' + str(monthNumber) +
-          ' ' + str(weekDayOfMonthStart(monthNumber, year)))
+          ' ' + str(week_day_of_month_start(monthNumber, year)))
 
     if monthNumber < 12:
         daysInMonth = \
@@ -385,7 +385,7 @@ def htmlCalendar(person_cache: {}, cssCache: {}, translate: {},
     navLinks[timelineLinkStr] = calActor + '/inbox'
 
     dayOfMonth = 0
-    dow = weekDayOfMonthStart(monthNumber, year)
+    dow = week_day_of_month_start(monthNumber, year)
     for weekOfMonth in range(1, 7):
         if dayOfMonth == daysInMonth:
             continue
