@@ -24,7 +24,7 @@ from utils import isPGPEncrypted
 from utils import containsPGPPublicKey
 from utils import acct_dir
 from utils import isfloat
-from utils import getCurrencies
+from utils import get_currencies
 from utils import removeHtml
 from petnames import getPetName
 from session import downloadImage
@@ -1221,7 +1221,7 @@ def limitRepeatedWords(text: str, maxRepeats: int) -> str:
 def getPriceFromString(priceStr: str) -> (str, str):
     """Returns the item price and currency
     """
-    currencies = getCurrencies()
+    currencies = get_currencies()
     for symbol, name in currencies.items():
         if symbol in priceStr:
             price = priceStr.replace(symbol, '')

@@ -15,7 +15,7 @@ from utils import getDomainFromActor
 from utils import getMediaFormats
 from utils import get_config_param
 from utils import acct_dir
-from utils import getCurrencies
+from utils import get_currencies
 from utils import get_category_types
 from webapp_utils import getBannerFile
 from webapp_utils import htmlHeaderWithExternalStyle
@@ -482,7 +482,7 @@ def htmlNewPost(cssCache: {}, media_instance: bool, translate: {},
         extraFields += '<br>'
         extraFields += \
             '<label class="labels">' + translate['Currency'] + '</label><br>\n'
-        currencies = getCurrencies()
+        currencies = get_currencies()
         extraFields += '  <select id="themeDropdown" ' + \
             'name="itemCurrency" class="theme">\n'
         currencyList = []
@@ -547,7 +547,7 @@ def htmlNewPost(cssCache: {}, media_instance: bool, translate: {},
         extraFields += '<br>'
         extraFields += \
             '<label class="labels">' + translate['Currency'] + '</label><br>\n'
-        currencies = getCurrencies()
+        currencies = get_currencies()
         extraFields += '  <select id="themeDropdown" ' + \
             'name="itemCurrency" class="theme">\n'
         currencyList = []

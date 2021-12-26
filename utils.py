@@ -3043,7 +3043,7 @@ def isGroupAccount(base_dir: str, nickname: str, domain: str) -> bool:
     return False
 
 
-def getCurrencies() -> {}:
+def get_currencies() -> {}:
     """Returns a dictionary of currencies
     """
     return {
