@@ -27,7 +27,7 @@ from utils import get_full_domain
 from utils import remove_id_ending
 from utils import isEvil
 from utils import locate_post
-from utils import evilIncarnate
+from utils import evil_incarnate
 from utils import getDomainFromActor
 from utils import getNicknameFromActor
 from utils import acct_dir
@@ -251,7 +251,7 @@ def getDomainBlocklist(base_dir: str) -> str:
     """
     blockedStr = ''
 
-    evilDomains = evilIncarnate()
+    evilDomains = evil_incarnate()
     for evil in evilDomains:
         blockedStr += evil + '\n'
 

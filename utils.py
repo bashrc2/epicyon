@@ -711,17 +711,17 @@ def load_json_onionify(filename: str, domain: str, onion_domain: str,
     return json_object
 
 
-def get_status_number(publishedStr: str = None) -> (str, str):
+def get_status_number(published_str: str = None) -> (str, str):
     """Returns the status number and published date
     """
-    if not publishedStr:
+    if not published_str:
         curr_time = datetime.datetime.utcnow()
     else:
         curr_time = \
-            datetime.datetime.strptime(publishedStr, '%Y-%m-%dT%H:%M:%SZ')
+            datetime.datetime.strptime(published_str, '%Y-%m-%dT%H:%M:%SZ')
     days_since_epoch = (curr_time - datetime.datetime(1970, 1, 1)).days
     # status is the number of seconds since epoch
-    statusNumber = \
+    status_number = \
         str(((days_since_epoch * 24 * 60 * 60) +
              (curr_time.hour * 60 * 60) +
              (curr_time.minute * 60) +
@@ -730,14 +730,14 @@ def get_status_number(publishedStr: str = None) -> (str, str):
     # See https://github.com/tootsuite/mastodon/blob/
     # 995f8b389a66ab76ec92d9a240de376f1fc13a38/lib/mastodon/snowflake.rb
     # use the leftover microseconds as the sequence number
-    sequenceId = curr_time.microsecond % 1000
+    sequence_id = curr_time.microsecond % 1000
     # shift by 16bits "sequence data"
-    statusNumber = str((int(statusNumber) << 16) + sequenceId)
+    status_number = str((int(status_number) << 16) + sequence_id)
     published = curr_time.strftime("%Y-%m-%dT%H:%M:%SZ")
-    return statusNumber, published
+    return status_number, published
 
 
-def evilIncarnate() -> []:
+def evil_incarnate() -> []:
     return ('fedilist.com', 'gab.com', 'gabfed.com', 'spinster.xyz',
             'kiwifarms.cc', 'djitter.com')
 
@@ -757,7 +757,7 @@ def isEvil(domain: str) -> bool:
     for hostileStr in evilEmporium:
         if hostileStr in domain:
             return True
-    evilDomains = evilIncarnate()
+    evilDomains = evil_incarnate()
     for concentratedEvil in evilDomains:
         if domain.endswith(concentratedEvil):
             return True
