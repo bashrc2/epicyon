@@ -743,32 +743,33 @@ def evil_incarnate() -> []:
 
 
 def is_evil(domain: str) -> bool:
-    # https://www.youtube.com/watch?v=5qw1hcevmdU
+    """ https://www.youtube.com/watch?v=5qw1hcevmdU
+    """
     if not isinstance(domain, str):
         print('WARN: Malformed domain ' + str(domain))
         return True
     # if a domain contains any of these strings then it is
     # declaring itself to be hostile
-    evilEmporium = (
+    evil_emporium = (
         'nazi', 'extremis', 'extreemis', 'gendercritic',
         'kiwifarm', 'illegal', 'raplst', 'rapist',
         'antivax', 'plandemic'
     )
-    for hostileStr in evilEmporium:
-        if hostileStr in domain:
+    for hostile_str in evil_emporium:
+        if hostile_str in domain:
             return True
-    evilDomains = evil_incarnate()
-    for concentratedEvil in evilDomains:
-        if domain.endswith(concentratedEvil):
+    evil_domains = evil_incarnate()
+    for concentrated_evil in evil_domains:
+        if domain.endswith(concentrated_evil):
             return True
     return False
 
 
-def containsInvalidChars(jsonStr: str) -> bool:
+def contains_invalid_chars(json_str: str) -> bool:
     """Does the given json string contain invalid characters?
     """
-    for isInvalid in INVALID_CHARACTERS:
-        if isInvalid in jsonStr:
+    for is_invalid in INVALID_CHARACTERS:
+        if is_invalid in json_str:
             return True
     return False
 

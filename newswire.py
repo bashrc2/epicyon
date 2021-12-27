@@ -28,7 +28,7 @@ from utils import locate_post
 from utils import load_json
 from utils import save_json
 from utils import is_suspended
-from utils import containsInvalidChars
+from utils import contains_invalid_chars
 from utils import remove_html
 from utils import is_account_dir
 from utils import acct_dir
@@ -891,7 +891,7 @@ def getRSS(base_dir: str, domain: str, session, url: str,
         result = session.get(url, headers=sessionHeaders, params=sessionParams)
         if result:
             if int(len(result.text) / 1024) < maxFeedSizeKb and \
-               not containsInvalidChars(result.text):
+               not contains_invalid_chars(result.text):
                 return _xmlStrToDict(base_dir, domain, result.text,
                                      moderated, mirrored,
                                      maxPostsPerSource,

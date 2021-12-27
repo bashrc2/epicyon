@@ -281,7 +281,7 @@ from utils import media_file_mime_type
 from utils import getCSS
 from utils import first_paragraph_from_string
 from utils import clearFromPostCaches
-from utils import containsInvalidChars
+from utils import contains_invalid_chars
 from utils import is_system_account
 from utils import setConfigParam
 from utils import get_config_param
@@ -18224,7 +18224,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.POSTbusy = False
                 return
 
-        if containsInvalidChars(messageBytes.decode("utf-8")):
+        if contains_invalid_chars(messageBytes.decode("utf-8")):
             self._400()
             self.server.POSTbusy = False
             return

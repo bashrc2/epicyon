@@ -30,7 +30,7 @@ from utils import load_json
 from utils import save_json
 from utils import remove_post_from_cache
 from utils import get_cached_post_filename
-from utils import containsInvalidChars
+from utils import contains_invalid_chars
 from posts import sendSignedJson
 from session import postJson
 from webfinger import webfingerHandle
@@ -55,7 +55,7 @@ def validEmojiContent(emojiContent: str) -> bool:
         return False
     if len(emojiRegex.findall(emojiContent)) == 0:
         return False
-    if containsInvalidChars(emojiContent):
+    if contains_invalid_chars(emojiContent):
         return False
     return True
 

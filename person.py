@@ -39,7 +39,7 @@ from roles import setRolesFromList
 from roles import getActorRolesList
 from media import processMetaData
 from utils import remove_html
-from utils import containsInvalidChars
+from utils import contains_invalid_chars
 from utils import replace_users_with_at
 from utils import remove_line_endings
 from utils import remove_domain_port
@@ -1725,7 +1725,7 @@ def validSendingActor(session, base_dir: str,
 
         if actor_json.get('name'):
             bioStr += ' ' + remove_html(actor_json['name'])
-        if containsInvalidChars(bioStr):
+        if contains_invalid_chars(bioStr):
             print('REJECT: post actor bio contains invalid characters')
             return False
         if isFilteredBio(base_dir, nickname, domain, bioStr):
