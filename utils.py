@@ -447,22 +447,22 @@ def remove_html(content: str) -> str:
     content = content.replace('<q>', '"').replace('</q>', '"')
     content = content.replace('</p>', '\n\n').replace('<br>', '\n')
     result = ''
-    for ch in content:
-        if ch == '<':
+    for char in content:
+        if char == '<':
             removing = True
-        elif ch == '>':
+        elif char == '>':
             removing = False
         elif not removing:
-            result += ch
+            result += char
 
     plain_text = result.replace('  ', ' ')
 
     # insert spaces after full stops
-    strLen = len(plain_text)
+    str_len = len(plain_text)
     result = ''
-    for i in range(strLen):
+    for i in range(str_len):
         result += plain_text[i]
-        if plain_text[i] == '.' and i < strLen - 1:
+        if plain_text[i] == '.' and i < str_len - 1:
             if plain_text[i + 1] >= 'A' and plain_text[i + 1] <= 'Z':
                 result += ' '
 
@@ -485,7 +485,7 @@ def first_paragraph_from_string(content: str) -> str:
 def is_system_account(nickname: str) -> bool:
     """Returns true if the given nickname is a system account
     """
-    if nickname == 'news' or nickname == 'inbox':
+    if nickname in ('news', 'inbox'):
         return True
     return False
 
@@ -518,10 +518,10 @@ def get_config_param(base_dir: str, variable_name: str):
     """
     _create_config(base_dir)
     config_filename = base_dir + '/config.json'
-    configJson = load_json(config_filename)
-    if configJson:
-        if variable_name in configJson:
-            return configJson[variable_name]
+    config_json = load_json(config_filename)
+    if config_json:
+        if variable_name in config_json:
+            return config_json[variable_name]
     return None
 
 
@@ -536,8 +536,8 @@ def is_suspended(base_dir: str, nickname: str) -> bool:
 
     suspended_filename = base_dir + '/accounts/suspended.txt'
     if os.path.isfile(suspended_filename):
-        with open(suspended_filename, 'r') as f:
-            lines = f.readlines()
+        with open(suspended_filename, 'r') as susp_file:
+            lines = susp_file.readlines()
         for suspended in lines:
             if suspended.strip('\n').strip('\r') == nickname:
                 return True
@@ -554,8 +554,8 @@ def get_followers_list(base_dir: str,
     if not os.path.isfile(filename):
         return []
 
-    with open(filename, 'r') as f:
-        lines = f.readlines()
+    with open(filename, 'r') as foll_file:
+        lines = foll_file.readlines()
         for i in range(len(lines)):
             lines[i] = lines[i].strip()
         return lines
@@ -573,7 +573,7 @@ def get_followers_of_person(base_dir: str,
     handle = nickname + '@' + domain
     if not os.path.isdir(base_dir + '/accounts/' + handle):
         return followers
-    for subdir, dirs, files in os.walk(base_dir + '/accounts'):
+    for subdir, dirs, _ in os.walk(base_dir + '/accounts'):
         for account in dirs:
             filename = os.path.join(subdir, account) + '/' + follow_file
             if account == handle or \
@@ -610,7 +610,7 @@ def remove_id_ending(id_str: str) -> str:
     return id_str
 
 
-def removeHashFromPostId(post_id: str) -> str:
+def remove_hash_from_post_id(post_id: str) -> str:
     """Removes any has from a post id
     """
     if '#' not in post_id:

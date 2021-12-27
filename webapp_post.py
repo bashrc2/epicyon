@@ -23,7 +23,7 @@ from posts import postIsMuted
 from posts import getPersonBox
 from posts import downloadAnnounce
 from posts import populateRepliesJson
-from utils import removeHashFromPostId
+from utils import remove_hash_from_post_id
 from utils import remove_html
 from utils import get_actor_languages_list
 from utils import get_base_content_from_post
@@ -391,7 +391,7 @@ def _getReplyIconHtml(base_dir: str, nickname: str, domain: str,
         return replyStr
 
     # reply is permitted - create reply icon
-    replyToLink = removeHashFromPostId(post_json_object['object']['id'])
+    replyToLink = remove_hash_from_post_id(post_json_object['object']['id'])
     replyToLink = remove_id_ending(replyToLink)
 
     # see Mike MacGirvin's replyTo suggestion
@@ -573,7 +573,7 @@ def _getAnnounceIconHtml(isAnnounced: bool,
             unannounceLinkStr = '?unannounce=' + \
                 remove_id_ending(announceJsonObject['id'])
 
-    announcePostId = removeHashFromPostId(post_json_object['object']['id'])
+    announcePostId = remove_hash_from_post_id(post_json_object['object']['id'])
     announcePostId = remove_id_ending(announcePostId)
     announceLinkStr = '?' + \
         announceLink + '=' + announcePostId + pageNumberParam
@@ -642,7 +642,7 @@ def _getLikeIconHtml(nickname: str, domain_full: str,
         likeStr += '<label class="likesCount">'
         likeStr += likeCountStr.replace('(', '').replace(')', '').strip()
         likeStr += '</label>\n'
-    likePostId = removeHashFromPostId(post_json_object['id'])
+    likePostId = remove_hash_from_post_id(post_json_object['id'])
     likePostId = remove_id_ending(likePostId)
     likeStr += \
         '        <a class="imageAnchor" href="/users/' + nickname + '?' + \
@@ -689,7 +689,7 @@ def _getBookmarkIconHtml(nickname: str, domain_full: str,
         if translate.get(bookmarkTitle):
             bookmarkTitle = translate[bookmarkTitle]
     _logPostTiming(enableTimingLog, postStartTime, '12.6')
-    bookmarkPostId = removeHashFromPostId(post_json_object['object']['id'])
+    bookmarkPostId = remove_hash_from_post_id(post_json_object['object']['id'])
     bookmarkPostId = remove_id_ending(bookmarkPostId)
     bookmarkStr = \
         '        <a class="imageAnchor" href="/users/' + nickname + '?' + \
@@ -727,7 +727,7 @@ def _getReactionIconHtml(nickname: str, domain_full: str,
     if translate.get(reactionTitle):
         reactionTitle = translate[reactionTitle]
     _logPostTiming(enableTimingLog, postStartTime, '12.65')
-    reactionPostId = removeHashFromPostId(post_json_object['object']['id'])
+    reactionPostId = remove_hash_from_post_id(post_json_object['object']['id'])
     reactionPostId = remove_id_ending(reactionPostId)
     reactionStr = \
         '        <a class="imageAnchor" href="/users/' + nickname + \
@@ -1372,7 +1372,7 @@ def individualPostAsHtml(signing_priv_key_pem: str,
     avatarPosition = ''
     messageId = ''
     if post_json_object.get('id'):
-        messageId = removeHashFromPostId(post_json_object['id'])
+        messageId = remove_hash_from_post_id(post_json_object['id'])
         messageId = remove_id_ending(messageId)
 
     _logPostTiming(enableTimingLog, postStartTime, '2')
