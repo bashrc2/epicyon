@@ -635,14 +635,14 @@ def get_link_prefixes() -> []:
             'hyper://', 'gemini://', 'gopher://', 'briar:')
 
 
-def remove_avatar_from_cache(base_dir: str, actorStr: str) -> None:
+def remove_avatar_from_cache(base_dir: str, actor_str: str) -> None:
     """Removes any existing avatar entries from the cache
     This avoids duplicate entries with differing extensions
     """
     avatar_filename_extensions = get_image_extensions()
     for extension in avatar_filename_extensions:
         avatar_filename = \
-            base_dir + '/cache/avatars/' + actorStr + '.' + extension
+            base_dir + '/cache/avatars/' + actor_str + '.' + extension
         if os.path.isfile(avatar_filename):
             try:
                 os.remove(avatar_filename)
@@ -739,6 +739,8 @@ def get_status_number(published_str: str = None) -> (str, str):
 
 
 def evil_incarnate() -> []:
+    """Hardcoded blocked domains
+    """
     return ('fedilist.com', 'gab.com', 'gabfed.com', 'spinster.xyz',
             'kiwifarms.cc', 'djitter.com')
 
@@ -832,7 +834,7 @@ def urlPermitted(url: str, federation_list: []):
     return False
 
 
-def getLocalNetworkAddresses() -> []:
+def get_local_network_addresses() -> []:
     """Returns patterns for local network address detection
     """
     return ('localhost', '127.0.', '192.168', '10.0.')
@@ -841,7 +843,7 @@ def getLocalNetworkAddresses() -> []:
 def isLocalNetworkAddress(ipAddress: str) -> bool:
     """
     """
-    localIPs = getLocalNetworkAddresses()
+    localIPs = get_local_network_addresses()
     for ipAddr in localIPs:
         if ipAddress.startswith(ipAddr):
             return True
@@ -862,7 +864,7 @@ def _isDangerousString(content: str, allow_local_network_access: bool,
         contentSections = content.split(startChar)
         invalidPartials = ()
         if not allow_local_network_access:
-            invalidPartials = getLocalNetworkAddresses()
+            invalidPartials = get_local_network_addresses()
         for markup in contentSections:
             if endChar not in markup:
                 continue

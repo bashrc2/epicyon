@@ -267,7 +267,7 @@ from utils import get_occupation_skills
 from utils import get_occupation_name
 from utils import set_occupation_name
 from utils import load_translations_from_file
-from utils import getLocalNetworkAddresses
+from utils import get_local_network_addresses
 from utils import decoded_host
 from utils import isPublicPost
 from utils import get_locked_account
@@ -1447,7 +1447,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # sent by an actor on a local network address?
         if not self.server.allow_local_network_access:
-            localNetworkPatternList = getLocalNetworkAddresses()
+            localNetworkPatternList = get_local_network_addresses()
             for localNetworkPattern in localNetworkPatternList:
                 if localNetworkPattern in message_json['actor']:
                     print('POST actor contains local network address ' +

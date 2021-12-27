@@ -19,7 +19,7 @@ from posts import sendToNamedAddressesThread
 from utils import has_object_stringType
 from utils import get_base_content_from_post
 from utils import has_object_dict
-from utils import getLocalNetworkAddresses
+from utils import get_local_network_addresses
 from utils import get_full_domain
 from utils import remove_id_ending
 from utils import get_domain_from_actor
@@ -274,7 +274,7 @@ def postMessageToOutbox(session, translate: {},
 
         # sent by an actor on a local network address?
         if not allow_local_network_access:
-            localNetworkPatternList = getLocalNetworkAddresses()
+            localNetworkPatternList = get_local_network_addresses()
             for localNetworkPattern in localNetworkPatternList:
                 if localNetworkPattern in message_json['actor']:
                     return False
