@@ -14,7 +14,7 @@ from utils import remove_id_ending
 from utils import has_users_path
 from utils import get_full_domain
 from utils import get_status_number
-from utils import createOutboxDir
+from utils import create_outbox_dir
 from utils import urlPermitted
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
@@ -157,7 +157,7 @@ def createAnnounce(session, base_dir: str, federation_list: [],
         if len(ccUrl) > 0:
             newAnnounce['cc'] = [ccUrl]
     if saveToFile:
-        outboxDir = createOutboxDir(nickname, domain, base_dir)
+        outboxDir = create_outbox_dir(nickname, domain, base_dir)
         filename = outboxDir + '/' + newAnnounceId.replace('/', '#') + '.json'
         save_json(newAnnounce, filename)
 

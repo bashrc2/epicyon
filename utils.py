@@ -777,27 +777,27 @@ def contains_invalid_chars(json_str: str) -> bool:
 def removeInvalidChars(text: str) -> str:
     """Removes any invalid characters from a string
     """
-    for isInvalid in INVALID_CHARACTERS:
-        if isInvalid not in text:
+    for is_invalid in INVALID_CHARACTERS:
+        if is_invalid not in text:
             continue
-        text = text.replace(isInvalid, '')
+        text = text.replace(is_invalid, '')
     return text
 
 
 def createPersonDir(nickname: str, domain: str, base_dir: str,
-                    dirname: str) -> str:
+                    dir_name: str) -> str:
     """Create a directory for a person
     """
     handle = nickname + '@' + domain
     if not os.path.isdir(base_dir + '/accounts/' + handle):
         os.mkdir(base_dir + '/accounts/' + handle)
-    boxDir = base_dir + '/accounts/' + handle + '/' + dirname
-    if not os.path.isdir(boxDir):
-        os.mkdir(boxDir)
-    return boxDir
+    box_dir = base_dir + '/accounts/' + handle + '/' + dir_name
+    if not os.path.isdir(box_dir):
+        os.mkdir(box_dir)
+    return box_dir
 
 
-def createOutboxDir(nickname: str, domain: str, base_dir: str) -> str:
+def create_outbox_dir(nickname: str, domain: str, base_dir: str) -> str:
     """Create an outbox for a person
     """
     return createPersonDir(nickname, domain, base_dir, 'outbox')
