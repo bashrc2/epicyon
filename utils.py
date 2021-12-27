@@ -908,7 +908,7 @@ def dangerous_svg(content: str, allow_local_network_access: bool) -> bool:
                                 separators, invalid_strings)
 
 
-def getDisplayName(base_dir: str, actor: str, person_cache: {}) -> str:
+def get_display_name(base_dir: str, actor: str, person_cache: {}) -> str:
     """Returns the display name for the given actor
     """
     if '/statuses/' in actor:

@@ -10,7 +10,7 @@ __module_group__ = "Web Interface"
 import os
 from pprint import pprint
 from webfinger import webfingerHandle
-from utils import getDisplayName
+from utils import get_display_name
 from utils import is_group_account
 from utils import has_object_dict
 from utils import get_occupation_name
@@ -2361,7 +2361,7 @@ def _individualFollowAsHtml(signing_priv_key_pem: str,
     if not avatarUrl:
         avatarUrl = followUrl + '/avatar.png'
 
-    displayName = getDisplayName(base_dir, followUrl, person_cache)
+    displayName = get_display_name(base_dir, followUrl, person_cache)
     isGroup = False
     if not displayName:
         # lookup the correct webfinger for the followUrl

@@ -44,7 +44,7 @@ from utils import get_cached_post_filename
 from utils import get_protocol_prefixes
 from utils import isNewsPost
 from utils import isBlogPost
-from utils import getDisplayName
+from utils import get_display_name
 from utils import isPublicPost
 from utils import updateRecentPostsCache
 from utils import remove_id_ending
@@ -997,7 +997,8 @@ def _getPostTitleAnnounceHtml(base_dir: str,
 
     announceDomain, announcePort = get_domain_from_actor(attributedTo)
     getPersonFromCache(base_dir, attributedTo, person_cache, allowDownloads)
-    announceDisplayName = getDisplayName(base_dir, attributedTo, person_cache)
+    announceDisplayName = \
+        get_display_name(base_dir, attributedTo, person_cache)
     if not announceDisplayName:
         announceDisplayName = announceNickname + '@' + announceDomain
 
@@ -1180,7 +1181,7 @@ def _getPostTitleReplyHtml(base_dir: str,
                 containerClassIcons, containerClass)
 
     getPersonFromCache(base_dir, replyActor, person_cache, allowDownloads)
-    replyDisplayName = getDisplayName(base_dir, replyActor, person_cache)
+    replyDisplayName = get_display_name(base_dir, replyActor, person_cache)
     if not replyDisplayName:
         replyDisplayName = replyNickname + '@' + replyDomain
 
@@ -1580,7 +1581,7 @@ def individualPostAsHtml(signing_priv_key_pem: str,
         actorNickname = 'dev'
     actorDomain, actorPort = get_domain_from_actor(postActor)
 
-    displayName = getDisplayName(base_dir, postActor, person_cache)
+    displayName = get_display_name(base_dir, postActor, person_cache)
     if displayName:
         if ':' in displayName:
             displayName = \

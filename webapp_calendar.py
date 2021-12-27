@@ -10,7 +10,7 @@ __module_group__ = "Calendar"
 import os
 from datetime import datetime
 from datetime import date
-from utils import getDisplayName
+from utils import get_display_name
 from utils import get_config_param
 from utils import getNicknameFromActor
 from utils import get_domain_from_actor
@@ -159,8 +159,8 @@ def _htmlCalendarDay(person_cache: {}, cssCache: {}, translate: {},
                         if ev.get('sender'):
                             senderActor = ev['sender']
                             dispName = \
-                                getDisplayName(base_dir, senderActor,
-                                               person_cache)
+                                get_display_name(base_dir, senderActor,
+                                                 person_cache)
                             if dispName:
                                 senderName = \
                                     '<a href="' + senderActor + '">' + \

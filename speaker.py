@@ -18,7 +18,7 @@ from utils import camel_case_split
 from utils import get_domain_from_actor
 from utils import getNicknameFromActor
 from utils import getGenderFromBio
-from utils import getDisplayName
+from utils import get_display_name
 from utils import remove_html
 from utils import load_json
 from utils import save_json
@@ -470,7 +470,7 @@ def _postToSpeakerJson(base_dir: str, http_prefix: str,
             summary = html.unescape(summary)
 
     speakerName = \
-        getDisplayName(base_dir, post_json_object['actor'], person_cache)
+        get_display_name(base_dir, post_json_object['actor'], person_cache)
     if not speakerName:
         return
     speakerName = _removeEmojiFromText(speakerName)
