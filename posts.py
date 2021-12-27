@@ -63,7 +63,7 @@ from utils import load_json
 from utils import save_json
 from utils import get_config_param
 from utils import locate_news_votes
-from utils import locateNewsArrival
+from utils import locate_news_arrival
 from utils import votes_on_newswire_item
 from utils import remove_html
 from utils import dangerous_markup
@@ -3618,7 +3618,7 @@ def _passedNewswireVoting(newswire_votes_threshold: int,
     # note that the presence of an arrival file also indicates
     # that this post is moderated
     arrivalDate = \
-        locateNewsArrival(base_dir, domain, post_filename)
+        locate_news_arrival(base_dir, domain, post_filename)
     if not arrivalDate:
         return True
     # how long has elapsed since this post arrived?

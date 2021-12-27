@@ -1266,32 +1266,32 @@ def locate_news_votes(base_dir: str, domain: str,
     return None
 
 
-def locateNewsArrival(base_dir: str, domain: str,
-                      postUrl: str) -> str:
+def locate_news_arrival(base_dir: str, domain: str,
+                        post_url: str) -> str:
     """Returns the arrival time for a news post
     within the news user account
     """
-    postUrl = \
-        postUrl.strip().replace('\n', '').replace('\r', '')
+    post_url = \
+        post_url.strip().replace('\n', '').replace('\r', '')
 
     # if this post in the shared inbox?
-    postUrl = remove_id_ending(postUrl.strip()).replace('/', '#')
+    post_url = remove_id_ending(post_url.strip()).replace('/', '#')
 
-    if postUrl.endswith('.json'):
-        postUrl = postUrl + '.arrived'
+    if post_url.endswith('.json'):
+        post_url = post_url + '.arrived'
     else:
-        postUrl = postUrl + '.json.arrived'
+        post_url = post_url + '.json.arrived'
 
-    accountDir = base_dir + '/accounts/news@' + domain + '/'
-    post_filename = accountDir + 'outbox/' + postUrl
+    account_dir = base_dir + '/accounts/news@' + domain + '/'
+    post_filename = account_dir + 'outbox/' + post_url
     if os.path.isfile(post_filename):
-        with open(post_filename, 'r') as arrivalFile:
-            arrival = arrivalFile.read()
+        with open(post_filename, 'r') as arrival_file:
+            arrival = arrival_file.read()
             if arrival:
-                arrivalDate = \
+                arrival_date = \
                     datetime.datetime.strptime(arrival,
                                                "%Y-%m-%dT%H:%M:%SZ")
-                return arrivalDate
+                return arrival_date
 
     return None
 
