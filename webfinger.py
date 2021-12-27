@@ -16,7 +16,7 @@ from utils import get_full_domain
 from utils import load_json
 from utils import load_json_onionify
 from utils import save_json
-from utils import getProtocolPrefixes
+from utils import get_protocol_prefixes
 from utils import remove_domain_port
 from utils import get_user_paths
 from utils import get_group_paths
@@ -29,7 +29,7 @@ def _parseHandle(handle: str) -> (str, str, bool):
     group_account = False
     if '.' not in handle:
         return None, None, False
-    prefixes = getProtocolPrefixes()
+    prefixes = get_protocol_prefixes()
     handleStr = handle
     for prefix in prefixes:
         handleStr = handleStr.replace(prefix, '')

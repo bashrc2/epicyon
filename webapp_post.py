@@ -41,7 +41,7 @@ from utils import locate_post
 from utils import load_json
 from utils import get_cached_post_directory
 from utils import get_cached_post_filename
-from utils import getProtocolPrefixes
+from utils import get_protocol_prefixes
 from utils import isNewsPost
 from utils import isBlogPost
 from utils import getDisplayName
@@ -1153,7 +1153,7 @@ def _getPostTitleReplyHtml(base_dir: str,
     # has a reply
     if '/statuses/' not in objJson['inReplyTo']:
         postDomain = objJson['inReplyTo']
-        prefixes = getProtocolPrefixes()
+        prefixes = get_protocol_prefixes()
         for prefix in prefixes:
             postDomain = postDomain.replace(prefix, '')
         if '/' in postDomain:

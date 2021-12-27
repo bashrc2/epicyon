@@ -51,7 +51,7 @@ from utils import save_json
 from utils import setConfigParam
 from utils import get_config_param
 from utils import refresh_newswire
-from utils import getProtocolPrefixes
+from utils import get_protocol_prefixes
 from utils import has_users_path
 from utils import get_image_extensions
 from utils import is_image_file
@@ -1457,7 +1457,7 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
                       'https://domain/@nick or https://domain' +
                       detectedUsersPath + 'nick')
             return None, None
-        prefixes = getProtocolPrefixes()
+        prefixes = get_protocol_prefixes()
         for prefix in prefixes:
             handle = handle.replace(prefix, '')
         handle = handle.replace('/@', detectedUsersPath)

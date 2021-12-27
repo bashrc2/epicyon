@@ -618,7 +618,7 @@ def remove_hash_from_post_id(post_id: str) -> str:
     return post_id.split('#')[0]
 
 
-def getProtocolPrefixes() -> []:
+def get_protocol_prefixes() -> []:
     """Returns a list of valid prefixes
     """
     return ('https://', 'http://', 'ftp://',
@@ -1072,7 +1072,7 @@ def getDomainFromActor(actor: str) -> (str, int):
     if actor.startswith('@'):
         actor = actor[1:]
     port = None
-    prefixes = getProtocolPrefixes()
+    prefixes = get_protocol_prefixes()
     usersPaths = get_user_paths()
     for possiblePath in usersPaths:
         if possiblePath in actor:
@@ -2894,7 +2894,7 @@ def get_actor_property_url(actor_json: {}, property_name: str) -> str:
         if property_value['type'] != 'PropertyValue':
             continue
         property_value['value'] = property_value['value'].strip()
-        prefixes = getProtocolPrefixes()
+        prefixes = get_protocol_prefixes()
         prefixFound = False
         for prefix in prefixes:
             if property_value['value'].startswith(prefix):

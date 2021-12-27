@@ -13,7 +13,7 @@ from collections import OrderedDict
 from session import getJson
 from utils import is_account_dir
 from utils import remove_html
-from utils import getProtocolPrefixes
+from utils import get_protocol_prefixes
 from utils import load_json
 from utils import get_cached_post_filename
 from utils import get_config_param
@@ -192,7 +192,7 @@ def _setActorPropertyUrl(actor_json: {}, property_name: str, url: str) -> None:
     if propertyFound:
         actor_json['attachment'].remove(propertyFound)
 
-    prefixes = getProtocolPrefixes()
+    prefixes = get_protocol_prefixes()
     prefixFound = False
     for prefix in prefixes:
         if url.startswith(prefix):

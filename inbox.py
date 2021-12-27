@@ -40,7 +40,7 @@ from utils import has_users_path
 from utils import valid_post_date
 from utils import get_full_domain
 from utils import remove_id_ending
-from utils import getProtocolPrefixes
+from utils import get_protocol_prefixes
 from utils import isBlogPost
 from utils import removeAvatarFromCache
 from utils import isPublicPost
@@ -1856,7 +1856,7 @@ def _receiveAnnounce(recent_posts_cache: {},
         return False
 
     blockedCache = {}
-    prefixes = getProtocolPrefixes()
+    prefixes = get_protocol_prefixes()
     # is the domain of the announce actor blocked?
     objectDomain = message_json['object']
     for prefix in prefixes:

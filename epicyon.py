@@ -75,7 +75,7 @@ from utils import getDomainFromActor
 from utils import getNicknameFromActor
 from utils import follow_person
 from utils import validNickname
-from utils import getProtocolPrefixes
+from utils import get_protocol_prefixes
 from utils import acct_dir
 from media import archiveMedia
 from media import getAttachmentMediaType
@@ -2125,7 +2125,7 @@ if args.followers:
        args.followers.startswith('http') or \
        args.followers.startswith('hyper'):
         # format: https://domain/@nick
-        prefixes = getProtocolPrefixes()
+        prefixes = get_protocol_prefixes()
         for prefix in prefixes:
             args.followers = args.followers.replace(prefix, '')
         args.followers = args.followers.replace('/@', '/users/')
