@@ -81,7 +81,7 @@ from utils import copytree
 from utils import load_json
 from utils import save_json
 from utils import getStatusNumber
-from utils import getFollowersOfPerson
+from utils import get_followers_of_person
 from utils import removeHtml
 from utils import dangerousMarkup
 from utils import acct_dir
@@ -2473,7 +2473,7 @@ def _testFollowersOfPerson(base_dir: str) -> None:
     followPerson(base_dir, nickname, domain, 'someother', 'randodomain.net',
                  federation_list, False, False)
 
-    followList = getFollowersOfPerson(base_dir, 'ultrapancake', domain)
+    followList = get_followers_of_person(base_dir, 'ultrapancake', domain)
     assert len(followList) == 3
     assert 'mxpop@' + domain in followList
     assert 'drokk@' + domain in followList

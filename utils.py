@@ -566,9 +566,9 @@ def getFollowersList(base_dir: str,
     return []
 
 
-def getFollowersOfPerson(base_dir: str,
-                         nickname: str, domain: str,
-                         followFile='following.txt') -> []:
+def get_followers_of_person(base_dir: str,
+                            nickname: str, domain: str,
+                            follow_file='following.txt') -> []:
     """Returns a list containing the followers of the given person
     Used by the shared inbox to know who to send incoming mail to
     """
@@ -579,7 +579,7 @@ def getFollowersOfPerson(base_dir: str,
         return followers
     for subdir, dirs, files in os.walk(base_dir + '/accounts'):
         for account in dirs:
-            filename = os.path.join(subdir, account) + '/' + followFile
+            filename = os.path.join(subdir, account) + '/' + follow_file
             if account == handle or \
                account.startswith('inbox@') or \
                account.startswith('news@'):
@@ -598,20 +598,20 @@ def getFollowersOfPerson(base_dir: str,
     return followers
 
 
-def remove_id_ending(idStr: str) -> str:
+def remove_id_ending(id_str: str) -> str:
     """Removes endings such as /activity and /undo
     """
-    if idStr.endswith('/activity'):
-        idStr = idStr[:-len('/activity')]
-    elif idStr.endswith('/undo'):
-        idStr = idStr[:-len('/undo')]
-    elif idStr.endswith('/event'):
-        idStr = idStr[:-len('/event')]
-    elif idStr.endswith('/replies'):
-        idStr = idStr[:-len('/replies')]
-    if idStr.endswith('#Create'):
-        idStr = idStr.split('#Create')[0]
-    return idStr
+    if id_str.endswith('/activity'):
+        id_str = id_str[:-len('/activity')]
+    elif id_str.endswith('/undo'):
+        id_str = id_str[:-len('/undo')]
+    elif id_str.endswith('/event'):
+        id_str = id_str[:-len('/event')]
+    elif id_str.endswith('/replies'):
+        id_str = id_str[:-len('/replies')]
+    if id_str.endswith('#Create'):
+        id_str = id_str.split('#Create')[0]
+    return id_str
 
 
 def removeHashFromPostId(post_id: str) -> str:
@@ -1136,7 +1136,7 @@ def followPerson(base_dir: str, nickname: str, domain: str,
                  followNickname: str, followDomain: str,
                  federation_list: [], debug: bool,
                  group_account: bool,
-                 followFile: str = 'following.txt') -> bool:
+                 follow_file: str = 'following.txt') -> bool:
     """Adds a person to the follow list
     """
     followDomainStrLower = followDomain.lower().replace('\n', '')
@@ -1187,7 +1187,7 @@ def followPerson(base_dir: str, nickname: str, domain: str,
     handleToFollow = followNickname + '@' + followDomain
     if group_account:
         handleToFollow = '!' + handleToFollow
-    filename = base_dir + '/accounts/' + handle + '/' + followFile
+    filename = base_dir + '/accounts/' + handle + '/' + follow_file
     if os.path.isfile(filename):
         if handleToFollow in open(filename).read():
             if debug:
@@ -1213,7 +1213,7 @@ def followPerson(base_dir: str, nickname: str, domain: str,
         with open(filename, 'w+') as f:
             f.write(handleToFollow + '\n')
 
-    if followFile.endswith('following.txt'):
+    if follow_file.endswith('following.txt'):
         # Default to adding new follows to the calendar.
         # Possibly this could be made optional
         # if following a person add them to the list of
