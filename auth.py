@@ -13,7 +13,7 @@ import binascii
 import os
 import secrets
 import datetime
-from utils import isSystemAccount
+from utils import is_system_account
 from utils import has_users_path
 
 
@@ -103,7 +103,7 @@ def authorizeBasic(base_dir: str, path: str, authHeader: str,
             print('DEBUG: basic auth - this is not a users endpoint')
         return False
     nicknameFromPath = pathUsersSection.split('/')[0]
-    if isSystemAccount(nicknameFromPath):
+    if is_system_account(nicknameFromPath):
         print('basic auth - attempted login using system account ' +
               nicknameFromPath + ' in path')
         return False
@@ -116,7 +116,7 @@ def authorizeBasic(base_dir: str, path: str, authHeader: str,
                   'separator for username:password')
         return False
     nickname = plain.split(':')[0]
-    if isSystemAccount(nickname):
+    if is_system_account(nickname):
         print('basic auth - attempted login using system account ' + nickname +
               ' in Auth header')
         return False

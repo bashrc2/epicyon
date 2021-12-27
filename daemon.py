@@ -282,7 +282,7 @@ from utils import getCSS
 from utils import firstParagraphFromString
 from utils import clearFromPostCaches
 from utils import containsInvalidChars
-from utils import isSystemAccount
+from utils import is_system_account
 from utils import setConfigParam
 from utils import get_config_param
 from utils import remove_id_ending
@@ -1584,7 +1584,7 @@ class PubServer(BaseHTTPRequestHandler):
                     tokenStr = tokenStr.split(';')[0].strip()
                 if self.server.tokens_lookup.get(tokenStr):
                     nickname = self.server.tokens_lookup[tokenStr]
-                    if not isSystemAccount(nickname):
+                    if not is_system_account(nickname):
                         self.authorizedNickname = nickname
                         # default to the inbox of the person
                         if self.path == '/':
@@ -1679,7 +1679,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.last_login_time,
                                     self.server.domain)
         if loginNickname:
-            if isSystemAccount(loginNickname):
+            if is_system_account(loginNickname):
                 print('Invalid username login: ' + loginNickname +
                       ' (system account)')
                 self._clearLoginDetails(loginNickname, calling_domain)

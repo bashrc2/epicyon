@@ -20,7 +20,7 @@ from utils import is_artist
 from utils import is_dormant
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
-from utils import isSystemAccount
+from utils import is_system_account
 from utils import removeHtml
 from utils import load_json
 from utils import get_config_param
@@ -569,7 +569,7 @@ def htmlProfile(signing_priv_key_pem: str,
     nickname = profile_json['preferredUsername']
     if not nickname:
         return ""
-    if isSystemAccount(nickname):
+    if is_system_account(nickname):
         return htmlFrontScreen(signing_priv_key_pem,
                                rss_icon_at_top,
                                cssCache, icons_as_buttons,
@@ -652,7 +652,7 @@ def htmlProfile(signing_priv_key_pem: str,
        PGPfingerprint or emailAddress:
         donateSection = '<div class="container">\n'
         donateSection += '  <center>\n'
-        if donateUrl and not isSystemAccount(nickname):
+        if donateUrl and not is_system_account(nickname):
             donateSection += \
                 '    <p><a href="' + donateUrl + \
                 '"><button class="donateButton">' + translate['Donate'] + \

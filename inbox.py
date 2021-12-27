@@ -19,7 +19,7 @@ from reaction import updateReactionCollection
 from reaction import validEmojiContent
 from utils import domainPermitted
 from utils import is_group_account
-from utils import isSystemAccount
+from utils import is_system_account
 from utils import invalid_ciphertext
 from utils import removeHtml
 from utils import fileLastModified
@@ -3911,7 +3911,7 @@ def _receiveFollowRequest(session, base_dir: str, http_prefix: str,
             print('DEBUG: follow request does not contain a ' +
                   'nickname for the account followed')
         return True
-    if isSystemAccount(nicknameToFollow):
+    if is_system_account(nicknameToFollow):
         if debug:
             print('DEBUG: Cannot follow system account - ' +
                   nicknameToFollow)

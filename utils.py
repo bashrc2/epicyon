@@ -486,7 +486,7 @@ def firstParagraphFromString(content: str) -> str:
     return removeHtml(paragraph)
 
 
-def isSystemAccount(nickname: str) -> bool:
+def is_system_account(nickname: str) -> bool:
     """Returns true if the given nickname is a system account
     """
     if nickname == 'news' or nickname == 'inbox':
@@ -505,7 +505,7 @@ def _create_config(base_dir: str) -> None:
     save_json(config_json, config_filename)
 
 
-def setConfigParam(base_dir: str, variableName: str, variableValue) -> None:
+def setConfigParam(base_dir: str, variable_name: str, variable_value) -> None:
     """Sets a configuration value
     """
     _create_config(base_dir)
@@ -513,19 +513,19 @@ def setConfigParam(base_dir: str, variableName: str, variableValue) -> None:
     configJson = {}
     if os.path.isfile(config_filename):
         configJson = load_json(config_filename)
-    configJson[variableName] = variableValue
+    configJson[variable_name] = variable_value
     save_json(configJson, config_filename)
 
 
-def get_config_param(base_dir: str, variableName: str):
+def get_config_param(base_dir: str, variable_name: str):
     """Gets a configuration value
     """
     _create_config(base_dir)
     config_filename = base_dir + '/config.json'
     configJson = load_json(config_filename)
     if configJson:
-        if variableName in configJson:
-            return configJson[variableName]
+        if variable_name in configJson:
+            return configJson[variable_name]
     return None
 
 
