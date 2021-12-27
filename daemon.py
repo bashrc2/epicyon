@@ -256,7 +256,7 @@ from utils import valid_password
 from utils import remove_line_endings
 from utils import get_base_content_from_post
 from utils import acct_dir
-from utils import getImageExtensionFromMimeType
+from utils import get_image_extension_from_mime_type
 from utils import get_image_mime_type
 from utils import has_object_dict
 from utils import user_agent_domain
@@ -3808,7 +3808,7 @@ class PubServer(BaseHTTPRequestHandler):
         mediaFilenameBase = accountsDir + '/upload'
         mediaFilename = \
             mediaFilenameBase + '.' + \
-            getImageExtensionFromMimeType(self.headers['Content-type'])
+            get_image_extension_from_mime_type(self.headers['Content-type'])
         try:
             with open(mediaFilename, 'wb') as avFile:
                 avFile.write(mediaBytes)

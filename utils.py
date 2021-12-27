@@ -378,7 +378,7 @@ def get_image_mime_type(image_filename: str) -> str:
     return 'image/png'
 
 
-def getImageExtensionFromMimeType(content_type: str) -> str:
+def get_image_extension_from_mime_type(content_type: str) -> str:
     """Returns the image extension from a mime type, such as image/jpeg
     """
     image_media = {
@@ -390,8 +390,8 @@ def getImageExtensionFromMimeType(content_type: str) -> str:
         'avif': 'avif',
         'x-icon': 'ico'
     }
-    for mimeExt, ext in image_media.items():
-        if content_type.endswith(mimeExt):
+    for mime_ext, ext in image_media.items():
+        if content_type.endswith(mime_ext):
             return ext
     return 'png'
 
@@ -407,14 +407,14 @@ def get_image_formats() -> str:
     """Returns a string of permissable image formats
     used when selecting an image for a new post
     """
-    imageExt = get_image_extensions()
+    image_ext = get_image_extensions()
 
-    imageFormats = ''
-    for ext in imageExt:
-        if imageFormats:
-            imageFormats += ', '
-        imageFormats += '.' + ext
-    return imageFormats
+    image_formats = ''
+    for ext in image_ext:
+        if image_formats:
+            image_formats += ', '
+        image_formats += '.' + ext
+    return image_formats
 
 
 def is_image_file(filename: str) -> bool:
