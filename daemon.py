@@ -243,7 +243,7 @@ from languages import getActorLanguages
 from languages import setActorLanguages
 from like import updateLikesCollection
 from reaction import updateReactionCollection
-from utils import undoReactionCollectionEntry
+from utils import undo_reaction_collection_entry
 from utils import get_new_post_endpoints
 from utils import has_actor
 from utils import setReplyIntervalHours
@@ -8704,21 +8704,22 @@ class PubServer(BaseHTTPRequestHandler):
             recent_posts_cache = self.server.recent_posts_cache
             reactionPostJson = load_json(reactionPostFilename, 0, 1)
             if origFilename and origPostUrl:
-                undoReactionCollectionEntry(recent_posts_cache,
-                                            base_dir, reactionPostFilename,
-                                            reactionUrl,
-                                            undoActor, domain, debug,
-                                            reactionPostJson,
-                                            emojiContent)
+                undo_reaction_collection_entry(recent_posts_cache,
+                                               base_dir,
+                                               reactionPostFilename,
+                                               reactionUrl,
+                                               undoActor, domain, debug,
+                                               reactionPostJson,
+                                               emojiContent)
                 reactionUrl = origPostUrl
                 reactionPostFilename = origFilename
             if debug:
                 print('Removing emoji reaction for ' + reactionPostFilename)
-            undoReactionCollectionEntry(recent_posts_cache,
-                                        base_dir,
-                                        reactionPostFilename, reactionUrl,
-                                        undoActor, domain, debug,
-                                        reactionPostJson, emojiContent)
+            undo_reaction_collection_entry(recent_posts_cache,
+                                           base_dir,
+                                           reactionPostFilename, reactionUrl,
+                                           undoActor, domain, debug,
+                                           reactionPostJson, emojiContent)
             if debug:
                 print('Regenerating html post for changed ' +
                       'emoji reaction collection')

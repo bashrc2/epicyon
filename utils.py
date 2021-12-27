@@ -2276,12 +2276,12 @@ def undoLikesCollectionEntry(recent_posts_cache: {},
     save_json(post_json_object, post_filename)
 
 
-def undoReactionCollectionEntry(recent_posts_cache: {},
-                                base_dir: str, post_filename: str,
-                                objectUrl: str,
-                                actor: str, domain: str, debug: bool,
-                                post_json_object: {},
-                                emojiContent: str) -> None:
+def undo_reaction_collection_entry(recent_posts_cache: {},
+                                   base_dir: str, post_filename: str,
+                                   objectUrl: str,
+                                   actor: str, domain: str, debug: bool,
+                                   post_json_object: {},
+                                   emojiContent: str) -> None:
     """Undoes an emoji reaction for a particular actor
     """
     if not post_json_object:
@@ -2299,7 +2299,7 @@ def undoReactionCollectionEntry(recent_posts_cache: {},
             try:
                 os.remove(cached_post_filename)
             except OSError:
-                print('EX: undoReactionCollectionEntry ' +
+                print('EX: undo_reaction_collection_entry ' +
                       'unable to delete cached post ' +
                       str(cached_post_filename))
     remove_post_from_cache(post_json_object, recent_posts_cache)

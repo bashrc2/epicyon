@@ -23,7 +23,7 @@ from utils import url_permitted
 from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
 from utils import locate_post
-from utils import undoReactionCollectionEntry
+from utils import undo_reaction_collection_entry
 from utils import has_group_type
 from utils import local_actor_url
 from utils import load_json
@@ -432,9 +432,9 @@ def outboxUndoReaction(recent_posts_cache: {},
             print('DEBUG: c2s undo reaction post not found in inbox or outbox')
             print(messageId)
         return True
-    undoReactionCollectionEntry(recent_posts_cache, base_dir, post_filename,
-                                messageId, message_json['actor'],
-                                domain, debug, None, emojiContent)
+    undo_reaction_collection_entry(recent_posts_cache, base_dir, post_filename,
+                                   messageId, message_json['actor'],
+                                   domain, debug, None, emojiContent)
     if debug:
         print('DEBUG: post undo reaction via c2s - ' + post_filename)
 

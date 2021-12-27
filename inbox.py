@@ -57,7 +57,7 @@ from utils import removeModerationPostFromIndex
 from utils import load_json
 from utils import save_json
 from utils import undoLikesCollectionEntry
-from utils import undoReactionCollectionEntry
+from utils import undo_reaction_collection_entry
 from utils import has_group_type
 from utils import local_actor_url
 from utils import has_object_stringType
@@ -1446,9 +1446,9 @@ def _receiveUndoReaction(recent_posts_cache: {},
         if debug:
             print('DEBUG: unreaction has no content')
         return True
-    undoReactionCollectionEntry(recent_posts_cache, base_dir, post_filename,
-                                postReactionId, reactionActor, domain,
-                                debug, None, emojiContent)
+    undo_reaction_collection_entry(recent_posts_cache, base_dir, post_filename,
+                                   postReactionId, reactionActor, domain,
+                                   debug, None, emojiContent)
     # regenerate the html
     reactionPostJson = load_json(post_filename, 0, 1)
     if reactionPostJson:
@@ -1463,13 +1463,14 @@ def _receiveUndoReaction(recent_posts_cache: {},
                     if announceReactionFilename:
                         postReactionId = announceReactionUrl
                         post_filename = announceReactionFilename
-                        undoReactionCollectionEntry(recent_posts_cache,
-                                                    base_dir,
-                                                    post_filename,
-                                                    postReactionId,
-                                                    reactionActor, domain,
-                                                    debug, None,
-                                                    emojiContent)
+                        undo_reaction_collection_entry(recent_posts_cache,
+                                                       base_dir,
+                                                       post_filename,
+                                                       postReactionId,
+                                                       reactionActor,
+                                                       domain,
+                                                       debug, None,
+                                                       emojiContent)
         if reactionPostJson:
             if debug:
                 cachedPostFilename = \
