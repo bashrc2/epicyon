@@ -18,7 +18,7 @@ from datetime import timezone
 from collections import OrderedDict
 from utils import valid_post_date
 from categories import setHashtagCategory
-from utils import dangerousSVG
+from utils import dangerous_svg
 from utils import get_fav_filename_from_url
 from utils import get_base_content_from_post
 from utils import has_object_dict
@@ -180,7 +180,7 @@ def _downloadNewswireFeedFavicon(session, base_dir: str,
     # check svg for dubious scripts
     if favUrl.endswith('.svg'):
         imageDataStr = str(imageData)
-        if dangerousSVG(imageDataStr, False):
+        if dangerous_svg(imageDataStr, False):
             return False
 
     # save to the cache

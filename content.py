@@ -11,7 +11,7 @@ import os
 import email.parser
 import urllib.parse
 from shutil import copyfile
-from utils import dangerousSVG
+from utils import dangerous_svg
 from utils import remove_domain_port
 from utils import isValidLanguage
 from utils import get_image_extensions
@@ -1120,7 +1120,7 @@ def saveMediaInFormPOST(mediaBytes, debug: bool,
     if detectedExtension == 'svg':
         svgStr = mediaBytes[startPos:]
         svgStr = svgStr.decode()
-        if dangerousSVG(svgStr, False):
+        if dangerous_svg(svgStr, False):
             return None, None
 
     try:

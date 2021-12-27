@@ -14,7 +14,7 @@ from utils import save_json
 from utils import get_image_extensions
 from utils import copytree
 from utils import acct_dir
-from utils import dangerousSVG
+from utils import dangerous_svg
 from utils import local_actor_url
 from shutil import copyfile
 from shutil import make_archive
@@ -902,7 +902,7 @@ def scanThemesForScripts(base_dir: str) -> bool:
             content = ''
             with open(svgFilename, 'r') as fp:
                 content = fp.read()
-            svgDangerous = dangerousSVG(content, False)
+            svgDangerous = dangerous_svg(content, False)
             if svgDangerous:
                 print('svg file contains script: ' + svgFilename)
                 return True

@@ -897,15 +897,15 @@ def dangerous_markup(content: str, allow_local_network_access: bool) -> bool:
                                 separators, invalid_strings)
 
 
-def dangerousSVG(content: str, allow_local_network_access: bool) -> bool:
+def dangerous_svg(content: str, allow_local_network_access: bool) -> bool:
     """Returns true if the given svg file content contains dangerous scripts
     """
     separators = [['<', '>'], ['&lt;', '&gt;']]
-    invalidStrings = [
+    invalid_strings = [
         'script'
     ]
     return _is_dangerous_string(content, allow_local_network_access,
-                                separators, invalidStrings)
+                                separators, invalid_strings)
 
 
 def getDisplayName(base_dir: str, actor: str, person_cache: {}) -> str:

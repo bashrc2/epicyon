@@ -59,7 +59,7 @@ from utils import acct_dir
 from utils import get_user_paths
 from utils import get_group_paths
 from utils import local_actor_url
-from utils import dangerousSVG
+from utils import dangerous_svg
 from session import createSession
 from session import getJson
 from webfinger import webfingerHandle
@@ -1635,7 +1635,7 @@ def getPersonAvatarUrl(base_dir: str, personUrl: str, person_cache: {},
             content = ''
             with open(imFilename, 'r') as fp:
                 content = fp.read()
-            if not dangerousSVG(content, False):
+            if not dangerous_svg(content, False):
                 return imPath
 
     if personJson.get('icon'):

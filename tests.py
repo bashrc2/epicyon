@@ -55,7 +55,7 @@ from follow import sendFollowRequestViaServer
 from follow import sendUnfollowRequestViaServer
 from siteactive import siteIsActive
 from utils import get_sha_256
-from utils import dangerousSVG
+from utils import dangerous_svg
 from utils import canReplyTo
 from utils import is_group_account
 from utils import get_actor_languages_list
@@ -3685,7 +3685,7 @@ def _testDangerousSVG(base_dir: str) -> None:
         '  <svg viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg">' + \
         '  <circle cx="5" cy="5" r="4" />' + \
         '</svg>'
-    assert not dangerousSVG(svgContent, False)
+    assert not dangerous_svg(svgContent, False)
     svgContent = \
         '  <svg viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg">' + \
         '  <script>' + \
@@ -3705,7 +3705,7 @@ def _testDangerousSVG(base_dir: str) -> None:
         '' + \
         '  <circle cx="5" cy="5" r="4" />' + \
         '</svg>'
-    assert dangerousSVG(svgContent, False)
+    assert dangerous_svg(svgContent, False)
 
     assert not scanThemesForScripts(base_dir)
 
