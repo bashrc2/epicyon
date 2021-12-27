@@ -840,61 +840,61 @@ def get_local_network_addresses() -> []:
     return ('localhost', '127.0.', '192.168', '10.0.')
 
 
-def is_local_network_address(ipAddress: str) -> bool:
+def is_local_network_address(ip_address: str) -> bool:
+    """Is the given ip address local?
     """
-    """
-    localIPs = get_local_network_addresses()
-    for ipAddr in localIPs:
-        if ipAddress.startswith(ipAddr):
+    local_ips = get_local_network_addresses()
+    for ip_addr in local_ips:
+        if ip_address.startswith(ip_addr):
             return True
     return False
 
 
-def _isDangerousString(content: str, allow_local_network_access: bool,
-                       separators: [], invalidStrings: []) -> bool:
+def _is_dangerous_string(content: str, allow_local_network_access: bool,
+                         separators: [], invalid_strings: []) -> bool:
     """Returns true if the given string is dangerous
     """
-    for separatorStyle in separators:
-        startChar = separatorStyle[0]
-        endChar = separatorStyle[1]
-        if startChar not in content:
+    for separator_style in separators:
+        start_char = separator_style[0]
+        end_char = separator_style[1]
+        if start_char not in content:
             continue
-        if endChar not in content:
+        if end_char not in content:
             continue
-        contentSections = content.split(startChar)
-        invalidPartials = ()
+        content_sections = content.split(start_char)
+        invalid_partials = ()
         if not allow_local_network_access:
-            invalidPartials = get_local_network_addresses()
-        for markup in contentSections:
-            if endChar not in markup:
+            invalid_partials = get_local_network_addresses()
+        for markup in content_sections:
+            if end_char not in markup:
                 continue
-            markup = markup.split(endChar)[0].strip()
-            for partialMatch in invalidPartials:
-                if partialMatch in markup:
+            markup = markup.split(end_char)[0].strip()
+            for partial_match in invalid_partials:
+                if partial_match in markup:
                     return True
             if ' ' not in markup:
-                for badStr in invalidStrings:
-                    if badStr in markup:
+                for bad_str in invalid_strings:
+                    if bad_str in markup:
                         return True
             else:
-                for badStr in invalidStrings:
-                    if badStr + ' ' in markup:
+                for bad_str in invalid_strings:
+                    if bad_str + ' ' in markup:
                         return True
     return False
 
 
-def dangerousMarkup(content: str, allow_local_network_access: bool) -> bool:
+def dangerous_markup(content: str, allow_local_network_access: bool) -> bool:
     """Returns true if the given content contains dangerous html markup
     """
     separators = [['<', '>'], ['&lt;', '&gt;']]
-    invalidStrings = [
+    invalid_strings = [
         'script', 'noscript', 'code', 'pre',
         'canvas', 'style', 'abbr',
         'frame', 'iframe', 'html', 'body',
         'hr', 'allow-popups', 'allow-scripts'
     ]
-    return _isDangerousString(content, allow_local_network_access,
-                              separators, invalidStrings)
+    return _is_dangerous_string(content, allow_local_network_access,
+                                separators, invalid_strings)
 
 
 def dangerousSVG(content: str, allow_local_network_access: bool) -> bool:
@@ -904,8 +904,8 @@ def dangerousSVG(content: str, allow_local_network_access: bool) -> bool:
     invalidStrings = [
         'script'
     ]
-    return _isDangerousString(content, allow_local_network_access,
-                              separators, invalidStrings)
+    return _is_dangerous_string(content, allow_local_network_access,
+                                separators, invalidStrings)
 
 
 def getDisplayName(base_dir: str, actor: str, person_cache: {}) -> str:
@@ -929,7 +929,7 @@ def getDisplayName(base_dir: str, actor: str, person_cache: {}) -> str:
                 if actor_json.get('name'):
                     nameFound = actor_json['name']
     if nameFound:
-        if dangerousMarkup(nameFound, False):
+        if dangerous_markup(nameFound, False):
             nameFound = "*ADVERSARY*"
     return nameFound
 

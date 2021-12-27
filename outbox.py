@@ -23,7 +23,7 @@ from utils import get_local_network_addresses
 from utils import get_full_domain
 from utils import remove_id_ending
 from utils import get_domain_from_actor
-from utils import dangerousMarkup
+from utils import dangerous_markup
 from utils import is_featured_writer
 from utils import load_json
 from utils import save_json
@@ -225,7 +225,7 @@ def postMessageToOutbox(session, translate: {},
     if has_object_dict(message_json):
         contentStr = get_base_content_from_post(message_json, system_language)
         if contentStr:
-            if dangerousMarkup(contentStr, allow_local_network_access):
+            if dangerous_markup(contentStr, allow_local_network_access):
                 print('POST to outbox contains dangerous markup: ' +
                       str(message_json))
                 return False

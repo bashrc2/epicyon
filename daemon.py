@@ -300,7 +300,7 @@ from utils import url_permitted
 from utils import load_json
 from utils import save_json
 from utils import is_suspended
-from utils import dangerousMarkup
+from utils import dangerous_markup
 from utils import refresh_newswire
 from utils import is_image_file
 from utils import has_group_type
@@ -4158,8 +4158,8 @@ class PubServer(BaseHTTPRequestHandler):
             if nickname == adminNickname:
                 if fields.get('editedAbout'):
                     aboutStr = fields['editedAbout']
-                    if not dangerousMarkup(aboutStr,
-                                           allow_local_network_access):
+                    if not dangerous_markup(aboutStr,
+                                            allow_local_network_access):
                         try:
                             with open(aboutFilename, 'w+') as aboutFile:
                                 aboutFile.write(aboutStr)
@@ -4175,8 +4175,8 @@ class PubServer(BaseHTTPRequestHandler):
 
                 if fields.get('editedTOS'):
                     TOSStr = fields['editedTOS']
-                    if not dangerousMarkup(TOSStr,
-                                           allow_local_network_access):
+                    if not dangerous_markup(TOSStr,
+                                            allow_local_network_access):
                         try:
                             with open(TOSFilename, 'w+') as TOSFile:
                                 TOSFile.write(TOSStr)

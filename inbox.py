@@ -88,7 +88,7 @@ from blocking import broch_modeLapses
 from filters import isFiltered
 from utils import update_announce_collection
 from utils import undo_announce_collection_entry
-from utils import dangerousMarkup
+from utils import dangerous_markup
 from utils import is_dm
 from utils import is_reply
 from utils import has_actor
@@ -2241,7 +2241,7 @@ def _validPostContent(base_dir: str, nickname: str, domain: str,
         return True
 
     contentStr = get_base_content_from_post(message_json, system_language)
-    if dangerousMarkup(contentStr, allow_local_network_access):
+    if dangerous_markup(contentStr, allow_local_network_access):
         if message_json['object'].get('id'):
             print('REJECT ARBITRARY HTML: ' + message_json['object']['id'])
         print('REJECT ARBITRARY HTML: bad string in post - ' +

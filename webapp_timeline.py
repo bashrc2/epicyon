@@ -11,7 +11,7 @@ import os
 import time
 from shutil import copyfile
 from utils import is_artist
-from utils import dangerousMarkup
+from utils import dangerous_markup
 from utils import get_config_param
 from utils import get_full_domain
 from utils import is_editor
@@ -88,7 +88,7 @@ def _getHelpForTimeline(base_dir: str, boxName: str) -> str:
             instanceTitle = 'Epicyon'
         with open(helpFilename, 'r') as helpFile:
             helpText = helpFile.read()
-            if dangerousMarkup(helpText, False):
+            if dangerous_markup(helpText, False):
                 return ''
             helpText = helpText.replace('INSTANCE', instanceTitle)
             return '<div class="container">\n' + \

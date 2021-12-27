@@ -66,7 +66,7 @@ from utils import locateNewsVotes
 from utils import locateNewsArrival
 from utils import votesOnNewswireItem
 from utils import remove_html
-from utils import dangerousMarkup
+from utils import dangerous_markup
 from utils import acct_dir
 from utils import local_actor_url
 from media import attachMedia
@@ -414,7 +414,7 @@ def getPersonBox(signing_priv_key_pem: str, originDomain: str,
     displayName = None
     if personJson.get('name'):
         displayName = personJson['name']
-        if dangerousMarkup(personJson['name'], False):
+        if dangerous_markup(personJson['name'], False):
             displayName = '*ADVERSARY*'
         elif isFiltered(base_dir,
                         nickname, domain,
@@ -4674,7 +4674,7 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
             return None
         # Check the content of the announce
         contentStr = announcedJson['content']
-        if dangerousMarkup(contentStr, allow_local_network_access):
+        if dangerous_markup(contentStr, allow_local_network_access):
             _rejectAnnounce(announceFilename,
                             base_dir, nickname, domain, post_id,
                             recent_posts_cache)

@@ -32,7 +32,7 @@ from utils import load_json
 from utils import save_json
 from utils import get_status_number
 from utils import clearFromPostCaches
-from utils import dangerousMarkup
+from utils import dangerous_markup
 from utils import local_actor_url
 from inbox import storeHashTags
 from session import createSession
@@ -599,8 +599,8 @@ def _convertRSStoActivityPub(base_dir: str, http_prefix: str,
 
         rssTitle = _removeControlCharacters(item[0])
         url = item[1]
-        if dangerousMarkup(url, allow_local_network_access) or \
-           dangerousMarkup(rssTitle, allow_local_network_access):
+        if dangerous_markup(url, allow_local_network_access) or \
+           dangerous_markup(rssTitle, allow_local_network_access):
             continue
         rssDescription = ''
 
