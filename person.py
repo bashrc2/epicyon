@@ -43,7 +43,7 @@ from utils import containsInvalidChars
 from utils import replace_users_with_at
 from utils import remove_line_endings
 from utils import remove_domain_port
-from utils import getStatusNumber
+from utils import get_status_number
 from utils import get_full_domain
 from utils import validNickname
 from utils import load_json
@@ -199,7 +199,7 @@ def randomizeActorImages(personJson: {}) -> None:
 def getActorUpdateJson(actor_json: {}) -> {}:
     """Returns the json for an Person Update
     """
-    pubNumber, _ = getStatusNumber()
+    pubNumber, _ = get_status_number()
     manuallyApprovesFollowers = actor_json['manuallyApprovesFollowers']
     return {
         '@context': [
@@ -403,7 +403,7 @@ def _createPersonBase(base_dir: str, nickname: str, domain: str, port: int,
         personId + '/avatar' + \
         str(randint(10000000000000, 99999999999999)) + '.png'  # nosec
 
-    statusNumber, published = getStatusNumber()
+    statusNumber, published = get_status_number()
     newPerson = {
         '@context': [
             'https://www.w3.org/ns/activitystreams',
@@ -740,7 +740,7 @@ def personUpgradeActor(base_dir: str, personJson: {},
         updateActor = True
 
     if not personJson.get('published'):
-        statusNumber, published = getStatusNumber()
+        statusNumber, published = get_status_number()
         personJson['published'] = published
         updateActor = True
 

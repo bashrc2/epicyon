@@ -51,7 +51,7 @@ from utils import valid_post_date
 from utils import get_full_domain
 from utils import get_followers_list
 from utils import isEvil
-from utils import getStatusNumber
+from utils import get_status_number
 from utils import createPersonDir
 from utils import urlPermitted
 from utils import getNicknameFromActor
@@ -919,7 +919,7 @@ def savePostToBox(base_dir: str, http_prefix: str, post_id: str,
     domain = remove_domain_port(domain)
 
     if not post_id:
-        statusNumber, published = getStatusNumber()
+        statusNumber, published = get_status_number()
         post_id = \
             local_actor_url(http_prefix, nickname, originalDomain) + \
             '/statuses/' + statusNumber
@@ -1426,7 +1426,7 @@ def _createPostBase(base_dir: str,
                 if tag['name'] not in content:
                     del hashtagsDict[tagName]
 
-    statusNumber, published = getStatusNumber()
+    statusNumber, published = get_status_number()
     newPostId = \
         local_actor_url(http_prefix, nickname, domain) + \
         '/statuses/' + statusNumber
@@ -1570,7 +1570,7 @@ def outboxMessageCreateWrap(http_prefix: str,
     """
 
     domain = get_full_domain(domain, port)
-    statusNumber, published = getStatusNumber()
+    statusNumber, published = get_status_number()
     if message_json.get('published'):
         published = message_json['published']
     newPostId = \

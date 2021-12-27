@@ -14,7 +14,7 @@ from person import getActorJson
 from utils import contains_pgp_public_key
 from utils import is_pgp_encrypted
 from utils import get_full_domain
-from utils import getStatusNumber
+from utils import get_status_number
 from utils import local_actor_url
 from utils import replace_users_with_at
 from webfinger import webfingerHandle
@@ -542,7 +542,7 @@ def pgpPublicKeyUpload(base_dir: str, session,
     setPGPpubKey(actor_json, PGPpubKey)
 
     # create an actor update
-    statusNumber, published = getStatusNumber()
+    statusNumber, published = get_status_number()
     actorUpdate = {
         '@context': 'https://www.w3.org/ns/activitystreams',
         'id': actor + '#updates/' + statusNumber,

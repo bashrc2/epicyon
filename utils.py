@@ -657,8 +657,8 @@ def save_json(json_object: {}, filename: str) -> bool:
     tries = 0
     while tries < 5:
         try:
-            with open(filename, 'w+') as fp:
-                fp.write(json.dumps(json_object))
+            with open(filename, 'w+') as json_file:
+                json_file.write(json.dumps(json_object))
                 return True
         except OSError:
             print('EX: save_json ' + str(tries))
@@ -670,20 +670,20 @@ def save_json(json_object: {}, filename: str) -> bool:
 def load_json(filename: str, delay_sec: int = 2, max_tries: int = 5) -> {}:
     """Makes a few attempts to load a json formatted file
     """
-    jsonObject = None
+    json_object = None
     tries = 0
     while tries < max_tries:
         try:
-            with open(filename, 'r') as fp:
-                data = fp.read()
-                jsonObject = json.loads(data)
+            with open(filename, 'r') as json_file:
+                data = json_file.read()
+                json_object = json.loads(data)
                 break
         except BaseException:
             print('EX: load_json exception ' + str(filename))
             if delay_sec > 0:
                 time.sleep(delay_sec)
             tries += 1
-    return jsonObject
+    return json_object
 
 
 def load_json_onionify(filename: str, domain: str, onion_domain: str,
@@ -691,27 +691,27 @@ def load_json_onionify(filename: str, domain: str, onion_domain: str,
     """Makes a few attempts to load a json formatted file
     This also converts the domain name to the onion domain
     """
-    jsonObject = None
+    json_object = None
     tries = 0
     while tries < 5:
         try:
-            with open(filename, 'r') as fp:
-                data = fp.read()
+            with open(filename, 'r') as json_file:
+                data = json_file.read()
                 if data:
                     data = data.replace(domain, onion_domain)
                     data = data.replace('https:', 'http:')
                     print('*****data: ' + data)
-                jsonObject = json.loads(data)
+                json_object = json.loads(data)
                 break
         except BaseException:
             print('EX: load_json_onionify exception ' + str(filename))
             if delay_sec > 0:
                 time.sleep(delay_sec)
             tries += 1
-    return jsonObject
+    return json_object
 
 
-def getStatusNumber(publishedStr: str = None) -> (str, str):
+def get_status_number(publishedStr: str = None) -> (str, str):
     """Returns the status number and published date
     """
     if not publishedStr:

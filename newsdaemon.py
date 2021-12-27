@@ -30,7 +30,7 @@ from utils import remove_html
 from utils import get_full_domain
 from utils import load_json
 from utils import save_json
-from utils import getStatusNumber
+from utils import get_status_number
 from utils import clearFromPostCaches
 from utils import dangerousMarkup
 from utils import local_actor_url
@@ -581,7 +581,7 @@ def _convertRSStoActivityPub(base_dir: str, http_prefix: str,
                       str(dateStrWithOffset))
                 continue
 
-        statusNumber, published = getStatusNumber(dateStr)
+        statusNumber, published = get_status_number(dateStr)
         newPostId = \
             local_actor_url(http_prefix, 'news', domain) + \
             '/statuses/' + statusNumber

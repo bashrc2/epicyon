@@ -80,7 +80,7 @@ from utils import getDomainFromActor
 from utils import copytree
 from utils import load_json
 from utils import save_json
-from utils import getStatusNumber
+from utils import get_status_number
 from utils import get_followers_of_person
 from utils import remove_html
 from utils import dangerousMarkup
@@ -3459,7 +3459,7 @@ def _testGetStatusNumber():
     print('testGetStatusNumber')
     prevStatusNumber = None
     for i in range(1, 20):
-        statusNumber, published = getStatusNumber()
+        statusNumber, published = get_status_number()
         if prevStatusNumber:
             assert len(statusNumber) == 18
             assert int(statusNumber) > prevStatusNumber

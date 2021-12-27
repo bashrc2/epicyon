@@ -48,7 +48,7 @@ from utils import get_cached_post_filename
 from utils import remove_post_from_cache
 from utils import urlPermitted
 from utils import createInboxQueueDir
-from utils import getStatusNumber
+from utils import get_status_number
 from utils import getDomainFromActor
 from utils import getNicknameFromActor
 from utils import locate_post
@@ -540,7 +540,7 @@ def savePostToInboxQueue(base_dir: str, http_prefix: str,
         post_id = remove_id_ending(post_json_object['id'])
         published = curr_time.strftime("%Y-%m-%dT%H:%M:%SZ")
     if not post_id:
-        statusNumber, published = getStatusNumber()
+        statusNumber, published = get_status_number()
         if actor:
             post_id = actor + '/statuses/' + statusNumber
         else:

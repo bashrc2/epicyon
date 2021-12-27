@@ -295,7 +295,7 @@ from utils import get_cached_post_filename
 from utils import remove_post_from_cache
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
-from utils import getStatusNumber
+from utils import get_status_number
 from utils import urlPermitted
 from utils import load_json
 from utils import save_json
@@ -2941,7 +2941,7 @@ class PubServer(BaseHTTPRequestHandler):
                           followingActor)
                 followActor = \
                     local_actor_url(http_prefix, followerNickname, domain_full)
-                statusNumber, published = getStatusNumber()
+                statusNumber, published = get_status_number()
                 followId = followActor + '/statuses/' + str(statusNumber)
                 unfollowJson = {
                     '@context': 'https://www.w3.org/ns/activitystreams',
@@ -6518,7 +6518,7 @@ class PubServer(BaseHTTPRequestHandler):
                             actor_json['id'].replace('/', '#') + '.json'
                         save_json(actor_json, actorCacheFilename)
                         # send profile update to followers
-                        pubNumber, pubDate = getStatusNumber()
+                        pubNumber, pubDate = get_status_number()
                         updateActorJson = getActorUpdateJson(actor_json)
                         print('Sending actor update: ' + str(updateActorJson))
                         self._postToOutbox(updateActorJson,

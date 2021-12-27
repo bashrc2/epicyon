@@ -13,7 +13,7 @@ from utils import remove_domain_port
 from utils import remove_id_ending
 from utils import has_users_path
 from utils import get_full_domain
-from utils import getStatusNumber
+from utils import get_status_number
 from utils import createOutboxDir
 from utils import urlPermitted
 from utils import getNicknameFromActor
@@ -137,7 +137,7 @@ def createAnnounce(session, base_dir: str, federation_list: [],
     domain = remove_domain_port(domain)
     fullDomain = get_full_domain(domain, port)
 
-    statusNumber, published = getStatusNumber()
+    statusNumber, published = get_status_number()
     newAnnounceId = http_prefix + '://' + fullDomain + \
         '/users/' + nickname + '/statuses/' + statusNumber
     atomUriStr = local_actor_url(http_prefix, nickname, fullDomain) + \
@@ -229,7 +229,7 @@ def sendAnnounceViaServer(base_dir: str, session,
     actorStr = local_actor_url(http_prefix, fromNickname, fromDomainFull)
     ccUrl = actorStr + '/followers'
 
-    statusNumber, published = getStatusNumber()
+    statusNumber, published = get_status_number()
     newAnnounceId = actorStr + '/statuses/' + statusNumber
     newAnnounceJson = {
         "@context": "https://www.w3.org/ns/activitystreams",
@@ -321,7 +321,7 @@ def sendUndoAnnounceViaServer(base_dir: str, session,
     actor = local_actor_url(http_prefix, nickname, domain_full)
     handle = replace_users_with_at(actor)
 
-    statusNumber, published = getStatusNumber()
+    statusNumber, published = get_status_number()
     unAnnounceJson = {
         '@context': 'https://www.w3.org/ns/activitystreams',
         'id': actor + '/statuses/' + str(statusNumber) + '/undo',

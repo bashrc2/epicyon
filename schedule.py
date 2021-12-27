@@ -11,7 +11,7 @@ import os
 import time
 import datetime
 from utils import has_object_dict
-from utils import getStatusNumber
+from utils import get_status_number
 from utils import load_json
 from utils import is_account_dir
 from utils import acct_dir
@@ -82,7 +82,7 @@ def _updatePostSchedule(base_dir: str, handle: str, httpd,
             # set the published time
             # If this is not recent then http checks on the receiving side
             # will reject it
-            statusNumber, published = getStatusNumber()
+            statusNumber, published = get_status_number()
             if post_json_object.get('published'):
                 post_json_object['published'] = published
             if has_object_dict(post_json_object):

@@ -19,7 +19,7 @@ from utils import validNickname
 from utils import domainPermitted
 from utils import getDomainFromActor
 from utils import getNicknameFromActor
-from utils import getStatusNumber
+from utils import get_status_number
 from utils import follow_person
 from posts import sendSignedJson
 from posts import getPersonBox
@@ -869,7 +869,7 @@ def sendFollowRequest(session, base_dir: str,
 
     requestDomain = get_full_domain(followDomain, followPort)
 
-    statusNumber, published = getStatusNumber()
+    statusNumber, published = get_status_number()
 
     group_account = False
     if followNickname:
@@ -962,7 +962,7 @@ def sendFollowRequestViaServer(base_dir: str, session,
     followedId = \
         http_prefix + '://' + followDomainFull + '/@' + followNickname
 
-    statusNumber, published = getStatusNumber()
+    statusNumber, published = get_status_number()
     newFollowJson = {
         '@context': 'https://www.w3.org/ns/activitystreams',
         'id': followActor + '/statuses/' + str(statusNumber),
@@ -1050,7 +1050,7 @@ def sendUnfollowRequestViaServer(base_dir: str, session,
     followActor = local_actor_url(http_prefix, fromNickname, fromDomainFull)
     followedId = \
         http_prefix + '://' + followDomainFull + '/@' + followNickname
-    statusNumber, published = getStatusNumber()
+    statusNumber, published = get_status_number()
 
     unfollowJson = {
         '@context': 'https://www.w3.org/ns/activitystreams',

@@ -10,7 +10,7 @@ __module_group__ = "Profile Metadata"
 import os
 from utils import load_json
 from utils import save_json
-from utils import getStatusNumber
+from utils import get_status_number
 from utils import remove_domain_port
 from utils import acct_dir
 
@@ -153,7 +153,7 @@ def _setActorRole(actor_json: {}, roleName: str) -> bool:
             continue
         if occupationItem['hasOccupation']['name'] == roleName:
             return True
-    statusNumber, published = getStatusNumber()
+    statusNumber, published = get_status_number()
     newRole = {
         "@type": "Role",
         "hasOccupation": {
