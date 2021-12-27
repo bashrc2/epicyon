@@ -548,12 +548,12 @@ def isSuspended(base_dir: str, nickname: str) -> bool:
     return False
 
 
-def getFollowersList(base_dir: str,
-                     nickname: str, domain: str,
-                     followFile='following.txt') -> []:
+def get_followers_list(base_dir: str,
+                       nickname: str, domain: str,
+                       follow_file='following.txt') -> []:
     """Returns a list of followers for the given account
     """
-    filename = acct_dir(base_dir, nickname, domain) + '/' + followFile
+    filename = acct_dir(base_dir, nickname, domain) + '/' + follow_file
 
     if not os.path.isfile(filename):
         return []
@@ -587,10 +587,10 @@ def get_followers_of_person(base_dir: str,
             if not os.path.isfile(filename):
                 continue
             with open(filename, 'r') as followingfile:
-                for followingHandle in followingfile:
-                    followingHandle2 = followingHandle.replace('\n', '')
-                    followingHandle2 = followingHandle2.replace('\r', '')
-                    if followingHandle2 == handle:
+                for following_handle in followingfile:
+                    following_handle2 = following_handle.replace('\n', '')
+                    following_handle2 = following_handle2.replace('\r', '')
+                    if following_handle2 == handle:
                         if account not in followers:
                             followers.append(account)
                         break

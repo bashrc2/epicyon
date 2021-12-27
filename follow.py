@@ -14,7 +14,7 @@ from utils import has_object_stringType
 from utils import remove_domain_port
 from utils import has_users_path
 from utils import get_full_domain
-from utils import getFollowersList
+from utils import get_followers_list
 from utils import validNickname
 from utils import domainPermitted
 from utils import getDomainFromActor
@@ -197,9 +197,9 @@ def getMutualsOfPerson(base_dir: str,
     i.e. accounts which they follow and which also follow back
     """
     followers = \
-        getFollowersList(base_dir, nickname, domain, 'followers.txt')
+        get_followers_list(base_dir, nickname, domain, 'followers.txt')
     following = \
-        getFollowersList(base_dir, nickname, domain, 'following.txt')
+        get_followers_list(base_dir, nickname, domain, 'following.txt')
     mutuals = []
     for handle in following:
         if handle in followers:

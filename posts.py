@@ -49,7 +49,7 @@ from utils import isPublicPost
 from utils import has_users_path
 from utils import valid_post_date
 from utils import get_full_domain
-from utils import getFollowersList
+from utils import get_followers_list
 from utils import isEvil
 from utils import getStatusNumber
 from utils import createPersonDir
@@ -4348,9 +4348,9 @@ def _getNonMutualsOfPerson(base_dir: str,
     i.e. accounts which follow you but you don't follow them
     """
     followers = \
-        getFollowersList(base_dir, nickname, domain, 'followers.txt')
+        get_followers_list(base_dir, nickname, domain, 'followers.txt')
     following = \
-        getFollowersList(base_dir, nickname, domain, 'following.txt')
+        get_followers_list(base_dir, nickname, domain, 'following.txt')
     nonMutuals = []
     for handle in followers:
         if handle not in following:
