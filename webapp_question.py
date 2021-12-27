@@ -9,7 +9,7 @@ __module_group__ = "Web Interface"
 
 import os
 from question import isQuestion
-from utils import removeIdEnding
+from utils import remove_id_ending
 from utils import acct_dir
 
 
@@ -23,7 +23,7 @@ def insertQuestion(base_dir: str, translate: {},
         return content
     if len(post_json_object['object']['oneOf']) == 0:
         return content
-    messageId = removeIdEnding(post_json_object['id'])
+    messageId = remove_id_ending(post_json_object['id'])
     if '#' in messageId:
         messageId = messageId.split('#', 1)[0]
     pageNumberStr = ''

@@ -16,7 +16,7 @@ from utils import remove_domain_port
 from utils import has_object_dict
 from utils import has_users_path
 from utils import get_full_domain
-from utils import removeIdEnding
+from utils import remove_id_ending
 from utils import urlPermitted
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
@@ -358,7 +358,7 @@ def outboxLike(recent_posts_cache: {},
     if debug:
         print('DEBUG: c2s like request arrived in outbox')
 
-    messageId = removeIdEnding(message_json['object'])
+    messageId = remove_id_ending(message_json['object'])
     domain = remove_domain_port(domain)
     post_filename = locate_post(base_dir, nickname, domain, messageId)
     if not post_filename:
@@ -395,7 +395,7 @@ def outboxUndoLike(recent_posts_cache: {},
     if debug:
         print('DEBUG: c2s undo like request arrived in outbox')
 
-    messageId = removeIdEnding(message_json['object']['object'])
+    messageId = remove_id_ending(message_json['object']['object'])
     domain = remove_domain_port(domain)
     post_filename = locate_post(base_dir, nickname, domain, messageId)
     if not post_filename:

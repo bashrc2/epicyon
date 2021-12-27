@@ -10,7 +10,7 @@ __module_group__ = "Timeline"
 import os
 from utils import has_object_dict
 from utils import acct_dir
-from utils import removeIdEnding
+from utils import remove_id_ending
 
 
 def _getConversationFilename(base_dir: str, nickname: str, domain: str,
@@ -39,7 +39,7 @@ def updateConversation(base_dir: str, nickname: str, domain: str,
         _getConversationFilename(base_dir, nickname, domain, post_json_object)
     if not conversationFilename:
         return False
-    post_id = removeIdEnding(post_json_object['object']['id'])
+    post_id = remove_id_ending(post_json_object['object']['id'])
     if not os.path.isfile(conversationFilename):
         try:
             with open(conversationFilename, 'w+') as fp:

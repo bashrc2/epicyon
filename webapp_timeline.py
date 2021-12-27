@@ -15,7 +15,7 @@ from utils import dangerousMarkup
 from utils import get_config_param
 from utils import get_full_domain
 from utils import is_editor
-from utils import removeIdEnding
+from utils import remove_id_ending
 from utils import acct_dir
 from utils import is_float
 from utils import local_actor_url
@@ -876,7 +876,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                 # is the post in the memory cache of recent ones?
                 currTlStr = None
                 if boxName != 'tlmedia' and recent_posts_cache.get('html'):
-                    post_id = removeIdEnding(item['id']).replace('/', '#')
+                    post_id = remove_id_ending(item['id']).replace('/', '#')
                     if recent_posts_cache['html'].get(post_id):
                         currTlStr = recent_posts_cache['html'][post_id]
                         currTlStr = \

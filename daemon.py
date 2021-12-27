@@ -285,7 +285,7 @@ from utils import containsInvalidChars
 from utils import isSystemAccount
 from utils import setConfigParam
 from utils import get_config_param
-from utils import removeIdEnding
+from utils import remove_id_ending
 from utils import undoLikesCollectionEntry
 from utils import deletePost
 from utils import isBlogPost
@@ -4659,7 +4659,7 @@ class PubServer(BaseHTTPRequestHandler):
                             print('ERROR: saving newswire state, ' + str(ex))
 
                     # remove any previous cached news posts
-                    newsId = removeIdEnding(post_json_object['object']['id'])
+                    newsId = remove_id_ending(post_json_object['object']['id'])
                     newsId = newsId.replace('/', '#')
                     clearFromPostCaches(base_dir,
                                         self.server.recent_posts_cache,
@@ -7715,7 +7715,7 @@ class PubServer(BaseHTTPRequestHandler):
             # save the announce straight to the outbox
             # This is because the subsequent send is within a separate thread
             # but the html still needs to be generated before this call ends
-            announceId = removeIdEnding(announceJson['id'])
+            announceId = remove_id_ending(announceJson['id'])
             announceFilename = \
                 savePostToBox(base_dir, http_prefix, announceId,
                               self.postToNickname, domain_full,
@@ -13971,7 +13971,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.system_language)
             message_json = {}
             if pinnedPostJson:
-                post_id = removeIdEnding(pinnedPostJson['id'])
+                post_id = remove_id_ending(pinnedPostJson['id'])
                 message_json = \
                     outboxMessageCreateWrap(self.server.http_prefix,
                                             nickname,
@@ -18241,7 +18241,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self._postToOutbox(message_json,
                                   self.server.project_version, None):
                 if message_json.get('id'):
-                    locnStr = removeIdEnding(message_json['id'])
+                    locnStr = remove_id_ending(message_json['id'])
                     self.headers['Location'] = locnStr
                 self.send_response(201)
                 self.end_headers()

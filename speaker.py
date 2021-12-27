@@ -11,7 +11,7 @@ import os
 import html
 import random
 import urllib.parse
-from utils import removeIdEnding
+from utils import remove_id_ending
 from utils import is_dm
 from utils import is_reply
 from utils import camel_case_split
@@ -491,7 +491,7 @@ def _postToSpeakerJson(base_dir: str, http_prefix: str,
                 announcedHandle + '. ' + content
     post_id = None
     if post_json_object['object'].get('id'):
-        post_id = removeIdEnding(post_json_object['object']['id'])
+        post_id = remove_id_ending(post_json_object['object']['id'])
 
     followRequestsExist = False
     followRequestsList = []

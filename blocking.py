@@ -24,7 +24,7 @@ from utils import fileLastModified
 from utils import setConfigParam
 from utils import has_users_path
 from utils import get_full_domain
-from utils import removeIdEnding
+from utils import remove_id_ending
 from utils import isEvil
 from utils import locate_post
 from utils import evilIncarnate
@@ -432,7 +432,7 @@ def outboxBlock(base_dir: str, http_prefix: str,
     if debug:
         print('DEBUG: c2s block request arrived in outbox')
 
-    messageId = removeIdEnding(message_json['object'])
+    messageId = remove_id_ending(message_json['object'])
     if '/statuses/' not in messageId:
         if debug:
             print('DEBUG: c2s block object is not a status')
@@ -488,7 +488,7 @@ def outboxUndoBlock(base_dir: str, http_prefix: str,
     if debug:
         print('DEBUG: c2s undo block request arrived in outbox')
 
-    messageId = removeIdEnding(message_json['object']['object'])
+    messageId = remove_id_ending(message_json['object']['object'])
     if '/statuses/' not in messageId:
         if debug:
             print('DEBUG: c2s undo block object is not a status')
@@ -541,7 +541,7 @@ def mutePost(base_dir: str, nickname: str, domain: str, port: int,
         postJsonObj = post_json_object['object']
     else:
         if has_object_string(post_json_object, debug):
-            alsoUpdatePostId = removeIdEnding(post_json_object['object'])
+            alsoUpdatePostId = remove_id_ending(post_json_object['object'])
 
     domain_full = get_full_domain(domain, port)
     actor = local_actor_url(http_prefix, nickname, domain_full)
@@ -611,7 +611,7 @@ def mutePost(base_dir: str, nickname: str, domain: str, port: int,
     # if the post is in the recent posts cache then mark it as muted
     if recent_posts_cache.get('index'):
         post_id = \
-            removeIdEnding(post_json_object['id']).replace('/', '#')
+            remove_id_ending(post_json_object['id']).replace('/', '#')
         if post_id in recent_posts_cache['index']:
             print('MUTE: ' + post_id + ' is in recent posts cache')
         if recent_posts_cache.get('json'):
@@ -681,7 +681,7 @@ def unmutePost(base_dir: str, nickname: str, domain: str, port: int,
         postJsonObj = post_json_object['object']
     else:
         if has_object_string(post_json_object, debug):
-            alsoUpdatePostId = removeIdEnding(post_json_object['object'])
+            alsoUpdatePostId = remove_id_ending(post_json_object['object'])
 
     if postJsonObj.get('conversation'):
         unmuteConversation(base_dir, nickname, domain,
@@ -727,7 +727,7 @@ def unmutePost(base_dir: str, nickname: str, domain: str, port: int,
     # if the post is in the recent posts cache then mark it as unmuted
     if recent_posts_cache.get('index'):
         post_id = \
-            removeIdEnding(post_json_object['id']).replace('/', '#')
+            remove_id_ending(post_json_object['id']).replace('/', '#')
         if post_id in recent_posts_cache['index']:
             print('UNMUTE: ' + post_id + ' is in recent posts cache')
         if recent_posts_cache.get('json'):
@@ -790,7 +790,7 @@ def outboxMute(base_dir: str, http_prefix: str,
     if debug:
         print('DEBUG: c2s mute request arrived in outbox')
 
-    messageId = removeIdEnding(message_json['object'])
+    messageId = remove_id_ending(message_json['object'])
     if '/statuses/' not in messageId:
         if debug:
             print('DEBUG: c2s mute object is not a status')
@@ -845,7 +845,7 @@ def outboxUndoMute(base_dir: str, http_prefix: str,
     if debug:
         print('DEBUG: c2s undo mute request arrived in outbox')
 
-    messageId = removeIdEnding(message_json['object']['object'])
+    messageId = remove_id_ending(message_json['object']['object'])
     if '/statuses/' not in messageId:
         if debug:
             print('DEBUG: c2s undo mute object is not a status')

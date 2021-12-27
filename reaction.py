@@ -18,7 +18,7 @@ from utils import remove_domain_port
 from utils import has_object_dict
 from utils import has_users_path
 from utils import get_full_domain
-from utils import removeIdEnding
+from utils import remove_id_ending
 from utils import urlPermitted
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
@@ -381,7 +381,7 @@ def outboxReaction(recent_posts_cache: {},
     if debug:
         print('DEBUG: c2s reaction request arrived in outbox')
 
-    messageId = removeIdEnding(message_json['object'])
+    messageId = remove_id_ending(message_json['object'])
     domain = remove_domain_port(domain)
     emojiContent = message_json['content']
     post_filename = locate_post(base_dir, nickname, domain, messageId)
@@ -423,7 +423,7 @@ def outboxUndoReaction(recent_posts_cache: {},
     if debug:
         print('DEBUG: c2s undo reaction request arrived in outbox')
 
-    messageId = removeIdEnding(message_json['object']['object'])
+    messageId = remove_id_ending(message_json['object']['object'])
     emojiContent = message_json['object']['content']
     domain = remove_domain_port(domain)
     post_filename = locate_post(base_dir, nickname, domain, messageId)
@@ -551,7 +551,7 @@ def htmlEmojiReactions(post_json_object: {}, interactive: bool,
                 reactions[emojiContent]['handles'].append(emojiHandle)
     if len(reactions.items()) == 0:
         return ''
-    reactBy = removeIdEnding(post_json_object['object']['id'])
+    reactBy = remove_id_ending(post_json_object['object']['id'])
     htmlStr = '<div class="emojiReactionBar">\n'
     for emojiContent, item in reactions.items():
         count = item['count']

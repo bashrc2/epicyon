@@ -47,7 +47,7 @@ from utils import isBlogPost
 from utils import getDisplayName
 from utils import isPublicPost
 from utils import updateRecentPostsCache
-from utils import removeIdEnding
+from utils import remove_id_ending
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import acct_dir
@@ -392,7 +392,7 @@ def _getReplyIconHtml(base_dir: str, nickname: str, domain: str,
 
     # reply is permitted - create reply icon
     replyToLink = removeHashFromPostId(post_json_object['object']['id'])
-    replyToLink = removeIdEnding(replyToLink)
+    replyToLink = remove_id_ending(replyToLink)
 
     # see Mike MacGirvin's replyTo suggestion
     if post_json_object['object'].get('replyTo'):
@@ -475,7 +475,7 @@ def _getEditIconHtml(base_dir: str, nickname: str, domain_full: str,
         (is_editor(base_dir, nickname) and
          actor.endswith('/' + domain_full + '/users/news'))):
 
-        post_id = removeIdEnding(post_json_object['object']['id'])
+        post_id = remove_id_ending(post_json_object['object']['id'])
 
         if '/statuses/' not in post_id:
             return editStr
@@ -571,10 +571,10 @@ def _getAnnounceIconHtml(isAnnounced: bool,
         announceTitle = undoTheRepeatStr
         if announceJsonObject:
             unannounceLinkStr = '?unannounce=' + \
-                removeIdEnding(announceJsonObject['id'])
+                remove_id_ending(announceJsonObject['id'])
 
     announcePostId = removeHashFromPostId(post_json_object['object']['id'])
-    announcePostId = removeIdEnding(announcePostId)
+    announcePostId = remove_id_ending(announcePostId)
     announceLinkStr = '?' + \
         announceLink + '=' + announcePostId + pageNumberParam
     announceStr = \
@@ -643,7 +643,7 @@ def _getLikeIconHtml(nickname: str, domain_full: str,
         likeStr += likeCountStr.replace('(', '').replace(')', '').strip()
         likeStr += '</label>\n'
     likePostId = removeHashFromPostId(post_json_object['id'])
-    likePostId = removeIdEnding(likePostId)
+    likePostId = remove_id_ending(likePostId)
     likeStr += \
         '        <a class="imageAnchor" href="/users/' + nickname + '?' + \
         likeLink + '=' + likePostId + \
@@ -690,7 +690,7 @@ def _getBookmarkIconHtml(nickname: str, domain_full: str,
             bookmarkTitle = translate[bookmarkTitle]
     _logPostTiming(enableTimingLog, postStartTime, '12.6')
     bookmarkPostId = removeHashFromPostId(post_json_object['object']['id'])
-    bookmarkPostId = removeIdEnding(bookmarkPostId)
+    bookmarkPostId = remove_id_ending(bookmarkPostId)
     bookmarkStr = \
         '        <a class="imageAnchor" href="/users/' + nickname + '?' + \
         bookmarkLink + '=' + bookmarkPostId + \
@@ -728,7 +728,7 @@ def _getReactionIconHtml(nickname: str, domain_full: str,
         reactionTitle = translate[reactionTitle]
     _logPostTiming(enableTimingLog, postStartTime, '12.65')
     reactionPostId = removeHashFromPostId(post_json_object['object']['id'])
-    reactionPostId = removeIdEnding(reactionPostId)
+    reactionPostId = remove_id_ending(reactionPostId)
     reactionStr = \
         '        <a class="imageAnchor" href="/users/' + nickname + \
         '?selreact=' + reactionPostId + pageNumberParam + \
@@ -916,7 +916,7 @@ def _announceUnattributedHtml(translate: {},
     announcesStr = 'announces'
     if translate.get(announcesStr):
         announcesStr = translate[announcesStr]
-    post_id = removeIdEnding(post_json_object['object']['id'])
+    post_id = remove_id_ending(post_json_object['object']['id'])
     return '    <img loading="lazy" title="' + \
         announcesStr + '" alt="' + \
         announcesStr + '" src="/icons' + \
@@ -934,7 +934,7 @@ def _announceWithDisplayNameHtml(translate: {},
     announcesStr = 'announces'
     if translate.get(announcesStr):
         announcesStr = translate[announcesStr]
-    post_id = removeIdEnding(post_json_object['object']['id'])
+    post_id = remove_id_ending(post_json_object['object']['id'])
     return '          <img loading="lazy" title="' + \
         announcesStr + '" alt="' + \
         announcesStr + '" src="/' + \
@@ -1373,7 +1373,7 @@ def individualPostAsHtml(signing_priv_key_pem: str,
     messageId = ''
     if post_json_object.get('id'):
         messageId = removeHashFromPostId(post_json_object['id'])
-        messageId = removeIdEnding(messageId)
+        messageId = remove_id_ending(messageId)
 
     _logPostTiming(enableTimingLog, postStartTime, '2')
 
@@ -1473,7 +1473,7 @@ def individualPostAsHtml(signing_priv_key_pem: str,
     avatarImageInPost = \
         '      <div class="timeline-avatar">' + avatarLink + '</div>\n'
 
-    timelinePostBookmark = removeIdEnding(post_json_object['id'])
+    timelinePostBookmark = remove_id_ending(post_json_object['id'])
     timelinePostBookmark = timelinePostBookmark.replace('://', '-')
     timelinePostBookmark = timelinePostBookmark.replace('/', '-')
 
@@ -1509,7 +1509,7 @@ def individualPostAsHtml(signing_priv_key_pem: str,
                              blockedCache)
         if not postJsonAnnounce:
             # if the announce could not be downloaded then mark it as rejected
-            announcedPostId = removeIdEnding(post_json_object['id'])
+            announcedPostId = remove_id_ending(post_json_object['id'])
             reject_post_id(base_dir, nickname, domain, announcedPostId,
                            recent_posts_cache)
             return ''
@@ -2074,7 +2074,7 @@ def htmlIndividualPost(cssCache: {},
                              system_language, max_like_count,
                              False, authorized, False, False, False, False,
                              cw_lists, lists_enabled)
-    messageId = removeIdEnding(post_json_object['id'])
+    messageId = remove_id_ending(post_json_object['id'])
 
     # show the previous posts
     if has_object_dict(post_json_object):
@@ -2252,7 +2252,7 @@ def htmlEmojiReactionPicker(cssCache: {},
     reactionsJson = load_json(reactionsFilename)
     emojiPicksStr = ''
     baseUrl = '/users/' + nickname
-    post_id = removeIdEnding(post_json_object['id'])
+    post_id = remove_id_ending(post_json_object['id'])
     for category, item in reactionsJson.items():
         emojiPicksStr += '<div class="container">\n'
         for emojiContent in item:

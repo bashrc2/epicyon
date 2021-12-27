@@ -13,7 +13,7 @@ from utils import has_object_string
 from utils import remove_domain_port
 from utils import has_users_path
 from utils import get_full_domain
-from utils import removeIdEnding
+from utils import remove_id_ending
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import locate_post
@@ -138,7 +138,7 @@ def outboxDelete(base_dir: str, http_prefix: str,
         if debug:
             print('DEBUG: delete not permitted from other instances')
         return
-    messageId = removeIdEnding(message_json['object'])
+    messageId = remove_id_ending(message_json['object'])
     if '/statuses/' not in messageId:
         if debug:
             print('DEBUG: c2s delete object is not a status')

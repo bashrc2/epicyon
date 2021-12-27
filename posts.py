@@ -35,7 +35,7 @@ from languages import understoodPostLanguage
 from utils import get_user_paths
 from utils import invalid_ciphertext
 from utils import has_object_stringType
-from utils import removeIdEnding
+from utils import remove_id_ending
 from utils import replace_users_with_at
 from utils import has_group_type
 from utils import get_base_content_from_post
@@ -2093,7 +2093,7 @@ def createDirectMessagePost(base_dir: str,
     message_json['cc'] = []
     message_json['object']['cc'] = []
     if schedulePost:
-        post_id = removeIdEnding(message_json['object']['id'])
+        post_id = remove_id_ending(message_json['object']['id'])
         savePostToBox(base_dir, http_prefix, post_id,
                       nickname, domain, message_json, 'scheduled')
     return message_json
@@ -4539,7 +4539,7 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
 
     post_id = None
     if post_json_object.get('id'):
-        post_id = removeIdEnding(post_json_object['id'])
+        post_id = remove_id_ending(post_json_object['id'])
     announceFilename = \
         announceCacheDir + '/' + \
         post_json_object['object'].replace('/', '#') + '.json'
@@ -5213,7 +5213,7 @@ def editedPostFilename(base_dir: str, nickname: str, domain: str,
         actor.replace('/', '#')
     if not os.path.isfile(actorFilename):
         return ''
-    post_id = removeIdEnding(post_json_object['object']['id'])
+    post_id = remove_id_ending(post_json_object['object']['id'])
     lastpost_id = None
     try:
         with open(actorFilename, 'r') as fp:

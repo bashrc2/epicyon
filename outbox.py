@@ -21,7 +21,7 @@ from utils import get_base_content_from_post
 from utils import has_object_dict
 from utils import getLocalNetworkAddresses
 from utils import get_full_domain
-from utils import removeIdEnding
+from utils import remove_id_ending
 from utils import getDomainFromActor
 from utils import dangerousMarkup
 from utils import is_featured_writer
@@ -351,7 +351,7 @@ def postMessageToOutbox(session, translate: {},
                   ' is not a permitted activity type')
         return False
     if message_json.get('id'):
-        post_id = removeIdEnding(message_json['id'])
+        post_id = remove_id_ending(message_json['id'])
         if debug:
             print('DEBUG: id attribute exists within POST to outbox')
     else:

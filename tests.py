@@ -72,7 +72,7 @@ from utils import decoded_host
 from utils import get_full_domain
 from utils import validNickname
 from utils import firstParagraphFromString
-from utils import removeIdEnding
+from utils import remove_id_ending
 from utils import updateRecentPostsCache
 from utils import followPerson
 from utils import getNicknameFromActor
@@ -2946,7 +2946,7 @@ def testClientToServer(base_dir: str):
             outboxPostFilename = outboxPath + '/' + name
             post_json_object = load_json(outboxPostFilename, 0)
             if post_json_object:
-                outboxPostId = removeIdEnding(post_json_object['id'])
+                outboxPostId = remove_id_ending(post_json_object['id'])
     assert outboxPostId
     print('message id obtained: ' + outboxPostId)
     assert validInbox(bobDir, 'bob', bobDomain)
@@ -3836,25 +3836,25 @@ def _testJsonPostAllowsComments():
 def _testRemoveIdEnding():
     print('testRemoveIdEnding')
     testStr = 'https://activitypub.somedomain.net'
-    resultStr = removeIdEnding(testStr)
+    resultStr = remove_id_ending(testStr)
     assert resultStr == 'https://activitypub.somedomain.net'
 
     testStr = \
         'https://activitypub.somedomain.net/users/foo/' + \
         'statuses/34544814814/activity'
-    resultStr = removeIdEnding(testStr)
+    resultStr = remove_id_ending(testStr)
     assert resultStr == \
         'https://activitypub.somedomain.net/users/foo/statuses/34544814814'
 
     testStr = \
         'https://undo.somedomain.net/users/foo/statuses/34544814814/undo'
-    resultStr = removeIdEnding(testStr)
+    resultStr = remove_id_ending(testStr)
     assert resultStr == \
         'https://undo.somedomain.net/users/foo/statuses/34544814814'
 
     testStr = \
         'https://event.somedomain.net/users/foo/statuses/34544814814/event'
-    resultStr = removeIdEnding(testStr)
+    resultStr = remove_id_ending(testStr)
     assert resultStr == \
         'https://event.somedomain.net/users/foo/statuses/34544814814'
 

@@ -39,7 +39,7 @@ from utils import get_config_param
 from utils import has_users_path
 from utils import valid_post_date
 from utils import get_full_domain
-from utils import removeIdEnding
+from utils import remove_id_ending
 from utils import getProtocolPrefixes
 from utils import isBlogPost
 from utils import removeAvatarFromCache
@@ -137,10 +137,10 @@ def _storeLastPostId(base_dir: str, nickname: str, domain: str,
         if post_json_object['object'].get('attributedTo'):
             if isinstance(post_json_object['object']['attributedTo'], str):
                 actor = post_json_object['object']['attributedTo']
-                post_id = removeIdEnding(post_json_object['object']['id'])
+                post_id = remove_id_ending(post_json_object['object']['id'])
     if not actor:
         actor = post_json_object['actor']
-        post_id = removeIdEnding(post_json_object['id'])
+        post_id = remove_id_ending(post_json_object['id'])
     if not actor:
         return
     lastpostDir = acct_dir(base_dir, nickname, domain) + '/lastpost'
@@ -238,7 +238,7 @@ def storeHashTags(base_dir: str, nickname: str, domain: str,
         if not validHashTag(tagName):
             continue
         tagsFilename = tagsDir + '/' + tagName + '.txt'
-        postUrl = removeIdEnding(post_json_object['id'])
+        postUrl = remove_id_ending(post_json_object['id'])
         postUrl = postUrl.replace('/', '#')
         daysDiff = datetime.datetime.utcnow() - datetime.datetime(1970, 1, 1)
         daysSinceEpoch = daysDiff.days
@@ -531,13 +531,13 @@ def savePostToInboxQueue(base_dir: str, http_prefix: str,
     if post_json_object.get('id'):
         if not isinstance(post_json_object['id'], str):
             return None
-        originalPostId = removeIdEnding(post_json_object['id'])
+        originalPostId = remove_id_ending(post_json_object['id'])
 
     curr_time = datetime.datetime.utcnow()
 
     post_id = None
     if post_json_object.get('id'):
-        post_id = removeIdEnding(post_json_object['id'])
+        post_id = remove_id_ending(post_json_object['id'])
         published = curr_time.strftime("%Y-%m-%dT%H:%M:%SZ")
     if not post_id:
         statusNumber, published = getStatusNumber()
@@ -909,7 +909,7 @@ def _receiveUpdateToQuestion(recent_posts_cache: {}, message_json: {},
         return
     if not has_actor(message_json, False):
         return
-    messageId = removeIdEnding(message_json['id'])
+    messageId = remove_id_ending(message_json['id'])
     if '#' in messageId:
         messageId = messageId.split('#', 1)[0]
     # find the question post
@@ -1566,7 +1566,7 @@ def _receiveBookmark(recent_posts_cache: {},
     if debug:
         print('DEBUG: c2s inbox bookmark Add request arrived in outbox')
 
-    messageUrl = removeIdEnding(message_json['object']['url'])
+    messageUrl = remove_id_ending(message_json['object']['url'])
     domain = remove_domain_port(domain)
     post_filename = locate_post(base_dir, nickname, domain, messageUrl)
     if not post_filename:
@@ -1679,7 +1679,7 @@ def _receiveUndoBookmark(recent_posts_cache: {},
         print('DEBUG: c2s inbox Remove bookmark ' +
               'request arrived in outbox')
 
-    messageUrl = removeIdEnding(message_json['object']['url'])
+    messageUrl = remove_id_ending(message_json['object']['url'])
     domain = remove_domain_port(domain)
     post_filename = locate_post(base_dir, nickname, domain, messageUrl)
     if not post_filename:
@@ -1773,7 +1773,7 @@ def _receiveDelete(session, handle: str, isGroup: bool, base_dir: str,
     if not os.path.isdir(base_dir + '/accounts/' + handle):
         print('DEBUG: unknown recipient of like - ' + handle)
     # if this post in the outbox of the person?
-    messageId = removeIdEnding(message_json['object'])
+    messageId = remove_id_ending(message_json['object'])
     removeModerationPostFromIndex(base_dir, messageId, debug)
     handleNickname = handle.split('@')[0]
     handleDomain = handle.split('@')[1]
@@ -2164,7 +2164,7 @@ def populateReplies(base_dir: str, http_prefix: str, domain: str,
         return False
     # populate a text file containing the ids of replies
     postRepliesFilename = post_filename.replace('.json', '.replies')
-    messageId = removeIdEnding(message_json['id'])
+    messageId = remove_id_ending(message_json['id'])
     if os.path.isfile(postRepliesFilename):
         numLines = sum(1 for line in open(postRepliesFilename))
         if numLines > max_replies:
@@ -2665,7 +2665,7 @@ def _sendToGroupMembers(session, base_dir: str, handle: str, port: int,
     savePostToBox(base_dir, http_prefix, None,
                   nickname, domain, post_json_object, 'outbox')
 
-    post_id = removeIdEnding(post_json_object['object']['id'])
+    post_id = remove_id_ending(post_json_object['object']['id'])
     if debug:
         print('Group announce: ' + post_id)
     announceJson = \
@@ -2713,7 +2713,7 @@ def _inboxUpdateCalendar(base_dir: str, handle: str,
                                    actorNickname, actorDomain):
         return
 
-    post_id = removeIdEnding(post_json_object['id']).replace('/', '#')
+    post_id = remove_id_ending(post_json_object['id']).replace('/', '#')
 
     # look for events within the tags list
     for tagDict in post_json_object['object']['tag']:
@@ -2848,7 +2848,7 @@ def _bounceDM(senderPostId: str, session, http_prefix: str,
     mediaType = None
     imageDescription = ''
     city = 'London, England'
-    inReplyTo = removeIdEnding(senderPostId)
+    inReplyTo = remove_id_ending(senderPostId)
     inReplyToAtomUri = None
     schedulePost = False
     eventDate = None
@@ -2959,7 +2959,8 @@ def _isValidDM(base_dir: str, nickname: str, domain: str, port: int,
                     obj = post_json_object['object']
                     if isinstance(obj, dict):
                         if not obj.get('inReplyTo'):
-                            bouncedId = removeIdEnding(post_json_object['id'])
+                            bouncedId = \
+                                remove_id_ending(post_json_object['id'])
                             _bounceDM(bouncedId,
                                       session, http_prefix,
                                       base_dir,
@@ -3148,7 +3149,7 @@ def _lowFrequencyPostNotification(base_dir: str, http_prefix: str,
     fromDomainFull = get_full_domain(fromDomain, fromPort)
     if notifyWhenPersonPosts(base_dir, nickname, domain,
                              fromNickname, fromDomainFull):
-        post_id = removeIdEnding(jsonObj['id'])
+        post_id = remove_id_ending(jsonObj['id'])
         domFull = get_full_domain(domain, port)
         postLink = \
             local_actor_url(http_prefix, nickname, domFull) + \

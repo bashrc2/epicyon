@@ -598,7 +598,7 @@ def getFollowersOfPerson(base_dir: str,
     return followers
 
 
-def removeIdEnding(idStr: str) -> str:
+def remove_id_ending(idStr: str) -> str:
     """Removes endings such as /activity and /undo
     """
     if idStr.endswith('/activity'):
@@ -1248,7 +1248,7 @@ def locateNewsVotes(base_dir: str, domain: str,
         postUrl.strip().replace('\n', '').replace('\r', '')
 
     # if this post in the shared inbox?
-    postUrl = removeIdEnding(postUrl.strip()).replace('/', '#')
+    postUrl = remove_id_ending(postUrl.strip()).replace('/', '#')
 
     if postUrl.endswith('.json'):
         postUrl = postUrl + '.votes'
@@ -1272,7 +1272,7 @@ def locateNewsArrival(base_dir: str, domain: str,
         postUrl.strip().replace('\n', '').replace('\r', '')
 
     # if this post in the shared inbox?
-    postUrl = removeIdEnding(postUrl.strip()).replace('/', '#')
+    postUrl = remove_id_ending(postUrl.strip()).replace('/', '#')
 
     if postUrl.endswith('.json'):
         postUrl = postUrl + '.arrived'
@@ -1336,7 +1336,7 @@ def locate_post(base_dir: str, nickname: str, domain: str,
         extension = 'replies'
 
     # if this post in the shared inbox?
-    postUrl = removeIdEnding(postUrl.strip()).replace('/', '#')
+    postUrl = remove_id_ending(postUrl.strip()).replace('/', '#')
 
     # add the extension
     postUrl = postUrl + '.' + extension
@@ -1492,7 +1492,7 @@ def removeModerationPostFromIndex(base_dir: str, postUrl: str,
     moderation_index_file = base_dir + '/accounts/moderation.txt'
     if not os.path.isfile(moderation_index_file):
         return
-    post_id = removeIdEnding(postUrl)
+    post_id = remove_id_ending(postUrl)
     if post_id in open(moderation_index_file).read():
         with open(moderation_index_file, 'r') as f:
             lines = f.readlines()
@@ -1520,7 +1520,7 @@ def _is_reply_to_blog_post(base_dir: str, nickname: str, domain: str,
         acct_dir(base_dir, nickname, domain) + '/tlblogs.index'
     if not os.path.isfile(blogs_index_filename):
         return False
-    post_id = removeIdEnding(post_json_object['object']['inReplyTo'])
+    post_id = remove_id_ending(post_json_object['object']['inReplyTo'])
     post_id = post_id.replace('/', '#')
     if post_id in open(blogs_index_filename).read():
         return True
@@ -1583,7 +1583,7 @@ def remove_post_from_cache(post_json_object: {},
     post_id = post_json_object['id']
     if '#' in post_id:
         post_id = post_id.split('#', 1)[0]
-    post_id = removeIdEnding(post_id).replace('/', '#')
+    post_id = remove_id_ending(post_id).replace('/', '#')
     if post_id not in recent_posts_cache['index']:
         return
 
@@ -1633,7 +1633,7 @@ def _deleteHashtagsOnPost(base_dir: str, post_json_object: {}) -> None:
         return
 
     # get the id of the post
-    post_id = removeIdEnding(post_json_object['object']['id'])
+    post_id = remove_id_ending(post_json_object['object']['id'])
     for tag in post_json_object['object']['tag']:
         if not tag.get('type'):
             continue
@@ -1772,7 +1772,7 @@ def deletePost(base_dir: str, http_prefix: str,
         if has_object_dict(post_json_object):
             if post_json_object['object'].get('moderationStatus'):
                 if post_json_object.get('id'):
-                    post_id = removeIdEnding(post_json_object['id'])
+                    post_id = remove_id_ending(post_json_object['id'])
                     removeModerationPostFromIndex(base_dir, post_id, debug)
 
     # remove any hashtags index entries
@@ -2004,7 +2004,7 @@ def get_cached_post_filename(base_dir: str, nickname: str, domain: str,
     if '@' not in cachedPostDir:
         # print('ERROR: invalid html cache directory ' + cachedPostDir)
         return None
-    cachedPostId = removeIdEnding(post_json_object['id'])
+    cachedPostId = remove_id_ending(post_json_object['id'])
     cached_post_filename = cachedPostDir + '/' + cachedPostId.replace('/', '#')
     return cached_post_filename + '.html'
 
@@ -2018,7 +2018,7 @@ def updateRecentPostsCache(recent_posts_cache: {}, max_recent_posts: int,
     post_id = post_json_object['id']
     if '#' in post_id:
         post_id = post_id.split('#', 1)[0]
-    post_id = removeIdEnding(post_id).replace('/', '#')
+    post_id = remove_id_ending(post_id).replace('/', '#')
     if recent_posts_cache.get('index'):
         if post_id in recent_posts_cache['index']:
             return
@@ -2442,7 +2442,7 @@ def update_announce_collection(recent_posts_cache: {},
             pprint(post_json_object)
             print('DEBUG: post ' + post_filename + ' has no object')
         return
-    postUrl = removeIdEnding(post_json_object['id']) + '/shares'
+    postUrl = remove_id_ending(post_json_object['id']) + '/shares'
     if not post_json_object['object'].get('shares'):
         if debug:
             print('DEBUG: Adding initial shares (announcements) to ' +

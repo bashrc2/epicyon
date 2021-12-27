@@ -10,7 +10,7 @@ __module_group__ = "ActivityPub"
 from utils import has_object_string_object
 from utils import has_group_type
 from utils import remove_domain_port
-from utils import removeIdEnding
+from utils import remove_id_ending
 from utils import has_users_path
 from utils import get_full_domain
 from utils import getStatusNumber
@@ -408,7 +408,7 @@ def outboxUndoAnnounce(recent_posts_cache: {},
     if debug:
         print('DEBUG: c2s undo announce request arrived in outbox')
 
-    messageId = removeIdEnding(message_json['object']['object'])
+    messageId = remove_id_ending(message_json['object']['object'])
     domain = remove_domain_port(domain)
     post_filename = locate_post(base_dir, nickname, domain, messageId)
     if not post_filename:

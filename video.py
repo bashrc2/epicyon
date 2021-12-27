@@ -10,7 +10,7 @@ __module_group__ = "Timeline"
 from utils import get_full_domain
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
-from utils import removeIdEnding
+from utils import remove_id_ending
 from blocking import isBlocked
 from filters import isFiltered
 
@@ -89,7 +89,7 @@ def convertVideoToNote(base_dir: str, nickname: str, domain: str,
                 content += '<p>' + post_json_object['license']['name'] + '</p>'
     content += post_json_object['content']
 
-    conversationId = removeIdEnding(post_json_object['id'])
+    conversationId = remove_id_ending(post_json_object['id'])
 
     mediaType = None
     mediaUrl = None
@@ -131,7 +131,7 @@ def convertVideoToNote(base_dir: str, nickname: str, domain: str,
             content += '<a href="' + mediaMagnet + '">🧲</a>'
         content += '</p>'
 
-    newPostId = removeIdEnding(post_json_object['id'])
+    newPostId = remove_id_ending(post_json_object['id'])
     newPost = {
         '@context': post_json_object['@context'],
         'id': newPostId + '/activity',

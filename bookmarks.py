@@ -14,7 +14,7 @@ from auth import createBasicAuthHeader
 from utils import remove_domain_port
 from utils import has_users_path
 from utils import get_full_domain
-from utils import removeIdEnding
+from utils import remove_id_ending
 from utils import remove_post_from_cache
 from utils import urlPermitted
 from utils import getNicknameFromActor
@@ -593,7 +593,7 @@ def outboxBookmark(recent_posts_cache: {},
     if debug:
         print('DEBUG: c2s bookmark Add request arrived in outbox')
 
-    messageUrl = removeIdEnding(message_json['object']['url'])
+    messageUrl = remove_id_ending(message_json['object']['url'])
     domain = remove_domain_port(domain)
     post_filename = locate_post(base_dir, nickname, domain, messageUrl)
     if not post_filename:
@@ -649,7 +649,7 @@ def outboxUndoBookmark(recent_posts_cache: {},
     if debug:
         print('DEBUG: c2s unbookmark Remove request arrived in outbox')
 
-    messageUrl = removeIdEnding(message_json['object']['url'])
+    messageUrl = remove_id_ending(message_json['object']['url'])
     domain = remove_domain_port(domain)
     post_filename = locate_post(base_dir, nickname, domain, messageUrl)
     if not post_filename:
