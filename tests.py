@@ -71,7 +71,7 @@ from utils import camel_case_split
 from utils import decoded_host
 from utils import get_full_domain
 from utils import validNickname
-from utils import firstParagraphFromString
+from utils import first_paragraph_from_string
 from utils import remove_id_ending
 from utils import updateRecentPostsCache
 from utils import followPerson
@@ -4154,13 +4154,13 @@ def _testFirstParagraphFromString():
     testStr = \
         '<p><a href="https://somesite.com/somepath">This is a test</a></p>' + \
         '<p>This is another paragraph</p>'
-    resultStr = firstParagraphFromString(testStr)
+    resultStr = first_paragraph_from_string(testStr)
     if resultStr != 'This is a test':
         print(resultStr)
     assert resultStr == 'This is a test'
 
     testStr = 'Testing without html'
-    resultStr = firstParagraphFromString(testStr)
+    resultStr = first_paragraph_from_string(testStr)
     assert resultStr == testStr
 
 

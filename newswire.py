@@ -22,7 +22,7 @@ from utils import dangerousSVG
 from utils import get_fav_filename_from_url
 from utils import get_base_content_from_post
 from utils import has_object_dict
-from utils import firstParagraphFromString
+from utils import first_paragraph_from_string
 from utils import isPublicPost
 from utils import locate_post
 from utils import load_json
@@ -946,7 +946,7 @@ def getRSSfromDict(base_dir: str, newswire: {},
         rssStr += \
             '<item>\n' + \
             '  <title>' + fields[0] + '</title>\n'
-        description = remove_html(firstParagraphFromString(fields[4]))
+        description = remove_html(first_paragraph_from_string(fields[4]))
         rssStr += '  <description>' + description + '</description>\n'
         url = fields[1]
         if '://' not in url:
@@ -1064,7 +1064,7 @@ def _addAccountBlogsToNewswire(base_dir: str, nickname: str, domain: str,
                     content = \
                         get_base_content_from_post(post_json_object,
                                                    system_language)
-                    description = firstParagraphFromString(content)
+                    description = first_paragraph_from_string(content)
                     description = remove_html(description)
                     tagsFromPost = _getHashtagsFromPost(post_json_object)
                     summary = post_json_object['object']['summary']

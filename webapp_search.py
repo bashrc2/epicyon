@@ -21,7 +21,7 @@ from utils import getDomainFromActor
 from utils import getNicknameFromActor
 from utils import locate_post
 from utils import isPublicPost
-from utils import firstParagraphFromString
+from utils import first_paragraph_from_string
 from utils import searchBoxPosts
 from utils import get_alt_path
 from utils import acct_dir
@@ -989,7 +989,7 @@ def rssHashtagSearch(nickname: str, domain: str, port: int,
                 description = \
                     get_base_content_from_post(post_json_object,
                                                system_language)
-                description = firstParagraphFromString(description)
+                description = first_paragraph_from_string(description)
                 hashtagFeed += \
                     '         <description>' + description + '</description>'
                 hashtagFeed += \

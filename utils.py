@@ -474,7 +474,7 @@ def remove_html(content: str) -> str:
     return result
 
 
-def firstParagraphFromString(content: str) -> str:
+def first_paragraph_from_string(content: str) -> str:
     """Get the first paragraph from a blog post
     to be used as a summary in the newswire feed
     """

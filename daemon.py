@@ -279,7 +279,7 @@ from utils import is_artist
 from utils import get_image_extensions
 from utils import media_file_mime_type
 from utils import getCSS
-from utils import firstParagraphFromString
+from utils import first_paragraph_from_string
 from utils import clearFromPostCaches
 from utils import containsInvalidChars
 from utils import is_system_account
@@ -4648,7 +4648,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.newswire[publishedDate][0] = \
                             newsPostTitle
                         self.server.newswire[publishedDate][4] = \
-                            firstParagraphFromString(newsPostContent)
+                            first_paragraph_from_string(newsPostContent)
                         # save newswire
                         newswireStateFilename = \
                             base_dir + '/accounts/.newswirestate.json'

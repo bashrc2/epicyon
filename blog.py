@@ -30,7 +30,7 @@ from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import locate_post
 from utils import load_json
-from utils import firstParagraphFromString
+from utils import first_paragraph_from_string
 from utils import get_actor_property_url
 from utils import acct_dir
 from posts import createBlogsTimeline
@@ -370,7 +370,7 @@ def _htmlBlogPostRSS2(authorized: bool,
                 content = \
                     get_base_content_from_post(post_json_object,
                                                system_language)
-                description = firstParagraphFromString(content)
+                description = first_paragraph_from_string(content)
                 rssStr = '     <item>'
                 rssStr += '         <title>' + titleStr + '</title>'
                 rssStr += '         <link>' + messageLink + '</link>'
@@ -405,7 +405,7 @@ def _htmlBlogPostRSS3(authorized: bool,
                 content = \
                     get_base_content_from_post(post_json_object,
                                                system_language)
-                description = firstParagraphFromString(content)
+                description = first_paragraph_from_string(content)
                 rssStr = 'title: ' + titleStr + '\n'
                 rssStr += 'link: ' + messageLink + '\n'
                 rssStr += 'description: ' + description + '\n'
