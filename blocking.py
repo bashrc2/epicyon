@@ -25,7 +25,7 @@ from utils import setConfigParam
 from utils import has_users_path
 from utils import get_full_domain
 from utils import remove_id_ending
-from utils import isEvil
+from utils import is_evil
 from utils import locate_post
 from utils import evil_incarnate
 from utils import getDomainFromActor
@@ -315,7 +315,7 @@ def isBlockedDomain(base_dir: str, domain: str,
     if '.' not in domain:
         return False
 
-    if isEvil(domain):
+    if is_evil(domain):
         return True
 
     shortDomain = _getShortDomain(domain)
@@ -361,7 +361,7 @@ def isBlocked(base_dir: str, nickname: str, domain: str,
               blockedCache: [] = None) -> bool:
     """Is the given nickname blocked?
     """
-    if isEvil(blockDomain):
+    if is_evil(blockDomain):
         return True
 
     blockHandle = None

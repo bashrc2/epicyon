@@ -50,7 +50,7 @@ from utils import has_users_path
 from utils import valid_post_date
 from utils import get_full_domain
 from utils import get_followers_list
-from utils import isEvil
+from utils import is_evil
 from utils import get_status_number
 from utils import createPersonDir
 from utils import urlPermitted
@@ -4333,7 +4333,7 @@ def getPublicPostDomainsBlocked(session, base_dir: str,
             continue
         # get the domain after the @
         domainName = domainName.split('@')[1].strip()
-        if isEvil(domainName):
+        if is_evil(domainName):
             blockedDomains.append(domainName)
             continue
         if domainName in blockedStr:

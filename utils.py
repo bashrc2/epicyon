@@ -742,7 +742,7 @@ def evil_incarnate() -> []:
             'kiwifarms.cc', 'djitter.com')
 
 
-def isEvil(domain: str) -> bool:
+def is_evil(domain: str) -> bool:
     # https://www.youtube.com/watch?v=5qw1hcevmdU
     if not isinstance(domain, str):
         print('WARN: Malformed domain ' + str(domain))
@@ -818,7 +818,7 @@ def domainPermitted(domain: str, federation_list: []):
 
 
 def urlPermitted(url: str, federation_list: []):
-    if isEvil(url):
+    if is_evil(url):
         return False
     if not federation_list:
         return True
