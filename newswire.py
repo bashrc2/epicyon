@@ -27,7 +27,7 @@ from utils import isPublicPost
 from utils import locate_post
 from utils import load_json
 from utils import save_json
-from utils import isSuspended
+from utils import is_suspended
 from utils import containsInvalidChars
 from utils import removeHtml
 from utils import is_account_dir
@@ -1099,7 +1099,7 @@ def _addBlogsToNewswire(base_dir: str, domain: str, newswire: {},
             nickname = handle.split('@')[0]
 
             # has this account been suspended?
-            if isSuspended(base_dir, nickname):
+            if is_suspended(base_dir, nickname):
                 continue
 
             if os.path.isfile(base_dir + '/accounts/' + handle +

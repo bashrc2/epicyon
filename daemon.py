@@ -299,7 +299,7 @@ from utils import getStatusNumber
 from utils import urlPermitted
 from utils import load_json
 from utils import save_json
-from utils import isSuspended
+from utils import is_suspended
 from utils import dangerousMarkup
 from utils import refresh_newswire
 from utils import isImageFile
@@ -1749,7 +1749,7 @@ class PubServer(BaseHTTPRequestHandler):
             else:
                 if self.server.login_failure_count.get(ipAddress):
                     del self.server.login_failure_count[ipAddress]
-                if isSuspended(base_dir, loginNickname):
+                if is_suspended(base_dir, loginNickname):
                     msg = \
                         htmlSuspended(self.server.cssCache,
                                       base_dir).encode('utf-8')

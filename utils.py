@@ -529,18 +529,18 @@ def get_config_param(base_dir: str, variableName: str):
     return None
 
 
-def isSuspended(base_dir: str, nickname: str) -> bool:
+def is_suspended(base_dir: str, nickname: str) -> bool:
     """Returns true if the given nickname is suspended
     """
-    adminNickname = get_config_param(base_dir, 'admin')
-    if not adminNickname:
+    admin_nickname = get_config_param(base_dir, 'admin')
+    if not admin_nickname:
         return False
-    if nickname == adminNickname:
+    if nickname == admin_nickname:
         return False
 
-    suspendedFilename = base_dir + '/accounts/suspended.txt'
-    if os.path.isfile(suspendedFilename):
-        with open(suspendedFilename, 'r') as f:
+    suspended_filename = base_dir + '/accounts/suspended.txt'
+    if os.path.isfile(suspended_filename):
+        with open(suspended_filename, 'r') as f:
             lines = f.readlines()
         for suspended in lines:
             if suspended.strip('\n').strip('\r') == nickname:
