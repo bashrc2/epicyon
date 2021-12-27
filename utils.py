@@ -774,7 +774,7 @@ def contains_invalid_chars(json_str: str) -> bool:
     return False
 
 
-def removeInvalidChars(text: str) -> str:
+def remove_invalid_chars(text: str) -> str:
     """Removes any invalid characters from a string
     """
     for is_invalid in INVALID_CHARACTERS:

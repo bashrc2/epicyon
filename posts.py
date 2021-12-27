@@ -43,7 +43,7 @@ from utils import remove_domain_port
 from utils import get_port_from_domain
 from utils import has_object_dict
 from utils import reject_post_id
-from utils import removeInvalidChars
+from utils import remove_invalid_chars
 from utils import fileLastModified
 from utils import isPublicPost
 from utils import has_users_path
@@ -1002,7 +1002,7 @@ def validContentWarning(cw: str) -> str:
     # so remove them
     if '#' in cw:
         cw = cw.replace('#', '').replace('  ', ' ')
-    return removeInvalidChars(cw)
+    return remove_invalid_chars(cw)
 
 
 def _loadAutoCW(base_dir: str, nickname: str, domain: str) -> []:
@@ -1385,7 +1385,7 @@ def _createPostBase(base_dir: str,
                     content_license_url: str) -> {}:
     """Creates a message
     """
-    content = removeInvalidChars(content)
+    content = remove_invalid_chars(content)
 
     subject = _addAutoCW(base_dir, nickname, domain, subject, content)
 
@@ -1434,7 +1434,7 @@ def _createPostBase(base_dir: str,
     sensitive = False
     summary = None
     if subject:
-        summary = removeInvalidChars(validContentWarning(subject))
+        summary = remove_invalid_chars(validContentWarning(subject))
         sensitive = True
 
     toRecipients = []
