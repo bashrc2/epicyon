@@ -16,7 +16,7 @@ from utils import get_base_content_from_post
 from utils import remove_html
 from utils import locate_post
 from utils import load_json
-from utils import votesOnNewswireItem
+from utils import votes_on_newswire_item
 from utils import get_nickname_from_actor
 from utils import is_editor
 from utils import get_config_param
@@ -268,7 +268,7 @@ def _htmlNewswire(base_dir: str, newswire: {}, nickname: str, moderator: bool,
             totalVotesStr = ''
             totalVotes = 0
             if moderator:
-                totalVotes = votesOnNewswireItem(item[2])
+                totalVotes = votes_on_newswire_item(item[2])
                 totalVotesStr = \
                     _votesIndicator(totalVotes, positive_voting)
 
@@ -295,7 +295,7 @@ def _htmlNewswire(base_dir: str, newswire: {}, nickname: str, moderator: bool,
             totalVotes = 0
             if moderator:
                 if moderatedItem:
-                    totalVotes = votesOnNewswireItem(item[2])
+                    totalVotes = votes_on_newswire_item(item[2])
                     # show a number of ticks or crosses for how many
                     # votes for or against
                     totalVotesStr = \

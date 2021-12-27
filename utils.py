@@ -1028,33 +1028,32 @@ def get_nickname_from_actor(actor: str) -> str:
     """
     if actor.startswith('@'):
         actor = actor[1:]
-    usersPaths = get_user_paths()
-    for possiblePath in usersPaths:
-        if possiblePath in actor:
-            nickStr = actor.split(possiblePath)[1].replace('@', '')
-            if '/' not in nickStr:
-                return nickStr
-            else:
-                return nickStr.split('/')[0]
+    users_paths = get_user_paths()
+    for possible_path in users_paths:
+        if possible_path in actor:
+            nick_str = actor.split(possible_path)[1].replace('@', '')
+            if '/' not in nick_str:
+                return nick_str
+            return nick_str.split('/')[0]
     if '/@' in actor:
         # https://domain/@nick
-        nickStr = actor.split('/@')[1]
-        if '/' in nickStr:
-            nickStr = nickStr.split('/')[0]
-        return nickStr
-    elif '@' in actor:
-        nickStr = actor.split('@')[0]
-        return nickStr
-    elif '://' in actor:
+        nick_str = actor.split('/@')[1]
+        if '/' in nick_str:
+            nick_str = nick_str.split('/')[0]
+        return nick_str
+    if '@' in actor:
+        nick_str = actor.split('@')[0]
+        return nick_str
+    if '://' in actor:
         domain = actor.split('://')[1]
         if '/' in domain:
             domain = domain.split('/')[0]
         if '://' + domain + '/' not in actor:
             return None
-        nickStr = actor.split('://' + domain + '/')[1]
-        if '/' in nickStr or '.' in nickStr:
+        nick_str = actor.split('://' + domain + '/')[1]
+        if '/' in nick_str or '.' in nick_str:
             return None
-        return nickStr
+        return nick_str
     return None
 
 
@@ -1080,10 +1079,10 @@ def get_domain_from_actor(actor: str) -> (str, int):
         actor = actor[1:]
     port = None
     prefixes = get_protocol_prefixes()
-    usersPaths = get_user_paths()
-    for possiblePath in usersPaths:
-        if possiblePath in actor:
-            domain = actor.split(possiblePath)[0]
+    users_paths = get_user_paths()
+    for possible_path in users_paths:
+        if possible_path in actor:
+            domain = actor.split(possible_path)[0]
             for prefix in prefixes:
                 domain = domain.replace(prefix, '')
             break
@@ -1111,28 +1110,28 @@ def _set_default_pet_name(base_dir: str, nickname: str, domain: str,
     This helps especially when using onion or i2p address
     """
     domain = remove_domain_port(domain)
-    userPath = acct_dir(base_dir, nickname, domain)
-    petnamesFilename = userPath + '/petnames.txt'
+    user_path = acct_dir(base_dir, nickname, domain)
+    petnames_filename = user_path + '/petnames.txt'
 
-    petnameLookupEntry = follow_nickname + ' ' + \
+    petname_lookup_entry = follow_nickname + ' ' + \
         follow_nickname + '@' + follow_domain + '\n'
-    if not os.path.isfile(petnamesFilename):
+    if not os.path.isfile(petnames_filename):
         # if there is no existing petnames lookup file
-        with open(petnamesFilename, 'w+') as petnamesFile:
-            petnamesFile.write(petnameLookupEntry)
+        with open(petnames_filename, 'w+') as petnames_file:
+            petnames_file.write(petname_lookup_entry)
         return
 
-    with open(petnamesFilename, 'r') as petnamesFile:
-        petnamesStr = petnamesFile.read()
-        if petnamesStr:
-            petnamesList = petnamesStr.split('\n')
-            for pet in petnamesList:
+    with open(petnames_filename, 'r') as petnames_file:
+        petnames_str = petnames_file.read()
+        if petnames_str:
+            petnames_list = petnames_str.split('\n')
+            for pet in petnames_list:
                 if pet.startswith(follow_nickname + ' '):
                     # petname already exists
                     return
     # petname doesn't already exist
-    with open(petnamesFilename, 'a+') as petnames_file:
-        petnames_file.write(petnameLookupEntry)
+    with open(petnames_filename, 'a+') as petnames_file:
+        petnames_file.write(petname_lookup_entry)
 
 
 def follow_person(base_dir: str, nickname: str, domain: str,
@@ -1142,8 +1141,8 @@ def follow_person(base_dir: str, nickname: str, domain: str,
                   follow_file: str = 'following.txt') -> bool:
     """Adds a person to the follow list
     """
-    follow_domainStrLower = follow_domain.lower().replace('\n', '')
-    if not domain_permitted(follow_domainStrLower,
+    follow_domain_str_lower = follow_domain.lower().replace('\n', '')
+    if not domain_permitted(follow_domain_str_lower,
                             federation_list):
         if debug:
             print('DEBUG: follow of domain ' +
@@ -1153,8 +1152,8 @@ def follow_person(base_dir: str, nickname: str, domain: str,
         print('DEBUG: follow of domain ' + follow_domain)
 
     if ':' in domain:
-        domainOnly = remove_domain_port(domain)
-        handle = nickname + '@' + domainOnly
+        domain_only = remove_domain_port(domain)
+        handle = nickname + '@' + domain_only
     else:
         handle = nickname + '@' + domain
 
@@ -1163,36 +1162,36 @@ def follow_person(base_dir: str, nickname: str, domain: str,
         return False
 
     if ':' in follow_domain:
-        follow_domainOnly = remove_domain_port(follow_domain)
-        handleToFollow = follow_nickname + '@' + follow_domainOnly
+        follow_domain_only = remove_domain_port(follow_domain)
+        handle_to_follow = follow_nickname + '@' + follow_domain_only
     else:
-        handleToFollow = follow_nickname + '@' + follow_domain
+        handle_to_follow = follow_nickname + '@' + follow_domain
 
     if group_account:
-        handleToFollow = '!' + handleToFollow
+        handle_to_follow = '!' + handle_to_follow
 
     # was this person previously unfollowed?
-    unfollowedFilename = base_dir + '/accounts/' + handle + '/unfollowed.txt'
-    if os.path.isfile(unfollowedFilename):
-        if handleToFollow in open(unfollowedFilename).read():
+    unfollowed_filename = base_dir + '/accounts/' + handle + '/unfollowed.txt'
+    if os.path.isfile(unfollowed_filename):
+        if handle_to_follow in open(unfollowed_filename).read():
             # remove them from the unfollowed file
-            newLines = ''
-            with open(unfollowedFilename, 'r') as f:
-                lines = f.readlines()
+            new_lines = ''
+            with open(unfollowed_filename, 'r') as unfoll_file:
+                lines = unfoll_file.readlines()
                 for line in lines:
-                    if handleToFollow not in line:
-                        newLines += line
-            with open(unfollowedFilename, 'w+') as f:
-                f.write(newLines)
+                    if handle_to_follow not in line:
+                        new_lines += line
+            with open(unfollowed_filename, 'w+') as unfoll_file:
+                unfoll_file.write(new_lines)
 
     if not os.path.isdir(base_dir + '/accounts'):
         os.mkdir(base_dir + '/accounts')
-    handleToFollow = follow_nickname + '@' + follow_domain
+    handle_to_follow = follow_nickname + '@' + follow_domain
     if group_account:
-        handleToFollow = '!' + handleToFollow
+        handle_to_follow = '!' + handle_to_follow
     filename = base_dir + '/accounts/' + handle + '/' + follow_file
     if os.path.isfile(filename):
-        if handleToFollow in open(filename).read():
+        if handle_to_follow in open(filename).read():
             if debug:
                 print('DEBUG: follow already exists')
             return True
@@ -1200,9 +1199,9 @@ def follow_person(base_dir: str, nickname: str, domain: str,
         try:
             with open(filename, 'r+') as foll_file:
                 content = foll_file.read()
-                if handleToFollow + '\n' not in content:
+                if handle_to_follow + '\n' not in content:
                     foll_file.seek(0, 0)
-                    foll_file.write(handleToFollow + '\n' + content)
+                    foll_file.write(handle_to_follow + '\n' + content)
                     print('DEBUG: follow added')
         except OSError as ex:
             print('WARN: Failed to write entry to follow file ' +
@@ -1211,10 +1210,11 @@ def follow_person(base_dir: str, nickname: str, domain: str,
         # first follow
         if debug:
             print('DEBUG: ' + handle +
-                  ' creating new following file to follow ' + handleToFollow +
+                  ' creating new following file to follow ' +
+                  handle_to_follow +
                   ', filename is ' + filename)
-        with open(filename, 'w+') as fp:
-            fp.write(handleToFollow + '\n')
+        with open(filename, 'w+') as foll_file:
+            foll_file.write(handle_to_follow + '\n')
 
     if follow_file.endswith('following.txt'):
         # Default to adding new follows to the calendar.
@@ -1232,14 +1232,14 @@ def follow_person(base_dir: str, nickname: str, domain: str,
     return True
 
 
-def votesOnNewswireItem(status: []) -> int:
+def votes_on_newswire_item(status: []) -> int:
     """Returns the number of votes on a newswire item
     """
-    totalVotes = 0
+    total_votes = 0
     for line in status:
         if 'vote:' in line:
-            totalVotes += 1
-    return totalVotes
+            total_votes += 1
+    return total_votes
 
 
 def locateNewsVotes(base_dir: str, domain: str,

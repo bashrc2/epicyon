@@ -64,7 +64,7 @@ from utils import save_json
 from utils import get_config_param
 from utils import locateNewsVotes
 from utils import locateNewsArrival
-from utils import votesOnNewswireItem
+from utils import votes_on_newswire_item
 from utils import remove_html
 from utils import dangerous_markup
 from utils import acct_dir
@@ -3640,14 +3640,14 @@ def _passedNewswireVoting(newswire_votes_threshold: int,
     if not votesJson:
         return True
     if not positive_voting:
-        if votesOnNewswireItem(votesJson) >= \
+        if votes_on_newswire_item(votesJson) >= \
            newswire_votes_threshold:
             # Too many veto votes.
             # Continue without incrementing
             # the posts counter
             return False
     else:
-        if votesOnNewswireItem < \
+        if votes_on_newswire_item < \
            newswire_votes_threshold:
             # Not enough votes.
             # Continue without incrementing
