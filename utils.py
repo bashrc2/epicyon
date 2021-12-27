@@ -1242,24 +1242,24 @@ def votes_on_newswire_item(status: []) -> int:
     return total_votes
 
 
-def locateNewsVotes(base_dir: str, domain: str,
-                    postUrl: str) -> str:
+def locate_news_votes(base_dir: str, domain: str,
+                      post_url: str) -> str:
     """Returns the votes filename for a news post
     within the news user account
     """
-    postUrl = \
-        postUrl.strip().replace('\n', '').replace('\r', '')
+    post_url = \
+        post_url.strip().replace('\n', '').replace('\r', '')
 
     # if this post in the shared inbox?
-    postUrl = remove_id_ending(postUrl.strip()).replace('/', '#')
+    post_url = remove_id_ending(post_url.strip()).replace('/', '#')
 
-    if postUrl.endswith('.json'):
-        postUrl = postUrl + '.votes'
+    if post_url.endswith('.json'):
+        post_url = post_url + '.votes'
     else:
-        postUrl = postUrl + '.json.votes'
+        post_url = post_url + '.json.votes'
 
-    accountDir = base_dir + '/accounts/news@' + domain + '/'
-    post_filename = accountDir + 'outbox/' + postUrl
+    account_dir = base_dir + '/accounts/news@' + domain + '/'
+    post_filename = account_dir + 'outbox/' + post_url
     if os.path.isfile(post_filename):
         return post_filename
 

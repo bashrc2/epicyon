@@ -62,7 +62,7 @@ from utils import locate_post
 from utils import load_json
 from utils import save_json
 from utils import get_config_param
-from utils import locateNewsVotes
+from utils import locate_news_votes
 from utils import locateNewsArrival
 from utils import votes_on_newswire_item
 from utils import remove_html
@@ -3632,7 +3632,7 @@ def _passedNewswireVoting(newswire_votes_threshold: int,
         return False
     # if there a votes file for this post?
     votesFilename = \
-        locateNewsVotes(base_dir, domain, post_filename)
+        locate_news_votes(base_dir, domain, post_filename)
     if not votesFilename:
         return True
     # load the votes file and count the votes
