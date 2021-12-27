@@ -286,7 +286,7 @@ from utils import is_system_account
 from utils import set_config_param
 from utils import get_config_param
 from utils import remove_id_ending
-from utils import undoLikesCollectionEntry
+from utils import undo_likes_collection_entry
 from utils import deletePost
 from utils import isBlogPost
 from utils import remove_avatar_from_cache
@@ -8352,18 +8352,19 @@ class PubServer(BaseHTTPRequestHandler):
             recent_posts_cache = self.server.recent_posts_cache
             likedPostJson = load_json(likedPostFilename, 0, 1)
             if origFilename and origPostUrl:
-                undoLikesCollectionEntry(recent_posts_cache,
-                                         base_dir, likedPostFilename,
-                                         likeUrl, undoActor, domain, debug,
-                                         likedPostJson)
+                undo_likes_collection_entry(recent_posts_cache,
+                                            base_dir, likedPostFilename,
+                                            likeUrl, undoActor,
+                                            domain, debug,
+                                            likedPostJson)
                 likeUrl = origPostUrl
                 likedPostFilename = origFilename
             if debug:
                 print('Removing likes for ' + likedPostFilename)
-            undoLikesCollectionEntry(recent_posts_cache,
-                                     base_dir,
-                                     likedPostFilename, likeUrl,
-                                     undoActor, domain, debug, None)
+            undo_likes_collection_entry(recent_posts_cache,
+                                        base_dir,
+                                        likedPostFilename, likeUrl,
+                                        undoActor, domain, debug, None)
             if debug:
                 print('Regenerating html post for changed likes collection')
             if likedPostJson:

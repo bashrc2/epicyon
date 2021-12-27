@@ -21,7 +21,7 @@ from utils import url_permitted
 from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
 from utils import locate_post
-from utils import undoLikesCollectionEntry
+from utils import undo_likes_collection_entry
 from utils import has_group_type
 from utils import local_actor_url
 from utils import load_json
@@ -403,9 +403,9 @@ def outboxUndoLike(recent_posts_cache: {},
             print('DEBUG: c2s undo like post not found in inbox or outbox')
             print(messageId)
         return True
-    undoLikesCollectionEntry(recent_posts_cache, base_dir, post_filename,
-                             messageId, message_json['actor'],
-                             domain, debug, None)
+    undo_likes_collection_entry(recent_posts_cache, base_dir, post_filename,
+                                messageId, message_json['actor'],
+                                domain, debug, None)
     if debug:
         print('DEBUG: post undo liked via c2s - ' + post_filename)
 

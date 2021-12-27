@@ -2212,10 +2212,11 @@ def getFileCaseInsensitive(path: str) -> str:
     return None
 
 
-def undoLikesCollectionEntry(recent_posts_cache: {},
-                             base_dir: str, post_filename: str, objectUrl: str,
-                             actor: str, domain: str, debug: bool,
-                             post_json_object: {}) -> None:
+def undo_likes_collection_entry(recent_posts_cache: {},
+                                base_dir: str, post_filename: str,
+                                object_url: str,
+                                actor: str, domain: str, debug: bool,
+                                post_json_object: {}) -> None:
     """Undoes a like for a particular actor
     """
     if not post_json_object:
@@ -2233,7 +2234,7 @@ def undoLikesCollectionEntry(recent_posts_cache: {},
             try:
                 os.remove(cached_post_filename)
             except OSError:
-                print('EX: undoLikesCollectionEntry ' +
+                print('EX: undo_likes_collection_entry ' +
                       'unable to delete cached post ' +
                       str(cached_post_filename))
     remove_post_from_cache(post_json_object, recent_posts_cache)
@@ -2251,9 +2252,9 @@ def undoLikesCollectionEntry(recent_posts_cache: {},
         return
     if not obj['likes'].get('items'):
         return
-    totalItems = 0
+    total_items = 0
     if obj['likes'].get('totalItems'):
-        totalItems = obj['likes']['totalItems']
+        total_items = obj['likes']['totalItems']
     itemFound = False
     for likeItem in obj['likes']['items']:
         if likeItem.get('actor'):
@@ -2265,7 +2266,7 @@ def undoLikesCollectionEntry(recent_posts_cache: {},
                 break
     if not itemFound:
         return
-    if totalItems == 1:
+    if total_items == 1:
         if debug:
             print('DEBUG: likes was removed from post')
         del obj['likes']
@@ -2278,7 +2279,7 @@ def undoLikesCollectionEntry(recent_posts_cache: {},
 
 def undo_reaction_collection_entry(recent_posts_cache: {},
                                    base_dir: str, post_filename: str,
-                                   objectUrl: str,
+                                   object_url: str,
                                    actor: str, domain: str, debug: bool,
                                    post_json_object: {},
                                    emojiContent: str) -> None:
@@ -2317,9 +2318,9 @@ def undo_reaction_collection_entry(recent_posts_cache: {},
         return
     if not obj['reactions'].get('items'):
         return
-    totalItems = 0
+    total_items = 0
     if obj['reactions'].get('totalItems'):
-        totalItems = obj['reactions']['totalItems']
+        total_items = obj['reactions']['totalItems']
     itemFound = False
     for likeItem in obj['reactions']['items']:
         if likeItem.get('actor'):
@@ -2332,7 +2333,7 @@ def undo_reaction_collection_entry(recent_posts_cache: {},
                 break
     if not itemFound:
         return
-    if totalItems == 1:
+    if total_items == 1:
         if debug:
             print('DEBUG: emoji reaction was removed from post')
         del obj['reactions']
@@ -2385,9 +2386,9 @@ def undo_announce_collection_entry(recent_posts_cache: {},
         return
     if not post_json_object['object']['shares'].get('items'):
         return
-    totalItems = 0
+    total_items = 0
     if post_json_object['object']['shares'].get('totalItems'):
-        totalItems = post_json_object['object']['shares']['totalItems']
+        total_items = post_json_object['object']['shares']['totalItems']
     itemFound = False
     for announceItem in post_json_object['object']['shares']['items']:
         if announceItem.get('actor'):
@@ -2400,7 +2401,7 @@ def undo_announce_collection_entry(recent_posts_cache: {},
                 break
     if not itemFound:
         return
-    if totalItems == 1:
+    if total_items == 1:
         if debug:
             print('DEBUG: shares (announcements) ' +
                   'was removed from post')
@@ -2468,11 +2469,11 @@ def update_announce_collection(recent_posts_cache: {},
                 if announceItem.get('actor'):
                     if announceItem['actor'] == actor:
                         return
-            newAnnounce = {
+            new_announce = {
                 'type': 'Announce',
                 'actor': actor
             }
-            post_json_object['object']['shares']['items'].append(newAnnounce)
+            post_json_object['object']['shares']['items'].append(new_announce)
             itlen = len(post_json_object['object']['shares']['items'])
             post_json_object['object']['shares']['totalItems'] = itlen
         else:

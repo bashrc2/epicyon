@@ -56,7 +56,7 @@ from utils import deletePost
 from utils import removeModerationPostFromIndex
 from utils import load_json
 from utils import save_json
-from utils import undoLikesCollectionEntry
+from utils import undo_likes_collection_entry
 from utils import undo_reaction_collection_entry
 from utils import has_group_type
 from utils import local_actor_url
@@ -1171,8 +1171,8 @@ def _receiveUndoLike(recent_posts_cache: {},
         print('DEBUG: liked post found in inbox. Now undoing.')
     likeActor = message_json['actor']
     postLikedId = message_json['object']
-    undoLikesCollectionEntry(recent_posts_cache, base_dir, post_filename,
-                             postLikedId, likeActor, domain, debug, None)
+    undo_likes_collection_entry(recent_posts_cache, base_dir, post_filename,
+                                postLikedId, likeActor, domain, debug, None)
     # regenerate the html
     likedPostJson = load_json(post_filename, 0, 1)
     if likedPostJson:
@@ -1187,10 +1187,12 @@ def _receiveUndoLike(recent_posts_cache: {},
                     if announceLikedFilename:
                         postLikedId = announceLikeUrl
                         post_filename = announceLikedFilename
-                        undoLikesCollectionEntry(recent_posts_cache, base_dir,
-                                                 post_filename, postLikedId,
-                                                 likeActor, domain, debug,
-                                                 None)
+                        undo_likes_collection_entry(recent_posts_cache,
+                                                    base_dir,
+                                                    post_filename,
+                                                    postLikedId,
+                                                    likeActor, domain, debug,
+                                                    None)
         if likedPostJson:
             if debug:
                 cachedPostFilename = \
