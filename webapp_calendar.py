@@ -13,7 +13,7 @@ from datetime import date
 from utils import getDisplayName
 from utils import get_config_param
 from utils import getNicknameFromActor
-from utils import getDomainFromActor
+from utils import get_domain_from_actor
 from utils import locate_post
 from utils import load_json
 from utils import week_day_of_month_start
@@ -40,7 +40,7 @@ def htmlCalendarDeleteConfirm(cssCache: {}, translate: {}, base_dir: str,
     """
     nickname = getNicknameFromActor(path)
     actor = local_actor_url(http_prefix, nickname, domain_full)
-    domain, port = getDomainFromActor(actor)
+    domain, port = get_domain_from_actor(actor)
     messageId = actor + '/statuses/' + post_id
 
     post_filename = locate_post(base_dir, nickname, domain, messageId)

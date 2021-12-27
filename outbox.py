@@ -22,7 +22,7 @@ from utils import has_object_dict
 from utils import getLocalNetworkAddresses
 from utils import get_full_domain
 from utils import remove_id_ending
-from utils import getDomainFromActor
+from utils import get_domain_from_actor
 from utils import dangerousMarkup
 from utils import is_featured_writer
 from utils import load_json
@@ -279,7 +279,7 @@ def postMessageToOutbox(session, translate: {},
                 if localNetworkPattern in message_json['actor']:
                     return False
 
-        testDomain, testPort = getDomainFromActor(message_json['actor'])
+        testDomain, testPort = get_domain_from_actor(message_json['actor'])
         testDomain = get_full_domain(testDomain, testPort)
         if isBlockedDomain(base_dir, testDomain):
             if debug:

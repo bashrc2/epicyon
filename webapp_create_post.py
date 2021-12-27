@@ -11,7 +11,7 @@ import os
 from utils import get_new_post_endpoints
 from utils import isPublicPostFromUrl
 from utils import getNicknameFromActor
-from utils import getDomainFromActor
+from utils import get_domain_from_actor
 from utils import get_media_formats
 from utils import get_config_param
 from utils import acct_dir
@@ -654,7 +654,7 @@ def htmlNewPost(cssCache: {}, media_instance: bool, translate: {},
         mentionNickname = getNicknameFromActor(m)
         if not mentionNickname:
             continue
-        mentionDomain, mentionPort = getDomainFromActor(m)
+        mentionDomain, mentionPort = get_domain_from_actor(m)
         if not mentionDomain:
             continue
         if mentionPort:

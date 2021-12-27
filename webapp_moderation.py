@@ -14,7 +14,7 @@ from utils import get_full_domain
 from utils import is_editor
 from utils import load_json
 from utils import getNicknameFromActor
-from utils import getDomainFromActor
+from utils import get_domain_from_actor
 from utils import get_config_param
 from utils import local_actor_url
 from posts import downloadFollowCollection
@@ -104,7 +104,7 @@ def htmlAccountInfo(cssCache: {}, translate: {},
     infoForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
 
     searchNickname = getNicknameFromActor(searchHandle)
-    searchDomain, searchPort = getDomainFromActor(searchHandle)
+    searchDomain, searchPort = get_domain_from_actor(searchHandle)
 
     searchHandle = searchNickname + '@' + searchDomain
     searchActor = \
@@ -142,7 +142,7 @@ def htmlAccountInfo(cssCache: {}, translate: {},
     blockedFollowers = []
     for followerActor in followersList:
         followerNickname = getNicknameFromActor(followerActor)
-        followerDomain, followerPort = getDomainFromActor(followerActor)
+        followerDomain, followerPort = get_domain_from_actor(followerActor)
         followerDomainFull = get_full_domain(followerDomain, followerPort)
         if isBlocked(base_dir, nickname, domain,
                      followerNickname, followerDomainFull):
@@ -156,7 +156,7 @@ def htmlAccountInfo(cssCache: {}, translate: {},
     blockedFollowing = []
     for followingActor in followingList:
         followingNickname = getNicknameFromActor(followingActor)
-        followingDomain, followingPort = getDomainFromActor(followingActor)
+        followingDomain, followingPort = get_domain_from_actor(followingActor)
         followingDomainFull = get_full_domain(followingDomain, followingPort)
         if isBlocked(base_dir, nickname, domain,
                      followingNickname, followingDomainFull):
@@ -217,7 +217,7 @@ def htmlAccountInfo(cssCache: {}, translate: {},
             ':</p>\n'
         for actor in blockedFollowing:
             followingNickname = getNicknameFromActor(actor)
-            followingDomain, followingPort = getDomainFromActor(actor)
+            followingDomain, followingPort = get_domain_from_actor(actor)
             followingDomainFull = \
                 get_full_domain(followingDomain, followingPort)
             infoForm += '<a href="' + actor + '" ' + \
@@ -236,7 +236,7 @@ def htmlAccountInfo(cssCache: {}, translate: {},
             ':</p>\n'
         for actor in blockedFollowers:
             followerNickname = getNicknameFromActor(actor)
-            followerDomain, followerPort = getDomainFromActor(actor)
+            followerDomain, followerPort = get_domain_from_actor(actor)
             followerDomainFull = get_full_domain(followerDomain, followerPort)
             infoForm += '<a href="' + actor + '" ' + \
                 'target="_blank" rel="nofollow noopener noreferrer">' + \

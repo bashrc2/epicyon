@@ -17,7 +17,7 @@ from utils import get_full_domain
 from utils import get_followers_list
 from utils import validNickname
 from utils import domain_permitted
-from utils import getDomainFromActor
+from utils import get_domain_from_actor
 from utils import getNicknameFromActor
 from utils import get_status_number
 from utils import follow_person
@@ -182,7 +182,7 @@ def isFollowingActor(base_dir: str,
     if not followingNickname:
         print('WARN: unable to find nickname in ' + actor)
         return False
-    followingDomain, followingPort = getDomainFromActor(actor)
+    followingDomain, followingPort = get_domain_from_actor(actor)
     followingHandle = \
         get_full_domain(followingNickname + '@' + followingDomain,
                         followingPort)
@@ -237,7 +237,7 @@ def getFollowerDomains(base_dir: str, nickname: str, domain: str) -> []:
     domainsList = []
     for handle in lines:
         handle = handle.replace('\n', '')
-        followerDomain, _ = getDomainFromActor(handle)
+        followerDomain, _ = get_domain_from_actor(handle)
         if not followerDomain:
             continue
         if followerDomain not in domainsList:
@@ -1346,7 +1346,7 @@ def getFollowersOfActor(base_dir: str, actor: str, debug: bool) -> {}:
         if debug:
             print('DEBUG: no nickname found in ' + actor)
         return recipientsDict
-    domain, port = getDomainFromActor(actor)
+    domain, port = get_domain_from_actor(actor)
     if not domain:
         if debug:
             print('DEBUG: no domain found in ' + actor)
@@ -1404,7 +1404,7 @@ def outboxUndoFollow(base_dir: str, message_json: {}, debug: bool) -> None:
               message_json['object']['actor'])
         return
     domainFollower, portFollower = \
-        getDomainFromActor(message_json['object']['actor'])
+        get_domain_from_actor(message_json['object']['actor'])
     domainFollowerFull = get_full_domain(domainFollower, portFollower)
 
     nicknameFollowing = getNicknameFromActor(message_json['object']['object'])
@@ -1413,7 +1413,7 @@ def outboxUndoFollow(base_dir: str, message_json: {}, debug: bool) -> None:
               message_json['object']['object'])
         return
     domainFollowing, portFollowing = \
-        getDomainFromActor(message_json['object']['object'])
+        get_domain_from_actor(message_json['object']['object'])
     domainFollowingFull = get_full_domain(domainFollowing, portFollowing)
 
     group_account = \

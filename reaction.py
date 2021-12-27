@@ -21,7 +21,7 @@ from utils import get_full_domain
 from utils import remove_id_ending
 from utils import urlPermitted
 from utils import getNicknameFromActor
-from utils import getDomainFromActor
+from utils import get_domain_from_actor
 from utils import locate_post
 from utils import undoReactionCollectionEntry
 from utils import has_group_type
@@ -103,13 +103,13 @@ def _reaction(recent_posts_cache: {},
     if actorReaction:
         reactionPostNickname = getNicknameFromActor(actorReaction)
         reactionPostDomain, reactionPostPort = \
-            getDomainFromActor(actorReaction)
+            get_domain_from_actor(actorReaction)
         group_account = has_group_type(base_dir, actorReaction, person_cache)
     else:
         if has_users_path(objectUrl):
             reactionPostNickname = getNicknameFromActor(objectUrl)
             reactionPostDomain, reactionPostPort = \
-                getDomainFromActor(objectUrl)
+                get_domain_from_actor(objectUrl)
             if '/' + str(reactionPostNickname) + '/' in objectUrl:
                 actorReaction = \
                     objectUrl.split('/' + reactionPostNickname + '/')[0] + \
@@ -534,7 +534,7 @@ def htmlEmojiReactions(post_json_object: {}, interactive: bool,
         emojiContent = item['content']
         emojiActor = item['actor']
         emojiNickname = getNicknameFromActor(emojiActor)
-        emojiDomain, _ = getDomainFromActor(emojiActor)
+        emojiDomain, _ = get_domain_from_actor(emojiActor)
         emojiHandle = emojiNickname + '@' + emojiDomain
         if emojiActor == actor:
             if emojiContent not in reactedToByThisActor:

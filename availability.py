@@ -15,7 +15,7 @@ from session import postJson
 from utils import has_object_string
 from utils import get_full_domain
 from utils import getNicknameFromActor
-from utils import getDomainFromActor
+from utils import get_domain_from_actor
 from utils import load_json
 from utils import save_json
 from utils import acct_dir
@@ -70,7 +70,7 @@ def outboxAvailability(base_dir: str, nickname: str, message_json: {},
     actorNickname = getNicknameFromActor(message_json['actor'])
     if actorNickname != nickname:
         return False
-    domain, port = getDomainFromActor(message_json['actor'])
+    domain, port = get_domain_from_actor(message_json['actor'])
     status = message_json['object'].replace('"', '')
 
     return setAvailability(base_dir, nickname, domain, status)

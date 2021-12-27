@@ -10,7 +10,7 @@ __module_group__ = "Core"
 import os
 from utils import is_account_dir
 from utils import getNicknameFromActor
-from utils import getDomainFromActor
+from utils import get_domain_from_actor
 from utils import acct_dir
 from utils import has_group_type
 from webfinger import webfingerHandle
@@ -99,7 +99,7 @@ def _updateMovedHandle(base_dir: str, nickname: str, domain: str,
     movedToNickname = getNicknameFromActor(movedToUrl)
     if not movedToNickname:
         return ctr
-    movedToDomain, movedToPort = getDomainFromActor(movedToUrl)
+    movedToDomain, movedToPort = get_domain_from_actor(movedToUrl)
     if not movedToDomain:
         return ctr
     movedToDomainFull = movedToDomain

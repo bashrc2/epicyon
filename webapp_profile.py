@@ -19,7 +19,7 @@ from utils import get_full_domain
 from utils import is_artist
 from utils import is_dormant
 from utils import getNicknameFromActor
-from utils import getDomainFromActor
+from utils import get_domain_from_actor
 from utils import is_system_account
 from utils import remove_html
 from utils import load_json
@@ -156,7 +156,7 @@ def htmlProfileAfterSearch(cssCache: {},
         return None
 
     personUrl = profile_json['id']
-    searchDomain, searchPort = getDomainFromActor(personUrl)
+    searchDomain, searchPort = get_domain_from_actor(personUrl)
     if not searchDomain:
         return None
     searchNickname = getNicknameFromActor(personUrl)
@@ -408,7 +408,7 @@ def _getProfileHeader(base_dir: str, http_prefix: str,
             joinedDate.split('T')[0] + '<br>\n'
     if movedTo:
         newNickname = getNicknameFromActor(movedTo)
-        newDomain, newPort = getDomainFromActor(movedTo)
+        newDomain, newPort = get_domain_from_actor(movedTo)
         newDomainFull = get_full_domain(newDomain, newPort)
         if newNickname and newDomain:
             htmlStr += \
@@ -428,13 +428,13 @@ def _getProfileHeader(base_dir: str, http_prefix: str,
                 if ctr > 0:
                     otherAccountsHtml += ' '
                 ctr += 1
-                altDomain, altPort = getDomainFromActor(altActor)
+                altDomain, altPort = get_domain_from_actor(altActor)
                 otherAccountsHtml += \
                     '<a href="' + altActor + '">' + altDomain + '</a>'
         elif isinstance(alsoKnownAs, str):
             if alsoKnownAs != actor:
                 ctr += 1
-                altDomain, altPort = getDomainFromActor(alsoKnownAs)
+                altDomain, altPort = get_domain_from_actor(alsoKnownAs)
                 otherAccountsHtml += \
                     '<a href="' + alsoKnownAs + '">' + altDomain + '</a>'
         otherAccountsHtml += '</p>\n'
@@ -502,7 +502,7 @@ def _getProfileHeaderAfterSearch(base_dir: str,
         htmlStr += '        <p><b>' + translate['Follows you'] + '</b></p>\n'
     if movedTo:
         newNickname = getNicknameFromActor(movedTo)
-        newDomain, newPort = getDomainFromActor(movedTo)
+        newDomain, newPort = get_domain_from_actor(movedTo)
         newDomainFull = get_full_domain(newDomain, newPort)
         if newNickname and newDomain:
             newHandle = newNickname + '@' + newDomainFull
@@ -520,13 +520,13 @@ def _getProfileHeaderAfterSearch(base_dir: str,
                 if ctr > 0:
                     otherAccountshtml += ' '
                 ctr += 1
-                altDomain, altPort = getDomainFromActor(altActor)
+                altDomain, altPort = get_domain_from_actor(altActor)
                 otherAccountshtml += \
                     '<a href="' + altActor + '">' + altDomain + '</a>'
         elif isinstance(alsoKnownAs, str):
             if alsoKnownAs != actor:
                 ctr += 1
-                altDomain, altPort = getDomainFromActor(alsoKnownAs)
+                altDomain, altPort = get_domain_from_actor(alsoKnownAs)
                 otherAccountshtml += \
                     '<a href="' + alsoKnownAs + '">' + altDomain + '</a>'
 
@@ -589,7 +589,7 @@ def htmlProfile(signing_priv_key_pem: str,
                                pageNumber, maxItemsPerPage, cw_lists,
                                lists_enabled)
 
-    domain, port = getDomainFromActor(profile_json['id'])
+    domain, port = get_domain_from_actor(profile_json['id'])
     if not domain:
         return ""
     displayName = \
@@ -760,7 +760,7 @@ def htmlProfile(signing_priv_key_pem: str,
                             # is this a new domain?
                             # if so then append a new instance indicator
                             followerDomain, _ = \
-                                getDomainFromActor(followerActor)
+                                get_domain_from_actor(followerActor)
                             newFollowerDomain = ''
                             if followerDomain not in currFollowerDomains:
                                 newFollowerDomain = ' ✨'
@@ -2354,7 +2354,7 @@ def _individualFollowAsHtml(signing_priv_key_pem: str,
     """An individual follow entry on the profile screen
     """
     followUrlNickname = getNicknameFromActor(followUrl)
-    followUrlDomain, followUrlPort = getDomainFromActor(followUrl)
+    followUrlDomain, followUrlPort = get_domain_from_actor(followUrl)
     followUrlDomainFull = get_full_domain(followUrlDomain, followUrlPort)
     titleStr = '@' + followUrlNickname + '@' + followUrlDomainFull
     avatarUrl = getPersonAvatarUrl(base_dir, followUrl, person_cache, True)

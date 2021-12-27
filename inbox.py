@@ -49,7 +49,7 @@ from utils import remove_post_from_cache
 from utils import urlPermitted
 from utils import create_inbox_queue_dir
 from utils import get_status_number
-from utils import getDomainFromActor
+from utils import get_domain_from_actor
 from utils import getNicknameFromActor
 from utils import locate_post
 from utils import deletePost
@@ -480,7 +480,7 @@ def savePostToInboxQueue(base_dir: str, http_prefix: str,
         if not postNickname:
             print('No post Nickname in actor ' + post_json_object['actor'])
             return None
-        postDomain, postPort = getDomainFromActor(post_json_object['actor'])
+        postDomain, postPort = get_domain_from_actor(post_json_object['actor'])
         if not postDomain:
             if debug:
                 pprint(post_json_object)
@@ -499,7 +499,7 @@ def savePostToInboxQueue(base_dir: str, http_prefix: str,
                 inReplyTo = \
                     post_json_object['object']['inReplyTo']
                 replyDomain, replyPort = \
-                    getDomainFromActor(inReplyTo)
+                    get_domain_from_actor(inReplyTo)
                 if isBlockedDomain(base_dir, replyDomain, blockedCache):
                     if debug:
                         print('WARN: post contains reply from ' +
@@ -764,7 +764,7 @@ def _receiveUndoFollow(session, base_dir: str, http_prefix: str,
               message_json['object']['actor'])
         return False
     domainFollower, portFollower = \
-        getDomainFromActor(message_json['object']['actor'])
+        get_domain_from_actor(message_json['object']['actor'])
     domainFollowerFull = get_full_domain(domainFollower, portFollower)
 
     nicknameFollowing = \
@@ -774,7 +774,7 @@ def _receiveUndoFollow(session, base_dir: str, http_prefix: str,
               message_json['object']['object'])
         return False
     domainFollowing, portFollowing = \
-        getDomainFromActor(message_json['object']['object'])
+        get_domain_from_actor(message_json['object']['object'])
     domainFollowingFull = get_full_domain(domainFollowing, portFollowing)
 
     group_account = \
@@ -978,7 +978,7 @@ def _receiveUpdate(recent_posts_cache: {}, session, base_dir: str,
             updateNickname = getNicknameFromActor(message_json['actor'])
             if updateNickname:
                 updateDomain, updatePort = \
-                    getDomainFromActor(message_json['actor'])
+                    get_domain_from_actor(message_json['actor'])
                 if _personReceiveUpdate(base_dir,
                                         domain, port,
                                         updateNickname, updateDomain,
@@ -1873,7 +1873,7 @@ def _receiveAnnounce(recent_posts_cache: {},
     # is the announce actor blocked?
     nickname = handle.split('@')[0]
     actorNickname = getNicknameFromActor(message_json['actor'])
-    actorDomain, actorPort = getDomainFromActor(message_json['actor'])
+    actorDomain, actorPort = get_domain_from_actor(message_json['actor'])
     if isBlocked(base_dir, nickname, domain, actorNickname, actorDomain):
         print('Receive announce blocked for actor: ' +
               actorNickname + '@' + actorDomain)
@@ -1882,7 +1882,7 @@ def _receiveAnnounce(recent_posts_cache: {},
     # also check the actor for the url being announced
     announcedActorNickname = getNicknameFromActor(message_json['object'])
     announcedActorDomain, announcedActorPort = \
-        getDomainFromActor(message_json['object'])
+        get_domain_from_actor(message_json['object'])
     if isBlocked(base_dir, nickname, domain,
                  announcedActorNickname, announcedActorDomain):
         print('Receive announce object blocked for actor: ' +
@@ -2145,7 +2145,7 @@ def populateReplies(base_dir: str, http_prefix: str, domain: str,
     if not replyToNickname:
         print('DEBUG: no nickname found for ' + replyTo)
         return False
-    replyToDomain, replyToPort = getDomainFromActor(replyTo)
+    replyToDomain, replyToPort = get_domain_from_actor(replyTo)
     if not replyToDomain:
         if debug:
             print('DEBUG: no domain found for ' + replyTo)
@@ -2454,7 +2454,7 @@ def _likeNotify(base_dir: str, domain: str, onion_domain: str,
             return
 
     likerNickname = getNicknameFromActor(actor)
-    likerDomain, likerPort = getDomainFromActor(actor)
+    likerDomain, likerPort = get_domain_from_actor(actor)
     if likerNickname and likerDomain:
         likerHandle = likerNickname + '@' + likerDomain
     else:
@@ -2516,7 +2516,7 @@ def _reactionNotify(base_dir: str, domain: str, onion_domain: str,
             return
 
     reactionNickname = getNicknameFromActor(actor)
-    reactionDomain, reactionPort = getDomainFromActor(actor)
+    reactionDomain, reactionPort = get_domain_from_actor(actor)
     if reactionNickname and reactionDomain:
         reactionHandle = reactionNickname + '@' + reactionDomain
     else:
@@ -2705,7 +2705,7 @@ def _inboxUpdateCalendar(base_dir: str, handle: str,
 
     actor = post_json_object['actor']
     actorNickname = getNicknameFromActor(actor)
-    actorDomain, actorPort = getDomainFromActor(actor)
+    actorDomain, actorPort = get_domain_from_actor(actor)
     handleNickname = handle.split('@')[0]
     handleDomain = handle.split('@')[1]
     if not receivingCalendarEvents(base_dir,
@@ -2922,7 +2922,7 @@ def _isValidDM(base_dir: str, nickname: str, domain: str, port: int,
     if not sendingActorNickname:
         return False
     sendingActorDomain, sendingActorPort = \
-        getDomainFromActor(sendingActor)
+        get_domain_from_actor(sendingActor)
     if not sendingActorDomain:
         return False
     # Is this DM to yourself? eg. a reminder
@@ -3145,7 +3145,7 @@ def _lowFrequencyPostNotification(base_dir: str, http_prefix: str,
     if not isinstance(attributedTo, str):
         return
     fromNickname = getNicknameFromActor(attributedTo)
-    fromDomain, fromPort = getDomainFromActor(attributedTo)
+    fromDomain, fromPort = get_domain_from_actor(attributedTo)
     fromDomainFull = get_full_domain(fromDomain, fromPort)
     if notifyWhenPersonPosts(base_dir, nickname, domain,
                              fromNickname, fromDomainFull):
@@ -3173,7 +3173,7 @@ def _checkForGitPatches(base_dir: str, nickname: str, domain: str,
     if not isinstance(attributedTo, str):
         return 0
     fromNickname = getNicknameFromActor(attributedTo)
-    fromDomain, fromPort = getDomainFromActor(attributedTo)
+    fromDomain, fromPort = get_domain_from_actor(attributedTo)
     fromDomainFull = get_full_domain(fromDomain, fromPort)
     if receiveGitPatch(base_dir, nickname, domain,
                        jsonObj['type'], jsonObj['summary'],
@@ -3876,7 +3876,7 @@ def _receiveFollowRequest(session, base_dir: str, http_prefix: str,
         if debug:
             print('DEBUG: users/profile/accounts/channel missing from actor')
         return False
-    domain, tempPort = getDomainFromActor(message_json['actor'])
+    domain, tempPort = get_domain_from_actor(message_json['actor'])
     fromPort = port
     domain_full = get_full_domain(domain, tempPort)
     if tempPort:
@@ -3899,7 +3899,7 @@ def _receiveFollowRequest(session, base_dir: str, http_prefix: str,
             print('DEBUG: users/profile/channel/accounts ' +
                   'not found within object')
         return False
-    domainToFollow, tempPort = getDomainFromActor(message_json['object'])
+    domainToFollow, tempPort = get_domain_from_actor(message_json['object'])
     if not domain_permitted(domainToFollow, federation_list):
         if debug:
             print('DEBUG: follow domain not permitted ' + domainToFollow)

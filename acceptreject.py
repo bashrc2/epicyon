@@ -12,7 +12,7 @@ from utils import has_object_string_object
 from utils import has_users_path
 from utils import get_full_domain
 from utils import urlPermitted
-from utils import getDomainFromActor
+from utils import get_domain_from_actor
 from utils import getNicknameFromActor
 from utils import domain_permitted
 from utils import follow_person
@@ -103,7 +103,7 @@ def _accept_follow(base_dir: str, domain: str, message_json: {},
     if not nickname:
         print('WARN: no nickname found in ' + this_actor)
         return
-    acceptedDomain, acceptedPort = getDomainFromActor(this_actor)
+    acceptedDomain, acceptedPort = get_domain_from_actor(this_actor)
     if not acceptedDomain:
         if debug:
             print('DEBUG: domain not found in ' + this_actor)
@@ -130,7 +130,7 @@ def _accept_follow(base_dir: str, domain: str, message_json: {},
                 print('DEBUG: unrecognized actor ' + this_actor)
             return
     followed_actor = message_json['object']['object']
-    followed_domain, port = getDomainFromActor(followed_actor)
+    followed_domain, port = get_domain_from_actor(followed_actor)
     if not followed_domain:
         print('DEBUG: no domain found within Follow activity object ' +
               followed_actor)
@@ -200,7 +200,7 @@ def receiveAcceptReject(session, base_dir: str,
         if debug:
             print('DEBUG: "users" or "profile" missing from actor in ' +
                   message_json['type'] + '. Assuming single user instance.')
-    domain, _ = getDomainFromActor(message_json['actor'])
+    domain, _ = get_domain_from_actor(message_json['actor'])
     if not domain_permitted(domain, federation_list):
         if debug:
             print('DEBUG: ' + message_json['type'] +

@@ -16,7 +16,7 @@ from utils import get_full_domain
 from utils import get_config_param
 from utils import is_dormant
 from utils import remove_html
-from utils import getDomainFromActor
+from utils import get_domain_from_actor
 from utils import getNicknameFromActor
 from utils import is_featured_writer
 from utils import acct_dir
@@ -65,7 +65,7 @@ def htmlPersonOptions(defaultTimeline: str,
                       isGroup: bool) -> str:
     """Show options for a person: view/follow/block/report
     """
-    optionsDomain, optionsPort = getDomainFromActor(optionsActor)
+    optionsDomain, optionsPort = get_domain_from_actor(optionsActor)
     optionsDomainFull = get_full_domain(optionsDomain, optionsPort)
 
     if os.path.isfile(base_dir + '/accounts/options-background-custom.jpg'):
@@ -87,7 +87,7 @@ def htmlPersonOptions(defaultTimeline: str,
             nickname = nickname.split('/')[0]
         if '?' in nickname:
             nickname = nickname.split('?')[0]
-        followerDomain, followerPort = getDomainFromActor(optionsActor)
+        followerDomain, followerPort = get_domain_from_actor(optionsActor)
         if isFollowingActor(base_dir, nickname, domain, optionsActor):
             followStr = 'Unfollow'
             if isGroup:
@@ -155,7 +155,7 @@ def htmlPersonOptions(defaultTimeline: str,
             '  <p class="optionsText">' + translate['Follows you'] + '</p>\n'
     if movedTo:
         newNickname = getNicknameFromActor(movedTo)
-        newDomain, newPort = getDomainFromActor(movedTo)
+        newDomain, newPort = get_domain_from_actor(movedTo)
         if newNickname and newDomain:
             newHandle = newNickname + '@' + newDomain
             optionsStr += \
@@ -175,13 +175,13 @@ def htmlPersonOptions(defaultTimeline: str,
                 if ctr > 0:
                     otherAccountsHtml += ' '
                 ctr += 1
-                altDomain, altPort = getDomainFromActor(altActor)
+                altDomain, altPort = get_domain_from_actor(altActor)
                 otherAccountsHtml += \
                     '<a href="' + altActor + '">' + altDomain + '</a>'
         elif isinstance(alsoKnownAs, str):
             if alsoKnownAs != optionsActor:
                 ctr += 1
-                altDomain, altPort = getDomainFromActor(alsoKnownAs)
+                altDomain, altPort = get_domain_from_actor(alsoKnownAs)
                 otherAccountsHtml += \
                     '<a href="' + alsoKnownAs + '">' + altDomain + '</a>'
         otherAccountsHtml += '</p>\n'

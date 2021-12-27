@@ -28,7 +28,7 @@ from utils import remove_id_ending
 from utils import is_evil
 from utils import locate_post
 from utils import evil_incarnate
-from utils import getDomainFromActor
+from utils import get_domain_from_actor
 from utils import getNicknameFromActor
 from utils import acct_dir
 from utils import local_actor_url
@@ -452,7 +452,7 @@ def outboxBlock(base_dir: str, http_prefix: str,
     if not nicknameBlocked:
         print('WARN: unable to find nickname in ' + message_json['object'])
         return False
-    domainBlocked, portBlocked = getDomainFromActor(message_json['object'])
+    domainBlocked, portBlocked = get_domain_from_actor(message_json['object'])
     domainBlockedFull = get_full_domain(domainBlocked, portBlocked)
 
     addBlock(base_dir, nickname, domain,
@@ -510,7 +510,7 @@ def outboxUndoBlock(base_dir: str, http_prefix: str,
               message_json['object']['object'])
         return
     domainObject = message_json['object']['object']
-    domainBlocked, portBlocked = getDomainFromActor(domainObject)
+    domainBlocked, portBlocked = get_domain_from_actor(domainObject)
     domainBlockedFull = get_full_domain(domainBlocked, portBlocked)
 
     removeBlock(base_dir, nickname, domain,

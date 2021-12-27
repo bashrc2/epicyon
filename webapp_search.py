@@ -17,7 +17,7 @@ from utils import get_config_param
 from utils import get_full_domain
 from utils import is_editor
 from utils import load_json
-from utils import getDomainFromActor
+from utils import get_domain_from_actor
 from utils import getNicknameFromActor
 from utils import locate_post
 from utils import isPublicPost
@@ -337,7 +337,7 @@ def htmlSearchEmojiTextEntry(cssCache: {}, translate: {},
                  base_dir + '/emoji/emoji.json')
 
     actor = path.replace('/search', '')
-    domain, port = getDomainFromActor(actor)
+    domain, port = get_domain_from_actor(actor)
 
     setCustomBackground(base_dir, 'search-background', 'follow-background')
 

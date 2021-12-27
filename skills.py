@@ -15,7 +15,7 @@ from session import postJson
 from utils import has_object_string
 from utils import get_full_domain
 from utils import getNicknameFromActor
-from utils import getDomainFromActor
+from utils import get_domain_from_actor
 from utils import load_json
 from utils import get_occupation_skills
 from utils import set_occupation_skills_list
@@ -160,7 +160,7 @@ def outboxSkills(base_dir: str, nickname: str, message_json: {},
     actorNickname = getNicknameFromActor(message_json['actor'])
     if actorNickname != nickname:
         return False
-    domain, port = getDomainFromActor(message_json['actor'])
+    domain, port = get_domain_from_actor(message_json['actor'])
     skill = message_json['object'].replace('"', '').split(';')[0].strip()
     skillLevelPercentStr = \
         message_json['object'].replace('"', '').split(';')[1].strip()

@@ -71,7 +71,7 @@ from utils import has_users_path
 from utils import get_full_domain
 from utils import setConfigParam
 from utils import get_config_param
-from utils import getDomainFromActor
+from utils import get_domain_from_actor
 from utils import getNicknameFromActor
 from utils import follow_person
 from utils import validNickname
@@ -702,7 +702,7 @@ if args.posts:
     if '@' not in args.posts:
         if '/users/' in args.posts:
             postsNickname = getNicknameFromActor(args.posts)
-            postsDomain, postsPort = getDomainFromActor(args.posts)
+            postsDomain, postsPort = get_domain_from_actor(args.posts)
             args.posts = \
                 get_full_domain(postsNickname + '@' + postsDomain, postsPort)
         else:
@@ -736,7 +736,7 @@ if args.postDomains:
     if '@' not in args.postDomains:
         if '/users/' in args.postDomains:
             postsNickname = getNicknameFromActor(args.postDomains)
-            postsDomain, postsPort = getDomainFromActor(args.postDomains)
+            postsDomain, postsPort = get_domain_from_actor(args.postDomains)
             args.postDomains = \
                 get_full_domain(postsNickname + '@' + postsDomain, postsPort)
         else:
@@ -788,7 +788,7 @@ if args.postDomainsBlocked:
         if '/users/' in args.postDomainsBlocked:
             postsNickname = getNicknameFromActor(args.postDomainsBlocked)
             postsDomain, postsPort = \
-                getDomainFromActor(args.postDomainsBlocked)
+                get_domain_from_actor(args.postDomainsBlocked)
             args.postDomainsBlocked = \
                 get_full_domain(postsNickname + '@' + postsDomain, postsPort)
         else:
@@ -834,7 +834,7 @@ if args.checkDomains:
     if '@' not in args.checkDomains:
         if '/users/' in args.checkDomains:
             postsNickname = getNicknameFromActor(args.posts)
-            postsDomain, postsPort = getDomainFromActor(args.posts)
+            postsDomain, postsPort = get_domain_from_actor(args.posts)
             args.checkDomains = \
                 get_full_domain(postsNickname + '@' + postsDomain, postsPort)
         else:
@@ -1882,7 +1882,7 @@ if args.follow:
     if not followNickname:
         print('Unable to find nickname in ' + args.follow)
         sys.exit()
-    followDomain, followPort = getDomainFromActor(args.follow)
+    followDomain, followPort = get_domain_from_actor(args.follow)
 
     session = createSession(proxy_type)
     person_cache = {}
@@ -1928,7 +1928,7 @@ if args.unfollow:
     if not followNickname:
         print('WARN: unable to find nickname in ' + args.unfollow)
         sys.exit()
-    followDomain, followPort = getDomainFromActor(args.unfollow)
+    followDomain, followPort = get_domain_from_actor(args.unfollow)
 
     session = createSession(proxy_type)
     person_cache = {}

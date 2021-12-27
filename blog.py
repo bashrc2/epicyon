@@ -27,7 +27,7 @@ from utils import get_config_param
 from utils import get_full_domain
 from utils import get_media_formats
 from utils import getNicknameFromActor
-from utils import getDomainFromActor
+from utils import get_domain_from_actor
 from utils import locate_post
 from utils import load_json
 from utils import first_paragraph_from_string
@@ -218,7 +218,7 @@ def _htmlBlogPostContent(debug: bool, session, authorized: bool,
             actor = post_json_object['object']['attributedTo']
             authorNickname = getNicknameFromActor(actor)
         if authorNickname:
-            authorDomain, authorPort = getDomainFromActor(actor)
+            authorDomain, authorPort = get_domain_from_actor(actor)
             if authorDomain:
                 # author must be from the given domain
                 if restrictToDomain and authorDomain != domain:

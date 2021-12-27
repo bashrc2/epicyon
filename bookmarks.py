@@ -18,7 +18,7 @@ from utils import remove_id_ending
 from utils import remove_post_from_cache
 from utils import urlPermitted
 from utils import getNicknameFromActor
-from utils import getDomainFromActor
+from utils import get_domain_from_actor
 from utils import locate_post
 from utils import get_cached_post_filename
 from utils import load_json
@@ -286,12 +286,13 @@ def bookmark(recent_posts_cache: {},
     if actorBookmarked:
         acBm = actorBookmarked
         bookmarkedPostNickname = getNicknameFromActor(acBm)
-        bookmarkedPostDomain, bookmarkedPostPort = getDomainFromActor(acBm)
+        bookmarkedPostDomain, bookmarkedPostPort = get_domain_from_actor(acBm)
     else:
         if has_users_path(objectUrl):
             ou = objectUrl
             bookmarkedPostNickname = getNicknameFromActor(ou)
-            bookmarkedPostDomain, bookmarkedPostPort = getDomainFromActor(ou)
+            bookmarkedPostDomain, bookmarkedPostPort = \
+                get_domain_from_actor(ou)
 
     if bookmarkedPostNickname:
         post_filename = locate_post(base_dir, nickname, domain, objectUrl)
@@ -350,12 +351,13 @@ def undoBookmark(recent_posts_cache: {},
     if actorBookmarked:
         acBm = actorBookmarked
         bookmarkedPostNickname = getNicknameFromActor(acBm)
-        bookmarkedPostDomain, bookmarkedPostPort = getDomainFromActor(acBm)
+        bookmarkedPostDomain, bookmarkedPostPort = get_domain_from_actor(acBm)
     else:
         if has_users_path(objectUrl):
             ou = objectUrl
             bookmarkedPostNickname = getNicknameFromActor(ou)
-            bookmarkedPostDomain, bookmarkedPostPort = getDomainFromActor(ou)
+            bookmarkedPostDomain, bookmarkedPostPort = \
+                get_domain_from_actor(ou)
 
     if bookmarkedPostNickname:
         post_filename = locate_post(base_dir, nickname, domain, objectUrl)

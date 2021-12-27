@@ -9,7 +9,7 @@ __module_group__ = "Timeline"
 
 import os
 from utils import is_system_account
-from utils import getDomainFromActor
+from utils import get_domain_from_actor
 from utils import get_config_param
 from person import personBoxJson
 from webapp_utils import htmlHeaderWithExternalStyle
@@ -122,7 +122,7 @@ def htmlFrontScreen(signing_priv_key_pem: str,
         return ""
     if not is_system_account(nickname):
         return ""
-    domain, port = getDomainFromActor(profile_json['id'])
+    domain, port = get_domain_from_actor(profile_json['id'])
     if not domain:
         return ""
     domain_full = domain

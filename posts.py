@@ -55,7 +55,7 @@ from utils import get_status_number
 from utils import createPersonDir
 from utils import urlPermitted
 from utils import getNicknameFromActor
-from utils import getDomainFromActor
+from utils import get_domain_from_actor
 from utils import deletePost
 from utils import validNickname
 from utils import locate_post
@@ -790,7 +790,7 @@ def getPostDomains(session, outboxUrl: str, maxPosts: int,
         if item['object'].get('inReplyTo'):
             if isinstance(item['object']['inReplyTo'], str):
                 postDomain, postPort = \
-                    getDomainFromActor(item['object']['inReplyTo'])
+                    get_domain_from_actor(item['object']['inReplyTo'])
                 if postDomain not in postDomains:
                     postDomains.append(postDomain)
 
@@ -802,7 +802,7 @@ def getPostDomains(session, outboxUrl: str, maxPosts: int,
                 if tagType == 'mention':
                     if tagItem.get('href'):
                         postDomain, postPort = \
-                            getDomainFromActor(tagItem['href'])
+                            get_domain_from_actor(tagItem['href'])
                         if postDomain not in postDomains:
                             postDomains.append(postDomain)
     return postDomains
@@ -852,7 +852,7 @@ def _getPostsForBlockedDomains(base_dir: str,
         if item['object'].get('inReplyTo'):
             if isinstance(item['object']['inReplyTo'], str):
                 postDomain, postPort = \
-                    getDomainFromActor(item['object']['inReplyTo'])
+                    get_domain_from_actor(item['object']['inReplyTo'])
                 if isBlockedDomain(base_dir, postDomain):
                     if item['object'].get('url'):
                         url = item['object']['url']
@@ -871,7 +871,7 @@ def _getPostsForBlockedDomains(base_dir: str,
                 tagType = tagItem['type'].lower()
                 if tagType == 'mention' and tagItem.get('href'):
                     postDomain, postPort = \
-                        getDomainFromActor(tagItem['href'])
+                        get_domain_from_actor(tagItem['href'])
                     if isBlockedDomain(base_dir, postDomain):
                         if item['object'].get('url'):
                             url = item['object']['url']
@@ -2955,7 +2955,7 @@ def _sendToNamedAddresses(session, base_dir: str,
         toNickname = getNicknameFromActor(address)
         if not toNickname:
             continue
-        toDomain, toPort = getDomainFromActor(address)
+        toDomain, toPort = get_domain_from_actor(address)
         if not toDomain:
             continue
         # Don't send profile/actor updates to yourself
@@ -4571,7 +4571,8 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
                 'Accept': acceptStr
             }
         actorNickname = getNicknameFromActor(post_json_object['actor'])
-        actorDomain, actorPort = getDomainFromActor(post_json_object['actor'])
+        actorDomain, actorPort = \
+            get_domain_from_actor(post_json_object['actor'])
         if not actorDomain:
             print('Announce actor does not contain a ' +
                   'valid domain or port number: ' +
@@ -4583,7 +4584,7 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
             return None
         objectNickname = getNicknameFromActor(post_json_object['object'])
         objectDomain, objectPort = \
-            getDomainFromActor(post_json_object['object'])
+            get_domain_from_actor(post_json_object['object'])
         if not objectDomain:
             print('Announce object does not contain a ' +
                   'valid domain or port number: ' +
@@ -4725,7 +4726,7 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
         attributedNickname = \
             getNicknameFromActor(announcedJson['object']['id'])
         attributedDomain, attributedPort = \
-            getDomainFromActor(announcedJson['object']['id'])
+            get_domain_from_actor(announcedJson['object']['id'])
         if attributedNickname and attributedDomain:
             attributedDomain = \
                 get_full_domain(attributedDomain, attributedPort)
@@ -5305,7 +5306,7 @@ def getOriginalPostFromAnnounceUrl(announceUrl: str, base_dir: str,
         if has_users_path(origPostId):
             # get the actor from the original post url
             origNick = getNicknameFromActor(origPostId)
-            origDomain, origPort = getDomainFromActor(origPostId)
+            origDomain, origPort = get_domain_from_actor(origPostId)
             if origNick and origDomain:
                 actor = \
                     origPostId.split('/' + origNick + '/')[0] + \

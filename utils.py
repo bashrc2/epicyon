@@ -1068,7 +1068,7 @@ def get_group_paths() -> []:
     return ['/c/', '/video-channels/']
 
 
-def getDomainFromActor(actor: str) -> (str, int):
+def get_domain_from_actor(actor: str) -> (str, int):
     """Returns the domain name from an actor url
     """
     if actor.startswith('@'):

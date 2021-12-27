@@ -15,7 +15,7 @@ from utils import has_users_path
 from utils import get_full_domain
 from utils import remove_id_ending
 from utils import getNicknameFromActor
-from utils import getDomainFromActor
+from utils import get_domain_from_actor
 from utils import locate_post
 from utils import deletePost
 from utils import removeModerationPostFromIndex
@@ -153,7 +153,7 @@ def outboxDelete(base_dir: str, http_prefix: str,
             print("DEBUG: you can't delete a post which " +
                   "wasn't created by you (nickname does not match)")
         return
-    deleteDomain, deletePort = getDomainFromActor(messageId)
+    deleteDomain, deletePort = get_domain_from_actor(messageId)
     domain = remove_domain_port(domain)
     if deleteDomain != domain:
         if debug:

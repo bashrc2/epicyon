@@ -11,7 +11,7 @@ import os
 from shutil import copyfile
 from utils import get_full_domain
 from utils import getNicknameFromActor
-from utils import getDomainFromActor
+from utils import get_domain_from_actor
 from utils import locate_post
 from utils import load_json
 from utils import get_config_param
@@ -44,7 +44,7 @@ def htmlConfirmDelete(cssCache: {},
         return None
     actor = messageId.split('/statuses/')[0]
     nickname = getNicknameFromActor(actor)
-    domain, port = getDomainFromActor(actor)
+    domain, port = get_domain_from_actor(actor)
     domain_full = get_full_domain(domain, port)
 
     post_filename = locate_post(base_dir, nickname, domain, messageId)
@@ -113,7 +113,7 @@ def htmlConfirmRemoveSharedItem(cssCache: {}, translate: {}, base_dir: str,
     """Shows a screen asking to confirm the removal of a shared item
     """
     nickname = getNicknameFromActor(actor)
-    domain, port = getDomainFromActor(actor)
+    domain, port = get_domain_from_actor(actor)
     domain_full = get_full_domain(domain, port)
     sharesFile = \
         acct_dir(base_dir, nickname, domain) + '/' + sharesFileType + '.json'
@@ -180,7 +180,7 @@ def htmlConfirmFollow(cssCache: {}, translate: {}, base_dir: str,
                       followProfileUrl: str) -> str:
     """Asks to confirm a follow
     """
-    followDomain, port = getDomainFromActor(followActor)
+    followDomain, port = get_domain_from_actor(followActor)
 
     if os.path.isfile(base_dir + '/accounts/follow-background-custom.jpg'):
         if not os.path.isfile(base_dir + '/accounts/follow-background.jpg'):
@@ -225,7 +225,7 @@ def htmlConfirmUnfollow(cssCache: {}, translate: {}, base_dir: str,
                         followProfileUrl: str) -> str:
     """Asks to confirm unfollowing an actor
     """
-    followDomain, port = getDomainFromActor(followActor)
+    followDomain, port = get_domain_from_actor(followActor)
 
     if os.path.isfile(base_dir + '/accounts/follow-background-custom.jpg'):
         if not os.path.isfile(base_dir + '/accounts/follow-background.jpg'):
@@ -271,7 +271,7 @@ def htmlConfirmUnblock(cssCache: {}, translate: {}, base_dir: str,
                        blockProfileUrl: str) -> str:
     """Asks to confirm unblocking an actor
     """
-    blockDomain, port = getDomainFromActor(blockActor)
+    blockDomain, port = get_domain_from_actor(blockActor)
 
     setCustomBackground(base_dir, 'block-background', 'follow-background')
 

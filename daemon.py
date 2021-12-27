@@ -294,7 +294,7 @@ from utils import locate_post
 from utils import get_cached_post_filename
 from utils import remove_post_from_cache
 from utils import getNicknameFromActor
-from utils import getDomainFromActor
+from utils import get_domain_from_actor
 from utils import get_status_number
 from utils import urlPermitted
 from utils import load_json
@@ -1457,7 +1457,7 @@ class PubServer(BaseHTTPRequestHandler):
                     return 3
 
         messageDomain, messagePort = \
-            getDomainFromActor(message_json['actor'])
+            get_domain_from_actor(message_json['actor'])
 
         self.server.blockedCacheLastUpdated = \
             updateBlockedCache(self.server.base_dir,
@@ -1885,7 +1885,7 @@ class PubServer(BaseHTTPRequestHandler):
                             searchNickname = \
                                 getNicknameFromActor(searchHandle)
                             searchDomain, searchPort = \
-                                getDomainFromActor(searchHandle)
+                                get_domain_from_actor(searchHandle)
                             searchHandle = \
                                 searchNickname + '@' + searchDomain
                         if '@' not in searchHandle:
@@ -1893,7 +1893,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 searchNickname = \
                                     getNicknameFromActor(searchHandle)
                                 searchDomain, searchPort = \
-                                    getDomainFromActor(searchHandle)
+                                    get_domain_from_actor(searchHandle)
                                 searchHandle = \
                                     searchNickname + '@' + searchDomain
                         if '@' not in searchHandle:
@@ -1968,7 +1968,7 @@ class PubServer(BaseHTTPRequestHandler):
                        moderationText.startswith('hyper'):
                         # https://domain
                         blockDomain, blockPort = \
-                            getDomainFromActor(moderationText)
+                            get_domain_from_actor(moderationText)
                         fullBlockDomain = \
                             get_full_domain(blockDomain, blockPort)
                     if '@' in moderationText:
@@ -1987,7 +1987,7 @@ class PubServer(BaseHTTPRequestHandler):
                        moderationText.startswith('hyper'):
                         # https://domain
                         blockDomain, blockPort = \
-                            getDomainFromActor(moderationText)
+                            get_domain_from_actor(moderationText)
                         fullBlockDomain = \
                             get_full_domain(blockDomain, blockPort)
                     if '@' in moderationText:
@@ -2369,7 +2369,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy = False
             return
 
-        optionsDomain, optionsPort = getDomainFromActor(optionsActor)
+        optionsDomain, optionsPort = get_domain_from_actor(optionsActor)
         optionsDomainFull = get_full_domain(optionsDomain, optionsPort)
         if chooserNickname == optionsNickname and \
            optionsDomain == domain and \
@@ -2927,7 +2927,7 @@ class PubServer(BaseHTTPRequestHandler):
                 followingActor = followingActor.split('&')[0]
             followingNickname = getNicknameFromActor(followingActor)
             followingDomain, followingPort = \
-                getDomainFromActor(followingActor)
+                get_domain_from_actor(followingActor)
             followingDomainFull = \
                 get_full_domain(followingDomain, followingPort)
             if followerNickname == followingNickname and \
@@ -3025,7 +3025,7 @@ class PubServer(BaseHTTPRequestHandler):
                 followingActor = followingActor.split('&')[0]
             followingNickname = getNicknameFromActor(followingActor)
             followingDomain, followingPort = \
-                getDomainFromActor(followingActor)
+                get_domain_from_actor(followingActor)
             if followerNickname == followingNickname and \
                followingDomain == domain and \
                followingPort == port:
@@ -3125,7 +3125,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.POSTbusy = False
                 return
             blockingDomain, blockingPort = \
-                getDomainFromActor(blockingActor)
+                get_domain_from_actor(blockingActor)
             blockingDomainFull = get_full_domain(blockingDomain, blockingPort)
             if blockerNickname == blockingNickname and \
                blockingDomain == domain and \
@@ -3212,7 +3212,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.POSTbusy = False
                 return
             blockingDomain, blockingPort = \
-                getDomainFromActor(blockingActor)
+                get_domain_from_actor(blockingActor)
             blockingDomainFull = get_full_domain(blockingDomain, blockingPort)
             if blockerNickname == blockingNickname and \
                blockingDomain == domain and \
@@ -3514,7 +3514,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if not has_users_path(searchStr):
                         searchNickname = getNicknameFromActor(searchStr)
                         searchDomain, searchPort = \
-                            getDomainFromActor(searchStr)
+                            get_domain_from_actor(searchStr)
                         searchDomainFull = \
                             get_full_domain(searchDomain, searchPort)
                         actor = \
@@ -3874,7 +3874,7 @@ class PubServer(BaseHTTPRequestHandler):
                     itemID = itemID.split('&')[0]
                 shareNickname = getNicknameFromActor(shareActor)
                 if shareNickname:
-                    shareDomain, sharePort = getDomainFromActor(shareActor)
+                    shareDomain, sharePort = get_domain_from_actor(shareActor)
                     removeSharedItem(base_dir,
                                      shareNickname, shareDomain, itemID,
                                      http_prefix, domain_full, 'shares')
@@ -3941,7 +3941,7 @@ class PubServer(BaseHTTPRequestHandler):
                     itemID = itemID.split('&')[0]
                 shareNickname = getNicknameFromActor(shareActor)
                 if shareNickname:
-                    shareDomain, sharePort = getDomainFromActor(shareActor)
+                    shareDomain, sharePort = get_domain_from_actor(shareActor)
                     removeSharedItem(base_dir,
                                      shareNickname, shareDomain, itemID,
                                      http_prefix, domain_full, 'wanted')
@@ -7904,7 +7904,7 @@ class PubServer(BaseHTTPRequestHandler):
         followingHandle = path.split('/followapprove=')[1]
         if '://' in followingHandle:
             handleNickname = getNicknameFromActor(followingHandle)
-            handleDomain, handlePort = getDomainFromActor(followingHandle)
+            handleDomain, handlePort = get_domain_from_actor(followingHandle)
             followingHandle = \
                 handleNickname + '@' + \
                 get_full_domain(handleDomain, handlePort)
@@ -8063,7 +8063,7 @@ class PubServer(BaseHTTPRequestHandler):
         followingHandle = path.split('/followdeny=')[1]
         if '://' in followingHandle:
             handleNickname = getNicknameFromActor(followingHandle)
-            handleDomain, handlePort = getDomainFromActor(followingHandle)
+            handleDomain, handlePort = get_domain_from_actor(followingHandle)
             followingHandle = \
                 handleNickname + '@' + \
                 get_full_domain(handleDomain, handlePort)
@@ -13265,11 +13265,11 @@ class PubServer(BaseHTTPRequestHandler):
         refererDomain = None
         if self.headers.get('referer'):
             refererDomain, refererPort = \
-                getDomainFromActor(self.headers['referer'])
+                get_domain_from_actor(self.headers['referer'])
             refererDomain = get_full_domain(refererDomain, refererPort)
         elif self.headers.get('Referer'):
             refererDomain, refererPort = \
-                getDomainFromActor(self.headers['Referer'])
+                get_domain_from_actor(self.headers['Referer'])
             refererDomain = get_full_domain(refererDomain, refererPort)
         elif self.headers.get('Signature'):
             if 'keyId="' in self.headers['Signature']:

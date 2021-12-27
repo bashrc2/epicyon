@@ -23,7 +23,7 @@ from utils import is_dm
 from utils import load_translations_from_file
 from utils import remove_html
 from utils import getNicknameFromActor
-from utils import getDomainFromActor
+from utils import get_domain_from_actor
 from utils import is_pgp_encrypted
 from utils import local_actor_url
 from session import createSession
@@ -143,7 +143,7 @@ def _createDesktopConfig(actor: str) -> None:
     if not os.path.isdir(homeDir + '/.config/epicyon'):
         os.mkdir(homeDir + '/.config/epicyon')
     nickname = getNicknameFromActor(actor)
-    domain, port = getDomainFromActor(actor)
+    domain, port = get_domain_from_actor(actor)
     handle = nickname + '@' + domain
     if port != 443 and port != 80:
         handle += '_' + str(port)
@@ -158,7 +158,7 @@ def _markPostAsRead(actor: str, post_id: str, postCategory: str) -> None:
     homeDir = str(Path.home())
     _createDesktopConfig(actor)
     nickname = getNicknameFromActor(actor)
-    domain, port = getDomainFromActor(actor)
+    domain, port = get_domain_from_actor(actor)
     handle = nickname + '@' + domain
     if port != 443 and port != 80:
         handle += '_' + str(port)
@@ -188,7 +188,7 @@ def _hasReadPost(actor: str, post_id: str, postCategory: str) -> bool:
     homeDir = str(Path.home())
     _createDesktopConfig(actor)
     nickname = getNicknameFromActor(actor)
-    domain, port = getDomainFromActor(actor)
+    domain, port = get_domain_from_actor(actor)
     handle = nickname + '@' + domain
     if port != 443 and port != 80:
         handle += '_' + str(port)
@@ -427,7 +427,7 @@ def _desktopReplyToPost(session, post_id: str,
     if '://' not in post_id:
         return
     toNickname = getNicknameFromActor(post_id)
-    toDomain, toPort = getDomainFromActor(post_id)
+    toDomain, toPort = get_domain_from_actor(post_id)
     sayStr = 'Replying to ' + toNickname + '@' + toDomain
     _sayCommand(sayStr, sayStr,
                 screenreader, system_language, espeak)
@@ -805,7 +805,7 @@ def _desktopShowActor(base_dir: str, actor_json: {}, translate: {},
     """
     actor = actor_json['id']
     actorNickname = getNicknameFromActor(actor)
-    actorDomain, actorPort = getDomainFromActor(actor)
+    actorDomain, actorPort = get_domain_from_actor(actor)
     actorDomainFull = get_full_domain(actorDomain, actorPort)
     handle = '@' + actorNickname + '@' + actorDomainFull
 
@@ -1018,7 +1018,7 @@ def _desktopShowBox(indent: str,
                     announcedNickname = \
                         getNicknameFromActor(post_json_object['object'])
                     announcedDomain, announcedPort = \
-                        getDomainFromActor(post_json_object['object'])
+                        get_domain_from_actor(post_json_object['object'])
                     announcedHandle = announcedNickname + '@' + announcedDomain
                     lineStr = \
                         indent + str(posStr) + ' | ' + name + ' | ' + \
@@ -1175,7 +1175,7 @@ def _desktopNewDMbase(session, toHandle: str,
     toPort = port
     if '://' in toHandle:
         toNickname = getNicknameFromActor(toHandle)
-        toDomain, toPort = getDomainFromActor(toHandle)
+        toDomain, toPort = get_domain_from_actor(toHandle)
         toHandle = toNickname + '@' + toDomain
     else:
         if toHandle.startswith('@'):
@@ -1282,7 +1282,7 @@ def _desktopShowFollowRequests(followRequestsJson: {}, translate: {}) -> None:
     print('')
     for item in followRequestsJson['orderedItems']:
         handleNickname = getNicknameFromActor(item)
-        handleDomain, handlePort = getDomainFromActor(item)
+        handleDomain, handlePort = get_domain_from_actor(item)
         handleDomainFull = \
             get_full_domain(handleDomain, handlePort)
         print(indent + '  👤 ' +
@@ -1308,7 +1308,7 @@ def _desktopShowFollowing(followingJson: {}, translate: {},
     print('')
     for item in followingJson['orderedItems']:
         handleNickname = getNicknameFromActor(item)
-        handleDomain, handlePort = getDomainFromActor(item)
+        handleDomain, handlePort = get_domain_from_actor(item)
         handleDomainFull = \
             get_full_domain(handleDomain, handlePort)
         print(indent + '  👤 ' +
@@ -2214,7 +2214,7 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                 if '@' in followHandle or '://' in followHandle:
                     followNickname = getNicknameFromActor(followHandle)
                     followDomain, followPort = \
-                        getDomainFromActor(followHandle)
+                        get_domain_from_actor(followHandle)
                     if followNickname and followDomain:
                         sayStr = 'Sending follow request to ' + \
                             followNickname + '@' + followDomain
@@ -2250,7 +2250,7 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                 if '@' in followHandle or '://' in followHandle:
                     followNickname = getNicknameFromActor(followHandle)
                     followDomain, followPort = \
-                        getDomainFromActor(followHandle)
+                        get_domain_from_actor(followHandle)
                     if followNickname and followDomain:
                         sayStr = 'Stop following ' + \
                             followNickname + '@' + followDomain
@@ -2281,7 +2281,7 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                 if '@' in approveHandle or '://' in approveHandle:
                     approveNickname = getNicknameFromActor(approveHandle)
                     approveDomain, approvePort = \
-                        getDomainFromActor(approveHandle)
+                        get_domain_from_actor(approveHandle)
                     if approveNickname and approveDomain:
                         sayStr = 'Sending approve follow request for ' + \
                             approveNickname + '@' + approveDomain
@@ -2314,7 +2314,7 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                 if '@' in denyHandle or '://' in denyHandle:
                     denyNickname = getNicknameFromActor(denyHandle)
                     denyDomain, denyPort = \
-                        getDomainFromActor(denyHandle)
+                        get_domain_from_actor(denyHandle)
                     if denyNickname and denyDomain:
                         sayStr = 'Sending deny follow request for ' + \
                             denyNickname + '@' + denyDomain

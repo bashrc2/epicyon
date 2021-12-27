@@ -9,7 +9,7 @@ __module_group__ = "Timeline"
 
 from utils import get_full_domain
 from utils import getNicknameFromActor
-from utils import getDomainFromActor
+from utils import get_domain_from_actor
 from utils import remove_id_ending
 from blocking import isBlocked
 from filters import isFiltered
@@ -64,7 +64,7 @@ def convertVideoToNote(base_dir: str, nickname: str, domain: str,
     postNickname = getNicknameFromActor(attributedTo)
     if not postNickname:
         return None
-    postDomain, postDomainPort = getDomainFromActor(attributedTo)
+    postDomain, postDomainPort = get_domain_from_actor(attributedTo)
     if not postDomain:
         return None
     postDomainFull = get_full_domain(postDomain, postDomainPort)

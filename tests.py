@@ -76,7 +76,7 @@ from utils import remove_id_ending
 from utils import updateRecentPostsCache
 from utils import follow_person
 from utils import getNicknameFromActor
-from utils import getDomainFromActor
+from utils import get_domain_from_actor
 from utils import copytree
 from utils import load_json
 from utils import save_json
@@ -3236,44 +3236,44 @@ def testClientToServer(base_dir: str):
 def _testActorParsing():
     print('testActorParsing')
     actor = 'https://mydomain:72/users/mynick'
-    domain, port = getDomainFromActor(actor)
+    domain, port = get_domain_from_actor(actor)
     assert domain == 'mydomain'
     assert port == 72
     nickname = getNicknameFromActor(actor)
     assert nickname == 'mynick'
 
     actor = 'https://element/accounts/badger'
-    domain, port = getDomainFromActor(actor)
+    domain, port = get_domain_from_actor(actor)
     assert domain == 'element'
     nickname = getNicknameFromActor(actor)
     assert nickname == 'badger'
 
     actor = 'egg@chicken.com'
-    domain, port = getDomainFromActor(actor)
+    domain, port = get_domain_from_actor(actor)
     assert domain == 'chicken.com'
     nickname = getNicknameFromActor(actor)
     assert nickname == 'egg'
 
     actor = '@waffle@cardboard'
-    domain, port = getDomainFromActor(actor)
+    domain, port = get_domain_from_actor(actor)
     assert domain == 'cardboard'
     nickname = getNicknameFromActor(actor)
     assert nickname == 'waffle'
 
     actor = 'https://astral/channel/sky'
-    domain, port = getDomainFromActor(actor)
+    domain, port = get_domain_from_actor(actor)
     assert domain == 'astral'
     nickname = getNicknameFromActor(actor)
     assert nickname == 'sky'
 
     actor = 'https://randomain/users/rando'
-    domain, port = getDomainFromActor(actor)
+    domain, port = get_domain_from_actor(actor)
     assert domain == 'randomain'
     nickname = getNicknameFromActor(actor)
     assert nickname == 'rando'
 
     actor = 'https://otherdomain:49/@othernick'
-    domain, port = getDomainFromActor(actor)
+    domain, port = get_domain_from_actor(actor)
     assert domain == 'otherdomain'
     assert port == 49
     nickname = getNicknameFromActor(actor)
