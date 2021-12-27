@@ -21,7 +21,7 @@ from utils import is_dormant
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import is_system_account
-from utils import removeHtml
+from utils import remove_html
 from utils import load_json
 from utils import get_config_param
 from utils import get_image_formats
@@ -242,7 +242,7 @@ def htmlProfileAfterSearch(cssCache: {},
             avatarDescription = avatarDescription.replace('<p>', '')
             avatarDescription = avatarDescription.replace('</p>', '')
             if '<' in avatarDescription:
-                avatarDescription = removeHtml(avatarDescription)
+                avatarDescription = remove_html(avatarDescription)
 
     imageUrl = ''
     if profile_json.get('image'):

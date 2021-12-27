@@ -26,7 +26,7 @@ from posts import createNewsPost
 from posts import archivePostsForPerson
 from content import validHashTag
 from utils import get_base_content_from_post
-from utils import removeHtml
+from utils import remove_html
 from utils import get_full_domain
 from utils import load_json
 from utils import save_json
@@ -605,7 +605,7 @@ def _convertRSStoActivityPub(base_dir: str, http_prefix: str,
         rssDescription = ''
 
         # get the rss description if it exists
-        rssDescription = '<p>' + removeHtml(item[4]) + '<p>'
+        rssDescription = '<p>' + remove_html(item[4]) + '<p>'
 
         mirrored = item[7]
         postUrl = url

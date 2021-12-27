@@ -13,7 +13,7 @@ from content import removeLongWords
 from content import limitRepeatedWords
 from utils import get_fav_filename_from_url
 from utils import get_base_content_from_post
-from utils import removeHtml
+from utils import remove_html
 from utils import locate_post
 from utils import load_json
 from utils import votesOnNewswireItem
@@ -221,7 +221,7 @@ def _htmlNewswire(base_dir: str, newswire: {}, nickname: str, moderator: bool,
     separatorStr = htmlPostSeparator(base_dir, 'right')
     htmlStr = ''
     for dateStr, item in newswire.items():
-        item[0] = removeHtml(item[0]).strip()
+        item[0] = remove_html(item[0]).strip()
         if not item[0]:
             continue
         # remove any CDATA
@@ -408,7 +408,7 @@ def htmlCitations(base_dir: str, nickname: str, domain: str,
     if newswire:
         ctr = 0
         for dateStr, item in newswire.items():
-            item[0] = removeHtml(item[0]).strip()
+            item[0] = remove_html(item[0]).strip()
             if not item[0]:
                 continue
             # remove any CDATA

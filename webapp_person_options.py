@@ -15,7 +15,7 @@ from posts import isModerator
 from utils import get_full_domain
 from utils import get_config_param
 from utils import is_dormant
-from utils import removeHtml
+from utils import remove_html
 from utils import getDomainFromActor
 from utils import getNicknameFromActor
 from utils import is_featured_writer
@@ -191,51 +191,51 @@ def htmlPersonOptions(defaultTimeline: str,
         optionsStr += \
             '<p class="imText">' + translate['Email'] + \
             ': <a href="mailto:' + \
-            emailAddress + '">' + removeHtml(emailAddress) + '</a></p>\n'
+            emailAddress + '">' + remove_html(emailAddress) + '</a></p>\n'
     if xmppAddress:
         optionsStr += \
             '<p class="imText">' + translate['XMPP'] + \
-            ': <a href="xmpp:' + removeHtml(xmppAddress) + '">' + \
+            ': <a href="xmpp:' + remove_html(xmppAddress) + '">' + \
             xmppAddress + '</a></p>\n'
     if matrixAddress:
         optionsStr += \
             '<p class="imText">' + translate['Matrix'] + ': ' + \
-            removeHtml(matrixAddress) + '</p>\n'
+            remove_html(matrixAddress) + '</p>\n'
     if ssbAddress:
         optionsStr += \
-            '<p class="imText">SSB: ' + removeHtml(ssbAddress) + '</p>\n'
+            '<p class="imText">SSB: ' + remove_html(ssbAddress) + '</p>\n'
     if blogAddress:
         optionsStr += \
             '<p class="imText">Blog: <a href="' + \
-            removeHtml(blogAddress) + '">' + \
-            removeHtml(blogAddress) + '</a></p>\n'
+            remove_html(blogAddress) + '">' + \
+            remove_html(blogAddress) + '</a></p>\n'
     if toxAddress:
         optionsStr += \
-            '<p class="imText">Tox: ' + removeHtml(toxAddress) + '</p>\n'
+            '<p class="imText">Tox: ' + remove_html(toxAddress) + '</p>\n'
     if briarAddress:
         if briarAddress.startswith('briar://'):
             optionsStr += \
                 '<p class="imText">' + \
-                removeHtml(briarAddress) + '</p>\n'
+                remove_html(briarAddress) + '</p>\n'
         else:
             optionsStr += \
                 '<p class="imText">briar://' + \
-                removeHtml(briarAddress) + '</p>\n'
+                remove_html(briarAddress) + '</p>\n'
     if jamiAddress:
         optionsStr += \
-            '<p class="imText">Jami: ' + removeHtml(jamiAddress) + '</p>\n'
+            '<p class="imText">Jami: ' + remove_html(jamiAddress) + '</p>\n'
     if cwtchAddress:
         optionsStr += \
-            '<p class="imText">Cwtch: ' + removeHtml(cwtchAddress) + '</p>\n'
+            '<p class="imText">Cwtch: ' + remove_html(cwtchAddress) + '</p>\n'
     if EnigmaPubKey:
         optionsStr += \
-            '<p class="imText">Enigma: ' + removeHtml(EnigmaPubKey) + '</p>\n'
+            '<p class="imText">Enigma: ' + remove_html(EnigmaPubKey) + '</p>\n'
     if PGPfingerprint:
         optionsStr += '<p class="pgp">PGP: ' + \
-            removeHtml(PGPfingerprint).replace('\n', '<br>') + '</p>\n'
+            remove_html(PGPfingerprint).replace('\n', '<br>') + '</p>\n'
     if PGPpubKey:
         optionsStr += '<p class="pgp">' + \
-            removeHtml(PGPpubKey).replace('\n', '<br>') + '</p>\n'
+            remove_html(PGPpubKey).replace('\n', '<br>') + '</p>\n'
     optionsStr += '  <form method="POST" action="' + \
         originPathStr + '/personoptions">\n'
     optionsStr += '    <input type="hidden" name="pageNumber" value="' + \

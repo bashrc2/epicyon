@@ -24,7 +24,7 @@ from posts import getPersonBox
 from posts import downloadAnnounce
 from posts import populateRepliesJson
 from utils import removeHashFromPostId
-from utils import removeHtml
+from utils import remove_html
 from utils import get_actor_languages_list
 from utils import get_base_content_from_post
 from utils import get_content_from_post
@@ -114,7 +114,7 @@ def _htmlPostMetadataOpenGraph(domain: str, post_json_object: {}) -> str:
             "\" property=\"og:published_time\" />\n"
     if not objJson.get('attachment') or objJson.get('sensitive'):
         if objJson.get('content') and not objJson.get('sensitive'):
-            description = removeHtml(objJson['content'])
+            description = remove_html(objJson['content'])
             metadata += \
                 "    <meta content=\"" + description + \
                 "\" name=\"description\">\n"
@@ -142,7 +142,7 @@ def _htmlPostMetadataOpenGraph(domain: str, post_json_object: {}) -> str:
             description = 'Attached: 1 audio'
         if description:
             if objJson.get('content') and not objJson.get('sensitive'):
-                description += '\n\n' + removeHtml(objJson['content'])
+                description += '\n\n' + remove_html(objJson['content'])
             metadata += \
                 "    <meta content=\"" + description + \
                 "\" name=\"description\">\n"

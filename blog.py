@@ -22,7 +22,7 @@ from utils import get_actor_languages_list
 from utils import get_base_content_from_post
 from utils import get_content_from_post
 from utils import is_account_dir
-from utils import removeHtml
+from utils import remove_html
 from utils import get_config_param
 from utils import get_full_domain
 from utils import getMediaFormats
@@ -434,7 +434,7 @@ def _getSnippetFromBlogContent(post_json_object: {},
         content = content.split('<p>', 1)[1]
         if '</p>' in content:
             content = content.split('</p>', 1)[0]
-    content = removeHtml(content)
+    content = remove_html(content)
     if '\n' in content:
         content = content.split('\n')[0]
     if len(content) >= 256:

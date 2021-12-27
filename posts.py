@@ -65,7 +65,7 @@ from utils import get_config_param
 from utils import locateNewsVotes
 from utils import locateNewsArrival
 from utils import votesOnNewswireItem
-from utils import removeHtml
+from utils import remove_html
 from utils import dangerousMarkup
 from utils import acct_dir
 from utils import local_actor_url
@@ -714,7 +714,7 @@ def _updateWordFrequency(content: str, wordFrequency: {}) -> None:
     """Creates a dictionary containing words and the number of times
     that they appear
     """
-    plainText = removeHtml(content)
+    plainText = remove_html(content)
     removeChars = ('.', ';', '?', '\n', ':')
     for ch in removeChars:
         plainText = plainText.replace(ch, ' ')
@@ -997,7 +997,7 @@ def _addSchedulePost(base_dir: str, nickname: str, domain: str,
 def validContentWarning(cw: str) -> str:
     """Returns a validated content warning
     """
-    cw = removeHtml(cw)
+    cw = remove_html(cw)
     # hashtags within content warnings apparently cause a lot of trouble
     # so remove them
     if '#' in cw:

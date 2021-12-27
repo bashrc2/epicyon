@@ -19,7 +19,7 @@ from utils import getDomainFromActor
 from utils import getNicknameFromActor
 from utils import getGenderFromBio
 from utils import getDisplayName
-from utils import removeHtml
+from utils import remove_html
 from utils import load_json
 from utils import save_json
 from utils import is_pgp_encrypted
@@ -388,7 +388,7 @@ def speakableText(base_dir: str, content: str, translate: {}) -> (str, []):
     # replace some emoji before removing html
     if ' <3' in content:
         content = content.replace(' <3', ' ' + translate['heart'])
-    content = removeHtml(htmlReplaceQuoteMarks(content))
+    content = remove_html(htmlReplaceQuoteMarks(content))
     detectedLinks = []
     content = speakerReplaceLinks(content, translate, detectedLinks)
     # replace all double spaces
@@ -426,7 +426,7 @@ def _postToSpeakerJson(base_dir: str, http_prefix: str,
         # replace some emoji before removing html
         if ' <3' in content:
             content = content.replace(' <3', ' ' + translate['heart'])
-        content = removeHtml(htmlReplaceQuoteMarks(content))
+        content = remove_html(htmlReplaceQuoteMarks(content))
         content = speakerReplaceLinks(content, translate, detectedLinks)
         # replace all double spaces
         while '  ' in content:

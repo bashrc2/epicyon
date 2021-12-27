@@ -82,7 +82,7 @@ from utils import load_json
 from utils import save_json
 from utils import getStatusNumber
 from utils import get_followers_of_person
-from utils import removeHtml
+from utils import remove_html
 from utils import dangerousMarkup
 from utils import acct_dir
 from pgp import extractPGPPublicKey
@@ -141,7 +141,7 @@ from content import addHtmlTags
 from content import removeLongWords
 from content import replaceContentDuplicates
 from content import removeTextFormatting
-from content import removeHtmlTag
+from content import remove_htmlTag
 from theme import updateDefaultThemesList
 from theme import setCSSparam
 from theme import scanThemesForScripts
@@ -3655,17 +3655,17 @@ def _testSiteIsActive():
 def _testRemoveHtml():
     print('testRemoveHtml')
     testStr = 'This string has no html.'
-    assert(removeHtml(testStr) == testStr)
+    assert(remove_html(testStr) == testStr)
     testStr = 'This string <a href="1234.567">has html</a>.'
-    assert(removeHtml(testStr) == 'This string has html.')
+    assert(remove_html(testStr) == 'This string has html.')
     testStr = '<label>This string has.</label><label>Two labels.</label>'
-    assert(removeHtml(testStr) == 'This string has. Two labels.')
+    assert(remove_html(testStr) == 'This string has. Two labels.')
     testStr = '<p>This string has.</p><p>Two paragraphs.</p>'
-    assert(removeHtml(testStr) == 'This string has.\n\nTwo paragraphs.')
+    assert(remove_html(testStr) == 'This string has.\n\nTwo paragraphs.')
     testStr = 'This string has.<br>A new line.'
-    assert(removeHtml(testStr) == 'This string has.\nA new line.')
+    assert(remove_html(testStr) == 'This string has.\nA new line.')
     testStr = '<p>This string contains a url http://somesite.or.other</p>'
-    assert(removeHtml(testStr) ==
+    assert(remove_html(testStr) ==
            'This string contains a url http://somesite.or.other')
 
 
@@ -3998,7 +3998,7 @@ def _testRemoveHtmlTag():
     print('testRemoveHtmlTag')
     testStr = "<p><img width=\"864\" height=\"486\" " + \
         "src=\"https://somesiteorother.com/image.jpg\"></p>"
-    resultStr = removeHtmlTag(testStr, 'width')
+    resultStr = remove_htmlTag(testStr, 'width')
     assert resultStr == "<p><img height=\"486\" " + \
         "src=\"https://somesiteorother.com/image.jpg\"></p>"
 
@@ -5622,7 +5622,7 @@ def _testGetLinksFromContent():
     assert links.get('another')
     assert links['another'] == link2
 
-    contentPlain = '<p>' + removeHtml(content) + '</p>'
+    contentPlain = '<p>' + remove_html(content) + '</p>'
     assert '>@linked</a>' not in contentPlain
     content = addLinksToContent(contentPlain, links)
     assert '>@linked</a>' in content

@@ -12,7 +12,7 @@ from shutil import copyfile
 from collections import OrderedDict
 from session import getJson
 from utils import is_account_dir
-from utils import removeHtml
+from utils import remove_html
 from utils import getProtocolPrefixes
 from utils import load_json
 from utils import get_cached_post_filename
@@ -230,7 +230,7 @@ def _setActorPropertyUrl(actor_json: {}, property_name: str, url: str) -> None:
 def setBlogAddress(actor_json: {}, blogAddress: str) -> None:
     """Sets an blog address for the given actor
     """
-    _setActorPropertyUrl(actor_json, 'Blog', removeHtml(blogAddress))
+    _setActorPropertyUrl(actor_json, 'Blog', remove_html(blogAddress))
 
 
 def updateAvatarImageCache(signing_priv_key_pem: str,
@@ -650,8 +650,8 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
                 firstEntry = False
             skillsMarkup += '\n        ],\n'
 
-    description = removeHtml(actor_json['summary'])
-    nameStr = removeHtml(actor_json['name'])
+    description = remove_html(actor_json['summary'])
+    nameStr = remove_html(actor_json['name'])
     domain_full = actor_json['id'].split('://')[1].split('/')[0]
     handle = actor_json['preferredUsername'] + '@' + domain_full
 
@@ -689,7 +689,7 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
         '    }\n' + \
         '    </script>\n'
 
-    description = removeHtml(description)
+    description = remove_html(description)
     ogMetadata = \
         "    <meta content=\"profile\" property=\"og:type\" />\n" + \
         "    <meta content=\"" + description + \

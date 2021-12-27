@@ -21,7 +21,7 @@ from utils import has_object_dict
 from utils import get_full_domain
 from utils import is_dm
 from utils import load_translations_from_file
-from utils import removeHtml
+from utils import remove_html
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import is_pgp_encrypted
@@ -586,7 +586,7 @@ def _textOnlyContent(content: str) -> str:
     """
     content = urllib.parse.unquote_plus(content)
     content = html.unescape(content)
-    return removeHtml(content)
+    return remove_html(content)
 
 
 def _getImageDescription(post_json_object: {}) -> str:
@@ -827,7 +827,7 @@ def _desktopShowActor(base_dir: str, actor_json: {}, translate: {},
         sayStr = 'Also known as ' + html.unescape(alsoKnownAsStr)
         _sayCommand(sayStr, sayStr, screenreader, system_language, espeak)
     if actor_json.get('summary'):
-        sayStr = html.unescape(removeHtml(actor_json['summary']))
+        sayStr = html.unescape(remove_html(actor_json['summary']))
         sayStr = sayStr.replace('"', "'")
         sayStr2 = speakableText(base_dir, sayStr, translate)[0]
         _sayCommand(sayStr, sayStr2, screenreader, system_language, espeak)

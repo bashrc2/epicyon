@@ -11,7 +11,7 @@ import os
 import json
 from urllib import request, parse
 from utils import get_actor_languages_list
-from utils import removeHtml
+from utils import remove_html
 from utils import has_object_dict
 from utils import get_config_param
 from utils import local_actor_url
@@ -240,7 +240,7 @@ def libretranslate(url: str, text: str,
     links = getLinksFromContent(text)
 
     # LibreTranslate doesn't like markup
-    text = removeHtml(text)
+    text = remove_html(text)
 
     # remove any links from plain text version of the content
     for _, url in links.items():
@@ -302,7 +302,7 @@ def autoTranslatePost(base_dir: str, post_json_object: {},
                                lang, system_language,
                                libretranslateApiKey)
             if translatedText:
-                if removeHtml(translatedText) == removeHtml(content):
+                if remove_html(translatedText) == remove_html(content):
                     return content
                 translatedText = \
                     '<p>' + translate['Translated'].upper() + '</p>' + \

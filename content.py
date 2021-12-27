@@ -25,12 +25,12 @@ from utils import contains_pgp_public_key
 from utils import acct_dir
 from utils import is_float
 from utils import get_currencies
-from utils import removeHtml
+from utils import remove_html
 from petnames import getPetName
 from session import downloadImage
 
 
-def removeHtmlTag(htmlStr: str, tag: str) -> str:
+def remove_htmlTag(htmlStr: str, tag: str) -> str:
     """Removes a given tag from a html string
     """
     tagFound = True
@@ -1253,7 +1253,7 @@ def _wordsSimilarityWordsList(content: str) -> []:
     """Returns a list of words for the given content
     """
     removePunctuation = ('.', ',', ';', '-', ':', '"')
-    content = removeHtml(content).lower()
+    content = remove_html(content).lower()
     for p in removePunctuation:
         content = content.replace(p, ' ')
         content = content.replace('  ', ' ')

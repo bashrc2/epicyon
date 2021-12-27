@@ -9,7 +9,7 @@ __module_group__ = "Onboarding"
 
 import os
 from shutil import copyfile
-from utils import removeHtml
+from utils import remove_html
 from utils import load_json
 from utils import get_config_param
 from utils import get_image_extensions
@@ -60,7 +60,7 @@ def htmlWelcomeProfile(base_dir: str, nickname: str, domain: str,
         with open(profileFilename, 'r') as profileFile:
             profileText = profileFile.read()
             profileText = profileText.replace('INSTANCE', instanceTitle)
-            profileText = markdownToHtml(removeHtml(profileText))
+            profileText = markdownToHtml(remove_html(profileText))
 
     profileForm = ''
     cssFilename = base_dir + '/epicyon-welcome.css'

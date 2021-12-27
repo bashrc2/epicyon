@@ -29,7 +29,7 @@ from utils import load_json
 from utils import save_json
 from utils import is_suspended
 from utils import containsInvalidChars
-from utils import removeHtml
+from utils import remove_html
 from utils import is_account_dir
 from utils import acct_dir
 from utils import local_actor_url
@@ -208,8 +208,8 @@ def _addNewswireDictEntry(base_dir: str, domain: str,
     """Update the newswire dictionary
     """
     # remove any markup
-    title = removeHtml(title)
-    description = removeHtml(description)
+    title = remove_html(title)
+    description = remove_html(description)
 
     allText = title + ' ' + description
 
@@ -419,17 +419,17 @@ def _xml2StrToDict(base_dir: str, domain: str, xmlStr: str,
             continue
         title = rssItem.split('<title>')[1]
         title = _removeCDATA(title.split('</title>')[0])
-        title = removeHtml(title)
+        title = remove_html(title)
         description = ''
         if '<description>' in rssItem and '</description>' in rssItem:
             description = rssItem.split('<description>')[1]
-            description = removeHtml(description.split('</description>')[0])
+            description = remove_html(description.split('</description>')[0])
         else:
             if '<media:description>' in rssItem and \
                '</media:description>' in rssItem:
                 description = rssItem.split('<media:description>')[1]
                 description = description.split('</media:description>')[0]
-                description = removeHtml(description)
+                description = remove_html(description)
         link = rssItem.split('<link>')[1]
         link = link.split('</link>')[0]
         if '://' not in link:
@@ -507,17 +507,17 @@ def _xml1StrToDict(base_dir: str, domain: str, xmlStr: str,
             continue
         title = rssItem.split('<title>')[1]
         title = _removeCDATA(title.split('</title>')[0])
-        title = removeHtml(title)
+        title = remove_html(title)
         description = ''
         if '<description>' in rssItem and '</description>' in rssItem:
             description = rssItem.split('<description>')[1]
-            description = removeHtml(description.split('</description>')[0])
+            description = remove_html(description.split('</description>')[0])
         else:
             if '<media:description>' in rssItem and \
                '</media:description>' in rssItem:
                 description = rssItem.split('<media:description>')[1]
                 description = description.split('</media:description>')[0]
-                description = removeHtml(description)
+                description = remove_html(description)
         link = rssItem.split('<link>')[1]
         link = link.split('</link>')[0]
         if '://' not in link:
@@ -583,17 +583,17 @@ def _atomFeedToDict(base_dir: str, domain: str, xmlStr: str,
             continue
         title = atomItem.split('<title>')[1]
         title = _removeCDATA(title.split('</title>')[0])
-        title = removeHtml(title)
+        title = remove_html(title)
         description = ''
         if '<summary>' in atomItem and '</summary>' in atomItem:
             description = atomItem.split('<summary>')[1]
-            description = removeHtml(description.split('</summary>')[0])
+            description = remove_html(description.split('</summary>')[0])
         else:
             if '<media:description>' in atomItem and \
                '</media:description>' in atomItem:
                 description = atomItem.split('<media:description>')[1]
                 description = description.split('</media:description>')[0]
-                description = removeHtml(description)
+                description = remove_html(description)
         link = atomItem.split('<link>')[1]
         link = link.split('</link>')[0]
         if '://' not in link:
@@ -670,11 +670,11 @@ def _jsonFeedV1ToDict(base_dir: str, domain: str, xmlStr: str,
         if jsonFeedItem.get('content_html'):
             if not isinstance(jsonFeedItem['content_html'], str):
                 continue
-            title = removeHtml(jsonFeedItem['content_html'])
+            title = remove_html(jsonFeedItem['content_html'])
         else:
             if not isinstance(jsonFeedItem['content_text'], str):
                 continue
-            title = removeHtml(jsonFeedItem['content_text'])
+            title = remove_html(jsonFeedItem['content_text'])
         if len(title) > maxBytes:
             print('WARN: json feed title is too long')
             continue
@@ -682,7 +682,7 @@ def _jsonFeedV1ToDict(base_dir: str, domain: str, xmlStr: str,
         if jsonFeedItem.get('description'):
             if not isinstance(jsonFeedItem['description'], str):
                 continue
-            description = removeHtml(jsonFeedItem['description'])
+            description = remove_html(jsonFeedItem['description'])
             if len(description) > maxBytes:
                 print('WARN: json feed description is too long')
                 continue
@@ -780,11 +780,11 @@ def _atomFeedYTToDict(base_dir: str, domain: str, xmlStr: str,
            '</media:description>' in atomItem:
             description = atomItem.split('<media:description>')[1]
             description = description.split('</media:description>')[0]
-            description = removeHtml(description)
+            description = remove_html(description)
         elif '<summary>' in atomItem and '</summary>' in atomItem:
             description = atomItem.split('<summary>')[1]
             description = description.split('</summary>')[0]
-            description = removeHtml(description)
+            description = remove_html(description)
         link = atomItem.split('<yt:videoId>')[1]
         link = link.split('</yt:videoId>')[0]
         link = 'https://www.youtube.com/watch?v=' + link.strip()
@@ -946,7 +946,7 @@ def getRSSfromDict(base_dir: str, newswire: {},
         rssStr += \
             '<item>\n' + \
             '  <title>' + fields[0] + '</title>\n'
-        description = removeHtml(firstParagraphFromString(fields[4]))
+        description = remove_html(firstParagraphFromString(fields[4]))
         rssStr += '  <description>' + description + '</description>\n'
         url = fields[1]
         if '://' not in url:
@@ -1065,7 +1065,7 @@ def _addAccountBlogsToNewswire(base_dir: str, nickname: str, domain: str,
                         get_base_content_from_post(post_json_object,
                                                    system_language)
                     description = firstParagraphFromString(content)
-                    description = removeHtml(description)
+                    description = remove_html(description)
                     tagsFromPost = _getHashtagsFromPost(post_json_object)
                     summary = post_json_object['object']['summary']
                     _addNewswireDictEntry(base_dir, domain,

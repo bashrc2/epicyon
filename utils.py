@@ -440,7 +440,7 @@ def getMediaFormats() -> str:
     return mediaFormats
 
 
-def removeHtml(content: str) -> str:
+def remove_html(content: str) -> str:
     """Removes html links from the given content.
     Used to ensure that profile descriptions don't contain dubious content
     """
@@ -479,11 +479,11 @@ def firstParagraphFromString(content: str) -> str:
     to be used as a summary in the newswire feed
     """
     if '<p>' not in content or '</p>' not in content:
-        return removeHtml(content)
+        return remove_html(content)
     paragraph = content.split('<p>')[1]
     if '</p>' in paragraph:
         paragraph = paragraph.split('</p>')[0]
-    return removeHtml(paragraph)
+    return remove_html(paragraph)
 
 
 def is_system_account(nickname: str) -> bool:

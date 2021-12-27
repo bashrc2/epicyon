@@ -10,7 +10,7 @@ __module_group__ = "Onboarding"
 import os
 from shutil import copyfile
 from utils import get_config_param
-from utils import removeHtml
+from utils import remove_html
 from utils import acct_dir
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
@@ -79,7 +79,7 @@ def htmlWelcomeScreen(base_dir: str, nickname: str,
         with open(welcomeFilename, 'r') as welcomeFile:
             welcomeText = welcomeFile.read()
             welcomeText = welcomeText.replace('INSTANCE', instanceTitle)
-            welcomeText = markdownToHtml(removeHtml(welcomeText))
+            welcomeText = markdownToHtml(remove_html(welcomeText))
 
     welcomeForm = ''
     cssFilename = base_dir + '/epicyon-welcome.css'

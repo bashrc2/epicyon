@@ -21,7 +21,7 @@ from utils import domainPermitted
 from utils import is_group_account
 from utils import is_system_account
 from utils import invalid_ciphertext
-from utils import removeHtml
+from utils import remove_html
 from utils import fileLastModified
 from utils import has_object_string
 from utils import has_object_string_object
@@ -1290,7 +1290,7 @@ def _receiveReaction(recent_posts_cache: {},
     handleDom = handle.split('@')[1]
 
     postReactionId = message_json['object']
-    emojiContent = removeHtml(message_json['content'])
+    emojiContent = remove_html(message_json['content'])
     if not emojiContent:
         if debug:
             print('DEBUG: emoji reaction has no content')
@@ -1441,7 +1441,7 @@ def _receiveUndoReaction(recent_posts_cache: {},
         print('DEBUG: reaction post found in inbox. Now undoing.')
     reactionActor = message_json['actor']
     postReactionId = message_json['object']
-    emojiContent = removeHtml(message_json['object']['content'])
+    emojiContent = remove_html(message_json['object']['content'])
     if not emojiContent:
         if debug:
             print('DEBUG: unreaction has no content')

@@ -38,7 +38,7 @@ from roles import setRole
 from roles import setRolesFromList
 from roles import getActorRolesList
 from media import processMetaData
-from utils import removeHtml
+from utils import remove_html
 from utils import containsInvalidChars
 from utils import replace_users_with_at
 from utils import remove_line_endings
@@ -1696,7 +1696,7 @@ def validSendingActor(session, base_dir: str,
     if not unit_test:
         bioStr = ''
         if actor_json.get('summary'):
-            bioStr = removeHtml(actor_json['summary']).strip()
+            bioStr = remove_html(actor_json['summary']).strip()
         if not bioStr:
             # allow no bio if it's an actor in this instance
             if domain not in sendingActor:
@@ -1707,7 +1707,7 @@ def validSendingActor(session, base_dir: str,
             print('REJECT: actor bio is not long enough ' +
                   sendingActor + ' ' + bioStr)
             return False
-        bioStr += ' ' + removeHtml(actor_json['preferredUsername'])
+        bioStr += ' ' + remove_html(actor_json['preferredUsername'])
 
         if actor_json.get('attachment'):
             if isinstance(actor_json['attachment'], list):
@@ -1724,7 +1724,7 @@ def validSendingActor(session, base_dir: str,
                         bioStr += ' ' + tag['value']
 
         if actor_json.get('name'):
-            bioStr += ' ' + removeHtml(actor_json['name'])
+            bioStr += ' ' + remove_html(actor_json['name'])
         if containsInvalidChars(bioStr):
             print('REJECT: post actor bio contains invalid characters')
             return False

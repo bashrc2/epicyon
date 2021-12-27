@@ -273,7 +273,7 @@ from utils import isPublicPost
 from utils import get_locked_account
 from utils import has_users_path
 from utils import get_full_domain
-from utils import removeHtml
+from utils import remove_html
 from utils import is_editor
 from utils import is_artist
 from utils import get_image_extensions
@@ -4998,7 +4998,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if fields.get('displayNickname'):
                         if fields['displayNickname'] != actor_json['name']:
                             displayName = \
-                                removeHtml(fields['displayNickname'])
+                                remove_html(fields['displayNickname'])
                             if not isFiltered(base_dir,
                                               nickname, domain,
                                               displayName):
@@ -5477,7 +5477,7 @@ class PubServer(BaseHTTPRequestHandler):
                     occupationName = get_occupation_name(actor_json)
                     if fields.get('occupationName'):
                         fields['occupationName'] = \
-                            removeHtml(fields['occupationName'])
+                            remove_html(fields['occupationName'])
                         if occupationName != \
                            fields['occupationName']:
                             set_occupation_name(actor_json,
@@ -5524,7 +5524,7 @@ class PubServer(BaseHTTPRequestHandler):
                     # change user bio
                     if fields.get('bio'):
                         if fields['bio'] != actor_json['summary']:
-                            bioStr = removeHtml(fields['bio'])
+                            bioStr = remove_html(fields['bio'])
                             if not isFiltered(base_dir,
                                               nickname, domain, bioStr):
                                 actorTags = {}
