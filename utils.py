@@ -1567,7 +1567,8 @@ def _isBookmarked(base_dir: str, nickname: str, domain: str,
     return False
 
 
-def removePostFromCache(post_json_object: {}, recent_posts_cache: {}) -> None:
+def remove_post_from_cache(post_json_object: {},
+                           recent_posts_cache: {}) -> None:
     """ if the post exists in the recent posts cache then remove it
     """
     if not recent_posts_cache:
@@ -1603,16 +1604,16 @@ def _deleteCachedHtml(base_dir: str, nickname: str, domain: str,
                       post_json_object: {}):
     """Removes cached html file for the given post
     """
-    cachedPostFilename = \
+    cached_post_filename = \
         get_cached_post_filename(base_dir, nickname, domain, post_json_object)
-    if cachedPostFilename:
-        if os.path.isfile(cachedPostFilename):
+    if cached_post_filename:
+        if os.path.isfile(cached_post_filename):
             try:
-                os.remove(cachedPostFilename)
+                os.remove(cached_post_filename)
             except OSError:
                 print('EX: _deleteCachedHtml ' +
                       'unable to delete cached post file ' +
-                      str(cachedPostFilename))
+                      str(cached_post_filename))
 
 
 def _deleteHashtagsOnPost(base_dir: str, post_json_object: {}) -> None:
@@ -1741,7 +1742,7 @@ def deletePost(base_dir: str, http_prefix: str,
         return
 
     # remove from recent posts cache in memory
-    removePostFromCache(post_json_object, recent_posts_cache)
+    remove_post_from_cache(post_json_object, recent_posts_cache)
 
     # remove from conversation index
     _deleteConversationPost(base_dir, nickname, domain, post_json_object)
@@ -2004,8 +2005,8 @@ def get_cached_post_filename(base_dir: str, nickname: str, domain: str,
         # print('ERROR: invalid html cache directory ' + cachedPostDir)
         return None
     cachedPostId = removeIdEnding(post_json_object['id'])
-    cachedPostFilename = cachedPostDir + '/' + cachedPostId.replace('/', '#')
-    return cachedPostFilename + '.html'
+    cached_post_filename = cachedPostDir + '/' + cachedPostId.replace('/', '#')
+    return cached_post_filename + '.html'
 
 
 def updateRecentPostsCache(recent_posts_cache: {}, max_recent_posts: int,
@@ -2221,18 +2222,18 @@ def undoLikesCollectionEntry(recent_posts_cache: {},
     # remove any cached version of this post so that the
     # like icon is changed
     nickname = getNicknameFromActor(actor)
-    cachedPostFilename = \
+    cached_post_filename = \
         get_cached_post_filename(base_dir, nickname,
                                  domain, post_json_object)
-    if cachedPostFilename:
-        if os.path.isfile(cachedPostFilename):
+    if cached_post_filename:
+        if os.path.isfile(cached_post_filename):
             try:
-                os.remove(cachedPostFilename)
+                os.remove(cached_post_filename)
             except OSError:
                 print('EX: undoLikesCollectionEntry ' +
                       'unable to delete cached post ' +
-                      str(cachedPostFilename))
-    removePostFromCache(post_json_object, recent_posts_cache)
+                      str(cached_post_filename))
+    remove_post_from_cache(post_json_object, recent_posts_cache)
 
     if not post_json_object.get('type'):
         return
@@ -2287,18 +2288,18 @@ def undoReactionCollectionEntry(recent_posts_cache: {},
     # remove any cached version of this post so that the
     # like icon is changed
     nickname = getNicknameFromActor(actor)
-    cachedPostFilename = \
+    cached_post_filename = \
         get_cached_post_filename(base_dir, nickname,
                                  domain, post_json_object)
-    if cachedPostFilename:
-        if os.path.isfile(cachedPostFilename):
+    if cached_post_filename:
+        if os.path.isfile(cached_post_filename):
             try:
-                os.remove(cachedPostFilename)
+                os.remove(cached_post_filename)
             except OSError:
                 print('EX: undoReactionCollectionEntry ' +
                       'unable to delete cached post ' +
-                      str(cachedPostFilename))
-    removePostFromCache(post_json_object, recent_posts_cache)
+                      str(cached_post_filename))
+    remove_post_from_cache(post_json_object, recent_posts_cache)
 
     if not post_json_object.get('type'):
         return
@@ -2354,19 +2355,19 @@ def undo_announce_collection_entry(recent_posts_cache: {},
     # remove any cached version of this announce so that the announce
     # icon is changed
     nickname = getNicknameFromActor(actor)
-    cachedPostFilename = \
+    cached_post_filename = \
         get_cached_post_filename(base_dir, nickname, domain,
                                  post_json_object)
-    if cachedPostFilename:
-        if os.path.isfile(cachedPostFilename):
+    if cached_post_filename:
+        if os.path.isfile(cached_post_filename):
             try:
-                os.remove(cachedPostFilename)
+                os.remove(cached_post_filename)
             except OSError:
                 if debug:
                     print('EX: undo_announce_collection_entry ' +
                           'unable to delete cached post ' +
-                          str(cachedPostFilename))
-    removePostFromCache(post_json_object, recent_posts_cache)
+                          str(cached_post_filename))
+    remove_post_from_cache(post_json_object, recent_posts_cache)
 
     if not post_json_object.get('type'):
         return
@@ -2422,19 +2423,19 @@ def update_announce_collection(recent_posts_cache: {},
         return
     # remove any cached version of this announce so that the announce
     # icon is changed
-    cachedPostFilename = \
+    cached_post_filename = \
         get_cached_post_filename(base_dir, nickname, domain,
                                  post_json_object)
-    if cachedPostFilename:
-        if os.path.isfile(cachedPostFilename):
+    if cached_post_filename:
+        if os.path.isfile(cached_post_filename):
             try:
-                os.remove(cachedPostFilename)
+                os.remove(cached_post_filename)
             except OSError:
                 if debug:
                     print('EX: update_announce_collection ' +
                           'unable to delete cached post ' +
-                          str(cachedPostFilename))
-    removePostFromCache(post_json_object, recent_posts_cache)
+                          str(cached_post_filename))
+    remove_post_from_cache(post_json_object, recent_posts_cache)
 
     if not has_object_dict(post_json_object):
         if debug:

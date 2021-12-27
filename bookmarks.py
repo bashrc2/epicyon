@@ -15,7 +15,7 @@ from utils import remove_domain_port
 from utils import has_users_path
 from utils import get_full_domain
 from utils import removeIdEnding
-from utils import removePostFromCache
+from utils import remove_post_from_cache
 from utils import urlPermitted
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
@@ -57,7 +57,7 @@ def undoBookmarksCollectionEntry(recent_posts_cache: {},
                     print('EX: undoBookmarksCollectionEntry ' +
                           'unable to delete cached post file ' +
                           str(cachedPostFilename))
-    removePostFromCache(post_json_object, recent_posts_cache)
+    remove_post_from_cache(post_json_object, recent_posts_cache)
 
     # remove from the index
     bookmarksIndexFilename = \
@@ -177,7 +177,7 @@ def updateBookmarksCollection(recent_posts_cache: {},
                         print('EX: updateBookmarksCollection ' +
                               'unable to delete cached post ' +
                               str(cachedPostFilename))
-        removePostFromCache(post_json_object, recent_posts_cache)
+        remove_post_from_cache(post_json_object, recent_posts_cache)
 
         if not post_json_object.get('object'):
             if debug:

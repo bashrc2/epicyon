@@ -45,7 +45,7 @@ from utils import isBlogPost
 from utils import removeAvatarFromCache
 from utils import isPublicPost
 from utils import get_cached_post_filename
-from utils import removePostFromCache
+from utils import remove_post_from_cache
 from utils import urlPermitted
 from utils import createInboxQueueDir
 from utils import getStatusNumber
@@ -938,7 +938,7 @@ def _receiveUpdateToQuestion(recent_posts_cache: {}, message_json: {},
                 print('EX: _receiveUpdateToQuestion unable to delete ' +
                       cachedPostFilename)
     # remove from memory cache
-    removePostFromCache(message_json, recent_posts_cache)
+    remove_post_from_cache(message_json, recent_posts_cache)
 
 
 def _receiveUpdate(recent_posts_cache: {}, session, base_dir: str,
@@ -3010,7 +3010,7 @@ def _receiveQuestionVote(base_dir: str, nickname: str, domain: str,
     if not questionPostFilename:
         return
 
-    removePostFromCache(questionJson, recent_posts_cache)
+    remove_post_from_cache(questionJson, recent_posts_cache)
     # ensure that the cached post is removed if it exists, so
     # that it then will be recreated
     cachedPostFilename = \

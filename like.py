@@ -26,7 +26,7 @@ from utils import has_group_type
 from utils import local_actor_url
 from utils import load_json
 from utils import save_json
-from utils import removePostFromCache
+from utils import remove_post_from_cache
 from utils import get_cached_post_filename
 from posts import sendSignedJson
 from session import postJson
@@ -424,7 +424,7 @@ def updateLikesCollection(recent_posts_cache: {},
 
     # remove any cached version of this post so that the
     # like icon is changed
-    removePostFromCache(post_json_object, recent_posts_cache)
+    remove_post_from_cache(post_json_object, recent_posts_cache)
     cachedPostFilename = \
         get_cached_post_filename(base_dir, nickname,
                                  domain, post_json_object)

@@ -292,7 +292,7 @@ from utils import isBlogPost
 from utils import removeAvatarFromCache
 from utils import locate_post
 from utils import get_cached_post_filename
-from utils import removePostFromCache
+from utils import remove_post_from_cache
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import getStatusNumber
@@ -560,8 +560,8 @@ class PubServer(BaseHTTPRequestHandler):
                                           'unable to delete ' +
                                           cachedPostFilename)
                         # remove from memory cache
-                        removePostFromCache(post_json_object,
-                                            self.server.recent_posts_cache)
+                        remove_post_from_cache(post_json_object,
+                                               self.server.recent_posts_cache)
             else:
                 print('ERROR: unable to post vote to outbox')
         else:
@@ -16769,8 +16769,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 print('EX: _receiveNewPostProcess ' +
                                       'unable to delete ' + cachedFilename)
                         # remove from memory cache
-                        removePostFromCache(post_json_object,
-                                            self.server.recent_posts_cache)
+                        remove_post_from_cache(post_json_object,
+                                               self.server.recent_posts_cache)
                         # change the blog post title
                         post_json_object['object']['summary'] = \
                             fields['subject']
