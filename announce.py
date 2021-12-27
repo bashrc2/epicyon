@@ -20,7 +20,7 @@ from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import locate_post
 from utils import save_json
-from utils import undoAnnounceCollectionEntry
+from utils import undo_announce_collection_entry
 from utils import update_announce_collection
 from utils import local_actor_url
 from utils import replace_users_with_at
@@ -96,10 +96,10 @@ def outboxAnnounce(recent_posts_cache: {},
             post_filename = locate_post(base_dir, nickname, domain,
                                         message_json['object']['object'])
             if post_filename:
-                undoAnnounceCollectionEntry(recent_posts_cache,
-                                            base_dir, post_filename,
-                                            message_json['actor'],
-                                            domain, debug)
+                undo_announce_collection_entry(recent_posts_cache,
+                                               base_dir, post_filename,
+                                               message_json['actor'],
+                                               domain, debug)
                 return True
     return False
 
@@ -416,7 +416,7 @@ def outboxUndoAnnounce(recent_posts_cache: {},
             print('DEBUG: c2s undo announce post not found in inbox or outbox')
             print(messageId)
         return True
-    undoAnnounceCollectionEntry(recent_posts_cache, base_dir, post_filename,
-                                message_json['actor'], domain, debug)
+    undo_announce_collection_entry(recent_posts_cache, base_dir, post_filename,
+                                   message_json['actor'], domain, debug)
     if debug:
         print('DEBUG: post undo announce via c2s - ' + post_filename)

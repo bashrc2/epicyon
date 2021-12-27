@@ -87,7 +87,7 @@ from blocking import isBlockedDomain
 from blocking import broch_modeLapses
 from filters import isFiltered
 from utils import update_announce_collection
-from utils import undoAnnounceCollectionEntry
+from utils import undo_announce_collection_entry
 from utils import dangerousMarkup
 from utils import is_dm
 from utils import is_reply
@@ -2079,8 +2079,8 @@ def _receiveUndoAnnounce(recent_posts_cache: {},
                     print("DEBUG: Attempt to undo something " +
                           "which isn't an announcement")
                 return False
-    undoAnnounceCollectionEntry(recent_posts_cache, base_dir, post_filename,
-                                message_json['actor'], domain, debug)
+    undo_announce_collection_entry(recent_posts_cache, base_dir, post_filename,
+                                   message_json['actor'], domain, debug)
     if os.path.isfile(post_filename):
         try:
             os.remove(post_filename)

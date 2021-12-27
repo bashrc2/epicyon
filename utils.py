@@ -2339,9 +2339,10 @@ def undoReactionCollectionEntry(recent_posts_cache: {},
     save_json(post_json_object, post_filename)
 
 
-def undoAnnounceCollectionEntry(recent_posts_cache: {},
-                                base_dir: str, post_filename: str,
-                                actor: str, domain: str, debug: bool) -> None:
+def undo_announce_collection_entry(recent_posts_cache: {},
+                                   base_dir: str, post_filename: str,
+                                   actor: str, domain: str,
+                                   debug: bool) -> None:
     """Undoes an announce for a particular actor by removing it from
     the "shares" collection within a post. Note that the "shares"
     collection has no relation to shared items in shares.py. It's
@@ -2362,7 +2363,7 @@ def undoAnnounceCollectionEntry(recent_posts_cache: {},
                 os.remove(cachedPostFilename)
             except OSError:
                 if debug:
-                    print('EX: undoAnnounceCollectionEntry ' +
+                    print('EX: undo_announce_collection_entry ' +
                           'unable to delete cached post ' +
                           str(cachedPostFilename))
     removePostFromCache(post_json_object, recent_posts_cache)
