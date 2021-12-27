@@ -15,7 +15,7 @@ from utils import urlPermitted
 from utils import getDomainFromActor
 from utils import getNicknameFromActor
 from utils import domainPermitted
-from utils import followPerson
+from utils import follow_person
 from utils import acct_dir
 from utils import has_group_type
 from utils import local_actor_url
@@ -168,10 +168,10 @@ def _accept_follow(base_dir: str, domain: str, message_json: {},
         print('Accepted follow is a group: ' + str(group_account) +
               ' ' + followed_actor + ' ' + base_dir)
 
-    if followPerson(base_dir,
-                    nickname, accepted_domain_full,
-                    followed_nickname, followed_domain_full,
-                    federation_list, debug, group_account):
+    if follow_person(base_dir,
+                     nickname, accepted_domain_full,
+                     followed_nickname, followed_domain_full,
+                     federation_list, debug, group_account):
         if debug:
             print('DEBUG: ' + nickname + '@' + accepted_domain_full +
                   ' followed ' +

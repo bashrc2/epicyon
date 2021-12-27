@@ -74,7 +74,7 @@ from utils import validNickname
 from utils import first_paragraph_from_string
 from utils import remove_id_ending
 from utils import updateRecentPostsCache
-from utils import followPerson
+from utils import follow_person
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import copytree
@@ -706,8 +706,8 @@ def createServerAlice(path: str, domain: str, port: int,
     assert setSkillLevel(path, nickname, domain, 'hacking', 90)
     assert setRole(path, nickname, domain, 'guru')
     if hasFollows:
-        followPerson(path, nickname, domain, 'bob', bobAddress,
-                     federation_list, False, False)
+        follow_person(path, nickname, domain, 'bob', bobAddress,
+                      federation_list, False, False)
         followerOfPerson(path, nickname, domain, 'bob', bobAddress,
                          federation_list, False, False)
     if hasPosts:
@@ -849,8 +849,8 @@ def createServerBob(path: str, domain: str, port: int,
     deleteAllPosts(path, nickname, domain, 'inbox')
     deleteAllPosts(path, nickname, domain, 'outbox')
     if hasFollows and aliceAddress:
-        followPerson(path, nickname, domain,
-                     'alice', aliceAddress, federation_list, False, False)
+        follow_person(path, nickname, domain,
+                      'alice', aliceAddress, federation_list, False, False)
         followerOfPerson(path, nickname, domain,
                          'alice', aliceAddress, federation_list, False, False)
     if hasPosts:
@@ -1310,8 +1310,8 @@ def testPostMessageBetweenServers(base_dir: str) -> None:
     followerOfPerson(bobDir, 'bob', bobDomain, 'alice',
                      aliceDomainStr, federation_list, False, False)
     bobDomainStr = bobDomain + ':' + str(bobPort)
-    followPerson(aliceDir, 'alice', aliceDomain, 'bob',
-                 bobDomainStr, federation_list, False, False)
+    follow_person(aliceDir, 'alice', aliceDomain, 'bob',
+                  bobDomainStr, federation_list, False, False)
 
     sessionBob = createSession(proxy_type)
     bobPostLog = []
@@ -2459,19 +2459,19 @@ def _testFollowersOfPerson(base_dir: str) -> None:
                  http_prefix, True, False, password)
 
     clearFollows(base_dir, nickname, domain)
-    followPerson(base_dir, nickname, domain, 'maxboardroom', domain,
-                 federation_list, False, False)
-    followPerson(base_dir, 'drokk', domain, 'ultrapancake', domain,
-                 federation_list, False, False)
+    follow_person(base_dir, nickname, domain, 'maxboardroom', domain,
+                  federation_list, False, False)
+    follow_person(base_dir, 'drokk', domain, 'ultrapancake', domain,
+                  federation_list, False, False)
     # deliberate duplication
-    followPerson(base_dir, 'drokk', domain, 'ultrapancake', domain,
-                 federation_list, False, False)
-    followPerson(base_dir, 'sausagedog', domain, 'ultrapancake', domain,
-                 federation_list, False, False)
-    followPerson(base_dir, nickname, domain, 'ultrapancake', domain,
-                 federation_list, False, False)
-    followPerson(base_dir, nickname, domain, 'someother', 'randodomain.net',
-                 federation_list, False, False)
+    follow_person(base_dir, 'drokk', domain, 'ultrapancake', domain,
+                  federation_list, False, False)
+    follow_person(base_dir, 'sausagedog', domain, 'ultrapancake', domain,
+                  federation_list, False, False)
+    follow_person(base_dir, nickname, domain, 'ultrapancake', domain,
+                  federation_list, False, False)
+    follow_person(base_dir, nickname, domain, 'someother', 'randodomain.net',
+                  federation_list, False, False)
 
     followList = get_followers_of_person(base_dir, 'ultrapancake', domain)
     assert len(followList) == 3
@@ -2508,12 +2508,12 @@ def _testNoOfFollowersOnDomain(base_dir: str) -> None:
     createPerson(base_dir, 'sausagedog', otherdomain, port,
                  http_prefix, True, False, password)
 
-    followPerson(base_dir, 'drokk', otherdomain, nickname, domain,
-                 federation_list, False, False)
-    followPerson(base_dir, 'sausagedog', otherdomain, nickname, domain,
-                 federation_list, False, False)
-    followPerson(base_dir, 'maxboardroom', otherdomain, nickname, domain,
-                 federation_list, False, False)
+    follow_person(base_dir, 'drokk', otherdomain, nickname, domain,
+                  federation_list, False, False)
+    follow_person(base_dir, 'sausagedog', otherdomain, nickname, domain,
+                  federation_list, False, False)
+    follow_person(base_dir, 'maxboardroom', otherdomain, nickname, domain,
+                  federation_list, False, False)
 
     followerOfPerson(base_dir, nickname, domain,
                      'cucumber', 'sandwiches.party',
@@ -2607,16 +2607,16 @@ def _testFollows(base_dir: str) -> None:
                  False, password)
 
     clearFollows(base_dir, nickname, domain)
-    followPerson(base_dir, nickname, domain, 'badger', 'wild.com',
-                 federation_list, False, False)
-    followPerson(base_dir, nickname, domain, 'squirrel', 'secret.com',
-                 federation_list, False, False)
-    followPerson(base_dir, nickname, domain, 'rodent', 'drainpipe.com',
-                 federation_list, False, False)
-    followPerson(base_dir, nickname, domain, 'batman', 'mesh.com',
-                 federation_list, False, False)
-    followPerson(base_dir, nickname, domain, 'giraffe', 'trees.com',
-                 federation_list, False, False)
+    follow_person(base_dir, nickname, domain, 'badger', 'wild.com',
+                  federation_list, False, False)
+    follow_person(base_dir, nickname, domain, 'squirrel', 'secret.com',
+                  federation_list, False, False)
+    follow_person(base_dir, nickname, domain, 'rodent', 'drainpipe.com',
+                  federation_list, False, False)
+    follow_person(base_dir, nickname, domain, 'batman', 'mesh.com',
+                  federation_list, False, False)
+    follow_person(base_dir, nickname, domain, 'giraffe', 'trees.com',
+                  federation_list, False, False)
 
     accountDir = acct_dir(base_dir, nickname, domain)
     f = open(accountDir + '/following.txt', 'r')

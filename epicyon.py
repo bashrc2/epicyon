@@ -73,7 +73,7 @@ from utils import setConfigParam
 from utils import get_config_param
 from utils import getDomainFromActor
 from utils import getNicknameFromActor
-from utils import followPerson
+from utils import follow_person
 from utils import validNickname
 from utils import getProtocolPrefixes
 from utils import acct_dir
@@ -2982,14 +2982,14 @@ if args.testdata:
                      low_bandwidth, args.content_license_url)
     domain_full = domain + ':' + str(port)
     clearFollows(base_dir, nickname, domain)
-    followPerson(base_dir, nickname, domain, 'maxboardroom', domain_full,
-                 federation_list, False, False)
-    followPerson(base_dir, nickname, domain, 'ultrapancake', domain_full,
-                 federation_list, False, False)
-    followPerson(base_dir, nickname, domain, 'sausagedog', domain_full,
-                 federation_list, False, False)
-    followPerson(base_dir, nickname, domain, 'drokk', domain_full,
-                 federation_list, False, False)
+    follow_person(base_dir, nickname, domain, 'maxboardroom', domain_full,
+                  federation_list, False, False)
+    follow_person(base_dir, nickname, domain, 'ultrapancake', domain_full,
+                  federation_list, False, False)
+    follow_person(base_dir, nickname, domain, 'sausagedog', domain_full,
+                  federation_list, False, False)
+    follow_person(base_dir, nickname, domain, 'drokk', domain_full,
+                  federation_list, False, False)
     followerOfPerson(base_dir, nickname, domain, 'drokk', domain_full,
                      federation_list, False, False)
     followerOfPerson(base_dir, nickname, domain, 'maxboardroom', domain_full,

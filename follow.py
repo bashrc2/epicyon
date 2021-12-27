@@ -20,7 +20,7 @@ from utils import domainPermitted
 from utils import getDomainFromActor
 from utils import getNicknameFromActor
 from utils import getStatusNumber
-from utils import followPerson
+from utils import follow_person
 from posts import sendSignedJson
 from posts import getPersonBox
 from utils import load_json
@@ -213,9 +213,10 @@ def followerOfPerson(base_dir: str, nickname: str, domain: str,
                      group_account: bool) -> bool:
     """Adds a follower of the given person
     """
-    return followPerson(base_dir, nickname, domain,
-                        followerNickname, followerDomain,
-                        federation_list, debug, group_account, 'followers.txt')
+    return follow_person(base_dir, nickname, domain,
+                         followerNickname, followerDomain,
+                         federation_list, debug, group_account,
+                         'followers.txt')
 
 
 def getFollowerDomains(base_dir: str, nickname: str, domain: str) -> []:

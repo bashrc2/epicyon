@@ -1128,11 +1128,11 @@ def _setDefaultPetName(base_dir: str, nickname: str, domain: str,
         petnamesFile.write(petnameLookupEntry)
 
 
-def followPerson(base_dir: str, nickname: str, domain: str,
-                 followNickname: str, followDomain: str,
-                 federation_list: [], debug: bool,
-                 group_account: bool,
-                 follow_file: str = 'following.txt') -> bool:
+def follow_person(base_dir: str, nickname: str, domain: str,
+                  followNickname: str, followDomain: str,
+                  federation_list: [], debug: bool,
+                  group_account: bool,
+                  follow_file: str = 'following.txt') -> bool:
     """Adds a person to the follow list
     """
     followDomainStrLower = followDomain.lower().replace('\n', '')
@@ -1191,11 +1191,11 @@ def followPerson(base_dir: str, nickname: str, domain: str,
             return True
         # prepend to follow file
         try:
-            with open(filename, 'r+') as fp:
-                content = fp.read()
+            with open(filename, 'r+') as foll_file:
+                content = foll_file.read()
                 if handleToFollow + '\n' not in content:
-                    fp.seek(0, 0)
-                    fp.write(handleToFollow + '\n' + content)
+                    foll_file.seek(0, 0)
+                    foll_file.write(handleToFollow + '\n' + content)
                     print('DEBUG: follow added')
         except OSError as ex:
             print('WARN: Failed to write entry to follow file ' +
