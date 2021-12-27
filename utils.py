@@ -626,7 +626,7 @@ def get_protocol_prefixes() -> []:
             'hyper://', 'gemini://', 'gopher://')
 
 
-def getLinkPrefixes() -> []:
+def get_link_prefixes() -> []:
     """Returns a list of valid web link prefixes
     """
     return ('https://', 'http://', 'ftp://',

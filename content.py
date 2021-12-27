@@ -18,7 +18,7 @@ from utils import get_image_extensions
 from utils import load_json
 from utils import save_json
 from utils import fileLastModified
-from utils import getLinkPrefixes
+from utils import get_link_prefixes
 from utils import dangerousMarkup
 from utils import is_pgp_encrypted
 from utils import contains_pgp_public_key
@@ -401,7 +401,7 @@ def addWebLinks(content: str) -> str:
     if ':' not in content:
         return content
 
-    prefixes = getLinkPrefixes()
+    prefixes = get_link_prefixes()
 
     # do any of these prefixes exist within the content?
     prefixFound = False
