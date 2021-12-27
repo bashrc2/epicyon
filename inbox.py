@@ -47,7 +47,7 @@ from utils import isPublicPost
 from utils import get_cached_post_filename
 from utils import remove_post_from_cache
 from utils import urlPermitted
-from utils import createInboxQueueDir
+from utils import create_inbox_queue_dir
 from utils import get_status_number
 from utils import getDomainFromActor
 from utils import getNicknameFromActor
@@ -550,7 +550,7 @@ def savePostToInboxQueue(base_dir: str, http_prefix: str,
 
     # NOTE: don't change post_json_object['id'] before signature check
 
-    inbox_queueDir = createInboxQueueDir(nickname, domain, base_dir)
+    inbox_queueDir = create_inbox_queue_dir(nickname, domain, base_dir)
 
     handle = nickname + '@' + domain
     destination = base_dir + '/accounts/' + \

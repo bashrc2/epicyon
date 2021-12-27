@@ -803,7 +803,7 @@ def create_outbox_dir(nickname: str, domain: str, base_dir: str) -> str:
     return createPersonDir(nickname, domain, base_dir, 'outbox')
 
 
-def createInboxQueueDir(nickname: str, domain: str, base_dir: str) -> str:
+def create_inbox_queue_dir(nickname: str, domain: str, base_dir: str) -> str:
     """Create an inbox queue and returns the feed filename and directory
     """
     return createPersonDir(nickname, domain, base_dir, 'queue')
