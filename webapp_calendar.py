@@ -12,7 +12,7 @@ from datetime import datetime
 from datetime import date
 from utils import get_display_name
 from utils import get_config_param
-from utils import getNicknameFromActor
+from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
 from utils import locate_post
 from utils import load_json
@@ -38,7 +38,7 @@ def htmlCalendarDeleteConfirm(cssCache: {}, translate: {}, base_dir: str,
                               dayNumber: int, calling_domain: str) -> str:
     """Shows a screen asking to confirm the deletion of a calendar event
     """
-    nickname = getNicknameFromActor(path)
+    nickname = get_nickname_from_actor(path)
     actor = local_actor_url(http_prefix, nickname, domain_full)
     domain, port = get_domain_from_actor(actor)
     messageId = actor + '/statuses/' + post_id
@@ -282,7 +282,7 @@ def htmlCalendar(person_cache: {}, cssCache: {}, translate: {},
         year = currDate.year
         monthNumber = currDate.month
 
-    nickname = getNicknameFromActor(actor)
+    nickname = get_nickname_from_actor(actor)
 
     setCustomBackground(base_dir, 'calendar-background', 'calendar-background')
 

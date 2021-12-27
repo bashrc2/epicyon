@@ -18,7 +18,7 @@ from utils import get_full_domain
 from utils import is_editor
 from utils import load_json
 from utils import get_domain_from_actor
-from utils import getNicknameFromActor
+from utils import get_nickname_from_actor
 from utils import locate_post
 from utils import isPublicPost
 from utils import first_paragraph_from_string
@@ -377,7 +377,7 @@ def htmlSearch(cssCache: {}, translate: {},
     """Search called from the timeline icon
     """
     actor = path.replace('/search', '')
-    searchNickname = getNicknameFromActor(actor)
+    searchNickname = get_nickname_from_actor(actor)
 
     setCustomBackground(base_dir, 'search-background', 'follow-background')
 
@@ -820,7 +820,7 @@ def htmlHashtagSearch(cssCache: {},
     while index <= endIndex:
         post_id = lines[index].strip('\n').strip('\r')
         if '  ' not in post_id:
-            nickname = getNicknameFromActor(post_id)
+            nickname = get_nickname_from_actor(post_id)
             if not nickname:
                 index += 1
                 continue
@@ -941,7 +941,7 @@ def rssHashtagSearch(nickname: str, domain: str, port: int,
     for index in range(len(lines)):
         post_id = lines[index].strip('\n').strip('\r')
         if '  ' not in post_id:
-            nickname = getNicknameFromActor(post_id)
+            nickname = get_nickname_from_actor(post_id)
             if not nickname:
                 index += 1
                 if index >= maxFeedLength:

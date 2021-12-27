@@ -17,7 +17,7 @@ from utils import remove_html
 from utils import locate_post
 from utils import load_json
 from utils import votesOnNewswireItem
-from utils import getNicknameFromActor
+from utils import get_nickname_from_actor
 from utils import is_editor
 from utils import get_config_param
 from utils import remove_domain_port
@@ -530,7 +530,7 @@ def htmlEditNewswire(cssCache: {}, translate: {}, base_dir: str, path: str,
     path = path.replace('/inbox', '').replace('/outbox', '')
     path = path.replace('/shares', '').replace('/wanted', '')
 
-    nickname = getNicknameFromActor(path)
+    nickname = get_nickname_from_actor(path)
     if not nickname:
         return ''
 
@@ -651,7 +651,7 @@ def htmlEditNewsPost(cssCache: {}, translate: {}, base_dir: str, path: str,
         return ''
     pathOriginal = path
 
-    nickname = getNicknameFromActor(path)
+    nickname = get_nickname_from_actor(path)
     if not nickname:
         return ''
 

@@ -18,7 +18,7 @@ from utils import get_followers_list
 from utils import validNickname
 from utils import domain_permitted
 from utils import get_domain_from_actor
-from utils import getNicknameFromActor
+from utils import get_nickname_from_actor
 from utils import get_status_number
 from utils import follow_person
 from posts import sendSignedJson
@@ -178,7 +178,7 @@ def isFollowingActor(base_dir: str,
         return False
     if actor.lower() in open(followingFile).read().lower():
         return True
-    followingNickname = getNicknameFromActor(actor)
+    followingNickname = get_nickname_from_actor(actor)
     if not followingNickname:
         print('WARN: unable to find nickname in ' + actor)
         return False
@@ -1341,7 +1341,7 @@ def getFollowersOfActor(base_dir: str, actor: str, debug: bool) -> {}:
     recipientsDict = {}
     if ':' not in actor:
         return recipientsDict
-    nickname = getNicknameFromActor(actor)
+    nickname = get_nickname_from_actor(actor)
     if not nickname:
         if debug:
             print('DEBUG: no nickname found in ' + actor)
@@ -1398,7 +1398,7 @@ def outboxUndoFollow(base_dir: str, message_json: {}, debug: bool) -> None:
     if debug:
         print('DEBUG: undo follow arrived in outbox')
 
-    nicknameFollower = getNicknameFromActor(message_json['object']['actor'])
+    nicknameFollower = get_nickname_from_actor(message_json['object']['actor'])
     if not nicknameFollower:
         print('WARN: unable to find nickname in ' +
               message_json['object']['actor'])
@@ -1407,7 +1407,8 @@ def outboxUndoFollow(base_dir: str, message_json: {}, debug: bool) -> None:
         get_domain_from_actor(message_json['object']['actor'])
     domainFollowerFull = get_full_domain(domainFollower, portFollower)
 
-    nicknameFollowing = getNicknameFromActor(message_json['object']['object'])
+    nicknameFollowing = \
+        get_nickname_from_actor(message_json['object']['object'])
     if not nicknameFollowing:
         print('WARN: unable to find nickname in ' +
               message_json['object']['object'])

@@ -293,7 +293,7 @@ from utils import remove_avatar_from_cache
 from utils import locate_post
 from utils import get_cached_post_filename
 from utils import remove_post_from_cache
-from utils import getNicknameFromActor
+from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
 from utils import get_status_number
 from utils import url_permitted
@@ -1883,7 +1883,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if searchHandle:
                         if '/@' in searchHandle:
                             searchNickname = \
-                                getNicknameFromActor(searchHandle)
+                                get_nickname_from_actor(searchHandle)
                             searchDomain, searchPort = \
                                 get_domain_from_actor(searchHandle)
                             searchHandle = \
@@ -1891,7 +1891,7 @@ class PubServer(BaseHTTPRequestHandler):
                         if '@' not in searchHandle:
                             if searchHandle.startswith('http'):
                                 searchNickname = \
-                                    getNicknameFromActor(searchHandle)
+                                    get_nickname_from_actor(searchHandle)
                                 searchDomain, searchPort = \
                                     get_domain_from_actor(searchHandle)
                                 searchHandle = \
@@ -1951,7 +1951,7 @@ class PubServer(BaseHTTPRequestHandler):
                 nickname = moderationText
                 if nickname.startswith('http') or \
                    nickname.startswith('hyper'):
-                    nickname = getNicknameFromActor(nickname)
+                    nickname = get_nickname_from_actor(nickname)
                 if '@' in nickname:
                     nickname = nickname.split('@')[0]
                 if moderationButton == 'suspend':
@@ -2274,7 +2274,7 @@ class PubServer(BaseHTTPRequestHandler):
         usersPath = path.split('/personoptions')[0]
         originPathStr = http_prefix + '://' + domain_full + usersPath
 
-        chooserNickname = getNicknameFromActor(originPathStr)
+        chooserNickname = get_nickname_from_actor(originPathStr)
         if not chooserNickname:
             if calling_domain.endswith('.onion') and onion_domain:
                 originPathStr = 'http://' + onion_domain + usersPath
@@ -2358,7 +2358,7 @@ class PubServer(BaseHTTPRequestHandler):
                 personNotes = None
 
         # get the nickname
-        optionsNickname = getNicknameFromActor(optionsActor)
+        optionsNickname = get_nickname_from_actor(optionsActor)
         if not optionsNickname:
             if calling_domain.endswith('.onion') and onion_domain:
                 originPathStr = 'http://' + onion_domain + usersPath
@@ -2895,7 +2895,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         usersPath = path.split('/unfollowconfirm')[0]
         originPathStr = http_prefix + '://' + domain_full + usersPath
-        followerNickname = getNicknameFromActor(originPathStr)
+        followerNickname = get_nickname_from_actor(originPathStr)
 
         length = int(self.headers['Content-length'])
 
@@ -2925,7 +2925,7 @@ class PubServer(BaseHTTPRequestHandler):
             followingActor = followingActor.split('actor=')[1]
             if '&' in followingActor:
                 followingActor = followingActor.split('&')[0]
-            followingNickname = getNicknameFromActor(followingActor)
+            followingNickname = get_nickname_from_actor(followingActor)
             followingDomain, followingPort = \
                 get_domain_from_actor(followingActor)
             followingDomainFull = \
@@ -2983,7 +2983,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         usersPath = path.split('/followconfirm')[0]
         originPathStr = http_prefix + '://' + domain_full + usersPath
-        followerNickname = getNicknameFromActor(originPathStr)
+        followerNickname = get_nickname_from_actor(originPathStr)
 
         length = int(self.headers['Content-length'])
 
@@ -3023,7 +3023,7 @@ class PubServer(BaseHTTPRequestHandler):
             followingActor = followingActor.split('actor=')[1]
             if '&' in followingActor:
                 followingActor = followingActor.split('&')[0]
-            followingNickname = getNicknameFromActor(followingActor)
+            followingNickname = get_nickname_from_actor(followingActor)
             followingDomain, followingPort = \
                 get_domain_from_actor(followingActor)
             if followerNickname == followingNickname and \
@@ -3073,7 +3073,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         usersPath = path.split('/blockconfirm')[0]
         originPathStr = http_prefix + '://' + domain_full + usersPath
-        blockerNickname = getNicknameFromActor(originPathStr)
+        blockerNickname = get_nickname_from_actor(originPathStr)
         if not blockerNickname:
             if calling_domain.endswith('.onion') and onion_domain:
                 originPathStr = 'http://' + onion_domain + usersPath
@@ -3113,7 +3113,7 @@ class PubServer(BaseHTTPRequestHandler):
             blockingActor = blockingActor.split('actor=')[1]
             if '&' in blockingActor:
                 blockingActor = blockingActor.split('&')[0]
-            blockingNickname = getNicknameFromActor(blockingActor)
+            blockingNickname = get_nickname_from_actor(blockingActor)
             if not blockingNickname:
                 if calling_domain.endswith('.onion') and onion_domain:
                     originPathStr = 'http://' + onion_domain + usersPath
@@ -3160,7 +3160,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         usersPath = path.split('/unblockconfirm')[0]
         originPathStr = http_prefix + '://' + domain_full + usersPath
-        blockerNickname = getNicknameFromActor(originPathStr)
+        blockerNickname = get_nickname_from_actor(originPathStr)
         if not blockerNickname:
             if calling_domain.endswith('.onion') and onion_domain:
                 originPathStr = 'http://' + onion_domain + usersPath
@@ -3200,7 +3200,7 @@ class PubServer(BaseHTTPRequestHandler):
             blockingActor = blockingActor.split('actor=')[1]
             if '&' in blockingActor:
                 blockingActor = blockingActor.split('&')[0]
-            blockingNickname = getNicknameFromActor(blockingActor)
+            blockingNickname = get_nickname_from_actor(blockingActor)
             if not blockingNickname:
                 if calling_domain.endswith('.onion') and onion_domain:
                     originPathStr = 'http://' + onion_domain + usersPath
@@ -3292,7 +3292,7 @@ class PubServer(BaseHTTPRequestHandler):
             if searchForEmoji:
                 searchStr = ':' + searchStr + ':'
             if searchStr.startswith('#'):
-                nickname = getNicknameFromActor(actorStr)
+                nickname = get_nickname_from_actor(actorStr)
                 # hashtag search
                 hashtagStr = \
                     htmlHashtagSearch(self.server.cssCache,
@@ -3384,7 +3384,7 @@ class PubServer(BaseHTTPRequestHandler):
                         searchStr = searchStr.replace(possEnding, '')
                         break
                 # your post history search
-                nickname = getNicknameFromActor(actorStr)
+                nickname = get_nickname_from_actor(actorStr)
                 searchStr = searchStr.replace("'", '', 1).strip()
                 historyStr = \
                     htmlHistorySearch(self.server.cssCache,
@@ -3452,7 +3452,7 @@ class PubServer(BaseHTTPRequestHandler):
                         searchStr = searchStr.replace(possEnding, '')
                         break
                 # bookmark search
-                nickname = getNicknameFromActor(actorStr)
+                nickname = get_nickname_from_actor(actorStr)
                 searchStr = searchStr.replace('-', '', 1).strip()
                 bookmarksStr = \
                     htmlHistorySearch(self.server.cssCache,
@@ -3503,7 +3503,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.POSTbusy = False
                     return
                 # profile search
-                nickname = getNicknameFromActor(actorStr)
+                nickname = get_nickname_from_actor(actorStr)
                 if not self._establishSession("handle search"):
                     self.server.POSTbusy = False
                     return
@@ -3512,7 +3512,7 @@ class PubServer(BaseHTTPRequestHandler):
                 # are we already following the searched for handle?
                 if isFollowingActor(base_dir, nickname, domain, searchStr):
                     if not has_users_path(searchStr):
-                        searchNickname = getNicknameFromActor(searchStr)
+                        searchNickname = get_nickname_from_actor(searchStr)
                         searchDomain, searchPort = \
                             get_domain_from_actor(searchStr)
                         searchDomainFull = \
@@ -3691,7 +3691,7 @@ class PubServer(BaseHTTPRequestHandler):
         # the actor who votes
         usersPath = path.replace('/question', '')
         actor = http_prefix + '://' + domain_full + usersPath
-        nickname = getNicknameFromActor(actor)
+        nickname = get_nickname_from_actor(actor)
         if not nickname:
             if calling_domain.endswith('.onion') and onion_domain:
                 actor = 'http://' + onion_domain + usersPath
@@ -3866,13 +3866,13 @@ class PubServer(BaseHTTPRequestHandler):
             adminActor = \
                 local_actor_url(http_prefix, adminNickname, domain_full)
             actor = originPathStr
-            actorNickname = getNicknameFromActor(actor)
+            actorNickname = get_nickname_from_actor(actor)
             if actor == shareActor or actor == adminActor or \
                isModerator(base_dir, actorNickname):
                 itemID = removeShareConfirmParams.split('itemID=')[1]
                 if '&' in itemID:
                     itemID = itemID.split('&')[0]
-                shareNickname = getNicknameFromActor(shareActor)
+                shareNickname = get_nickname_from_actor(shareActor)
                 if shareNickname:
                     shareDomain, sharePort = get_domain_from_actor(shareActor)
                     removeSharedItem(base_dir,
@@ -3933,13 +3933,13 @@ class PubServer(BaseHTTPRequestHandler):
             adminActor = \
                 local_actor_url(http_prefix, adminNickname, domain_full)
             actor = originPathStr
-            actorNickname = getNicknameFromActor(actor)
+            actorNickname = get_nickname_from_actor(actor)
             if actor == shareActor or actor == adminActor or \
                isModerator(base_dir, actorNickname):
                 itemID = removeShareConfirmParams.split('itemID=')[1]
                 if '&' in itemID:
                     itemID = itemID.split('&')[0]
-                shareNickname = getNicknameFromActor(shareActor)
+                shareNickname = get_nickname_from_actor(shareActor)
                 if shareNickname:
                     shareDomain, sharePort = get_domain_from_actor(shareActor)
                     removeSharedItem(base_dir,
@@ -4027,7 +4027,7 @@ class PubServer(BaseHTTPRequestHandler):
                     'cc': [removePostActor + '/followers'],
                     'type': 'Delete'
                 }
-                self.postToNickname = getNicknameFromActor(removePostActor)
+                self.postToNickname = get_nickname_from_actor(removePostActor)
                 if self.postToNickname:
                     if monthStr and yearStr:
                         if monthStr.isdigit() and yearStr.isdigit():
@@ -4072,7 +4072,7 @@ class PubServer(BaseHTTPRequestHandler):
                 boundary = boundary.split(';')[0]
 
             # get the nickname
-            nickname = getNicknameFromActor(actorStr)
+            nickname = get_nickname_from_actor(actorStr)
             editor = None
             if nickname:
                 editor = is_editor(base_dir, nickname)
@@ -4231,7 +4231,7 @@ class PubServer(BaseHTTPRequestHandler):
                 boundary = boundary.split(';')[0]
 
             # get the nickname
-            nickname = getNicknameFromActor(actorStr)
+            nickname = get_nickname_from_actor(actorStr)
             editor = None
             if nickname:
                 editor = is_editor(base_dir, nickname)
@@ -4314,7 +4314,7 @@ class PubServer(BaseHTTPRequestHandler):
                 boundary = boundary.split(';')[0]
 
             # get the nickname
-            nickname = getNicknameFromActor(actorStr)
+            nickname = get_nickname_from_actor(actorStr)
             moderator = None
             if nickname:
                 moderator = isModerator(base_dir, nickname)
@@ -4464,7 +4464,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         usersPath = path.replace('/citationsdata', '')
         actorStr = self._get_instance_url(calling_domain) + usersPath
-        nickname = getNicknameFromActor(actorStr)
+        nickname = get_nickname_from_actor(actorStr)
 
         citationsFilename = \
             acct_dir(base_dir, nickname, domain) + '/.citations.txt'
@@ -4559,7 +4559,7 @@ class PubServer(BaseHTTPRequestHandler):
                 boundary = boundary.split(';')[0]
 
             # get the nickname
-            nickname = getNicknameFromActor(actorStr)
+            nickname = get_nickname_from_actor(actorStr)
             editorRole = None
             if nickname:
                 editorRole = is_editor(base_dir, nickname)
@@ -4696,7 +4696,7 @@ class PubServer(BaseHTTPRequestHandler):
                 boundary = boundary.split(';')[0]
 
             # get the nickname
-            nickname = getNicknameFromActor(actorStr)
+            nickname = get_nickname_from_actor(actorStr)
             if not nickname:
                 print('WARN: nickname not found in ' + actorStr)
                 self._redirect_headers(actorStr, cookie, calling_domain)
@@ -7607,7 +7607,7 @@ class PubServer(BaseHTTPRequestHandler):
             actor = \
                 http_prefix + '://' + domain_full + path
             nickname = \
-                getNicknameFromActor(actor)
+                get_nickname_from_actor(actor)
         hashtagStr = \
             rssHashtagSearch(nickname,
                              domain, port,
@@ -7680,7 +7680,7 @@ class PubServer(BaseHTTPRequestHandler):
             if '?' in timelineStr:
                 timelineStr = timelineStr.split('?')[0]
         actor = path.split('?repeat=')[0]
-        self.postToNickname = getNicknameFromActor(actor)
+        self.postToNickname = get_nickname_from_actor(actor)
         if not self.postToNickname:
             print('WARN: unable to find nickname in ' + actor)
             actorAbsolute = self._get_instance_url(calling_domain) + actor
@@ -7832,7 +7832,7 @@ class PubServer(BaseHTTPRequestHandler):
             if '?' in timelineStr:
                 timelineStr = timelineStr.split('?')[0]
         actor = path.split('?unrepeat=')[0]
-        self.postToNickname = getNicknameFromActor(actor)
+        self.postToNickname = get_nickname_from_actor(actor)
         if not self.postToNickname:
             print('WARN: unable to find nickname in ' + actor)
             actorAbsolute = self._get_instance_url(calling_domain) + actor
@@ -7873,7 +7873,7 @@ class PubServer(BaseHTTPRequestHandler):
             if '?' in announceUrl:
                 announceUrl = announceUrl.split('?')[0]
             post_filename = None
-            nickname = getNicknameFromActor(announceUrl)
+            nickname = get_nickname_from_actor(announceUrl)
             if nickname:
                 if domain_full + '/users/' + nickname + '/' in announceUrl:
                     post_filename = \
@@ -7908,7 +7908,7 @@ class PubServer(BaseHTTPRequestHandler):
         followerNickname = originPathStr.replace('/users/', '')
         followingHandle = path.split('/followapprove=')[1]
         if '://' in followingHandle:
-            handleNickname = getNicknameFromActor(followingHandle)
+            handleNickname = get_nickname_from_actor(followingHandle)
             handleDomain, handlePort = get_domain_from_actor(followingHandle)
             followingHandle = \
                 handleNickname + '@' + \
@@ -8067,7 +8067,7 @@ class PubServer(BaseHTTPRequestHandler):
         followerNickname = originPathStr.replace('/users/', '')
         followingHandle = path.split('/followdeny=')[1]
         if '://' in followingHandle:
-            handleNickname = getNicknameFromActor(followingHandle)
+            handleNickname = get_nickname_from_actor(followingHandle)
             handleDomain, handlePort = get_domain_from_actor(followingHandle)
             followingHandle = \
                 handleNickname + '@' + \
@@ -8134,7 +8134,7 @@ class PubServer(BaseHTTPRequestHandler):
             if '?' in timelineStr:
                 timelineStr = timelineStr.split('?')[0]
 
-        self.postToNickname = getNicknameFromActor(actor)
+        self.postToNickname = get_nickname_from_actor(actor)
         if not self.postToNickname:
             print('WARN: unable to find nickname in ' + actor)
             actorAbsolute = self._get_instance_url(calling_domain) + actor
@@ -8298,7 +8298,7 @@ class PubServer(BaseHTTPRequestHandler):
             if '?' in timelineStr:
                 timelineStr = timelineStr.split('?')[0]
         actor = path.split('?unlike=')[0]
-        self.postToNickname = getNicknameFromActor(actor)
+        self.postToNickname = get_nickname_from_actor(actor)
         if not self.postToNickname:
             print('WARN: unable to find nickname in ' + actor)
             actorAbsolute = self._get_instance_url(calling_domain) + actor
@@ -8465,7 +8465,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    calling_domain)
             return
         emojiContent = urllib.parse.unquote_plus(emojiContentEncoded)
-        self.postToNickname = getNicknameFromActor(actor)
+        self.postToNickname = get_nickname_from_actor(actor)
         if not self.postToNickname:
             print('WARN: unable to find nickname in ' + actor)
             actorAbsolute = self._get_instance_url(calling_domain) + actor
@@ -8634,7 +8634,7 @@ class PubServer(BaseHTTPRequestHandler):
             if '?' in timelineStr:
                 timelineStr = timelineStr.split('?')[0]
         actor = path.split('?unreact=')[0]
-        self.postToNickname = getNicknameFromActor(actor)
+        self.postToNickname = get_nickname_from_actor(actor)
         if not self.postToNickname:
             print('WARN: unable to find nickname in ' + actor)
             actorAbsolute = self._get_instance_url(calling_domain) + actor
@@ -8802,7 +8802,7 @@ class PubServer(BaseHTTPRequestHandler):
             timelineStr = path.split('?tl=')[1]
             if '?' in timelineStr:
                 timelineStr = timelineStr.split('?')[0]
-        self.postToNickname = getNicknameFromActor(actor)
+        self.postToNickname = get_nickname_from_actor(actor)
         if not self.postToNickname:
             print('WARN: unable to find nickname in ' + actor)
             actorAbsolute = self._get_instance_url(calling_domain) + actor
@@ -8896,7 +8896,7 @@ class PubServer(BaseHTTPRequestHandler):
             if '?' in timelineStr:
                 timelineStr = timelineStr.split('?')[0]
 
-        self.postToNickname = getNicknameFromActor(actor)
+        self.postToNickname = get_nickname_from_actor(actor)
         if not self.postToNickname:
             print('WARN: unable to find nickname in ' + actor)
             actorAbsolute = self._get_instance_url(calling_domain) + actor
@@ -9022,7 +9022,7 @@ class PubServer(BaseHTTPRequestHandler):
             if '?' in timelineStr:
                 timelineStr = timelineStr.split('?')[0]
         actor = path.split('?unbookmark=')[0]
-        self.postToNickname = getNicknameFromActor(actor)
+        self.postToNickname = get_nickname_from_actor(actor)
         if not self.postToNickname:
             print('WARN: unable to find nickname in ' + actor)
             actorAbsolute = self._get_instance_url(calling_domain) + actor
@@ -9163,7 +9163,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._redirect_headers(actor + '/' + timelineStr,
                                        cookie, calling_domain)
                 return
-            self.postToNickname = getNicknameFromActor(actor)
+            self.postToNickname = get_nickname_from_actor(actor)
             if not self.postToNickname:
                 print('WARN: unable to find nickname in ' + actor)
                 if calling_domain.endswith('.onion') and onion_domain:
@@ -9249,7 +9249,7 @@ class PubServer(BaseHTTPRequestHandler):
                 pageNumber = int(pageNumberStr)
         actor = \
             http_prefix + '://' + domain_full + path.split('?mute=')[0]
-        nickname = getNicknameFromActor(actor)
+        nickname = get_nickname_from_actor(actor)
         mutePost(base_dir, nickname, domain, port,
                  http_prefix, muteUrl,
                  self.server.recent_posts_cache, debug)
@@ -9358,7 +9358,7 @@ class PubServer(BaseHTTPRequestHandler):
                 pageNumber = int(pageNumberStr)
         actor = \
             http_prefix + '://' + domain_full + path.split('?unmute=')[0]
-        nickname = getNicknameFromActor(actor)
+        nickname = get_nickname_from_actor(actor)
         unmutePost(base_dir, nickname, domain, port,
                    http_prefix, muteUrl,
                    self.server.recent_posts_cache, debug)
@@ -12526,7 +12526,7 @@ class PubServer(BaseHTTPRequestHandler):
                     GETstartTime) -> bool:
         """Shows a QR code for an account
         """
-        nickname = getNicknameFromActor(path)
+        nickname = get_nickname_from_actor(path)
         savePersonQrcode(base_dir, nickname, domain, port)
         qrFilename = \
             acct_dir(base_dir, nickname, domain) + '/qrcode.png'
@@ -12567,7 +12567,7 @@ class PubServer(BaseHTTPRequestHandler):
                             GETstartTime) -> bool:
         """Shows a banner image on the search screen
         """
-        nickname = getNicknameFromActor(path)
+        nickname = get_nickname_from_actor(path)
         bannerFilename = \
             acct_dir(base_dir, nickname, domain) + '/search_banner.png'
         if not os.path.isfile(bannerFilename):
@@ -12612,7 +12612,7 @@ class PubServer(BaseHTTPRequestHandler):
                      GETstartTime) -> bool:
         """Shows an image at the top of the left/right column
         """
-        nickname = getNicknameFromActor(path)
+        nickname = get_nickname_from_actor(path)
         if not nickname:
             self._404()
             return True
@@ -12954,7 +12954,7 @@ class PubServer(BaseHTTPRequestHandler):
                     isNewPostEndpoint = True
                     break
         if isNewPostEndpoint:
-            nickname = getNicknameFromActor(path)
+            nickname = get_nickname_from_actor(path)
 
             if inReplyToUrl:
                 replyIntervalHours = self.server.default_reply_interval_hrs
@@ -13041,7 +13041,7 @@ class PubServer(BaseHTTPRequestHandler):
             return False
         if not path.endswith('/crawlers'):
             return False
-        nickname = getNicknameFromActor(path)
+        nickname = get_nickname_from_actor(path)
         if not nickname:
             return False
         if not isModerator(base_dir, nickname):
@@ -13072,7 +13072,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         if '/users/' in path and path.endswith('/editprofile'):
             peertube_instances = self.server.peertube_instances
-            nickname = getNicknameFromActor(path)
+            nickname = get_nickname_from_actor(path)
             if nickname:
                 city = getSpoofedCity(self.server.city,
                                       base_dir, nickname, domain)
@@ -14385,7 +14385,7 @@ class PubServer(BaseHTTPRequestHandler):
         # show a list of who you are following
         if htmlGET and authorized and usersInPath and \
            self.path.endswith('/followingaccounts'):
-            nickname = getNicknameFromActor(self.path)
+            nickname = get_nickname_from_actor(self.path)
             followingFilename = \
                 acct_dir(self.server.base_dir,
                          nickname, self.server.domain) + '/following.txt'
@@ -14984,7 +14984,7 @@ class PubServer(BaseHTTPRequestHandler):
                 (not authorized and
                  self.path.startswith('/users/news/') and
                  self.server.news_instance)):
-                nickname = getNicknameFromActor(self.path)
+                nickname = get_nickname_from_actor(self.path)
                 if not nickname:
                     self._404()
                     self.server.GETbusy = False
@@ -15028,7 +15028,7 @@ class PubServer(BaseHTTPRequestHandler):
                 (not authorized and
                  self.path.startswith('/users/news/') and
                  self.server.news_instance)):
-                nickname = getNicknameFromActor(self.path)
+                nickname = get_nickname_from_actor(self.path)
                 if not nickname:
                     self._404()
                     self.server.GETbusy = False
@@ -15698,7 +15698,7 @@ class PubServer(BaseHTTPRequestHandler):
                 actor = self.path.split(';actor=')[1]
                 if ';' in actor:
                     actor = actor.split(';')[0]
-                nickname = getNicknameFromActor(self.path.split('?')[0])
+                nickname = get_nickname_from_actor(self.path.split('?')[0])
                 if nickname == actor:
                     postUrl = \
                         local_actor_url(self.server.http_prefix, nickname,

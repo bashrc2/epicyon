@@ -14,7 +14,7 @@ from utils import remove_domain_port
 from utils import has_users_path
 from utils import get_full_domain
 from utils import remove_id_ending
-from utils import getNicknameFromActor
+from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
 from utils import locate_post
 from utils import deletePost
@@ -147,7 +147,7 @@ def outboxDelete(base_dir: str, http_prefix: str,
         if debug:
             print('DEBUG: c2s delete object has no nickname')
         return
-    deleteNickname = getNicknameFromActor(messageId)
+    deleteNickname = get_nickname_from_actor(messageId)
     if deleteNickname != nickname:
         if debug:
             print("DEBUG: you can't delete a post which " +

@@ -17,7 +17,7 @@ from utils import get_config_param
 from utils import is_dormant
 from utils import remove_html
 from utils import get_domain_from_actor
-from utils import getNicknameFromActor
+from utils import get_nickname_from_actor
 from utils import is_featured_writer
 from utils import acct_dir
 from blocking import isBlocked
@@ -96,7 +96,7 @@ def htmlPersonOptions(defaultTimeline: str,
                 is_dormant(base_dir, nickname, domain, optionsActor,
                            dormant_months)
 
-        optionsNickname = getNicknameFromActor(optionsActor)
+        optionsNickname = get_nickname_from_actor(optionsActor)
         optionsDomainFull = get_full_domain(optionsDomain, optionsPort)
         followsYou = \
             isFollowerOfPerson(base_dir,
@@ -139,7 +139,7 @@ def htmlPersonOptions(defaultTimeline: str,
     optionsStr += '  <a href="' + optionsActor + '">\n'
     optionsStr += '  <img loading="lazy" src="' + optionsProfileUrl + \
         '" alt="" ' + getBrokenLinkSubstitute() + '/></a>\n'
-    handle = getNicknameFromActor(optionsActor) + '@' + optionsDomain
+    handle = get_nickname_from_actor(optionsActor) + '@' + optionsDomain
     handleShown = handle
     if lockedAccount:
         handleShown += '🔒'
@@ -154,7 +154,7 @@ def htmlPersonOptions(defaultTimeline: str,
         optionsStr += \
             '  <p class="optionsText">' + translate['Follows you'] + '</p>\n'
     if movedTo:
-        newNickname = getNicknameFromActor(movedTo)
+        newNickname = get_nickname_from_actor(movedTo)
         newDomain, newPort = get_domain_from_actor(movedTo)
         if newNickname and newDomain:
             newHandle = newNickname + '@' + newDomain

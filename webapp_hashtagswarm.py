@@ -9,7 +9,7 @@ __module_group__ = "Web Interface"
 
 import os
 from datetime import datetime
-from utils import getNicknameFromActor
+from utils import get_nickname_from_actor
 from utils import get_config_param
 from categories import getHashtagCategories
 from categories import getHashtagCategory
@@ -199,7 +199,7 @@ def htmlSearchHashtagCategory(cssCache: {}, translate: {},
     """
     actor = path.split('/category/')[0]
     categoryStr = path.split('/category/')[1].strip()
-    searchNickname = getNicknameFromActor(actor)
+    searchNickname = get_nickname_from_actor(actor)
 
     setCustomBackground(base_dir, 'search-background', 'follow-background')
 

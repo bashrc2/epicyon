@@ -22,7 +22,7 @@ from utils import get_full_domain
 from utils import is_dm
 from utils import load_translations_from_file
 from utils import remove_html
-from utils import getNicknameFromActor
+from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
 from utils import is_pgp_encrypted
 from utils import local_actor_url
@@ -142,7 +142,7 @@ def _createDesktopConfig(actor: str) -> None:
         os.mkdir(homeDir + '/.config')
     if not os.path.isdir(homeDir + '/.config/epicyon'):
         os.mkdir(homeDir + '/.config/epicyon')
-    nickname = getNicknameFromActor(actor)
+    nickname = get_nickname_from_actor(actor)
     domain, port = get_domain_from_actor(actor)
     handle = nickname + '@' + domain
     if port != 443 and port != 80:
@@ -157,7 +157,7 @@ def _markPostAsRead(actor: str, post_id: str, postCategory: str) -> None:
     """
     homeDir = str(Path.home())
     _createDesktopConfig(actor)
-    nickname = getNicknameFromActor(actor)
+    nickname = get_nickname_from_actor(actor)
     domain, port = get_domain_from_actor(actor)
     handle = nickname + '@' + domain
     if port != 443 and port != 80:
@@ -187,7 +187,7 @@ def _hasReadPost(actor: str, post_id: str, postCategory: str) -> bool:
     """
     homeDir = str(Path.home())
     _createDesktopConfig(actor)
-    nickname = getNicknameFromActor(actor)
+    nickname = get_nickname_from_actor(actor)
     domain, port = get_domain_from_actor(actor)
     handle = nickname + '@' + domain
     if port != 443 and port != 80:
@@ -426,7 +426,7 @@ def _desktopReplyToPost(session, post_id: str,
     """
     if '://' not in post_id:
         return
-    toNickname = getNicknameFromActor(post_id)
+    toNickname = get_nickname_from_actor(post_id)
     toDomain, toPort = get_domain_from_actor(post_id)
     sayStr = 'Replying to ' + toNickname + '@' + toDomain
     _sayCommand(sayStr, sayStr,
@@ -695,7 +695,7 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
 
     if post_json_object['type'] == 'Announce':
         actor = post_json_object['actor']
-        nameStr = getNicknameFromActor(actor)
+        nameStr = get_nickname_from_actor(actor)
         recent_posts_cache = {}
         allow_local_network_access = False
         yt_replace_domain = None
@@ -725,7 +725,7 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
                     if isinstance(attributedTo, str) and content:
                         actor = attributedTo
                         nameStr += ' ' + translate['announces'] + ' ' + \
-                            getNicknameFromActor(actor)
+                            get_nickname_from_actor(actor)
                         sayStr = nameStr
                         _sayCommand(sayStr, sayStr, screenreader,
                                     system_language, espeak)
@@ -751,7 +751,7 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
        not isinstance(content, str):
         return {}
     actor = attributedTo
-    nameStr = getNicknameFromActor(actor)
+    nameStr = get_nickname_from_actor(actor)
     content = _textOnlyContent(content)
     content += _getImageDescription(post_json_object)
 
@@ -804,7 +804,7 @@ def _desktopShowActor(base_dir: str, actor_json: {}, translate: {},
     """Shows information for the given actor
     """
     actor = actor_json['id']
-    actorNickname = getNicknameFromActor(actor)
+    actorNickname = get_nickname_from_actor(actor)
     actorDomain, actorPort = get_domain_from_actor(actor)
     actorDomainFull = get_full_domain(actorDomain, actorPort)
     handle = '@' + actorNickname + '@' + actorDomainFull
@@ -853,7 +853,7 @@ def _desktopShowProfile(session, nickname: str, domain: str,
 
     actor = None
     if post_json_object['type'] == 'Announce':
-        nickname = getNicknameFromActor(post_json_object['object'])
+        nickname = get_nickname_from_actor(post_json_object['object'])
         if nickname:
             nickStr = '/' + nickname + '/'
             if nickStr in post_json_object['object']:
@@ -1010,13 +1010,13 @@ def _desktopShowBox(indent: str,
                post_json_object.get('object'):
                 if isinstance(post_json_object['object'], str):
                     authorActor = post_json_object['actor']
-                    name = getNicknameFromActor(authorActor) + ' ⮌'
+                    name = get_nickname_from_actor(authorActor) + ' ⮌'
                     name = _padToWidth(name, nameWidth)
                     ctrStr = str(ctr)
                     posStr = _padToWidth(ctrStr, numberWidth)
                     published = _formatPublished(post_json_object['published'])
                     announcedNickname = \
-                        getNicknameFromActor(post_json_object['object'])
+                        get_nickname_from_actor(post_json_object['object'])
                     announcedDomain, announcedPort = \
                         get_domain_from_actor(post_json_object['object'])
                     announcedHandle = announcedNickname + '@' + announcedDomain
@@ -1043,7 +1043,7 @@ def _desktopShowBox(indent: str,
             contentWarning = '⚡' + \
                 _padToWidth(post_json_object['object']['summary'],
                             contentWidth)
-        name = getNicknameFromActor(authorActor)
+        name = get_nickname_from_actor(authorActor)
 
         # append icons to the end of the name
         spaceAdded = False
@@ -1174,7 +1174,7 @@ def _desktopNewDMbase(session, toHandle: str,
     conversationId = None
     toPort = port
     if '://' in toHandle:
-        toNickname = getNicknameFromActor(toHandle)
+        toNickname = get_nickname_from_actor(toHandle)
         toDomain, toPort = get_domain_from_actor(toHandle)
         toHandle = toNickname + '@' + toDomain
     else:
@@ -1281,7 +1281,7 @@ def _desktopShowFollowRequests(followRequestsJson: {}, translate: {}) -> None:
     print(indent + 'Follow requests:')
     print('')
     for item in followRequestsJson['orderedItems']:
-        handleNickname = getNicknameFromActor(item)
+        handleNickname = get_nickname_from_actor(item)
         handleDomain, handlePort = get_domain_from_actor(item)
         handleDomainFull = \
             get_full_domain(handleDomain, handlePort)
@@ -1307,7 +1307,7 @@ def _desktopShowFollowing(followingJson: {}, translate: {},
         print(indent + 'Followers page ' + str(pageNumber))
     print('')
     for item in followingJson['orderedItems']:
-        handleNickname = getNicknameFromActor(item)
+        handleNickname = get_nickname_from_actor(item)
         handleDomain, handlePort = get_domain_from_actor(item)
         handleDomainFull = \
             get_full_domain(handleDomain, handlePort)
@@ -1802,7 +1802,7 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                     if post_json_object.get('id'):
                         likeActor = post_json_object['object']['attributedTo']
                         sayStr = 'Liking post by ' + \
-                            getNicknameFromActor(likeActor)
+                            get_nickname_from_actor(likeActor)
                         _sayCommand(sayStr, sayStr,
                                     screenreader,
                                     system_language, espeak)
@@ -1841,7 +1841,7 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                     if post_json_object.get('id'):
                         muteActor = post_json_object['object']['attributedTo']
                         sayStr = 'Unmuting post by ' + \
-                            getNicknameFromActor(muteActor)
+                            get_nickname_from_actor(muteActor)
                         _sayCommand(sayStr, sayStr,
                                     screenreader,
                                     system_language, espeak)
@@ -1873,7 +1873,7 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                     if post_json_object.get('id'):
                         muteActor = post_json_object['object']['attributedTo']
                         sayStr = 'Muting post by ' + \
-                            getNicknameFromActor(muteActor)
+                            get_nickname_from_actor(muteActor)
                         _sayCommand(sayStr, sayStr,
                                     screenreader,
                                     system_language, espeak)
@@ -1914,7 +1914,7 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                     if post_json_object.get('id'):
                         bmActor = post_json_object['object']['attributedTo']
                         sayStr = 'Unbookmarking post by ' + \
-                            getNicknameFromActor(bmActor)
+                            get_nickname_from_actor(bmActor)
                         _sayCommand(sayStr, sayStr,
                                     screenreader,
                                     system_language, espeak)
@@ -1945,7 +1945,7 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                     if post_json_object.get('id'):
                         bmActor = post_json_object['object']['attributedTo']
                         sayStr = 'Bookmarking post by ' + \
-                            getNicknameFromActor(bmActor)
+                            get_nickname_from_actor(bmActor)
                         _sayCommand(sayStr, sayStr,
                                     screenreader,
                                     system_language, espeak)
@@ -1979,7 +1979,7 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                                 blockActor = \
                                     post_json_object['object']['attributedTo']
                                 sayStr = 'Unblocking ' + \
-                                    getNicknameFromActor(blockActor)
+                                    get_nickname_from_actor(blockActor)
                                 _sayCommand(sayStr, sayStr,
                                             screenreader,
                                             system_language, espeak)
@@ -2026,7 +2026,7 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                                     post_json_object['object']['attributedTo']
                 if blockActor:
                     sayStr = 'Blocking ' + \
-                        getNicknameFromActor(blockActor)
+                        get_nickname_from_actor(blockActor)
                     _sayCommand(sayStr, sayStr,
                                 screenreader,
                                 system_language, espeak)
@@ -2057,7 +2057,7 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                             post_json_object['object']['attributedTo']
                         sayStr = \
                             'Undoing like of post by ' + \
-                            getNicknameFromActor(unlikeActor)
+                            get_nickname_from_actor(unlikeActor)
                         _sayCommand(sayStr, sayStr,
                                     screenreader,
                                     system_language, espeak)
@@ -2088,7 +2088,7 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                         announceActor = \
                             post_json_object['object']['attributedTo']
                         sayStr = 'Announcing post by ' + \
-                            getNicknameFromActor(announceActor)
+                            get_nickname_from_actor(announceActor)
                         _sayCommand(sayStr, sayStr,
                                     screenreader,
                                     system_language, espeak)
@@ -2121,7 +2121,7 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                         announceActor = \
                             post_json_object['object']['attributedTo']
                         sayStr = 'Undoing announce post by ' + \
-                            getNicknameFromActor(announceActor)
+                            get_nickname_from_actor(announceActor)
                         _sayCommand(sayStr, sayStr,
                                     screenreader,
                                     system_language, espeak)
@@ -2212,7 +2212,7 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                         followHandle = followHandle[1:]
 
                 if '@' in followHandle or '://' in followHandle:
-                    followNickname = getNicknameFromActor(followHandle)
+                    followNickname = get_nickname_from_actor(followHandle)
                     followDomain, followPort = \
                         get_domain_from_actor(followHandle)
                     if followNickname and followDomain:
@@ -2248,7 +2248,7 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                 if followHandle.startswith('@'):
                     followHandle = followHandle[1:]
                 if '@' in followHandle or '://' in followHandle:
-                    followNickname = getNicknameFromActor(followHandle)
+                    followNickname = get_nickname_from_actor(followHandle)
                     followDomain, followPort = \
                         get_domain_from_actor(followHandle)
                     if followNickname and followDomain:
@@ -2279,7 +2279,7 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                     approveHandle = approveHandle[1:]
 
                 if '@' in approveHandle or '://' in approveHandle:
-                    approveNickname = getNicknameFromActor(approveHandle)
+                    approveNickname = get_nickname_from_actor(approveHandle)
                     approveDomain, approvePort = \
                         get_domain_from_actor(approveHandle)
                     if approveNickname and approveDomain:
@@ -2312,7 +2312,7 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                     denyHandle = denyHandle[1:]
 
                 if '@' in denyHandle or '://' in denyHandle:
-                    denyNickname = getNicknameFromActor(denyHandle)
+                    denyNickname = get_nickname_from_actor(denyHandle)
                     denyDomain, denyPort = \
                         get_domain_from_actor(denyHandle)
                     if denyNickname and denyDomain:

@@ -10,7 +10,7 @@ __module_group__ = "Web Interface"
 import os
 from utils import get_new_post_endpoints
 from utils import isPublicPostFromUrl
-from utils import getNicknameFromActor
+from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
 from utils import get_media_formats
 from utils import get_config_param
@@ -651,7 +651,7 @@ def htmlNewPost(cssCache: {}, media_instance: bool, translate: {},
 
     mentionsStr = ''
     for m in mentions:
-        mentionNickname = getNicknameFromActor(m)
+        mentionNickname = get_nickname_from_actor(m)
         if not mentionNickname:
             continue
         mentionDomain, mentionPort = get_domain_from_actor(m)

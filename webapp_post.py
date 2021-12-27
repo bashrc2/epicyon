@@ -48,7 +48,7 @@ from utils import get_display_name
 from utils import isPublicPost
 from utils import updateRecentPostsCache
 from utils import remove_id_ending
-from utils import getNicknameFromActor
+from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
 from utils import acct_dir
 from utils import local_actor_url
@@ -98,7 +98,7 @@ def _htmlPostMetadataOpenGraph(domain: str, post_json_object: {}) -> str:
     if objJson.get('attributedTo'):
         if isinstance(objJson['attributedTo'], str):
             attrib = objJson['attributedTo']
-            actorNick = getNicknameFromActor(attrib)
+            actorNick = get_nickname_from_actor(attrib)
             actorDomain, _ = get_domain_from_actor(attrib)
             actorHandle = actorNick + '@' + actorDomain
             metadata += \
@@ -398,7 +398,7 @@ def _getReplyIconHtml(base_dir: str, nickname: str, domain: str,
     if post_json_object['object'].get('replyTo'):
         # check that the alternative replyTo url is not blocked
         blockNickname = \
-            getNicknameFromActor(post_json_object['object']['replyTo'])
+            get_nickname_from_actor(post_json_object['object']['replyTo'])
         blockDomain, _ = \
             get_domain_from_actor(post_json_object['object']['replyTo'])
         if not isBlocked(base_dir, nickname, domain,
@@ -989,7 +989,7 @@ def _getPostTitleAnnounceHtml(base_dir: str,
     _logPostTiming(enableTimingLog, postStartTime, '13.2')
     announceNickname = None
     if attributedTo:
-        announceNickname = getNicknameFromActor(attributedTo)
+        announceNickname = get_nickname_from_actor(attributedTo)
     if not announceNickname:
         titleStr += _announceUnattributedHtml(translate, post_json_object)
         return (titleStr, replyAvatarImageInPost,
@@ -1168,7 +1168,7 @@ def _getPostTitleReplyHtml(base_dir: str,
 
     inReplyTo = objJson['inReplyTo']
     replyActor = inReplyTo.split('/statuses/')[0]
-    replyNickname = getNicknameFromActor(replyActor)
+    replyNickname = get_nickname_from_actor(replyActor)
     if not replyNickname:
         titleStr += _replyToUnknownHtml(translate, post_json_object)
         return (titleStr, replyAvatarImageInPost,
@@ -1425,7 +1425,7 @@ def individualPostAsHtml(signing_priv_key_pem: str,
     # get the display name
     if domain_full not in postActor:
         # lookup the correct webfinger for the postActor
-        postActorNickname = getNicknameFromActor(postActor)
+        postActorNickname = get_nickname_from_actor(postActor)
         postActorDomain, postActorPort = get_domain_from_actor(postActor)
         postActorDomainFull = get_full_domain(postActorDomain, postActorPort)
         postActorHandle = postActorNickname + '@' + postActorDomainFull
@@ -1575,7 +1575,7 @@ def individualPostAsHtml(signing_priv_key_pem: str,
     containerClass = 'container'
     containerClassIcons = 'containericons'
     timeClass = 'time-right'
-    actorNickname = getNicknameFromActor(postActor)
+    actorNickname = get_nickname_from_actor(postActor)
     if not actorNickname:
         # single user instance
         actorNickname = 'dev'
@@ -2025,7 +2025,7 @@ def htmlIndividualPost(cssCache: {},
         byTextExtra = ' ' + reactEmoji
 
     if byStr:
-        byStrNickname = getNicknameFromActor(byStr)
+        byStrNickname = get_nickname_from_actor(byStr)
         byStrDomain, byStrPort = get_domain_from_actor(byStr)
         byStrDomain = get_full_domain(byStrDomain, byStrPort)
         byStrHandle = byStrNickname + '@' + byStrDomain

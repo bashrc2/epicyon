@@ -10,7 +10,7 @@ __module_group__ = "Web Interface"
 import os
 from shutil import copyfile
 from utils import get_full_domain
-from utils import getNicknameFromActor
+from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
 from utils import locate_post
 from utils import load_json
@@ -43,7 +43,7 @@ def htmlConfirmDelete(cssCache: {},
     if '/statuses/' not in messageId:
         return None
     actor = messageId.split('/statuses/')[0]
-    nickname = getNicknameFromActor(actor)
+    nickname = get_nickname_from_actor(actor)
     domain, port = get_domain_from_actor(actor)
     domain_full = get_full_domain(domain, port)
 
@@ -112,7 +112,7 @@ def htmlConfirmRemoveSharedItem(cssCache: {}, translate: {}, base_dir: str,
                                 sharesFileType: str) -> str:
     """Shows a screen asking to confirm the removal of a shared item
     """
-    nickname = getNicknameFromActor(actor)
+    nickname = get_nickname_from_actor(actor)
     domain, port = get_domain_from_actor(actor)
     domain_full = get_full_domain(domain, port)
     sharesFile = \
@@ -200,7 +200,7 @@ def htmlConfirmFollow(cssCache: {}, translate: {}, base_dir: str,
     followStr += '  <img loading="lazy" src="' + followProfileUrl + '"/></a>\n'
     followStr += \
         '  <p class="followText">' + translate['Follow'] + ' ' + \
-        getNicknameFromActor(followActor) + '@' + followDomain + ' ?</p>\n'
+        get_nickname_from_actor(followActor) + '@' + followDomain + ' ?</p>\n'
     followStr += '  <form method="POST" action="' + \
         originPathStr + '/followconfirm">\n'
     followStr += '    <input type="hidden" name="actor" value="' + \
@@ -245,7 +245,7 @@ def htmlConfirmUnfollow(cssCache: {}, translate: {}, base_dir: str,
     followStr += '  <img loading="lazy" src="' + followProfileUrl + '"/></a>\n'
     followStr += \
         '  <p class="followText">' + translate['Stop following'] + \
-        ' ' + getNicknameFromActor(followActor) + \
+        ' ' + get_nickname_from_actor(followActor) + \
         '@' + followDomain + ' ?</p>\n'
     followStr += '  <form method="POST" action="' + \
         originPathStr + '/unfollowconfirm">\n'
@@ -288,7 +288,7 @@ def htmlConfirmUnblock(cssCache: {}, translate: {}, base_dir: str,
     blockStr += '  <img loading="lazy" src="' + blockProfileUrl + '"/></a>\n'
     blockStr += \
         '  <p class="blockText">' + translate['Stop blocking'] + ' ' + \
-        getNicknameFromActor(blockActor) + '@' + blockDomain + ' ?</p>\n'
+        get_nickname_from_actor(blockActor) + '@' + blockDomain + ' ?</p>\n'
     blockStr += '  <form method="POST" action="' + \
         originPathStr + '/unblockconfirm">\n'
     blockStr += '    <input type="hidden" name="actor" value="' + \

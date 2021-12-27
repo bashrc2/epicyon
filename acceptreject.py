@@ -13,7 +13,7 @@ from utils import has_users_path
 from utils import get_full_domain
 from utils import url_permitted
 from utils import get_domain_from_actor
-from utils import getNicknameFromActor
+from utils import get_nickname_from_actor
 from utils import domain_permitted
 from utils import follow_person
 from utils import acct_dir
@@ -99,7 +99,7 @@ def _accept_follow(base_dir: str, domain: str, message_json: {},
     if debug:
         print('DEBUG: follow Accept received')
     this_actor = message_json['object']['actor']
-    nickname = getNicknameFromActor(this_actor)
+    nickname = get_nickname_from_actor(this_actor)
     if not nickname:
         print('WARN: no nickname found in ' + this_actor)
         return
@@ -138,7 +138,7 @@ def _accept_follow(base_dir: str, domain: str, message_json: {},
     followed_domain_full = followed_domain
     if port:
         followed_domain_full = followed_domain + ':' + str(port)
-    followed_nickname = getNicknameFromActor(followed_actor)
+    followed_nickname = get_nickname_from_actor(followed_actor)
     if not followed_nickname:
         print('DEBUG: no nickname found within Follow activity object ' +
               followed_actor)
@@ -206,7 +206,7 @@ def receiveAcceptReject(session, base_dir: str,
             print('DEBUG: ' + message_json['type'] +
                   ' from domain not permitted - ' + domain)
         return False
-    nickname = getNicknameFromActor(message_json['actor'])
+    nickname = get_nickname_from_actor(message_json['actor'])
     if not nickname:
         # single user instance
         nickname = 'dev'

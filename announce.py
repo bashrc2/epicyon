@@ -16,7 +16,7 @@ from utils import get_full_domain
 from utils import get_status_number
 from utils import create_outbox_dir
 from utils import url_permitted
-from utils import getNicknameFromActor
+from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
 from utils import locate_post
 from utils import save_json
@@ -69,7 +69,7 @@ def outboxAnnounce(recent_posts_cache: {},
             return False
         if isSelfAnnounce(message_json):
             return False
-        nickname = getNicknameFromActor(message_json['actor'])
+        nickname = get_nickname_from_actor(message_json['actor'])
         if not nickname:
             print('WARN: no nickname found in ' + message_json['actor'])
             return False
@@ -88,7 +88,7 @@ def outboxAnnounce(recent_posts_cache: {},
         if message_json['object']['type'] == 'Announce':
             if not isinstance(message_json['object']['object'], str):
                 return False
-            nickname = getNicknameFromActor(message_json['actor'])
+            nickname = get_nickname_from_actor(message_json['actor'])
             if not nickname:
                 print('WARN: no nickname found in ' + message_json['actor'])
                 return False
@@ -166,7 +166,7 @@ def createAnnounce(session, base_dir: str, federation_list: [],
     announcePort = None
     group_account = False
     if has_users_path(objectUrl):
-        announceNickname = getNicknameFromActor(objectUrl)
+        announceNickname = get_nickname_from_actor(objectUrl)
         announceDomain, announcePort = get_domain_from_actor(objectUrl)
         if '/' + str(announceNickname) + '/' in objectUrl:
             announceActor = \

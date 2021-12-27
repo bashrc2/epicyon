@@ -16,7 +16,7 @@ from utils import is_dm
 from utils import is_reply
 from utils import camel_case_split
 from utils import get_domain_from_actor
-from utils import getNicknameFromActor
+from utils import get_nickname_from_actor
 from utils import get_gender_from_bio
 from utils import get_display_name
 from utils import remove_html
@@ -479,7 +479,7 @@ def _postToSpeakerJson(base_dir: str, http_prefix: str,
     gender = get_gender_from_bio(base_dir, post_json_object['actor'],
                                  person_cache, translate)
     if announcingActor:
-        announcedNickname = getNicknameFromActor(announcingActor)
+        announcedNickname = get_nickname_from_actor(announcingActor)
         announcedDomain, announcedport = get_domain_from_actor(announcingActor)
         if announcedNickname and announcedDomain:
             announcedHandle = announcedNickname + '@' + announcedDomain

@@ -963,48 +963,48 @@ def get_gender_from_bio(base_dir: str, actor: str, person_cache: {},
     """Tries to ascertain gender from bio description
     This is for use by text-to-speech for pitch setting
     """
-    defaultGender = 'They/Them'
+    default_gender = 'They/Them'
     if '/statuses/' in actor:
         actor = actor.split('/statuses/')[0]
     if not person_cache.get(actor):
-        return defaultGender
-    bioFound = None
+        return default_gender
+    bio_found = None
     if translate:
-        pronounStr = translate['pronoun'].lower()
+        pronoun_str = translate['pronoun'].lower()
     else:
-        pronounStr = 'pronoun'
+        pronoun_str = 'pronoun'
     actor_json = None
     if person_cache[actor].get('actor'):
         actor_json = person_cache[actor]['actor']
     else:
         # Try to obtain from the cached actors
-        cachedActorFilename = \
+        cached_actor_filename = \
             base_dir + '/cache/actors/' + (actor.replace('/', '#')) + '.json'
-        if os.path.isfile(cachedActorFilename):
-            actor_json = load_json(cachedActorFilename, 1)
+        if os.path.isfile(cached_actor_filename):
+            actor_json = load_json(cached_actor_filename, 1)
     if not actor_json:
-        return defaultGender
+        return default_gender
     # is gender defined as a profile tag?
     if actor_json.get('attachment'):
-        tagsList = actor_json['attachment']
-        if isinstance(tagsList, list):
+        tags_list = actor_json['attachment']
+        if isinstance(tags_list, list):
             # look for a gender field name
-            for tag in tagsList:
+            for tag in tags_list:
                 if not isinstance(tag, dict):
                     continue
                 if not tag.get('name') or not tag.get('value'):
                     continue
                 if tag['name'].lower() == \
                    translate['gender'].lower():
-                    bioFound = tag['value']
+                    bio_found = tag['value']
                     break
-                elif tag['name'].lower().startswith(pronounStr):
-                    bioFound = tag['value']
+                if tag['name'].lower().startswith(pronoun_str):
+                    bio_found = tag['value']
                     break
             # the field name could be anything,
             # just look at the value
-            if not bioFound:
-                for tag in tagsList:
+            if not bio_found:
+                for tag in tags_list:
                     if not isinstance(tag, dict):
                         continue
                     if not tag.get('name') or not tag.get('value'):
@@ -1013,17 +1013,17 @@ def get_gender_from_bio(base_dir: str, actor: str, person_cache: {},
                     if gender:
                         return gender
     # if not then use the bio
-    if not bioFound and actor_json.get('summary'):
-        bioFound = actor_json['summary']
-    if not bioFound:
-        return defaultGender
-    gender = _gender_from_string(translate, bioFound)
+    if not bio_found and actor_json.get('summary'):
+        bio_found = actor_json['summary']
+    if not bio_found:
+        return default_gender
+    gender = _gender_from_string(translate, bio_found)
     if not gender:
-        gender = defaultGender
+        gender = default_gender
     return gender
 
 
-def getNicknameFromActor(actor: str) -> str:
+def get_nickname_from_actor(actor: str) -> str:
     """Returns the nickname from an actor url
     """
     if actor.startswith('@'):
@@ -2224,7 +2224,7 @@ def undoLikesCollectionEntry(recent_posts_cache: {},
         return
     # remove any cached version of this post so that the
     # like icon is changed
-    nickname = getNicknameFromActor(actor)
+    nickname = get_nickname_from_actor(actor)
     cached_post_filename = \
         get_cached_post_filename(base_dir, nickname,
                                  domain, post_json_object)
@@ -2290,7 +2290,7 @@ def undoReactionCollectionEntry(recent_posts_cache: {},
         return
     # remove any cached version of this post so that the
     # like icon is changed
-    nickname = getNicknameFromActor(actor)
+    nickname = get_nickname_from_actor(actor)
     cached_post_filename = \
         get_cached_post_filename(base_dir, nickname,
                                  domain, post_json_object)
@@ -2357,7 +2357,7 @@ def undo_announce_collection_entry(recent_posts_cache: {},
         return
     # remove any cached version of this announce so that the announce
     # icon is changed
-    nickname = getNicknameFromActor(actor)
+    nickname = get_nickname_from_actor(actor)
     cached_post_filename = \
         get_cached_post_filename(base_dir, nickname, domain,
                                  post_json_object)

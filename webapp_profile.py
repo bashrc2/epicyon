@@ -18,7 +18,7 @@ from utils import get_locked_account
 from utils import get_full_domain
 from utils import is_artist
 from utils import is_dormant
-from utils import getNicknameFromActor
+from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
 from utils import is_system_account
 from utils import remove_html
@@ -159,7 +159,7 @@ def htmlProfileAfterSearch(cssCache: {},
     searchDomain, searchPort = get_domain_from_actor(personUrl)
     if not searchDomain:
         return None
-    searchNickname = getNicknameFromActor(personUrl)
+    searchNickname = get_nickname_from_actor(personUrl)
     if not searchNickname:
         return None
     searchDomainFull = get_full_domain(searchDomain, searchPort)
@@ -407,7 +407,7 @@ def _getProfileHeader(base_dir: str, http_prefix: str,
             '    <p>' + translate['Joined'] + ' ' + \
             joinedDate.split('T')[0] + '<br>\n'
     if movedTo:
-        newNickname = getNicknameFromActor(movedTo)
+        newNickname = get_nickname_from_actor(movedTo)
         newDomain, newPort = get_domain_from_actor(movedTo)
         newDomainFull = get_full_domain(newDomain, newPort)
         if newNickname and newDomain:
@@ -501,7 +501,7 @@ def _getProfileHeaderAfterSearch(base_dir: str,
     if followsYou:
         htmlStr += '        <p><b>' + translate['Follows you'] + '</b></p>\n'
     if movedTo:
-        newNickname = getNicknameFromActor(movedTo)
+        newNickname = get_nickname_from_actor(movedTo)
         newDomain, newPort = get_domain_from_actor(movedTo)
         newDomainFull = get_full_domain(newDomain, newPort)
         if newNickname and newDomain:
@@ -2102,7 +2102,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, base_dir: str, path: str,
     """
     path = path.replace('/inbox', '').replace('/outbox', '')
     path = path.replace('/shares', '').replace('/wanted', '')
-    nickname = getNicknameFromActor(path)
+    nickname = get_nickname_from_actor(path)
     if not nickname:
         return ''
     domain_full = get_full_domain(domain, port)
@@ -2353,7 +2353,7 @@ def _individualFollowAsHtml(signing_priv_key_pem: str,
                             buttons=[]) -> str:
     """An individual follow entry on the profile screen
     """
-    followUrlNickname = getNicknameFromActor(followUrl)
+    followUrlNickname = get_nickname_from_actor(followUrl)
     followUrlDomain, followUrlPort = get_domain_from_actor(followUrl)
     followUrlDomainFull = get_full_domain(followUrlDomain, followUrlPort)
     titleStr = '@' + followUrlNickname + '@' + followUrlDomainFull

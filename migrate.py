@@ -9,7 +9,7 @@ __module_group__ = "Core"
 
 import os
 from utils import is_account_dir
-from utils import getNicknameFromActor
+from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
 from utils import acct_dir
 from utils import has_group_type
@@ -96,7 +96,7 @@ def _updateMovedHandle(base_dir: str, nickname: str, domain: str,
         return ctr
     if '.' not in movedToUrl:
         return ctr
-    movedToNickname = getNicknameFromActor(movedToUrl)
+    movedToNickname = get_nickname_from_actor(movedToUrl)
     if not movedToNickname:
         return ctr
     movedToDomain, movedToPort = get_domain_from_actor(movedToUrl)

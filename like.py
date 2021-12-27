@@ -18,7 +18,7 @@ from utils import has_users_path
 from utils import get_full_domain
 from utils import remove_id_ending
 from utils import url_permitted
-from utils import getNicknameFromActor
+from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
 from utils import locate_post
 from utils import undoLikesCollectionEntry
@@ -104,12 +104,12 @@ def _like(recent_posts_cache: {},
     likedPostPort = None
     group_account = False
     if actorLiked:
-        likedPostNickname = getNicknameFromActor(actorLiked)
+        likedPostNickname = get_nickname_from_actor(actorLiked)
         likedPostDomain, likedPostPort = get_domain_from_actor(actorLiked)
         group_account = has_group_type(base_dir, actorLiked, person_cache)
     else:
         if has_users_path(objectUrl):
-            likedPostNickname = getNicknameFromActor(objectUrl)
+            likedPostNickname = get_nickname_from_actor(objectUrl)
             likedPostDomain, likedPostPort = get_domain_from_actor(objectUrl)
             if '/' + str(likedPostNickname) + '/' in objectUrl:
                 actorLiked = \

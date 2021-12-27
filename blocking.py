@@ -29,7 +29,7 @@ from utils import is_evil
 from utils import locate_post
 from utils import evil_incarnate
 from utils import get_domain_from_actor
-from utils import getNicknameFromActor
+from utils import get_nickname_from_actor
 from utils import acct_dir
 from utils import local_actor_url
 from utils import has_actor
@@ -448,7 +448,7 @@ def outboxBlock(base_dir: str, http_prefix: str,
             print('DEBUG: c2s block post not found in inbox or outbox')
             print(messageId)
         return False
-    nicknameBlocked = getNicknameFromActor(message_json['object'])
+    nicknameBlocked = get_nickname_from_actor(message_json['object'])
     if not nicknameBlocked:
         print('WARN: unable to find nickname in ' + message_json['object'])
         return False
@@ -504,7 +504,7 @@ def outboxUndoBlock(base_dir: str, http_prefix: str,
             print('DEBUG: c2s undo block post not found in inbox or outbox')
             print(messageId)
         return
-    nicknameBlocked = getNicknameFromActor(message_json['object']['object'])
+    nicknameBlocked = get_nickname_from_actor(message_json['object']['object'])
     if not nicknameBlocked:
         print('WARN: unable to find nickname in ' +
               message_json['object']['object'])
@@ -806,7 +806,7 @@ def outboxMute(base_dir: str, http_prefix: str,
             print('DEBUG: c2s mute post not found in inbox or outbox')
             print(messageId)
         return
-    nicknameMuted = getNicknameFromActor(message_json['object'])
+    nicknameMuted = get_nickname_from_actor(message_json['object'])
     if not nicknameMuted:
         print('WARN: unable to find nickname in ' + message_json['object'])
         return
@@ -861,7 +861,7 @@ def outboxUndoMute(base_dir: str, http_prefix: str,
             print('DEBUG: c2s undo mute post not found in inbox or outbox')
             print(messageId)
         return
-    nicknameMuted = getNicknameFromActor(message_json['object']['object'])
+    nicknameMuted = get_nickname_from_actor(message_json['object']['object'])
     if not nicknameMuted:
         print('WARN: unable to find nickname in ' +
               message_json['object']['object'])

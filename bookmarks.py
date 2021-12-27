@@ -17,7 +17,7 @@ from utils import get_full_domain
 from utils import remove_id_ending
 from utils import remove_post_from_cache
 from utils import url_permitted
-from utils import getNicknameFromActor
+from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
 from utils import locate_post
 from utils import get_cached_post_filename
@@ -44,7 +44,7 @@ def undoBookmarksCollectionEntry(recent_posts_cache: {},
 
     # remove any cached version of this post so that the
     # bookmark icon is changed
-    nickname = getNicknameFromActor(actor)
+    nickname = get_nickname_from_actor(actor)
     cachedPostFilename = \
         get_cached_post_filename(base_dir, nickname,
                                  domain, post_json_object)
@@ -164,7 +164,7 @@ def updateBookmarksCollection(recent_posts_cache: {},
     if post_json_object:
         # remove any cached version of this post so that the
         # bookmark icon is changed
-        nickname = getNicknameFromActor(actor)
+        nickname = get_nickname_from_actor(actor)
         cachedPostFilename = \
             get_cached_post_filename(base_dir, nickname,
                                      domain, post_json_object)
@@ -285,12 +285,12 @@ def bookmark(recent_posts_cache: {},
     bookmarkedPostPort = None
     if actorBookmarked:
         acBm = actorBookmarked
-        bookmarkedPostNickname = getNicknameFromActor(acBm)
+        bookmarkedPostNickname = get_nickname_from_actor(acBm)
         bookmarkedPostDomain, bookmarkedPostPort = get_domain_from_actor(acBm)
     else:
         if has_users_path(objectUrl):
             ou = objectUrl
-            bookmarkedPostNickname = getNicknameFromActor(ou)
+            bookmarkedPostNickname = get_nickname_from_actor(ou)
             bookmarkedPostDomain, bookmarkedPostPort = \
                 get_domain_from_actor(ou)
 
@@ -350,12 +350,12 @@ def undoBookmark(recent_posts_cache: {},
     bookmarkedPostPort = None
     if actorBookmarked:
         acBm = actorBookmarked
-        bookmarkedPostNickname = getNicknameFromActor(acBm)
+        bookmarkedPostNickname = get_nickname_from_actor(acBm)
         bookmarkedPostDomain, bookmarkedPostPort = get_domain_from_actor(acBm)
     else:
         if has_users_path(objectUrl):
             ou = objectUrl
-            bookmarkedPostNickname = getNicknameFromActor(ou)
+            bookmarkedPostNickname = get_nickname_from_actor(ou)
             bookmarkedPostDomain, bookmarkedPostPort = \
                 get_domain_from_actor(ou)
 

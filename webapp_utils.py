@@ -18,7 +18,7 @@ from utils import load_json
 from utils import get_cached_post_filename
 from utils import get_config_param
 from utils import acct_dir
-from utils import getNicknameFromActor
+from utils import get_nickname_from_actor
 from utils import is_float
 from utils import get_audio_extensions
 from utils import get_video_extensions
@@ -410,7 +410,7 @@ def sharesTimelineJson(actor: str, pageNumber: int, itemsPerPage: int,
                         shareActor = itemID.split('--shareditems--')[0]
                         shareActor = shareActor.replace('___', '://')
                         shareActor = shareActor.replace('--', '/')
-                        shareNickname = getNicknameFromActor(shareActor)
+                        shareNickname = get_nickname_from_actor(shareActor)
                         if isBlocked(base_dir, nickname, domain,
                                      shareNickname, federatedDomain, None):
                             continue
@@ -1466,7 +1466,7 @@ def htmlSearchResultShare(base_dir: str, sharedItem: {}, translate: {},
 
     # should the remove button be shown?
     showRemoveButton = False
-    nickname = getNicknameFromActor(actor)
+    nickname = get_nickname_from_actor(actor)
     if actor.endswith('/users/' + contactNickname):
         showRemoveButton = True
     elif isModerator(base_dir, nickname):
@@ -1503,7 +1503,7 @@ def htmlShowShare(base_dir: str, domain: str, nickname: str,
     sharesJson = None
 
     shareUrl = itemID.replace('___', '://').replace('--', '/')
-    contactNickname = getNicknameFromActor(shareUrl)
+    contactNickname = get_nickname_from_actor(shareUrl)
     if not contactNickname:
         return None
 

@@ -54,7 +54,7 @@ from utils import is_evil
 from utils import get_status_number
 from utils import create_person_dir
 from utils import url_permitted
-from utils import getNicknameFromActor
+from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
 from utils import deletePost
 from utils import validNickname
@@ -1339,7 +1339,7 @@ def getActorFromInReplyTo(inReplyTo: str) -> str:
     """Tries to get the replied to actor from the inReplyTo post id
     Note: this will not always be successful for some instance types
     """
-    replyNickname = getNicknameFromActor(inReplyTo)
+    replyNickname = get_nickname_from_actor(inReplyTo)
     if not replyNickname:
         return None
     replyActor = None
@@ -2952,7 +2952,7 @@ def _sendToNamedAddresses(session, base_dir: str,
     # this is after the message has arrived at the server
     client_to_server = False
     for address in recipients:
-        toNickname = getNicknameFromActor(address)
+        toNickname = get_nickname_from_actor(address)
         if not toNickname:
             continue
         toDomain, toPort = get_domain_from_actor(address)
@@ -4570,7 +4570,7 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
             asHeader = {
                 'Accept': acceptStr
             }
-        actorNickname = getNicknameFromActor(post_json_object['actor'])
+        actorNickname = get_nickname_from_actor(post_json_object['actor'])
         actorDomain, actorPort = \
             get_domain_from_actor(post_json_object['actor'])
         if not actorDomain:
@@ -4582,7 +4582,7 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
             print('Announce download blocked actor: ' +
                   actorNickname + '@' + actorDomain)
             return None
-        objectNickname = getNicknameFromActor(post_json_object['object'])
+        objectNickname = get_nickname_from_actor(post_json_object['object'])
         objectDomain, objectPort = \
             get_domain_from_actor(post_json_object['object'])
         if not objectDomain:
@@ -4724,7 +4724,7 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
         announcedJson['object']['id'] = post_json_object['object']
         # check that the repeat isn't for a blocked account
         attributedNickname = \
-            getNicknameFromActor(announcedJson['object']['id'])
+            get_nickname_from_actor(announcedJson['object']['id'])
         attributedDomain, attributedPort = \
             get_domain_from_actor(announcedJson['object']['id'])
         if attributedNickname and attributedDomain:
@@ -5305,7 +5305,7 @@ def getOriginalPostFromAnnounceUrl(announceUrl: str, base_dir: str,
         # we don't have the original post
         if has_users_path(origPostId):
             # get the actor from the original post url
-            origNick = getNicknameFromActor(origPostId)
+            origNick = get_nickname_from_actor(origPostId)
             origDomain, origPort = get_domain_from_actor(origPostId)
             if origNick and origDomain:
                 actor = \

@@ -9,7 +9,7 @@ __module_group__ = "Web Interface Columns"
 
 import os
 from utils import get_config_param
-from utils import getNicknameFromActor
+from utils import get_nickname_from_actor
 from utils import is_editor
 from utils import is_artist
 from utils import remove_domain_port
@@ -424,7 +424,7 @@ def htmlEditLinks(cssCache: {}, translate: {}, base_dir: str, path: str,
     path = path.replace('/inbox', '').replace('/outbox', '')
     path = path.replace('/shares', '').replace('/wanted', '')
 
-    nickname = getNicknameFromActor(path)
+    nickname = get_nickname_from_actor(path)
     if not nickname:
         return ''
 

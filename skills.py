@@ -14,7 +14,7 @@ from posts import getPersonBox
 from session import postJson
 from utils import has_object_string
 from utils import get_full_domain
-from utils import getNicknameFromActor
+from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
 from utils import load_json
 from utils import get_occupation_skills
@@ -157,7 +157,7 @@ def outboxSkills(base_dir: str, nickname: str, message_json: {},
     if not has_object_string(message_json, debug):
         return False
 
-    actorNickname = getNicknameFromActor(message_json['actor'])
+    actorNickname = get_nickname_from_actor(message_json['actor'])
     if actorNickname != nickname:
         return False
     domain, port = get_domain_from_actor(message_json['actor'])
