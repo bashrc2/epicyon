@@ -14,7 +14,7 @@ from utils import get_full_domain
 from utils import urlPermitted
 from utils import getDomainFromActor
 from utils import getNicknameFromActor
-from utils import domainPermitted
+from utils import domain_permitted
 from utils import follow_person
 from utils import acct_dir
 from utils import has_group_type
@@ -201,7 +201,7 @@ def receiveAcceptReject(session, base_dir: str,
             print('DEBUG: "users" or "profile" missing from actor in ' +
                   message_json['type'] + '. Assuming single user instance.')
     domain, _ = getDomainFromActor(message_json['actor'])
-    if not domainPermitted(domain, federation_list):
+    if not domain_permitted(domain, federation_list):
         if debug:
             print('DEBUG: ' + message_json['type'] +
                   ' from domain not permitted - ' + domain)

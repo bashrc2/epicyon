@@ -809,7 +809,7 @@ def create_inbox_queue_dir(nickname: str, domain: str, base_dir: str) -> str:
     return createPersonDir(nickname, domain, base_dir, 'queue')
 
 
-def domainPermitted(domain: str, federation_list: []):
+def domain_permitted(domain: str, federation_list: []):
     if len(federation_list) == 0:
         return True
     domain = remove_domain_port(domain)
@@ -1126,8 +1126,8 @@ def _setDefaultPetName(base_dir: str, nickname: str, domain: str,
                     # petname already exists
                     return
     # petname doesn't already exist
-    with open(petnamesFilename, 'a+') as petnamesFile:
-        petnamesFile.write(petnameLookupEntry)
+    with open(petnamesFilename, 'a+') as petnames_file:
+        petnames_file.write(petnameLookupEntry)
 
 
 def follow_person(base_dir: str, nickname: str, domain: str,
@@ -1138,8 +1138,8 @@ def follow_person(base_dir: str, nickname: str, domain: str,
     """Adds a person to the follow list
     """
     followDomainStrLower = followDomain.lower().replace('\n', '')
-    if not domainPermitted(followDomainStrLower,
-                           federation_list):
+    if not domain_permitted(followDomainStrLower,
+                            federation_list):
         if debug:
             print('DEBUG: follow of domain ' +
                   followDomain + ' not permitted')

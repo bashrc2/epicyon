@@ -17,7 +17,7 @@ from languages import understoodPostLanguage
 from like import updateLikesCollection
 from reaction import updateReactionCollection
 from reaction import validEmojiContent
-from utils import domainPermitted
+from utils import domain_permitted
 from utils import is_group_account
 from utils import is_system_account
 from utils import invalid_ciphertext
@@ -3881,7 +3881,7 @@ def _receiveFollowRequest(session, base_dir: str, http_prefix: str,
     domain_full = get_full_domain(domain, tempPort)
     if tempPort:
         fromPort = tempPort
-    if not domainPermitted(domain, federation_list):
+    if not domain_permitted(domain, federation_list):
         if debug:
             print('DEBUG: follower from domain not permitted - ' + domain)
         return False
@@ -3900,7 +3900,7 @@ def _receiveFollowRequest(session, base_dir: str, http_prefix: str,
                   'not found within object')
         return False
     domainToFollow, tempPort = getDomainFromActor(message_json['object'])
-    if not domainPermitted(domainToFollow, federation_list):
+    if not domain_permitted(domainToFollow, federation_list):
         if debug:
             print('DEBUG: follow domain not permitted ' + domainToFollow)
         return True

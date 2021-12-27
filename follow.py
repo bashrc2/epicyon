@@ -16,7 +16,7 @@ from utils import has_users_path
 from utils import get_full_domain
 from utils import get_followers_list
 from utils import validNickname
-from utils import domainPermitted
+from utils import domain_permitted
 from utils import getDomainFromActor
 from utils import getNicknameFromActor
 from utils import get_status_number
@@ -860,7 +860,7 @@ def sendFollowRequest(session, base_dir: str,
     if not signing_priv_key_pem:
         print('WARN: follow request without signing key')
 
-    if not domainPermitted(followDomain, federation_list):
+    if not domain_permitted(followDomain, federation_list):
         print('You are not permitted to follow the domain ' + followDomain)
         return None
 
