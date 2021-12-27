@@ -426,7 +426,7 @@ def isImageFile(filename: str) -> bool:
     return False
 
 
-def getMediaFormats() -> str:
+def get_media_formats() -> str:
     """Returns a string of permissable media formats
     used when selecting an attachment for a new post
     """
@@ -459,15 +459,15 @@ def remove_html(content: str) -> str:
         elif not removing:
             result += ch
 
-    plainText = result.replace('  ', ' ')
+    plain_text = result.replace('  ', ' ')
 
     # insert spaces after full stops
-    strLen = len(plainText)
+    strLen = len(plain_text)
     result = ''
     for i in range(strLen):
-        result += plainText[i]
-        if plainText[i] == '.' and i < strLen - 1:
-            if plainText[i + 1] >= 'A' and plainText[i + 1] <= 'Z':
+        result += plain_text[i]
+        if plain_text[i] == '.' and i < strLen - 1:
+            if plain_text[i + 1] >= 'A' and plain_text[i + 1] <= 'Z':
                 result += ' '
 
     result = result.replace('  ', ' ').strip()

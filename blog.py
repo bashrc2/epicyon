@@ -25,7 +25,7 @@ from utils import is_account_dir
 from utils import remove_html
 from utils import get_config_param
 from utils import get_full_domain
-from utils import getMediaFormats
+from utils import get_media_formats
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import locate_post
@@ -814,7 +814,7 @@ def htmlEditBlog(media_instance: bool, translate: {},
     editBlogImageSection += \
         '      <input type="file" id="attachpic" name="attachpic"'
     editBlogImageSection += \
-        '            accept="' + getMediaFormats() + '">'
+        '            accept="' + get_media_formats() + '">'
     editBlogImageSection += '    </div>'
 
     placeholderMessage = translate['Write something'] + '...'

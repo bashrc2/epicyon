@@ -12,7 +12,7 @@ from utils import get_new_post_endpoints
 from utils import isPublicPostFromUrl
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
-from utils import getMediaFormats
+from utils import get_media_formats
 from utils import get_config_param
 from utils import acct_dir
 from utils import get_currencies
@@ -361,7 +361,7 @@ def htmlNewPost(cssCache: {}, media_instance: bool, translate: {},
 
     newPostImageSection += \
         '      <input type="file" id="attachpic" name="attachpic"'
-    formatsString = getMediaFormats()
+    formatsString = get_media_formats()
     # remove svg as a permitted format
     formatsString = formatsString.replace(', .svg', '').replace('.svg, ', '')
     newPostImageSection += \
