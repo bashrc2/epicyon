@@ -10,7 +10,7 @@ __module_group__ = "Session"
 import os
 import requests
 from utils import urlPermitted
-from utils import isImageFile
+from utils import is_image_file
 from httpsig import createSignedHeader
 import json
 from socket import error as SocketError
@@ -398,7 +398,7 @@ def postImage(session, attachImageFilename: str, federation_list: [],
         print('postJson: ' + inboxUrl + ' not permitted')
         return None
 
-    if not isImageFile(attachImageFilename):
+    if not is_image_file(attachImageFilename):
         print('Image must be png, jpg, webp, avif, gif or svg')
         return None
     if not os.path.isfile(attachImageFilename):

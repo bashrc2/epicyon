@@ -417,7 +417,7 @@ def get_image_formats() -> str:
     return imageFormats
 
 
-def isImageFile(filename: str) -> bool:
+def is_image_file(filename: str) -> bool:
     """Is the given filename an image?
     """
     for ext in get_image_extensions():
@@ -432,12 +432,12 @@ def get_media_formats() -> str:
     """
     media_ext = get_media_extensions()
 
-    mediaFormats = ''
+    media_formats = ''
     for ext in media_ext:
-        if mediaFormats:
-            mediaFormats += ', '
-        mediaFormats += '.' + ext
-    return mediaFormats
+        if media_formats:
+            media_formats += ', '
+        media_formats += '.' + ext
+    return media_formats
 
 
 def remove_html(content: str) -> str:

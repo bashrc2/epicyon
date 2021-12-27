@@ -54,7 +54,7 @@ from utils import refresh_newswire
 from utils import getProtocolPrefixes
 from utils import has_users_path
 from utils import get_image_extensions
-from utils import isImageFile
+from utils import is_image_file
 from utils import acct_dir
 from utils import get_user_paths
 from utils import get_group_paths
@@ -100,7 +100,7 @@ def setProfileImage(base_dir: str, http_prefix: str,
     image for the given person
     """
     image_filename = image_filename.replace('\n', '').replace('\r', '')
-    if not isImageFile(image_filename):
+    if not is_image_file(image_filename):
         print('Profile image must be png, jpg, gif or svg format')
         return False
 

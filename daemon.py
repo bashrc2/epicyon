@@ -302,7 +302,7 @@ from utils import save_json
 from utils import is_suspended
 from utils import dangerousMarkup
 from utils import refresh_newswire
-from utils import isImageFile
+from utils import is_image_file
 from utils import has_group_type
 from manualapprove import manualDenyFollowRequestThread
 from manualapprove import manualApproveFollowRequestThread
@@ -7208,7 +7208,7 @@ class PubServer(BaseHTTPRequestHandler):
                    GETstartTime) -> None:
         """Returns a media file
         """
-        if isImageFile(path) or \
+        if is_image_file(path) or \
            pathIsVideo(path) or \
            pathIsAudio(path):
             mediaStr = path.split('/media/')[1]
@@ -7294,7 +7294,7 @@ class PubServer(BaseHTTPRequestHandler):
                    base_dir: str, GETstartTime) -> None:
         """Returns an emoji image
         """
-        if isImageFile(path):
+        if is_image_file(path):
             emojiStr = path.split('/emoji/')[1]
             emojiFilename = base_dir + '/emoji/' + emojiStr
             if not os.path.isfile(emojiFilename):
@@ -7385,7 +7385,7 @@ class PubServer(BaseHTTPRequestHandler):
                              base_dir: str, GETstartTime) -> None:
         """Shows a help screen image
         """
-        if not isImageFile(path):
+        if not is_image_file(path):
             return
         mediaStr = path.split('/helpimages/')[1]
         if '/' not in mediaStr:
@@ -12745,7 +12745,7 @@ class PubServer(BaseHTTPRequestHandler):
                         base_dir: str, GETstartTime) -> bool:
         """Show a shared item image
         """
-        if not isImageFile(path):
+        if not is_image_file(path):
             self._404()
             return True
 
@@ -12791,7 +12791,7 @@ class PubServer(BaseHTTPRequestHandler):
                '/accounts/avatars/' not in path and \
                '/accounts/headers/' not in path:
                 return False
-        if not isImageFile(path):
+        if not is_image_file(path):
             return False
         if '/system/accounts/avatars/' in path:
             avatarStr = path.split('/system/accounts/avatars/')[1]
@@ -14576,7 +14576,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # if not authorized then show the login screen
         if htmlGET and self.path != '/login' and \
-           not isImageFile(self.path) and \
+           not is_image_file(self.path) and \
            self.path != '/' and \
            self.path != '/users/news/linksmobile' and \
            self.path != '/users/news/newswiremobile':
@@ -14686,7 +14686,7 @@ class PubServer(BaseHTTPRequestHandler):
                            self.server.debug)
 
         # image on login screen or qrcode
-        if (isImageFile(self.path) and
+        if (is_image_file(self.path) and
             (self.path.startswith('/login.') or
              self.path.startswith('/qrcode.png'))):
             iconFilename = \
@@ -16397,7 +16397,7 @@ class PubServer(BaseHTTPRequestHandler):
         fileLength = -1
 
         if '/media/' in self.path:
-            if isImageFile(self.path) or \
+            if is_image_file(self.path) or \
                pathIsVideo(self.path) or \
                pathIsAudio(self.path):
                 mediaStr = self.path.split('/media/')[1]
@@ -16506,7 +16506,7 @@ class PubServer(BaseHTTPRequestHandler):
                     print('DEBUG: no media filename in POST')
 
             if filename:
-                if isImageFile(filename):
+                if is_image_file(filename):
                     postImageFilename = filename.replace('.temp', '')
                     print('Removing metadata from ' + postImageFilename)
                     city = getSpoofedCity(self.server.city,
