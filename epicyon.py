@@ -69,7 +69,7 @@ from utils import remove_domain_port
 from utils import get_port_from_domain
 from utils import has_users_path
 from utils import get_full_domain
-from utils import setConfigParam
+from utils import set_config_param
 from utils import get_config_param
 from utils import get_domain_from_actor
 from utils import getNicknameFromActor
@@ -688,9 +688,10 @@ if base_dir.endswith('/'):
 if args.libretranslateUrl:
     if '://' in args.libretranslateUrl and \
        '.' in args.libretranslateUrl:
-        setConfigParam(base_dir, 'libretranslateUrl', args.libretranslateUrl)
+        set_config_param(base_dir, 'libretranslateUrl', args.libretranslateUrl)
 if args.libretranslateApiKey:
-    setConfigParam(base_dir, 'libretranslateApiKey', args.libretranslateApiKey)
+    set_config_param(base_dir, 'libretranslateApiKey',
+                     args.libretranslateApiKey)
 
 if args.posts:
     if not args.domain:
@@ -994,7 +995,7 @@ if not os.path.isdir(base_dir + '/cache/announce'):
 # set the theme in config.json
 theme_name = get_config_param(base_dir, 'theme')
 if not theme_name:
-    setConfigParam(base_dir, 'theme', 'default')
+    set_config_param(base_dir, 'theme', 'default')
     theme_name = 'default'
 
 if not args.mediainstance:
@@ -1024,23 +1025,23 @@ if not args.blogsinstance:
 # set the instance title in config.json
 title = get_config_param(base_dir, 'instanceTitle')
 if not title:
-    setConfigParam(base_dir, 'instanceTitle', 'Epicyon')
+    set_config_param(base_dir, 'instanceTitle', 'Epicyon')
 
 # set the instance description in config.json
 descFull = get_config_param(base_dir, 'instanceDescription')
 if not descFull:
-    setConfigParam(base_dir, 'instanceDescription',
-                   'Just another ActivityPub server')
+    set_config_param(base_dir, 'instanceDescription',
+                     'Just another ActivityPub server')
 
 # set the short instance description in config.json
 descShort = get_config_param(base_dir, 'instanceDescriptionShort')
 if not descShort:
-    setConfigParam(base_dir, 'instanceDescriptionShort',
-                   'Just another ActivityPub server')
+    set_config_param(base_dir, 'instanceDescriptionShort',
+                     'Just another ActivityPub server')
 
 if args.domain:
     domain = args.domain
-    setConfigParam(base_dir, 'domain', domain)
+    set_config_param(base_dir, 'domain', domain)
 
 if args.rss:
     session = createSession(None)
@@ -1056,7 +1057,7 @@ if args.onion:
     if '://' in args.onion:
         args.onion = args.onion.split('://')[1]
     onion_domain = args.onion
-    setConfigParam(base_dir, 'onion', onion_domain)
+    set_config_param(base_dir, 'onion', onion_domain)
 
 i2p_domain = None
 if args.i2p_domain:
@@ -1066,7 +1067,7 @@ if args.i2p_domain:
     if '://' in args.i2p_domain:
         args.onion = args.onion.split('://')[1]
     i2p_domain = args.i2p_domain
-    setConfigParam(base_dir, 'i2p_domain', i2p_domain)
+    set_config_param(base_dir, 'i2p_domain', i2p_domain)
 
 if not args.language:
     languageCode = get_config_param(base_dir, 'language')
@@ -1080,30 +1081,30 @@ if not args.maxRegistrations:
     maxRegistrations = get_config_param(base_dir, 'maxRegistrations')
     if not maxRegistrations:
         maxRegistrations = 10
-        setConfigParam(base_dir, 'maxRegistrations', str(maxRegistrations))
+        set_config_param(base_dir, 'maxRegistrations', str(maxRegistrations))
     else:
         maxRegistrations = int(maxRegistrations)
 else:
     maxRegistrations = args.maxRegistrations
-    setConfigParam(base_dir, 'maxRegistrations', str(maxRegistrations))
+    set_config_param(base_dir, 'maxRegistrations', str(maxRegistrations))
 
 # if this is the initial run then allow new registrations
 if not get_config_param(base_dir, 'registration'):
     if args.registration.lower() == 'open':
-        setConfigParam(base_dir, 'registration', 'open')
-        setConfigParam(base_dir, 'maxRegistrations', str(maxRegistrations))
-        setConfigParam(base_dir, 'registrationsRemaining',
-                       str(maxRegistrations))
+        set_config_param(base_dir, 'registration', 'open')
+        set_config_param(base_dir, 'maxRegistrations', str(maxRegistrations))
+        set_config_param(base_dir, 'registrationsRemaining',
+                         str(maxRegistrations))
 
 if args.resetregistrations:
-    setConfigParam(base_dir, 'registrationsRemaining', str(maxRegistrations))
+    set_config_param(base_dir, 'registrationsRemaining', str(maxRegistrations))
     print('Number of new registrations reset to ' + str(maxRegistrations))
 
 # unique ID for the instance
 instance_id = get_config_param(base_dir, 'instance_id')
 if not instance_id:
     instance_id = createPassword(32)
-    setConfigParam(base_dir, 'instance_id', instance_id)
+    set_config_param(base_dir, 'instance_id', instance_id)
     print('Instance ID: ' + instance_id)
 
 # get domain name from configuration
@@ -1160,7 +1161,7 @@ if args.federation_list:
                           ': Federate with domains, not individual accounts')
                     sys.exit()
             federation_list = args.federation_list.copy()
-        setConfigParam(base_dir, 'federation_list', federation_list)
+        set_config_param(base_dir, 'federation_list', federation_list)
 else:
     configFederationList = get_config_param(base_dir, 'federation_list')
     if configFederationList:
@@ -2058,13 +2059,13 @@ if args.followRequestsList:
 nickname = 'admin'
 if args.domain:
     domain = args.domain
-    setConfigParam(base_dir, 'domain', domain)
+    set_config_param(base_dir, 'domain', domain)
 if args.port:
     port = args.port
-    setConfigParam(base_dir, 'port', port)
+    set_config_param(base_dir, 'port', port)
 if args.proxy_port:
     proxy_port = args.proxy_port
-    setConfigParam(base_dir, 'proxy_port', proxy_port)
+    set_config_param(base_dir, 'proxy_port', proxy_port)
 if args.gnunet:
     http_prefix = 'gnunet'
 if args.dat or args.hyper:
@@ -2610,8 +2611,8 @@ if args.shared_items_federated_domains:
 shared_items_federated_domains = []
 if args.shared_items_federated_domains:
     fed_domains_str = args.shared_items_federated_domains
-    setConfigParam(base_dir, 'shared_items_federated_domains',
-                   fed_domains_str)
+    set_config_param(base_dir, 'shared_items_federated_domains',
+                     fed_domains_str)
 else:
     fed_domains_str = \
         get_config_param(base_dir, 'shared_items_federated_domains')
@@ -2811,8 +2812,8 @@ if args.testdata:
         shutil.rmtree(base_dir + '/wfendpoints',
                       ignore_errors=False, onerror=None)
 
-    setConfigParam(base_dir, 'registrationsRemaining',
-                   str(maxRegistrations))
+    set_config_param(base_dir, 'registrationsRemaining',
+                     str(maxRegistrations))
 
     createPerson(base_dir, 'maxboardroom', domain, port, http_prefix,
                  True, False, password)
@@ -2994,7 +2995,7 @@ if args.testdata:
                      federation_list, False, False)
     followerOfPerson(base_dir, nickname, domain, 'maxboardroom', domain_full,
                      federation_list, False, False)
-    setConfigParam(base_dir, 'admin', nickname)
+    set_config_param(base_dir, 'admin', nickname)
 
 # set a lower bound to the maximum mentions
 # so that it can't be accidentally set to zero and disable replies
@@ -3012,7 +3013,7 @@ if minimumvotes:
 content_license_url = ''
 if args.content_license_url:
     content_license_url = args.content_license_url
-    setConfigParam(base_dir, 'content_license_url', content_license_url)
+    set_config_param(base_dir, 'content_license_url', content_license_url)
 else:
     content_license_url = get_config_param(base_dir, 'content_license_url')
 
@@ -3141,7 +3142,7 @@ if low_bandwidth is not None:
 user_agents_blocked = []
 if args.userAgentBlocks:
     user_agents_blockedStr = args.userAgentBlocks
-    setConfigParam(base_dir, 'user_agents_blocked', user_agents_blockedStr)
+    set_config_param(base_dir, 'user_agents_blocked', user_agents_blockedStr)
 else:
     user_agents_blockedStr = \
         get_config_param(base_dir, 'user_agents_blocked')
@@ -3153,7 +3154,7 @@ if user_agents_blockedStr:
 lists_enabled = ''
 if args.lists_enabled:
     lists_enabled = args.lists_enabled
-    setConfigParam(base_dir, 'lists_enabled', lists_enabled)
+    set_config_param(base_dir, 'lists_enabled', lists_enabled)
 else:
     lists_enabled = get_config_param(base_dir, 'lists_enabled')
 
@@ -3189,24 +3190,24 @@ if args.registration:
     if args.registration.lower() == 'open':
         registration = get_config_param(base_dir, 'registration')
         if not registration:
-            setConfigParam(base_dir, 'registrationsRemaining',
-                           str(maxRegistrations))
+            set_config_param(base_dir, 'registrationsRemaining',
+                             str(maxRegistrations))
         else:
             if registration != 'open':
-                setConfigParam(base_dir, 'registrationsRemaining',
-                               str(maxRegistrations))
-        setConfigParam(base_dir, 'registration', 'open')
+                set_config_param(base_dir, 'registrationsRemaining',
+                                 str(maxRegistrations))
+        set_config_param(base_dir, 'registration', 'open')
         print('New registrations open')
     else:
-        setConfigParam(base_dir, 'registration', 'closed')
+        set_config_param(base_dir, 'registration', 'closed')
         print('New registrations closed')
 
 defaultCurrency = get_config_param(base_dir, 'defaultCurrency')
 if not defaultCurrency:
-    setConfigParam(base_dir, 'defaultCurrency', 'EUR')
+    set_config_param(base_dir, 'defaultCurrency', 'EUR')
 if args.defaultCurrency:
     if args.defaultCurrency == args.defaultCurrency.upper():
-        setConfigParam(base_dir, 'defaultCurrency', args.defaultCurrency)
+        set_config_param(base_dir, 'defaultCurrency', args.defaultCurrency)
         print('Default currency set to ' + args.defaultCurrency)
 
 if __name__ == "__main__":

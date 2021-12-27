@@ -61,7 +61,7 @@ from utils import is_group_account
 from utils import get_actor_languages_list
 from utils import get_category_types
 from utils import get_supported_languages
-from utils import setConfigParam
+from utils import set_config_param
 from utils import is_group_actor
 from utils import date_string_to_seconds
 from utils import date_seconds_to_string
@@ -1723,8 +1723,8 @@ def testSharedItemsFederation(base_dir: str) -> None:
     print("Alice and Bob agree to share items catalogs")
     assert os.path.isdir(aliceDir)
     assert os.path.isdir(bobDir)
-    setConfigParam(aliceDir, 'shared_items_federated_domains', bobAddress)
-    setConfigParam(bobDir, 'shared_items_federated_domains', aliceAddress)
+    set_config_param(aliceDir, 'shared_items_federated_domains', bobAddress)
+    set_config_param(bobDir, 'shared_items_federated_domains', aliceAddress)
 
     print('*********************************************************')
     print('Alice sends a follow request to Bob')

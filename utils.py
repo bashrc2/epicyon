@@ -501,16 +501,17 @@ def _create_config(base_dir: str) -> None:
     save_json(config_json, config_filename)
 
 
-def setConfigParam(base_dir: str, variable_name: str, variable_value) -> None:
+def set_config_param(base_dir: str, variable_name: str,
+                     variable_value) -> None:
     """Sets a configuration value
     """
     _create_config(base_dir)
     config_filename = base_dir + '/config.json'
-    configJson = {}
+    config_json = {}
     if os.path.isfile(config_filename):
-        configJson = load_json(config_filename)
-    configJson[variable_name] = variable_value
-    save_json(configJson, config_filename)
+        config_json = load_json(config_filename)
+    config_json[variable_name] = variable_value
+    save_json(config_json, config_filename)
 
 
 def get_config_param(base_dir: str, variable_name: str):

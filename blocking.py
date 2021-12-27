@@ -21,7 +21,7 @@ from utils import get_cached_post_filename
 from utils import load_json
 from utils import save_json
 from utils import fileLastModified
-from utils import setConfigParam
+from utils import set_config_param
 from utils import has_users_path
 from utils import get_full_domain
 from utils import remove_id_ending
@@ -945,7 +945,7 @@ def setBrochMode(base_dir: str, domain_full: str, enabled: bool) -> None:
             print('EX: Broch mode not enabled due to file write ' + str(ex))
             return
 
-    setConfigParam(base_dir, "broch_mode", enabled)
+    set_config_param(base_dir, "broch_mode", enabled)
 
 
 def broch_modeLapses(base_dir: str, lapseDays: int) -> bool:
@@ -976,7 +976,7 @@ def broch_modeLapses(base_dir: str, lapseDays: int) -> bool:
             print('EX: broch_modeLapses allow file not deleted ' +
                   str(allowFilename))
         if removed:
-            setConfigParam(base_dir, "broch_mode", False)
+            set_config_param(base_dir, "broch_mode", False)
             print('Broch mode has elapsed')
             return True
     return False

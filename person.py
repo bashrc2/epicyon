@@ -48,7 +48,7 @@ from utils import get_full_domain
 from utils import validNickname
 from utils import load_json
 from utils import save_json
-from utils import setConfigParam
+from utils import set_config_param
 from utils import get_config_param
 from utils import refresh_newswire
 from utils import get_protocol_prefixes
@@ -628,7 +628,7 @@ def createPerson(base_dir: str, nickname: str, domain: str, port: int,
     if not get_config_param(base_dir, 'admin'):
         if nickname != 'news':
             # print(nickname+' becomes the instance admin and a moderator')
-            setConfigParam(base_dir, 'admin', nickname)
+            set_config_param(base_dir, 'admin', nickname)
             setRole(base_dir, nickname, domain, 'admin')
             setRole(base_dir, nickname, domain, 'moderator')
             setRole(base_dir, nickname, domain, 'editor')
@@ -701,8 +701,8 @@ def createPerson(base_dir: str, nickname: str, domain: str, port: int,
         copyfile(defaultBannerFilename, accountDir + '/banner.png')
     if nickname != 'news' and remainingConfigExists:
         registrationsRemaining -= 1
-        setConfigParam(base_dir, 'registrationsRemaining',
-                       str(registrationsRemaining))
+        set_config_param(base_dir, 'registrationsRemaining',
+                         str(registrationsRemaining))
     savePersonQrcode(base_dir, nickname, domain, port)
     return privateKeyPem, publicKeyPem, newPerson, webfingerEndpoint
 

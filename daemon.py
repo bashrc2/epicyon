@@ -283,7 +283,7 @@ from utils import first_paragraph_from_string
 from utils import clearFromPostCaches
 from utils import contains_invalid_chars
 from utils import is_system_account
-from utils import setConfigParam
+from utils import set_config_param
 from utils import get_config_param
 from utils import remove_id_ending
 from utils import undoLikesCollectionEntry
@@ -5055,22 +5055,22 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.blogs_instance = False
                                 self.server.news_instance = False
                                 self.server.defaultTimeline = 'tlmedia'
-                            setConfigParam(base_dir,
-                                           "media_instance",
-                                           self.server.media_instance)
-                            setConfigParam(base_dir,
-                                           "blogs_instance",
-                                           self.server.blogs_instance)
-                            setConfigParam(base_dir,
-                                           "news_instance",
-                                           self.server.news_instance)
+                            set_config_param(base_dir,
+                                             "media_instance",
+                                             self.server.media_instance)
+                            set_config_param(base_dir,
+                                             "blogs_instance",
+                                             self.server.blogs_instance)
+                            set_config_param(base_dir,
+                                             "news_instance",
+                                             self.server.news_instance)
                         else:
                             if self.server.media_instance:
                                 self.server.media_instance = False
                                 self.server.defaultTimeline = 'inbox'
-                                setConfigParam(base_dir,
-                                               "media_instance",
-                                               self.server.media_instance)
+                                set_config_param(base_dir,
+                                                 "media_instance",
+                                                 self.server.media_instance)
 
                         # is this a news theme?
                         if isNewsThemeName(self.server.base_dir,
@@ -5086,22 +5086,22 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.blogs_instance = False
                                 self.server.media_instance = False
                                 self.server.defaultTimeline = 'tlfeatures'
-                            setConfigParam(base_dir,
-                                           "media_instance",
-                                           self.server.media_instance)
-                            setConfigParam(base_dir,
-                                           "blogs_instance",
-                                           self.server.blogs_instance)
-                            setConfigParam(base_dir,
-                                           "news_instance",
-                                           self.server.news_instance)
+                            set_config_param(base_dir,
+                                             "media_instance",
+                                             self.server.media_instance)
+                            set_config_param(base_dir,
+                                             "blogs_instance",
+                                             self.server.blogs_instance)
+                            set_config_param(base_dir,
+                                             "news_instance",
+                                             self.server.news_instance)
                         else:
                             if self.server.news_instance:
                                 self.server.news_instance = False
                                 self.server.defaultTimeline = 'inbox'
-                                setConfigParam(base_dir,
-                                               "news_instance",
-                                               self.server.media_instance)
+                                set_config_param(base_dir,
+                                                 "news_instance",
+                                                 self.server.media_instance)
 
                         # change blog instance status
                         if fields.get('blogs_instance'):
@@ -5112,30 +5112,30 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.media_instance = False
                                 self.server.news_instance = False
                                 self.server.defaultTimeline = 'tlblogs'
-                            setConfigParam(base_dir,
-                                           "blogs_instance",
-                                           self.server.blogs_instance)
-                            setConfigParam(base_dir,
-                                           "media_instance",
-                                           self.server.media_instance)
-                            setConfigParam(base_dir,
-                                           "news_instance",
-                                           self.server.news_instance)
+                            set_config_param(base_dir,
+                                             "blogs_instance",
+                                             self.server.blogs_instance)
+                            set_config_param(base_dir,
+                                             "media_instance",
+                                             self.server.media_instance)
+                            set_config_param(base_dir,
+                                             "news_instance",
+                                             self.server.news_instance)
                         else:
                             if self.server.blogs_instance:
                                 self.server.blogs_instance = False
                                 self.server.defaultTimeline = 'inbox'
-                                setConfigParam(base_dir,
-                                               "blogs_instance",
-                                               self.server.blogs_instance)
+                                set_config_param(base_dir,
+                                                 "blogs_instance",
+                                                 self.server.blogs_instance)
 
                         # change instance title
                         if fields.get('instanceTitle'):
                             currInstanceTitle = \
                                 get_config_param(base_dir, 'instanceTitle')
                             if fields['instanceTitle'] != currInstanceTitle:
-                                setConfigParam(base_dir, 'instanceTitle',
-                                               fields['instanceTitle'])
+                                set_config_param(base_dir, 'instanceTitle',
+                                                 fields['instanceTitle'])
 
                         # change YouTube alternate domain
                         if fields.get('ytdomain'):
@@ -5147,14 +5147,14 @@ class PubServer(BaseHTTPRequestHandler):
                                 if '/' in newYTDomain:
                                     newYTDomain = newYTDomain.split('/')[0]
                                 if '.' in newYTDomain:
-                                    setConfigParam(base_dir,
-                                                   'youtubedomain',
-                                                   newYTDomain)
+                                    set_config_param(base_dir,
+                                                     'youtubedomain',
+                                                     newYTDomain)
                                     self.server.yt_replace_domain = \
                                         newYTDomain
                         else:
-                            setConfigParam(base_dir,
-                                           'youtubedomain', '')
+                            set_config_param(base_dir,
+                                             'youtubedomain', '')
                             self.server.yt_replace_domain = None
 
                         # change twitter alternate domain
@@ -5170,14 +5170,14 @@ class PubServer(BaseHTTPRequestHandler):
                                     newTwitterDomain = \
                                         newTwitterDomain.split('/')[0]
                                 if '.' in newTwitterDomain:
-                                    setConfigParam(base_dir,
-                                                   'twitterdomain',
-                                                   newTwitterDomain)
+                                    set_config_param(base_dir,
+                                                     'twitterdomain',
+                                                     newTwitterDomain)
                                     self.server.twitter_replacement_domain = \
                                         newTwitterDomain
                         else:
-                            setConfigParam(base_dir,
-                                           'twitterdomain', '')
+                            set_config_param(base_dir,
+                                             'twitterdomain', '')
                             self.server.twitter_replacement_domain = None
 
                         # change custom post submit button text
@@ -5187,13 +5187,13 @@ class PubServer(BaseHTTPRequestHandler):
                             if fields['customSubmitText'] != \
                                currCustomSubmitText:
                                 customText = fields['customSubmitText']
-                                setConfigParam(base_dir,
-                                               'customSubmitText',
-                                               customText)
+                                set_config_param(base_dir,
+                                                 'customSubmitText',
+                                                 customText)
                         else:
                             if currCustomSubmitText:
-                                setConfigParam(base_dir,
-                                               'customSubmitText', '')
+                                set_config_param(base_dir,
+                                                 'customSubmitText', '')
 
                         # libretranslate URL
                         currLibretranslateUrl = \
@@ -5205,13 +5205,13 @@ class PubServer(BaseHTTPRequestHandler):
                                 ltUrl = fields['libretranslateUrl']
                                 if '://' in ltUrl and \
                                    '.' in ltUrl:
-                                    setConfigParam(base_dir,
-                                                   'libretranslateUrl',
-                                                   ltUrl)
+                                    set_config_param(base_dir,
+                                                     'libretranslateUrl',
+                                                     ltUrl)
                         else:
                             if currLibretranslateUrl:
-                                setConfigParam(base_dir,
-                                               'libretranslateUrl', '')
+                                set_config_param(base_dir,
+                                                 'libretranslateUrl', '')
 
                         # libretranslate API Key
                         currLibretranslateApiKey = \
@@ -5221,30 +5221,30 @@ class PubServer(BaseHTTPRequestHandler):
                             if fields['libretranslateApiKey'] != \
                                currLibretranslateApiKey:
                                 ltApiKey = fields['libretranslateApiKey']
-                                setConfigParam(base_dir,
-                                               'libretranslateApiKey',
-                                               ltApiKey)
+                                set_config_param(base_dir,
+                                                 'libretranslateApiKey',
+                                                 ltApiKey)
                         else:
                             if currLibretranslateApiKey:
-                                setConfigParam(base_dir,
-                                               'libretranslateApiKey', '')
+                                set_config_param(base_dir,
+                                                 'libretranslateApiKey', '')
 
                         # change instance short description
                         if fields.get('content_license_url'):
                             if fields['content_license_url'] != \
                                self.server.content_license_url:
                                 licenseStr = fields['content_license_url']
-                                setConfigParam(base_dir,
-                                               'content_license_url',
-                                               licenseStr)
+                                set_config_param(base_dir,
+                                                 'content_license_url',
+                                                 licenseStr)
                                 self.server.content_license_url = \
                                     licenseStr
                         else:
                             licenseStr = \
                                 'https://creativecommons.org/licenses/by/4.0'
-                            setConfigParam(base_dir,
-                                           'content_license_url',
-                                           licenseStr)
+                            set_config_param(base_dir,
+                                             'content_license_url',
+                                             licenseStr)
                             self.server.content_license_url = licenseStr
 
                         # change instance short description
@@ -5255,13 +5255,14 @@ class PubServer(BaseHTTPRequestHandler):
                             if fields['instanceDescriptionShort'] != \
                                currInstanceDescriptionShort:
                                 iDesc = fields['instanceDescriptionShort']
-                                setConfigParam(base_dir,
-                                               'instanceDescriptionShort',
-                                               iDesc)
+                                set_config_param(base_dir,
+                                                 'instanceDescriptionShort',
+                                                 iDesc)
                         else:
                             if currInstanceDescriptionShort:
-                                setConfigParam(base_dir,
-                                               'instanceDescriptionShort', '')
+                                set_config_param(base_dir,
+                                                 'instanceDescriptionShort',
+                                                 '')
 
                         # change instance description
                         currInstanceDescription = \
@@ -5269,13 +5270,13 @@ class PubServer(BaseHTTPRequestHandler):
                         if fields.get('instanceDescription'):
                             if fields['instanceDescription'] != \
                                currInstanceDescription:
-                                setConfigParam(base_dir,
-                                               'instanceDescription',
-                                               fields['instanceDescription'])
+                                set_config_param(base_dir,
+                                                 'instanceDescription',
+                                                 fields['instanceDescription'])
                         else:
                             if currInstanceDescription:
-                                setConfigParam(base_dir,
-                                               'instanceDescription', '')
+                                set_config_param(base_dir,
+                                                 'instanceDescription', '')
 
                     # change email address
                     currentEmailAddress = getEmailAddress(actor_json)
@@ -5560,8 +5561,9 @@ class PubServer(BaseHTTPRequestHandler):
                                     show_node_info_accounts = True
                             self.server.show_node_info_accounts = \
                                 show_node_info_accounts
-                            setConfigParam(base_dir, "show_node_info_accounts",
-                                           show_node_info_accounts)
+                            set_config_param(base_dir,
+                                             "show_node_info_accounts",
+                                             show_node_info_accounts)
 
                             show_node_info_version = False
                             if fields.get('show_node_info_version'):
@@ -5569,8 +5571,9 @@ class PubServer(BaseHTTPRequestHandler):
                                     show_node_info_version = True
                             self.server.show_node_info_version = \
                                 show_node_info_version
-                            setConfigParam(base_dir, "show_node_info_version",
-                                           show_node_info_version)
+                            set_config_param(base_dir,
+                                             "show_node_info_version",
+                                             show_node_info_version)
 
                             verify_all_signatures = False
                             if fields.get('verifyallsignatures'):
@@ -5578,8 +5581,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     verify_all_signatures = True
                             self.server.verify_all_signatures = \
                                 verify_all_signatures
-                            setConfigParam(base_dir, "verify_all_signatures",
-                                           verify_all_signatures)
+                            set_config_param(base_dir, "verify_all_signatures",
+                                             verify_all_signatures)
 
                             broch_mode = False
                             if fields.get('broch_mode'):
@@ -5591,8 +5594,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 setBrochMode(self.server.base_dir,
                                              self.server.domain_full,
                                              broch_mode)
-                                setConfigParam(base_dir, "broch_mode",
-                                               broch_mode)
+                                set_config_param(base_dir, "broch_mode",
+                                                 broch_mode)
 
                             # shared item federation domains
                             siDomainUpdated = False
@@ -5618,15 +5621,17 @@ class PubServer(BaseHTTPRequestHandler):
                                         shareDomainList.replace('\n', ',')
                                     sharedItemsField = \
                                         "shared_items_federated_domains"
-                                    setConfigParam(base_dir, sharedItemsField,
-                                                   sharedItemsFormStr2)
+                                    set_config_param(base_dir,
+                                                     sharedItemsField,
+                                                     sharedItemsFormStr2)
                                     siDomainUpdated = True
                             else:
                                 if fed_domains_str:
                                     sharedItemsField = \
                                         "shared_items_federated_domains"
-                                    setConfigParam(base_dir, sharedItemsField,
-                                                   '')
+                                    set_config_param(base_dir,
+                                                     sharedItemsField,
+                                                     '')
                                     siDomainUpdated = True
                             if siDomainUpdated:
                                 siDomains = sharedItemsFormStr.split('\n')
@@ -6219,8 +6224,8 @@ class PubServer(BaseHTTPRequestHandler):
                             if fields['low_bandwidth'] == 'on':
                                 low_bandwidth = True
                         if currLowBandwidth != low_bandwidth:
-                            setConfigParam(base_dir, 'low_bandwidth',
-                                           low_bandwidth)
+                            set_config_param(base_dir, 'low_bandwidth',
+                                             low_bandwidth)
                             self.server.low_bandwidth = low_bandwidth
 
                     # save filtered words list
@@ -6400,9 +6405,9 @@ class PubServer(BaseHTTPRequestHandler):
                                         newListsEnabled += name
                         if newListsEnabled != self.server.lists_enabled:
                             self.server.lists_enabled = newListsEnabled
-                            setConfigParam(self.server.base_dir,
-                                           "lists_enabled",
-                                           newListsEnabled)
+                            set_config_param(self.server.base_dir,
+                                             "lists_enabled",
+                                             newListsEnabled)
 
                         # save blocked user agents
                         user_agents_blocked = []
@@ -6424,8 +6429,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 if user_agents_blockedStr:
                                     user_agents_blockedStr += ','
                                 user_agents_blockedStr += ua
-                            setConfigParam(base_dir, 'user_agents_blocked',
-                                           user_agents_blockedStr)
+                            set_config_param(base_dir, 'user_agents_blocked',
+                                             user_agents_blockedStr)
 
                         # save peertube instances list
                         peertube_instancesFile = \
@@ -18809,7 +18814,7 @@ def runDaemon(content_license_url: str,
     if not os.path.isdir(base_dir + '/accounts/news@' + domain):
         print('Creating news inbox: news@' + domain)
         createNewsInbox(base_dir, domain, port, http_prefix)
-        setConfigParam(base_dir, "lists_enabled", "Murdoch press")
+        set_config_param(base_dir, "lists_enabled", "Murdoch press")
 
     # dict of known web crawlers accessing nodeinfo or the masto API
     # and how many times they have been seen
