@@ -339,7 +339,7 @@ from happening import removeCalendarEvent
 from bookmarks import bookmark
 from bookmarks import undoBookmark
 from petnames import setPetName
-from followingCalendar import addPersonToCalendar
+from followingCalendar import add_person_to_calendar
 from followingCalendar import removePersonFromCalendar
 from notifyOnPost import addNotifyOnPost
 from notifyOnPost import removeNotifyOnPost
@@ -2434,11 +2434,11 @@ class PubServer(BaseHTTPRequestHandler):
                 if '&' in onCalendar:
                     onCalendar = onCalendar.split('&')[0]
             if onCalendar == 'on':
-                addPersonToCalendar(base_dir,
-                                    chooserNickname,
-                                    domain,
-                                    optionsNickname,
-                                    optionsDomainFull)
+                add_person_to_calendar(base_dir,
+                                       chooserNickname,
+                                       domain,
+                                       optionsNickname,
+                                       optionsDomainFull)
             else:
                 removePersonFromCalendar(base_dir,
                                          chooserNickname,

@@ -18,7 +18,7 @@ import locale
 from pprint import pprint
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
-from followingCalendar import addPersonToCalendar
+from followingCalendar import add_person_to_calendar
 
 # posts containing these strings will always get screened out,
 # both incoming and outgoing.
@@ -54,7 +54,7 @@ def get_actor_languages_list(actor_json: {}) -> []:
             lang_list = property_value['value']
             lang_list.sort()
             return lang_list
-        elif isinstance(property_value['value'], str):
+        if isinstance(property_value['value'], str):
             lang_str = property_value['value']
             lang_list_temp = []
             if ',' in lang_str:
@@ -216,8 +216,8 @@ def valid_post_date(published: str, max_age_days: int, debug: bool) -> bool:
     """
     baseline_time = datetime.datetime(1970, 1, 1)
 
-    daysDiff = datetime.datetime.utcnow() - baseline_time
-    now_days_since_epoch = daysDiff.days
+    days_diff = datetime.datetime.utcnow() - baseline_time
+    now_days_since_epoch = days_diff.days
 
     try:
         post_time_object = \
@@ -250,7 +250,7 @@ def get_full_domain(domain: str, port: int) -> str:
         return domain
     if ':' in domain:
         return domain
-    if port == 80 or port == 443:
+    if port in (80, 443):
         return domain
     return domain + ':' + str(port)
 
@@ -289,24 +289,22 @@ def is_dormant(base_dir: str, nickname: str, domain: str, actor: str,
 def is_editor(base_dir: str, nickname: str) -> bool:
     """Returns true if the given nickname is an editor
     """
-    editorsFile = base_dir + '/accounts/editors.txt'
+    editors_file = base_dir + '/accounts/editors.txt'
 
-    if not os.path.isfile(editorsFile):
+    if not os.path.isfile(editors_file):
         admin_name = get_config_param(base_dir, 'admin')
-        if not admin_name:
-            return False
-        if admin_name == nickname:
-            return True
-        return False
-
-    with open(editorsFile, 'r') as f:
-        lines = f.readlines()
-        if len(lines) == 0:
-            admin_name = get_config_param(base_dir, 'admin')
-            if not admin_name:
-                return False
+        if admin_name:
             if admin_name == nickname:
                 return True
+        return False
+
+    with open(editors_file, 'r') as editors:
+        lines = editors.readlines()
+        if len(lines) == 0:
+            admin_name = get_config_param(base_dir, 'admin')
+            if admin_name:
+                if admin_name == nickname:
+                    return True
         for editor in lines:
             editor = editor.strip('\n').strip('\r')
             if editor == nickname:
@@ -321,20 +319,18 @@ def is_artist(base_dir: str, nickname: str) -> bool:
 
     if not os.path.isfile(artists_file):
         admin_name = get_config_param(base_dir, 'admin')
-        if not admin_name:
-            return False
-        if admin_name == nickname:
-            return True
-        return False
-
-    with open(artists_file, 'r') as f:
-        lines = f.readlines()
-        if len(lines) == 0:
-            admin_name = get_config_param(base_dir, 'admin')
-            if not admin_name:
-                return False
+        if admin_name:
             if admin_name == nickname:
                 return True
+        return False
+
+    with open(artists_file, 'r') as artists:
+        lines = artists.readlines()
+        if len(lines) == 0:
+            admin_name = get_config_param(base_dir, 'admin')
+            if admin_name:
+                if admin_name == nickname:
+                    return True
         for artist in lines:
             artist = artist.strip('\n').strip('\r')
             if artist == nickname:
@@ -363,7 +359,7 @@ def get_image_extensions() -> []:
 def get_image_mime_type(image_filename: str) -> str:
     """Returns the mime type for the given image
     """
-    extensionsToMime = {
+    extensions_to_mime = {
         'png': 'png',
         'jpg': 'jpeg',
         'gif': 'gif',
@@ -372,7 +368,7 @@ def get_image_mime_type(image_filename: str) -> str:
         'webp': 'webp',
         'ico': 'x-icon'
     }
-    for ext, mime_ext in extensionsToMime.items():
+    for ext, mime_ext in extensions_to_mime.items():
         if image_filename.endswith('.' + ext):
             return 'image/' + mime_ext
     return 'image/png'
@@ -1195,13 +1191,13 @@ def followPerson(base_dir: str, nickname: str, domain: str,
             return True
         # prepend to follow file
         try:
-            with open(filename, 'r+') as f:
-                content = f.read()
+            with open(filename, 'r+') as fp:
+                content = fp.read()
                 if handleToFollow + '\n' not in content:
-                    f.seek(0, 0)
-                    f.write(handleToFollow + '\n' + content)
+                    fp.seek(0, 0)
+                    fp.write(handleToFollow + '\n' + content)
                     print('DEBUG: follow added')
-        except Exception as ex:
+        except OSError as ex:
             print('WARN: Failed to write entry to follow file ' +
                   filename + ' ' + str(ex))
     else:
@@ -1210,8 +1206,8 @@ def followPerson(base_dir: str, nickname: str, domain: str,
             print('DEBUG: ' + handle +
                   ' creating new following file to follow ' + handleToFollow +
                   ', filename is ' + filename)
-        with open(filename, 'w+') as f:
-            f.write(handleToFollow + '\n')
+        with open(filename, 'w+') as fp:
+            fp.write(handleToFollow + '\n')
 
     if follow_file.endswith('following.txt'):
         # Default to adding new follows to the calendar.
@@ -1221,8 +1217,8 @@ def followPerson(base_dir: str, nickname: str, domain: str,
         print('DEBUG: adding ' +
               followNickname + '@' + followDomain + ' to calendar of ' +
               nickname + '@' + domain)
-        addPersonToCalendar(base_dir, nickname, domain,
-                            followNickname, followDomain)
+        add_person_to_calendar(base_dir, nickname, domain,
+                               followNickname, followDomain)
         # add a default petname
         _setDefaultPetName(base_dir, nickname, domain,
                            followNickname, followDomain)

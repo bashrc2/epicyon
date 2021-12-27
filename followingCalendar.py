@@ -135,9 +135,9 @@ def _receiveCalendarEvents(base_dir: str, nickname: str, domain: str,
                 print('EX: _receiveCalendarEvents 4 ' + calendarFilename)
 
 
-def addPersonToCalendar(base_dir: str, nickname: str, domain: str,
-                        followingNickname: str,
-                        followingDomain: str) -> None:
+def add_person_to_calendar(base_dir: str, nickname: str, domain: str,
+                           followingNickname: str,
+                           followingDomain: str) -> None:
     _receiveCalendarEvents(base_dir, nickname, domain,
                            followingNickname, followingDomain, True)
 
