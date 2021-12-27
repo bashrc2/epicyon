@@ -784,8 +784,8 @@ def removeInvalidChars(text: str) -> str:
     return text
 
 
-def createPersonDir(nickname: str, domain: str, base_dir: str,
-                    dir_name: str) -> str:
+def create_person_dir(nickname: str, domain: str, base_dir: str,
+                      dir_name: str) -> str:
     """Create a directory for a person
     """
     handle = nickname + '@' + domain
@@ -800,16 +800,18 @@ def createPersonDir(nickname: str, domain: str, base_dir: str,
 def create_outbox_dir(nickname: str, domain: str, base_dir: str) -> str:
     """Create an outbox for a person
     """
-    return createPersonDir(nickname, domain, base_dir, 'outbox')
+    return create_person_dir(nickname, domain, base_dir, 'outbox')
 
 
 def create_inbox_queue_dir(nickname: str, domain: str, base_dir: str) -> str:
     """Create an inbox queue and returns the feed filename and directory
     """
-    return createPersonDir(nickname, domain, base_dir, 'queue')
+    return create_person_dir(nickname, domain, base_dir, 'queue')
 
 
-def domain_permitted(domain: str, federation_list: []):
+def domain_permitted(domain: str, federation_list: []) -> bool:
+    """Is the given domain permitted according to the federation list?
+    """
     if len(federation_list) == 0:
         return True
     domain = remove_domain_port(domain)
@@ -1100,8 +1102,8 @@ def get_domain_from_actor(actor: str) -> (str, int):
     return domain, port
 
 
-def _setDefaultPetName(base_dir: str, nickname: str, domain: str,
-                       followNickname: str, followDomain: str) -> None:
+def _set_default_pet_name(base_dir: str, nickname: str, domain: str,
+                          follow_nickname: str, follow_domain: str) -> None:
     """Sets a default petname
     This helps especially when using onion or i2p address
     """
@@ -1109,8 +1111,8 @@ def _setDefaultPetName(base_dir: str, nickname: str, domain: str,
     userPath = acct_dir(base_dir, nickname, domain)
     petnamesFilename = userPath + '/petnames.txt'
 
-    petnameLookupEntry = followNickname + ' ' + \
-        followNickname + '@' + followDomain + '\n'
+    petnameLookupEntry = follow_nickname + ' ' + \
+        follow_nickname + '@' + follow_domain + '\n'
     if not os.path.isfile(petnamesFilename):
         # if there is no existing petnames lookup file
         with open(petnamesFilename, 'w+') as petnamesFile:
@@ -1122,7 +1124,7 @@ def _setDefaultPetName(base_dir: str, nickname: str, domain: str,
         if petnamesStr:
             petnamesList = petnamesStr.split('\n')
             for pet in petnamesList:
-                if pet.startswith(followNickname + ' '):
+                if pet.startswith(follow_nickname + ' '):
                     # petname already exists
                     return
     # petname doesn't already exist
@@ -1131,21 +1133,21 @@ def _setDefaultPetName(base_dir: str, nickname: str, domain: str,
 
 
 def follow_person(base_dir: str, nickname: str, domain: str,
-                  followNickname: str, followDomain: str,
+                  follow_nickname: str, follow_domain: str,
                   federation_list: [], debug: bool,
                   group_account: bool,
                   follow_file: str = 'following.txt') -> bool:
     """Adds a person to the follow list
     """
-    followDomainStrLower = followDomain.lower().replace('\n', '')
-    if not domain_permitted(followDomainStrLower,
+    follow_domainStrLower = follow_domain.lower().replace('\n', '')
+    if not domain_permitted(follow_domainStrLower,
                             federation_list):
         if debug:
             print('DEBUG: follow of domain ' +
-                  followDomain + ' not permitted')
+                  follow_domain + ' not permitted')
         return False
     if debug:
-        print('DEBUG: follow of domain ' + followDomain)
+        print('DEBUG: follow of domain ' + follow_domain)
 
     if ':' in domain:
         domainOnly = remove_domain_port(domain)
@@ -1157,11 +1159,11 @@ def follow_person(base_dir: str, nickname: str, domain: str,
         print('WARN: account for ' + handle + ' does not exist')
         return False
 
-    if ':' in followDomain:
-        followDomainOnly = remove_domain_port(followDomain)
-        handleToFollow = followNickname + '@' + followDomainOnly
+    if ':' in follow_domain:
+        follow_domainOnly = remove_domain_port(follow_domain)
+        handleToFollow = follow_nickname + '@' + follow_domainOnly
     else:
-        handleToFollow = followNickname + '@' + followDomain
+        handleToFollow = follow_nickname + '@' + follow_domain
 
     if group_account:
         handleToFollow = '!' + handleToFollow
@@ -1182,7 +1184,7 @@ def follow_person(base_dir: str, nickname: str, domain: str,
 
     if not os.path.isdir(base_dir + '/accounts'):
         os.mkdir(base_dir + '/accounts')
-    handleToFollow = followNickname + '@' + followDomain
+    handleToFollow = follow_nickname + '@' + follow_domain
     if group_account:
         handleToFollow = '!' + handleToFollow
     filename = base_dir + '/accounts/' + handle + '/' + follow_file
@@ -1217,13 +1219,13 @@ def follow_person(base_dir: str, nickname: str, domain: str,
         # if following a person add them to the list of
         # calendar follows
         print('DEBUG: adding ' +
-              followNickname + '@' + followDomain + ' to calendar of ' +
+              follow_nickname + '@' + follow_domain + ' to calendar of ' +
               nickname + '@' + domain)
         add_person_to_calendar(base_dir, nickname, domain,
-                               followNickname, followDomain)
+                               follow_nickname, follow_domain)
         # add a default petname
-        _setDefaultPetName(base_dir, nickname, domain,
-                           followNickname, followDomain)
+        _set_default_pet_name(base_dir, nickname, domain,
+                              follow_nickname, follow_domain)
     return True
 
 

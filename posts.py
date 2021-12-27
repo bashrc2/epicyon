@@ -52,7 +52,7 @@ from utils import get_full_domain
 from utils import get_followers_list
 from utils import is_evil
 from utils import get_status_number
-from utils import createPersonDir
+from utils import create_person_dir
 from utils import urlPermitted
 from utils import getNicknameFromActor
 from utils import get_domain_from_actor
@@ -892,7 +892,7 @@ def deleteAllPosts(base_dir: str,
     if boxname != 'inbox' and boxname != 'outbox' and \
        boxname != 'tlblogs' and boxname != 'tlnews':
         return
-    boxDir = createPersonDir(nickname, domain, base_dir, boxname)
+    boxDir = create_person_dir(nickname, domain, base_dir, boxname)
     for deleteFilename in os.scandir(boxDir):
         deleteFilename = deleteFilename.name
         filePath = os.path.join(boxDir, deleteFilename)
@@ -928,7 +928,7 @@ def savePostToBox(base_dir: str, http_prefix: str, post_id: str,
         post_json_object['object']['id'] = post_id
         post_json_object['object']['atomUri'] = post_id
 
-    boxDir = createPersonDir(nickname, domain, base_dir, boxname)
+    boxDir = create_person_dir(nickname, domain, base_dir, boxname)
     filename = boxDir + '/' + post_id.replace('/', '#') + '.json'
 
     save_json(post_json_object, filename)
@@ -3394,7 +3394,7 @@ def createOutbox(session, base_dir: str, nickname: str, domain: str,
 def createModeration(base_dir: str, nickname: str, domain: str, port: int,
                      http_prefix: str, itemsPerPage: int, headerOnly: bool,
                      pageNumber: int) -> {}:
-    boxDir = createPersonDir(nickname, domain, base_dir, 'inbox')
+    boxDir = create_person_dir(nickname, domain, base_dir, 'inbox')
     boxname = 'moderation'
 
     domain = get_full_domain(domain, port)
@@ -3952,7 +3952,7 @@ def archivePostsForPerson(http_prefix: str, nickname: str, domain: str,
     if archive_dir:
         if not os.path.isdir(archive_dir):
             os.mkdir(archive_dir)
-    boxDir = createPersonDir(nickname, domain, base_dir, boxname)
+    boxDir = create_person_dir(nickname, domain, base_dir, boxname)
     postsInBox = os.scandir(boxDir)
     noOfPosts = 0
     for f in postsInBox:
