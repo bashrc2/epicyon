@@ -260,7 +260,7 @@ from utils import get_image_extension_from_mime_type
 from utils import get_image_mime_type
 from utils import has_object_dict
 from utils import user_agent_domain
-from utils import isLocalNetworkAddress
+from utils import is_local_network_address
 from utils import permitted_dir
 from utils import is_account_dir
 from utils import get_occupation_skills
@@ -1729,7 +1729,7 @@ class PubServer(BaseHTTPRequestHandler):
             else:
                 ipAddress = self.client_address[0]
             if not domain.endswith('.onion'):
-                if not isLocalNetworkAddress(ipAddress):
+                if not is_local_network_address(ipAddress):
                     print('Login attempt from IP: ' + str(ipAddress))
             if not authorizeBasic(base_dir, '/users/' +
                                   loginNickname + '/outbox',
@@ -1739,7 +1739,7 @@ class PubServer(BaseHTTPRequestHandler):
                 failTime = int(time.time())
                 self.server.last_login_failure = failTime
                 if not domain.endswith('.onion'):
-                    if not isLocalNetworkAddress(ipAddress):
+                    if not is_local_network_address(ipAddress):
                         recordLoginFailure(base_dir, ipAddress,
                                            self.server.login_failure_count,
                                            failTime,

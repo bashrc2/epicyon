@@ -840,7 +840,7 @@ def get_local_network_addresses() -> []:
     return ('localhost', '127.0.', '192.168', '10.0.')
 
 
-def isLocalNetworkAddress(ipAddress: str) -> bool:
+def is_local_network_address(ipAddress: str) -> bool:
     """
     """
     localIPs = get_local_network_addresses()
