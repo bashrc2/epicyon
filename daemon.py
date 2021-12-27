@@ -289,7 +289,7 @@ from utils import remove_id_ending
 from utils import undoLikesCollectionEntry
 from utils import deletePost
 from utils import isBlogPost
-from utils import removeAvatarFromCache
+from utils import remove_avatar_from_cache
 from utils import locate_post
 from utils import get_cached_post_filename
 from utils import remove_post_from_cache
@@ -6511,7 +6511,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            True)
                         # clear any cached images for this actor
                         idStr = actor_json['id'].replace('/', '-')
-                        removeAvatarFromCache(base_dir, idStr)
+                        remove_avatar_from_cache(base_dir, idStr)
                         # save the actor to the cache
                         actorCacheFilename = \
                             base_dir + '/cache/actors/' + \

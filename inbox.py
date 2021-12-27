@@ -42,7 +42,7 @@ from utils import get_full_domain
 from utils import remove_id_ending
 from utils import get_protocol_prefixes
 from utils import isBlogPost
-from utils import removeAvatarFromCache
+from utils import remove_avatar_from_cache
 from utils import isPublicPost
 from utils import get_cached_post_filename
 from utils import remove_post_from_cache
@@ -895,7 +895,7 @@ def _personReceiveUpdate(base_dir: str,
     # remove avatar if it exists so that it will be refreshed later
     # when a timeline is constructed
     actorStr = personJson['id'].replace('/', '-')
-    removeAvatarFromCache(base_dir, actorStr)
+    remove_avatar_from_cache(base_dir, actorStr)
     return True
 
 

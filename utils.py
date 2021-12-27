@@ -634,20 +634,21 @@ def get_link_prefixes() -> []:
             'hyper://', 'gemini://', 'gopher://', 'briar:')
 
 
-def removeAvatarFromCache(base_dir: str, actorStr: str) -> None:
+def remove_avatar_from_cache(base_dir: str, actorStr: str) -> None:
     """Removes any existing avatar entries from the cache
     This avoids duplicate entries with differing extensions
     """
-    avatarFilenameExtensions = get_image_extensions()
-    for extension in avatarFilenameExtensions:
-        avatarFilename = \
+    avatar_filename_extensions = get_image_extensions()
+    for extension in avatar_filename_extensions:
+        avatar_filename = \
             base_dir + '/cache/avatars/' + actorStr + '.' + extension
-        if os.path.isfile(avatarFilename):
+        if os.path.isfile(avatar_filename):
             try:
-                os.remove(avatarFilename)
+                os.remove(avatar_filename)
             except OSError:
-                print('EX: removeAvatarFromCache ' +
-                      'unable to delete cached avatar ' + str(avatarFilename))
+                print('EX: remove_avatar_from_cache ' +
+                      'unable to delete cached avatar ' +
+                      str(avatar_filename))
 
 
 def save_json(json_object: {}, filename: str) -> bool:
