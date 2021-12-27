@@ -915,32 +915,32 @@ def get_display_name(base_dir: str, actor: str, person_cache: {}) -> str:
         actor = actor.split('/statuses/')[0]
     if not person_cache.get(actor):
         return None
-    nameFound = None
+    name_found = None
     if person_cache[actor].get('actor'):
         if person_cache[actor]['actor'].get('name'):
-            nameFound = person_cache[actor]['actor']['name']
+            name_found = person_cache[actor]['actor']['name']
     else:
         # Try to obtain from the cached actors
-        cachedActorFilename = \
+        cached_actor_filename = \
             base_dir + '/cache/actors/' + (actor.replace('/', '#')) + '.json'
-        if os.path.isfile(cachedActorFilename):
-            actor_json = load_json(cachedActorFilename, 1)
+        if os.path.isfile(cached_actor_filename):
+            actor_json = load_json(cached_actor_filename, 1)
             if actor_json:
                 if actor_json.get('name'):
-                    nameFound = actor_json['name']
-    if nameFound:
-        if dangerous_markup(nameFound, False):
-            nameFound = "*ADVERSARY*"
-    return nameFound
+                    name_found = actor_json['name']
+    if name_found:
+        if dangerous_markup(name_found, False):
+            name_found = "*ADVERSARY*"
+    return name_found
 
 
-def _genderFromString(translate: {}, text: str) -> str:
+def _gender_from_string(translate: {}, text: str) -> str:
     """Given some text, does it contain a gender description?
     """
     gender = None
     if not text:
         return None
-    textOrig = text
+    text_orig = text
     text = text.lower()
     if translate['He/Him'].lower() in text or \
        translate['boy'].lower() in text:
@@ -953,13 +953,13 @@ def _genderFromString(translate: {}, text: str) -> str:
     elif 'her' in text or 'she' in text or \
          'fem' in text or 'woman' in text:
         gender = 'She/Her'
-    elif 'man' in text or 'He' in textOrig:
+    elif 'man' in text or 'He' in text_orig:
         gender = 'He/Him'
     return gender
 
 
-def getGenderFromBio(base_dir: str, actor: str, person_cache: {},
-                     translate: {}) -> str:
+def get_gender_from_bio(base_dir: str, actor: str, person_cache: {},
+                        translate: {}) -> str:
     """Tries to ascertain gender from bio description
     This is for use by text-to-speech for pitch setting
     """
@@ -1009,7 +1009,7 @@ def getGenderFromBio(base_dir: str, actor: str, person_cache: {},
                         continue
                     if not tag.get('name') or not tag.get('value'):
                         continue
-                    gender = _genderFromString(translate, tag['value'])
+                    gender = _gender_from_string(translate, tag['value'])
                     if gender:
                         return gender
     # if not then use the bio
@@ -1017,7 +1017,7 @@ def getGenderFromBio(base_dir: str, actor: str, person_cache: {},
         bioFound = actor_json['summary']
     if not bioFound:
         return defaultGender
-    gender = _genderFromString(translate, bioFound)
+    gender = _gender_from_string(translate, bioFound)
     if not gender:
         gender = defaultGender
     return gender

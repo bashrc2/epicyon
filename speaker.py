@@ -17,7 +17,7 @@ from utils import is_reply
 from utils import camel_case_split
 from utils import get_domain_from_actor
 from utils import getNicknameFromActor
-from utils import getGenderFromBio
+from utils import get_gender_from_bio
 from utils import get_display_name
 from utils import remove_html
 from utils import load_json
@@ -476,8 +476,8 @@ def _postToSpeakerJson(base_dir: str, http_prefix: str,
     speakerName = _removeEmojiFromText(speakerName)
     speakerName = speakerName.replace('_', ' ')
     speakerName = camel_case_split(speakerName)
-    gender = getGenderFromBio(base_dir, post_json_object['actor'],
-                              person_cache, translate)
+    gender = get_gender_from_bio(base_dir, post_json_object['actor'],
+                                 person_cache, translate)
     if announcingActor:
         announcedNickname = getNicknameFromActor(announcingActor)
         announcedDomain, announcedport = get_domain_from_actor(announcingActor)
