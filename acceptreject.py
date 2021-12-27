@@ -11,7 +11,7 @@ import os
 from utils import has_object_string_object
 from utils import has_users_path
 from utils import get_full_domain
-from utils import urlPermitted
+from utils import url_permitted
 from utils import get_domain_from_actor
 from utils import getNicknameFromActor
 from utils import domain_permitted
@@ -36,7 +36,7 @@ def _create_accept_reject(base_dir: str, federation_list: [],
     if not objectJson.get('actor'):
         return None
 
-    if not urlPermitted(objectJson['actor'], federation_list):
+    if not url_permitted(objectJson['actor'], federation_list):
         return None
 
     domain = get_full_domain(domain, port)

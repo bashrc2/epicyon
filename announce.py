@@ -15,7 +15,7 @@ from utils import has_users_path
 from utils import get_full_domain
 from utils import get_status_number
 from utils import create_outbox_dir
-from utils import urlPermitted
+from utils import url_permitted
 from utils import getNicknameFromActor
 from utils import get_domain_from_actor
 from utils import locate_post
@@ -131,7 +131,7 @@ def createAnnounce(session, base_dir: str, federation_list: [],
     followers url objectUrl is typically the url of the message,
     corresponding to url or atomUri in createPostBase
     """
-    if not urlPermitted(objectUrl, federation_list):
+    if not url_permitted(objectUrl, federation_list):
         return None
 
     domain = remove_domain_port(domain)

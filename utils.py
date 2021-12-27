@@ -823,7 +823,7 @@ def domain_permitted(domain: str, federation_list: []) -> bool:
     return False
 
 
-def urlPermitted(url: str, federation_list: []):
+def url_permitted(url: str, federation_list: []):
     if is_evil(url):
         return False
     if not federation_list:

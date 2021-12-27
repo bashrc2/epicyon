@@ -19,7 +19,7 @@ from utils import has_object_dict
 from utils import has_users_path
 from utils import get_full_domain
 from utils import remove_id_ending
-from utils import urlPermitted
+from utils import url_permitted
 from utils import getNicknameFromActor
 from utils import get_domain_from_actor
 from utils import locate_post
@@ -76,7 +76,7 @@ def _reaction(recent_posts_cache: {},
     'to' might be a specific person (actor) whose post was reaction
     object is typically the url of the message which was reaction
     """
-    if not urlPermitted(objectUrl, federation_list):
+    if not url_permitted(objectUrl, federation_list):
         return None
     if not validEmojiContent(emojiContent):
         print('_reaction: Invalid emoji reaction: "' + emojiContent + '"')

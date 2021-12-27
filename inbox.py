@@ -46,7 +46,7 @@ from utils import remove_avatar_from_cache
 from utils import isPublicPost
 from utils import get_cached_post_filename
 from utils import remove_post_from_cache
-from utils import urlPermitted
+from utils import url_permitted
 from utils import create_inbox_queue_dir
 from utils import get_status_number
 from utils import get_domain_from_actor
@@ -430,7 +430,7 @@ def inboxPermittedMessage(domain: str, message_json: {},
     if domain in actor:
         return True
 
-    if not urlPermitted(actor, federation_list):
+    if not url_permitted(actor, federation_list):
         return False
 
     alwaysAllowedTypes = (
@@ -443,7 +443,7 @@ def inboxPermittedMessage(domain: str, message_json: {},
             inReplyTo = message_json['object']['inReplyTo']
             if not isinstance(inReplyTo, str):
                 return False
-            if not urlPermitted(inReplyTo, federation_list):
+            if not url_permitted(inReplyTo, federation_list):
                 return False
 
     return True

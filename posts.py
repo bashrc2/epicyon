@@ -53,7 +53,7 @@ from utils import get_followers_list
 from utils import is_evil
 from utils import get_status_number
 from utils import create_person_dir
-from utils import urlPermitted
+from utils import url_permitted
 from utils import getNicknameFromActor
 from utils import get_domain_from_actor
 from utils import deletePost
@@ -610,8 +610,8 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
                         if tagItem.get('name') and tagItem.get('icon'):
                             if tagItem['icon'].get('url'):
                                 # No emoji from non-permitted domains
-                                if urlPermitted(tagItem['icon']['url'],
-                                                federation_list):
+                                if url_permitted(tagItem['icon']['url'],
+                                                 federation_list):
                                     emojiName = tagItem['name']
                                     emojiIcon = tagItem['icon']['url']
                                     emoji[emojiName] = emojiIcon
@@ -640,8 +640,8 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
                 if thisItem['inReplyTo']:
                     if isinstance(thisItem['inReplyTo'], str):
                         # No replies to non-permitted domains
-                        if not urlPermitted(thisItem['inReplyTo'],
-                                            federation_list):
+                        if not url_permitted(thisItem['inReplyTo'],
+                                             federation_list):
                             if debug:
                                 print('url not permitted ' +
                                       thisItem['inReplyTo'])
@@ -653,8 +653,8 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
                     for attach in thisItem['attachment']:
                         if attach.get('name') and attach.get('url'):
                             # no attachments from non-permitted domains
-                            if urlPermitted(attach['url'],
-                                            federation_list):
+                            if url_permitted(attach['url'],
+                                             federation_list):
                                 attachment.append([attach['name'],
                                                    attach['url']])
                             else:

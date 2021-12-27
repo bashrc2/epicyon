@@ -296,7 +296,7 @@ from utils import remove_post_from_cache
 from utils import getNicknameFromActor
 from utils import get_domain_from_actor
 from utils import get_status_number
-from utils import urlPermitted
+from utils import url_permitted
 from utils import load_json
 from utils import save_json
 from utils import is_suspended
@@ -722,7 +722,7 @@ class PubServer(BaseHTTPRequestHandler):
             return False
 
         # is the keyId (actor) valid?
-        if not urlPermitted(keyId, self.server.federation_list):
+        if not url_permitted(keyId, self.server.federation_list):
             if self.server.debug:
                 print('AUTH: Secure mode GET request not permitted: ' + keyId)
             return False

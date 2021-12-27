@@ -9,7 +9,7 @@ __module_group__ = "Session"
 
 import os
 import requests
-from utils import urlPermitted
+from utils import url_permitted
 from utils import is_image_file
 from httpsig import createSignedHeader
 import json
@@ -297,7 +297,7 @@ def postJson(http_prefix: str, domain_full: str,
     """Post a json message to the inbox of another person
     """
     # check that we are posting to a permitted domain
-    if not urlPermitted(inboxUrl, federation_list):
+    if not url_permitted(inboxUrl, federation_list):
         if not quiet:
             print('postJson: ' + inboxUrl + ' not permitted')
         return None
@@ -394,7 +394,7 @@ def postImage(session, attachImageFilename: str, federation_list: [],
     """Post an image to the inbox of another person or outbox via c2s
     """
     # check that we are posting to a permitted domain
-    if not urlPermitted(inboxUrl, federation_list):
+    if not url_permitted(inboxUrl, federation_list):
         print('postJson: ' + inboxUrl + ' not permitted')
         return None
 
