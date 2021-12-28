@@ -5056,21 +5056,17 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.blogs_instance = False
                                 self.server.news_instance = False
                                 self.server.defaultTimeline = 'tlmedia'
-                            set_config_param(base_dir,
-                                             "media_instance",
+                            set_config_param(base_dir, "media_instance",
                                              self.server.media_instance)
-                            set_config_param(base_dir,
-                                             "blogs_instance",
+                            set_config_param(base_dir, "blogs_instance",
                                              self.server.blogs_instance)
-                            set_config_param(base_dir,
-                                             "news_instance",
+                            set_config_param(base_dir, "news_instance",
                                              self.server.news_instance)
                         else:
                             if self.server.media_instance:
                                 self.server.media_instance = False
                                 self.server.defaultTimeline = 'inbox'
-                                set_config_param(base_dir,
-                                                 "media_instance",
+                                set_config_param(base_dir, "media_instance",
                                                  self.server.media_instance)
 
                         # is this a news theme?
@@ -5087,21 +5083,17 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.blogs_instance = False
                                 self.server.media_instance = False
                                 self.server.defaultTimeline = 'tlfeatures'
-                            set_config_param(base_dir,
-                                             "media_instance",
+                            set_config_param(base_dir, "media_instance",
                                              self.server.media_instance)
-                            set_config_param(base_dir,
-                                             "blogs_instance",
+                            set_config_param(base_dir, "blogs_instance",
                                              self.server.blogs_instance)
-                            set_config_param(base_dir,
-                                             "news_instance",
+                            set_config_param(base_dir, "news_instance",
                                              self.server.news_instance)
                         else:
                             if self.server.news_instance:
                                 self.server.news_instance = False
                                 self.server.defaultTimeline = 'inbox'
-                                set_config_param(base_dir,
-                                                 "news_instance",
+                                set_config_param(base_dir, "news_instance",
                                                  self.server.media_instance)
 
                         # change blog instance status
@@ -5113,21 +5105,17 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.media_instance = False
                                 self.server.news_instance = False
                                 self.server.defaultTimeline = 'tlblogs'
-                            set_config_param(base_dir,
-                                             "blogs_instance",
+                            set_config_param(base_dir, "blogs_instance",
                                              self.server.blogs_instance)
-                            set_config_param(base_dir,
-                                             "media_instance",
+                            set_config_param(base_dir, "media_instance",
                                              self.server.media_instance)
-                            set_config_param(base_dir,
-                                             "news_instance",
+                            set_config_param(base_dir, "news_instance",
                                              self.server.news_instance)
                         else:
                             if self.server.blogs_instance:
                                 self.server.blogs_instance = False
                                 self.server.defaultTimeline = 'inbox'
-                                set_config_param(base_dir,
-                                                 "blogs_instance",
+                                set_config_param(base_dir, "blogs_instance",
                                                  self.server.blogs_instance)
 
                         # change instance title
@@ -5148,14 +5136,12 @@ class PubServer(BaseHTTPRequestHandler):
                                 if '/' in newYTDomain:
                                     newYTDomain = newYTDomain.split('/')[0]
                                 if '.' in newYTDomain:
-                                    set_config_param(base_dir,
-                                                     'youtubedomain',
+                                    set_config_param(base_dir, 'youtubedomain',
                                                      newYTDomain)
                                     self.server.yt_replace_domain = \
                                         newYTDomain
                         else:
-                            set_config_param(base_dir,
-                                             'youtubedomain', '')
+                            set_config_param(base_dir, 'youtubedomain', '')
                             self.server.yt_replace_domain = None
 
                         # change twitter alternate domain
@@ -5171,14 +5157,12 @@ class PubServer(BaseHTTPRequestHandler):
                                     newTwitterDomain = \
                                         newTwitterDomain.split('/')[0]
                                 if '.' in newTwitterDomain:
-                                    set_config_param(base_dir,
-                                                     'twitterdomain',
+                                    set_config_param(base_dir, 'twitterdomain',
                                                      newTwitterDomain)
                                     self.server.twitter_replacement_domain = \
                                         newTwitterDomain
                         else:
-                            set_config_param(base_dir,
-                                             'twitterdomain', '')
+                            set_config_param(base_dir, 'twitterdomain', '')
                             self.server.twitter_replacement_domain = None
 
                         # change custom post submit button text
@@ -5188,13 +5172,12 @@ class PubServer(BaseHTTPRequestHandler):
                             if fields['customSubmitText'] != \
                                currCustomSubmitText:
                                 customText = fields['customSubmitText']
-                                set_config_param(base_dir,
-                                                 'customSubmitText',
+                                set_config_param(base_dir, 'customSubmitText',
                                                  customText)
                         else:
                             if currCustomSubmitText:
-                                set_config_param(base_dir,
-                                                 'customSubmitText', '')
+                                set_config_param(base_dir, 'customSubmitText',
+                                                 '')
 
                         # libretranslate URL
                         currLibretranslateUrl = \
