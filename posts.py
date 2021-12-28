@@ -152,7 +152,7 @@ def _getLocalPrivateKey(base_dir: str, nickname: str, domain: str) -> str:
     return None
 
 
-def getInstanceActorKey(base_dir: str, domain: str) -> str:
+def get_instance_actor_key(base_dir: str, domain: str) -> str:
     """Returns the private key for the instance actor used for
     signing GET posts
     """
@@ -905,9 +905,9 @@ def deleteAllPosts(base_dir: str,
             print('ERROR: deleteAllPosts ' + str(ex))
 
 
-def savePostToBox(base_dir: str, http_prefix: str, post_id: str,
-                  nickname: str, domain: str, post_json_object: {},
-                  boxname: str) -> str:
+def save_post_to_box(base_dir: str, http_prefix: str, post_id: str,
+                     nickname: str, domain: str, post_json_object: {},
+                     boxname: str) -> str:
     """Saves the give json to the give box
     Returns the filename
     """
@@ -1546,19 +1546,19 @@ def _createPostBase(base_dir: str,
             # add an item to the scheduled post index file
             _addSchedulePost(base_dir, nickname, domain,
                              eventDateStr, newPostId)
-            savePostToBox(base_dir, http_prefix, newPostId,
-                          nickname, domain, newPost, 'scheduled')
+            save_post_to_box(base_dir, http_prefix, newPostId,
+                             nickname, domain, newPost, 'scheduled')
         else:
             print('Unable to create scheduled post without ' +
                   'date and time values')
             return newPost
     elif saveToFile:
         if isArticle:
-            savePostToBox(base_dir, http_prefix, newPostId,
-                          nickname, domain, newPost, 'tlblogs')
+            save_post_to_box(base_dir, http_prefix, newPostId,
+                             nickname, domain, newPost, 'tlblogs')
         else:
-            savePostToBox(base_dir, http_prefix, newPostId,
-                          nickname, domain, newPost, 'outbox')
+            save_post_to_box(base_dir, http_prefix, newPostId,
+                             nickname, domain, newPost, 'outbox')
     return newPost
 
 
@@ -2094,8 +2094,8 @@ def createDirectMessagePost(base_dir: str,
     message_json['object']['cc'] = []
     if schedulePost:
         post_id = remove_id_ending(message_json['object']['id'])
-        savePostToBox(base_dir, http_prefix, post_id,
-                      nickname, domain, message_json, 'scheduled')
+        save_post_to_box(base_dir, http_prefix, post_id,
+                         nickname, domain, message_json, 'scheduled')
     return message_json
 
 
@@ -5265,9 +5265,9 @@ def editedPostFilename(base_dir: str, nickname: str, domain: str,
     return lastpost_filename
 
 
-def getOriginalPostFromAnnounceUrl(announceUrl: str, base_dir: str,
-                                   nickname: str,
-                                   domain: str) -> (str, str, str):
+def get_original_post_from_announce_url(announceUrl: str, base_dir: str,
+                                        nickname: str,
+                                        domain: str) -> (str, str, str):
     """From the url of an announce this returns the actor, url and
     filename (if available) of the original post being announced
     """

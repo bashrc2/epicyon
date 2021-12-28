@@ -39,10 +39,10 @@ from posts import getPersonBox
 from posts import isModerator
 from posts import parseUserFeed
 from posts import isCreateInsideAnnounce
-from donate import getDonationUrl
-from donate import getWebsite
+from donate import get_donation_url
+from donate import get_website
 from xmpp import get_xmpp_address
-from matrix import getMatrixAddress
+from matrix import get_matrix_address
 from ssb import get_ssb_address
 from pgp import get_email_address
 from pgp import get_pgp_fingerprint
@@ -632,15 +632,15 @@ def htmlProfile(signing_priv_key_pem: str,
     usersPath = '/users/' + actor.split('/users/')[1]
 
     donateSection = ''
-    donateUrl = getDonationUrl(profile_json)
-    websiteUrl = getWebsite(profile_json, translate)
+    donateUrl = get_donation_url(profile_json)
+    websiteUrl = get_website(profile_json, translate)
     blogAddress = getBlogAddress(profile_json)
     EnigmaPubKey = get_enigma_pub_key(profile_json)
     PGPpubKey = get_pgp_pub_key(profile_json)
     PGPfingerprint = get_pgp_fingerprint(profile_json)
     emailAddress = get_email_address(profile_json)
     xmppAddress = get_xmpp_address(profile_json)
-    matrixAddress = getMatrixAddress(profile_json)
+    matrixAddress = get_matrix_address(profile_json)
     ssbAddress = get_ssb_address(profile_json)
     toxAddress = get_tox_address(profile_json)
     briarAddress = get_briar_address(profile_json)
@@ -2130,10 +2130,10 @@ def htmlEditProfile(css_cache: {}, translate: {}, base_dir: str, path: str,
     if actor_json:
         if actor_json.get('movedTo'):
             movedTo = actor_json['movedTo']
-        donateUrl = getDonationUrl(actor_json)
-        websiteUrl = getWebsite(actor_json, translate)
+        donateUrl = get_donation_url(actor_json)
+        websiteUrl = get_website(actor_json, translate)
         xmppAddress = get_xmpp_address(actor_json)
-        matrixAddress = getMatrixAddress(actor_json)
+        matrixAddress = get_matrix_address(actor_json)
         ssbAddress = get_ssb_address(actor_json)
         blogAddress = getBlogAddress(actor_json)
         toxAddress = get_tox_address(actor_json)

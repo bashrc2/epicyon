@@ -94,7 +94,7 @@ from utils import is_reply
 from utils import has_actor
 from httpsig import messageContentDigest
 from posts import editedPostFilename
-from posts import savePostToBox
+from posts import save_post_to_box
 from posts import isCreateInsideAnnounce
 from posts import createDirectMessagePost
 from posts import validContentWarning
@@ -2665,8 +2665,8 @@ def _sendToGroupMembers(session, base_dir: str, handle: str, port: int,
 
     # save to the group outbox so that replies will be to the group
     # rather than the original sender
-    savePostToBox(base_dir, http_prefix, None,
-                  nickname, domain, post_json_object, 'outbox')
+    save_post_to_box(base_dir, http_prefix, None,
+                     nickname, domain, post_json_object, 'outbox')
 
     post_id = remove_id_ending(post_json_object['object']['id'])
     if debug:

@@ -8,7 +8,7 @@ __status__ = "Production"
 __module_group__ = "Profile Metadata"
 
 
-def getMatrixAddress(actor_json: {}) -> str:
+def get_matrix_address(actor_json: {}) -> str:
     """Returns matrix address for the given actor
     """
     if not actor_json.get('attachment'):
@@ -36,7 +36,7 @@ def getMatrixAddress(actor_json: {}) -> str:
     return ''
 
 
-def setMatrixAddress(actor_json: {}, matrixAddress: str) -> None:
+def set_matrix_address(actor_json: {}, matrixAddress: str) -> None:
     """Sets an matrix address for the given actor
     """
     if not actor_json.get('attachment'):

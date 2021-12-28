@@ -173,7 +173,7 @@ def _accountExists(base_dir: str, nickname: str, domain: str) -> bool:
         os.path.isdir(base_dir + '/deactivated/' + nickname + '@' + domain)
 
 
-def randomizeActorImages(personJson: {}) -> None:
+def randomize_actor_images(personJson: {}) -> None:
     """Randomizes the filenames for avatar image and background
     This causes other instances to update their cached avatar image
     """
@@ -196,7 +196,7 @@ def randomizeActorImages(personJson: {}) -> None:
         '/image' + randStr + '.' + existingExtension
 
 
-def getActorUpdateJson(actor_json: {}) -> {}:
+def get_actor_update_json(actor_json: {}) -> {}:
     """Returns the json for an Person Update
     """
     pubNumber, _ = get_status_number()
@@ -307,7 +307,7 @@ def getActorUpdateJson(actor_json: {}) -> {}:
     }
 
 
-def getDefaultPersonContext() -> str:
+def get_default_person_context() -> str:
     """Gets the default actor context
     """
     return {
@@ -408,7 +408,7 @@ def _createPersonBase(base_dir: str, nickname: str, domain: str, port: int,
         '@context': [
             'https://www.w3.org/ns/activitystreams',
             'https://w3id.org/security/v1',
-            getDefaultPersonContext()
+            get_default_person_context()
         ],
         'published': published,
         'alsoKnownAs': [],
@@ -539,9 +539,9 @@ def _createPersonBase(base_dir: str, nickname: str, domain: str, port: int,
     return privateKeyPem, publicKeyPem, newPerson, webfingerEndpoint
 
 
-def registerAccount(base_dir: str, http_prefix: str, domain: str, port: int,
-                    nickname: str, password: str,
-                    manual_follower_approval: bool) -> bool:
+def register_account(base_dir: str, http_prefix: str, domain: str, port: int,
+                     nickname: str, password: str,
+                     manual_follower_approval: bool) -> bool:
     """Registers a new account from the web interface
     """
     if _accountExists(base_dir, nickname, domain):
@@ -577,9 +577,9 @@ def createGroup(base_dir: str, nickname: str, domain: str, port: int,
     return privateKeyPem, publicKeyPem, newPerson, webfingerEndpoint
 
 
-def savePersonQrcode(base_dir: str,
-                     nickname: str, domain: str, port: int,
-                     scale=6) -> None:
+def save_person_qrcode(base_dir: str,
+                       nickname: str, domain: str, port: int,
+                       scale=6) -> None:
     """Saves a qrcode image for the handle of the person
     This helps to transfer onion or i2p handles to a mobile device
     """
@@ -703,28 +703,28 @@ def createPerson(base_dir: str, nickname: str, domain: str, port: int,
         registrationsRemaining -= 1
         set_config_param(base_dir, 'registrationsRemaining',
                          str(registrationsRemaining))
-    savePersonQrcode(base_dir, nickname, domain, port)
+    save_person_qrcode(base_dir, nickname, domain, port)
     return privateKeyPem, publicKeyPem, newPerson, webfingerEndpoint
 
 
-def createSharedInbox(base_dir: str, nickname: str, domain: str, port: int,
-                      http_prefix: str) -> (str, str, {}, {}):
+def create_shared_inbox(base_dir: str, nickname: str, domain: str, port: int,
+                        http_prefix: str) -> (str, str, {}, {}):
     """Generates the shared inbox
     """
     return _createPersonBase(base_dir, nickname, domain, port, http_prefix,
                              True, True, False, None)
 
 
-def createNewsInbox(base_dir: str, domain: str, port: int,
-                    http_prefix: str) -> (str, str, {}, {}):
+def create_news_inbox(base_dir: str, domain: str, port: int,
+                      http_prefix: str) -> (str, str, {}, {}):
     """Generates the news inbox
     """
     return createPerson(base_dir, 'news', domain, port,
                         http_prefix, True, True, None)
 
 
-def personUpgradeActor(base_dir: str, personJson: {},
-                       handle: str, filename: str) -> None:
+def person_upgrade_actor(base_dir: str, personJson: {},
+                         handle: str, filename: str) -> None:
     """Alter the actor to add any new properties
     """
     updateActor = False
@@ -837,7 +837,7 @@ def personUpgradeActor(base_dir: str, personJson: {},
         personJson['@context'] = [
             'https://www.w3.org/ns/activitystreams',
             'https://w3id.org/security/v1',
-            getDefaultPersonContext()
+            get_default_person_context()
         ],
 
         save_json(personJson, filename)
@@ -858,7 +858,7 @@ def personUpgradeActor(base_dir: str, personJson: {},
             save_json(personJson, actorCacheFilename)
 
 
-def personLookup(domain: str, path: str, base_dir: str) -> {}:
+def person_lookup(domain: str, path: str, base_dir: str) -> {}:
     """Lookup the person for an given nickname
     """
     if path.endswith('#main-key'):
@@ -892,7 +892,7 @@ def personLookup(domain: str, path: str, base_dir: str) -> {}:
         return None
     personJson = load_json(filename)
     if not isSharedInbox:
-        personUpgradeActor(base_dir, personJson, handle, filename)
+        person_upgrade_actor(base_dir, personJson, handle, filename)
     # if not personJson:
     #     personJson={"user": "unknown"}
     return personJson
@@ -1038,7 +1038,7 @@ def setBio(base_dir: str, nickname: str, domain: str, bio: str) -> bool:
     return True
 
 
-def reenableAccount(base_dir: str, nickname: str) -> None:
+def reenable_account(base_dir: str, nickname: str) -> None:
     """Removes an account suspention
     """
     suspendedFilename = base_dir + '/accounts/suspended.txt'
@@ -1056,7 +1056,7 @@ def reenableAccount(base_dir: str, nickname: str) -> None:
                   ' ' + str(ex))
 
 
-def suspendAccount(base_dir: str, nickname: str, domain: str) -> None:
+def suspend_account(base_dir: str, nickname: str, domain: str) -> None:
     """Suspends the given account
     """
     # Don't suspend the admin
@@ -1080,13 +1080,13 @@ def suspendAccount(base_dir: str, nickname: str, domain: str) -> None:
         try:
             os.remove(saltFilename)
         except OSError:
-            print('EX: suspendAccount unable to delete ' + saltFilename)
+            print('EX: suspend_account unable to delete ' + saltFilename)
     tokenFilename = acct_dir(base_dir, nickname, domain) + '/.token'
     if os.path.isfile(tokenFilename):
         try:
             os.remove(tokenFilename)
         except OSError:
-            print('EX: suspendAccount unable to delete ' + tokenFilename)
+            print('EX: suspend_account unable to delete ' + tokenFilename)
 
     suspendedFilename = base_dir + '/accounts/suspended.txt'
     if os.path.isfile(suspendedFilename):
@@ -1108,8 +1108,8 @@ def suspendAccount(base_dir: str, nickname: str, domain: str) -> None:
             print('EX: unable to write ' + suspendedFilename)
 
 
-def canRemovePost(base_dir: str, nickname: str,
-                  domain: str, port: int, post_id: str) -> bool:
+def can_remove_post(base_dir: str, nickname: str,
+                    domain: str, port: int, post_id: str) -> bool:
     """Returns true if the given post can be removed
     """
     if '/statuses/' not in post_id:
@@ -1172,8 +1172,8 @@ def _removeTagsForNickname(base_dir: str, nickname: str,
             print('EX: unable to write ' + tagFilename)
 
 
-def removeAccount(base_dir: str, nickname: str,
-                  domain: str, port: int) -> bool:
+def remove_account(base_dir: str, nickname: str,
+                   domain: str, port: int) -> bool:
     """Removes an account
     """
     # Don't remove the admin
@@ -1192,7 +1192,7 @@ def removeAccount(base_dir: str, nickname: str,
             if moderator.strip('\n') == nickname:
                 return False
 
-    reenableAccount(base_dir, nickname)
+    reenable_account(base_dir, nickname)
     handle = nickname + '@' + domain
     removePassword(base_dir, nickname)
     _removeTagsForNickname(base_dir, nickname, domain, port)
@@ -1206,25 +1206,25 @@ def removeAccount(base_dir: str, nickname: str,
         try:
             os.remove(base_dir + '/accounts/' + handle + '.json')
         except OSError:
-            print('EX: removeAccount unable to delete ' +
+            print('EX: remove_account unable to delete ' +
                   base_dir + '/accounts/' + handle + '.json')
     if os.path.isfile(base_dir + '/wfendpoints/' + handle + '.json'):
         try:
             os.remove(base_dir + '/wfendpoints/' + handle + '.json')
         except OSError:
-            print('EX: removeAccount unable to delete ' +
+            print('EX: remove_account unable to delete ' +
                   base_dir + '/wfendpoints/' + handle + '.json')
     if os.path.isfile(base_dir + '/keys/private/' + handle + '.key'):
         try:
             os.remove(base_dir + '/keys/private/' + handle + '.key')
         except OSError:
-            print('EX: removeAccount unable to delete ' +
+            print('EX: remove_account unable to delete ' +
                   base_dir + '/keys/private/' + handle + '.key')
     if os.path.isfile(base_dir + '/keys/public/' + handle + '.pem'):
         try:
             os.remove(base_dir + '/keys/public/' + handle + '.pem')
         except OSError:
-            print('EX: removeAccount unable to delete ' +
+            print('EX: remove_account unable to delete ' +
                   base_dir + '/keys/public/' + handle + '.pem')
     if os.path.isdir(base_dir + '/sharefiles/' + nickname):
         shutil.rmtree(base_dir + '/sharefiles/' + nickname,
@@ -1233,7 +1233,7 @@ def removeAccount(base_dir: str, nickname: str,
         try:
             os.remove(base_dir + '/wfdeactivated/' + handle + '.json')
         except OSError:
-            print('EX: removeAccount unable to delete ' +
+            print('EX: remove_account unable to delete ' +
                   base_dir + '/wfdeactivated/' + handle + '.json')
     if os.path.isdir(base_dir + '/sharefilesdeactivated/' + nickname):
         shutil.rmtree(base_dir + '/sharefilesdeactivated/' + nickname,
@@ -1244,7 +1244,7 @@ def removeAccount(base_dir: str, nickname: str,
     return True
 
 
-def deactivateAccount(base_dir: str, nickname: str, domain: str) -> bool:
+def deactivate_account(base_dir: str, nickname: str, domain: str) -> bool:
     """Makes an account temporarily unavailable
     """
     handle = nickname + '@' + domain
@@ -1276,7 +1276,7 @@ def deactivateAccount(base_dir: str, nickname: str, domain: str) -> bool:
     return os.path.isdir(deactivatedDir + '/' + nickname + '@' + domain)
 
 
-def activateAccount(base_dir: str, nickname: str, domain: str) -> None:
+def activate_account(base_dir: str, nickname: str, domain: str) -> None:
     """Makes a deactivated account available
     """
     handle = nickname + '@' + domain
@@ -1345,8 +1345,8 @@ def isPersonSnoozed(base_dir: str, nickname: str, domain: str,
     return False
 
 
-def personSnooze(base_dir: str, nickname: str, domain: str,
-                 snoozeActor: str) -> None:
+def person_snooze(base_dir: str, nickname: str, domain: str,
+                  snoozeActor: str) -> None:
     """Temporarily ignores the given actor
     """
     accountDir = acct_dir(base_dir, nickname, domain)
@@ -1365,8 +1365,8 @@ def personSnooze(base_dir: str, nickname: str, domain: str,
         print('EX: unable to append ' + snoozedFilename)
 
 
-def personUnsnooze(base_dir: str, nickname: str, domain: str,
-                   snoozeActor: str) -> None:
+def person_unsnooze(base_dir: str, nickname: str, domain: str,
+                    snoozeActor: str) -> None:
     """Undoes a temporarily ignore of the given actor
     """
     accountDir = acct_dir(base_dir, nickname, domain)
@@ -1396,8 +1396,8 @@ def personUnsnooze(base_dir: str, nickname: str, domain: str,
                 print('EX: unable to write ' + snoozedFilename)
 
 
-def setPersonNotes(base_dir: str, nickname: str, domain: str,
-                   handle: str, notes: str) -> bool:
+def set_person_notes(base_dir: str, nickname: str, domain: str,
+                     handle: str, notes: str) -> bool:
     """Adds notes about a person
     """
     if '@' not in handle:
@@ -1645,7 +1645,7 @@ def getPersonAvatarUrl(base_dir: str, personUrl: str, person_cache: {},
     return None
 
 
-def addActorUpdateTimestamp(actor_json: {}) -> None:
+def add_actor_update_timestamp(actor_json: {}) -> None:
     """Adds 'updated' fields with a timestamp
     """
     updatedTime = datetime.datetime.utcnow()

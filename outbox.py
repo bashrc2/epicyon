@@ -13,7 +13,7 @@ from session import create_session
 from auth import createPassword
 from posts import isImageMedia
 from posts import outboxMessageCreateWrap
-from posts import savePostToBox
+from posts import save_post_to_box
 from posts import sendToFollowersThread
 from posts import sendToNamedAddressesThread
 from utils import has_object_stringType
@@ -359,7 +359,7 @@ def postMessageToOutbox(session, translate: {},
             print('DEBUG: No id attribute within POST to outbox')
         post_id = None
     if debug:
-        print('DEBUG: savePostToBox')
+        print('DEBUG: save_post_to_box')
     if message_json['type'] != 'Upgrade':
         outboxName = 'outbox'
 
@@ -371,11 +371,11 @@ def postMessageToOutbox(session, translate: {},
                         outboxName = 'tlblogs'
 
         savedFilename = \
-            savePostToBox(base_dir,
-                          http_prefix,
-                          post_id,
-                          postToNickname, domain_full,
-                          message_json, outboxName)
+            save_post_to_box(base_dir,
+                             http_prefix,
+                             post_id,
+                             postToNickname, domain_full,
+                             message_json, outboxName)
         if not savedFilename:
             print('WARN: post not saved to outbox ' + outboxName)
             return False

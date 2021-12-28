@@ -49,35 +49,35 @@ from jami import get_jami_address
 from jami import set_jami_address
 from cwtch import get_cwtch_address
 from cwtch import set_cwtch_address
-from matrix import getMatrixAddress
-from matrix import setMatrixAddress
-from donate import getDonationUrl
-from donate import setDonationUrl
-from donate import getWebsite
-from donate import setWebsite
-from person import addActorUpdateTimestamp
-from person import setPersonNotes
-from person import getDefaultPersonContext
-from person import getActorUpdateJson
-from person import savePersonQrcode
-from person import randomizeActorImages
-from person import personUpgradeActor
-from person import activateAccount
-from person import deactivateAccount
-from person import registerAccount
-from person import personLookup
+from matrix import get_matrix_address
+from matrix import set_matrix_address
+from donate import get_donation_url
+from donate import set_donation_url
+from donate import get_website
+from donate import set_website
+from person import add_actor_update_timestamp
+from person import set_person_notes
+from person import get_default_person_context
+from person import get_actor_update_json
+from person import save_person_qrcode
+from person import randomize_actor_images
+from person import person_upgrade_actor
+from person import activate_account
+from person import deactivate_account
+from person import register_account
+from person import person_lookup
 from person import person_box_json
-from person import createSharedInbox
-from person import createNewsInbox
-from person import suspendAccount
-from person import reenableAccount
-from person import removeAccount
-from person import canRemovePost
-from person import personSnooze
-from person import personUnsnooze
-from posts import getOriginalPostFromAnnounceUrl
-from posts import savePostToBox
-from posts import getInstanceActorKey
+from person import create_shared_inbox
+from person import create_news_inbox
+from person import suspend_account
+from person import reenable_account
+from person import remove_account
+from person import can_remove_post
+from person import person_snooze
+from person import person_unsnooze
+from posts import get_original_post_from_announce_url
+from posts import save_post_to_box
+from posts import get_instance_actor_key
 from posts import removePostInteractions
 from posts import outboxMessageCreateWrap
 from posts import getPinnedPostAsJson
@@ -1704,9 +1704,9 @@ class PubServer(BaseHTTPRequestHandler):
                                                cookie, calling_domain)
                     return
 
-                if not registerAccount(base_dir, http_prefix, domain, port,
-                                       loginNickname, loginPassword,
-                                       self.server.manual_follower_approval):
+                if not register_account(base_dir, http_prefix, domain, port,
+                                        loginNickname, loginPassword,
+                                        self.server.manual_follower_approval):
                     self.server.POSTbusy = False
                     if calling_domain.endswith('.onion') and onion_domain:
                         self._redirect_headers('http://' + onion_domain +
@@ -1763,7 +1763,7 @@ class PubServer(BaseHTTPRequestHandler):
                 # login success - redirect with authorization
                 print('Login success: ' + loginNickname)
                 # re-activate account if needed
-                activateAccount(base_dir, loginNickname, domain)
+                activate_account(base_dir, loginNickname, domain)
                 # This produces a deterministic token based
                 # on nick+password+salt
                 saltFilename = \
@@ -1798,9 +1798,9 @@ class PubServer(BaseHTTPRequestHandler):
                     print('EX: Unable to save token for ' +
                           loginNickname + ' ' + str(ex))
 
-                personUpgradeActor(base_dir, None, loginHandle,
-                                   base_dir + '/accounts/' +
-                                   loginHandle + '.json')
+                person_upgrade_actor(base_dir, None, loginHandle,
+                                     base_dir + '/accounts/' +
+                                     loginHandle + '.json')
 
                 index = self.server.tokens[loginNickname]
                 self.server.tokens_lookup[index] = loginNickname
@@ -1956,9 +1956,9 @@ class PubServer(BaseHTTPRequestHandler):
                 if '@' in nickname:
                     nickname = nickname.split('@')[0]
                 if moderationButton == 'suspend':
-                    suspendAccount(base_dir, nickname, domain)
+                    suspend_account(base_dir, nickname, domain)
                 if moderationButton == 'unsuspend':
-                    reenableAccount(base_dir, nickname)
+                    reenable_account(base_dir, nickname)
                 if moderationButton == 'filter':
                     addGlobalFilter(base_dir, moderationText)
                 if moderationButton == 'unfilter':
@@ -2003,16 +2003,16 @@ class PubServer(BaseHTTPRequestHandler):
                         removeGlobalBlock(base_dir, nickname, fullBlockDomain)
                 if moderationButton == 'remove':
                     if '/statuses/' not in moderationText:
-                        removeAccount(base_dir, nickname, domain, port)
+                        remove_account(base_dir, nickname, domain, port)
                     else:
                         # remove a post or thread
                         post_filename = \
                             locate_post(base_dir, nickname, domain,
                                         moderationText)
                         if post_filename:
-                            if canRemovePost(base_dir,
-                                             nickname, domain, port,
-                                             moderationText):
+                            if can_remove_post(base_dir,
+                                               nickname, domain, port,
+                                               moderationText):
                                 delete_post(base_dir,
                                             http_prefix,
                                             nickname, domain,
@@ -2026,9 +2026,9 @@ class PubServer(BaseHTTPRequestHandler):
                                 locate_post(base_dir, 'news', domain,
                                             moderationText)
                             if post_filename:
-                                if canRemovePost(base_dir,
-                                                 'news', domain, port,
-                                                 moderationText):
+                                if can_remove_post(base_dir,
+                                                   'news', domain, port,
+                                                   moderationText):
                                     delete_post(base_dir,
                                                 http_prefix,
                                                 'news', domain,
@@ -2414,10 +2414,10 @@ class PubServer(BaseHTTPRequestHandler):
             handle = optionsNickname + '@' + optionsDomainFull
             if not personNotes:
                 personNotes = ''
-            setPersonNotes(base_dir,
-                           chooserNickname,
-                           domain,
-                           handle, personNotes)
+            set_person_notes(base_dir,
+                             chooserNickname,
+                             domain,
+                             handle, personNotes)
             usersPathStr = \
                 usersPath + '/' + self.server.defaultTimeline + \
                 '?page=' + str(pageNumber)
@@ -2781,8 +2781,8 @@ class PubServer(BaseHTTPRequestHandler):
                 print('Snoozing ' + optionsActor + ' ' + thisActor)
             if '/users/' in thisActor:
                 nickname = thisActor.split('/users/')[1]
-                personSnooze(base_dir, nickname,
-                             domain, optionsActor)
+                person_snooze(base_dir, nickname,
+                              domain, optionsActor)
                 if calling_domain.endswith('.onion') and onion_domain:
                     thisActor = 'http://' + onion_domain + usersPath
                 elif (calling_domain.endswith('.i2p') and i2p_domain):
@@ -2804,8 +2804,8 @@ class PubServer(BaseHTTPRequestHandler):
                 print('Unsnoozing ' + optionsActor + ' ' + thisActor)
             if '/users/' in thisActor:
                 nickname = thisActor.split('/users/')[1]
-                personUnsnooze(base_dir, nickname,
-                               domain, optionsActor)
+                person_unsnooze(base_dir, nickname,
+                                domain, optionsActor)
                 if calling_domain.endswith('.onion') and onion_domain:
                     thisActor = 'http://' + onion_domain + usersPath
                 elif (calling_domain.endswith('.i2p') and i2p_domain):
@@ -5287,15 +5287,15 @@ class PubServer(BaseHTTPRequestHandler):
                             actorChanged = True
 
                     # change matrix address
-                    currentMatrixAddress = getMatrixAddress(actor_json)
+                    currentMatrixAddress = get_matrix_address(actor_json)
                     if fields.get('matrixAddress'):
                         if fields['matrixAddress'] != currentMatrixAddress:
-                            setMatrixAddress(actor_json,
-                                             fields['matrixAddress'])
+                            set_matrix_address(actor_json,
+                                               fields['matrixAddress'])
                             actorChanged = True
                     else:
                         if currentMatrixAddress:
-                            setMatrixAddress(actor_json, '')
+                            set_matrix_address(actor_json, '')
                             actorChanged = True
 
                     # change SSB address
@@ -5419,29 +5419,29 @@ class PubServer(BaseHTTPRequestHandler):
                             actorChanged = True
 
                     # change donation link
-                    currentDonateUrl = getDonationUrl(actor_json)
+                    currentDonateUrl = get_donation_url(actor_json)
                     if fields.get('donateUrl'):
                         if fields['donateUrl'] != currentDonateUrl:
-                            setDonationUrl(actor_json,
-                                           fields['donateUrl'])
+                            set_donation_url(actor_json,
+                                             fields['donateUrl'])
                             actorChanged = True
                     else:
                         if currentDonateUrl:
-                            setDonationUrl(actor_json, '')
+                            set_donation_url(actor_json, '')
                             actorChanged = True
 
                     # change website
                     currentWebsite = \
-                        getWebsite(actor_json, self.server.translate)
+                        get_website(actor_json, self.server.translate)
                     if fields.get('websiteUrl'):
                         if fields['websiteUrl'] != currentWebsite:
-                            setWebsite(actor_json,
-                                       fields['websiteUrl'],
-                                       self.server.translate)
+                            set_website(actor_json,
+                                        fields['websiteUrl'],
+                                        self.server.translate)
                             actorChanged = True
                     else:
                         if currentWebsite:
-                            setWebsite(actor_json, '', self.server.translate)
+                            set_website(actor_json, '', self.server.translate)
                             actorChanged = True
 
                     # account moved to new address
@@ -6475,7 +6475,7 @@ class PubServer(BaseHTTPRequestHandler):
                         actor_json['@context'] = [
                             'https://www.w3.org/ns/activitystreams',
                             'https://w3id.org/security/v1',
-                            getDefaultPersonContext()
+                            get_default_person_context()
                         ]
                         if actor_json.get('nomadicLocations'):
                             del actor_json['nomadicLocations']
@@ -6485,8 +6485,8 @@ class PubServer(BaseHTTPRequestHandler):
                         if not actor_json.get('featuredTags'):
                             actor_json['featuredTags'] = \
                                 actor_json['id'] + '/collections/tags'
-                        randomizeActorImages(actor_json)
-                        addActorUpdateTimestamp(actor_json)
+                        randomize_actor_images(actor_json)
+                        add_actor_update_timestamp(actor_json)
                         # save the actor
                         save_json(actor_json, actorFilename)
                         webfinger_update(base_dir,
@@ -6509,7 +6509,7 @@ class PubServer(BaseHTTPRequestHandler):
                         save_json(actor_json, actorCacheFilename)
                         # send profile update to followers
                         pubNumber, pubDate = get_status_number()
-                        updateActorJson = getActorUpdateJson(actor_json)
+                        updateActorJson = get_actor_update_json(actor_json)
                         print('Sending actor update: ' + str(updateActorJson))
                         self._postToOutbox(updateActorJson,
                                            self.server.project_version,
@@ -6518,8 +6518,8 @@ class PubServer(BaseHTTPRequestHandler):
                     # deactivate the account
                     if fields.get('deactivateThisAccount'):
                         if fields['deactivateThisAccount'] == 'on':
-                            deactivateAccount(base_dir,
-                                              nickname, domain)
+                            deactivate_account(base_dir,
+                                               nickname, domain)
                             self._clearLoginDetails(nickname,
                                                     calling_domain)
                             self.server.POSTbusy = False
@@ -7111,10 +7111,10 @@ class PubServer(BaseHTTPRequestHandler):
                 if actor_json['type'] == 'Group':
                     isGroup = True
                 lockedAccount = get_locked_account(actor_json)
-                donateUrl = getDonationUrl(actor_json)
-                websiteUrl = getWebsite(actor_json, self.server.translate)
+                donateUrl = get_donation_url(actor_json)
+                websiteUrl = get_website(actor_json, self.server.translate)
                 xmppAddress = get_xmpp_address(actor_json)
-                matrixAddress = getMatrixAddress(actor_json)
+                matrixAddress = get_matrix_address(actor_json)
                 ssbAddress = get_ssb_address(actor_json)
                 blogAddress = getBlogAddress(actor_json)
                 toxAddress = get_tox_address(actor_json)
@@ -7707,9 +7707,9 @@ class PubServer(BaseHTTPRequestHandler):
             # but the html still needs to be generated before this call ends
             announceId = remove_id_ending(announceJson['id'])
             announceFilename = \
-                savePostToBox(base_dir, http_prefix, announceId,
-                              self.postToNickname, domain_full,
-                              announceJson, 'outbox')
+                save_post_to_box(base_dir, http_prefix, announceId,
+                                 self.postToNickname, domain_full,
+                                 announceJson, 'outbox')
 
             # clear the icon from the cache so that it gets updated
             if self.server.iconsCache.get('repeat.png'):
@@ -8140,8 +8140,8 @@ class PubServer(BaseHTTPRequestHandler):
 
         # if this is an announce then send the like to the original post
         origActor, origPostUrl, origFilename = \
-            getOriginalPostFromAnnounceUrl(likeUrl, base_dir,
-                                           self.postToNickname, domain)
+            get_original_post_from_announce_url(likeUrl, base_dir,
+                                                self.postToNickname, domain)
         likeUrl2 = likeUrl
         likedPostFilename = origFilename
         if origActor and origPostUrl:
@@ -8304,8 +8304,8 @@ class PubServer(BaseHTTPRequestHandler):
 
         # if this is an announce then send the like to the original post
         origActor, origPostUrl, origFilename = \
-            getOriginalPostFromAnnounceUrl(likeUrl, base_dir,
-                                           self.postToNickname, domain)
+            get_original_post_from_announce_url(likeUrl, base_dir,
+                                                self.postToNickname, domain)
         likeUrl2 = likeUrl
         likedPostFilename = origFilename
         if origActor and origPostUrl:
@@ -8473,8 +8473,8 @@ class PubServer(BaseHTTPRequestHandler):
         # if this is an announce then send the emoji reaction
         # to the original post
         origActor, origPostUrl, origFilename = \
-            getOriginalPostFromAnnounceUrl(reactionUrl, base_dir,
-                                           self.postToNickname, domain)
+            get_original_post_from_announce_url(reactionUrl, base_dir,
+                                                self.postToNickname, domain)
         reactionUrl2 = reactionUrl
         reactionPostFilename = origFilename
         if origActor and origPostUrl:
@@ -8657,8 +8657,8 @@ class PubServer(BaseHTTPRequestHandler):
         # if this is an announce then send the emoji reaction
         # to the original post
         origActor, origPostUrl, origFilename = \
-            getOriginalPostFromAnnounceUrl(reactionUrl, base_dir,
-                                           self.postToNickname, domain)
+            get_original_post_from_announce_url(reactionUrl, base_dir,
+                                                self.postToNickname, domain)
         reactionUrl2 = reactionUrl
         reactionPostFilename = origFilename
         if origActor and origPostUrl:
@@ -9667,8 +9667,8 @@ class PubServer(BaseHTTPRequestHandler):
         if actor_json.get('hasOccupation'):
             if self._requestHTTP():
                 getPerson = \
-                    personLookup(domain, path.replace('/roles', ''),
-                                 base_dir)
+                    person_lookup(domain, path.replace('/roles', ''),
+                                  base_dir)
                 if getPerson:
                     defaultTimeline = \
                         self.server.defaultTimeline
@@ -9771,9 +9771,9 @@ class PubServer(BaseHTTPRequestHandler):
                     if noOfActorSkills(actor_json) > 0:
                         if self._requestHTTP():
                             getPerson = \
-                                personLookup(domain,
-                                             path.replace('/skills', ''),
-                                             base_dir)
+                                person_lookup(domain,
+                                              path.replace('/skills', ''),
+                                              base_dir)
                             if getPerson:
                                 defaultTimeline =  \
                                     self.server.defaultTimeline
@@ -11820,9 +11820,9 @@ class PubServer(BaseHTTPRequestHandler):
                         pageNumber = int(pageNumberStr)
                     searchPath = path.split('?page=')[0]
                 getPerson = \
-                    personLookup(domain,
-                                 searchPath.replace('/' + sharesFileType, ''),
-                                 base_dir)
+                    person_lookup(domain,
+                                  searchPath.replace('/' + sharesFileType, ''),
+                                  base_dir)
                 if getPerson:
                     if not self._establishSession("showSharesFeed"):
                         self._404()
@@ -11939,9 +11939,9 @@ class PubServer(BaseHTTPRequestHandler):
                         pageNumber = int(pageNumberStr)
                     searchPath = path.split('?page=')[0]
                 getPerson = \
-                    personLookup(domain,
-                                 searchPath.replace('/following', ''),
-                                 base_dir)
+                    person_lookup(domain,
+                                  searchPath.replace('/following', ''),
+                                  base_dir)
                 if getPerson:
                     if not self._establishSession("showFollowingFeed"):
                         self._404()
@@ -12058,9 +12058,9 @@ class PubServer(BaseHTTPRequestHandler):
                         pageNumber = int(pageNumberStr)
                     searchPath = path.split('?page=')[0]
                 getPerson = \
-                    personLookup(domain,
-                                 searchPath.replace('/followers', ''),
-                                 base_dir)
+                    person_lookup(domain,
+                                  searchPath.replace('/followers', ''),
+                                  base_dir)
                 if getPerson:
                     if not self._establishSession("showFollowersFeed"):
                         self._404()
@@ -12196,7 +12196,7 @@ class PubServer(BaseHTTPRequestHandler):
         """Shows the profile for a person
         """
         # look up a person
-        actor_json = personLookup(domain, path, base_dir)
+        actor_json = person_lookup(domain, path, base_dir)
         if not actor_json:
             return False
         if self._requestHTTP():
@@ -12298,7 +12298,7 @@ class PubServer(BaseHTTPRequestHandler):
         if self._requestHTTP():
             self._404()
             return False
-        actor_json = personLookup(domain, path, base_dir)
+        actor_json = person_lookup(domain, path, base_dir)
         if not actor_json:
             print('ERROR: no instance actor found')
             self._404()
@@ -12521,7 +12521,7 @@ class PubServer(BaseHTTPRequestHandler):
         """Shows a QR code for an account
         """
         nickname = get_nickname_from_actor(path)
-        savePersonQrcode(base_dir, nickname, domain, port)
+        save_person_qrcode(base_dir, nickname, domain, port)
         qrFilename = \
             acct_dir(base_dir, nickname, domain) + '/qrcode.png'
         if os.path.isfile(qrFilename):
@@ -18803,11 +18803,11 @@ def runDaemon(content_license_url: str,
 
     if not os.path.isdir(base_dir + '/accounts/inbox@' + domain):
         print('Creating shared inbox: inbox@' + domain)
-        createSharedInbox(base_dir, 'inbox', domain, port, http_prefix)
+        create_shared_inbox(base_dir, 'inbox', domain, port, http_prefix)
 
     if not os.path.isdir(base_dir + '/accounts/news@' + domain):
         print('Creating news inbox: news@' + domain)
-        createNewsInbox(base_dir, domain, port, http_prefix)
+        create_news_inbox(base_dir, domain, port, http_prefix)
         set_config_param(base_dir, "lists_enabled", "Murdoch press")
 
     # dict of known web crawlers accessing nodeinfo or the masto API
@@ -18994,7 +18994,7 @@ def runDaemon(content_license_url: str,
 
     # signing key used for authorized fetch
     # this is the instance actor private key
-    httpd.signing_priv_key_pem = getInstanceActorKey(base_dir, domain)
+    httpd.signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
 
     if not unit_test:
         print('Creating inbox queue watchdog')

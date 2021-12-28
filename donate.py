@@ -14,11 +14,11 @@ def _getDonationTypes() -> []:
             'subscribestar')
 
 
-def _getWebsiteStrings() -> []:
+def _get_websiteStrings() -> []:
     return ['www', 'website', 'web', 'homepage']
 
 
-def getDonationUrl(actor_json: {}) -> str:
+def get_donation_url(actor_json: {}) -> str:
     """Returns a link used for donations
     """
     if not actor_json.get('attachment'):
@@ -43,12 +43,12 @@ def getDonationUrl(actor_json: {}) -> str:
     return ''
 
 
-def getWebsite(actor_json: {}, translate: {}) -> str:
+def get_website(actor_json: {}, translate: {}) -> str:
     """Returns a web address link
     """
     if not actor_json.get('attachment'):
         return ''
-    matchStrings = _getWebsiteStrings()
+    matchStrings = _get_websiteStrings()
     matchStrings.append(translate['Website'].lower())
     for property_value in actor_json['attachment']:
         if not property_value.get('name'):
@@ -65,7 +65,7 @@ def getWebsite(actor_json: {}, translate: {}) -> str:
     return ''
 
 
-def setDonationUrl(actor_json: {}, donateUrl: str) -> None:
+def set_donation_url(actor_json: {}, donateUrl: str) -> None:
     """Sets a link used for donations
     """
     notUrl = False
@@ -130,7 +130,7 @@ def setDonationUrl(actor_json: {}, donateUrl: str) -> None:
     actor_json['attachment'].append(newDonate)
 
 
-def setWebsite(actor_json: {}, websiteUrl: str, translate: {}) -> None:
+def set_website(actor_json: {}, websiteUrl: str, translate: {}) -> None:
     """Sets a web address
     """
     websiteUrl = websiteUrl.strip()
@@ -147,7 +147,7 @@ def setWebsite(actor_json: {}, websiteUrl: str, translate: {}) -> None:
     if not actor_json.get('attachment'):
         actor_json['attachment'] = []
 
-    matchStrings = _getWebsiteStrings()
+    matchStrings = _get_websiteStrings()
     matchStrings.append(translate['Website'].lower())
 
     # remove any existing value
