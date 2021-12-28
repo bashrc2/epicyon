@@ -22,7 +22,7 @@ from hashlib import sha256
 from hashlib import md5
 from shutil import copyfile
 from session import create_session
-from webfinger import webfingerMeta
+from webfinger import webfinger_meta
 from webfinger import webfingerNodeInfo
 from webfinger import webfingerLookup
 from webfinger import webfingerUpdate
@@ -1182,15 +1182,15 @@ class PubServer(BaseHTTPRequestHandler):
             if calling_domain.endswith('.onion') and \
                self.server.onion_domain:
                 wfResult = \
-                    webfingerMeta('http', self.server.onion_domain)
+                    webfinger_meta('http', self.server.onion_domain)
             elif (calling_domain.endswith('.i2p') and
                   self.server.i2p_domain):
                 wfResult = \
-                    webfingerMeta('http', self.server.i2p_domain)
+                    webfinger_meta('http', self.server.i2p_domain)
             else:
                 wfResult = \
-                    webfingerMeta(self.server.http_prefix,
-                                  self.server.domain_full)
+                    webfinger_meta(self.server.http_prefix,
+                                   self.server.domain_full)
             if wfResult:
                 msg = wfResult.encode('utf-8')
                 msglen = len(msg)

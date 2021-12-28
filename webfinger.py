@@ -195,7 +195,7 @@ def webfingerNodeInfo(http_prefix: str, domain_full: str) -> {}:
     return nodeinfo
 
 
-def webfingerMeta(http_prefix: str, domain_full: str) -> str:
+def webfinger_meta(http_prefix: str, domain_full: str) -> str:
     """Return /.well-known/host-meta
     """
     metaStr = \
