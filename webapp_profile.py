@@ -28,7 +28,7 @@ from utils import get_image_formats
 from utils import acct_dir
 from utils import get_supported_languages
 from utils import local_actor_url
-from utils import getReplyIntervalHours
+from utils import get_reply_interval_hours
 from languages import getActorLanguages
 from skills import getSkills
 from theme import getThemesList
@@ -2302,8 +2302,8 @@ def htmlEditProfile(cssCache: {}, translate: {}, base_dir: str, path: str,
     editProfileForm += systemMonitorStr
 
     # Filtering and blocking section
-    replyIntervalHours = getReplyIntervalHours(base_dir, nickname, domain,
-                                               default_reply_interval_hrs)
+    replyIntervalHours = get_reply_interval_hours(base_dir, nickname, domain,
+                                                  default_reply_interval_hrs)
     editProfileForm += \
         _htmlEditProfileFiltering(base_dir, nickname, domain,
                                   user_agents_blocked, translate,

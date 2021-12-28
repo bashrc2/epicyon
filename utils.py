@@ -1367,7 +1367,7 @@ def locate_post(base_dir: str, nickname: str, domain: str,
     return None
 
 
-def _getPublishedDate(post_json_object: {}) -> str:
+def _get_published_date(post_json_object: {}) -> str:
     """Returns the published date on the given post
     """
     published = None
@@ -1383,19 +1383,19 @@ def _getPublishedDate(post_json_object: {}) -> str:
     return published
 
 
-def getReplyIntervalHours(base_dir: str, nickname: str, domain: str,
-                          default_reply_interval_hrs: int) -> int:
+def get_reply_interval_hours(base_dir: str, nickname: str, domain: str,
+                             default_reply_interval_hrs: int) -> int:
     """Returns the reply interval for the given account.
     The reply interval is the number of hours after a post being made
     during which replies are allowed
     """
-    replyIntervalFilename = \
+    reply_interval_filename = \
         acct_dir(base_dir, nickname, domain) + '/.replyIntervalHours'
-    if os.path.isfile(replyIntervalFilename):
-        with open(replyIntervalFilename, 'r') as fp:
-            hoursStr = fp.read()
-            if hoursStr.isdigit():
-                return int(hoursStr)
+    if os.path.isfile(reply_interval_filename):
+        with open(reply_interval_filename, 'r') as interval_file:
+            hours_str = interval_file.read()
+            if hours_str.isdigit():
+                return int(hours_str)
     return default_reply_interval_hrs
 
 
@@ -1405,17 +1405,17 @@ def setReplyIntervalHours(base_dir: str, nickname: str, domain: str,
     The reply interval is the number of hours after a post being made
     during which replies are allowed
     """
-    replyIntervalFilename = \
+    reply_interval_filename = \
         acct_dir(base_dir, nickname, domain) + '/.replyIntervalHours'
-    with open(replyIntervalFilename, 'w+') as fp:
+    with open(reply_interval_filename, 'w+') as interval_file:
         try:
-            fp.write(str(replyIntervalHours))
+            interval_file.write(str(replyIntervalHours))
             return True
-        except BaseException:
-            print('EX: setReplyIntervalHours unable to save reply interval ' +
-                  str(replyIntervalFilename) + ' ' +
+        except OSError:
+            print('EX: setReplyIntervalHours ' +
+                  'unable to save reply interval ' +
+                  str(reply_interval_filename) + ' ' +
                   str(replyIntervalHours))
-            pass
     return False
 
 
@@ -1436,7 +1436,7 @@ def canReplyTo(base_dir: str, nickname: str, domain: str,
         post_json_object = load_json(post_filename)
     if not post_json_object:
         return False
-    published = _getPublishedDate(post_json_object)
+    published = _get_published_date(post_json_object)
     if not published:
         return False
     try:
