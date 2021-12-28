@@ -128,20 +128,20 @@ from media import replace_twitter
 from media import attach_media
 from media import path_is_video
 from media import path_is_audio
-from blocking import getCWlistVariable
-from blocking import loadCWLists
-from blocking import updateBlockedCache
-from blocking import mutePost
-from blocking import unmutePost
-from blocking import setBrochMode
-from blocking import broch_modeIsActive
-from blocking import addBlock
-from blocking import removeBlock
-from blocking import addGlobalBlock
-from blocking import removeGlobalBlock
-from blocking import isBlockedHashtag
-from blocking import isBlockedDomain
-from blocking import getDomainBlocklist
+from blocking import get_cw_list_variable
+from blocking import load_cw_lists
+from blocking import update_blocked_cache
+from blocking import mute_post
+from blocking import unmute_post
+from blocking import set_broch_mode
+from blocking import broch_mode_is_active
+from blocking import add_block
+from blocking import remove_block
+from blocking import add_global_block
+from blocking import remove_global_block
+from blocking import is_blocked_hashtag
+from blocking import is_blocked_domain
+from blocking import get_domain_blocklist
 from roles import getActorRolesList
 from roles import setRole
 from roles import clearModeratorStatus
@@ -614,13 +614,13 @@ class PubServer(BaseHTTPRequestHandler):
         blockedUA = False
         if not agentDomain.startswith(calling_domain):
             self.server.blockedCacheLastUpdated = \
-                updateBlockedCache(self.server.base_dir,
-                                   self.server.blockedCache,
-                                   self.server.blockedCacheLastUpdated,
-                                   self.server.blockedCacheUpdateSecs)
+                update_blocked_cache(self.server.base_dir,
+                                     self.server.blockedCache,
+                                     self.server.blockedCacheLastUpdated,
+                                     self.server.blockedCacheUpdateSecs)
 
-            blockedUA = isBlockedDomain(self.server.base_dir, agentDomain,
-                                        self.server.blockedCache)
+            blockedUA = is_blocked_domain(self.server.base_dir, agentDomain,
+                                          self.server.blockedCache)
             # if self.server.debug:
             if blockedUA:
                 print('Blocked User agent: ' + agentDomain)
@@ -1061,7 +1061,7 @@ class PubServer(BaseHTTPRequestHandler):
         print('mastodon api v1: nickname ' + str(nickname))
         self._update_known_crawlers(uaStr)
 
-        broch_mode = broch_modeIsActive(base_dir)
+        broch_mode = broch_mode_is_active(base_dir)
         sendJson, sendJsonStr = \
             masto_api_v1_response(path,
                                   calling_domain,
@@ -1134,7 +1134,7 @@ class PubServer(BaseHTTPRequestHandler):
         # For example, if this or allied instances are being attacked
         # then numbers of accounts may be changing as people
         # migrate, and that information may be useful to an adversary
-        broch_mode = broch_modeIsActive(self.server.base_dir)
+        broch_mode = broch_mode_is_active(self.server.base_dir)
 
         nodeInfoVersion = self.server.project_version
         if not self.server.show_node_info_version or broch_mode:
@@ -1461,13 +1461,13 @@ class PubServer(BaseHTTPRequestHandler):
             get_domain_from_actor(message_json['actor'])
 
         self.server.blockedCacheLastUpdated = \
-            updateBlockedCache(self.server.base_dir,
-                               self.server.blockedCache,
-                               self.server.blockedCacheLastUpdated,
-                               self.server.blockedCacheUpdateSecs)
+            update_blocked_cache(self.server.base_dir,
+                                 self.server.blockedCache,
+                                 self.server.blockedCacheLastUpdated,
+                                 self.server.blockedCacheUpdateSecs)
 
-        if isBlockedDomain(self.server.base_dir, messageDomain,
-                           self.server.blockedCache):
+        if is_blocked_domain(self.server.base_dir, messageDomain,
+                             self.server.blockedCache):
             print('POST from blocked domain ' + messageDomain)
             self._400()
             self.server.POSTbusy = False
@@ -1527,10 +1527,10 @@ class PubServer(BaseHTTPRequestHandler):
             return 5
 
         self.server.blockedCacheLastUpdated = \
-            updateBlockedCache(self.server.base_dir,
-                               self.server.blockedCache,
-                               self.server.blockedCacheLastUpdated,
-                               self.server.blockedCacheUpdateSecs)
+            update_blocked_cache(self.server.base_dir,
+                                 self.server.blockedCache,
+                                 self.server.blockedCacheLastUpdated,
+                                 self.server.blockedCacheUpdateSecs)
 
         queueFilename = \
             save_post_to_inbox_queue(self.server.base_dir,
@@ -1981,7 +1981,7 @@ class PubServer(BaseHTTPRequestHandler):
                             nickname = '*'
                             fullBlockDomain = moderationText.strip()
                     if fullBlockDomain or nickname.startswith('#'):
-                        addGlobalBlock(base_dir, nickname, fullBlockDomain)
+                        add_global_block(base_dir, nickname, fullBlockDomain)
                 if moderationButton == 'unblock':
                     fullBlockDomain = None
                     if moderationText.startswith('http') or \
@@ -2000,7 +2000,8 @@ class PubServer(BaseHTTPRequestHandler):
                             nickname = '*'
                             fullBlockDomain = moderationText.strip()
                     if fullBlockDomain or nickname.startswith('#'):
-                        removeGlobalBlock(base_dir, nickname, fullBlockDomain)
+                        remove_global_block(base_dir, nickname,
+                                            fullBlockDomain)
                 if moderationButton == 'remove':
                     if '/statuses/' not in moderationText:
                         remove_account(base_dir, nickname, domain, port)
@@ -2618,9 +2619,9 @@ class PubServer(BaseHTTPRequestHandler):
         if '&submitBlock=' in optionsConfirmParams:
             print('Adding block by ' + chooserNickname +
                   ' of ' + optionsActor)
-            if addBlock(base_dir, chooserNickname,
-                        domain,
-                        optionsNickname, optionsDomainFull):
+            if add_block(base_dir, chooserNickname,
+                         domain,
+                         optionsNickname, optionsDomainFull):
                 # send block activity
                 self._sendBlock(http_prefix,
                                 chooserNickname, domain_full,
@@ -3136,10 +3137,10 @@ class PubServer(BaseHTTPRequestHandler):
             else:
                 print('Adding block by ' + blockerNickname +
                       ' of ' + blockingActor)
-                if addBlock(base_dir, blockerNickname,
-                            domain,
-                            blockingNickname,
-                            blockingDomainFull):
+                if add_block(base_dir, blockerNickname,
+                             domain,
+                             blockingNickname,
+                             blockingDomainFull):
                     # send block activity
                     self._sendBlock(http_prefix,
                                     blockerNickname, domain_full,
@@ -3224,9 +3225,9 @@ class PubServer(BaseHTTPRequestHandler):
                 if debug:
                     print(blockerNickname + ' stops blocking ' +
                           blockingActor)
-                removeBlock(base_dir,
-                            blockerNickname, domain,
-                            blockingNickname, blockingDomainFull)
+                remove_block(base_dir,
+                             blockerNickname, domain,
+                             blockingNickname, blockingDomainFull)
         if calling_domain.endswith('.onion') and onion_domain:
             originPathStr = 'http://' + onion_domain + usersPath
         elif (calling_domain.endswith('.i2p') and i2p_domain):
@@ -4281,7 +4282,7 @@ class PubServer(BaseHTTPRequestHandler):
 
             if fields.get('hashtagCategory'):
                 categoryStr = fields['hashtagCategory'].lower()
-                if not isBlockedHashtag(base_dir, categoryStr) and \
+                if not is_blocked_hashtag(base_dir, categoryStr) and \
                    not isFiltered(base_dir, nickname, domain, categoryStr):
                     setHashtagCategory(base_dir, hashtag, categoryStr, False)
             else:
@@ -5576,9 +5577,9 @@ class PubServer(BaseHTTPRequestHandler):
                             currBrochMode = \
                                 get_config_param(base_dir, "broch_mode")
                             if broch_mode != currBrochMode:
-                                setBrochMode(self.server.base_dir,
-                                             self.server.domain_full,
-                                             broch_mode)
+                                set_broch_mode(self.server.base_dir,
+                                               self.server.domain_full,
+                                               broch_mode)
                                 set_config_param(base_dir, "broch_mode",
                                                  broch_mode)
 
@@ -6381,7 +6382,7 @@ class PubServer(BaseHTTPRequestHandler):
                         # set selected content warning lists
                         newListsEnabled = ''
                         for name, item in self.server.cw_lists.items():
-                            listVarName = getCWlistVariable(name)
+                            listVarName = get_cw_list_variable(name)
                             if fields.get(listVarName):
                                 if fields[listVarName] == 'on':
                                     if newListsEnabled:
@@ -7515,7 +7516,7 @@ class PubServer(BaseHTTPRequestHandler):
         if '?page=' in hashtag:
             hashtag = hashtag.split('?page=')[0]
         hashtag = urllib.parse.unquote_plus(hashtag)
-        if isBlockedHashtag(base_dir, hashtag):
+        if is_blocked_hashtag(base_dir, hashtag):
             print('BLOCK: hashtag #' + hashtag)
             msg = htmlHashtagBlocked(self.server.css_cache, base_dir,
                                      self.server.translate).encode('utf-8')
@@ -7584,7 +7585,7 @@ class PubServer(BaseHTTPRequestHandler):
         """Return an RSS 2 feed for a hashtag
         """
         hashtag = path.split('/tags/rss2/')[1]
-        if isBlockedHashtag(base_dir, hashtag):
+        if is_blocked_hashtag(base_dir, hashtag):
             self._400()
             return
         nickname = None
@@ -9237,27 +9238,28 @@ class PubServer(BaseHTTPRequestHandler):
         actor = \
             http_prefix + '://' + domain_full + path.split('?mute=')[0]
         nickname = get_nickname_from_actor(actor)
-        mutePost(base_dir, nickname, domain, port,
-                 http_prefix, muteUrl,
-                 self.server.recent_posts_cache, debug)
+        mute_post(base_dir, nickname, domain, port,
+                  http_prefix, muteUrl,
+                  self.server.recent_posts_cache, debug)
         muteFilename = \
             locate_post(base_dir, nickname, domain, muteUrl)
         if muteFilename:
-            print('mutePost: Regenerating html post for changed mute status')
-            mutePostJson = load_json(muteFilename, 0, 1)
-            if mutePostJson:
+            print('mute_post: Regenerating html post for changed mute status')
+            mute_postJson = load_json(muteFilename, 0, 1)
+            if mute_postJson:
                 cachedPostFilename = \
                     get_cached_post_filename(base_dir, nickname,
-                                             domain, mutePostJson)
-                print('mutePost: Muted post json: ' + str(mutePostJson))
-                print('mutePost: Muted post nickname: ' +
+                                             domain, mute_postJson)
+                print('mute_post: Muted post json: ' + str(mute_postJson))
+                print('mute_post: Muted post nickname: ' +
                       nickname + ' ' + domain)
-                print('mutePost: Muted post cache: ' + str(cachedPostFilename))
+                print('mute_post: Muted post cache: ' +
+                      str(cachedPostFilename))
                 showIndividualPostIcons = True
                 manuallyApproveFollowers = \
                     follower_approval_active(base_dir,
                                              nickname, domain)
-                showRepeats = not is_dm(mutePostJson)
+                showRepeats = not is_dm(mute_postJson)
                 showPublicOnly = False
                 storeToCache = True
                 useCacheOnly = False
@@ -9274,7 +9276,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.cached_webfingers,
                                      self.server.person_cache,
                                      nickname, domain,
-                                     self.server.port, mutePostJson,
+                                     self.server.port, mute_postJson,
                                      avatarUrl, showAvatarOptions,
                                      self.server.allow_deletion,
                                      http_prefix,
@@ -9346,28 +9348,28 @@ class PubServer(BaseHTTPRequestHandler):
         actor = \
             http_prefix + '://' + domain_full + path.split('?unmute=')[0]
         nickname = get_nickname_from_actor(actor)
-        unmutePost(base_dir, nickname, domain, port,
-                   http_prefix, muteUrl,
-                   self.server.recent_posts_cache, debug)
+        unmute_post(base_dir, nickname, domain, port,
+                    http_prefix, muteUrl,
+                    self.server.recent_posts_cache, debug)
         muteFilename = \
             locate_post(base_dir, nickname, domain, muteUrl)
         if muteFilename:
-            print('unmutePost: ' +
+            print('unmute_post: ' +
                   'Regenerating html post for changed unmute status')
-            mutePostJson = load_json(muteFilename, 0, 1)
-            if mutePostJson:
+            mute_postJson = load_json(muteFilename, 0, 1)
+            if mute_postJson:
                 cachedPostFilename = \
                     get_cached_post_filename(base_dir, nickname,
-                                             domain, mutePostJson)
-                print('unmutePost: Unmuted post json: ' + str(mutePostJson))
-                print('unmutePost: Unmuted post nickname: ' +
+                                             domain, mute_postJson)
+                print('unmute_post: Unmuted post json: ' + str(mute_postJson))
+                print('unmute_post: Unmuted post nickname: ' +
                       nickname + ' ' + domain)
-                print('unmutePost: Unmuted post cache: ' +
+                print('unmute_post: Unmuted post cache: ' +
                       str(cachedPostFilename))
                 showIndividualPostIcons = True
                 manuallyApproveFollowers = \
                     follower_approval_active(base_dir, nickname, domain)
-                showRepeats = not is_dm(mutePostJson)
+                showRepeats = not is_dm(mute_postJson)
                 showPublicOnly = False
                 storeToCache = True
                 useCacheOnly = False
@@ -9384,7 +9386,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.cached_webfingers,
                                      self.server.person_cache,
                                      nickname, domain,
-                                     self.server.port, mutePostJson,
+                                     self.server.port, mute_postJson,
                                      avatarUrl, showAvatarOptions,
                                      self.server.allow_deletion,
                                      http_prefix,
@@ -16119,7 +16121,7 @@ class PubServer(BaseHTTPRequestHandler):
             blockDomain = urllib.parse.unquote_plus(blockDomain.strip())
             if '?' in blockDomain:
                 blockDomain = blockDomain.split('?')[0]
-            addGlobalBlock(self.server.base_dir, '*', blockDomain)
+            add_global_block(self.server.base_dir, '*', blockDomain)
             msg = \
                 htmlAccountInfo(self.server.css_cache,
                                 self.server.translate,
@@ -16156,7 +16158,7 @@ class PubServer(BaseHTTPRequestHandler):
             searchHandle = urllib.parse.unquote_plus(searchHandle)
             blockDomain = blockDomain.split('?handle=')[0]
             blockDomain = urllib.parse.unquote_plus(blockDomain.strip())
-            removeGlobalBlock(self.server.base_dir, '*', blockDomain)
+            remove_global_block(self.server.base_dir, '*', blockDomain)
             msg = \
                 htmlAccountInfo(self.server.css_cache,
                                 self.server.translate,
@@ -18634,7 +18636,7 @@ def runDaemon(content_license_url: str,
     # It helps to avoid touching the disk and so improves flooding resistance
     httpd.blocklistUpdateCtr = 0
     httpd.blocklistUpdateInterval = 100
-    httpd.domainBlocklist = getDomainBlocklist(base_dir)
+    httpd.domainBlocklist = get_domain_blocklist(base_dir)
 
     httpd.manual_follower_approval = manual_follower_approval
     httpd.onion_domain = onion_domain
@@ -18792,9 +18794,9 @@ def runDaemon(content_license_url: str,
     httpd.blockedCacheLastUpdated = 0
     httpd.blockedCacheUpdateSecs = 120
     httpd.blockedCacheLastUpdated = \
-        updateBlockedCache(base_dir, httpd.blockedCache,
-                           httpd.blockedCacheLastUpdated,
-                           httpd.blockedCacheUpdateSecs)
+        update_blocked_cache(base_dir, httpd.blockedCache,
+                             httpd.blockedCacheLastUpdated,
+                             httpd.blockedCacheUpdateSecs)
 
     # cache to store css files
     httpd.css_cache = {}
@@ -18804,7 +18806,7 @@ def runDaemon(content_license_url: str,
         metadata_custom_emoji(base_dir, http_prefix, httpd.domain_full)
 
     # whether to enable broch mode, which locks down the instance
-    setBrochMode(base_dir, httpd.domain_full, broch_mode)
+    set_broch_mode(base_dir, httpd.domain_full, broch_mode)
 
     if not os.path.isdir(base_dir + '/accounts/inbox@' + domain):
         print('Creating shared inbox: inbox@' + domain)
@@ -18828,7 +18830,7 @@ def runDaemon(content_license_url: str,
         httpd.lists_enabled = lists_enabled
     else:
         httpd.lists_enabled = get_config_param(base_dir, "lists_enabled")
-    httpd.cw_lists = loadCWLists(base_dir, True)
+    httpd.cw_lists = load_cw_lists(base_dir, True)
 
     # set the avatar for the news account
     httpd.theme_name = get_config_param(base_dir, 'theme')

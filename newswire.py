@@ -33,8 +33,8 @@ from utils import remove_html
 from utils import is_account_dir
 from utils import acct_dir
 from utils import local_actor_url
-from blocking import isBlockedDomain
-from blocking import isBlockedHashtag
+from blocking import is_blocked_domain
+from blocking import is_blocked_hashtag
 from filters import isFiltered
 from session import downloadImageAnyMimeType
 
@@ -234,7 +234,7 @@ def _addNewswireDictEntry(base_dir: str, domain: str,
 
     # check that no tags are blocked
     for tag in postTags:
-        if isBlockedHashtag(base_dir, tag):
+        if is_blocked_hashtag(base_dir, tag):
             return
 
     _downloadNewswireFeedFavicon(session, base_dir, link, debug)
@@ -372,7 +372,7 @@ def _xml2StrToHashtagCategories(base_dir: str, xmlStr: str,
         if 'CDATA' in hashtagListStr:
             continue
         hashtagList = hashtagListStr.split(' ')
-        if not isBlockedHashtag(base_dir, categoryStr):
+        if not is_blocked_hashtag(base_dir, categoryStr):
             for hashtag in hashtagList:
                 setHashtagCategory(base_dir, hashtag, categoryStr,
                                    False, force)
@@ -437,7 +437,7 @@ def _xml2StrToDict(base_dir: str, domain: str, xmlStr: str,
         itemDomain = link.split('://')[1]
         if '/' in itemDomain:
             itemDomain = itemDomain.split('/')[0]
-        if isBlockedDomain(base_dir, itemDomain):
+        if is_blocked_domain(base_dir, itemDomain):
             continue
         pubDate = rssItem.split('<pubDate>')[1]
         pubDate = pubDate.split('</pubDate>')[0]
@@ -525,7 +525,7 @@ def _xml1StrToDict(base_dir: str, domain: str, xmlStr: str,
         itemDomain = link.split('://')[1]
         if '/' in itemDomain:
             itemDomain = itemDomain.split('/')[0]
-        if isBlockedDomain(base_dir, itemDomain):
+        if is_blocked_domain(base_dir, itemDomain):
             continue
         pubDate = rssItem.split('<dc:date>')[1]
         pubDate = pubDate.split('</dc:date>')[0]
@@ -601,7 +601,7 @@ def _atomFeedToDict(base_dir: str, domain: str, xmlStr: str,
         itemDomain = link.split('://')[1]
         if '/' in itemDomain:
             itemDomain = itemDomain.split('/')[0]
-        if isBlockedDomain(base_dir, itemDomain):
+        if is_blocked_domain(base_dir, itemDomain):
             continue
         pubDate = atomItem.split('<updated>')[1]
         pubDate = pubDate.split('</updated>')[0]
@@ -707,7 +707,7 @@ def _jsonFeedV1ToDict(base_dir: str, domain: str, xmlStr: str,
         itemDomain = link.split('://')[1]
         if '/' in itemDomain:
             itemDomain = itemDomain.split('/')[0]
-        if isBlockedDomain(base_dir, itemDomain):
+        if is_blocked_domain(base_dir, itemDomain):
             continue
         if jsonFeedItem.get('date_published'):
             if not isinstance(jsonFeedItem['date_published'], str):
@@ -747,7 +747,7 @@ def _atomFeedYTToDict(base_dir: str, domain: str, xmlStr: str,
     """
     if '<entry>' not in xmlStr:
         return {}
-    if isBlockedDomain(base_dir, 'www.youtube.com'):
+    if is_blocked_domain(base_dir, 'www.youtube.com'):
         return {}
     result = {}
     atomItems = xmlStr.split('<entry>')

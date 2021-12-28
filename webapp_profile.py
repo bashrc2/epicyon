@@ -73,7 +73,7 @@ from webapp_utils import endEditSection
 from blog import getBlogAddress
 from webapp_post import individualPostAsHtml
 from webapp_timeline import htmlIndividualShare
-from blocking import getCWlistVariable
+from blocking import get_cw_list_variable
 
 
 def _validProfilePreviewPost(post_json_object: {},
@@ -1777,7 +1777,7 @@ def _htmlEditProfileFiltering(base_dir: str, nickname: str, domain: str,
 
         cw_listsStr = ''
         for name, item in cw_lists.items():
-            variableName = getCWlistVariable(name)
+            variableName = get_cw_list_variable(name)
             listIsEnabled = False
             if lists_enabled:
                 if name in lists_enabled:

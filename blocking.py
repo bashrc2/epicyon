@@ -37,8 +37,8 @@ from conversation import muteConversation
 from conversation import unmuteConversation
 
 
-def addGlobalBlock(base_dir: str,
-                   blockNickname: str, blockDomain: str) -> bool:
+def add_global_block(base_dir: str,
+                     blockNickname: str, blockDomain: str) -> bool:
     """Global block which applies to all accounts
     """
     blockingFilename = base_dir + '/accounts/blocking.txt'
@@ -71,8 +71,8 @@ def addGlobalBlock(base_dir: str,
     return True
 
 
-def addBlock(base_dir: str, nickname: str, domain: str,
-             blockNickname: str, blockDomain: str) -> bool:
+def add_block(base_dir: str, nickname: str, domain: str,
+              blockNickname: str, blockDomain: str) -> bool:
     """Block the given account
     """
     if blockDomain.startswith(domain) and nickname == blockNickname:
@@ -139,9 +139,9 @@ def addBlock(base_dir: str, nickname: str, domain: str,
     return True
 
 
-def removeGlobalBlock(base_dir: str,
-                      unblockNickname: str,
-                      unblockDomain: str) -> bool:
+def remove_global_block(base_dir: str,
+                        unblockNickname: str,
+                        unblockDomain: str) -> bool:
     """Unblock the given global block
     """
     unblockingFilename = base_dir + '/accounts/blocking.txt'
@@ -198,8 +198,8 @@ def removeGlobalBlock(base_dir: str,
     return False
 
 
-def removeBlock(base_dir: str, nickname: str, domain: str,
-                unblockNickname: str, unblockDomain: str) -> bool:
+def remove_block(base_dir: str, nickname: str, domain: str,
+                 unblockNickname: str, unblockDomain: str) -> bool:
     """Unblock the given account
     """
     domain = remove_domain_port(domain)
@@ -229,7 +229,7 @@ def removeBlock(base_dir: str, nickname: str, domain: str,
     return False
 
 
-def isBlockedHashtag(base_dir: str, hashtag: str) -> bool:
+def is_blocked_hashtag(base_dir: str, hashtag: str) -> bool:
     """Is the given hashtag blocked?
     """
     # avoid very long hashtags
@@ -245,7 +245,7 @@ def isBlockedHashtag(base_dir: str, hashtag: str) -> bool:
     return False
 
 
-def getDomainBlocklist(base_dir: str) -> str:
+def get_domain_blocklist(base_dir: str) -> str:
     """Returns all globally blocked domains as a string
     This can be used for fast matching to mitigate flooding
     """
@@ -266,10 +266,10 @@ def getDomainBlocklist(base_dir: str) -> str:
     return blockedStr
 
 
-def updateBlockedCache(base_dir: str,
-                       blockedCache: [],
-                       blockedCacheLastUpdated: int,
-                       blockedCacheUpdateSecs: int) -> int:
+def update_blocked_cache(base_dir: str,
+                         blockedCache: [],
+                         blockedCacheLastUpdated: int,
+                         blockedCacheUpdateSecs: int) -> int:
     """Updates the cache of globally blocked domains held in memory
     """
     curr_time = int(time.time())
@@ -308,8 +308,8 @@ def _getShortDomain(domain: str) -> str:
     return None
 
 
-def isBlockedDomain(base_dir: str, domain: str,
-                    blockedCache: [] = None) -> bool:
+def is_blocked_domain(base_dir: str, domain: str,
+                      blockedCache: [] = None) -> bool:
     """Is the given domain blocked?
     """
     if '.' not in domain:
@@ -320,7 +320,7 @@ def isBlockedDomain(base_dir: str, domain: str,
 
     shortDomain = _getShortDomain(domain)
 
-    if not broch_modeIsActive(base_dir):
+    if not broch_mode_is_active(base_dir):
         if blockedCache:
             for blockedStr in blockedCache:
                 if '*@' + domain in blockedStr:
@@ -368,7 +368,7 @@ def isBlocked(base_dir: str, nickname: str, domain: str,
     if blockNickname and blockDomain:
         blockHandle = blockNickname + '@' + blockDomain
 
-    if not broch_modeIsActive(base_dir):
+    if not broch_mode_is_active(base_dir):
         # instance level block list
         if blockedCache:
             for blockedStr in blockedCache:
@@ -455,8 +455,8 @@ def outboxBlock(base_dir: str, http_prefix: str,
     domainBlocked, portBlocked = get_domain_from_actor(message_json['object'])
     domainBlockedFull = get_full_domain(domainBlocked, portBlocked)
 
-    addBlock(base_dir, nickname, domain,
-             nicknameBlocked, domainBlockedFull)
+    add_block(base_dir, nickname, domain,
+              nicknameBlocked, domainBlockedFull)
 
     if debug:
         print('DEBUG: post blocked via c2s - ' + post_filename)
@@ -513,27 +513,27 @@ def outboxUndoBlock(base_dir: str, http_prefix: str,
     domainBlocked, portBlocked = get_domain_from_actor(domainObject)
     domainBlockedFull = get_full_domain(domainBlocked, portBlocked)
 
-    removeBlock(base_dir, nickname, domain,
-                nicknameBlocked, domainBlockedFull)
+    remove_block(base_dir, nickname, domain,
+                 nicknameBlocked, domainBlockedFull)
     if debug:
         print('DEBUG: post undo blocked via c2s - ' + post_filename)
 
 
-def mutePost(base_dir: str, nickname: str, domain: str, port: int,
-             http_prefix: str, post_id: str, recent_posts_cache: {},
-             debug: bool) -> None:
+def mute_post(base_dir: str, nickname: str, domain: str, port: int,
+              http_prefix: str, post_id: str, recent_posts_cache: {},
+              debug: bool) -> None:
     """ Mutes the given post
     """
-    print('mutePost: post_id ' + post_id)
+    print('mute_post: post_id ' + post_id)
     post_filename = locate_post(base_dir, nickname, domain, post_id)
     if not post_filename:
-        print('mutePost: file not found ' + post_id)
+        print('mute_post: file not found ' + post_id)
         return
     post_json_object = load_json(post_filename)
     if not post_json_object:
-        print('mutePost: object not loaded ' + post_id)
+        print('mute_post: object not loaded ' + post_id)
         return
-    print('mutePost: ' + str(post_json_object))
+    print('mute_post: ' + str(post_json_object))
 
     postJsonObj = post_json_object
     alsoUpdatePostId = None
@@ -582,7 +582,7 @@ def mutePost(base_dir: str, nickname: str, domain: str, port: int,
         postJsonObj['ignores']['totalItems'] = igIt
     postJsonObj['muted'] = True
     if save_json(post_json_object, post_filename):
-        print('mutePost: saved ' + post_filename)
+        print('mute_post: saved ' + post_filename)
 
     # remove cached post so that the muted version gets recreated
     # without its content text and/or image
@@ -653,9 +653,9 @@ def mutePost(base_dir: str, nickname: str, domain: str, port: int,
                 print('MUTE: ' + alsoUpdatePostId + ' removed referenced html')
 
 
-def unmutePost(base_dir: str, nickname: str, domain: str, port: int,
-               http_prefix: str, post_id: str, recent_posts_cache: {},
-               debug: bool) -> None:
+def unmute_post(base_dir: str, nickname: str, domain: str, port: int,
+                http_prefix: str, post_id: str, recent_posts_cache: {},
+                debug: bool) -> None:
     """ Unmutes the given post
     """
     post_filename = locate_post(base_dir, nickname, domain, post_id)
@@ -671,7 +671,7 @@ def unmutePost(base_dir: str, nickname: str, domain: str, port: int,
             os.remove(muteFilename)
         except OSError:
             if debug:
-                print('EX: unmutePost mute filename not deleted ' +
+                print('EX: unmute_post mute filename not deleted ' +
                       str(muteFilename))
         print('UNMUTE: ' + muteFilename + ' file removed')
 
@@ -721,7 +721,7 @@ def unmutePost(base_dir: str, nickname: str, domain: str, port: int,
                 os.remove(cachedPostFilename)
             except OSError:
                 if debug:
-                    print('EX: unmutePost cached post not deleted ' +
+                    print('EX: unmute_post cached post not deleted ' +
                           str(cachedPostFilename))
 
     # if the post is in the recent posts cache then mark it as unmuted
@@ -755,7 +755,7 @@ def unmutePost(base_dir: str, nickname: str, domain: str, port: int,
                     except OSError:
                         if debug:
                             print('EX: ' +
-                                  'unmutePost cached ref post not removed ' +
+                                  'unmute_post cached ref post not removed ' +
                                   str(cachedPostFilename))
 
         if recent_posts_cache.get('json'):
@@ -811,9 +811,9 @@ def outboxMute(base_dir: str, http_prefix: str,
         print('WARN: unable to find nickname in ' + message_json['object'])
         return
 
-    mutePost(base_dir, nickname, domain, port,
-             http_prefix, message_json['object'], recent_posts_cache,
-             debug)
+    mute_post(base_dir, nickname, domain, port,
+              http_prefix, message_json['object'], recent_posts_cache,
+              debug)
 
     if debug:
         print('DEBUG: post muted via c2s - ' + post_filename)
@@ -867,22 +867,22 @@ def outboxUndoMute(base_dir: str, http_prefix: str,
               message_json['object']['object'])
         return
 
-    unmutePost(base_dir, nickname, domain, port,
-               http_prefix, message_json['object']['object'],
-               recent_posts_cache, debug)
+    unmute_post(base_dir, nickname, domain, port,
+                http_prefix, message_json['object']['object'],
+                recent_posts_cache, debug)
 
     if debug:
         print('DEBUG: post undo mute via c2s - ' + post_filename)
 
 
-def broch_modeIsActive(base_dir: str) -> bool:
+def broch_mode_is_active(base_dir: str) -> bool:
     """Returns true if broch mode is active
     """
     allowFilename = base_dir + '/accounts/allowedinstances.txt'
     return os.path.isfile(allowFilename)
 
 
-def setBrochMode(base_dir: str, domain_full: str, enabled: bool) -> None:
+def set_broch_mode(base_dir: str, domain_full: str, enabled: bool) -> None:
     """Broch mode can be used to lock down the instance during
     a period of time when it is temporarily under attack.
     For example, where an adversary is constantly spinning up new
@@ -899,7 +899,7 @@ def setBrochMode(base_dir: str, domain_full: str, enabled: bool) -> None:
             try:
                 os.remove(allowFilename)
             except OSError:
-                print('EX: setBrochMode allow file not deleted ' +
+                print('EX: set_broch_mode allow file not deleted ' +
                       str(allowFilename))
             print('Broch mode turned off')
     else:
@@ -982,7 +982,7 @@ def broch_modeLapses(base_dir: str, lapseDays: int) -> bool:
     return False
 
 
-def loadCWLists(base_dir: str, verbose: bool) -> {}:
+def load_cw_lists(base_dir: str, verbose: bool) -> {}:
     """Load lists used for content warnings
     """
     if not os.path.isdir(base_dir + '/cwlists'):
@@ -1067,7 +1067,7 @@ def addCWfromLists(post_json_object: {}, cw_lists: {}, translate: {},
         post_json_object['object']['sensitive'] = True
 
 
-def getCWlistVariable(listName: str) -> str:
+def get_cw_list_variable(listName: str) -> str:
     """Returns the variable associated with a CW list
     """
     return 'list' + listName.replace(' ', '').replace("'", '')

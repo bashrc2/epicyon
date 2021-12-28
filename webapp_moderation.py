@@ -25,7 +25,7 @@ from webapp_timeline import htmlTimeline
 from webapp_utils import getContentWarningButton
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
-from blocking import isBlockedDomain
+from blocking import is_blocked_domain
 from blocking import isBlocked
 from session import create_session
 
@@ -170,7 +170,7 @@ def htmlAccountInfo(css_cache: {}, translate: {},
             http_prefix + '://' + postDomain + '" ' + \
             'target="_blank" rel="nofollow noopener noreferrer">' + \
             postDomain + '</a> '
-        if isBlockedDomain(base_dir, postDomain):
+        if is_blocked_domain(base_dir, postDomain):
             blockedPostsLinks = ''
             urlCtr = 0
             for url in blockedPostUrls:

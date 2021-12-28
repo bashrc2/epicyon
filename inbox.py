@@ -83,7 +83,7 @@ from acceptreject import receiveAcceptReject
 from bookmarks import updateBookmarksCollection
 from bookmarks import undoBookmarksCollectionEntry
 from blocking import isBlocked
-from blocking import isBlockedDomain
+from blocking import is_blocked_domain
 from blocking import broch_modeLapses
 from filters import isFiltered
 from utils import update_announce_collection
@@ -500,7 +500,7 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
                     post_json_object['object']['inReplyTo']
                 replyDomain, replyPort = \
                     get_domain_from_actor(inReplyTo)
-                if isBlockedDomain(base_dir, replyDomain, blockedCache):
+                if is_blocked_domain(base_dir, replyDomain, blockedCache):
                     if debug:
                         print('WARN: post contains reply from ' +
                               str(actor) +
@@ -1866,7 +1866,7 @@ def _receiveAnnounce(recent_posts_cache: {},
         objectDomain = objectDomain.replace(prefix, '')
     if '/' in objectDomain:
         objectDomain = objectDomain.split('/')[0]
-    if isBlockedDomain(base_dir, objectDomain):
+    if is_blocked_domain(base_dir, objectDomain):
         if debug:
             print('DEBUG: announced domain is blocked')
         return False

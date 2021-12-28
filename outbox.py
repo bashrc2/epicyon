@@ -30,7 +30,7 @@ from utils import save_json
 from utils import acct_dir
 from utils import local_actor_url
 from utils import has_actor
-from blocking import isBlockedDomain
+from blocking import is_blocked_domain
 from blocking import outboxBlock
 from blocking import outboxUndoBlock
 from blocking import outboxMute
@@ -281,7 +281,7 @@ def postMessageToOutbox(session, translate: {},
 
         testDomain, testPort = get_domain_from_actor(message_json['actor'])
         testDomain = get_full_domain(testDomain, testPort)
-        if isBlockedDomain(base_dir, testDomain):
+        if is_blocked_domain(base_dir, testDomain):
             if debug:
                 print('DEBUG: domain is blocked: ' + message_json['actor'])
             return False

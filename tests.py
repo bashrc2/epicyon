@@ -170,7 +170,7 @@ from shares import updateSharedItemFederationToken
 from shares import mergeSharedItemTokens
 from shares import sendShareViaServer
 from shares import getSharedItemsCatalogViaServer
-from blocking import loadCWLists
+from blocking import load_cw_lists
 from blocking import addCWfromLists
 
 testServerGroupRunning = False
@@ -5860,7 +5860,7 @@ def _testWordsSimilarity() -> None:
 def _testAddCWfromLists(base_dir: str) -> None:
     print('testAddCWfromLists')
     translate = {}
-    cw_lists = loadCWLists(base_dir, True)
+    cw_lists = load_cw_lists(base_dir, True)
     assert cw_lists
 
     post_json_object = {

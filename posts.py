@@ -81,7 +81,7 @@ from content import replaceEmojiFromTags
 from content import removeTextFormatting
 from auth import create_basic_auth_header
 from blocking import isBlocked
-from blocking import isBlockedDomain
+from blocking import is_blocked_domain
 from filters import isFiltered
 from git import convertPostToPatch
 from linked_data_sig import generateJsonSignature
@@ -853,7 +853,7 @@ def _getPostsForBlockedDomains(base_dir: str,
             if isinstance(item['object']['inReplyTo'], str):
                 postDomain, postPort = \
                     get_domain_from_actor(item['object']['inReplyTo'])
-                if isBlockedDomain(base_dir, postDomain):
+                if is_blocked_domain(base_dir, postDomain):
                     if item['object'].get('url'):
                         url = item['object']['url']
                     else:
@@ -872,7 +872,7 @@ def _getPostsForBlockedDomains(base_dir: str,
                 if tagType == 'mention' and tagItem.get('href'):
                     postDomain, postPort = \
                         get_domain_from_actor(tagItem['href'])
-                    if isBlockedDomain(base_dir, postDomain):
+                    if is_blocked_domain(base_dir, postDomain):
                         if item['object'].get('url'):
                             url = item['object']['url']
                         else:
