@@ -12,7 +12,7 @@ from uuid import UUID
 from datetime import datetime
 from datetime import timedelta
 
-from utils import isPublicPost
+from utils import is_public_post
 from utils import load_json
 from utils import save_json
 from utils import locate_post
@@ -214,7 +214,7 @@ def getTodaysEvents(base_dir: str, nickname: str, domain: str,
             if not _isHappeningPost(post_json_object):
                 continue
 
-            publicEvent = isPublicPost(post_json_object)
+            publicEvent = is_public_post(post_json_object)
 
             postEvent = []
             dayOfMonth = None

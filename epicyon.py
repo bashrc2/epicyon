@@ -74,7 +74,7 @@ from utils import get_config_param
 from utils import get_domain_from_actor
 from utils import get_nickname_from_actor
 from utils import follow_person
-from utils import validNickname
+from utils import valid_nickname
 from utils import get_protocol_prefixes
 from utils import acct_dir
 from media import archiveMedia
@@ -2271,7 +2271,7 @@ if args.addaccount:
             print('The account domain is expected to be ' + configuredDomain)
             sys.exit()
 
-    if not validNickname(domain, nickname):
+    if not valid_nickname(domain, nickname):
         print(nickname + ' is a reserved name. Use something different.')
         sys.exit()
 
@@ -2315,7 +2315,7 @@ if args.addgroup:
     if nickname.startswith('!'):
         # remove preceding group indicator
         nickname = nickname[1:]
-    if not validNickname(domain, nickname):
+    if not valid_nickname(domain, nickname):
         print(nickname + ' is a reserved name. Use something different.')
         sys.exit()
     if not args.password:

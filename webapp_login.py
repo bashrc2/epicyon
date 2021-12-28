@@ -11,7 +11,7 @@ import os
 import time
 from shutil import copyfile
 from utils import get_config_param
-from utils import noOfAccounts
+from utils import no_of_accounts
 from utils import getNicknameValidationPattern
 from webapp_utils import setCustomBackground
 from webapp_utils import htmlHeaderWithWebsiteMarkup
@@ -61,7 +61,7 @@ def htmlLogin(css_cache: {}, translate: {},
               autocomplete: bool) -> str:
     """Shows the login screen
     """
-    accounts = noOfAccounts(base_dir)
+    accounts = no_of_accounts(base_dir)
 
     loginImage = 'login.png'
     loginImageFilename = None

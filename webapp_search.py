@@ -20,7 +20,7 @@ from utils import load_json
 from utils import get_domain_from_actor
 from utils import get_nickname_from_actor
 from utils import locate_post
-from utils import isPublicPost
+from utils import is_public_post
 from utils import first_paragraph_from_string
 from utils import search_box_posts
 from utils import get_alt_path
@@ -839,7 +839,7 @@ def htmlHashtagSearch(css_cache: {},
         if not post_json_object:
             index += 1
             continue
-        if not isPublicPost(post_json_object):
+        if not is_public_post(post_json_object):
             index += 1
             continue
         showIndividualPostIcons = False
@@ -964,7 +964,7 @@ def rssHashtagSearch(nickname: str, domain: str, port: int,
             continue
         post_json_object = load_json(post_filename)
         if post_json_object:
-            if not isPublicPost(post_json_object):
+            if not is_public_post(post_json_object):
                 index += 1
                 if index >= maxFeedLength:
                     break

@@ -1890,7 +1890,7 @@ def _isReservedName(nickname: str) -> bool:
     return False
 
 
-def validNickname(domain: str, nickname: str) -> bool:
+def valid_nickname(domain: str, nickname: str) -> bool:
     """Is the given nickname valid?
     """
     if len(nickname) == 0:
@@ -1911,7 +1911,7 @@ def validNickname(domain: str, nickname: str) -> bool:
     return True
 
 
-def noOfAccounts(base_dir: str) -> bool:
+def no_of_accounts(base_dir: str) -> bool:
     """Returns the number of accounts on the system
     """
     account_ctr = 0
@@ -1923,7 +1923,7 @@ def noOfAccounts(base_dir: str) -> bool:
     return account_ctr
 
 
-def noOfActiveAccountsMonthly(base_dir: str, months: int) -> bool:
+def no_of_active_accounts_monthly(base_dir: str, months: int) -> bool:
     """Returns the number of accounts on the system this month
     """
     account_ctr = 0
@@ -1947,8 +1947,8 @@ def noOfActiveAccountsMonthly(base_dir: str, months: int) -> bool:
     return account_ctr
 
 
-def isPublicPostFromUrl(base_dir: str, nickname: str, domain: str,
-                        post_url: str) -> bool:
+def is_public_post_from_url(base_dir: str, nickname: str, domain: str,
+                            post_url: str) -> bool:
     """Returns whether the given url is a public post
     """
     post_filename = locate_post(base_dir, nickname, domain, post_url)
@@ -1957,10 +1957,10 @@ def isPublicPostFromUrl(base_dir: str, nickname: str, domain: str,
     post_json_object = load_json(post_filename, 1)
     if not post_json_object:
         return False
-    return isPublicPost(post_json_object)
+    return is_public_post(post_json_object)
 
 
-def isPublicPost(post_json_object: {}) -> bool:
+def is_public_post(post_json_object: {}) -> bool:
     """Returns true if the given post is public
     """
     if not post_json_object.get('type'):

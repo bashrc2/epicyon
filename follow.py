@@ -15,7 +15,7 @@ from utils import remove_domain_port
 from utils import has_users_path
 from utils import get_full_domain
 from utils import get_followers_list
-from utils import validNickname
+from utils import valid_nickname
 from utils import domain_permitted
 from utils import get_domain_from_actor
 from utils import get_nickname_from_actor
@@ -463,7 +463,7 @@ def getFollowingFeed(base_dir: str, domain: str, port: int, path: str,
         nickname = path.replace('/@', '', 1).replace('/' + followFile, '')
     if not nickname:
         return None
-    if not validNickname(domain, nickname):
+    if not valid_nickname(domain, nickname):
         return None
 
     domain = get_full_domain(domain, port)

@@ -45,7 +45,7 @@ from utils import has_object_dict
 from utils import reject_post_id
 from utils import remove_invalid_chars
 from utils import file_last_modified
-from utils import isPublicPost
+from utils import is_public_post
 from utils import has_users_path
 from utils import valid_post_date
 from utils import get_full_domain
@@ -57,7 +57,7 @@ from utils import url_permitted
 from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
 from utils import deletePost
-from utils import validNickname
+from utils import valid_nickname
 from utils import locate_post
 from utils import load_json
 from utils import save_json
@@ -2037,7 +2037,7 @@ def getMentionedPeople(base_dir: str, http_prefix: str,
         mentionedDomain = handle.split('@')[1].strip('\n').strip('\r')
         if ':' in mentionedDomain:
             mentionedDomain = remove_domain_port(mentionedDomain)
-        if not validNickname(mentionedDomain, mentionedNickname):
+        if not valid_nickname(mentionedDomain, mentionedNickname):
             continue
         actor = \
             local_actor_url(http_prefix, mentionedNickname,
@@ -3580,7 +3580,7 @@ def removePostInteractions(post_json_object: {}, force: bool) -> bool:
         if not force:
             # If not authorized and it's a private post
             # then just don't show it within timelines
-            if not isPublicPost(post_json_object):
+            if not is_public_post(post_json_object):
                 return False
     else:
         postObj = post_json_object

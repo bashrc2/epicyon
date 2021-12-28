@@ -23,7 +23,7 @@ from utils import get_fav_filename_from_url
 from utils import get_base_content_from_post
 from utils import has_object_dict
 from utils import first_paragraph_from_string
-from utils import isPublicPost
+from utils import is_public_post
 from utils import locate_post
 from utils import load_json
 from utils import save_json
@@ -976,7 +976,7 @@ def _isNewswireBlogPost(post_json_object: {}) -> bool:
        post_json_object['object'].get('url') and \
        post_json_object['object'].get('content') and \
        post_json_object['object'].get('published'):
-        return isPublicPost(post_json_object)
+        return is_public_post(post_json_object)
     return False
 
 

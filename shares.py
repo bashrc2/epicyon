@@ -27,7 +27,7 @@ from utils import date_string_to_seconds
 from utils import date_seconds_to_string
 from utils import get_config_param
 from utils import get_full_domain
-from utils import validNickname
+from utils import valid_nickname
 from utils import load_json
 from utils import save_json
 from utils import get_image_extensions
@@ -483,7 +483,7 @@ def getSharesFeedForPerson(base_dir: str,
             path.replace('/@', '', 1).replace('/' + sharesFileType, '')
     if not nickname:
         return None
-    if not validNickname(domain, nickname):
+    if not valid_nickname(domain, nickname):
         return None
 
     domain = get_full_domain(domain, port)

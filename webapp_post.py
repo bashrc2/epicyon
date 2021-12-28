@@ -45,7 +45,7 @@ from utils import get_protocol_prefixes
 from utils import is_news_post
 from utils import is_blog_post
 from utils import get_display_name
-from utils import isPublicPost
+from utils import is_public_post
 from utils import update_recent_posts_cache
 from utils import remove_id_ending
 from utils import get_nickname_from_actor
@@ -1486,7 +1486,7 @@ def individualPostAsHtml(signing_priv_key_pem: str,
         if postIsDM:
             showRepeatIcon = False
         else:
-            if not isPublicPost(post_json_object):
+            if not is_public_post(post_json_object):
                 isPublicRepeat = True
 
     titleStr = ''
@@ -1635,7 +1635,7 @@ def individualPostAsHtml(signing_priv_key_pem: str,
             conversationId = post_json_object['object']['conversation']
 
     publicReply = False
-    if isPublicPost(post_json_object):
+    if is_public_post(post_json_object):
         publicReply = True
     replyStr = _getReplyIconHtml(base_dir, nickname, domain,
                                  publicReply,

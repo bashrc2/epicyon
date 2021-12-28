@@ -43,7 +43,7 @@ from utils import remove_id_ending
 from utils import get_protocol_prefixes
 from utils import is_blog_post
 from utils import remove_avatar_from_cache
-from utils import isPublicPost
+from utils import is_public_post
 from utils import get_cached_post_filename
 from utils import remove_post_from_cache
 from utils import url_permitted
@@ -205,7 +205,7 @@ def storeHashTags(base_dir: str, nickname: str, domain: str,
     """Extracts hashtags from an incoming post and updates the
     relevant tags files.
     """
-    if not isPublicPost(post_json_object):
+    if not is_public_post(post_json_object):
         return
     if not has_object_dict(post_json_object):
         return

@@ -45,7 +45,7 @@ from utils import remove_line_endings
 from utils import remove_domain_port
 from utils import get_status_number
 from utils import get_full_domain
-from utils import validNickname
+from utils import valid_nickname
 from utils import load_json
 from utils import save_json
 from utils import set_config_param
@@ -546,7 +546,7 @@ def registerAccount(base_dir: str, http_prefix: str, domain: str, port: int,
     """
     if _accountExists(base_dir, nickname, domain):
         return False
-    if not validNickname(domain, nickname):
+    if not valid_nickname(domain, nickname):
         print('REGISTER: Nickname ' + nickname + ' is invalid')
         return False
     if len(password) < 8:
@@ -598,7 +598,7 @@ def createPerson(base_dir: str, nickname: str, domain: str, port: int,
                  group_account: bool = False) -> (str, str, {}, {}):
     """Returns the private key, public key, actor and webfinger endpoint
     """
-    if not validNickname(domain, nickname):
+    if not valid_nickname(domain, nickname):
         return None, None, None, None
 
     # If a config.json file doesn't exist then don't decrement
@@ -883,7 +883,7 @@ def personLookup(domain: str, path: str, base_dir: str) -> {}:
         nickname = path.replace('/@', '', 1)
     if not nickname:
         return None
-    if not isSharedInbox and not validNickname(domain, nickname):
+    if not isSharedInbox and not valid_nickname(domain, nickname):
         return None
     domain = remove_domain_port(domain)
     handle = nickname + '@' + domain
@@ -946,7 +946,7 @@ def personBoxJson(recent_posts_cache: {},
         nickname = path.replace('/@', '', 1).replace('/' + boxname, '')
     if not nickname:
         return None
-    if not validNickname(domain, nickname):
+    if not valid_nickname(domain, nickname):
         return None
     if boxname == 'inbox':
         return createInbox(recent_posts_cache,

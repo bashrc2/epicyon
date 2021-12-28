@@ -10,8 +10,8 @@ __module_group__ = "Metadata"
 import os
 from utils import is_account_dir
 from utils import load_json
-from utils import noOfAccounts
-from utils import noOfActiveAccountsMonthly
+from utils import no_of_accounts
+from utils import no_of_active_accounts_monthly
 
 
 def _getStatusCount(base_dir: str) -> int:
@@ -47,9 +47,9 @@ def metaDataNodeInfo(base_dir: str,
     sensitive
     """
     if showAccounts:
-        activeAccounts = noOfAccounts(base_dir)
-        activeAccountsMonthly = noOfActiveAccountsMonthly(base_dir, 1)
-        activeAccountsHalfYear = noOfActiveAccountsMonthly(base_dir, 6)
+        activeAccounts = no_of_accounts(base_dir)
+        activeAccountsMonthly = no_of_active_accounts_monthly(base_dir, 1)
+        activeAccountsHalfYear = no_of_active_accounts_monthly(base_dir, 6)
         localPosts = _getStatusCount(base_dir)
     else:
         activeAccounts = 1
@@ -132,7 +132,7 @@ def metaDataInstance(showAccounts: bool,
         adminActor['preferredUsername']
 
     if showAccounts:
-        activeAccounts = noOfAccounts(base_dir)
+        activeAccounts = no_of_accounts(base_dir)
         localPosts = _getStatusCount(base_dir)
     else:
         activeAccounts = 1

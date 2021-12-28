@@ -70,7 +70,7 @@ from utils import user_agent_domain
 from utils import camel_case_split
 from utils import decoded_host
 from utils import get_full_domain
-from utils import validNickname
+from utils import valid_nickname
 from utils import first_paragraph_from_string
 from utils import remove_id_ending
 from utils import update_recent_posts_cache
@@ -4189,16 +4189,16 @@ def _testValidNickname():
     domain = 'somedomain.net'
 
     nickname = 'myvalidnick'
-    assert validNickname(domain, nickname)
+    assert valid_nickname(domain, nickname)
 
     nickname = 'my.invalid.nick'
-    assert not validNickname(domain, nickname)
+    assert not valid_nickname(domain, nickname)
 
     nickname = 'myinvalidnick?'
-    assert not validNickname(domain, nickname)
+    assert not valid_nickname(domain, nickname)
 
     nickname = 'my invalid nick?'
-    assert not validNickname(domain, nickname)
+    assert not valid_nickname(domain, nickname)
 
 
 def _testGuessHashtagCategory() -> None:

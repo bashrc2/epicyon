@@ -269,7 +269,7 @@ from utils import set_occupation_name
 from utils import load_translations_from_file
 from utils import get_local_network_addresses
 from utils import decoded_host
-from utils import isPublicPost
+from utils import is_public_post
 from utils import get_locked_account
 from utils import has_users_path
 from utils import get_full_domain
@@ -9989,7 +9989,7 @@ class PubServer(BaseHTTPRequestHandler):
         # Otherwize marketers could gain more social graph info
         if not authorized:
             pjo = post_json_object
-            if not isPublicPost(pjo):
+            if not is_public_post(pjo):
                 self._404()
                 self.server.GETbusy = False
                 return True

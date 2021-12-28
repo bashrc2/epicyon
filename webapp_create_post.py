@@ -9,7 +9,7 @@ __module_group__ = "Web Interface"
 
 import os
 from utils import get_new_post_endpoints
-from utils import isPublicPostFromUrl
+from utils import is_public_post_from_url
 from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
 from utils import get_media_formats
@@ -287,8 +287,8 @@ def htmlNewPost(css_cache: {}, media_instance: bool, translate: {},
 
                 # if replying to a non-public post then also make
                 # this post non-public
-                if not isPublicPostFromUrl(base_dir, nickname, domain,
-                                           inReplyTo):
+                if not is_public_post_from_url(base_dir, nickname, domain,
+                                               inReplyTo):
                     newPostPath = path
                     if '?' in newPostPath:
                         newPostPath = newPostPath.split('?')[0]
