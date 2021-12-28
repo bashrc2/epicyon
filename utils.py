@@ -2047,7 +2047,7 @@ def updateRecentPostsCache(recent_posts_cache: {}, max_recent_posts: int,
         recent_posts_cache['html'][post_id] = htmlStr
 
 
-def fileLastModified(filename: str) -> str:
+def file_last_modified(filename: str) -> str:
     """Returns the date when a file was last modified
     """
     time_val = os.path.getmtime(filename)
@@ -2062,7 +2062,7 @@ def get_css(base_dir: str, css_filename: str, css_cache: {}) -> str:
     if not os.path.isfile(css_filename):
         return None
 
-    last_modified = fileLastModified(css_filename)
+    last_modified = file_last_modified(css_filename)
 
     # has this already been loaded into the cache?
     if css_cache.get(css_filename):

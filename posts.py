@@ -44,7 +44,7 @@ from utils import get_port_from_domain
 from utils import has_object_dict
 from utils import reject_post_id
 from utils import remove_invalid_chars
-from utils import fileLastModified
+from utils import file_last_modified
 from utils import isPublicPost
 from utils import has_users_path
 from utils import valid_post_date
@@ -1687,7 +1687,7 @@ def getPinnedPostAsJson(base_dir: str, http_prefix: str,
                 'id': actor + '/pinned',
                 'inReplyTo': None,
                 'inReplyToAtomUri': None,
-                'published': fileLastModified(pinnedFilename),
+                'published': file_last_modified(pinnedFilename),
                 'replies': {},
                 'sensitive': False,
                 'summary': None,

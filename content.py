@@ -17,7 +17,7 @@ from utils import isValidLanguage
 from utils import get_image_extensions
 from utils import load_json
 from utils import save_json
-from utils import fileLastModified
+from utils import file_last_modified
 from utils import get_link_prefixes
 from utils import dangerous_markup
 from utils import is_pgp_encrypted
@@ -540,7 +540,7 @@ def _addEmoji(base_dir: str, wordStr: str,
             'url': emojiUrl
         },
         'name': ':' + emoji + ':',
-        "updated": fileLastModified(emojiFilename),
+        "updated": file_last_modified(emojiFilename),
         "id": emojiUrl.replace('.png', ''),
         'type': 'Emoji'
     }

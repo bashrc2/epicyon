@@ -22,7 +22,7 @@ from utils import is_group_account
 from utils import is_system_account
 from utils import invalid_ciphertext
 from utils import remove_html
-from utils import fileLastModified
+from utils import file_last_modified
 from utils import has_object_string
 from utils import has_object_string_object
 from utils import get_reply_interval_hours
@@ -163,7 +163,7 @@ def _updateCachedHashtagSwarm(base_dir: str, nickname: str, domain: str,
         acct_dir(base_dir, nickname, domain) + '/.hashtagSwarm'
     saveSwarm = True
     if os.path.isfile(cachedHashtagSwarmFilename):
-        lastModified = fileLastModified(cachedHashtagSwarmFilename)
+        lastModified = file_last_modified(cachedHashtagSwarmFilename)
         modifiedDate = None
         try:
             modifiedDate = \

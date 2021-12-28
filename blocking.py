@@ -20,7 +20,7 @@ from utils import is_account_dir
 from utils import get_cached_post_filename
 from utils import load_json
 from utils import save_json
-from utils import fileLastModified
+from utils import file_last_modified
 from utils import set_config_param
 from utils import has_users_path
 from utils import get_full_domain
@@ -904,7 +904,7 @@ def setBrochMode(base_dir: str, domain_full: str, enabled: bool) -> None:
             print('Broch mode turned off')
     else:
         if os.path.isfile(allowFilename):
-            lastModified = fileLastModified(allowFilename)
+            lastModified = file_last_modified(allowFilename)
             print('Broch mode already activated ' + lastModified)
             return
         # generate instance allow list
@@ -955,7 +955,7 @@ def broch_modeLapses(base_dir: str, lapseDays: int) -> bool:
     allowFilename = base_dir + '/accounts/allowedinstances.txt'
     if not os.path.isfile(allowFilename):
         return False
-    lastModified = fileLastModified(allowFilename)
+    lastModified = file_last_modified(allowFilename)
     modifiedDate = None
     try:
         modifiedDate = \
