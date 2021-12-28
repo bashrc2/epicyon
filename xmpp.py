@@ -8,7 +8,7 @@ __status__ = "Production"
 __module_group__ = "Profile Metadata"
 
 
-def getXmppAddress(actor_json: {}) -> str:
+def get_xmpp_address(actor_json: {}) -> str:
     """Returns xmpp address for the given actor
     """
     if not actor_json.get('attachment'):
@@ -34,7 +34,7 @@ def getXmppAddress(actor_json: {}) -> str:
     return ''
 
 
-def setXmppAddress(actor_json: {}, xmppAddress: str) -> None:
+def set_xmpp_address(actor_json: {}, xmppAddress: str) -> None:
     """Sets an xmpp address for the given actor
     """
     notXmppAddress = False

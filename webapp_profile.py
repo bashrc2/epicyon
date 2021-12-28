@@ -41,17 +41,17 @@ from posts import parseUserFeed
 from posts import isCreateInsideAnnounce
 from donate import getDonationUrl
 from donate import getWebsite
-from xmpp import getXmppAddress
+from xmpp import get_xmpp_address
 from matrix import getMatrixAddress
-from ssb import getSSBAddress
-from pgp import getEmailAddress
-from pgp import getPGPfingerprint
-from pgp import getPGPpubKey
+from ssb import get_ssb_address
+from pgp import get_email_address
+from pgp import get_pgp_fingerprint
+from pgp import get_pgp_pub_key
 from enigma import get_enigma_pub_key
-from tox import getToxAddress
-from briar import getBriarAddress
-from jami import getJamiAddress
-from cwtch import getCwtchAddress
+from tox import get_tox_address
+from briar import get_briar_address
+from jami import get_jami_address
+from cwtch import get_cwtch_address
 from filters import isFiltered
 from follow import isFollowerOfPerson
 from follow import getFollowerDomains
@@ -636,16 +636,16 @@ def htmlProfile(signing_priv_key_pem: str,
     websiteUrl = getWebsite(profile_json, translate)
     blogAddress = getBlogAddress(profile_json)
     EnigmaPubKey = get_enigma_pub_key(profile_json)
-    PGPpubKey = getPGPpubKey(profile_json)
-    PGPfingerprint = getPGPfingerprint(profile_json)
-    emailAddress = getEmailAddress(profile_json)
-    xmppAddress = getXmppAddress(profile_json)
+    PGPpubKey = get_pgp_pub_key(profile_json)
+    PGPfingerprint = get_pgp_fingerprint(profile_json)
+    emailAddress = get_email_address(profile_json)
+    xmppAddress = get_xmpp_address(profile_json)
     matrixAddress = getMatrixAddress(profile_json)
-    ssbAddress = getSSBAddress(profile_json)
-    toxAddress = getToxAddress(profile_json)
-    briarAddress = getBriarAddress(profile_json)
-    jamiAddress = getJamiAddress(profile_json)
-    cwtchAddress = getCwtchAddress(profile_json)
+    ssbAddress = get_ssb_address(profile_json)
+    toxAddress = get_tox_address(profile_json)
+    briarAddress = get_briar_address(profile_json)
+    jamiAddress = get_jami_address(profile_json)
+    cwtchAddress = get_cwtch_address(profile_json)
     if donateUrl or websiteUrl or xmppAddress or matrixAddress or \
        ssbAddress or toxAddress or briarAddress or \
        jamiAddress or cwtchAddress or PGPpubKey or EnigmaPubKey or \
@@ -2132,18 +2132,18 @@ def htmlEditProfile(css_cache: {}, translate: {}, base_dir: str, path: str,
             movedTo = actor_json['movedTo']
         donateUrl = getDonationUrl(actor_json)
         websiteUrl = getWebsite(actor_json, translate)
-        xmppAddress = getXmppAddress(actor_json)
+        xmppAddress = get_xmpp_address(actor_json)
         matrixAddress = getMatrixAddress(actor_json)
-        ssbAddress = getSSBAddress(actor_json)
+        ssbAddress = get_ssb_address(actor_json)
         blogAddress = getBlogAddress(actor_json)
-        toxAddress = getToxAddress(actor_json)
-        briarAddress = getBriarAddress(actor_json)
-        jamiAddress = getJamiAddress(actor_json)
-        cwtchAddress = getCwtchAddress(actor_json)
-        emailAddress = getEmailAddress(actor_json)
+        toxAddress = get_tox_address(actor_json)
+        briarAddress = get_briar_address(actor_json)
+        jamiAddress = get_jami_address(actor_json)
+        cwtchAddress = get_cwtch_address(actor_json)
+        emailAddress = get_email_address(actor_json)
         EnigmaPubKey = get_enigma_pub_key(actor_json)
-        PGPpubKey = getPGPpubKey(actor_json)
-        PGPfingerprint = getPGPfingerprint(actor_json)
+        PGPpubKey = get_pgp_pub_key(actor_json)
+        PGPfingerprint = get_pgp_fingerprint(actor_json)
         if actor_json.get('name'):
             if not isFiltered(base_dir, nickname, domain, actor_json['name']):
                 displayNickname = actor_json['name']

@@ -8,7 +8,7 @@ __status__ = "Production"
 __module_group__ = "Profile Metadata"
 
 
-def getSSBAddress(actor_json: {}) -> str:
+def get_ssb_address(actor_json: {}) -> str:
     """Returns ssb address for the given actor
     """
     if not actor_json.get('attachment'):
@@ -39,7 +39,7 @@ def getSSBAddress(actor_json: {}) -> str:
     return ''
 
 
-def setSSBAddress(actor_json: {}, ssbAddress: str) -> None:
+def set_ssb_address(actor_json: {}, ssbAddress: str) -> None:
     """Sets an ssb address for the given actor
     """
     notSSBAddress = False

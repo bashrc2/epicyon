@@ -8,7 +8,7 @@ __status__ = "Production"
 __module_group__ = "Profile Metadata"
 
 
-def getToxAddress(actor_json: {}) -> str:
+def get_tox_address(actor_json: {}) -> str:
     """Returns tox address for the given actor
     """
     if not actor_json.get('attachment'):
@@ -41,7 +41,7 @@ def getToxAddress(actor_json: {}) -> str:
     return ''
 
 
-def setToxAddress(actor_json: {}, toxAddress: str) -> None:
+def set_tox_address(actor_json: {}, toxAddress: str) -> None:
     """Sets an tox address for the given actor
     """
     notToxAddress = False

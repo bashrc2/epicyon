@@ -23,7 +23,7 @@ from auth import createBasicAuthHeader
 from session import postJson
 
 
-def getEmailAddress(actor_json: {}) -> str:
+def get_email_address(actor_json: {}) -> str:
     """Returns the email address for the given actor
     """
     if not actor_json.get('attachment'):
@@ -47,7 +47,7 @@ def getEmailAddress(actor_json: {}) -> str:
     return ''
 
 
-def getPGPpubKey(actor_json: {}) -> str:
+def get_pgp_pub_key(actor_json: {}) -> str:
     """Returns PGP public key for the given actor
     """
     if not actor_json.get('attachment'):
@@ -69,7 +69,7 @@ def getPGPpubKey(actor_json: {}) -> str:
     return ''
 
 
-def getPGPfingerprint(actor_json: {}) -> str:
+def get_pgp_fingerprint(actor_json: {}) -> str:
     """Returns PGP fingerprint for the given actor
     """
     if not actor_json.get('attachment'):
@@ -91,7 +91,7 @@ def getPGPfingerprint(actor_json: {}) -> str:
     return ''
 
 
-def setEmailAddress(actor_json: {}, emailAddress: str) -> None:
+def set_email_address(actor_json: {}, emailAddress: str) -> None:
     """Sets the email address for the given actor
     """
     notEmailAddress = False
@@ -143,7 +143,7 @@ def setEmailAddress(actor_json: {}, emailAddress: str) -> None:
     actor_json['attachment'].append(newEmailAddress)
 
 
-def setPGPpubKey(actor_json: {}, PGPpubKey: str) -> None:
+def set_pgp_pub_key(actor_json: {}, PGPpubKey: str) -> None:
     """Sets a PGP public key for the given actor
     """
     removeKey = False
@@ -194,7 +194,7 @@ def setPGPpubKey(actor_json: {}, PGPpubKey: str) -> None:
     actor_json['attachment'].append(newPGPpubKey)
 
 
-def setPGPfingerprint(actor_json: {}, fingerprint: str) -> None:
+def set_pgp_fingerprint(actor_json: {}, fingerprint: str) -> None:
     """Sets a PGP fingerprint for the given actor
     """
     removeFingerprint = False
@@ -532,14 +532,14 @@ def pgpPublicKeyUpload(base_dir: str, session,
 
     # set the pgp details
     if PGPpubKeyId:
-        setPGPfingerprint(actor_json, PGPpubKeyId)
+        set_pgp_fingerprint(actor_json, PGPpubKeyId)
     else:
         if debug:
             print('No PGP key Id. Continuing anyway.')
 
     if debug:
         print('Setting PGP key within ' + actor)
-    setPGPpubKey(actor_json, PGPpubKey)
+    set_pgp_pub_key(actor_json, PGPpubKey)
 
     # create an actor update
     statusNumber, published = get_status_number()

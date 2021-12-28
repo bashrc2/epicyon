@@ -31,24 +31,24 @@ from metadata import meta_data_node_info
 from metadata import metadata_custom_emoji
 from enigma import get_enigma_pub_key
 from enigma import set_enigma_pub_key
-from pgp import getEmailAddress
-from pgp import setEmailAddress
-from pgp import getPGPpubKey
-from pgp import getPGPfingerprint
-from pgp import setPGPpubKey
-from pgp import setPGPfingerprint
-from xmpp import getXmppAddress
-from xmpp import setXmppAddress
-from ssb import getSSBAddress
-from ssb import setSSBAddress
-from tox import getToxAddress
-from tox import setToxAddress
-from briar import getBriarAddress
-from briar import setBriarAddress
-from jami import getJamiAddress
-from jami import setJamiAddress
-from cwtch import getCwtchAddress
-from cwtch import setCwtchAddress
+from pgp import get_email_address
+from pgp import set_email_address
+from pgp import get_pgp_pub_key
+from pgp import get_pgp_fingerprint
+from pgp import set_pgp_pub_key
+from pgp import set_pgp_fingerprint
+from xmpp import get_xmpp_address
+from xmpp import set_xmpp_address
+from ssb import get_ssb_address
+from ssb import set_ssb_address
+from tox import get_tox_address
+from tox import set_tox_address
+from briar import get_briar_address
+from briar import set_briar_address
+from jami import get_jami_address
+from jami import set_jami_address
+from cwtch import get_cwtch_address
+from cwtch import set_cwtch_address
 from matrix import getMatrixAddress
 from matrix import setMatrixAddress
 from donate import getDonationUrl
@@ -5264,26 +5264,26 @@ class PubServer(BaseHTTPRequestHandler):
                                                  'instanceDescription', '')
 
                     # change email address
-                    currentEmailAddress = getEmailAddress(actor_json)
+                    currentEmailAddress = get_email_address(actor_json)
                     if fields.get('email'):
                         if fields['email'] != currentEmailAddress:
-                            setEmailAddress(actor_json, fields['email'])
+                            set_email_address(actor_json, fields['email'])
                             actorChanged = True
                     else:
                         if currentEmailAddress:
-                            setEmailAddress(actor_json, '')
+                            set_email_address(actor_json, '')
                             actorChanged = True
 
                     # change xmpp address
-                    currentXmppAddress = getXmppAddress(actor_json)
+                    currentXmppAddress = get_xmpp_address(actor_json)
                     if fields.get('xmppAddress'):
                         if fields['xmppAddress'] != currentXmppAddress:
-                            setXmppAddress(actor_json,
-                                           fields['xmppAddress'])
+                            set_xmpp_address(actor_json,
+                                             fields['xmppAddress'])
                             actorChanged = True
                     else:
                         if currentXmppAddress:
-                            setXmppAddress(actor_json, '')
+                            set_xmpp_address(actor_json, '')
                             actorChanged = True
 
                     # change matrix address
@@ -5299,15 +5299,15 @@ class PubServer(BaseHTTPRequestHandler):
                             actorChanged = True
 
                     # change SSB address
-                    currentSSBAddress = getSSBAddress(actor_json)
+                    currentSSBAddress = get_ssb_address(actor_json)
                     if fields.get('ssbAddress'):
                         if fields['ssbAddress'] != currentSSBAddress:
-                            setSSBAddress(actor_json,
-                                          fields['ssbAddress'])
+                            set_ssb_address(actor_json,
+                                            fields['ssbAddress'])
                             actorChanged = True
                     else:
                         if currentSSBAddress:
-                            setSSBAddress(actor_json, '')
+                            set_ssb_address(actor_json, '')
                             actorChanged = True
 
                     # change blog address
@@ -5335,51 +5335,51 @@ class PubServer(BaseHTTPRequestHandler):
                             actorChanged = True
 
                     # change tox address
-                    currentToxAddress = getToxAddress(actor_json)
+                    currentToxAddress = get_tox_address(actor_json)
                     if fields.get('toxAddress'):
                         if fields['toxAddress'] != currentToxAddress:
-                            setToxAddress(actor_json,
-                                          fields['toxAddress'])
+                            set_tox_address(actor_json,
+                                            fields['toxAddress'])
                             actorChanged = True
                     else:
                         if currentToxAddress:
-                            setToxAddress(actor_json, '')
+                            set_tox_address(actor_json, '')
                             actorChanged = True
 
                     # change briar address
-                    currentBriarAddress = getBriarAddress(actor_json)
+                    currentBriarAddress = get_briar_address(actor_json)
                     if fields.get('briarAddress'):
                         if fields['briarAddress'] != currentBriarAddress:
-                            setBriarAddress(actor_json,
-                                            fields['briarAddress'])
+                            set_briar_address(actor_json,
+                                              fields['briarAddress'])
                             actorChanged = True
                     else:
                         if currentBriarAddress:
-                            setBriarAddress(actor_json, '')
+                            set_briar_address(actor_json, '')
                             actorChanged = True
 
                     # change jami address
-                    currentJamiAddress = getJamiAddress(actor_json)
+                    currentJamiAddress = get_jami_address(actor_json)
                     if fields.get('jamiAddress'):
                         if fields['jamiAddress'] != currentJamiAddress:
-                            setJamiAddress(actor_json,
-                                           fields['jamiAddress'])
+                            set_jami_address(actor_json,
+                                             fields['jamiAddress'])
                             actorChanged = True
                     else:
                         if currentJamiAddress:
-                            setJamiAddress(actor_json, '')
+                            set_jami_address(actor_json, '')
                             actorChanged = True
 
                     # change cwtch address
-                    currentCwtchAddress = getCwtchAddress(actor_json)
+                    currentCwtchAddress = get_cwtch_address(actor_json)
                     if fields.get('cwtchAddress'):
                         if fields['cwtchAddress'] != currentCwtchAddress:
-                            setCwtchAddress(actor_json,
-                                            fields['cwtchAddress'])
+                            set_cwtch_address(actor_json,
+                                              fields['cwtchAddress'])
                             actorChanged = True
                     else:
                         if currentCwtchAddress:
-                            setCwtchAddress(actor_json, '')
+                            set_cwtch_address(actor_json, '')
                             actorChanged = True
 
                     # change Enigma public key
@@ -5395,27 +5395,27 @@ class PubServer(BaseHTTPRequestHandler):
                             actorChanged = True
 
                     # change PGP public key
-                    currentPGPpubKey = getPGPpubKey(actor_json)
+                    currentPGPpubKey = get_pgp_pub_key(actor_json)
                     if fields.get('pgp'):
                         if fields['pgp'] != currentPGPpubKey:
-                            setPGPpubKey(actor_json,
-                                         fields['pgp'])
+                            set_pgp_pub_key(actor_json,
+                                            fields['pgp'])
                             actorChanged = True
                     else:
                         if currentPGPpubKey:
-                            setPGPpubKey(actor_json, '')
+                            set_pgp_pub_key(actor_json, '')
                             actorChanged = True
 
                     # change PGP fingerprint
-                    currentPGPfingerprint = getPGPfingerprint(actor_json)
+                    currentPGPfingerprint = get_pgp_fingerprint(actor_json)
                     if fields.get('openpgp'):
                         if fields['openpgp'] != currentPGPfingerprint:
-                            setPGPfingerprint(actor_json,
-                                              fields['openpgp'])
+                            set_pgp_fingerprint(actor_json,
+                                                fields['openpgp'])
                             actorChanged = True
                     else:
                         if currentPGPfingerprint:
-                            setPGPfingerprint(actor_json, '')
+                            set_pgp_fingerprint(actor_json, '')
                             actorChanged = True
 
                     # change donation link
@@ -7113,18 +7113,18 @@ class PubServer(BaseHTTPRequestHandler):
                 lockedAccount = get_locked_account(actor_json)
                 donateUrl = getDonationUrl(actor_json)
                 websiteUrl = getWebsite(actor_json, self.server.translate)
-                xmppAddress = getXmppAddress(actor_json)
+                xmppAddress = get_xmpp_address(actor_json)
                 matrixAddress = getMatrixAddress(actor_json)
-                ssbAddress = getSSBAddress(actor_json)
+                ssbAddress = get_ssb_address(actor_json)
                 blogAddress = getBlogAddress(actor_json)
-                toxAddress = getToxAddress(actor_json)
-                briarAddress = getBriarAddress(actor_json)
-                jamiAddress = getJamiAddress(actor_json)
-                cwtchAddress = getCwtchAddress(actor_json)
-                emailAddress = getEmailAddress(actor_json)
+                toxAddress = get_tox_address(actor_json)
+                briarAddress = get_briar_address(actor_json)
+                jamiAddress = get_jami_address(actor_json)
+                cwtchAddress = get_cwtch_address(actor_json)
+                emailAddress = get_email_address(actor_json)
                 EnigmaPubKey = get_enigma_pub_key(actor_json)
-                PGPpubKey = getPGPpubKey(actor_json)
-                PGPfingerprint = getPGPfingerprint(actor_json)
+                PGPpubKey = get_pgp_pub_key(actor_json)
+                PGPfingerprint = get_pgp_fingerprint(actor_json)
                 if actor_json.get('alsoKnownAs'):
                     alsoKnownAs = actor_json['alsoKnownAs']
 

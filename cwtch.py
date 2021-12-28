@@ -10,7 +10,7 @@ __module_group__ = "Profile Metadata"
 import re
 
 
-def getCwtchAddress(actor_json: {}) -> str:
+def get_cwtch_address(actor_json: {}) -> str:
     """Returns cwtch address for the given actor
     """
     if not actor_json.get('attachment'):
@@ -41,7 +41,7 @@ def getCwtchAddress(actor_json: {}) -> str:
     return ''
 
 
-def setCwtchAddress(actor_json: {}, cwtchAddress: str) -> None:
+def set_cwtch_address(actor_json: {}, cwtchAddress: str) -> None:
     """Sets an cwtch address for the given actor
     """
     notCwtchAddress = False

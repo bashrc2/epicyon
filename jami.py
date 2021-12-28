@@ -8,7 +8,7 @@ __status__ = "Production"
 __module_group__ = "Profile Metadata"
 
 
-def getJamiAddress(actor_json: {}) -> str:
+def get_jami_address(actor_json: {}) -> str:
     """Returns jami address for the given actor
     """
     if not actor_json.get('attachment'):
@@ -39,7 +39,7 @@ def getJamiAddress(actor_json: {}) -> str:
     return ''
 
 
-def setJamiAddress(actor_json: {}, jamiAddress: str) -> None:
+def set_jami_address(actor_json: {}, jamiAddress: str) -> None:
     """Sets an jami address for the given actor
     """
     notJamiAddress = False

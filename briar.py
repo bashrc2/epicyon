@@ -8,7 +8,7 @@ __status__ = "Production"
 __module_group__ = "Profile Metadata"
 
 
-def getBriarAddress(actor_json: {}) -> str:
+def get_briar_address(actor_json: {}) -> str:
     """Returns briar address for the given actor
     """
     if not actor_json.get('attachment'):
@@ -43,7 +43,7 @@ def getBriarAddress(actor_json: {}) -> str:
     return ''
 
 
-def setBriarAddress(actor_json: {}, briarAddress: str) -> None:
+def set_briar_address(actor_json: {}, briarAddress: str) -> None:
     """Sets an briar address for the given actor
     """
     notBriarAddress = False
