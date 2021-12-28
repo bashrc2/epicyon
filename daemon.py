@@ -23,7 +23,7 @@ from hashlib import md5
 from shutil import copyfile
 from session import create_session
 from webfinger import webfinger_meta
-from webfinger import webfingerNodeInfo
+from webfinger import webfinger_node_info
 from webfinger import webfingerLookup
 from webfinger import webfingerUpdate
 from mastoapiv1 import mastoApiV1Response
@@ -1212,15 +1212,15 @@ class PubServer(BaseHTTPRequestHandler):
             if calling_domain.endswith('.onion') and \
                self.server.onion_domain:
                 wfResult = \
-                    webfingerNodeInfo('http', self.server.onion_domain)
+                    webfinger_node_info('http', self.server.onion_domain)
             elif (calling_domain.endswith('.i2p') and
                   self.server.i2p_domain):
                 wfResult = \
-                    webfingerNodeInfo('http', self.server.i2p_domain)
+                    webfinger_node_info('http', self.server.i2p_domain)
             else:
                 wfResult = \
-                    webfingerNodeInfo(self.server.http_prefix,
-                                      self.server.domain_full)
+                    webfinger_node_info(self.server.http_prefix,
+                                        self.server.domain_full)
             if wfResult:
                 msg = json.dumps(wfResult).encode('utf-8')
                 msglen = len(msg)

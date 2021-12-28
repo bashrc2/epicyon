@@ -181,7 +181,7 @@ def createWebfingerEndpoint(nickname: str, domain: str, port: int,
     return account
 
 
-def webfingerNodeInfo(http_prefix: str, domain_full: str) -> {}:
+def webfinger_node_info(http_prefix: str, domain_full: str) -> {}:
     """ /.well-known/nodeinfo endpoint
     """
     nodeinfo = {
