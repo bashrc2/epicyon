@@ -22,7 +22,7 @@ from utils import is_featured_writer
 from utils import acct_dir
 from blocking import isBlocked
 from follow import isFollowerOfPerson
-from follow import isFollowingActor
+from follow import is_following_actor
 from followingCalendar import receivingCalendarEvents
 from notifyOnPost import notifyWhenPersonPosts
 from webapp_utils import htmlHeaderWithExternalStyle
@@ -88,7 +88,7 @@ def htmlPersonOptions(defaultTimeline: str,
         if '?' in nickname:
             nickname = nickname.split('?')[0]
         followerDomain, followerPort = get_domain_from_actor(optionsActor)
-        if isFollowingActor(base_dir, nickname, domain, optionsActor):
+        if is_following_actor(base_dir, nickname, domain, optionsActor):
             followStr = 'Unfollow'
             if isGroup:
                 followStr = 'Leave'
@@ -259,7 +259,7 @@ def htmlPersonOptions(defaultTimeline: str,
                     translate['Submit'] + '</button><br>\n'
 
             # Notify when a post arrives from this person
-            if isFollowingActor(base_dir, nickname, domain, optionsActor):
+            if is_following_actor(base_dir, nickname, domain, optionsActor):
                 checkboxStr = \
                     '    <input type="checkbox" class="profilecheckbox" ' + \
                     'name="notifyOnPost" checked> 🔔' + \

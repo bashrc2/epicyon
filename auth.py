@@ -240,9 +240,9 @@ def createPassword(length: int):
     return ''.join((secrets.choice(validChars) for i in range(length)))
 
 
-def recordLoginFailure(base_dir: str, ipAddress: str,
-                       countDict: {}, failTime: int,
-                       logToFile: bool) -> None:
+def record_login_failure(base_dir: str, ipAddress: str,
+                         countDict: {}, failTime: int,
+                         logToFile: bool) -> None:
     """Keeps ip addresses and the number of times login failures
     occured for them in a dict
     """
@@ -287,4 +287,4 @@ def recordLoginFailure(base_dir: str, ipAddress: str,
                      ipAddress + ' port 443: ' +
                      'Too many authentication failures [preauth]\n')
     except OSError:
-        print('EX: recordLoginFailure failed ' + str(failureLog))
+        print('EX: record_login_failure failed ' + str(failureLog))

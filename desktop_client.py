@@ -38,7 +38,7 @@ from follow import denyFollowRequestViaServer
 from follow import getFollowRequestsViaServer
 from follow import getFollowingViaServer
 from follow import getFollowersViaServer
-from follow import sendFollowRequestViaServer
+from follow import send_follow_requestViaServer
 from follow import sendUnfollowRequestViaServer
 from posts import sendBlockViaServer
 from posts import sendUndoBlockViaServer
@@ -2221,18 +2221,18 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                         _sayCommand(sayStr, sayStr,
                                     screenreader, system_language, espeak)
                         sessionFollow = create_session(proxy_type)
-                        sendFollowRequestViaServer(base_dir,
-                                                   sessionFollow,
-                                                   nickname, password,
-                                                   domain, port,
-                                                   followNickname,
-                                                   followDomain,
-                                                   followPort,
-                                                   http_prefix,
-                                                   cached_webfingers,
-                                                   person_cache,
-                                                   debug, __version__,
-                                                   signing_priv_key_pem)
+                        send_follow_requestViaServer(base_dir,
+                                                     sessionFollow,
+                                                     nickname, password,
+                                                     domain, port,
+                                                     followNickname,
+                                                     followDomain,
+                                                     followPort,
+                                                     http_prefix,
+                                                     cached_webfingers,
+                                                     person_cache,
+                                                     debug, __version__,
+                                                     signing_priv_key_pem)
                     else:
                         if followHandle:
                             sayStr = followHandle + ' is not valid'

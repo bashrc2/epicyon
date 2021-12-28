@@ -18,7 +18,7 @@ from cache import getPersonFromCache
 from bookmarks import bookmarkedByPerson
 from like import likedByPerson
 from like import noOfLikes
-from follow import isFollowingActor
+from follow import is_following_actor
 from posts import postIsMuted
 from posts import getPersonBox
 from posts import downloadAnnounce
@@ -2044,7 +2044,7 @@ def htmlIndividualPost(css_cache: {},
         followStr += \
             '    <input type="hidden" name="searchtext" value="' + \
             byStrHandle + '">\n'
-        if not isFollowingActor(base_dir, nickname, domain_full, byStr):
+        if not is_following_actor(base_dir, nickname, domain_full, byStr):
             translateFollowStr = 'Follow'
             if translate.get(translateFollowStr):
                 translateFollowStr = translate[translateFollowStr]

@@ -66,8 +66,8 @@ from categories import setHashtagCategory
 from httpsig import getDigestAlgorithmFromHeaders
 from httpsig import verifyPostHeaders
 from session import create_session
-from follow import followerApprovalActive
-from follow import isFollowingActor
+from follow import follower_approval_active
+from follow import is_following_actor
 from follow import getFollowersOfActor
 from follow import unfollowerOfAccount
 from follow import isFollowerOfPerson
@@ -377,13 +377,13 @@ def validInboxFilenames(base_dir: str, nickname: str, domain: str,
     return True
 
 
-def inboxMessageHasParams(message_json: {}) -> bool:
+def inbox_message_has_params(message_json: {}) -> bool:
     """Checks whether an incoming message contains expected parameters
     """
     expectedParams = ['actor', 'type', 'object']
     for param in expectedParams:
         if not message_json.get(param):
-            # print('inboxMessageHasParams: ' +
+            # print('inbox_message_has_params: ' +
             #       param + ' ' + str(message_json))
             return False
 
@@ -418,8 +418,8 @@ def inboxMessageHasParams(message_json: {}) -> bool:
     return True
 
 
-def inboxPermittedMessage(domain: str, message_json: {},
-                          federation_list: []) -> bool:
+def inbox_permitted_message(domain: str, message_json: {},
+                            federation_list: []) -> bool:
     """ check that we are receiving from a permitted domain
     """
     if not has_actor(message_json, False):
@@ -449,14 +449,14 @@ def inboxPermittedMessage(domain: str, message_json: {},
     return True
 
 
-def savePostToInboxQueue(base_dir: str, http_prefix: str,
-                         nickname: str, domain: str,
-                         post_json_object: {},
-                         originalPostJsonObject: {},
-                         messageBytes: str,
-                         httpHeaders: {},
-                         postPath: str, debug: bool,
-                         blockedCache: [], system_language: str) -> str:
+def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
+                             nickname: str, domain: str,
+                             post_json_object: {},
+                             originalPostJsonObject: {},
+                             messageBytes: str,
+                             httpHeaders: {},
+                             postPath: str, debug: bool,
+                             blockedCache: [], system_language: str) -> str:
     """Saves the given json to the inbox queue for the person
     keyId specifies the actor sending the post
     """
@@ -1092,7 +1092,7 @@ def _receiveLike(recent_posts_cache: {},
             show_published_date_only = False
             showIndividualPostIcons = True
             manuallyApproveFollowers = \
-                followerApprovalActive(base_dir, handleName, domain)
+                follower_approval_active(base_dir, handleName, domain)
             notDM = not is_dm(likedPostJson)
             individualPostAsHtml(signing_priv_key_pem, False,
                                  recent_posts_cache, max_recent_posts,
@@ -1205,7 +1205,7 @@ def _receiveUndoLike(recent_posts_cache: {},
             show_published_date_only = False
             showIndividualPostIcons = True
             manuallyApproveFollowers = \
-                followerApprovalActive(base_dir, handleName, domain)
+                follower_approval_active(base_dir, handleName, domain)
             notDM = not is_dm(likedPostJson)
             individualPostAsHtml(signing_priv_key_pem, False,
                                  recent_posts_cache, max_recent_posts,
@@ -1354,7 +1354,7 @@ def _receiveReaction(recent_posts_cache: {},
             show_published_date_only = False
             showIndividualPostIcons = True
             manuallyApproveFollowers = \
-                followerApprovalActive(base_dir, handleName, domain)
+                follower_approval_active(base_dir, handleName, domain)
             notDM = not is_dm(reactionPostJson)
             individualPostAsHtml(signing_priv_key_pem, False,
                                  recent_posts_cache, max_recent_posts,
@@ -1485,7 +1485,7 @@ def _receiveUndoReaction(recent_posts_cache: {},
             show_published_date_only = False
             showIndividualPostIcons = True
             manuallyApproveFollowers = \
-                followerApprovalActive(base_dir, handleName, domain)
+                follower_approval_active(base_dir, handleName, domain)
             notDM = not is_dm(reactionPostJson)
             individualPostAsHtml(signing_priv_key_pem, False,
                                  recent_posts_cache, max_recent_posts,
@@ -1595,7 +1595,7 @@ def _receiveBookmark(recent_posts_cache: {},
         show_published_date_only = False
         showIndividualPostIcons = True
         manuallyApproveFollowers = \
-            followerApprovalActive(base_dir, nickname, domain)
+            follower_approval_active(base_dir, nickname, domain)
         notDM = not is_dm(bookmarkedPostJson)
         individualPostAsHtml(signing_priv_key_pem, False,
                              recent_posts_cache, max_recent_posts,
@@ -1708,7 +1708,7 @@ def _receiveUndoBookmark(recent_posts_cache: {},
         show_published_date_only = False
         showIndividualPostIcons = True
         manuallyApproveFollowers = \
-            followerApprovalActive(base_dir, nickname, domain)
+            follower_approval_active(base_dir, nickname, domain)
         notDM = not is_dm(bookmarkedPostJson)
         individualPostAsHtml(signing_priv_key_pem, False,
                              recent_posts_cache, max_recent_posts,
@@ -1912,7 +1912,7 @@ def _receiveAnnounce(recent_posts_cache: {},
     show_published_date_only = False
     showIndividualPostIcons = True
     manuallyApproveFollowers = \
-        followerApprovalActive(base_dir, nickname, domain)
+        follower_approval_active(base_dir, nickname, domain)
     notDM = True
     if debug:
         print('Generating html for announce ' + message_json['id'])
@@ -2119,8 +2119,8 @@ def _postAllowsComments(post_filename: str) -> bool:
     return jsonPostAllowsComments(post_json_object)
 
 
-def populateReplies(base_dir: str, http_prefix: str, domain: str,
-                    message_json: {}, max_replies: int, debug: bool) -> bool:
+def populate_replies(base_dir: str, http_prefix: str, domain: str,
+                     message_json: {}, max_replies: int, debug: bool) -> bool:
     """Updates the list of replies for a post on this domain if
     a reply to it arrives
     """
@@ -2780,7 +2780,7 @@ def _updateLastSeen(base_dir: str, handle: str, actor: str) -> None:
     accountPath = acct_dir(base_dir, nickname, domain)
     if not os.path.isdir(accountPath):
         return
-    if not isFollowingActor(base_dir, nickname, domain, actor):
+    if not is_following_actor(base_dir, nickname, domain, actor):
         return
     lastSeenPath = accountPath + '/lastseen'
     if not os.path.isdir(lastSeenPath):
@@ -2950,7 +2950,7 @@ def _isValidDM(base_dir: str, nickname: str, domain: str, port: int,
         # get the handle of the DM sender
         sendH = sendingActorNickname + '@' + sendingActorDomain
         # check the follow
-        if not isFollowingActor(base_dir, nickname, domain, sendH):
+        if not is_following_actor(base_dir, nickname, domain, sendH):
             # DMs may always be allowed from some domains
             if not dm_allowed_from_domain(base_dir,
                                           nickname, domain,
@@ -3032,7 +3032,7 @@ def _receiveQuestionVote(base_dir: str, nickname: str, domain: str,
     show_published_date_only = False
     showIndividualPostIcons = True
     manuallyApproveFollowers = \
-        followerApprovalActive(base_dir, nickname, domain)
+        follower_approval_active(base_dir, nickname, domain)
     notDM = not is_dm(questionJson)
     individualPostAsHtml(signing_priv_key_pem, False,
                          recent_posts_cache, max_recent_posts,
@@ -3462,8 +3462,8 @@ def _inboxAfterInitial(recent_posts_cache: {}, max_recent_posts: int,
 
         # list of indexes to be updated
         updateIndexList = ['inbox']
-        populateReplies(base_dir, http_prefix, domain, post_json_object,
-                        max_replies, debug)
+        populate_replies(base_dir, http_prefix, domain, post_json_object,
+                         max_replies, debug)
 
         _receiveQuestionVote(base_dir, nickname, domain,
                              http_prefix, handle, debug,
@@ -3680,18 +3680,18 @@ def _restoreQueueItems(base_dir: str, queue: []) -> None:
         print('Restored ' + str(len(queue)) + ' inbox queue items')
 
 
-def runInboxQueueWatchdog(project_version: str, httpd) -> None:
+def run_inbox_queue_watchdog(project_version: str, httpd) -> None:
     """This tries to keep the inbox thread running even if it dies
     """
     print('Starting inbox queue watchdog')
-    inbox_queueOriginal = httpd.thrInboxQueue.clone(runInboxQueue)
+    inbox_queueOriginal = httpd.thrInboxQueue.clone(run_inbox_queue)
     httpd.thrInboxQueue.start()
     while True:
         time.sleep(20)
         if not httpd.thrInboxQueue.is_alive() or httpd.restartInboxQueue:
             httpd.restartInboxQueueInProgress = True
             httpd.thrInboxQueue.kill()
-            httpd.thrInboxQueue = inbox_queueOriginal.clone(runInboxQueue)
+            httpd.thrInboxQueue = inbox_queueOriginal.clone(run_inbox_queue)
             httpd.inbox_queue.clear()
             httpd.thrInboxQueue.start()
             print('Restarting inbox queue...')
@@ -4078,30 +4078,30 @@ def _receiveFollowRequest(session, base_dir: str, http_prefix: str,
                                   signing_priv_key_pem)
 
 
-def runInboxQueue(recent_posts_cache: {}, max_recent_posts: int,
-                  project_version: str,
-                  base_dir: str, http_prefix: str,
-                  send_threads: [], postLog: [],
-                  cached_webfingers: {}, person_cache: {}, queue: [],
-                  domain: str,
-                  onion_domain: str, i2p_domain: str,
-                  port: int, proxy_type: str,
-                  federation_list: [], max_replies: int,
-                  domain_max_posts_per_day: int,
-                  account_max_posts_per_day: int,
-                  allow_deletion: bool, debug: bool, max_mentions: int,
-                  max_emoji: int, translate: {}, unit_test: bool,
-                  yt_replace_domain: str,
-                  twitter_replacement_domain: str,
-                  show_published_date_only: bool,
-                  max_followers: int,
-                  allow_local_network_access: bool,
-                  peertube_instances: [],
-                  verify_all_signatures: bool,
-                  theme_name: str, system_language: str,
-                  max_like_count: int, signing_priv_key_pem: str,
-                  default_reply_interval_hrs: int,
-                  cw_lists: {}) -> None:
+def run_inbox_queue(recent_posts_cache: {}, max_recent_posts: int,
+                    project_version: str,
+                    base_dir: str, http_prefix: str,
+                    send_threads: [], postLog: [],
+                    cached_webfingers: {}, person_cache: {}, queue: [],
+                    domain: str,
+                    onion_domain: str, i2p_domain: str,
+                    port: int, proxy_type: str,
+                    federation_list: [], max_replies: int,
+                    domain_max_posts_per_day: int,
+                    account_max_posts_per_day: int,
+                    allow_deletion: bool, debug: bool, max_mentions: int,
+                    max_emoji: int, translate: {}, unit_test: bool,
+                    yt_replace_domain: str,
+                    twitter_replacement_domain: str,
+                    show_published_date_only: bool,
+                    max_followers: int,
+                    allow_local_network_access: bool,
+                    peertube_instances: [],
+                    verify_all_signatures: bool,
+                    theme_name: str, system_language: str,
+                    max_like_count: int, signing_priv_key_pem: str,
+                    default_reply_interval_hrs: int,
+                    cw_lists: {}) -> None:
     """Processes received items and moves them to the appropriate
     directories
     """
@@ -4187,7 +4187,7 @@ def runInboxQueue(recent_posts_cache: {}, max_recent_posts: int,
         # Load the queue json
         queueJson = load_json(queueFilename, 1)
         if not queueJson:
-            print('Queue: runInboxQueue failed to load inbox queue item ' +
+            print('Queue: run_inbox_queue failed to load inbox queue item ' +
                   queueFilename)
             # Assume that the file is probably corrupt/unreadable
             if len(queue) > 0:
@@ -4197,7 +4197,7 @@ def runInboxQueue(recent_posts_cache: {}, max_recent_posts: int,
                 try:
                     os.remove(queueFilename)
                 except OSError:
-                    print('EX: runInboxQueue 1 unable to delete ' +
+                    print('EX: run_inbox_queue 1 unable to delete ' +
                           str(queueFilename))
             continue
 
@@ -4271,7 +4271,7 @@ def runInboxQueue(recent_posts_cache: {}, max_recent_posts: int,
                 try:
                     os.remove(queueFilename)
                 except OSError:
-                    print('EX: runInboxQueue 2 unable to delete ' +
+                    print('EX: run_inbox_queue 2 unable to delete ' +
                           str(queueFilename))
             if len(queue) > 0:
                 queue.pop(0)
@@ -4324,7 +4324,7 @@ def runInboxQueue(recent_posts_cache: {}, max_recent_posts: int,
                     try:
                         os.remove(queueFilename)
                     except OSError:
-                        print('EX: runInboxQueue 3 unable to delete ' +
+                        print('EX: run_inbox_queue 3 unable to delete ' +
                               str(queueFilename))
                 if len(queue) > 0:
                     queue.pop(0)
@@ -4345,7 +4345,7 @@ def runInboxQueue(recent_posts_cache: {}, max_recent_posts: int,
                         try:
                             os.remove(queueFilename)
                         except OSError:
-                            print('EX: runInboxQueue 4 unable to delete ' +
+                            print('EX: run_inbox_queue 4 unable to delete ' +
                                   str(queueFilename))
                     if len(queue) > 0:
                         queue.pop(0)
@@ -4375,7 +4375,7 @@ def runInboxQueue(recent_posts_cache: {}, max_recent_posts: int,
                 try:
                     os.remove(queueFilename)
                 except OSError:
-                    print('EX: runInboxQueue 5 unable to delete ' +
+                    print('EX: run_inbox_queue 5 unable to delete ' +
                           str(queueFilename))
             if len(queue) > 0:
                 queue.pop(0)
@@ -4397,7 +4397,7 @@ def runInboxQueue(recent_posts_cache: {}, max_recent_posts: int,
                 try:
                     os.remove(queueFilename)
                 except OSError:
-                    print('EX: runInboxQueue 6 unable to delete ' +
+                    print('EX: run_inbox_queue 6 unable to delete ' +
                           str(queueFilename))
             if len(queue) > 0:
                 queue.pop(0)
@@ -4419,7 +4419,7 @@ def runInboxQueue(recent_posts_cache: {}, max_recent_posts: int,
                 try:
                     os.remove(queueFilename)
                 except OSError:
-                    print('EX: runInboxQueue 7 unable to delete ' +
+                    print('EX: run_inbox_queue 7 unable to delete ' +
                           str(queueFilename))
             if len(queue) > 0:
                 queue.pop(0)
@@ -4441,7 +4441,7 @@ def runInboxQueue(recent_posts_cache: {}, max_recent_posts: int,
                 try:
                     os.remove(queueFilename)
                 except OSError:
-                    print('EX: runInboxQueue 8 unable to delete ' +
+                    print('EX: run_inbox_queue 8 unable to delete ' +
                           str(queueFilename))
             if len(queue) > 0:
                 queue.pop(0)
@@ -4460,7 +4460,7 @@ def runInboxQueue(recent_posts_cache: {}, max_recent_posts: int,
                 try:
                     os.remove(queueFilename)
                 except OSError:
-                    print('EX: runInboxQueue 9 unable to delete ' +
+                    print('EX: run_inbox_queue 9 unable to delete ' +
                           str(queueFilename))
             if len(queue) > 0:
                 queue.pop(0)
@@ -4541,7 +4541,7 @@ def runInboxQueue(recent_posts_cache: {}, max_recent_posts: int,
             try:
                 os.remove(queueFilename)
             except OSError:
-                print('EX: runInboxQueue 10 unable to delete ' +
+                print('EX: run_inbox_queue 10 unable to delete ' +
                       str(queueFilename))
         if len(queue) > 0:
             queue.pop(0)

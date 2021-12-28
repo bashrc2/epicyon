@@ -35,7 +35,7 @@ def setSkillsFromDict(actor_json: {}, skillsDict: {}) -> []:
     return skillsList
 
 
-def getSkillsFromList(skillsList: []) -> {}:
+def get_skills_from_list(skillsList: []) -> {}:
     """Returns a dict of skills from a list
     """
     if isinstance(skillsList, list):
@@ -54,11 +54,11 @@ def getSkillsFromList(skillsList: []) -> {}:
     return skillsDict
 
 
-def actorSkillValue(actor_json: {}, skillName: str) -> int:
+def actor_skill_value(actor_json: {}, skillName: str) -> int:
     """Returns The skill level from an actor
     """
     ocSkillsList = get_occupation_skills(actor_json)
-    skillsDict = getSkillsFromList(ocSkillsList)
+    skillsDict = get_skills_from_list(ocSkillsList)
     if not skillsDict:
         return 0
     skillName = skillName.lower()
@@ -67,7 +67,7 @@ def actorSkillValue(actor_json: {}, skillName: str) -> int:
     return 0
 
 
-def noOfActorSkills(actor_json: {}) -> int:
+def no_of_actor_skills(actor_json: {}) -> int:
     """Returns the number of skills that an actor has
     """
     if actor_json.get('hasOccupation'):
@@ -76,8 +76,8 @@ def noOfActorSkills(actor_json: {}) -> int:
     return 0
 
 
-def setActorSkillLevel(actor_json: {},
-                       skill: str, skillLevelPercent: int) -> bool:
+def set_actor_skill_level(actor_json: {},
+                          skill: str, skillLevelPercent: int) -> bool:
     """Set a skill level for a person
     Setting skill level to zero removes it
     """
@@ -97,7 +97,7 @@ def setActorSkillLevel(actor_json: {},
             'skills': []
         }]
     ocSkillsList = get_occupation_skills(actor_json)
-    skillsDict = getSkillsFromList(ocSkillsList)
+    skillsDict = get_skills_from_list(ocSkillsList)
     if not skillsDict.get(skill):
         if len(skillsDict.items()) >= 32:
             print('WARN: Maximum number of skills reached for ' +
@@ -124,8 +124,8 @@ def setSkillLevel(base_dir: str, nickname: str, domain: str,
         return False
 
     actor_json = load_json(actorFilename)
-    return setActorSkillLevel(actor_json,
-                              skill, skillLevelPercent)
+    return set_actor_skill_level(actor_json,
+                                 skill, skillLevelPercent)
 
 
 def getSkills(base_dir: str, nickname: str, domain: str) -> []:
@@ -140,7 +140,7 @@ def getSkills(base_dir: str, nickname: str, domain: str) -> []:
         if not actor_json.get('hasOccupation'):
             return None
         ocSkillsList = get_occupation_skills(actor_json)
-        return getSkillsFromList(ocSkillsList)
+        return get_skills_from_list(ocSkillsList)
     return None
 
 
@@ -265,7 +265,7 @@ def sendSkillViaServer(base_dir: str, session, nickname: str, password: str,
     return newSkillJson
 
 
-def actorHasSkill(actor_json: {}, skillName: str) -> bool:
+def actor_has_skill(actor_json: {}, skillName: str) -> bool:
     """Returns true if the given actor has the given skill
     """
     ocSkillsList = get_occupation_skills(actor_json)

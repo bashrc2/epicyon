@@ -51,7 +51,7 @@ from posts import sendPostViaServer
 from posts import secondsBetweenPublished
 from follow import clearFollows
 from follow import clearFollowers
-from follow import sendFollowRequestViaServer
+from follow import send_follow_requestViaServer
 from follow import sendUnfollowRequestViaServer
 from siteactive import siteIsActive
 from utils import get_sha_256
@@ -89,18 +89,18 @@ from pgp import extractPGPPublicKey
 from pgp import pgpPublicKeyUpload
 from utils import contains_pgp_public_key
 from follow import followerOfPerson
-from follow import unfollowAccount
+from follow import unfollow_account
 from follow import unfollowerOfAccount
-from follow import sendFollowRequest
+from follow import send_follow_request
 from person import createPerson
 from person import createGroup
 from person import setDisplayNickname
 from person import setBio
 # from person import generateRSAKey
 from skills import setSkillLevel
-from skills import actorSkillValue
+from skills import actor_skill_value
 from skills import setSkillsFromDict
-from skills import actorHasSkill
+from skills import actor_has_skill
 from roles import setRolesFromList
 from roles import setRole
 from roles import actorHasRole
@@ -1526,14 +1526,14 @@ def testFollowBetweenServers(base_dir: str) -> None:
     bobActor = http_prefix + '://' + bobAddress + '/users/bob'
     signing_priv_key_pem = None
     sendResult = \
-        sendFollowRequest(sessionAlice, aliceDir,
-                          'alice', aliceDomain, alicePort, http_prefix,
-                          'bob', bobDomain, bobActor,
-                          bobPort, http_prefix,
-                          client_to_server, federation_list,
-                          aliceSendThreads, alicePostLog,
-                          aliceCachedWebfingers, alicePersonCache,
-                          True, __version__, signing_priv_key_pem)
+        send_follow_request(sessionAlice, aliceDir,
+                            'alice', aliceDomain, alicePort, http_prefix,
+                            'bob', bobDomain, bobActor,
+                            bobPort, http_prefix,
+                            client_to_server, federation_list,
+                            aliceSendThreads, alicePostLog,
+                            aliceCachedWebfingers, alicePersonCache,
+                            True, __version__, signing_priv_key_pem)
     print('sendResult: ' + str(sendResult))
 
     for t in range(16):
@@ -1743,14 +1743,14 @@ def testSharedItemsFederation(base_dir: str) -> None:
     alicePostLog = []
     bobActor = http_prefix + '://' + bobAddress + '/users/bob'
     sendResult = \
-        sendFollowRequest(sessionAlice, aliceDir,
-                          'alice', aliceDomain, alicePort, http_prefix,
-                          'bob', bobDomain, bobActor,
-                          bobPort, http_prefix,
-                          client_to_server, federation_list,
-                          aliceSendThreads, alicePostLog,
-                          aliceCachedWebfingers, alicePersonCache,
-                          True, __version__, signing_priv_key_pem)
+        send_follow_request(sessionAlice, aliceDir,
+                            'alice', aliceDomain, alicePort, http_prefix,
+                            'bob', bobDomain, bobActor,
+                            bobPort, http_prefix,
+                            client_to_server, federation_list,
+                            aliceSendThreads, alicePostLog,
+                            aliceCachedWebfingers, alicePersonCache,
+                            True, __version__, signing_priv_key_pem)
     print('sendResult: ' + str(sendResult))
 
     for t in range(16):
@@ -2182,14 +2182,14 @@ def testGroupFollow(base_dir: str) -> None:
         http_prefix + '://' + testgroupAddress + '/users/testgroup'
     signing_priv_key_pem = None
     sendResult = \
-        sendFollowRequest(sessionAlice, aliceDir,
-                          'alice', aliceDomain, alicePort, http_prefix,
-                          'testgroup', testgroupDomain, testgroupActor,
-                          testgroupPort, http_prefix,
-                          client_to_server, federation_list,
-                          aliceSendThreads, alicePostLog,
-                          aliceCachedWebfingers, alicePersonCache,
-                          True, __version__, signing_priv_key_pem)
+        send_follow_request(sessionAlice, aliceDir,
+                            'alice', aliceDomain, alicePort, http_prefix,
+                            'testgroup', testgroupDomain, testgroupActor,
+                            testgroupPort, http_prefix,
+                            client_to_server, federation_list,
+                            aliceSendThreads, alicePostLog,
+                            aliceCachedWebfingers, alicePersonCache,
+                            True, __version__, signing_priv_key_pem)
     print('sendResult: ' + str(sendResult))
 
     aliceFollowingFilename = \
@@ -2259,14 +2259,14 @@ def testGroupFollow(base_dir: str) -> None:
         http_prefix + '://' + testgroupAddress + '/users/testgroup'
     signing_priv_key_pem = None
     sendResult = \
-        sendFollowRequest(sessionBob, bobDir,
-                          'bob', bobDomain, bobPort, http_prefix,
-                          'testgroup', testgroupDomain, testgroupActor,
-                          testgroupPort, http_prefix,
-                          client_to_server, federation_list,
-                          bobSendThreads, bobPostLog,
-                          bobCachedWebfingers, bobPersonCache,
-                          True, __version__, signing_priv_key_pem)
+        send_follow_request(sessionBob, bobDir,
+                            'bob', bobDomain, bobPort, http_prefix,
+                            'testgroup', testgroupDomain, testgroupActor,
+                            testgroupPort, http_prefix,
+                            client_to_server, federation_list,
+                            bobSendThreads, bobPostLog,
+                            bobCachedWebfingers, bobPersonCache,
+                            True, __version__, signing_priv_key_pem)
     print('sendResult: ' + str(sendResult))
 
     bobFollowingFilename = \
@@ -2631,8 +2631,8 @@ def _testFollows(base_dir: str) -> None:
             assert(False)
 
     assert(domainFound)
-    unfollowAccount(base_dir, nickname, domain, 'batman', 'mesh.com',
-                    True, False)
+    unfollow_account(base_dir, nickname, domain, 'batman', 'mesh.com',
+                     True, False)
 
     domainFound = False
     for followingDomain in f:
@@ -2955,13 +2955,13 @@ def testClientToServer(base_dir: str):
 
     print('\n\nAlice follows Bob')
     signing_priv_key_pem = None
-    sendFollowRequestViaServer(aliceDir, sessionAlice,
-                               'alice', password,
-                               aliceDomain, alicePort,
-                               'bob', bobDomain, bobPort,
-                               http_prefix,
-                               cached_webfingers, person_cache,
-                               True, __version__, signing_priv_key_pem)
+    send_follow_requestViaServer(aliceDir, sessionAlice,
+                                 'alice', password,
+                                 aliceDomain, alicePort,
+                                 'bob', bobDomain, bobPort,
+                                 http_prefix,
+                                 cached_webfingers, person_cache,
+                                 True, __version__, signing_priv_key_pem)
     alicePetnamesFilename = aliceDir + '/accounts/' + \
         'alice@' + aliceDomain + '/petnames.txt'
     aliceFollowingFilename = \
@@ -2997,13 +2997,13 @@ def testClientToServer(base_dir: str):
                                aliceDomain, alicePort)
 
     print('\n\nEVENT: Bob follows Alice')
-    sendFollowRequestViaServer(aliceDir, sessionAlice,
-                               'bob', 'bobpass',
-                               bobDomain, bobPort,
-                               'alice', aliceDomain, alicePort,
-                               http_prefix,
-                               cached_webfingers, person_cache,
-                               True, __version__, signing_priv_key_pem)
+    send_follow_requestViaServer(aliceDir, sessionAlice,
+                                 'bob', 'bobpass',
+                                 bobDomain, bobPort,
+                                 'alice', aliceDomain, alicePort,
+                                 http_prefix,
+                                 cached_webfingers, person_cache,
+                                 True, __version__, signing_priv_key_pem)
     for t in range(10):
         if os.path.isfile(aliceDir + '/accounts/alice@' + aliceDomain +
                           '/followers.txt'):
@@ -4612,8 +4612,8 @@ def _testFunctions():
         'remove_value',
         'normalize',
         'get_document_loader',
-        'runInboxQueueWatchdog',
-        'runInboxQueue',
+        'run_inbox_queue_watchdog',
+        'run_inbox_queue',
         'runPostSchedule',
         'runPostScheduleWatchdog',
         'str2bool',
@@ -5474,10 +5474,10 @@ def _testSkills() -> None:
         'gardening': 70
     }
     setSkillsFromDict(actor_json, skillsDict)
-    assert actorHasSkill(actor_json, 'bakery')
-    assert actorHasSkill(actor_json, 'gardening')
-    assert actorSkillValue(actor_json, 'bakery') == 40
-    assert actorSkillValue(actor_json, 'gardening') == 70
+    assert actor_has_skill(actor_json, 'bakery')
+    assert actor_has_skill(actor_json, 'gardening')
+    assert actor_skill_value(actor_json, 'bakery') == 40
+    assert actor_skill_value(actor_json, 'gardening') == 70
 
 
 def _testRoles() -> None:

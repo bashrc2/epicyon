@@ -38,7 +38,7 @@ from session import getJson
 from session import postJson
 
 
-def createInitialLastSeen(base_dir: str, http_prefix: str) -> None:
+def create_initial_last_seen(base_dir: str, http_prefix: str) -> None:
     """Creates initial lastseen files for all follows.
     The lastseen files are used to generate the Zzz icons on
     follows/following lists on the profile screen.
@@ -59,7 +59,7 @@ def createInitialLastSeen(base_dir: str, http_prefix: str) -> None:
                 with open(followingFilename, 'r') as fp:
                     followingHandles = fp.readlines()
             except OSError:
-                print('EX: createInitialLastSeen ' + followingFilename)
+                print('EX: create_initial_last_seen ' + followingFilename)
             for handle in followingHandles:
                 if '#' in handle:
                     continue
@@ -78,7 +78,7 @@ def createInitialLastSeen(base_dir: str, http_prefix: str) -> None:
                         with open(lastSeenFilename, 'w+') as fp:
                             fp.write(str(100))
                     except OSError:
-                        print('EX: createInitialLastSeen 2 ' +
+                        print('EX: create_initial_last_seen 2 ' +
                               lastSeenFilename)
         break
 
@@ -164,8 +164,8 @@ def _removeFromFollowRejects(base_dir: str,
                           acceptHandle, 'followrejects', debug)
 
 
-def isFollowingActor(base_dir: str,
-                     nickname: str, domain: str, actor: str) -> bool:
+def is_following_actor(base_dir: str,
+                       nickname: str, domain: str, actor: str) -> bool:
     """Is the given nickname following the given actor?
     The actor can also be a handle: nickname@domain
     """
@@ -283,10 +283,10 @@ def isFollowerOfPerson(base_dir: str, nickname: str, domain: str,
     return alreadyFollowing
 
 
-def unfollowAccount(base_dir: str, nickname: str, domain: str,
-                    followNickname: str, followDomain: str,
-                    debug: bool, group_account: bool,
-                    followFile: str = 'following.txt') -> bool:
+def unfollow_account(base_dir: str, nickname: str, domain: str,
+                     followNickname: str, followDomain: str,
+                     debug: bool, group_account: bool,
+                     followFile: str = 'following.txt') -> bool:
     """Removes a person to the follow list
     """
     domain = remove_domain_port(domain)
@@ -315,7 +315,7 @@ def unfollowAccount(base_dir: str, nickname: str, domain: str,
         with open(filename, 'r') as f:
             lines = f.readlines()
     except OSError:
-        print('EX: unfollowAccount ' + filename)
+        print('EX: unfollow_account ' + filename)
     if lines:
         try:
             with open(filename, 'w+') as f:
@@ -353,9 +353,9 @@ def unfollowerOfAccount(base_dir: str, nickname: str, domain: str,
                         debug: bool, group_account: bool) -> bool:
     """Remove a follower of a person
     """
-    return unfollowAccount(base_dir, nickname, domain,
-                           followerNickname, followerDomain,
-                           debug, group_account, 'followers.txt')
+    return unfollow_account(base_dir, nickname, domain,
+                            followerNickname, followerDomain,
+                            debug, group_account, 'followers.txt')
 
 
 def clearFollows(base_dir: str, nickname: str, domain: str,
@@ -424,10 +424,10 @@ def getNoOfFollowers(base_dir: str,
                            authenticated, 'followers.txt')
 
 
-def getFollowingFeed(base_dir: str, domain: str, port: int, path: str,
-                     http_prefix: str, authorized: bool,
-                     follows_per_page=12,
-                     followFile='following') -> {}:
+def get_following_feed(base_dir: str, domain: str, port: int, path: str,
+                       http_prefix: str, authorized: bool,
+                       follows_per_page=12,
+                       followFile='following') -> {}:
     """Returns the following and followers feeds from GET requests.
     This accesses the following.txt or followers.txt and builds a collection.
     """
@@ -448,7 +448,7 @@ def getFollowingFeed(base_dir: str, domain: str, port: int, path: str,
             try:
                 pageNumber = int(pageNumber)
             except BaseException:
-                print('EX: getFollowingFeed unable to convert to int ' +
+                print('EX: get_following_feed unable to convert to int ' +
                       str(pageNumber))
                 pass
         path = path.split('?page=')[0]
@@ -517,7 +517,7 @@ def getFollowingFeed(base_dir: str, domain: str, port: int, path: str,
         with open(filename, 'r') as f:
             lines = f.readlines()
     except OSError:
-        print('EX: getFollowingFeed ' + filename)
+        print('EX: get_following_feed ' + filename)
     for line in lines:
         if '#' not in line:
             if '@' in line and not line.startswith('http'):
@@ -846,15 +846,16 @@ def followedAccountRejects(session, base_dir: str, http_prefix: str,
                           6393063)
 
 
-def sendFollowRequest(session, base_dir: str,
-                      nickname: str, domain: str, port: int, http_prefix: str,
-                      followNickname: str, followDomain: str,
-                      followedActor: str,
-                      followPort: int, followHttpPrefix: str,
-                      client_to_server: bool, federation_list: [],
-                      send_threads: [], postLog: [], cached_webfingers: {},
-                      person_cache: {}, debug: bool,
-                      project_version: str, signing_priv_key_pem: str) -> {}:
+def send_follow_request(session, base_dir: str,
+                        nickname: str, domain: str, port: int,
+                        http_prefix: str,
+                        followNickname: str, followDomain: str,
+                        followedActor: str,
+                        followPort: int, followHttpPrefix: str,
+                        client_to_server: bool, federation_list: [],
+                        send_threads: [], postLog: [], cached_webfingers: {},
+                        person_cache: {}, debug: bool,
+                        project_version: str, signing_priv_key_pem: str) -> {}:
     """Gets the json object for sending a follow request
     """
     if not signing_priv_key_pem:
@@ -881,7 +882,7 @@ def sendFollowRequest(session, base_dir: str,
             print('Follow request being sent to group account')
     else:
         if debug:
-            print('DEBUG: sendFollowRequest - assuming single user instance')
+            print('DEBUG: send_follow_request - assuming single user instance')
         followedId = followHttpPrefix + '://' + requestDomain
         singleUserNickname = 'dev'
         followHandle = singleUserNickname + '@' + requestDomain
@@ -896,7 +897,7 @@ def sendFollowRequest(session, base_dir: str,
                 with open(unfollowedFilename, 'r') as fp:
                     unfollowedFile = fp.read()
             except OSError:
-                print('EX: sendFollowRequest ' + unfollowedFilename)
+                print('EX: send_follow_request ' + unfollowedFilename)
             if unfollowedFile:
                 unfollowedFile = \
                     unfollowedFile.replace(followHandle + '\n', '')
@@ -939,19 +940,19 @@ def sendFollowRequest(session, base_dir: str,
     return newFollowJson
 
 
-def sendFollowRequestViaServer(base_dir: str, session,
-                               fromNickname: str, password: str,
-                               fromDomain: str, fromPort: int,
-                               followNickname: str, followDomain: str,
-                               followPort: int,
-                               http_prefix: str,
-                               cached_webfingers: {}, person_cache: {},
-                               debug: bool, project_version: str,
-                               signing_priv_key_pem: str) -> {}:
+def send_follow_requestViaServer(base_dir: str, session,
+                                 fromNickname: str, password: str,
+                                 fromDomain: str, fromPort: int,
+                                 followNickname: str, followDomain: str,
+                                 followPort: int,
+                                 http_prefix: str,
+                                 cached_webfingers: {}, person_cache: {},
+                                 debug: bool, project_version: str,
+                                 signing_priv_key_pem: str) -> {}:
     """Creates a follow request via c2s
     """
     if not session:
-        print('WARN: No session for sendFollowRequestViaServer')
+        print('WARN: No session for send_follow_requestViaServer')
         return 6
 
     fromDomainFull = get_full_domain(fromDomain, fromPort)
@@ -1419,9 +1420,9 @@ def outboxUndoFollow(base_dir: str, message_json: {}, debug: bool) -> None:
 
     group_account = \
         has_group_type(base_dir, message_json['object']['object'], None)
-    if unfollowAccount(base_dir, nicknameFollower, domainFollowerFull,
-                       nicknameFollowing, domainFollowingFull,
-                       debug, group_account):
+    if unfollow_account(base_dir, nicknameFollower, domainFollowerFull,
+                        nicknameFollowing, domainFollowingFull,
+                        debug, group_account):
         if debug:
             print('DEBUG: ' + nicknameFollower + ' unfollowed ' +
                   nicknameFollowing + '@' + domainFollowingFull)
@@ -1431,7 +1432,8 @@ def outboxUndoFollow(base_dir: str, message_json: {}, debug: bool) -> None:
                   nicknameFollowing + '@' + domainFollowingFull)
 
 
-def followerApprovalActive(base_dir: str, nickname: str, domain: str) -> bool:
+def follower_approval_active(base_dir: str,
+                             nickname: str, domain: str) -> bool:
     """Returns true if the given account requires follower approval
     """
     manuallyApprovesFollowers = False

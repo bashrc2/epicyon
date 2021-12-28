@@ -19,7 +19,7 @@ from utils import remove_id_ending
 from utils import acct_dir
 from utils import is_float
 from utils import local_actor_url
-from follow import followerApprovalActive
+from follow import follower_approval_active
 from person import isPersonSnoozed
 from markdown import markdownToHtml
 from webapp_utils import htmlKeyboardNavigation
@@ -1148,7 +1148,7 @@ def htmlShares(css_cache: {}, defaultTimeline: str,
     """Show the shares timeline as html
     """
     manuallyApproveFollowers = \
-        followerApprovalActive(base_dir, nickname, domain)
+        follower_approval_active(base_dir, nickname, domain)
     artist = is_artist(base_dir, nickname)
 
     return htmlTimeline(css_cache, defaultTimeline,
@@ -1206,7 +1206,7 @@ def htmlWanted(css_cache: {}, defaultTimeline: str,
     """Show the wanted timeline as html
     """
     manuallyApproveFollowers = \
-        followerApprovalActive(base_dir, nickname, domain)
+        follower_approval_active(base_dir, nickname, domain)
     artist = is_artist(base_dir, nickname)
 
     return htmlTimeline(css_cache, defaultTimeline,
@@ -1265,7 +1265,7 @@ def htmlInbox(css_cache: {}, defaultTimeline: str,
     """Show the inbox as html
     """
     manuallyApproveFollowers = \
-        followerApprovalActive(base_dir, nickname, domain)
+        follower_approval_active(base_dir, nickname, domain)
     artist = is_artist(base_dir, nickname)
 
     return htmlTimeline(css_cache, defaultTimeline,
@@ -1324,7 +1324,7 @@ def htmlBookmarks(css_cache: {}, defaultTimeline: str,
     """Show the bookmarks as html
     """
     manuallyApproveFollowers = \
-        followerApprovalActive(base_dir, nickname, domain)
+        follower_approval_active(base_dir, nickname, domain)
     artist = is_artist(base_dir, nickname)
 
     return htmlTimeline(css_cache, defaultTimeline,
@@ -1700,7 +1700,7 @@ def htmlOutbox(css_cache: {}, defaultTimeline: str,
     """Show the Outbox as html
     """
     manuallyApproveFollowers = \
-        followerApprovalActive(base_dir, nickname, domain)
+        follower_approval_active(base_dir, nickname, domain)
     artist = is_artist(base_dir, nickname)
     return htmlTimeline(css_cache, defaultTimeline,
                         recent_posts_cache, max_recent_posts,

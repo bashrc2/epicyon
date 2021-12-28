@@ -67,7 +67,7 @@ from pprint import pprint
 from cache import getPersonFromCache
 from cache import storePersonInCache
 from filters import isFilteredBio
-from follow import isFollowingActor
+from follow import is_following_actor
 
 
 def generateRSAKey() -> (str, str):
@@ -1669,7 +1669,7 @@ def validSendingActor(session, base_dir: str,
     sendingActor = post_json_object['actor']
 
     # If you are following them then allow their posts
-    if isFollowingActor(base_dir, nickname, domain, sendingActor):
+    if is_following_actor(base_dir, nickname, domain, sendingActor):
         return True
 
     # sending to yourself (reminder)

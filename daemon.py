@@ -96,24 +96,24 @@ from posts import populate_replies_json
 from posts import add_to_field
 from posts import expire_cache
 from inbox import clear_queue_items
-from inbox import inboxPermittedMessage
-from inbox import inboxMessageHasParams
-from inbox import runInboxQueue
-from inbox import runInboxQueueWatchdog
-from inbox import savePostToInboxQueue
-from inbox import populateReplies
-from follow import followerApprovalActive
-from follow import isFollowingActor
-from follow import getFollowingFeed
-from follow import sendFollowRequest
-from follow import unfollowAccount
-from follow import createInitialLastSeen
-from skills import getSkillsFromList
-from skills import noOfActorSkills
-from skills import actorHasSkill
-from skills import actorSkillValue
-from skills import setActorSkillLevel
-from auth import recordLoginFailure
+from inbox import inbox_permitted_message
+from inbox import inbox_message_has_params
+from inbox import run_inbox_queue
+from inbox import run_inbox_queue_watchdog
+from inbox import save_post_to_inbox_queue
+from inbox import populate_replies
+from follow import follower_approval_active
+from follow import is_following_actor
+from follow import get_following_feed
+from follow import send_follow_request
+from follow import unfollow_account
+from follow import create_initial_last_seen
+from skills import get_skills_from_list
+from skills import no_of_actor_skills
+from skills import actor_has_skill
+from skills import actor_skill_value
+from skills import set_actor_skill_level
+from auth import record_login_failure
 from auth import authorize
 from auth import createPassword
 from auth import createBasicAuthHeader
@@ -530,12 +530,12 @@ class PubServer(BaseHTTPRequestHandler):
                 if post_filename:
                     post_json_object = load_json(post_filename)
                     if post_json_object:
-                        populateReplies(self.server.base_dir,
-                                        self.server.http_prefix,
-                                        self.server.domain_full,
-                                        post_json_object,
-                                        self.server.max_replies,
-                                        self.server.debug)
+                        populate_replies(self.server.base_dir,
+                                         self.server.http_prefix,
+                                         self.server.domain_full,
+                                         post_json_object,
+                                         self.server.max_replies,
+                                         self.server.debug)
                         # record the vote
                         try:
                             with open(votesFilename, 'a+') as votesFile:
@@ -1533,17 +1533,17 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.blockedCacheUpdateSecs)
 
         queueFilename = \
-            savePostToInboxQueue(self.server.base_dir,
-                                 self.server.http_prefix,
-                                 nickname,
-                                 self.server.domain_full,
-                                 message_json, originalMessageJson,
-                                 messageBytesDecoded,
-                                 headersDict,
-                                 self.path,
-                                 self.server.debug,
-                                 self.server.blockedCache,
-                                 self.server.system_language)
+            save_post_to_inbox_queue(self.server.base_dir,
+                                     self.server.http_prefix,
+                                     nickname,
+                                     self.server.domain_full,
+                                     message_json, originalMessageJson,
+                                     messageBytesDecoded,
+                                     headersDict,
+                                     self.path,
+                                     self.server.debug,
+                                     self.server.blockedCache,
+                                     self.server.system_language)
         if queueFilename:
             # add json to the queue
             if queueFilename not in self.server.inbox_queue:
@@ -1741,10 +1741,10 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.last_login_failure = failTime
                 if not domain.endswith('.onion'):
                     if not is_local_network_address(ipAddress):
-                        recordLoginFailure(base_dir, ipAddress,
-                                           self.server.login_failure_count,
-                                           failTime,
-                                           self.server.log_login_failures)
+                        record_login_failure(base_dir, ipAddress,
+                                             self.server.login_failure_count,
+                                             failTime,
+                                             self.server.log_login_failures)
                 self.server.POSTbusy = False
                 return
             else:
@@ -2961,10 +2961,10 @@ class PubServer(BaseHTTPRequestHandler):
                 group_account = has_group_type(self.server.base_dir,
                                                followingActor,
                                                self.server.person_cache)
-                unfollowAccount(self.server.base_dir, self.postToNickname,
-                                self.server.domain,
-                                followingNickname, followingDomainFull,
-                                self.server.debug, group_account)
+                unfollow_account(self.server.base_dir, self.postToNickname,
+                                 self.server.domain,
+                                 followingNickname, followingDomainFull,
+                                 self.server.debug, group_account)
                 self._postToOutboxThread(unfollowJson)
 
         if calling_domain.endswith('.onion') and onion_domain:
@@ -3042,21 +3042,21 @@ class PubServer(BaseHTTPRequestHandler):
                       followerNickname + ' to ' + followingActor)
                 if not self.server.signing_priv_key_pem:
                     print('Sending follow request with no signing key')
-                sendFollowRequest(self.server.session,
-                                  base_dir, followerNickname,
-                                  domain, port,
-                                  http_prefix,
-                                  followingNickname,
-                                  followingDomain,
-                                  followingActor,
-                                  followingPort, http_prefix,
-                                  False, self.server.federation_list,
-                                  self.server.send_threads,
-                                  self.server.postLog,
-                                  self.server.cached_webfingers,
-                                  self.server.person_cache, debug,
-                                  self.server.project_version,
-                                  self.server.signing_priv_key_pem)
+                send_follow_request(self.server.session,
+                                    base_dir, followerNickname,
+                                    domain, port,
+                                    http_prefix,
+                                    followingNickname,
+                                    followingDomain,
+                                    followingActor,
+                                    followingPort, http_prefix,
+                                    False, self.server.federation_list,
+                                    self.server.send_threads,
+                                    self.server.postLog,
+                                    self.server.cached_webfingers,
+                                    self.server.person_cache, debug,
+                                    self.server.project_version,
+                                    self.server.signing_priv_key_pem)
         if calling_domain.endswith('.onion') and onion_domain:
             originPathStr = 'http://' + onion_domain + usersPath
         elif (calling_domain.endswith('.i2p') and i2p_domain):
@@ -3511,7 +3511,7 @@ class PubServer(BaseHTTPRequestHandler):
                 profilePathStr = path.replace('/searchhandle', '')
 
                 # are we already following the searched for handle?
-                if isFollowingActor(base_dir, nickname, domain, searchStr):
+                if is_following_actor(base_dir, nickname, domain, searchStr):
                     if not has_users_path(searchStr):
                         searchNickname = get_nickname_from_actor(searchStr)
                         searchDomain, searchPort = \
@@ -4934,7 +4934,7 @@ class PubServer(BaseHTTPRequestHandler):
 
                     # set skill levels
                     skillCtr = 1
-                    actorSkillsCtr = noOfActorSkills(actor_json)
+                    actorSkillsCtr = no_of_actor_skills(actor_json)
                     while skillCtr < 10:
                         skillName = \
                             fields.get('skillName' + str(skillCtr))
@@ -4949,20 +4949,20 @@ class PubServer(BaseHTTPRequestHandler):
                         if not skillValue:
                             skillCtr += 1
                             continue
-                        if not actorHasSkill(actor_json, skillName):
+                        if not actor_has_skill(actor_json, skillName):
                             actorChanged = True
                         else:
-                            if actorSkillValue(actor_json, skillName) != \
+                            if actor_skill_value(actor_json, skillName) != \
                                int(skillValue):
                                 actorChanged = True
-                        setActorSkillLevel(actor_json,
-                                           skillName, int(skillValue))
+                        set_actor_skill_level(actor_json,
+                                              skillName, int(skillValue))
                         skillsStr = self.server.translate['Skills']
                         skillsStr = skillsStr.lower()
                         setHashtagCategory(base_dir, skillName,
                                            skillsStr, False)
                         skillCtr += 1
-                    if noOfActorSkills(actor_json) != \
+                    if no_of_actor_skills(actor_json) != \
                        actorSkillsCtr:
                         actorChanged = True
 
@@ -7738,8 +7738,8 @@ class PubServer(BaseHTTPRequestHandler):
                 print('Announced post cache: ' + str(cachedPostFilename))
             showIndividualPostIcons = True
             manuallyApproveFollowers = \
-                followerApprovalActive(base_dir,
-                                       self.postToNickname, domain)
+                follower_approval_active(base_dir,
+                                         self.postToNickname, domain)
             showRepeats = not is_dm(announceJson)
             individualPostAsHtml(self.server.signing_priv_key_pem, False,
                                  self.server.recent_posts_cache,
@@ -8199,8 +8199,8 @@ class PubServer(BaseHTTPRequestHandler):
                     print('Liked post cache: ' + str(cachedPostFilename))
                 showIndividualPostIcons = True
                 manuallyApproveFollowers = \
-                    followerApprovalActive(base_dir,
-                                           self.postToNickname, domain)
+                    follower_approval_active(base_dir,
+                                             self.postToNickname, domain)
                 showRepeats = not is_dm(likedPostJson)
                 individualPostAsHtml(self.server.signing_priv_key_pem, False,
                                      self.server.recent_posts_cache,
@@ -8355,8 +8355,8 @@ class PubServer(BaseHTTPRequestHandler):
             if likedPostJson:
                 showIndividualPostIcons = True
                 manuallyApproveFollowers = \
-                    followerApprovalActive(base_dir,
-                                           self.postToNickname, domain)
+                    follower_approval_active(base_dir,
+                                             self.postToNickname, domain)
                 showRepeats = not is_dm(likedPostJson)
                 individualPostAsHtml(self.server.signing_priv_key_pem, False,
                                      self.server.recent_posts_cache,
@@ -8538,8 +8538,8 @@ class PubServer(BaseHTTPRequestHandler):
                     print('Reaction post cache: ' + str(cachedPostFilename))
                 showIndividualPostIcons = True
                 manuallyApproveFollowers = \
-                    followerApprovalActive(base_dir,
-                                           self.postToNickname, domain)
+                    follower_approval_active(base_dir,
+                                             self.postToNickname, domain)
                 showRepeats = not is_dm(reactionPostJson)
                 individualPostAsHtml(self.server.signing_priv_key_pem, False,
                                      self.server.recent_posts_cache,
@@ -8712,8 +8712,8 @@ class PubServer(BaseHTTPRequestHandler):
             if reactionPostJson:
                 showIndividualPostIcons = True
                 manuallyApproveFollowers = \
-                    followerApprovalActive(base_dir,
-                                           self.postToNickname, domain)
+                    follower_approval_active(base_dir,
+                                             self.postToNickname, domain)
                 showRepeats = not is_dm(reactionPostJson)
                 individualPostAsHtml(self.server.signing_priv_key_pem, False,
                                      self.server.recent_posts_cache,
@@ -8932,8 +8932,8 @@ class PubServer(BaseHTTPRequestHandler):
                 print('Bookmarked post cache: ' + str(cachedPostFilename))
                 showIndividualPostIcons = True
                 manuallyApproveFollowers = \
-                    followerApprovalActive(base_dir,
-                                           self.postToNickname, domain)
+                    follower_approval_active(base_dir,
+                                             self.postToNickname, domain)
                 showRepeats = not is_dm(bookmarkPostJson)
                 individualPostAsHtml(self.server.signing_priv_key_pem, False,
                                      self.server.recent_posts_cache,
@@ -9060,8 +9060,8 @@ class PubServer(BaseHTTPRequestHandler):
                 print('Unbookmarked post cache: ' + str(cachedPostFilename))
                 showIndividualPostIcons = True
                 manuallyApproveFollowers = \
-                    followerApprovalActive(base_dir,
-                                           self.postToNickname, domain)
+                    follower_approval_active(base_dir,
+                                             self.postToNickname, domain)
                 showRepeats = not is_dm(bookmarkPostJson)
                 individualPostAsHtml(self.server.signing_priv_key_pem, False,
                                      self.server.recent_posts_cache,
@@ -9255,8 +9255,8 @@ class PubServer(BaseHTTPRequestHandler):
                 print('mutePost: Muted post cache: ' + str(cachedPostFilename))
                 showIndividualPostIcons = True
                 manuallyApproveFollowers = \
-                    followerApprovalActive(base_dir,
-                                           nickname, domain)
+                    follower_approval_active(base_dir,
+                                             nickname, domain)
                 showRepeats = not is_dm(mutePostJson)
                 showPublicOnly = False
                 storeToCache = True
@@ -9366,7 +9366,7 @@ class PubServer(BaseHTTPRequestHandler):
                       str(cachedPostFilename))
                 showIndividualPostIcons = True
                 manuallyApproveFollowers = \
-                    followerApprovalActive(base_dir, nickname, domain)
+                    follower_approval_active(base_dir, nickname, domain)
                 showRepeats = not is_dm(mutePostJson)
                 showPublicOnly = False
                 storeToCache = True
@@ -9768,7 +9768,7 @@ class PubServer(BaseHTTPRequestHandler):
             if os.path.isfile(actorFilename):
                 actor_json = load_json(actorFilename)
                 if actor_json:
-                    if noOfActorSkills(actor_json) > 0:
+                    if no_of_actor_skills(actor_json) > 0:
                         if self._requestHTTP():
                             getPerson = \
                                 person_lookup(domain,
@@ -9797,7 +9797,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.keyShortcuts[nickname]
                                 actorSkillsList = \
                                     get_occupation_skills(actor_json)
-                                skills = getSkillsFromList(actorSkillsList)
+                                skills = get_skills_from_list(actorSkillsList)
                                 city = getSpoofedCity(self.server.city,
                                                       base_dir,
                                                       nickname, domain)
@@ -9855,7 +9855,7 @@ class PubServer(BaseHTTPRequestHandler):
                             if self._secure_mode():
                                 actorSkillsList = \
                                     get_occupation_skills(actor_json)
-                                skills = getSkillsFromList(actorSkillsList)
+                                skills = get_skills_from_list(actorSkillsList)
                                 msg = json.dumps(skills,
                                                  ensure_ascii=False)
                                 msg = msg.encode('utf-8')
@@ -11915,9 +11915,9 @@ class PubServer(BaseHTTPRequestHandler):
         """Shows the following feed
         """
         following = \
-            getFollowingFeed(base_dir, domain, port, path,
-                             http_prefix, authorized, follows_per_page,
-                             'following')
+            get_following_feed(base_dir, domain, port, path,
+                               http_prefix, authorized, follows_per_page,
+                               'following')
         if following:
             if self._requestHTTP():
                 pageNumber = 1
@@ -11925,12 +11925,12 @@ class PubServer(BaseHTTPRequestHandler):
                     searchPath = path
                     # get a page of following, not the summary
                     following = \
-                        getFollowingFeed(base_dir,
-                                         domain,
-                                         port,
-                                         path + '?page=true',
-                                         http_prefix,
-                                         authorized, follows_per_page)
+                        get_following_feed(base_dir,
+                                           domain,
+                                           port,
+                                           path + '?page=true',
+                                           http_prefix,
+                                           authorized, follows_per_page)
                 else:
                     pageNumberStr = path.split('?page=')[1]
                     if '#' in pageNumberStr:
@@ -12034,8 +12034,8 @@ class PubServer(BaseHTTPRequestHandler):
         """Shows the followers feed
         """
         followers = \
-            getFollowingFeed(base_dir, domain, port, path, http_prefix,
-                             authorized, follows_per_page, 'followers')
+            get_following_feed(base_dir, domain, port, path, http_prefix,
+                               authorized, follows_per_page, 'followers')
         if followers:
             if self._requestHTTP():
                 pageNumber = 1
@@ -12043,13 +12043,13 @@ class PubServer(BaseHTTPRequestHandler):
                     searchPath = path
                     # get a page of followers, not the summary
                     followers = \
-                        getFollowingFeed(base_dir,
-                                         domain,
-                                         port,
-                                         path + '?page=1',
-                                         http_prefix,
-                                         authorized, follows_per_page,
-                                         'followers')
+                        get_following_feed(base_dir,
+                                           domain,
+                                           port,
+                                           path + '?page=1',
+                                           http_prefix,
+                                           authorized, follows_per_page,
+                                           'followers')
                 else:
                     pageNumberStr = path.split('?page=')[1]
                     if '#' in pageNumberStr:
@@ -13216,8 +13216,8 @@ class PubServer(BaseHTTPRequestHandler):
         """Returns json collection for following.txt
         """
         followingJson = \
-            getFollowingFeed(base_dir, domain, port, path, http_prefix,
-                             True, followingItemsPerPage, listName)
+            get_following_feed(base_dir, domain, port, path, http_prefix,
+                               True, followingItemsPerPage, listName)
         if not followingJson:
             if debug:
                 print(listName + ' json feed not found for ' + path)
@@ -16662,12 +16662,12 @@ class PubServer(BaseHTTPRequestHandler):
                     if self._postToOutbox(message_json,
                                           self.server.project_version,
                                           nickname):
-                        populateReplies(self.server.base_dir,
-                                        self.server.http_prefix,
-                                        self.server.domain_full,
-                                        message_json,
-                                        self.server.max_replies,
-                                        self.server.debug)
+                        populate_replies(self.server.base_dir,
+                                         self.server.http_prefix,
+                                         self.server.domain_full,
+                                         message_json,
+                                         self.server.max_replies,
+                                         self.server.debug)
                         return 1
                     else:
                         return -1
@@ -16739,12 +16739,12 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.project_version,
                                           nickname):
                         refresh_newswire(self.server.base_dir)
-                        populateReplies(self.server.base_dir,
-                                        self.server.http_prefix,
-                                        self.server.domain_full,
-                                        message_json,
-                                        self.server.max_replies,
-                                        self.server.debug)
+                        populate_replies(self.server.base_dir,
+                                         self.server.http_prefix,
+                                         self.server.domain_full,
+                                         message_json,
+                                         self.server.max_replies,
+                                         self.server.debug)
                         return 1
                     else:
                         return -1
@@ -16891,12 +16891,12 @@ class PubServer(BaseHTTPRequestHandler):
                     if self._postToOutbox(message_json,
                                           self.server.project_version,
                                           nickname):
-                        populateReplies(self.server.base_dir,
-                                        self.server.http_prefix,
-                                        self.server.domain,
-                                        message_json,
-                                        self.server.max_replies,
-                                        self.server.debug)
+                        populate_replies(self.server.base_dir,
+                                         self.server.http_prefix,
+                                         self.server.domain,
+                                         message_json,
+                                         self.server.max_replies,
+                                         self.server.debug)
                         return 1
                     else:
                         return -1
@@ -16943,12 +16943,12 @@ class PubServer(BaseHTTPRequestHandler):
                     if self._postToOutbox(message_json,
                                           self.server.project_version,
                                           nickname):
-                        populateReplies(self.server.base_dir,
-                                        self.server.http_prefix,
-                                        self.server.domain,
-                                        message_json,
-                                        self.server.max_replies,
-                                        self.server.debug)
+                        populate_replies(self.server.base_dir,
+                                         self.server.http_prefix,
+                                         self.server.domain,
+                                         message_json,
+                                         self.server.max_replies,
+                                         self.server.debug)
                         return 1
                     else:
                         return -1
@@ -17004,12 +17004,12 @@ class PubServer(BaseHTTPRequestHandler):
                     if self._postToOutbox(message_json,
                                           self.server.project_version,
                                           nickname):
-                        populateReplies(self.server.base_dir,
-                                        self.server.http_prefix,
-                                        self.server.domain,
-                                        message_json,
-                                        self.server.max_replies,
-                                        self.server.debug)
+                        populate_replies(self.server.base_dir,
+                                         self.server.http_prefix,
+                                         self.server.domain,
+                                         message_json,
+                                         self.server.max_replies,
+                                         self.server.debug)
                         return 1
                     else:
                         return -1
@@ -18275,7 +18275,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         if self.path.endswith('/inbox') or \
            self.path == '/sharedInbox':
-            if not inboxMessageHasParams(message_json):
+            if not inbox_message_has_params(message_json):
                 if self.server.debug:
                     print("DEBUG: inbox message doesn't have the " +
                           "required parameters")
@@ -18285,7 +18285,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return
 
         fitnessPerformance(POSTstartTime, self.server.fitness,
-                           '_POST', 'inboxMessageHasParams',
+                           '_POST', 'inbox_message_has_params',
                            self.server.debug)
 
         headerSignature = self._getheaderSignatureInput()
@@ -18305,9 +18305,9 @@ class PubServer(BaseHTTPRequestHandler):
                            self.server.debug)
 
         if not self.server.unit_test:
-            if not inboxPermittedMessage(self.server.domain,
-                                         message_json,
-                                         self.server.federation_list):
+            if not inbox_permitted_message(self.server.domain,
+                                           message_json,
+                                           self.server.federation_list):
                 if self.server.debug:
                     # https://www.youtube.com/watch?v=K3PrSj9XEu4
                     print('DEBUG: Ah Ah Ah')
@@ -18317,7 +18317,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return
 
         fitnessPerformance(POSTstartTime, self.server.fitness,
-                           '_POST', 'inboxPermittedMessage',
+                           '_POST', 'inbox_permitted_message',
                            self.server.debug)
 
         if self.server.debug:
@@ -18934,11 +18934,11 @@ def runDaemon(content_license_url: str,
     httpd.peertube_instances = []
     loadPeertubeInstances(base_dir, httpd.peertube_instances)
 
-    createInitialLastSeen(base_dir, http_prefix)
+    create_initial_last_seen(base_dir, http_prefix)
 
     print('Creating inbox queue')
     httpd.thrInboxQueue = \
-        threadWithTrace(target=runInboxQueue,
+        threadWithTrace(target=run_inbox_queue,
                         args=(httpd.recent_posts_cache,
                               httpd.max_recent_posts,
                               project_version,
@@ -19004,7 +19004,7 @@ def runDaemon(content_license_url: str,
     if not unit_test:
         print('Creating inbox queue watchdog')
         httpd.thrWatchdog = \
-            threadWithTrace(target=runInboxQueueWatchdog,
+            threadWithTrace(target=run_inbox_queue_watchdog,
                             args=(project_version, httpd), daemon=True)
         httpd.thrWatchdog.start()
 

@@ -43,7 +43,7 @@ from inbox import inboxUpdateIndex
 from announce import outboxAnnounce
 from announce import outboxUndoAnnounce
 from follow import outboxUndoFollow
-from follow import followerApprovalActive
+from follow import follower_approval_active
 from skills import outboxSkills
 from availability import outboxAvailability
 from like import outboxLike
@@ -451,8 +451,8 @@ def postMessageToOutbox(session, translate: {},
                     pageNumber = 1
                     showIndividualPostIcons = True
                     manuallyApproveFollowers = \
-                        followerApprovalActive(base_dir,
-                                               postToNickname, domain)
+                        follower_approval_active(base_dir,
+                                                 postToNickname, domain)
                     individualPostAsHtml(signing_priv_key_pem,
                                          False, recent_posts_cache,
                                          max_recent_posts,

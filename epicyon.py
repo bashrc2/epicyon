@@ -54,7 +54,7 @@ from follow import getFollowingViaServer
 from follow import getFollowersViaServer
 from follow import clearFollows
 from follow import followerOfPerson
-from follow import sendFollowRequestViaServer
+from follow import send_follow_requestViaServer
 from follow import sendUnfollowRequestViaServer
 from tests import testSharedItemsFederation
 from tests import testGroupFollow
@@ -1897,13 +1897,13 @@ if args.follow:
     if args.secure_mode:
         signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
 
-    sendFollowRequestViaServer(base_dir, session,
-                               args.nickname, args.password,
-                               domain, port,
-                               followNickname, followDomain, followPort,
-                               http_prefix,
-                               cached_webfingers, person_cache,
-                               debug, __version__, signing_priv_key_pem)
+    send_follow_requestViaServer(base_dir, session,
+                                 args.nickname, args.password,
+                                 domain, port,
+                                 followNickname, followDomain, followPort,
+                                 http_prefix,
+                                 cached_webfingers, person_cache,
+                                 debug, __version__, signing_priv_key_pem)
     for t in range(20):
         time.sleep(1)
         # TODO some method to know if it worked

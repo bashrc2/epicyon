@@ -16,7 +16,7 @@ from utils import has_group_type
 from webfinger import webfingerHandle
 from blocking import isBlocked
 from posts import getUserUrl
-from follow import unfollowAccount
+from follow import unfollow_account
 from person import getActorJson
 
 
@@ -111,9 +111,9 @@ def _updateMovedHandle(base_dir: str, nickname: str, domain: str,
                  movedToNickname, movedToDomain):
         # someone that you follow has moved to a blocked domain
         # so just unfollow them
-        unfollowAccount(base_dir, nickname, domain,
-                        movedToNickname, movedToDomainFull,
-                        debug, group_account, 'following.txt')
+        unfollow_account(base_dir, nickname, domain,
+                         movedToNickname, movedToDomainFull,
+                         debug, group_account, 'following.txt')
         return ctr
 
     followingFilename = acct_dir(base_dir, nickname, domain) + '/following.txt'
@@ -136,10 +136,10 @@ def _updateMovedHandle(base_dir: str, nickname: str, domain: str,
                     else:
                         handleNickname = handle.split('@')[0]
                         handleDomain = handle.split('@')[1]
-                        unfollowAccount(base_dir, nickname, domain,
-                                        handleNickname,
-                                        handleDomain,
-                                        debug, group_account, 'following.txt')
+                        unfollow_account(base_dir, nickname, domain,
+                                         handleNickname,
+                                         handleDomain,
+                                         debug, group_account, 'following.txt')
                         ctr += 1
                         print('Unfollowed ' + handle + ' who has moved to ' +
                               movedToHandle)
