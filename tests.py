@@ -73,7 +73,7 @@ from utils import get_full_domain
 from utils import validNickname
 from utils import first_paragraph_from_string
 from utils import remove_id_ending
-from utils import updateRecentPostsCache
+from utils import update_recent_posts_cache
 from utils import follow_person
 from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
@@ -3538,8 +3538,8 @@ def _testRecentPostsCache():
         post_json_object = {
             "id": "https://somesite.whatever/users/someuser/statuses/" + str(i)
         }
-        updateRecentPostsCache(recent_posts_cache, max_recent_posts,
-                               post_json_object, htmlStr)
+        update_recent_posts_cache(recent_posts_cache, max_recent_posts,
+                                  post_json_object, htmlStr)
     assert len(recent_posts_cache['index']) == max_recent_posts
     assert len(recent_posts_cache['json'].items()) == max_recent_posts
     assert len(recent_posts_cache['html'].items()) == max_recent_posts

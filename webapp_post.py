@@ -46,7 +46,7 @@ from utils import is_news_post
 from utils import is_blog_post
 from utils import get_display_name
 from utils import isPublicPost
-from utils import updateRecentPostsCache
+from utils import update_recent_posts_cache
 from utils import remove_id_ending
 from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
@@ -324,8 +324,8 @@ def _getPostFromRecentCache(session,
 
     postHtml = \
         preparePostFromHtmlCache(nickname, postHtml, boxName, pageNumber)
-    updateRecentPostsCache(recent_posts_cache, max_recent_posts,
-                           post_json_object, postHtml)
+    update_recent_posts_cache(recent_posts_cache, max_recent_posts,
+                              post_json_object, postHtml)
     _logPostTiming(enableTimingLog, postStartTime, '3')
     return postHtml
 
@@ -1984,8 +1984,8 @@ def individualPostAsHtml(signing_priv_key_pem: str,
        boxName != 'bookmarks':
         _saveIndividualPostAsHtmlToCache(base_dir, nickname, domain,
                                          post_json_object, postHtml)
-        updateRecentPostsCache(recent_posts_cache, max_recent_posts,
-                               post_json_object, postHtml)
+        update_recent_posts_cache(recent_posts_cache, max_recent_posts,
+                                  post_json_object, postHtml)
 
     _logPostTiming(enableTimingLog, postStartTime, '19')
 
