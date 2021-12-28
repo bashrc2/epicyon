@@ -246,8 +246,8 @@ from reaction import updateReactionCollection
 from utils import undo_reaction_collection_entry
 from utils import get_new_post_endpoints
 from utils import has_actor
-from utils import setReplyIntervalHours
-from utils import canReplyTo
+from utils import set_reply_interval_hours
+from utils import can_reply_to
 from utils import is_dm
 from utils import replace_users_with_at
 from utils import local_actor_url
@@ -4981,8 +4981,9 @@ class PubServer(BaseHTTPRequestHandler):
                     # reply interval in hours
                     if fields.get('replyhours'):
                         if fields['replyhours'].isdigit():
-                            setReplyIntervalHours(base_dir, nickname, domain,
-                                                  fields['replyhours'])
+                            set_reply_interval_hours(base_dir,
+                                                     nickname, domain,
+                                                     fields['replyhours'])
 
                     # change city
                     if fields.get('cityDropdown'):
@@ -12960,8 +12961,8 @@ class PubServer(BaseHTTPRequestHandler):
 
             if inReplyToUrl:
                 replyIntervalHours = self.server.default_reply_interval_hrs
-                if not canReplyTo(base_dir, nickname, domain,
-                                  inReplyToUrl, replyIntervalHours):
+                if not can_reply_to(base_dir, nickname, domain,
+                                    inReplyToUrl, replyIntervalHours):
                     print('Reply outside of time window ' + inReplyToUrl +
                           str(replyIntervalHours) + ' hours')
                     self._403()

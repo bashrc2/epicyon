@@ -56,7 +56,7 @@ from follow import sendUnfollowRequestViaServer
 from siteactive import siteIsActive
 from utils import get_sha_256
 from utils import dangerous_svg
-from utils import canReplyTo
+from utils import can_reply_to
 from utils import is_group_account
 from utils import get_actor_languages_list
 from utils import get_category_types
@@ -5807,17 +5807,17 @@ def _testCanReplyTo(base_dir: str) -> None:
     postUrl = post_json_object['object']['id']
     replyIntervalHours = 2
     currDateStr = "2021-09-08T21:32:10Z"
-    assert canReplyTo(base_dir, nickname, domain,
-                      postUrl, replyIntervalHours,
-                      currDateStr,
-                      post_json_object)
+    assert can_reply_to(base_dir, nickname, domain,
+                        postUrl, replyIntervalHours,
+                        currDateStr,
+                        post_json_object)
 
     # test a post outside of the reply interval
     currDateStr = "2021-09-09T09:24:47Z"
-    assert not canReplyTo(base_dir, nickname, domain,
-                          postUrl, replyIntervalHours,
-                          currDateStr,
-                          post_json_object)
+    assert not can_reply_to(base_dir, nickname, domain,
+                            postUrl, replyIntervalHours,
+                            currDateStr,
+                            post_json_object)
 
 
 def _testSecondsBetweenPublished() -> None:

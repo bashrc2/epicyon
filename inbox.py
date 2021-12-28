@@ -26,7 +26,7 @@ from utils import fileLastModified
 from utils import has_object_string
 from utils import has_object_string_object
 from utils import get_reply_interval_hours
-from utils import canReplyTo
+from utils import can_reply_to
 from utils import get_user_paths
 from utils import get_base_content_from_post
 from utils import acct_dir
@@ -3113,8 +3113,8 @@ def _createReplyNotificationFile(base_dir: str, nickname: str, domain: str,
         replyIntervalHours = \
             get_reply_interval_hours(base_dir, nickname, domain,
                                      default_reply_interval_hrs)
-        if canReplyTo(base_dir, nickname, domain, inReplyTo,
-                      replyIntervalHours):
+        if can_reply_to(base_dir, nickname, domain, inReplyTo,
+                        replyIntervalHours):
             actUrl = local_actor_url(http_prefix, nickname, domain)
             _replyNotify(base_dir, handle, actUrl + '/tlreplies')
         else:
