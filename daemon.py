@@ -66,7 +66,7 @@ from person import activateAccount
 from person import deactivateAccount
 from person import registerAccount
 from person import personLookup
-from person import personBoxJson
+from person import person_box_json
 from person import createSharedInbox
 from person import createNewsInbox
 from person import suspendAccount
@@ -10170,18 +10170,18 @@ class PubServer(BaseHTTPRequestHandler):
         if '/users/' in path:
             if authorized:
                 inboxFeed = \
-                    personBoxJson(recent_posts_cache,
-                                  session,
-                                  base_dir,
-                                  domain,
-                                  port,
-                                  path,
-                                  http_prefix,
-                                  max_posts_in_feed, 'inbox',
-                                  authorized,
-                                  0,
-                                  self.server.positive_voting,
-                                  self.server.voting_time_mins)
+                    person_box_json(recent_posts_cache,
+                                    session,
+                                    base_dir,
+                                    domain,
+                                    port,
+                                    path,
+                                    http_prefix,
+                                    max_posts_in_feed, 'inbox',
+                                    authorized,
+                                    0,
+                                    self.server.positive_voting,
+                                    self.server.voting_time_mins)
                 if inboxFeed:
                     if GETstartTime:
                         fitnessPerformance(GETstartTime,
@@ -10202,18 +10202,18 @@ class PubServer(BaseHTTPRequestHandler):
                         if 'page=' not in path:
                             # if no page was specified then show the first
                             inboxFeed = \
-                                personBoxJson(recent_posts_cache,
-                                              session,
-                                              base_dir,
-                                              domain,
-                                              port,
-                                              path + '?page=1',
-                                              http_prefix,
-                                              max_posts_in_feed, 'inbox',
-                                              authorized,
-                                              0,
-                                              self.server.positive_voting,
-                                              self.server.voting_time_mins)
+                                person_box_json(recent_posts_cache,
+                                                session,
+                                                base_dir,
+                                                domain,
+                                                port,
+                                                path + '?page=1',
+                                                http_prefix,
+                                                max_posts_in_feed, 'inbox',
+                                                authorized,
+                                                0,
+                                                self.server.positive_voting,
+                                                self.server.voting_time_mins)
                             if GETstartTime:
                                 fitnessPerformance(GETstartTime,
                                                    self.server.fitness,
@@ -10329,17 +10329,17 @@ class PubServer(BaseHTTPRequestHandler):
         if '/users/' in path:
             if authorized:
                 inboxDMFeed = \
-                    personBoxJson(self.server.recent_posts_cache,
-                                  self.server.session,
-                                  base_dir,
-                                  domain,
-                                  port,
-                                  path,
-                                  http_prefix,
-                                  max_posts_in_feed, 'dm',
-                                  authorized,
-                                  0, self.server.positive_voting,
-                                  self.server.voting_time_mins)
+                    person_box_json(self.server.recent_posts_cache,
+                                    self.server.session,
+                                    base_dir,
+                                    domain,
+                                    port,
+                                    path,
+                                    http_prefix,
+                                    max_posts_in_feed, 'dm',
+                                    authorized,
+                                    0, self.server.positive_voting,
+                                    self.server.voting_time_mins)
                 if inboxDMFeed:
                     if self._requestHTTP():
                         nickname = path.replace('/users/', '')
@@ -10355,18 +10355,18 @@ class PubServer(BaseHTTPRequestHandler):
                         if 'page=' not in path:
                             # if no page was specified then show the first
                             inboxDMFeed = \
-                                personBoxJson(self.server.recent_posts_cache,
-                                              self.server.session,
-                                              base_dir,
-                                              domain,
-                                              port,
-                                              path + '?page=1',
-                                              http_prefix,
-                                              max_posts_in_feed, 'dm',
-                                              authorized,
-                                              0,
-                                              self.server.positive_voting,
-                                              self.server.voting_time_mins)
+                                person_box_json(self.server.recent_posts_cache,
+                                                self.server.session,
+                                                base_dir,
+                                                domain,
+                                                port,
+                                                path + '?page=1',
+                                                http_prefix,
+                                                max_posts_in_feed, 'dm',
+                                                authorized,
+                                                0,
+                                                self.server.positive_voting,
+                                                self.server.voting_time_mins)
                         full_width_tl_button_header = \
                             self.server.full_width_tl_button_header
                         minimalNick = isMinimal(base_dir, domain, nickname)
@@ -10474,17 +10474,17 @@ class PubServer(BaseHTTPRequestHandler):
         if '/users/' in path:
             if authorized:
                 inboxRepliesFeed = \
-                    personBoxJson(self.server.recent_posts_cache,
-                                  self.server.session,
-                                  base_dir,
-                                  domain,
-                                  port,
-                                  path,
-                                  http_prefix,
-                                  max_posts_in_feed, 'tlreplies',
-                                  True,
-                                  0, self.server.positive_voting,
-                                  self.server.voting_time_mins)
+                    person_box_json(self.server.recent_posts_cache,
+                                    self.server.session,
+                                    base_dir,
+                                    domain,
+                                    port,
+                                    path,
+                                    http_prefix,
+                                    max_posts_in_feed, 'tlreplies',
+                                    True,
+                                    0, self.server.positive_voting,
+                                    self.server.voting_time_mins)
                 if not inboxRepliesFeed:
                     inboxRepliesFeed = []
                 if self._requestHTTP():
@@ -10501,17 +10501,17 @@ class PubServer(BaseHTTPRequestHandler):
                     if 'page=' not in path:
                         # if no page was specified then show the first
                         inboxRepliesFeed = \
-                            personBoxJson(self.server.recent_posts_cache,
-                                          self.server.session,
-                                          base_dir,
-                                          domain,
-                                          port,
-                                          path + '?page=1',
-                                          http_prefix,
-                                          max_posts_in_feed, 'tlreplies',
-                                          True,
-                                          0, self.server.positive_voting,
-                                          self.server.voting_time_mins)
+                            person_box_json(self.server.recent_posts_cache,
+                                            self.server.session,
+                                            base_dir,
+                                            domain,
+                                            port,
+                                            path + '?page=1',
+                                            http_prefix,
+                                            max_posts_in_feed, 'tlreplies',
+                                            True,
+                                            0, self.server.positive_voting,
+                                            self.server.voting_time_mins)
                     full_width_tl_button_header = \
                         self.server.full_width_tl_button_header
                     minimalNick = isMinimal(base_dir, domain, nickname)
@@ -10619,17 +10619,17 @@ class PubServer(BaseHTTPRequestHandler):
         if '/users/' in path:
             if authorized:
                 inboxMediaFeed = \
-                    personBoxJson(self.server.recent_posts_cache,
-                                  self.server.session,
-                                  base_dir,
-                                  domain,
-                                  port,
-                                  path,
-                                  http_prefix,
-                                  max_posts_in_media_feed, 'tlmedia',
-                                  True,
-                                  0, self.server.positive_voting,
-                                  self.server.voting_time_mins)
+                    person_box_json(self.server.recent_posts_cache,
+                                    self.server.session,
+                                    base_dir,
+                                    domain,
+                                    port,
+                                    path,
+                                    http_prefix,
+                                    max_posts_in_media_feed, 'tlmedia',
+                                    True,
+                                    0, self.server.positive_voting,
+                                    self.server.voting_time_mins)
                 if not inboxMediaFeed:
                     inboxMediaFeed = []
                 if self._requestHTTP():
@@ -10646,17 +10646,17 @@ class PubServer(BaseHTTPRequestHandler):
                     if 'page=' not in path:
                         # if no page was specified then show the first
                         inboxMediaFeed = \
-                            personBoxJson(self.server.recent_posts_cache,
-                                          self.server.session,
-                                          base_dir,
-                                          domain,
-                                          port,
-                                          path + '?page=1',
-                                          http_prefix,
-                                          max_posts_in_media_feed, 'tlmedia',
-                                          True,
-                                          0, self.server.positive_voting,
-                                          self.server.voting_time_mins)
+                            person_box_json(self.server.recent_posts_cache,
+                                            self.server.session,
+                                            base_dir,
+                                            domain,
+                                            port,
+                                            path + '?page=1',
+                                            http_prefix,
+                                            max_posts_in_media_feed, 'tlmedia',
+                                            True,
+                                            0, self.server.positive_voting,
+                                            self.server.voting_time_mins)
                     full_width_tl_button_header = \
                         self.server.full_width_tl_button_header
                     minimalNick = isMinimal(base_dir, domain, nickname)
@@ -10761,17 +10761,17 @@ class PubServer(BaseHTTPRequestHandler):
         if '/users/' in path:
             if authorized:
                 inboxBlogsFeed = \
-                    personBoxJson(self.server.recent_posts_cache,
-                                  self.server.session,
-                                  base_dir,
-                                  domain,
-                                  port,
-                                  path,
-                                  http_prefix,
-                                  max_posts_in_blogs_feed, 'tlblogs',
-                                  True,
-                                  0, self.server.positive_voting,
-                                  self.server.voting_time_mins)
+                    person_box_json(self.server.recent_posts_cache,
+                                    self.server.session,
+                                    base_dir,
+                                    domain,
+                                    port,
+                                    path,
+                                    http_prefix,
+                                    max_posts_in_blogs_feed, 'tlblogs',
+                                    True,
+                                    0, self.server.positive_voting,
+                                    self.server.voting_time_mins)
                 if not inboxBlogsFeed:
                     inboxBlogsFeed = []
                 if self._requestHTTP():
@@ -10788,17 +10788,17 @@ class PubServer(BaseHTTPRequestHandler):
                     if 'page=' not in path:
                         # if no page was specified then show the first
                         inboxBlogsFeed = \
-                            personBoxJson(self.server.recent_posts_cache,
-                                          self.server.session,
-                                          base_dir,
-                                          domain,
-                                          port,
-                                          path + '?page=1',
-                                          http_prefix,
-                                          max_posts_in_blogs_feed, 'tlblogs',
-                                          True,
-                                          0, self.server.positive_voting,
-                                          self.server.voting_time_mins)
+                            person_box_json(self.server.recent_posts_cache,
+                                            self.server.session,
+                                            base_dir,
+                                            domain,
+                                            port,
+                                            path + '?page=1',
+                                            http_prefix,
+                                            max_posts_in_blogs_feed, 'tlblogs',
+                                            True,
+                                            0, self.server.positive_voting,
+                                            self.server.voting_time_mins)
                     full_width_tl_button_header = \
                         self.server.full_width_tl_button_header
                     minimalNick = isMinimal(base_dir, domain, nickname)
@@ -10904,18 +10904,18 @@ class PubServer(BaseHTTPRequestHandler):
         if '/users/' in path:
             if authorized:
                 inboxNewsFeed = \
-                    personBoxJson(self.server.recent_posts_cache,
-                                  self.server.session,
-                                  base_dir,
-                                  domain,
-                                  port,
-                                  path,
-                                  http_prefix,
-                                  max_posts_in_news_feed, 'tlnews',
-                                  True,
-                                  self.server.newswire_votes_threshold,
-                                  self.server.positive_voting,
-                                  self.server.voting_time_mins)
+                    person_box_json(self.server.recent_posts_cache,
+                                    self.server.session,
+                                    base_dir,
+                                    domain,
+                                    port,
+                                    path,
+                                    http_prefix,
+                                    max_posts_in_news_feed, 'tlnews',
+                                    True,
+                                    self.server.newswire_votes_threshold,
+                                    self.server.positive_voting,
+                                    self.server.voting_time_mins)
                 if not inboxNewsFeed:
                     inboxNewsFeed = []
                 if self._requestHTTP():
@@ -10930,20 +10930,22 @@ class PubServer(BaseHTTPRequestHandler):
                         else:
                             pageNumber = 1
                     if 'page=' not in path:
+                        newswire_votes_threshold = \
+                            self.server.newswire_votes_threshold
                         # if no page was specified then show the first
                         inboxNewsFeed = \
-                            personBoxJson(self.server.recent_posts_cache,
-                                          self.server.session,
-                                          base_dir,
-                                          domain,
-                                          port,
-                                          path + '?page=1',
-                                          http_prefix,
-                                          max_posts_in_blogs_feed, 'tlnews',
-                                          True,
-                                          self.server.newswire_votes_threshold,
-                                          self.server.positive_voting,
-                                          self.server.voting_time_mins)
+                            person_box_json(self.server.recent_posts_cache,
+                                            self.server.session,
+                                            base_dir,
+                                            domain,
+                                            port,
+                                            path + '?page=1',
+                                            http_prefix,
+                                            max_posts_in_blogs_feed, 'tlnews',
+                                            True,
+                                            newswire_votes_threshold,
+                                            self.server.positive_voting,
+                                            self.server.voting_time_mins)
                     currNickname = path.split('/users/')[1]
                     if '/' in currNickname:
                         currNickname = currNickname.split('/')[0]
@@ -11055,18 +11057,18 @@ class PubServer(BaseHTTPRequestHandler):
         if '/users/' in path:
             if authorized:
                 inboxFeaturesFeed = \
-                    personBoxJson(self.server.recent_posts_cache,
-                                  self.server.session,
-                                  base_dir,
-                                  domain,
-                                  port,
-                                  path,
-                                  http_prefix,
-                                  max_posts_in_news_feed, 'tlfeatures',
-                                  True,
-                                  self.server.newswire_votes_threshold,
-                                  self.server.positive_voting,
-                                  self.server.voting_time_mins)
+                    person_box_json(self.server.recent_posts_cache,
+                                    self.server.session,
+                                    base_dir,
+                                    domain,
+                                    port,
+                                    path,
+                                    http_prefix,
+                                    max_posts_in_news_feed, 'tlfeatures',
+                                    True,
+                                    self.server.newswire_votes_threshold,
+                                    self.server.positive_voting,
+                                    self.server.voting_time_mins)
                 if not inboxFeaturesFeed:
                     inboxFeaturesFeed = []
                 if self._requestHTTP():
@@ -11081,21 +11083,23 @@ class PubServer(BaseHTTPRequestHandler):
                         else:
                             pageNumber = 1
                     if 'page=' not in path:
+                        newswire_votes_threshold = \
+                            self.server.newswire_votes_threshold
                         # if no page was specified then show the first
                         inboxFeaturesFeed = \
-                            personBoxJson(self.server.recent_posts_cache,
-                                          self.server.session,
-                                          base_dir,
-                                          domain,
-                                          port,
-                                          path + '?page=1',
-                                          http_prefix,
-                                          max_posts_in_blogs_feed,
-                                          'tlfeatures',
-                                          True,
-                                          self.server.newswire_votes_threshold,
-                                          self.server.positive_voting,
-                                          self.server.voting_time_mins)
+                            person_box_json(self.server.recent_posts_cache,
+                                            self.server.session,
+                                            base_dir,
+                                            domain,
+                                            port,
+                                            path + '?page=1',
+                                            http_prefix,
+                                            max_posts_in_blogs_feed,
+                                            'tlfeatures',
+                                            True,
+                                            newswire_votes_threshold,
+                                            self.server.positive_voting,
+                                            self.server.voting_time_mins)
                     currNickname = path.split('/users/')[1]
                     if '/' in currNickname:
                         currNickname = currNickname.split('/')[0]
@@ -11378,17 +11382,17 @@ class PubServer(BaseHTTPRequestHandler):
         if '/users/' in path:
             if authorized:
                 bookmarksFeed = \
-                    personBoxJson(self.server.recent_posts_cache,
-                                  self.server.session,
-                                  base_dir,
-                                  domain,
-                                  port,
-                                  path,
-                                  http_prefix,
-                                  max_posts_in_feed, 'tlbookmarks',
-                                  authorized,
-                                  0, self.server.positive_voting,
-                                  self.server.voting_time_mins)
+                    person_box_json(self.server.recent_posts_cache,
+                                    self.server.session,
+                                    base_dir,
+                                    domain,
+                                    port,
+                                    path,
+                                    http_prefix,
+                                    max_posts_in_feed, 'tlbookmarks',
+                                    authorized,
+                                    0, self.server.positive_voting,
+                                    self.server.voting_time_mins)
                 if bookmarksFeed:
                     if self._requestHTTP():
                         nickname = path.replace('/users/', '')
@@ -11405,18 +11409,18 @@ class PubServer(BaseHTTPRequestHandler):
                         if 'page=' not in path:
                             # if no page was specified then show the first
                             bookmarksFeed = \
-                                personBoxJson(self.server.recent_posts_cache,
-                                              self.server.session,
-                                              base_dir,
-                                              domain,
-                                              port,
-                                              path + '?page=1',
-                                              http_prefix,
-                                              max_posts_in_feed,
-                                              'tlbookmarks',
-                                              authorized,
-                                              0, self.server.positive_voting,
-                                              self.server.voting_time_mins)
+                                person_box_json(self.server.recent_posts_cache,
+                                                self.server.session,
+                                                base_dir,
+                                                domain,
+                                                port,
+                                                path + '?page=1',
+                                                http_prefix,
+                                                max_posts_in_feed,
+                                                'tlbookmarks',
+                                                authorized,
+                                                0, self.server.positive_voting,
+                                                self.server.voting_time_mins)
                         full_width_tl_button_header = \
                             self.server.full_width_tl_button_header
                         minimalNick = isMinimal(base_dir, domain, nickname)
@@ -11523,14 +11527,14 @@ class PubServer(BaseHTTPRequestHandler):
         """
         # get outbox feed for a person
         outboxFeed = \
-            personBoxJson(self.server.recent_posts_cache,
-                          self.server.session,
-                          base_dir, domain, port, path,
-                          http_prefix, max_posts_in_feed, 'outbox',
-                          authorized,
-                          self.server.newswire_votes_threshold,
-                          self.server.positive_voting,
-                          self.server.voting_time_mins)
+            person_box_json(self.server.recent_posts_cache,
+                            self.server.session,
+                            base_dir, domain, port, path,
+                            http_prefix, max_posts_in_feed, 'outbox',
+                            authorized,
+                            self.server.newswire_votes_threshold,
+                            self.server.positive_voting,
+                            self.server.voting_time_mins)
         if outboxFeed:
             nickname = \
                 path.replace('/users/', '').replace('/outbox', '')
@@ -11549,16 +11553,16 @@ class PubServer(BaseHTTPRequestHandler):
                 # if a page wasn't specified then show the first one
                 pageStr = '?page=' + str(pageNumber)
                 outboxFeed = \
-                    personBoxJson(self.server.recent_posts_cache,
-                                  self.server.session,
-                                  base_dir, domain, port,
-                                  path + pageStr,
-                                  http_prefix,
-                                  max_posts_in_feed, 'outbox',
-                                  authorized,
-                                  self.server.newswire_votes_threshold,
-                                  self.server.positive_voting,
-                                  self.server.voting_time_mins)
+                    person_box_json(self.server.recent_posts_cache,
+                                    self.server.session,
+                                    base_dir, domain, port,
+                                    path + pageStr,
+                                    http_prefix,
+                                    max_posts_in_feed, 'outbox',
+                                    authorized,
+                                    self.server.newswire_votes_threshold,
+                                    self.server.positive_voting,
+                                    self.server.voting_time_mins)
             else:
                 pageNumber = 1
 
@@ -11651,17 +11655,17 @@ class PubServer(BaseHTTPRequestHandler):
         if '/users/' in path:
             if authorized:
                 moderationFeed = \
-                    personBoxJson(self.server.recent_posts_cache,
-                                  self.server.session,
-                                  base_dir,
-                                  domain,
-                                  port,
-                                  path,
-                                  http_prefix,
-                                  max_posts_in_feed, 'moderation',
-                                  True,
-                                  0, self.server.positive_voting,
-                                  self.server.voting_time_mins)
+                    person_box_json(self.server.recent_posts_cache,
+                                    self.server.session,
+                                    base_dir,
+                                    domain,
+                                    port,
+                                    path,
+                                    http_prefix,
+                                    max_posts_in_feed, 'moderation',
+                                    True,
+                                    0, self.server.positive_voting,
+                                    self.server.voting_time_mins)
                 if moderationFeed:
                     if self._requestHTTP():
                         nickname = path.replace('/users/', '')
@@ -11677,17 +11681,18 @@ class PubServer(BaseHTTPRequestHandler):
                         if 'page=' not in path:
                             # if no page was specified then show the first
                             moderationFeed = \
-                                personBoxJson(self.server.recent_posts_cache,
-                                              self.server.session,
-                                              base_dir,
-                                              domain,
-                                              port,
-                                              path + '?page=1',
-                                              http_prefix,
-                                              max_posts_in_feed, 'moderation',
-                                              True,
-                                              0, self.server.positive_voting,
-                                              self.server.voting_time_mins)
+                                person_box_json(self.server.recent_posts_cache,
+                                                self.server.session,
+                                                base_dir,
+                                                domain,
+                                                port,
+                                                path + '?page=1',
+                                                http_prefix,
+                                                max_posts_in_feed,
+                                                'moderation',
+                                                True,
+                                                0, self.server.positive_voting,
+                                                self.server.voting_time_mins)
                         full_width_tl_button_header = \
                             self.server.full_width_tl_button_header
                         moderationActionStr = ''

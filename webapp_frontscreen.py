@@ -11,7 +11,7 @@ import os
 from utils import is_system_account
 from utils import get_domain_from_actor
 from utils import get_config_param
-from person import personBoxJson
+from person import person_box_json
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from webapp_utils import getBannerFile
@@ -53,10 +53,10 @@ def _htmlFrontScreenPosts(recent_posts_cache: {}, max_recent_posts: int,
             '/users/' + nickname + '/' + boxName + \
             '?page=' + str(currPage)
         outboxFeed = \
-            personBoxJson({}, session, base_dir, domain, port,
-                          outboxFeedPathStr,
-                          http_prefix, 10, boxName,
-                          authorized, 0, False, 0)
+            person_box_json({}, session, base_dir, domain, port,
+                            outboxFeedPathStr,
+                            http_prefix, 10, boxName,
+                            authorized, 0, False, 0)
         if not outboxFeed:
             break
         if len(outboxFeed['orderedItems']) == 0:

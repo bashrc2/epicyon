@@ -32,7 +32,7 @@ from utils import get_reply_interval_hours
 from languages import getActorLanguages
 from skills import getSkills
 from theme import getThemesList
-from person import personBoxJson
+from person import person_box_json
 from person import getActorJson
 from person import getPersonAvatarUrl
 from posts import getPersonBox
@@ -1055,12 +1055,12 @@ def _htmlProfilePosts(recent_posts_cache: {}, max_recent_posts: int,
             '/users/' + nickname + '/' + boxName + '?page=' + \
             str(currPage)
         outboxFeed = \
-            personBoxJson({}, session, base_dir, domain,
-                          port,
-                          outboxFeedPathStr,
-                          http_prefix,
-                          10, boxName,
-                          authorized, 0, False, 0)
+            person_box_json({}, session, base_dir, domain,
+                            port,
+                            outboxFeedPathStr,
+                            http_prefix,
+                            10, boxName,
+                            authorized, 0, False, 0)
         if not outboxFeed:
             break
         if len(outboxFeed['orderedItems']) == 0:

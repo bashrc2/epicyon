@@ -898,12 +898,12 @@ def personLookup(domain: str, path: str, base_dir: str) -> {}:
     return personJson
 
 
-def personBoxJson(recent_posts_cache: {},
-                  session, base_dir: str, domain: str, port: int, path: str,
-                  http_prefix: str, noOfItems: int, boxname: str,
-                  authorized: bool,
-                  newswire_votes_threshold: int, positive_voting: bool,
-                  voting_time_mins: int) -> {}:
+def person_box_json(recent_posts_cache: {},
+                    session, base_dir: str, domain: str, port: int, path: str,
+                    http_prefix: str, noOfItems: int, boxname: str,
+                    authorized: bool,
+                    newswire_votes_threshold: int, positive_voting: bool,
+                    voting_time_mins: int) -> {}:
     """Obtain the inbox/outbox/moderation feed for the given person
     """
     if boxname != 'inbox' and boxname != 'dm' and \
@@ -912,7 +912,7 @@ def personBoxJson(recent_posts_cache: {},
        boxname != 'tlfeatures' and \
        boxname != 'outbox' and boxname != 'moderation' and \
        boxname != 'tlbookmarks' and boxname != 'bookmarks':
-        print('ERROR: personBoxJson invalid box name ' + boxname)
+        print('ERROR: person_box_json invalid box name ' + boxname)
         return None
 
     if not '/' + boxname in path:
@@ -931,7 +931,7 @@ def personBoxJson(recent_posts_cache: {},
             try:
                 pageNumber = int(pageNumber)
             except BaseException:
-                print('EX: personBoxJson unable to convert to int ' +
+                print('EX: person_box_json unable to convert to int ' +
                       str(pageNumber))
                 pass
         path = path.split('?page=')[0]
