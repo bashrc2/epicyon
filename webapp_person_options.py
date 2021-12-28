@@ -32,7 +32,7 @@ from webapp_utils import htmlKeyboardNavigation
 
 
 def htmlPersonOptions(defaultTimeline: str,
-                      cssCache: {}, translate: {}, base_dir: str,
+                      css_cache: {}, translate: {}, base_dir: str,
                       domain: str, domain_full: str,
                       originPathStr: str,
                       optionsActor: str,

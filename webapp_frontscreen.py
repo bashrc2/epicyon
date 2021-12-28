@@ -95,7 +95,7 @@ def _htmlFrontScreenPosts(recent_posts_cache: {}, max_recent_posts: int,
 
 def htmlFrontScreen(signing_priv_key_pem: str,
                     rss_icon_at_top: bool,
-                    cssCache: {}, icons_as_buttons: bool,
+                    css_cache: {}, icons_as_buttons: bool,
                     defaultTimeline: str,
                     recent_posts_cache: {}, max_recent_posts: int,
                     translate: {}, project_version: str,

@@ -54,7 +54,7 @@ def htmlGetLoginCredentials(loginParams: str,
     return nickname, password, register
 
 
-def htmlLogin(cssCache: {}, translate: {},
+def htmlLogin(css_cache: {}, translate: {},
               base_dir: str,
               http_prefix: str, domain: str,
               system_language: str,

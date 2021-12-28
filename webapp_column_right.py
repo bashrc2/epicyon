@@ -331,7 +331,7 @@ def _htmlNewswire(base_dir: str, newswire: {}, nickname: str, moderator: bool,
 
 def htmlCitations(base_dir: str, nickname: str, domain: str,
                   http_prefix: str, defaultTimeline: str,
-                  translate: {}, newswire: {}, cssCache: {},
+                  translate: {}, newswire: {}, css_cache: {},
                   blogTitle: str, blogContent: str,
                   blogImageFilename: str,
                   blogImageAttachmentMediaType: str,
@@ -445,7 +445,7 @@ def htmlCitations(base_dir: str, nickname: str, domain: str,
     return htmlStr + htmlFooter()
 
 
-def htmlNewswireMobile(cssCache: {}, base_dir: str, nickname: str,
+def htmlNewswireMobile(css_cache: {}, base_dir: str, nickname: str,
                        domain: str, domain_full: str,
                        http_prefix: str, translate: {},
                        newswire: {},
@@ -519,7 +519,7 @@ def htmlNewswireMobile(cssCache: {}, base_dir: str, nickname: str,
     return htmlStr
 
 
-def htmlEditNewswire(cssCache: {}, translate: {}, base_dir: str, path: str,
+def htmlEditNewswire(css_cache: {}, translate: {}, base_dir: str, path: str,
                      domain: str, port: int, http_prefix: str,
                      defaultTimeline: str, theme: str,
                      accessKeys: {}) -> str:
@@ -641,7 +641,7 @@ def htmlEditNewswire(cssCache: {}, translate: {}, base_dir: str, path: str,
     return editNewswireForm
 
 
-def htmlEditNewsPost(cssCache: {}, translate: {}, base_dir: str, path: str,
+def htmlEditNewsPost(css_cache: {}, translate: {}, base_dir: str, path: str,
                      domain: str, port: int,
                      http_prefix: str, postUrl: str,
                      system_language: str) -> str:

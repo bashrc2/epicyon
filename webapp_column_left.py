@@ -348,7 +348,7 @@ def getLeftColumnContent(base_dir: str, nickname: str, domain_full: str,
     return htmlStr
 
 
-def htmlLinksMobile(cssCache: {}, base_dir: str,
+def htmlLinksMobile(css_cache: {}, base_dir: str,
                     nickname: str, domain_full: str,
                     http_prefix: str, translate,
                     timelinePath: str, authorized: bool,
@@ -413,7 +413,7 @@ def htmlLinksMobile(cssCache: {}, base_dir: str,
     return htmlStr
 
 
-def htmlEditLinks(cssCache: {}, translate: {}, base_dir: str, path: str,
+def htmlEditLinks(css_cache: {}, translate: {}, base_dir: str, path: str,
                   domain: str, port: int, http_prefix: str,
                   defaultTimeline: str, theme: str,
                   accessKeys: {}) -> str:

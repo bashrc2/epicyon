@@ -42,7 +42,7 @@ from webapp_post import individualPostAsHtml
 from webapp_hashtagswarm import htmlHashTagSwarm
 
 
-def htmlSearchEmoji(cssCache: {}, translate: {},
+def htmlSearchEmoji(css_cache: {}, translate: {},
                     base_dir: str, http_prefix: str,
                     searchStr: str) -> str:
     """Search results for emoji
@@ -217,7 +217,7 @@ def _htmlSharesResult(base_dir: str,
     return resultsExist, currPage, ctr, sharedItemsForm
 
 
-def htmlSearchSharedItems(cssCache: {}, translate: {},
+def htmlSearchSharedItems(css_cache: {}, translate: {},
                           base_dir: str, searchStr: str,
                           pageNumber: int,
                           resultsPerPage: int,
@@ -326,7 +326,7 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
     return sharedItemsForm
 
 
-def htmlSearchEmojiTextEntry(cssCache: {}, translate: {},
+def htmlSearchEmojiTextEntry(css_cache: {}, translate: {},
                              base_dir: str, path: str) -> str:
     """Search for an emoji by name
     """
@@ -370,7 +370,7 @@ def htmlSearchEmojiTextEntry(cssCache: {}, translate: {},
     return emojiStr
 
 
-def htmlSearch(cssCache: {}, translate: {},
+def htmlSearch(css_cache: {}, translate: {},
                base_dir: str, path: str, domain: str,
                defaultTimeline: str, theme: str,
                text_mode_banner: str, accessKeys: {}) -> str:
@@ -455,7 +455,7 @@ def htmlSearch(cssCache: {}, translate: {},
 
 
 def htmlSkillsSearch(actor: str,
-                     cssCache: {}, translate: {}, base_dir: str,
+                     css_cache: {}, translate: {}, base_dir: str,
                      http_prefix: str,
                      skillsearch: str, instanceOnly: bool,
                      postsPerPage: int) -> str:
@@ -585,7 +585,7 @@ def htmlSkillsSearch(actor: str,
     return skillSearchForm
 
 
-def htmlHistorySearch(cssCache: {}, translate: {}, base_dir: str,
+def htmlHistorySearch(css_cache: {}, translate: {}, base_dir: str,
                       http_prefix: str,
                       nickname: str, domain: str,
                       historysearch: str,
@@ -702,7 +702,7 @@ def htmlHistorySearch(cssCache: {}, translate: {}, base_dir: str,
     return historySearchForm
 
 
-def htmlHashtagSearch(cssCache: {},
+def htmlHashtagSearch(css_cache: {},
                       nickname: str, domain: str, port: int,
                       recent_posts_cache: {}, max_recent_posts: int,
                       translate: {},

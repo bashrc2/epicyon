@@ -184,7 +184,7 @@ def _htmlNewPostDropDown(scopeIcon: str, scopeDescription: str,
     return dropDownContent
 
 
-def htmlNewPost(cssCache: {}, media_instance: bool, translate: {},
+def htmlNewPost(css_cache: {}, media_instance: bool, translate: {},
                 base_dir: str, http_prefix: str,
                 path: str, inReplyTo: str,
                 mentions: [],

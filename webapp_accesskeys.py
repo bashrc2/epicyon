@@ -39,7 +39,7 @@ def loadAccessKeysForAccounts(base_dir: str, keyShortcuts: {},
         break
 
 
-def htmlAccessKeys(cssCache: {}, base_dir: str,
+def htmlAccessKeys(css_cache: {}, base_dir: str,
                    nickname: str, domain: str,
                    translate: {}, accessKeys: {},
                    defaultAccessKeys: {},

@@ -1992,7 +1992,7 @@ def individualPostAsHtml(signing_priv_key_pem: str,
     return postHtml
 
 
-def htmlIndividualPost(cssCache: {},
+def htmlIndividualPost(css_cache: {},
                        recent_posts_cache: {}, max_recent_posts: int,
                        translate: {},
                        base_dir: str, session, cached_webfingers: {},
@@ -2155,7 +2155,7 @@ def htmlIndividualPost(cssCache: {},
     return headerStr + postStr + htmlFooter()
 
 
-def htmlPostReplies(cssCache: {},
+def htmlPostReplies(css_cache: {},
                     recent_posts_cache: {}, max_recent_posts: int,
                     translate: {}, base_dir: str,
                     session, cached_webfingers: {}, person_cache: {},
@@ -2206,7 +2206,7 @@ def htmlPostReplies(cssCache: {},
     return headerStr + repliesStr + htmlFooter()
 
 
-def htmlEmojiReactionPicker(cssCache: {},
+def htmlEmojiReactionPicker(css_cache: {},
                             recent_posts_cache: {}, max_recent_posts: int,
                             translate: {},
                             base_dir: str, session, cached_webfingers: {},

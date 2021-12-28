@@ -40,7 +40,7 @@ def getBrokenLinkSubstitute() -> str:
         "/icons/avatar_default.png'\""
 
 
-def htmlFollowingList(cssCache: {}, base_dir: str,
+def htmlFollowingList(css_cache: {}, base_dir: str,
                       followingFilename: str) -> str:
     """Returns a list of handles being followed
     """
@@ -67,7 +67,7 @@ def htmlFollowingList(cssCache: {}, base_dir: str,
     return ''
 
 
-def htmlHashtagBlocked(cssCache: {}, base_dir: str, translate: {}) -> str:
+def htmlHashtagBlocked(css_cache: {}, base_dir: str, translate: {}) -> str:
     """Show the screen for a blocked hashtag
     """
     blockedHashtagForm = ''

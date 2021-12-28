@@ -278,7 +278,7 @@ from utils import is_editor
 from utils import is_artist
 from utils import get_image_extensions
 from utils import media_file_mime_type
-from utils import getCSS
+from utils import get_css
 from utils import first_paragraph_from_string
 from utils import clear_from_post_caches
 from utils import contains_invalid_chars
@@ -1751,7 +1751,7 @@ class PubServer(BaseHTTPRequestHandler):
                     del self.server.login_failure_count[ipAddress]
                 if is_suspended(base_dir, loginNickname):
                     msg = \
-                        htmlSuspended(self.server.cssCache,
+                        htmlSuspended(self.server.css_cache,
                                       base_dir).encode('utf-8')
                     msglen = len(msg)
                     self._login_headers('text/html',
@@ -1907,7 +1907,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 searchHandle = None
                     if searchHandle:
                         msg = \
-                            htmlAccountInfo(self.server.cssCache,
+                            htmlAccountInfo(self.server.css_cache,
                                             self.server.translate,
                                             base_dir, http_prefix,
                                             nickname,
@@ -1919,7 +1919,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.signing_priv_key_pem)
                     else:
                         msg = \
-                            htmlModerationInfo(self.server.cssCache,
+                            htmlModerationInfo(self.server.css_cache,
                                                self.server.translate,
                                                base_dir, http_prefix,
                                                nickname)
@@ -2631,7 +2631,7 @@ class PubServer(BaseHTTPRequestHandler):
             if debug:
                 print('Unblocking ' + optionsActor)
             msg = \
-                htmlConfirmUnblock(self.server.cssCache,
+                htmlConfirmUnblock(self.server.css_cache,
                                    self.server.translate,
                                    base_dir,
                                    usersPath,
@@ -2651,7 +2651,7 @@ class PubServer(BaseHTTPRequestHandler):
             if debug:
                 print('Following ' + optionsActor)
             msg = \
-                htmlConfirmFollow(self.server.cssCache,
+                htmlConfirmFollow(self.server.css_cache,
                                   self.server.translate,
                                   base_dir,
                                   usersPath,
@@ -2670,7 +2670,7 @@ class PubServer(BaseHTTPRequestHandler):
            '&submitLeave=' in optionsConfirmParams:
             print('Unfollowing ' + optionsActor)
             msg = \
-                htmlConfirmUnfollow(self.server.cssCache,
+                htmlConfirmUnfollow(self.server.css_cache,
                                     self.server.translate,
                                     base_dir,
                                     usersPath,
@@ -2700,7 +2700,7 @@ class PubServer(BaseHTTPRequestHandler):
 
             customSubmitText = get_config_param(base_dir, 'customSubmitText')
             conversationId = None
-            msg = htmlNewPost(self.server.cssCache,
+            msg = htmlNewPost(self.server.css_cache,
                               False, self.server.translate,
                               base_dir,
                               http_prefix,
@@ -2750,7 +2750,7 @@ class PubServer(BaseHTTPRequestHandler):
                     print('Showing info for ' + optionsActor)
                 signing_priv_key_pem = self.server.signing_priv_key_pem
                 msg = \
-                    htmlAccountInfo(self.server.cssCache,
+                    htmlAccountInfo(self.server.css_cache,
                                     self.server.translate,
                                     base_dir,
                                     http_prefix,
@@ -2835,7 +2835,7 @@ class PubServer(BaseHTTPRequestHandler):
 
             customSubmitText = get_config_param(base_dir, 'customSubmitText')
             conversationId = None
-            msg = htmlNewPost(self.server.cssCache,
+            msg = htmlNewPost(self.server.css_cache,
                               False, self.server.translate,
                               base_dir,
                               http_prefix,
@@ -3295,7 +3295,7 @@ class PubServer(BaseHTTPRequestHandler):
                 nickname = get_nickname_from_actor(actorStr)
                 # hashtag search
                 hashtagStr = \
-                    htmlHashtagSearch(self.server.cssCache,
+                    htmlHashtagSearch(self.server.css_cache,
                                       nickname, domain, port,
                                       self.server.recent_posts_cache,
                                       self.server.max_recent_posts,
@@ -3340,7 +3340,7 @@ class PubServer(BaseHTTPRequestHandler):
                 searchStr = searchStr.replace('*', '').strip()
                 skillStr = \
                     htmlSkillsSearch(actorStr,
-                                     self.server.cssCache,
+                                     self.server.css_cache,
                                      self.server.translate,
                                      base_dir,
                                      http_prefix,
@@ -3387,7 +3387,7 @@ class PubServer(BaseHTTPRequestHandler):
                 nickname = get_nickname_from_actor(actorStr)
                 searchStr = searchStr.replace("'", '', 1).strip()
                 historyStr = \
-                    htmlHistorySearch(self.server.cssCache,
+                    htmlHistorySearch(self.server.css_cache,
                                       self.server.translate,
                                       base_dir,
                                       http_prefix,
@@ -3455,7 +3455,7 @@ class PubServer(BaseHTTPRequestHandler):
                 nickname = get_nickname_from_actor(actorStr)
                 searchStr = searchStr.replace('-', '', 1).strip()
                 bookmarksStr = \
-                    htmlHistorySearch(self.server.cssCache,
+                    htmlHistorySearch(self.server.css_cache,
                                       self.server.translate,
                                       base_dir,
                                       http_prefix,
@@ -3554,7 +3554,7 @@ class PubServer(BaseHTTPRequestHandler):
                     twitter_replacement_domain = \
                         self.server.twitter_replacement_domain
                     profileStr = \
-                        htmlProfileAfterSearch(self.server.cssCache,
+                        htmlProfileAfterSearch(self.server.css_cache,
                                                self.server.recent_posts_cache,
                                                self.server.max_recent_posts,
                                                self.server.translate,
@@ -3606,7 +3606,7 @@ class PubServer(BaseHTTPRequestHandler):
                         searchStr.replace(' emoji', '')
                 # emoji search
                 emojiStr = \
-                    htmlSearchEmoji(self.server.cssCache,
+                    htmlSearchEmoji(self.server.css_cache,
                                     self.server.translate,
                                     base_dir,
                                     http_prefix,
@@ -3624,7 +3624,7 @@ class PubServer(BaseHTTPRequestHandler):
                 shared_items_federated_domains = \
                     self.server.shared_items_federated_domains
                 wantedItemsStr = \
-                    htmlSearchSharedItems(self.server.cssCache,
+                    htmlSearchSharedItems(self.server.css_cache,
                                           self.server.translate,
                                           base_dir,
                                           searchStr[1:], pageNumber,
@@ -3647,7 +3647,7 @@ class PubServer(BaseHTTPRequestHandler):
                 shared_items_federated_domains = \
                     self.server.shared_items_federated_domains
                 sharedItemsStr = \
-                    htmlSearchSharedItems(self.server.cssCache,
+                    htmlSearchSharedItems(self.server.css_cache,
                                           self.server.translate,
                                           base_dir,
                                           searchStr, pageNumber,
@@ -7160,7 +7160,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.server.keyShortcuts.get(nickname):
                     accessKeys = self.server.keyShortcuts[nickname]
             msg = htmlPersonOptions(self.server.defaultTimeline,
-                                    self.server.cssCache,
+                                    self.server.css_cache,
                                     self.server.translate,
                                     base_dir, domain,
                                     domain_full,
@@ -7533,7 +7533,7 @@ class PubServer(BaseHTTPRequestHandler):
         hashtag = urllib.parse.unquote_plus(hashtag)
         if isBlockedHashtag(base_dir, hashtag):
             print('BLOCK: hashtag #' + hashtag)
-            msg = htmlHashtagBlocked(self.server.cssCache, base_dir,
+            msg = htmlHashtagBlocked(self.server.css_cache, base_dir,
                                      self.server.translate).encode('utf-8')
             msglen = len(msg)
             self._login_headers('text/html', msglen, calling_domain)
@@ -7547,7 +7547,7 @@ class PubServer(BaseHTTPRequestHandler):
             if '?' in nickname:
                 nickname = nickname.split('?')[0]
         hashtagStr = \
-            htmlHashtagSearch(self.server.cssCache,
+            htmlHashtagSearch(self.server.css_cache,
                               nickname, domain, port,
                               self.server.recent_posts_cache,
                               self.server.max_recent_posts,
@@ -8831,7 +8831,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         msg = \
-            htmlEmojiReactionPicker(self.server.cssCache,
+            htmlEmojiReactionPicker(self.server.css_cache,
                                     self.server.recent_posts_cache,
                                     self.server.max_recent_posts,
                                     self.server.translate,
@@ -9181,7 +9181,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return
 
             deleteStr = \
-                htmlConfirmDelete(self.server.cssCache,
+                htmlConfirmDelete(self.server.css_cache,
                                   self.server.recent_posts_cache,
                                   self.server.max_recent_posts,
                                   self.server.translate, pageNumber,
@@ -9513,7 +9513,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.twitter_replacement_domain
                 peertube_instances = self.server.peertube_instances
                 msg = \
-                    htmlPostReplies(self.server.cssCache,
+                    htmlPostReplies(self.server.css_cache,
                                     recent_posts_cache,
                                     max_recent_posts,
                                     translate,
@@ -9605,7 +9605,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.twitter_replacement_domain
                 peertube_instances = self.server.peertube_instances
                 msg = \
-                    htmlPostReplies(self.server.cssCache,
+                    htmlPostReplies(self.server.css_cache,
                                     recent_posts_cache,
                                     max_recent_posts,
                                     translate,
@@ -9710,7 +9710,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = \
                         htmlProfile(self.server.signing_priv_key_pem,
                                     self.server.rss_icon_at_top,
-                                    self.server.cssCache,
+                                    self.server.css_cache,
                                     icons_as_buttons,
                                     defaultTimeline,
                                     recent_posts_cache,
@@ -9826,7 +9826,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 msg = \
                                     htmlProfile(signing_priv_key_pem,
                                                 self.server.rss_icon_at_top,
-                                                self.server.cssCache,
+                                                self.server.css_cache,
                                                 icons_as_buttons,
                                                 defaultTimeline,
                                                 recent_posts_cache,
@@ -9996,7 +9996,7 @@ class PubServer(BaseHTTPRequestHandler):
             removePostInteractions(pjo, True)
         if self._requestHTTP():
             msg = \
-                htmlIndividualPost(self.server.cssCache,
+                htmlIndividualPost(self.server.css_cache,
                                    self.server.recent_posts_cache,
                                    self.server.max_recent_posts,
                                    self.server.translate,
@@ -10247,7 +10247,7 @@ class PubServer(BaseHTTPRequestHandler):
 
                         shared_items_federated_domains = \
                             self.server.shared_items_federated_domains
-                        msg = htmlInbox(self.server.cssCache,
+                        msg = htmlInbox(self.server.css_cache,
                                         defaultTimeline,
                                         recent_posts_cache,
                                         max_recent_posts,
@@ -10400,7 +10400,7 @@ class PubServer(BaseHTTPRequestHandler):
                         twitter_replacement_domain = \
                             self.server.twitter_replacement_domain
                         msg = \
-                            htmlInboxDMs(self.server.cssCache,
+                            htmlInboxDMs(self.server.css_cache,
                                          self.server.defaultTimeline,
                                          self.server.recent_posts_cache,
                                          self.server.max_recent_posts,
@@ -10545,7 +10545,7 @@ class PubServer(BaseHTTPRequestHandler):
                     twitter_replacement_domain = \
                         self.server.twitter_replacement_domain
                     msg = \
-                        htmlInboxReplies(self.server.cssCache,
+                        htmlInboxReplies(self.server.css_cache,
                                          self.server.defaultTimeline,
                                          self.server.recent_posts_cache,
                                          self.server.max_recent_posts,
@@ -10686,7 +10686,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.shared_items_federated_domains
 
                     msg = \
-                        htmlInboxMedia(self.server.cssCache,
+                        htmlInboxMedia(self.server.css_cache,
                                        self.server.defaultTimeline,
                                        self.server.recent_posts_cache,
                                        self.server.max_recent_posts,
@@ -10828,7 +10828,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.shared_items_federated_domains
 
                     msg = \
-                        htmlInboxBlogs(self.server.cssCache,
+                        htmlInboxBlogs(self.server.css_cache,
                                        self.server.defaultTimeline,
                                        self.server.recent_posts_cache,
                                        self.server.max_recent_posts,
@@ -10979,7 +10979,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.shared_items_federated_domains
 
                     msg = \
-                        htmlInboxNews(self.server.cssCache,
+                        htmlInboxNews(self.server.css_cache,
                                       self.server.defaultTimeline,
                                       self.server.recent_posts_cache,
                                       self.server.max_recent_posts,
@@ -11131,7 +11131,7 @@ class PubServer(BaseHTTPRequestHandler):
                     twitter_replacement_domain = \
                         self.server.twitter_replacement_domain
                     msg = \
-                        htmlInboxFeatures(self.server.cssCache,
+                        htmlInboxFeatures(self.server.css_cache,
                                           self.server.defaultTimeline,
                                           self.server.recent_posts_cache,
                                           self.server.max_recent_posts,
@@ -11242,7 +11242,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.full_width_tl_button_header
 
                     msg = \
-                        htmlShares(self.server.cssCache,
+                        htmlShares(self.server.css_cache,
                                    self.server.defaultTimeline,
                                    self.server.recent_posts_cache,
                                    self.server.max_recent_posts,
@@ -11327,7 +11327,7 @@ class PubServer(BaseHTTPRequestHandler):
                     full_width_tl_button_header = \
                         self.server.full_width_tl_button_header
                     msg = \
-                        htmlWanted(self.server.cssCache,
+                        htmlWanted(self.server.css_cache,
                                    self.server.defaultTimeline,
                                    self.server.recent_posts_cache,
                                    self.server.max_recent_posts,
@@ -11449,7 +11449,7 @@ class PubServer(BaseHTTPRequestHandler):
                         twitter_replacement_domain = \
                             self.server.twitter_replacement_domain
                         msg = \
-                            htmlBookmarks(self.server.cssCache,
+                            htmlBookmarks(self.server.css_cache,
                                           self.server.defaultTimeline,
                                           self.server.recent_posts_cache,
                                           self.server.max_recent_posts,
@@ -11589,7 +11589,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.keyShortcuts[nickname]
 
                 msg = \
-                    htmlOutbox(self.server.cssCache,
+                    htmlOutbox(self.server.css_cache,
                                self.server.defaultTimeline,
                                self.server.recent_posts_cache,
                                self.server.max_recent_posts,
@@ -11722,7 +11722,7 @@ class PubServer(BaseHTTPRequestHandler):
                         show_published_date_only = \
                             self.server.show_published_date_only
                         msg = \
-                            htmlModeration(self.server.cssCache,
+                            htmlModeration(self.server.css_cache,
                                            self.server.defaultTimeline,
                                            self.server.recent_posts_cache,
                                            self.server.max_recent_posts,
@@ -11852,7 +11852,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = \
                         htmlProfile(self.server.signing_priv_key_pem,
                                     self.server.rss_icon_at_top,
-                                    self.server.cssCache,
+                                    self.server.css_cache,
                                     self.server.icons_as_buttons,
                                     self.server.defaultTimeline,
                                     self.server.recent_posts_cache,
@@ -11973,7 +11973,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = \
                         htmlProfile(self.server.signing_priv_key_pem,
                                     self.server.rss_icon_at_top,
-                                    self.server.cssCache,
+                                    self.server.css_cache,
                                     self.server.icons_as_buttons,
                                     self.server.defaultTimeline,
                                     self.server.recent_posts_cache,
@@ -12092,7 +12092,7 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = \
                         htmlProfile(self.server.signing_priv_key_pem,
                                     self.server.rss_icon_at_top,
-                                    self.server.cssCache,
+                                    self.server.css_cache,
                                     self.server.icons_as_buttons,
                                     self.server.defaultTimeline,
                                     self.server.recent_posts_cache,
@@ -12228,7 +12228,7 @@ class PubServer(BaseHTTPRequestHandler):
             msg = \
                 htmlProfile(self.server.signing_priv_key_pem,
                             self.server.rss_icon_at_top,
-                            self.server.cssCache,
+                            self.server.css_cache,
                             self.server.icons_as_buttons,
                             self.server.defaultTimeline,
                             self.server.recent_posts_cache,
@@ -12502,8 +12502,8 @@ class PubServer(BaseHTTPRequestHandler):
             tries = 0
             while tries < 5:
                 try:
-                    css = getCSS(self.server.base_dir, path,
-                                 self.server.cssCache)
+                    css = get_css(self.server.base_dir, path,
+                                  self.server.css_cache)
                     if css:
                         break
                 except Exception as ex:
@@ -12902,7 +12902,7 @@ class PubServer(BaseHTTPRequestHandler):
         if '?' in postDay:
             postDay = postDay.split('?')[0]
         # show the confirmation screen screen
-        msg = htmlCalendarDeleteConfirm(self.server.cssCache,
+        msg = htmlCalendarDeleteConfirm(self.server.css_cache,
                                         translate,
                                         base_dir, path,
                                         http_prefix,
@@ -12984,7 +12984,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if replyPostFilename:
                     post_json_object = load_json(replyPostFilename)
 
-            msg = htmlNewPost(self.server.cssCache,
+            msg = htmlNewPost(self.server.css_cache,
                               media_instance,
                               translate,
                               base_dir,
@@ -13088,7 +13088,7 @@ class PubServer(BaseHTTPRequestHandler):
                     accessKeys = self.server.keyShortcuts[nickname]
 
             default_reply_interval_hrs = self.server.default_reply_interval_hrs
-            msg = htmlEditProfile(self.server.cssCache,
+            msg = htmlEditProfile(self.server.css_cache,
                                   translate,
                                   base_dir,
                                   path, domain,
@@ -13129,7 +13129,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self.server.keyShortcuts.get(nickname):
                 accessKeys = self.server.keyShortcuts[nickname]
 
-            msg = htmlEditLinks(self.server.cssCache,
+            msg = htmlEditLinks(self.server.css_cache,
                                 translate,
                                 base_dir,
                                 path, domain,
@@ -13162,7 +13162,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self.server.keyShortcuts.get(nickname):
                 accessKeys = self.server.keyShortcuts[nickname]
 
-            msg = htmlEditNewswire(self.server.cssCache,
+            msg = htmlEditNewswire(self.server.css_cache,
                                    translate,
                                    base_dir,
                                    path, domain,
@@ -13200,7 +13200,7 @@ class PubServer(BaseHTTPRequestHandler):
             postUrl = local_actor_url(http_prefix, postActor, domain_full) + \
                 '/statuses/' + post_id
             path = path.split('/editnewspost=')[0]
-            msg = htmlEditNewsPost(self.server.cssCache,
+            msg = htmlEditNewsPost(self.server.css_cache,
                                    translate, base_dir,
                                    path, domain, port,
                                    http_prefix,
@@ -13377,7 +13377,7 @@ class PubServer(BaseHTTPRequestHandler):
         if self.path == '/logout':
             if not self.server.news_instance:
                 msg = \
-                    htmlLogin(self.server.cssCache,
+                    htmlLogin(self.server.css_cache,
                               self.server.translate,
                               self.server.base_dir,
                               self.server.http_prefix,
@@ -14294,7 +14294,7 @@ class PubServer(BaseHTTPRequestHandler):
             actor = \
                 self.server.http_prefix + '://' + \
                 self.server.domain_full + usersPath
-            msg = htmlConfirmRemoveSharedItem(self.server.cssCache,
+            msg = htmlConfirmRemoveSharedItem(self.server.css_cache,
                                               self.server.translate,
                                               self.server.base_dir,
                                               actor, itemID,
@@ -14327,7 +14327,7 @@ class PubServer(BaseHTTPRequestHandler):
             actor = \
                 self.server.http_prefix + '://' + \
                 self.server.domain_full + usersPath
-            msg = htmlConfirmRemoveSharedItem(self.server.cssCache,
+            msg = htmlConfirmRemoveSharedItem(self.server.css_cache,
                                               self.server.translate,
                                               self.server.base_dir,
                                               actor, itemID,
@@ -14359,16 +14359,16 @@ class PubServer(BaseHTTPRequestHandler):
         if self.path.startswith('/terms'):
             if calling_domain.endswith('.onion') and \
                self.server.onion_domain:
-                msg = htmlTermsOfService(self.server.cssCache,
+                msg = htmlTermsOfService(self.server.css_cache,
                                          self.server.base_dir, 'http',
                                          self.server.onion_domain)
             elif (calling_domain.endswith('.i2p') and
                   self.server.i2p_domain):
-                msg = htmlTermsOfService(self.server.cssCache,
+                msg = htmlTermsOfService(self.server.css_cache,
                                          self.server.base_dir, 'http',
                                          self.server.i2p_domain)
             else:
-                msg = htmlTermsOfService(self.server.cssCache,
+                msg = htmlTermsOfService(self.server.css_cache,
                                          self.server.base_dir,
                                          self.server.http_prefix,
                                          self.server.domain_full)
@@ -14395,7 +14395,7 @@ class PubServer(BaseHTTPRequestHandler):
             if not os.path.isfile(followingFilename):
                 self._404()
                 return
-            msg = htmlFollowingList(self.server.cssCache,
+            msg = htmlFollowingList(self.server.css_cache,
                                     self.server.base_dir, followingFilename)
             msglen = len(msg)
             self._login_headers('text/html', msglen, calling_domain)
@@ -14412,21 +14412,21 @@ class PubServer(BaseHTTPRequestHandler):
         if self.path.endswith('/about'):
             if calling_domain.endswith('.onion'):
                 msg = \
-                    htmlAbout(self.server.cssCache,
+                    htmlAbout(self.server.css_cache,
                               self.server.base_dir, 'http',
                               self.server.onion_domain,
                               None, self.server.translate,
                               self.server.system_language)
             elif calling_domain.endswith('.i2p'):
                 msg = \
-                    htmlAbout(self.server.cssCache,
+                    htmlAbout(self.server.css_cache,
                               self.server.base_dir, 'http',
                               self.server.i2p_domain,
                               None, self.server.translate,
                               self.server.system_language)
             else:
                 msg = \
-                    htmlAbout(self.server.cssCache,
+                    htmlAbout(self.server.css_cache,
                               self.server.base_dir,
                               self.server.http_prefix,
                               self.server.domain_full,
@@ -14454,7 +14454,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.keyShortcuts[nickname]
 
             msg = \
-                htmlAccessKeys(self.server.cssCache,
+                htmlAccessKeys(self.server.css_cache,
                                self.server.base_dir,
                                nickname, self.server.domain,
                                self.server.translate,
@@ -14481,7 +14481,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return
 
             msg = \
-                htmlThemeDesigner(self.server.cssCache,
+                htmlThemeDesigner(self.server.css_cache,
                                   self.server.base_dir,
                                   nickname, self.server.domain,
                                   self.server.translate,
@@ -14932,7 +14932,7 @@ class PubServer(BaseHTTPRequestHandler):
              not authorized and
              not self.server.news_instance)):
             # request basic auth
-            msg = htmlLogin(self.server.cssCache,
+            msg = htmlLogin(self.server.css_cache,
                             self.server.translate,
                             self.server.base_dir,
                             self.server.http_prefix,
@@ -15001,7 +15001,7 @@ class PubServer(BaseHTTPRequestHandler):
                 accessKeys = self.server.accessKeys
                 if self.server.keyShortcuts.get(nickname):
                     accessKeys = self.server.keyShortcuts[nickname]
-                msg = htmlNewswireMobile(self.server.cssCache,
+                msg = htmlNewswireMobile(self.server.css_cache,
                                          self.server.base_dir,
                                          nickname,
                                          self.server.domain,
@@ -15045,7 +15045,7 @@ class PubServer(BaseHTTPRequestHandler):
                 defaultTimeline = self.server.defaultTimeline
                 sharedItemsDomains = \
                     self.server.shared_items_federated_domains
-                msg = htmlLinksMobile(self.server.cssCache,
+                msg = htmlLinksMobile(self.server.css_cache,
                                       self.server.base_dir, nickname,
                                       self.server.domain_full,
                                       self.server.http_prefix,
@@ -15137,7 +15137,7 @@ class PubServer(BaseHTTPRequestHandler):
                     accessKeys = self.server.keyShortcuts[nickname]
 
                 # show the search screen
-                msg = htmlSearch(self.server.cssCache,
+                msg = htmlSearch(self.server.css_cache,
                                  self.server.translate,
                                  self.server.base_dir, self.path,
                                  self.server.domain,
@@ -15157,7 +15157,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # show a hashtag category from the search screen
         if htmlGET and '/category/' in self.path:
-            msg = htmlSearchHashtagCategory(self.server.cssCache,
+            msg = htmlSearchHashtagCategory(self.server.css_cache,
                                             self.server.translate,
                                             self.server.base_dir, self.path,
                                             self.server.domain,
@@ -15191,7 +15191,7 @@ class PubServer(BaseHTTPRequestHandler):
 
                 # show the calendar screen
                 msg = htmlCalendar(self.server.person_cache,
-                                   self.server.cssCache,
+                                   self.server.css_cache,
                                    self.server.translate,
                                    self.server.base_dir, self.path,
                                    self.server.http_prefix,
@@ -15237,7 +15237,7 @@ class PubServer(BaseHTTPRequestHandler):
         if htmlGET and usersInPath:
             if self.path.endswith('/searchemoji'):
                 # show the search screen
-                msg = htmlSearchEmojiTextEntry(self.server.cssCache,
+                msg = htmlSearchEmojiTextEntry(self.server.css_cache,
                                                self.server.translate,
                                                self.server.base_dir,
                                                self.path).encode('utf-8')
@@ -16130,7 +16130,7 @@ class PubServer(BaseHTTPRequestHandler):
                 blockDomain = blockDomain.split('?')[0]
             addGlobalBlock(self.server.base_dir, '*', blockDomain)
             msg = \
-                htmlAccountInfo(self.server.cssCache,
+                htmlAccountInfo(self.server.css_cache,
                                 self.server.translate,
                                 self.server.base_dir,
                                 self.server.http_prefix,
@@ -16167,7 +16167,7 @@ class PubServer(BaseHTTPRequestHandler):
             blockDomain = urllib.parse.unquote_plus(blockDomain.strip())
             removeGlobalBlock(self.server.base_dir, '*', blockDomain)
             msg = \
-                htmlAccountInfo(self.server.cssCache,
+                htmlAccountInfo(self.server.css_cache,
                                 self.server.translate,
                                 self.server.base_dir,
                                 self.server.http_prefix,
@@ -16689,7 +16689,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.defaultTimeline,
                                       self.server.translate,
                                       self.server.newswire,
-                                      self.server.cssCache,
+                                      self.server.css_cache,
                                       fields['subject'],
                                       fields['message'],
                                       filename, attachmentMediaType,
@@ -18801,7 +18801,7 @@ def runDaemon(content_license_url: str,
                            httpd.blockedCacheUpdateSecs)
 
     # cache to store css files
-    httpd.cssCache = {}
+    httpd.css_cache = {}
 
     # get the list of custom emoji, for use by the mastodon api
     httpd.customEmoji = \

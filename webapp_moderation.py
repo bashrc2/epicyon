@@ -30,7 +30,7 @@ from blocking import isBlocked
 from session import createSession
 
 
-def htmlModeration(cssCache: {}, defaultTimeline: str,
+def htmlModeration(css_cache: {}, defaultTimeline: str,
                    recent_posts_cache: {}, max_recent_posts: int,
                    translate: {}, pageNumber: int, itemsPerPage: int,
                    session, base_dir: str, wfRequest: {}, person_cache: {},
@@ -59,7 +59,7 @@ def htmlModeration(cssCache: {}, defaultTimeline: str,
     This is what you see when selecting the "mod" timeline
     """
     artist = is_artist(base_dir, nickname)
-    return htmlTimeline(cssCache, defaultTimeline,
+    return htmlTimeline(css_cache, defaultTimeline,
                         recent_posts_cache, max_recent_posts,
                         translate, pageNumber,
                         itemsPerPage, session, base_dir,
@@ -82,7 +82,7 @@ def htmlModeration(cssCache: {}, defaultTimeline: str,
                         signing_priv_key_pem, cw_lists, lists_enabled)
 
 
-def htmlAccountInfo(cssCache: {}, translate: {},
+def htmlAccountInfo(css_cache: {}, translate: {},
                     base_dir: str, http_prefix: str,
                     nickname: str, domain: str, port: int,
                     searchHandle: str, debug: bool,
@@ -273,7 +273,7 @@ def htmlAccountInfo(cssCache: {}, translate: {},
     return infoForm
 
 
-def htmlModerationInfo(cssCache: {}, translate: {},
+def htmlModerationInfo(css_cache: {}, translate: {},
                        base_dir: str, http_prefix: str,
                        nickname: str) -> str:
     msgStr1 = \

@@ -2055,7 +2055,7 @@ def fileLastModified(filename: str) -> str:
     return modified_time.strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
-def getCSS(base_dir: str, css_filename: str, cssCache: {}) -> str:
+def get_css(base_dir: str, css_filename: str, css_cache: {}) -> str:
     """Retrieves the css for a given file, or from a cache
     """
     # does the css file exist?
@@ -2065,20 +2065,20 @@ def getCSS(base_dir: str, css_filename: str, cssCache: {}) -> str:
     last_modified = fileLastModified(css_filename)
 
     # has this already been loaded into the cache?
-    if cssCache.get(css_filename):
-        if cssCache[css_filename][0] == last_modified:
+    if css_cache.get(css_filename):
+        if css_cache[css_filename][0] == last_modified:
             # file hasn't changed, so return the version in the cache
-            return cssCache[css_filename][1]
+            return css_cache[css_filename][1]
 
     with open(css_filename, 'r') as fp_css:
         css = fp_css.read()
-        if cssCache.get(css_filename):
+        if css_cache.get(css_filename):
             # alter the cache contents
-            cssCache[css_filename][0] = last_modified
-            cssCache[css_filename][1] = css
+            css_cache[css_filename][0] = last_modified
+            css_cache[css_filename][1] = css
         else:
             # add entry to the cache
-            cssCache[css_filename] = [last_modified, css]
+            css_cache[css_filename] = [last_modified, css]
         return css
 
     return None

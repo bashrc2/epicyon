@@ -31,7 +31,7 @@ from webapp_utils import htmlHideFromScreenReader
 from webapp_utils import htmlKeyboardNavigation
 
 
-def htmlCalendarDeleteConfirm(cssCache: {}, translate: {}, base_dir: str,
+def htmlCalendarDeleteConfirm(css_cache: {}, translate: {}, base_dir: str,
                               path: str, http_prefix: str,
                               domain_full: str, post_id: str, postTime: str,
                               year: int, monthNumber: int,
@@ -96,7 +96,7 @@ def htmlCalendarDeleteConfirm(cssCache: {}, translate: {}, base_dir: str,
     return deletePostStr
 
 
-def _htmlCalendarDay(person_cache: {}, cssCache: {}, translate: {},
+def _htmlCalendarDay(person_cache: {}, css_cache: {}, translate: {},
                      base_dir: str, path: str,
                      year: int, monthNumber: int, dayNumber: int,
                      nickname: str, domain: str, dayEvents: [],
@@ -245,7 +245,7 @@ def _htmlCalendarDay(person_cache: {}, cssCache: {}, translate: {},
     return calendarStr
 
 
-def htmlCalendar(person_cache: {}, cssCache: {}, translate: {},
+def htmlCalendar(person_cache: {}, css_cache: {}, translate: {},
                  base_dir: str, path: str,
                  http_prefix: str, domain_full: str,
                  text_mode_banner: str, accessKeys: {}) -> str:
@@ -300,7 +300,7 @@ def htmlCalendar(person_cache: {}, cssCache: {}, translate: {},
         if events:
             if events.get(str(dayNumber)):
                 dayEvents = events[str(dayNumber)]
-        return _htmlCalendarDay(person_cache, cssCache,
+        return _htmlCalendarDay(person_cache, css_cache,
                                 translate, base_dir, path,
                                 year, monthNumber, dayNumber,
                                 nickname, domain, dayEvents,

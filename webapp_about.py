@@ -15,7 +15,7 @@ from webapp_utils import htmlFooter
 from markdown import markdownToHtml
 
 
-def htmlAbout(cssCache: {}, base_dir: str, http_prefix: str,
+def htmlAbout(css_cache: {}, base_dir: str, http_prefix: str,
               domain_full: str, onion_domain: str, translate: {},
               system_language: str) -> str:
     """Show the about screen

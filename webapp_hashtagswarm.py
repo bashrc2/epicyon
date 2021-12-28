@@ -192,7 +192,7 @@ def htmlHashTagSwarm(base_dir: str, actor: str, translate: {}) -> str:
     return tagSwarmHtml
 
 
-def htmlSearchHashtagCategory(cssCache: {}, translate: {},
+def htmlSearchHashtagCategory(css_cache: {}, translate: {},
                               base_dir: str, path: str, domain: str,
                               theme: str) -> str:
     """Show hashtags after selecting a category on the main search screen

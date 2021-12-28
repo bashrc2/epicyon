@@ -23,7 +23,7 @@ from webapp_utils import htmlFooter
 from webapp_post import individualPostAsHtml
 
 
-def htmlConfirmDelete(cssCache: {},
+def htmlConfirmDelete(css_cache: {},
                       recent_posts_cache: {}, max_recent_posts: int,
                       translate, pageNumber: int,
                       session, base_dir: str, messageId: str,
@@ -106,7 +106,7 @@ def htmlConfirmDelete(cssCache: {},
     return deletePostStr
 
 
-def htmlConfirmRemoveSharedItem(cssCache: {}, translate: {}, base_dir: str,
+def htmlConfirmRemoveSharedItem(css_cache: {}, translate: {}, base_dir: str,
                                 actor: str, itemID: str,
                                 calling_domain: str,
                                 sharesFileType: str) -> str:
@@ -174,7 +174,7 @@ def htmlConfirmRemoveSharedItem(cssCache: {}, translate: {}, base_dir: str,
     return sharesStr
 
 
-def htmlConfirmFollow(cssCache: {}, translate: {}, base_dir: str,
+def htmlConfirmFollow(css_cache: {}, translate: {}, base_dir: str,
                       originPathStr: str,
                       followActor: str,
                       followProfileUrl: str) -> str:
@@ -219,7 +219,7 @@ def htmlConfirmFollow(cssCache: {}, translate: {}, base_dir: str,
     return followStr
 
 
-def htmlConfirmUnfollow(cssCache: {}, translate: {}, base_dir: str,
+def htmlConfirmUnfollow(css_cache: {}, translate: {}, base_dir: str,
                         originPathStr: str,
                         followActor: str,
                         followProfileUrl: str) -> str:
@@ -265,7 +265,7 @@ def htmlConfirmUnfollow(cssCache: {}, translate: {}, base_dir: str,
     return followStr
 
 
-def htmlConfirmUnblock(cssCache: {}, translate: {}, base_dir: str,
+def htmlConfirmUnblock(css_cache: {}, translate: {}, base_dir: str,
                        originPathStr: str,
                        blockActor: str,
                        blockProfileUrl: str) -> str:

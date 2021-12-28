@@ -121,7 +121,7 @@ def _validProfilePreviewPost(post_json_object: {},
     return True, post_json_object
 
 
-def htmlProfileAfterSearch(cssCache: {},
+def htmlProfileAfterSearch(css_cache: {},
                            recent_posts_cache: {}, max_recent_posts: int,
                            translate: {},
                            base_dir: str, path: str, http_prefix: str,
@@ -543,7 +543,7 @@ def _getProfileHeaderAfterSearch(base_dir: str,
 
 def htmlProfile(signing_priv_key_pem: str,
                 rss_icon_at_top: bool,
-                cssCache: {}, icons_as_buttons: bool,
+                css_cache: {}, icons_as_buttons: bool,
                 defaultTimeline: str,
                 recent_posts_cache: {}, max_recent_posts: int,
                 translate: {}, project_version: str,
@@ -572,7 +572,7 @@ def htmlProfile(signing_priv_key_pem: str,
     if is_system_account(nickname):
         return htmlFrontScreen(signing_priv_key_pem,
                                rss_icon_at_top,
-                               cssCache, icons_as_buttons,
+                               css_cache, icons_as_buttons,
                                defaultTimeline,
                                recent_posts_cache, max_recent_posts,
                                translate, project_version,
@@ -2089,7 +2089,7 @@ def _htmlEditProfileTopBanner(base_dir: str,
     return editProfileForm
 
 
-def htmlEditProfile(cssCache: {}, translate: {}, base_dir: str, path: str,
+def htmlEditProfile(css_cache: {}, translate: {}, base_dir: str, path: str,
                     domain: str, port: int, http_prefix: str,
                     defaultTimeline: str, theme: str,
                     peertube_instances: [],
