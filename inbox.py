@@ -41,7 +41,7 @@ from utils import valid_post_date
 from utils import get_full_domain
 from utils import remove_id_ending
 from utils import get_protocol_prefixes
-from utils import isBlogPost
+from utils import is_blog_post
 from utils import remove_avatar_from_cache
 from utils import isPublicPost
 from utils import get_cached_post_filename
@@ -3522,7 +3522,7 @@ def _inboxAfterInitial(recent_posts_cache: {}, max_recent_posts: int,
                             domain_full, person_cache, signing_priv_key_pem):
                 # media index will be updated
                 updateIndexList.append('tlmedia')
-            if isBlogPost(post_json_object):
+            if is_blog_post(post_json_object):
                 # blogs index will be updated
                 updateIndexList.append('tlblogs')
 

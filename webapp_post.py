@@ -43,7 +43,7 @@ from utils import get_cached_post_directory
 from utils import get_cached_post_filename
 from utils import get_protocol_prefixes
 from utils import is_news_post
-from utils import isBlogPost
+from utils import is_blog_post
 from utils import get_display_name
 from utils import isPublicPost
 from utils import updateRecentPostsCache
@@ -480,7 +480,7 @@ def _getEditIconHtml(base_dir: str, nickname: str, domain_full: str,
         if '/statuses/' not in post_id:
             return editStr
 
-        if isBlogPost(post_json_object):
+        if is_blog_post(post_json_object):
             editBlogPostStr = 'Edit blog post'
             if translate.get(editBlogPostStr):
                 editBlogPostStr = translate[editBlogPostStr]
@@ -1788,7 +1788,7 @@ def individualPostAsHtml(signing_priv_key_pem: str,
 
     publishedLink = messageId
     # blog posts should have no /statuses/ in their link
-    if isBlogPost(post_json_object):
+    if is_blog_post(post_json_object):
         # is this a post to the local domain?
         if '://' + domain in messageId:
             publishedLink = messageId.replace('/statuses/', '/')
@@ -1924,7 +1924,7 @@ def individualPostAsHtml(signing_priv_key_pem: str,
                                cwContentStr, post_json_object, pageNumber)
             cwContentStr = \
                 switchWords(base_dir, nickname, domain, cwContentStr)
-        if not isBlogPost(post_json_object):
+        if not is_blog_post(post_json_object):
             # get the content warning button
             contentStr += \
                 getContentWarningButton(postID, translate, cwContentStr)

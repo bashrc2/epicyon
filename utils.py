@@ -1461,8 +1461,8 @@ def can_reply_to(base_dir: str, nickname: str, domain: str,
     return True
 
 
-def _removeAttachment(base_dir: str, http_prefix: str, domain: str,
-                      post_json: {}):
+def _remove_attachment(base_dir: str, http_prefix: str, domain: str,
+                       post_json: {}):
     if not post_json.get('attachment'):
         return
     if not post_json['attachment'][0].get('url'):
@@ -1476,14 +1476,14 @@ def _removeAttachment(base_dir: str, http_prefix: str, domain: str,
         try:
             os.remove(media_filename)
         except OSError:
-            print('EX: _removeAttachment unable to delete media file ' +
+            print('EX: _remove_attachment unable to delete media file ' +
                   str(media_filename))
     etag_filename = media_filename + '.etag'
     if os.path.isfile(etag_filename):
         try:
             os.remove(etag_filename)
         except OSError:
-            print('EX: _removeAttachment unable to delete etag file ' +
+            print('EX: _remove_attachment unable to delete etag file ' +
                   str(etag_filename))
     post_json['attachment'] = []
 
@@ -1752,7 +1752,7 @@ def deletePost(base_dir: str, http_prefix: str,
     _deleteConversationPost(base_dir, nickname, domain, post_json_object)
 
     # remove any attachment
-    _removeAttachment(base_dir, http_prefix, domain, post_json_object)
+    _remove_attachment(base_dir, http_prefix, domain, post_json_object)
 
     extensions = ('votes', 'arrived', 'muted', 'tts', 'reject')
     for ext in extensions:
@@ -2084,7 +2084,7 @@ def getCSS(base_dir: str, css_filename: str, cssCache: {}) -> str:
     return None
 
 
-def isBlogPost(post_json_object: {}) -> bool:
+def is_blog_post(post_json_object: {}) -> bool:
     """Is the given post a blog post?
     """
     if post_json_object['type'] != 'Create':

@@ -288,7 +288,7 @@ from utils import get_config_param
 from utils import remove_id_ending
 from utils import undo_likes_collection_entry
 from utils import deletePost
-from utils import isBlogPost
+from utils import is_blog_post
 from utils import remove_avatar_from_cache
 from utils import locate_post
 from utils import get_cached_post_filename
@@ -14175,7 +14175,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.path)
             if blogFilename and nickname:
                 post_json_object = load_json(blogFilename)
-                if isBlogPost(post_json_object):
+                if is_blog_post(post_json_object):
                     msg = htmlBlogPost(self.server.session,
                                        authorized,
                                        self.server.base_dir,

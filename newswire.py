@@ -966,7 +966,7 @@ def _isNewswireBlogPost(post_json_object: {}) -> bool:
     """Is the given object a blog post?
     There isn't any difference between a blog post and a newswire blog post
     but we may here need to check for different properties than
-    isBlogPost does
+    is_blog_post does
     """
     if not post_json_object:
         return False
