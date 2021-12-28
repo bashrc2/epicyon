@@ -32,7 +32,7 @@ from httpsig import verifyPostHeaders
 from httpsig import messageContentDigest
 from cache import storePersonInCache
 from cache import getPersonFromCache
-from threads import threadWithTrace
+from threads import thread_with_trace
 from daemon import runDaemon
 from session import create_session
 from session import getJson
@@ -105,9 +105,9 @@ from roles import setRolesFromList
 from roles import setRole
 from roles import actorHasRole
 from auth import constantTimeStringCheck
-from auth import createBasicAuthHeader
-from auth import authorizeBasic
-from auth import storeBasicCredentials
+from auth import create_basic_auth_header
+from auth import authorize_basic
+from auth import store_basic_credentials
 from like import likePost
 from like import sendLikeViaServer
 from reaction import reactionPost
@@ -163,7 +163,7 @@ from languages import getLinksFromContent
 from languages import addLinksToContent
 from languages import libretranslate
 from languages import libretranslateLanguages
-from shares import authorizeSharedItems
+from shares import authorize_shared_items
 from shares import generateSharedItemFederationTokens
 from shares import createSharedItemFederationToken
 from shares import updateSharedItemFederationToken
@@ -667,9 +667,9 @@ def _testThreadsFunction(param: str):
 def _testThreads():
     print('testThreads')
     thr = \
-        threadWithTrace(target=_testThreadsFunction,
-                        args=('test',),
-                        daemon=True)
+        thread_with_trace(target=_testThreadsFunction,
+                          args=('test',),
+                          daemon=True)
     thr.start()
     assert thr.is_alive() is True
     time.sleep(1)
@@ -1145,11 +1145,11 @@ def testPostMessageBetweenServers(base_dir: str) -> None:
         thrAlice.kill()
 
     thrAlice = \
-        threadWithTrace(target=createServerAlice,
-                        args=(aliceDir, aliceDomain, alicePort, bobAddress,
-                              federation_list, False, False,
-                              aliceSendThreads),
-                        daemon=True)
+        thread_with_trace(target=createServerAlice,
+                          args=(aliceDir, aliceDomain, alicePort, bobAddress,
+                                federation_list, False, False,
+                                aliceSendThreads),
+                          daemon=True)
 
     global thrBob
     if thrBob:
@@ -1159,11 +1159,11 @@ def testPostMessageBetweenServers(base_dir: str) -> None:
         thrBob.kill()
 
     thrBob = \
-        threadWithTrace(target=createServerBob,
-                        args=(bobDir, bobDomain, bobPort, aliceAddress,
-                              federation_list, False, False,
-                              bobSendThreads),
-                        daemon=True)
+        thread_with_trace(target=createServerBob,
+                          args=(bobDir, bobDomain, bobPort, aliceAddress,
+                                federation_list, False, False,
+                                bobSendThreads),
+                          daemon=True)
 
     thrAlice.start()
     thrBob.start()
@@ -1469,11 +1469,11 @@ def testFollowBetweenServers(base_dir: str) -> None:
         thrAlice.kill()
 
     thrAlice = \
-        threadWithTrace(target=createServerAlice,
-                        args=(aliceDir, aliceDomain, alicePort, bobAddress,
-                              federation_list, False, False,
-                              aliceSendThreads),
-                        daemon=True)
+        thread_with_trace(target=createServerAlice,
+                          args=(aliceDir, aliceDomain, alicePort, bobAddress,
+                                federation_list, False, False,
+                                aliceSendThreads),
+                          daemon=True)
 
     global thrBob
     if thrBob:
@@ -1483,11 +1483,11 @@ def testFollowBetweenServers(base_dir: str) -> None:
         thrBob.kill()
 
     thrBob = \
-        threadWithTrace(target=createServerBob,
-                        args=(bobDir, bobDomain, bobPort, aliceAddress,
-                              federation_list, False, False,
-                              bobSendThreads),
-                        daemon=True)
+        thread_with_trace(target=createServerBob,
+                          args=(bobDir, bobDomain, bobPort, aliceAddress,
+                                federation_list, False, False,
+                                bobSendThreads),
+                          daemon=True)
 
     thrAlice.start()
     thrBob.start()
@@ -1661,11 +1661,11 @@ def testSharedItemsFederation(base_dir: str) -> None:
         thrAlice.kill()
 
     thrAlice = \
-        threadWithTrace(target=createServerAlice,
-                        args=(aliceDir, aliceDomain, alicePort, bobAddress,
-                              federation_list, False, False,
-                              aliceSendThreads),
-                        daemon=True)
+        thread_with_trace(target=createServerAlice,
+                          args=(aliceDir, aliceDomain, alicePort, bobAddress,
+                                federation_list, False, False,
+                                aliceSendThreads),
+                          daemon=True)
 
     global thrBob
     if thrBob:
@@ -1675,11 +1675,11 @@ def testSharedItemsFederation(base_dir: str) -> None:
         thrBob.kill()
 
     thrBob = \
-        threadWithTrace(target=createServerBob,
-                        args=(bobDir, bobDomain, bobPort, aliceAddress,
-                              federation_list, False, False,
-                              bobSendThreads),
-                        daemon=True)
+        thread_with_trace(target=createServerBob,
+                          args=(bobDir, bobDomain, bobPort, aliceAddress,
+                                federation_list, False, False,
+                                bobSendThreads),
+                          daemon=True)
 
     thrAlice.start()
     thrBob.start()
@@ -2070,12 +2070,12 @@ def testGroupFollow(base_dir: str) -> None:
         thrAlice.kill()
 
     thrAlice = \
-        threadWithTrace(target=createServerAlice,
-                        args=(aliceDir, aliceDomain, alicePort,
-                              testgroupAddress,
-                              federation_list, False, True,
-                              aliceSendThreads),
-                        daemon=True)
+        thread_with_trace(target=createServerAlice,
+                          args=(aliceDir, aliceDomain, alicePort,
+                                testgroupAddress,
+                                federation_list, False, True,
+                                aliceSendThreads),
+                          daemon=True)
 
     global thrBob
     if thrBob:
@@ -2085,11 +2085,11 @@ def testGroupFollow(base_dir: str) -> None:
         thrBob.kill()
 
     thrBob = \
-        threadWithTrace(target=createServerBob,
-                        args=(bobDir, bobDomain, bobPort, None,
-                              federation_list, False, False,
-                              bobSendThreads),
-                        daemon=True)
+        thread_with_trace(target=createServerBob,
+                          args=(bobDir, bobDomain, bobPort, None,
+                                federation_list, False, False,
+                                bobSendThreads),
+                          daemon=True)
 
     global thrGroup
     if thrGroup:
@@ -2099,11 +2099,11 @@ def testGroupFollow(base_dir: str) -> None:
         thrGroup.kill()
 
     thrGroup = \
-        threadWithTrace(target=createServerGroup,
-                        args=(testgroupDir, testgroupDomain, testgroupPort,
-                              federation_list, False, False,
-                              testgroupSendThreads),
-                        daemon=True)
+        thread_with_trace(target=createServerGroup,
+                          args=(testgroupDir, testgroupDomain, testgroupPort,
+                                federation_list, False, False,
+                                testgroupSendThreads),
+                          daemon=True)
 
     thrAlice.start()
     thrBob.start()
@@ -2748,29 +2748,29 @@ def _testAuthentication(base_dir: str) -> None:
     os.mkdir(base_dir)
     os.chdir(base_dir)
 
-    assert storeBasicCredentials(base_dir, 'othernick', 'otherpass')
-    assert storeBasicCredentials(base_dir, 'bad:nick', 'otherpass') is False
-    assert storeBasicCredentials(base_dir, 'badnick', 'otherpa:ss') is False
-    assert storeBasicCredentials(base_dir, nickname, password)
+    assert store_basic_credentials(base_dir, 'othernick', 'otherpass')
+    assert store_basic_credentials(base_dir, 'bad:nick', 'otherpass') is False
+    assert store_basic_credentials(base_dir, 'badnick', 'otherpa:ss') is False
+    assert store_basic_credentials(base_dir, nickname, password)
 
-    authHeader = createBasicAuthHeader(nickname, password)
-    assert authorizeBasic(base_dir, '/users/' + nickname + '/inbox',
-                          authHeader, False)
-    assert authorizeBasic(base_dir, '/users/' + nickname,
-                          authHeader, False) is False
-    assert authorizeBasic(base_dir, '/users/othernick/inbox',
-                          authHeader, False) is False
+    authHeader = create_basic_auth_header(nickname, password)
+    assert authorize_basic(base_dir, '/users/' + nickname + '/inbox',
+                           authHeader, False)
+    assert authorize_basic(base_dir, '/users/' + nickname,
+                           authHeader, False) is False
+    assert authorize_basic(base_dir, '/users/othernick/inbox',
+                           authHeader, False) is False
 
-    authHeader = createBasicAuthHeader(nickname, password + '1')
-    assert authorizeBasic(base_dir, '/users/' + nickname + '/inbox',
-                          authHeader, False) is False
+    authHeader = create_basic_auth_header(nickname, password + '1')
+    assert authorize_basic(base_dir, '/users/' + nickname + '/inbox',
+                           authHeader, False) is False
 
     password = 'someOtherPassword'
-    assert storeBasicCredentials(base_dir, nickname, password)
+    assert store_basic_credentials(base_dir, nickname, password)
 
-    authHeader = createBasicAuthHeader(nickname, password)
-    assert authorizeBasic(base_dir, '/users/' + nickname + '/inbox',
-                          authHeader, False)
+    authHeader = create_basic_auth_header(nickname, password)
+    assert authorize_basic(base_dir, '/users/' + nickname + '/inbox',
+                           authHeader, False)
 
     os.chdir(currDir)
     shutil.rmtree(base_dir, ignore_errors=False, onerror=None)
@@ -2816,11 +2816,11 @@ def testClientToServer(base_dir: str):
         thrAlice.kill()
 
     thrAlice = \
-        threadWithTrace(target=createServerAlice,
-                        args=(aliceDir, aliceDomain, alicePort, bobAddress,
-                              federation_list, False, False,
-                              aliceSendThreads),
-                        daemon=True)
+        thread_with_trace(target=createServerAlice,
+                          args=(aliceDir, aliceDomain, alicePort, bobAddress,
+                                federation_list, False, False,
+                                aliceSendThreads),
+                          daemon=True)
 
     global thrBob
     if thrBob:
@@ -2830,11 +2830,11 @@ def testClientToServer(base_dir: str):
         thrBob.kill()
 
     thrBob = \
-        threadWithTrace(target=createServerBob,
-                        args=(bobDir, bobDomain, bobPort, aliceAddress,
-                              federation_list, False, False,
-                              bobSendThreads),
-                        daemon=True)
+        thread_with_trace(target=createServerBob,
+                          args=(bobDir, bobDomain, bobPort, aliceAddress,
+                                federation_list, False, False,
+                                bobSendThreads),
+                          daemon=True)
 
     thrAlice.start()
     thrBob.start()
@@ -5091,11 +5091,11 @@ def testUpdateActor(base_dir: str):
         thrAlice.kill()
 
     thrAlice = \
-        threadWithTrace(target=createServerAlice,
-                        args=(aliceDir, aliceDomain, alicePort, bobAddress,
-                              federation_list, False, False,
-                              aliceSendThreads),
-                        daemon=True)
+        thread_with_trace(target=createServerAlice,
+                          args=(aliceDir, aliceDomain, alicePort, bobAddress,
+                                federation_list, False, False,
+                                aliceSendThreads),
+                          daemon=True)
 
     thrAlice.start()
     assert thrAlice.is_alive() is True
@@ -5643,14 +5643,14 @@ def _testAuthorizeSharedItems():
     assert len(tokensJson['dog.domain']) == 0
     assert len(tokensJson['cat.domain']) >= 64
     assert len(tokensJson['birb.domain']) == 0
-    assert not authorizeSharedItems(shared_items_fed_domains, None,
-                                    'birb.domain',
-                                    'cat.domain', 'M' * 86,
-                                    False, tokensJson)
-    assert authorizeSharedItems(shared_items_fed_domains, None,
-                                'birb.domain',
-                                'cat.domain', tokensJson['cat.domain'],
-                                False, tokensJson)
+    assert not authorize_shared_items(shared_items_fed_domains, None,
+                                      'birb.domain',
+                                      'cat.domain', 'M' * 86,
+                                      False, tokensJson)
+    assert authorize_shared_items(shared_items_fed_domains, None,
+                                  'birb.domain',
+                                  'cat.domain', tokensJson['cat.domain'],
+                                  False, tokensJson)
     tokensJson = \
         updateSharedItemFederationToken(None,
                                         'dog.domain', 'testToken',

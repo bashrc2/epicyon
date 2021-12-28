@@ -14,7 +14,7 @@ import subprocess
 import random
 from random import randint
 from hashlib import sha1
-from auth import createPassword
+from auth import create_password
 from utils import get_base_content_from_post
 from utils import get_full_domain
 from utils import get_image_extensions
@@ -72,8 +72,8 @@ def _replaceSiloDomain(post_json_object: {},
         post_json_object['object']['contentMap'][system_language] = contentStr
 
 
-def replaceYouTube(post_json_object: {}, replacementDomain: str,
-                   system_language: str) -> None:
+def replace_you_tube(post_json_object: {}, replacementDomain: str,
+                     system_language: str) -> None:
     """Replace YouTube with a replacement domain
     This denies Google some, but not all, tracking data
     """
@@ -81,8 +81,8 @@ def replaceYouTube(post_json_object: {}, replacementDomain: str,
                        replacementDomain, system_language)
 
 
-def replaceTwitter(post_json_object: {}, replacementDomain: str,
-                   system_language: str) -> None:
+def replace_twitter(post_json_object: {}, replacementDomain: str,
+                    system_language: str) -> None:
     """Replace Twitter with a replacement domain
     This allows you to view twitter posts without having a twitter account
     """
@@ -160,7 +160,7 @@ def _spoofMetaData(base_dir: str, nickname: str, domain: str,
         return
 
 
-def convertImageToLowBandwidth(image_filename: str) -> None:
+def convert_image_to_low_bandwidth(image_filename: str) -> None:
     """Converts an image to a low bandwidth version
     """
     low_bandwidthFilename = image_filename + '.low'
@@ -168,7 +168,7 @@ def convertImageToLowBandwidth(image_filename: str) -> None:
         try:
             os.remove(low_bandwidthFilename)
         except OSError:
-            print('EX: convertImageToLowBandwidth unable to delete ' +
+            print('EX: convert_image_to_low_bandwidth unable to delete ' +
                   low_bandwidthFilename)
 
     cmd = \
@@ -190,7 +190,7 @@ def convertImageToLowBandwidth(image_filename: str) -> None:
         try:
             os.remove(image_filename)
         except OSError:
-            print('EX: convertImageToLowBandwidth unable to delete ' +
+            print('EX: convert_image_to_low_bandwidth unable to delete ' +
                   image_filename)
         os.rename(low_bandwidthFilename, image_filename)
         if os.path.isfile(image_filename):
@@ -200,9 +200,9 @@ def convertImageToLowBandwidth(image_filename: str) -> None:
               low_bandwidthFilename)
 
 
-def processMetaData(base_dir: str, nickname: str, domain: str,
-                    image_filename: str, outputFilename: str,
-                    city: str, content_license_url: str) -> None:
+def process_meta_data(base_dir: str, nickname: str, domain: str,
+                      image_filename: str, outputFilename: str,
+                      city: str, content_license_url: str) -> None:
     """Handles image metadata. This tries to spoof the metadata
     if possible, but otherwise just removes it
     """
@@ -293,12 +293,12 @@ def _updateEtag(mediaFilename: str) -> None:
               str(mediaFilename) + '.etag')
 
 
-def attachMedia(base_dir: str, http_prefix: str,
-                nickname: str, domain: str, port: int,
-                postJson: {}, image_filename: str,
-                mediaType: str, description: str,
-                city: str, low_bandwidth: bool,
-                content_license_url: str) -> {}:
+def attach_media(base_dir: str, http_prefix: str,
+                 nickname: str, domain: str, port: int,
+                 postJson: {}, image_filename: str,
+                 mediaType: str, description: str,
+                 city: str, low_bandwidth: bool,
+                 content_license_url: str) -> {}:
     """Attaches media to a json object post
     The description can be None
     """
@@ -327,7 +327,7 @@ def attachMedia(base_dir: str, http_prefix: str,
     domain = get_full_domain(domain, port)
 
     mPath = getMediaPath()
-    mediaPath = mPath + '/' + createPassword(32) + '.' + fileExtension
+    mediaPath = mPath + '/' + create_password(32) + '.' + fileExtension
     if base_dir:
         createMediaDirs(base_dir, mPath)
         mediaFilename = base_dir + '/' + mediaPath
@@ -354,10 +354,10 @@ def attachMedia(base_dir: str, http_prefix: str,
     if base_dir:
         if mediaType.startswith('image/'):
             if low_bandwidth:
-                convertImageToLowBandwidth(image_filename)
-            processMetaData(base_dir, nickname, domain,
-                            image_filename, mediaFilename, city,
-                            content_license_url)
+                convert_image_to_low_bandwidth(image_filename)
+            process_meta_data(base_dir, nickname, domain,
+                              image_filename, mediaFilename, city,
+                              content_license_url)
         else:
             copyfile(image_filename, mediaFilename)
         _updateEtag(mediaFilename)
@@ -394,14 +394,14 @@ def archiveMedia(base_dir: str, archive_directory: str, maxWeeks: int) -> None:
         break
 
 
-def pathIsVideo(path: str) -> bool:
+def path_is_video(path: str) -> bool:
     if path.endswith('.ogv') or \
        path.endswith('.mp4'):
         return True
     return False
 
 
-def pathIsAudio(path: str) -> bool:
+def path_is_audio(path: str) -> bool:
     if path.endswith('.ogg') or \
        path.endswith('.mp3'):
         return True

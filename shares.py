@@ -16,7 +16,7 @@ from random import randint
 from pprint import pprint
 from session import getJson
 from webfinger import webfingerHandle
-from auth import createBasicAuthHeader
+from auth import create_basic_auth_header
 from auth import constantTimeStringCheck
 from posts import getPersonBox
 from session import postJson
@@ -38,8 +38,8 @@ from utils import is_float
 from utils import get_category_types
 from utils import get_shares_files_list
 from utils import local_actor_url
-from media import processMetaData
-from media import convertImageToLowBandwidth
+from media import process_meta_data
+from media import convert_image_to_low_bandwidth
 from filters import isFilteredGlobally
 from siteactive import siteIsActive
 from content import getPriceFromString
@@ -360,10 +360,10 @@ def addShare(base_dir: str,
                 if not image_filename.endswith('.' + ext):
                     continue
                 if low_bandwidth:
-                    convertImageToLowBandwidth(image_filename)
-                processMetaData(base_dir, nickname, domain,
-                                image_filename, itemIDfile + '.' + ext,
-                                city, content_license_url)
+                    convert_image_to_low_bandwidth(image_filename)
+                process_meta_data(base_dir, nickname, domain,
+                                  image_filename, itemIDfile + '.' + ext,
+                                  city, content_license_url)
                 if moveImage:
                     try:
                         os.remove(image_filename)
@@ -645,7 +645,7 @@ def sendShareViaServer(base_dir, session,
             print('DEBUG: share no actor was found for ' + handle)
         return 4
 
-    authHeader = createBasicAuthHeader(fromNickname, password)
+    authHeader = create_basic_auth_header(fromNickname, password)
 
     if image_filename:
         headers = {
@@ -749,7 +749,7 @@ def sendUndoShareViaServer(base_dir: str, session,
             print('DEBUG: unshare no actor was found for ' + handle)
         return 4
 
-    authHeader = createBasicAuthHeader(fromNickname, password)
+    authHeader = create_basic_auth_header(fromNickname, password)
 
     headers = {
         'host': fromDomain,
@@ -865,7 +865,7 @@ def sendWantedViaServer(base_dir, session,
             print('DEBUG: wanted no actor was found for ' + handle)
         return 4
 
-    authHeader = createBasicAuthHeader(fromNickname, password)
+    authHeader = create_basic_auth_header(fromNickname, password)
 
     if image_filename:
         headers = {
@@ -969,7 +969,7 @@ def sendUndoWantedViaServer(base_dir: str, session,
             print('DEBUG: unwant no actor was found for ' + handle)
         return 4
 
-    authHeader = createBasicAuthHeader(fromNickname, password)
+    authHeader = create_basic_auth_header(fromNickname, password)
 
     headers = {
         'host': fromDomain,
@@ -1002,7 +1002,7 @@ def getSharedItemsCatalogViaServer(base_dir, session,
         print('WARN: No session for getSharedItemsCatalogViaServer')
         return 6
 
-    authHeader = createBasicAuthHeader(nickname, password)
+    authHeader = create_basic_auth_header(nickname, password)
 
     headers = {
         'host': domain,
@@ -1482,13 +1482,13 @@ def createSharedItemFederationToken(base_dir: str,
     return tokensJson
 
 
-def authorizeSharedItems(shared_items_federated_domains: [],
-                         base_dir: str,
-                         originDomainFull: str,
-                         calling_domainFull: str,
-                         authHeader: str,
-                         debug: bool,
-                         tokensJson: {} = None) -> bool:
+def authorize_shared_items(shared_items_federated_domains: [],
+                           base_dir: str,
+                           originDomainFull: str,
+                           calling_domainFull: str,
+                           authHeader: str,
+                           debug: bool,
+                           tokensJson: {} = None) -> bool:
     """HTTP simple token check for shared item federation
     """
     if not shared_items_federated_domains:

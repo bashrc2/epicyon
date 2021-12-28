@@ -115,19 +115,19 @@ from skills import actor_skill_value
 from skills import set_actor_skill_level
 from auth import record_login_failure
 from auth import authorize
-from auth import createPassword
-from auth import createBasicAuthHeader
-from auth import authorizeBasic
-from auth import storeBasicCredentials
-from threads import threadWithTrace
-from threads import removeDormantThreads
-from media import processMetaData
-from media import convertImageToLowBandwidth
-from media import replaceYouTube
-from media import replaceTwitter
-from media import attachMedia
-from media import pathIsVideo
-from media import pathIsAudio
+from auth import create_password
+from auth import create_basic_auth_header
+from auth import authorize_basic
+from auth import store_basic_credentials
+from threads import thread_with_trace
+from threads import remove_dormant_threads
+from media import process_meta_data
+from media import convert_image_to_low_bandwidth
+from media import replace_you_tube
+from media import replace_twitter
+from media import attach_media
+from media import path_is_video
+from media import path_is_audio
 from blocking import getCWlistVariable
 from blocking import loadCWLists
 from blocking import updateBlockedCache
@@ -228,7 +228,7 @@ from shares import runFederatedSharesDaemon
 from shares import runFederatedSharesWatchdog
 from shares import updateSharedItemFederationToken
 from shares import createSharedItemFederationToken
-from shares import authorizeSharedItems
+from shares import authorize_shared_items
 from shares import generateSharedItemFederationTokens
 from shares import getSharesFeedForPerson
 from shares import addShare
@@ -1355,10 +1355,10 @@ class PubServer(BaseHTTPRequestHandler):
               accountOutboxThreadName + '/' +
               str(self.server.outbox_thread_index[accountOutboxThreadName]))
         self.server.outboxThread[accountOutboxThreadName][index] = \
-            threadWithTrace(target=self._postToOutbox,
-                            args=(message_json.copy(),
-                                  self.server.project_version, None),
-                            daemon=True)
+            thread_with_trace(target=self._postToOutbox,
+                              args=(message_json.copy(),
+                                    self.server.project_version, None),
+                              daemon=True)
         print('Starting outbox thread')
         self.server.outboxThread[accountOutboxThreadName][index].start()
         return True
@@ -1722,7 +1722,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                cookie, calling_domain)
                     return
             authHeader = \
-                createBasicAuthHeader(loginNickname, loginPassword)
+                create_basic_auth_header(loginNickname, loginPassword)
             if self.headers.get('X-Forward-For'):
                 ipAddress = self.headers['X-Forward-For']
             elif self.headers.get('X-Forwarded-For'):
@@ -1732,9 +1732,9 @@ class PubServer(BaseHTTPRequestHandler):
             if not domain.endswith('.onion'):
                 if not is_local_network_address(ipAddress):
                     print('Login attempt from IP: ' + str(ipAddress))
-            if not authorizeBasic(base_dir, '/users/' +
-                                  loginNickname + '/outbox',
-                                  authHeader, False):
+            if not authorize_basic(base_dir, '/users/' +
+                                   loginNickname + '/outbox',
+                                   authHeader, False):
                 print('Login failed: ' + loginNickname)
                 self._clearLoginDetails(loginNickname, calling_domain)
                 failTime = int(time.time())
@@ -1768,7 +1768,7 @@ class PubServer(BaseHTTPRequestHandler):
                 # on nick+password+salt
                 saltFilename = \
                     acct_dir(base_dir, loginNickname, domain) + '/.salt'
-                salt = createPassword(32)
+                salt = create_password(32)
                 if os.path.isfile(saltFilename):
                     try:
                         with open(saltFilename, 'r') as fp:
@@ -4827,10 +4827,10 @@ class PubServer(BaseHTTPRequestHandler):
                                       base_dir, nickname, domain)
 
                 if self.server.low_bandwidth:
-                    convertImageToLowBandwidth(filename)
-                processMetaData(base_dir, nickname, domain,
-                                filename, postImageFilename, city,
-                                content_license_url)
+                    convert_image_to_low_bandwidth(filename)
+                process_meta_data(base_dir, nickname, domain,
+                                  filename, postImageFilename, city,
+                                  content_license_url)
                 if os.path.isfile(postImageFilename):
                     print('profile update POST ' + mType +
                           ' image, zip or font saved to ' +
@@ -4976,8 +4976,8 @@ class PubServer(BaseHTTPRequestHandler):
                         if valid_password(fields['password']) and \
                            fields['password'] == fields['passwordconfirm']:
                             # set password
-                            storeBasicCredentials(base_dir, nickname,
-                                                  fields['password'])
+                            store_basic_credentials(base_dir, nickname,
+                                                    fields['password'])
 
                     # reply interval in hours
                     if fields.get('replyhours'):
@@ -7199,8 +7199,8 @@ class PubServer(BaseHTTPRequestHandler):
         """Returns a media file
         """
         if is_image_file(path) or \
-           pathIsVideo(path) or \
-           pathIsAudio(path):
+           path_is_video(path) or \
+           path_is_audio(path):
             mediaStr = path.split('/media/')[1]
             mediaFilename = base_dir + '/media/' + mediaStr
             if os.path.isfile(mediaFilename):
@@ -13527,13 +13527,13 @@ class PubServer(BaseHTTPRequestHandler):
                     permittedDomains = \
                         self.server.shared_items_federated_domains
                     sharedItemTokens = self.server.sharedItemFederationTokens
-                    if authorizeSharedItems(permittedDomains,
-                                            self.server.base_dir,
-                                            self.headers['Origin'],
-                                            calling_domain,
-                                            self.headers['Authorization'],
-                                            self.server.debug,
-                                            sharedItemTokens):
+                    if authorize_shared_items(permittedDomains,
+                                              self.server.base_dir,
+                                              self.headers['Origin'],
+                                              calling_domain,
+                                              self.headers['Authorization'],
+                                              self.server.debug,
+                                              sharedItemTokens):
                         catalogAuthorized = True
                     elif self.server.debug:
                         print('Authorization token refused for ' +
@@ -13619,13 +13619,13 @@ class PubServer(BaseHTTPRequestHandler):
                     permittedDomains = \
                         self.server.shared_items_federated_domains
                     sharedItemTokens = self.server.sharedItemFederationTokens
-                    if authorizeSharedItems(permittedDomains,
-                                            self.server.base_dir,
-                                            self.headers['Origin'],
-                                            calling_domain,
-                                            self.headers['Authorization'],
-                                            self.server.debug,
-                                            sharedItemTokens):
+                    if authorize_shared_items(permittedDomains,
+                                              self.server.base_dir,
+                                              self.headers['Origin'],
+                                              calling_domain,
+                                              self.headers['Authorization'],
+                                              self.server.debug,
+                                              sharedItemTokens):
                         catalogAuthorized = True
                     elif self.server.debug:
                         print('Authorization token refused for ' +
@@ -16397,8 +16397,8 @@ class PubServer(BaseHTTPRequestHandler):
 
         if '/media/' in self.path:
             if is_image_file(self.path) or \
-               pathIsVideo(self.path) or \
-               pathIsAudio(self.path):
+               path_is_video(self.path) or \
+               path_is_audio(self.path):
                 mediaStr = self.path.split('/media/')[1]
                 mediaFilename = \
                     self.server.base_dir + '/media/' + mediaStr
@@ -16512,11 +16512,11 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.base_dir,
                                           nickname, self.server.domain)
                     if self.server.low_bandwidth:
-                        convertImageToLowBandwidth(filename)
-                    processMetaData(self.server.base_dir,
-                                    nickname, self.server.domain,
-                                    filename, postImageFilename, city,
-                                    content_license_url)
+                        convert_image_to_low_bandwidth(filename)
+                    process_meta_data(self.server.base_dir,
+                                      nickname, self.server.domain,
+                                      filename, postImageFilename, city,
+                                      content_license_url)
                     if os.path.isfile(postImageFilename):
                         print('POST media saved to ' + postImageFilename)
                     else:
@@ -16814,25 +16814,25 @@ class PubServer(BaseHTTPRequestHandler):
                                                   nickname,
                                                   self.server.domain)
                             post_json_object['object'] = \
-                                attachMedia(self.server.base_dir,
-                                            self.server.http_prefix,
-                                            nickname,
-                                            self.server.domain,
-                                            self.server.port,
-                                            post_json_object['object'],
-                                            filename,
-                                            attachmentMediaType,
-                                            imgDescription,
-                                            city,
-                                            self.server.low_bandwidth,
-                                            self.server.content_license_url)
+                                attach_media(self.server.base_dir,
+                                             self.server.http_prefix,
+                                             nickname,
+                                             self.server.domain,
+                                             self.server.port,
+                                             post_json_object['object'],
+                                             filename,
+                                             attachmentMediaType,
+                                             imgDescription,
+                                             city,
+                                             self.server.low_bandwidth,
+                                             self.server.content_license_url)
 
-                        replaceYouTube(post_json_object,
-                                       self.server.yt_replace_domain,
-                                       self.server.system_language)
-                        replaceTwitter(post_json_object,
-                                       self.server.twitter_replacement_domain,
-                                       self.server.system_language)
+                        replace_you_tube(post_json_object,
+                                         self.server.yt_replace_domain,
+                                         self.server.system_language)
+                        replace_twitter(post_json_object,
+                                        self.server.twitter_replacement_domain,
+                                        self.server.system_language)
                         save_json(post_json_object, post_filename)
                         # also save to the news actor
                         if nickname != 'news':
@@ -18384,7 +18384,7 @@ def runPostsQueue(base_dir: str, send_threads: [], debug: bool,
     """
     while True:
         time.sleep(1)
-        removeDormantThreads(base_dir, send_threads, debug, timeoutMins)
+        remove_dormant_threads(base_dir, send_threads, debug, timeoutMins)
 
 
 def runSharesExpire(versionNumber: str, base_dir: str) -> None:
@@ -18875,17 +18875,17 @@ def runDaemon(content_license_url: str,
 
     print('Creating fitness thread')
     httpd.thrFitness = \
-        threadWithTrace(target=fitnessThread,
-                        args=(base_dir, httpd.fitness), daemon=True)
+        thread_with_trace(target=fitnessThread,
+                          args=(base_dir, httpd.fitness), daemon=True)
     httpd.thrFitness.start()
 
     print('Creating cache expiry thread')
     httpd.thrCache = \
-        threadWithTrace(target=expire_cache,
-                        args=(base_dir, httpd.person_cache,
-                              httpd.http_prefix,
-                              archive_dir,
-                              httpd.maxPostsInBox), daemon=True)
+        thread_with_trace(target=expire_cache,
+                          args=(base_dir, httpd.person_cache,
+                                httpd.http_prefix,
+                                archive_dir,
+                                httpd.maxPostsInBox), daemon=True)
     httpd.thrCache.start()
 
     # number of mins after which sending posts or updates will expire
@@ -18893,25 +18893,25 @@ def runDaemon(content_license_url: str,
 
     print('Creating posts queue')
     httpd.thrPostsQueue = \
-        threadWithTrace(target=runPostsQueue,
-                        args=(base_dir, httpd.send_threads, debug,
-                              httpd.send_threads_timeout_mins), daemon=True)
+        thread_with_trace(target=runPostsQueue,
+                          args=(base_dir, httpd.send_threads, debug,
+                                httpd.send_threads_timeout_mins), daemon=True)
     if not unit_test:
         httpd.thrPostsWatchdog = \
-            threadWithTrace(target=runPostsWatchdog,
-                            args=(project_version, httpd), daemon=True)
+            thread_with_trace(target=runPostsWatchdog,
+                              args=(project_version, httpd), daemon=True)
         httpd.thrPostsWatchdog.start()
     else:
         httpd.thrPostsQueue.start()
 
     print('Creating expire thread for shared items')
     httpd.thrSharesExpire = \
-        threadWithTrace(target=runSharesExpire,
-                        args=(project_version, base_dir), daemon=True)
+        thread_with_trace(target=runSharesExpire,
+                          args=(project_version, base_dir), daemon=True)
     if not unit_test:
         httpd.thrSharesExpireWatchdog = \
-            threadWithTrace(target=runSharesExpireWatchdog,
-                            args=(project_version, httpd), daemon=True)
+            thread_with_trace(target=runSharesExpireWatchdog,
+                              args=(project_version, httpd), daemon=True)
         httpd.thrSharesExpireWatchdog.start()
     else:
         httpd.thrSharesExpire.start()
@@ -18938,55 +18938,55 @@ def runDaemon(content_license_url: str,
 
     print('Creating inbox queue')
     httpd.thrInboxQueue = \
-        threadWithTrace(target=run_inbox_queue,
-                        args=(httpd.recent_posts_cache,
-                              httpd.max_recent_posts,
-                              project_version,
-                              base_dir, http_prefix, httpd.send_threads,
-                              httpd.postLog, httpd.cached_webfingers,
-                              httpd.person_cache, httpd.inbox_queue,
-                              domain, onion_domain, i2p_domain,
-                              port, proxy_type,
-                              httpd.federation_list,
-                              max_replies,
-                              domain_max_posts_per_day,
-                              account_max_posts_per_day,
-                              allow_deletion, debug,
-                              max_mentions, max_emoji,
-                              httpd.translate, unit_test,
-                              httpd.yt_replace_domain,
-                              httpd.twitter_replacement_domain,
-                              httpd.show_published_date_only,
-                              httpd.max_followers,
-                              httpd.allow_local_network_access,
-                              httpd.peertube_instances,
-                              verify_all_signatures,
-                              httpd.theme_name,
-                              httpd.system_language,
-                              httpd.max_like_count,
-                              httpd.signing_priv_key_pem,
-                              httpd.default_reply_interval_hrs,
-                              httpd.cw_lists), daemon=True)
+        thread_with_trace(target=run_inbox_queue,
+                          args=(httpd.recent_posts_cache,
+                                httpd.max_recent_posts,
+                                project_version,
+                                base_dir, http_prefix, httpd.send_threads,
+                                httpd.postLog, httpd.cached_webfingers,
+                                httpd.person_cache, httpd.inbox_queue,
+                                domain, onion_domain, i2p_domain,
+                                port, proxy_type,
+                                httpd.federation_list,
+                                max_replies,
+                                domain_max_posts_per_day,
+                                account_max_posts_per_day,
+                                allow_deletion, debug,
+                                max_mentions, max_emoji,
+                                httpd.translate, unit_test,
+                                httpd.yt_replace_domain,
+                                httpd.twitter_replacement_domain,
+                                httpd.show_published_date_only,
+                                httpd.max_followers,
+                                httpd.allow_local_network_access,
+                                httpd.peertube_instances,
+                                verify_all_signatures,
+                                httpd.theme_name,
+                                httpd.system_language,
+                                httpd.max_like_count,
+                                httpd.signing_priv_key_pem,
+                                httpd.default_reply_interval_hrs,
+                                httpd.cw_lists), daemon=True)
 
     print('Creating scheduled post thread')
     httpd.thrPostSchedule = \
-        threadWithTrace(target=runPostSchedule,
-                        args=(base_dir, httpd, 20), daemon=True)
+        thread_with_trace(target=runPostSchedule,
+                          args=(base_dir, httpd, 20), daemon=True)
 
     print('Creating newswire thread')
     httpd.thrNewswireDaemon = \
-        threadWithTrace(target=runNewswireDaemon,
-                        args=(base_dir, httpd,
-                              http_prefix, domain, port,
-                              httpd.translate), daemon=True)
+        thread_with_trace(target=runNewswireDaemon,
+                          args=(base_dir, httpd,
+                                http_prefix, domain, port,
+                                httpd.translate), daemon=True)
 
     print('Creating federated shares thread')
     httpd.thrFederatedSharesDaemon = \
-        threadWithTrace(target=runFederatedSharesDaemon,
-                        args=(base_dir, httpd,
-                              http_prefix, httpd.domain_full,
-                              proxy_type, debug,
-                              httpd.system_language), daemon=True)
+        thread_with_trace(target=runFederatedSharesDaemon,
+                          args=(base_dir, httpd,
+                                http_prefix, httpd.domain_full,
+                                proxy_type, debug,
+                                httpd.system_language), daemon=True)
 
     # flags used when restarting the inbox queue
     httpd.restartInboxQueueInProgress = False
@@ -19004,26 +19004,26 @@ def runDaemon(content_license_url: str,
     if not unit_test:
         print('Creating inbox queue watchdog')
         httpd.thrWatchdog = \
-            threadWithTrace(target=run_inbox_queue_watchdog,
-                            args=(project_version, httpd), daemon=True)
+            thread_with_trace(target=run_inbox_queue_watchdog,
+                              args=(project_version, httpd), daemon=True)
         httpd.thrWatchdog.start()
 
         print('Creating scheduled post watchdog')
         httpd.thrWatchdogSchedule = \
-            threadWithTrace(target=runPostScheduleWatchdog,
-                            args=(project_version, httpd), daemon=True)
+            thread_with_trace(target=runPostScheduleWatchdog,
+                              args=(project_version, httpd), daemon=True)
         httpd.thrWatchdogSchedule.start()
 
         print('Creating newswire watchdog')
         httpd.thrNewswireWatchdog = \
-            threadWithTrace(target=runNewswireWatchdog,
-                            args=(project_version, httpd), daemon=True)
+            thread_with_trace(target=runNewswireWatchdog,
+                              args=(project_version, httpd), daemon=True)
         httpd.thrNewswireWatchdog.start()
 
         print('Creating federated shares watchdog')
         httpd.thrFederatedSharesWatchdog = \
-            threadWithTrace(target=runFederatedSharesWatchdog,
-                            args=(project_version, httpd), daemon=True)
+            thread_with_trace(target=runFederatedSharesWatchdog,
+                              args=(project_version, httpd), daemon=True)
         httpd.thrFederatedSharesWatchdog.start()
     else:
         print('Starting inbox queue')

@@ -13,7 +13,7 @@ import time
 import datetime
 
 
-class threadWithTrace(threading.Thread):
+class thread_with_trace(threading.Thread):
     def __init__(self, *args, **keywords):
         self.startTime = datetime.datetime.utcnow()
         self.isStarted = False
@@ -69,13 +69,13 @@ class threadWithTrace(threading.Thread):
         self.killed = True
 
     def clone(self, fn):
-        return threadWithTrace(target=fn,
-                               args=self._args,
-                               daemon=True)
+        return thread_with_trace(target=fn,
+                                 args=self._args,
+                                 daemon=True)
 
 
-def removeDormantThreads(base_dir: str, threadsList: [], debug: bool,
-                         timeoutMins: int) -> None:
+def remove_dormant_threads(base_dir: str, threadsList: [], debug: bool,
+                           timeoutMins: int) -> None:
     """Removes threads whose execution has completed
     """
     if len(threadsList) == 0:
@@ -150,5 +150,5 @@ def removeDormantThreads(base_dir: str, threadsList: [], debug: bool,
                               ',' + str(noOfActiveThreads) +
                               ',' + str(len(threadsList)) + '\n')
         except OSError:
-            print('EX: removeDormantThreads unable to write ' +
+            print('EX: remove_dormant_threads unable to write ' +
                   sendLogFilename)

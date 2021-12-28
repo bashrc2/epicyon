@@ -32,12 +32,12 @@ from posts import createBookmarksTimeline
 from posts import createInbox
 from posts import createOutbox
 from posts import createModeration
-from auth import storeBasicCredentials
+from auth import store_basic_credentials
 from auth import removePassword
 from roles import setRole
 from roles import setRolesFromList
 from roles import getActorRolesList
-from media import processMetaData
+from media import process_meta_data
 from utils import remove_html
 from utils import contains_invalid_chars
 from utils import replace_users_with_at
@@ -157,9 +157,9 @@ def setProfileImage(base_dir: str, http_prefix: str,
             '/usr/bin/convert ' + image_filename + ' -size ' + \
             resolution + ' -quality 50 ' + profileFilename
         subprocess.call(cmd, shell=True)
-        processMetaData(base_dir, nickname, domain,
-                        profileFilename, profileFilename, city,
-                        content_license_url)
+        process_meta_data(base_dir, nickname, domain,
+                          profileFilename, profileFilename, city,
+                          content_license_url)
         return True
     return False
 
@@ -534,7 +534,7 @@ def _createPersonBase(base_dir: str, nickname: str, domain: str, port: int,
 
         if password:
             password = remove_line_endings(password)
-            storeBasicCredentials(base_dir, nickname, password)
+            store_basic_credentials(base_dir, nickname, password)
 
     return privateKeyPem, publicKeyPem, newPerson, webfingerEndpoint
 

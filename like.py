@@ -31,7 +31,7 @@ from utils import get_cached_post_filename
 from posts import sendSignedJson
 from session import postJson
 from webfinger import webfingerHandle
-from auth import createBasicAuthHeader
+from auth import create_basic_auth_header
 from posts import getPersonBox
 
 
@@ -230,7 +230,7 @@ def sendLikeViaServer(base_dir: str, session,
             print('DEBUG: like no actor was found for ' + handle)
         return 4
 
-    authHeader = createBasicAuthHeader(fromNickname, password)
+    authHeader = create_basic_auth_header(fromNickname, password)
 
     headers = {
         'host': fromDomain,
@@ -318,7 +318,7 @@ def sendUndoLikeViaServer(base_dir: str, session,
             print('DEBUG: unlike no actor was found for ' + handle)
         return 4
 
-    authHeader = createBasicAuthHeader(fromNickname, password)
+    authHeader = create_basic_auth_header(fromNickname, password)
 
     headers = {
         'host': fromDomain,

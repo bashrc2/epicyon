@@ -18,7 +18,7 @@ import random
 from socket import error as SocketError
 from time import gmtime, strftime
 from collections import OrderedDict
-from threads import threadWithTrace
+from threads import thread_with_trace
 from cache import storePersonInCache
 from cache import getPersonFromCache
 from cache import expirePersonCache
@@ -69,9 +69,9 @@ from utils import remove_html
 from utils import dangerous_markup
 from utils import acct_dir
 from utils import local_actor_url
-from media import attachMedia
-from media import replaceYouTube
-from media import replaceTwitter
+from media import attach_media
+from media import replace_you_tube
+from media import replace_twitter
 from content import wordsSimilarity
 from content import limitRepeatedWords
 from content import tagExists
@@ -79,7 +79,7 @@ from content import removeLongWords
 from content import addHtmlTags
 from content import replaceEmojiFromTags
 from content import removeTextFormatting
-from auth import createBasicAuthHeader
+from auth import create_basic_auth_header
 from blocking import isBlocked
 from blocking import isBlockedDomain
 from filters import isFiltered
@@ -1131,10 +1131,10 @@ def _createPostS2S(base_dir: str, nickname: str, domain: str, port: int,
     }
     if attachImageFilename:
         newPost['object'] = \
-            attachMedia(base_dir, http_prefix, nickname, domain, port,
-                        newPost['object'], attachImageFilename,
-                        mediaType, imageDescription, city, low_bandwidth,
-                        content_license_url)
+            attach_media(base_dir, http_prefix, nickname, domain, port,
+                         newPost['object'], attachImageFilename,
+                         mediaType, imageDescription, city, low_bandwidth,
+                         content_license_url)
     return newPost
 
 
@@ -1196,10 +1196,10 @@ def _createPostC2S(base_dir: str, nickname: str, domain: str, port: int,
     }
     if attachImageFilename:
         newPost = \
-            attachMedia(base_dir, http_prefix, nickname, domain, port,
-                        newPost, attachImageFilename,
-                        mediaType, imageDescription, city, low_bandwidth,
-                        content_license_url)
+            attach_media(base_dir, http_prefix, nickname, domain, port,
+                         newPost, attachImageFilename,
+                         mediaType, imageDescription, city, low_bandwidth,
+                         content_license_url)
     return newPost
 
 
@@ -2405,14 +2405,14 @@ def sendPost(signing_priv_key_pem: str, project_version: str,
         send_threads.pop(0)
         print('WARN: thread killed')
     thr = \
-        threadWithTrace(target=threadSendPost,
-                        args=(session,
-                              postJsonStr,
-                              federation_list,
-                              inboxUrl, base_dir,
-                              signatureHeaderJson.copy(),
-                              postLog,
-                              debug), daemon=True)
+        thread_with_trace(target=threadSendPost,
+                          args=(session,
+                                postJsonStr,
+                                federation_list,
+                                inboxUrl, base_dir,
+                                signatureHeaderJson.copy(),
+                                postLog,
+                                debug), daemon=True)
     send_threads.append(thr)
     thr.start()
     return 0
@@ -2518,7 +2518,7 @@ def sendPostViaServer(signing_priv_key_pem: str, project_version: str,
                         conversationId, low_bandwidth,
                         content_license_url)
 
-    authHeader = createBasicAuthHeader(fromNickname, password)
+    authHeader = create_basic_auth_header(fromNickname, password)
 
     if attachImageFilename:
         headers = {
@@ -2770,14 +2770,14 @@ def sendSignedJson(post_json_object: {}, session, base_dir: str,
         print('DEBUG: starting thread to send post')
         pprint(post_json_object)
     thr = \
-        threadWithTrace(target=threadSendPost,
-                        args=(session,
-                              postJsonStr,
-                              federation_list,
-                              inboxUrl, base_dir,
-                              signatureHeaderJson.copy(),
-                              postLog,
-                              debug), daemon=True)
+        thread_with_trace(target=threadSendPost,
+                          args=(session,
+                                postJsonStr,
+                                federation_list,
+                                inboxUrl, base_dir,
+                                signatureHeaderJson.copy(),
+                                postLog,
+                                debug), daemon=True)
     send_threads.append(thr)
     # thr.start()
     return 0
@@ -3029,18 +3029,18 @@ def sendToNamedAddressesThread(session, base_dir: str,
     """Returns a thread used to send a post to named addresses
     """
     sendThread = \
-        threadWithTrace(target=_sendToNamedAddresses,
-                        args=(session, base_dir,
-                              nickname, domain,
-                              onion_domain, i2p_domain, port,
-                              http_prefix, federation_list,
-                              send_threads, postLog,
-                              cached_webfingers, person_cache,
-                              post_json_object, debug,
-                              project_version,
-                              shared_items_federated_domains,
-                              sharedItemFederationTokens,
-                              signing_priv_key_pem), daemon=True)
+        thread_with_trace(target=_sendToNamedAddresses,
+                          args=(session, base_dir,
+                                nickname, domain,
+                                onion_domain, i2p_domain, port,
+                                http_prefix, federation_list,
+                                send_threads, postLog,
+                                cached_webfingers, person_cache,
+                                post_json_object, debug,
+                                project_version,
+                                shared_items_federated_domains,
+                                sharedItemFederationTokens,
+                                signing_priv_key_pem), daemon=True)
     try:
         sendThread.start()
     except SocketError as ex:
@@ -3278,18 +3278,18 @@ def sendToFollowersThread(session, base_dir: str,
     """Returns a thread used to send a post to followers
     """
     sendThread = \
-        threadWithTrace(target=sendToFollowers,
-                        args=(session, base_dir,
-                              nickname, domain,
-                              onion_domain, i2p_domain, port,
-                              http_prefix, federation_list,
-                              send_threads, postLog,
-                              cached_webfingers, person_cache,
-                              post_json_object.copy(), debug,
-                              project_version,
-                              shared_items_federated_domains,
-                              sharedItemFederationTokens,
-                              signing_priv_key_pem), daemon=True)
+        thread_with_trace(target=sendToFollowers,
+                          args=(session, base_dir,
+                                nickname, domain,
+                                onion_domain, i2p_domain, port,
+                                http_prefix, federation_list,
+                                send_threads, postLog,
+                                cached_webfingers, person_cache,
+                                post_json_object.copy(), debug,
+                                project_version,
+                                shared_items_federated_domains,
+                                sharedItemFederationTokens,
+                                signing_priv_key_pem), daemon=True)
     try:
         sendThread.start()
     except SocketError as ex:
@@ -4739,9 +4739,9 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
                                 recent_posts_cache)
                 return None
         post_json_object = announcedJson
-        replaceYouTube(post_json_object, yt_replace_domain, system_language)
-        replaceTwitter(post_json_object, twitter_replacement_domain,
-                       system_language)
+        replace_you_tube(post_json_object, yt_replace_domain, system_language)
+        replace_twitter(post_json_object, twitter_replacement_domain,
+                        system_language)
         if save_json(post_json_object, announceFilename):
             return post_json_object
     return None
@@ -4830,7 +4830,7 @@ def sendBlockViaServer(base_dir: str, session,
             print('DEBUG: block no actor was found for ' + handle)
         return 4
 
-    authHeader = createBasicAuthHeader(fromNickname, password)
+    authHeader = create_basic_auth_header(fromNickname, password)
 
     headers = {
         'host': fromDomain,
@@ -4910,7 +4910,7 @@ def sendMuteViaServer(base_dir: str, session,
             print('DEBUG: mute no actor was found for ' + handle)
         return 4
 
-    authHeader = createBasicAuthHeader(fromNickname, password)
+    authHeader = create_basic_auth_header(fromNickname, password)
 
     headers = {
         'host': fromDomain,
@@ -4996,7 +4996,7 @@ def sendUndoMuteViaServer(base_dir: str, session,
             print('DEBUG: undo mute no actor was found for ' + handle)
         return 4
 
-    authHeader = createBasicAuthHeader(fromNickname, password)
+    authHeader = create_basic_auth_header(fromNickname, password)
 
     headers = {
         'host': fromDomain,
@@ -5084,7 +5084,7 @@ def sendUndoBlockViaServer(base_dir: str, session,
             print('DEBUG: unblock no actor was found for ' + handle)
         return 4
 
-    authHeader = createBasicAuthHeader(fromNickname, password)
+    authHeader = create_basic_auth_header(fromNickname, password)
 
     headers = {
         'host': fromDomain,
@@ -5148,7 +5148,7 @@ def c2sBoxJson(base_dir: str, session,
     domain_full = get_full_domain(domain, port)
     actor = local_actor_url(http_prefix, nickname, domain_full)
 
-    authHeader = createBasicAuthHeader(nickname, password)
+    authHeader = create_basic_auth_header(nickname, password)
 
     profileStr = 'https://www.w3.org/ns/activitystreams'
     headers = {

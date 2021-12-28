@@ -30,7 +30,7 @@ from posts import sendSignedJson
 from posts import getPersonBox
 from session import postJson
 from webfinger import webfingerHandle
-from auth import createBasicAuthHeader
+from auth import create_basic_auth_header
 
 
 def isSelfAnnounce(post_json_object: {}) -> bool:
@@ -283,7 +283,7 @@ def sendAnnounceViaServer(base_dir: str, session,
             print('DEBUG: announce no actor was found for ' + handle)
         return 4
 
-    authHeader = createBasicAuthHeader(fromNickname, password)
+    authHeader = create_basic_auth_header(fromNickname, password)
 
     headers = {
         'host': fromDomain,
@@ -368,7 +368,7 @@ def sendUndoAnnounceViaServer(base_dir: str, session,
             print('DEBUG: undo announce no actor was found for ' + handle)
         return 4
 
-    authHeader = createBasicAuthHeader(nickname, password)
+    authHeader = create_basic_auth_header(nickname, password)
 
     headers = {
         'host': domain,

@@ -9,7 +9,7 @@ __module_group__ = "Profile Metadata"
 
 import os
 from webfinger import webfingerHandle
-from auth import createBasicAuthHeader
+from auth import create_basic_auth_header
 from posts import getPersonBox
 from session import postJson
 from utils import has_object_string
@@ -243,7 +243,7 @@ def sendSkillViaServer(base_dir: str, session, nickname: str, password: str,
             print('DEBUG: skill no actor was found for ' + handle)
         return 4
 
-    authHeader = createBasicAuthHeader(nickname, password)
+    authHeader = create_basic_auth_header(nickname, password)
 
     headers = {
         'host': domain,

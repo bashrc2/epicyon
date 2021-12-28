@@ -33,7 +33,7 @@ from utils import local_actor_url
 from acceptreject import createAccept
 from acceptreject import createReject
 from webfinger import webfingerHandle
-from auth import createBasicAuthHeader
+from auth import create_basic_auth_header
 from session import getJson
 from session import postJson
 
@@ -1009,7 +1009,7 @@ def send_follow_requestViaServer(base_dir: str, session,
             print('DEBUG: follow request no actor was found for ' + handle)
         return 4
 
-    authHeader = createBasicAuthHeader(fromNickname, password)
+    authHeader = create_basic_auth_header(fromNickname, password)
 
     headers = {
         'host': fromDomain,
@@ -1106,7 +1106,7 @@ def sendUnfollowRequestViaServer(base_dir: str, session,
             print('DEBUG: unfollow no actor was found for ' + handle)
         return 4
 
-    authHeader = createBasicAuthHeader(fromNickname, password)
+    authHeader = create_basic_auth_header(fromNickname, password)
 
     headers = {
         'host': fromDomain,
@@ -1143,7 +1143,7 @@ def getFollowingViaServer(base_dir: str, session,
     domain_full = get_full_domain(domain, port)
     followActor = local_actor_url(http_prefix, nickname, domain_full)
 
-    authHeader = createBasicAuthHeader(nickname, password)
+    authHeader = create_basic_auth_header(nickname, password)
 
     headers = {
         'host': domain,
@@ -1184,7 +1184,7 @@ def getFollowersViaServer(base_dir: str, session,
     domain_full = get_full_domain(domain, port)
     followActor = local_actor_url(http_prefix, nickname, domain_full)
 
-    authHeader = createBasicAuthHeader(nickname, password)
+    authHeader = create_basic_auth_header(nickname, password)
 
     headers = {
         'host': domain,
@@ -1225,7 +1225,7 @@ def getFollowRequestsViaServer(base_dir: str, session,
     domain_full = get_full_domain(domain, port)
 
     followActor = local_actor_url(http_prefix, nickname, domain_full)
-    authHeader = createBasicAuthHeader(nickname, password)
+    authHeader = create_basic_auth_header(nickname, password)
 
     headers = {
         'host': domain,
@@ -1268,7 +1268,7 @@ def approveFollowRequestViaServer(base_dir: str, session,
     domain_full = get_full_domain(domain, port)
     actor = local_actor_url(http_prefix, nickname, domain_full)
 
-    authHeader = createBasicAuthHeader(nickname, password)
+    authHeader = create_basic_auth_header(nickname, password)
 
     headers = {
         'host': domain,
@@ -1309,7 +1309,7 @@ def denyFollowRequestViaServer(base_dir: str, session,
     domain_full = get_full_domain(domain, port)
     actor = local_actor_url(http_prefix, nickname, domain_full)
 
-    authHeader = createBasicAuthHeader(nickname, password)
+    authHeader = create_basic_auth_header(nickname, password)
 
     headers = {
         'host': domain,

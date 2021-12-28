@@ -10,7 +10,7 @@ __module_group__ = "Timeline"
 import os
 from shutil import copyfile
 from session import create_session
-from auth import createPassword
+from auth import create_password
 from posts import isImageMedia
 from posts import outbox_message_create_wrap
 from posts import save_post_to_box
@@ -35,8 +35,8 @@ from blocking import outboxBlock
 from blocking import outboxUndoBlock
 from blocking import outboxMute
 from blocking import outboxUndoMute
-from media import replaceYouTube
-from media import replaceTwitter
+from media import replace_you_tube
+from media import replace_twitter
 from media import getMediaPath
 from media import createMediaDirs
 from inbox import inboxUpdateIndex
@@ -286,11 +286,11 @@ def postMessageToOutbox(session, translate: {},
                 print('DEBUG: domain is blocked: ' + message_json['actor'])
             return False
         # replace youtube, so that google gets less tracking data
-        replaceYouTube(message_json, yt_replace_domain, system_language)
+        replace_you_tube(message_json, yt_replace_domain, system_language)
         # replace twitter, so that twitter posts can be shown without
         # having a twitter account
-        replaceTwitter(message_json, twitter_replacement_domain,
-                       system_language)
+        replace_twitter(message_json, twitter_replacement_domain,
+                        system_language)
         # https://www.w3.org/TR/activitypub/#create-activity-outbox
         message_json['object']['attributedTo'] = message_json['actor']
         if message_json['object'].get('attachment'):
@@ -328,7 +328,7 @@ def postMessageToOutbox(session, translate: {},
                     # generate a path for the uploaded image
                     mPath = getMediaPath()
                     mediaPath = mPath + '/' + \
-                        createPassword(16).lower() + '.' + fileExtension
+                        create_password(16).lower() + '.' + fileExtension
                     createMediaDirs(base_dir, mPath)
                     mediaFilename = base_dir + '/' + mediaPath
                     # move the uploaded image to its new path

@@ -11,7 +11,7 @@ import os
 import time
 import urllib.parse
 from dateutil.parser import parse
-from auth import createPassword
+from auth import create_password
 from git import isGitPatch
 from datetime import datetime
 from cache import getPersonFromCache
@@ -1902,7 +1902,7 @@ def individualPostAsHtml(signing_priv_key_pem: str,
                                     contentStr, post_json_object,
                                     pageNumber)
     else:
-        postID = 'post' + str(createPassword(8))
+        postID = 'post' + str(create_password(8))
         contentStr = ''
         if post_json_object['object'].get('summary'):
             cwStr = str(post_json_object['object']['summary'])

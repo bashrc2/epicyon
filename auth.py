@@ -73,7 +73,7 @@ def _verifyPassword(storedPassword: str, providedPassword: str) -> bool:
     return constantTimeStringCheck(pwHash, storedPassword)
 
 
-def createBasicAuthHeader(nickname: str, password: str) -> str:
+def create_basic_auth_header(nickname: str, password: str) -> str:
     """This is only used by tests
     """
     authStr = \
@@ -83,8 +83,8 @@ def createBasicAuthHeader(nickname: str, password: str) -> str:
     return 'Basic ' + base64.b64encode(authStr.encode('utf-8')).decode('utf-8')
 
 
-def authorizeBasic(base_dir: str, path: str, authHeader: str,
-                   debug: bool) -> bool:
+def authorize_basic(base_dir: str, path: str, authHeader: str,
+                    debug: bool) -> bool:
     """HTTP basic auth
     """
     if ' ' not in authHeader:
@@ -152,7 +152,8 @@ def authorizeBasic(base_dir: str, path: str, authHeader: str,
     return False
 
 
-def storeBasicCredentials(base_dir: str, nickname: str, password: str) -> bool:
+def store_basic_credentials(base_dir: str,
+                            nickname: str, password: str) -> bool:
     """Stores login credentials to a file
     """
     if ':' in nickname or ':' in password:
@@ -230,11 +231,11 @@ def authorize(base_dir: str, path: str, authHeader: str, debug: bool) -> bool:
     """Authorize using http header
     """
     if authHeader.lower().startswith('basic '):
-        return authorizeBasic(base_dir, path, authHeader, debug)
+        return authorize_basic(base_dir, path, authHeader, debug)
     return False
 
 
-def createPassword(length: int):
+def create_password(length: int):
     validChars = 'abcdefghijklmnopqrstuvwxyz' + \
         'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
     return ''.join((secrets.choice(validChars) for i in range(length)))

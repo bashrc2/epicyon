@@ -22,7 +22,7 @@ from utils import remove_moderation_post_from_index
 from utils import local_actor_url
 from session import postJson
 from webfinger import webfingerHandle
-from auth import createBasicAuthHeader
+from auth import create_basic_auth_header
 from posts import getPersonBox
 
 
@@ -91,7 +91,7 @@ def sendDeleteViaServer(base_dir: str, session,
             print('DEBUG: delete no actor was found for ' + handle)
         return 4
 
-    authHeader = createBasicAuthHeader(fromNickname, password)
+    authHeader = create_basic_auth_header(fromNickname, password)
 
     headers = {
         'host': fromDomain,

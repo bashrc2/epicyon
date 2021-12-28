@@ -16,7 +16,7 @@ from utils import remove_domain_port
 from utils import get_port_from_domain
 from utils import get_user_paths
 from utils import acct_dir
-from threads import threadWithTrace
+from threads import thread_with_trace
 
 
 def manualDenyFollowRequest(session, base_dir: str,
@@ -85,17 +85,17 @@ def manualDenyFollowRequestThread(session, base_dir: str,
     user interface doesn't lag
     """
     thr = \
-        threadWithTrace(target=manualDenyFollowRequest,
-                        args=(session, base_dir,
-                              http_prefix,
-                              nickname, domain, port,
-                              denyHandle,
-                              federation_list,
-                              send_threads, postLog,
-                              cached_webfingers, person_cache,
-                              debug,
-                              project_version,
-                              signing_priv_key_pem), daemon=True)
+        thread_with_trace(target=manualDenyFollowRequest,
+                          args=(session, base_dir,
+                                http_prefix,
+                                nickname, domain, port,
+                                denyHandle,
+                                federation_list,
+                                send_threads, postLog,
+                                cached_webfingers, person_cache,
+                                debug,
+                                project_version,
+                                signing_priv_key_pem), daemon=True)
     thr.start()
     send_threads.append(thr)
 
@@ -293,16 +293,16 @@ def manualApproveFollowRequestThread(session, base_dir: str,
     the UI to lag
     """
     thr = \
-        threadWithTrace(target=manualApproveFollowRequest,
-                        args=(session, base_dir,
-                              http_prefix,
-                              nickname, domain, port,
-                              approveHandle,
-                              federation_list,
-                              send_threads, postLog,
-                              cached_webfingers, person_cache,
-                              debug,
-                              project_version,
-                              signing_priv_key_pem), daemon=True)
+        thread_with_trace(target=manualApproveFollowRequest,
+                          args=(session, base_dir,
+                                http_prefix,
+                                nickname, domain, port,
+                                approveHandle,
+                                federation_list,
+                                send_threads, postLog,
+                                cached_webfingers, person_cache,
+                                debug,
+                                project_version,
+                                signing_priv_key_pem), daemon=True)
     thr.start()
     send_threads.append(thr)

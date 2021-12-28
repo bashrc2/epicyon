@@ -10,7 +10,7 @@ __module_group__ = "Timeline"
 import os
 from pprint import pprint
 from webfinger import webfingerHandle
-from auth import createBasicAuthHeader
+from auth import create_basic_auth_header
 from utils import remove_domain_port
 from utils import has_users_path
 from utils import get_full_domain
@@ -443,7 +443,7 @@ def sendBookmarkViaServer(base_dir: str, session,
             print('DEBUG: bookmark no actor was found for ' + handle)
         return 4
 
-    authHeader = createBasicAuthHeader(nickname, password)
+    authHeader = create_basic_auth_header(nickname, password)
 
     headers = {
         'host': domain,
@@ -533,7 +533,7 @@ def sendUndoBookmarkViaServer(base_dir: str, session,
             print('DEBUG: unbookmark no actor was found for ' + handle)
         return 4
 
-    authHeader = createBasicAuthHeader(nickname, password)
+    authHeader = create_basic_auth_header(nickname, password)
 
     headers = {
         'host': domain,

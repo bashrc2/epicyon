@@ -105,8 +105,8 @@ from posts import sendSignedJson
 from posts import sendToFollowersThread
 from webapp_post import individualPostAsHtml
 from question import questionUpdateVotes
-from media import replaceYouTube
-from media import replaceTwitter
+from media import replace_you_tube
+from media import replace_twitter
 from git import isGitPatch
 from git import receiveGitPatch
 from followingCalendar import receivingCalendarEvents
@@ -3454,11 +3454,11 @@ def _inboxAfterInitial(recent_posts_cache: {}, max_recent_posts: int,
             return False
 
         # replace YouTube links, so they get less tracking data
-        replaceYouTube(post_json_object, yt_replace_domain, system_language)
+        replace_you_tube(post_json_object, yt_replace_domain, system_language)
         # replace twitter link domains, so that you can view twitter posts
         # without having an account
-        replaceTwitter(post_json_object, twitter_replacement_domain,
-                       system_language)
+        replace_twitter(post_json_object, twitter_replacement_domain,
+                        system_language)
 
         # list of indexes to be updated
         updateIndexList = ['inbox']

@@ -34,7 +34,7 @@ from utils import contains_invalid_chars
 from posts import sendSignedJson
 from session import postJson
 from webfinger import webfingerHandle
-from auth import createBasicAuthHeader
+from auth import create_basic_auth_header
 from posts import getPersonBox
 
 # the maximum number of reactions from individual actors which can be
@@ -242,7 +242,7 @@ def sendReactionViaServer(base_dir: str, session,
             print('DEBUG: reaction no actor was found for ' + handle)
         return 4
 
-    authHeader = createBasicAuthHeader(fromNickname, password)
+    authHeader = create_basic_auth_header(fromNickname, password)
 
     headers = {
         'host': fromDomain,
@@ -333,7 +333,7 @@ def sendUndoReactionViaServer(base_dir: str, session,
             print('DEBUG: unreaction no actor was found for ' + handle)
         return 4
 
-    authHeader = createBasicAuthHeader(fromNickname, password)
+    authHeader = create_basic_auth_header(fromNickname, password)
 
     headers = {
         'host': fromDomain,

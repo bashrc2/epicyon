@@ -19,7 +19,7 @@ from utils import local_actor_url
 from utils import replace_users_with_at
 from webfinger import webfingerHandle
 from posts import getPersonBox
-from auth import createBasicAuthHeader
+from auth import create_basic_auth_header
 from session import postJson
 
 
@@ -590,7 +590,7 @@ def pgpPublicKeyUpload(base_dir: str, session,
             print('DEBUG: No actor was found for ' + handle)
         return None
 
-    authHeader = createBasicAuthHeader(nickname, password)
+    authHeader = create_basic_auth_header(nickname, password)
 
     headers = {
         'host': domain,

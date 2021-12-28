@@ -63,8 +63,8 @@ from tests import testFollowBetweenServers
 from tests import testClientToServer
 from tests import testUpdateActor
 from tests import runAllTests
-from auth import storeBasicCredentials
-from auth import createPassword
+from auth import store_basic_credentials
+from auth import create_password
 from utils import remove_domain_port
 from utils import get_port_from_domain
 from utils import has_users_path
@@ -1103,7 +1103,7 @@ if args.resetregistrations:
 # unique ID for the instance
 instance_id = get_config_param(base_dir, 'instance_id')
 if not instance_id:
-    instance_id = createPassword(32)
+    instance_id = create_password(32)
     set_config_param(base_dir, 'instance_id', instance_id)
     print('Instance ID: ' + instance_id)
 
@@ -2418,7 +2418,7 @@ if args.changepassword:
     passwordFile = base_dir + '/accounts/passwords'
     if os.path.isfile(passwordFile):
         if nickname + ':' in open(passwordFile).read():
-            storeBasicCredentials(base_dir, nickname, newPassword)
+            store_basic_credentials(base_dir, nickname, newPassword)
             print('Password for ' + nickname + ' was changed')
         else:
             print(nickname + ' is not in the passwords file')
