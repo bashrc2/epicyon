@@ -185,15 +185,15 @@ def _getBlogReplies(base_dir: str, http_prefix: str, translate: {},
     return ''
 
 
-def _htmlBlogPostContent(debug: bool, session, authorized: bool,
-                         base_dir: str, http_prefix: str, translate: {},
-                         nickname: str, domain: str, domain_full: str,
-                         post_json_object: {},
-                         handle: str, restrictToDomain: bool,
-                         peertube_instances: [],
-                         system_language: str,
-                         person_cache: {},
-                         blogSeparator: str = '<hr>') -> str:
+def _html_blog_post_content(debug: bool, session, authorized: bool,
+                            base_dir: str, http_prefix: str, translate: {},
+                            nickname: str, domain: str, domain_full: str,
+                            post_json_object: {},
+                            handle: str, restrictToDomain: bool,
+                            peertube_instances: [],
+                            system_language: str,
+                            person_cache: {},
+                            blogSeparator: str = '<hr>') -> str:
     """Returns the content for a single blog post
     """
     linkedAuthor = False
@@ -346,12 +346,12 @@ def _htmlBlogPostContent(debug: bool, session, authorized: bool,
     return blogStr
 
 
-def _htmlBlogPostRSS2(authorized: bool,
-                      base_dir: str, http_prefix: str, translate: {},
-                      nickname: str, domain: str, domain_full: str,
-                      post_json_object: {},
-                      handle: str, restrictToDomain: bool,
-                      system_language: str) -> str:
+def _html_blog_post_rss2(authorized: bool,
+                         base_dir: str, http_prefix: str, translate: {},
+                         nickname: str, domain: str, domain_full: str,
+                         post_json_object: {},
+                         handle: str, restrictToDomain: bool,
+                         system_language: str) -> str:
     """Returns the RSS version 2 feed for a single blog post
     """
     rssStr = ''
@@ -381,12 +381,12 @@ def _htmlBlogPostRSS2(authorized: bool,
     return rssStr
 
 
-def _htmlBlogPostRSS3(authorized: bool,
-                      base_dir: str, http_prefix: str, translate: {},
-                      nickname: str, domain: str, domain_full: str,
-                      post_json_object: {},
-                      handle: str, restrictToDomain: bool,
-                      system_language: str) -> str:
+def _html_blog_post_rss3(authorized: bool,
+                         base_dir: str, http_prefix: str, translate: {},
+                         nickname: str, domain: str, domain_full: str,
+                         post_json_object: {},
+                         handle: str, restrictToDomain: bool,
+                         system_language: str) -> str:
     """Returns the RSS version 3 feed for a single blog post
     """
     rssStr = ''
@@ -442,13 +442,13 @@ def _getSnippetFromBlogContent(post_json_object: {},
     return content
 
 
-def htmlBlogPost(session, authorized: bool,
-                 base_dir: str, http_prefix: str, translate: {},
-                 nickname: str, domain: str, domain_full: str,
-                 post_json_object: {},
-                 peertube_instances: [],
-                 system_language: str, person_cache: {},
-                 debug: bool, content_license_url: str) -> str:
+def html_blog_post(session, authorized: bool,
+                   base_dir: str, http_prefix: str, translate: {},
+                   nickname: str, domain: str, domain_full: str,
+                   post_json_object: {},
+                   peertube_instances: [],
+                   system_language: str, person_cache: {},
+                   debug: bool, content_license_url: str) -> str:
     """Returns a html blog post
     """
     blogStr = ''
@@ -474,13 +474,13 @@ def htmlBlogPost(session, authorized: bool,
                                        content_license_url)
     _htmlBlogRemoveCwButton(blogStr, translate)
 
-    blogStr += _htmlBlogPostContent(debug, session, authorized, base_dir,
-                                    http_prefix, translate,
-                                    nickname, domain,
-                                    domain_full, post_json_object,
-                                    None, False,
-                                    peertube_instances, system_language,
-                                    person_cache)
+    blogStr += _html_blog_post_content(debug, session, authorized, base_dir,
+                                       http_prefix, translate,
+                                       nickname, domain,
+                                       domain_full, post_json_object,
+                                       None, False,
+                                       peertube_instances, system_language,
+                                       person_cache)
 
     # show rss links
     blogStr += '<p class="rssfeed">'
@@ -504,12 +504,12 @@ def htmlBlogPost(session, authorized: bool,
     return blogStr + htmlFooter()
 
 
-def htmlBlogPage(authorized: bool, session,
-                 base_dir: str, http_prefix: str, translate: {},
-                 nickname: str, domain: str, port: int,
-                 noOfItems: int, pageNumber: int,
-                 peertube_instances: [], system_language: str,
-                 person_cache: {}, debug: bool) -> str:
+def html_blog_page(authorized: bool, session,
+                   base_dir: str, http_prefix: str, translate: {},
+                   nickname: str, domain: str, port: int,
+                   noOfItems: int, pageNumber: int,
+                   peertube_instances: [], system_language: str,
+                   person_cache: {}, debug: bool) -> str:
     """Returns a html blog page containing posts
     """
     if ' ' in nickname or '@' in nickname or \
@@ -566,14 +566,15 @@ def htmlBlogPage(authorized: bool, session,
         if item['type'] != 'Create':
             continue
 
-        blogStr += _htmlBlogPostContent(debug, session, authorized, base_dir,
-                                        http_prefix, translate,
-                                        nickname, domain,
-                                        domain_full, item,
-                                        None, True,
-                                        peertube_instances,
-                                        system_language,
-                                        person_cache)
+        blogStr += _html_blog_post_content(debug, session, authorized,
+                                           base_dir,
+                                           http_prefix, translate,
+                                           nickname, domain,
+                                           domain_full, item,
+                                           None, True,
+                                           peertube_instances,
+                                           system_language,
+                                           person_cache)
 
     if len(timelineJson['orderedItems']) >= noOfItems:
         blogStr += navigateStr
@@ -597,11 +598,11 @@ def htmlBlogPage(authorized: bool, session,
     return blogStr + htmlFooter()
 
 
-def htmlBlogPageRSS2(authorized: bool, session,
-                     base_dir: str, http_prefix: str, translate: {},
-                     nickname: str, domain: str, port: int,
-                     noOfItems: int, pageNumber: int,
-                     includeHeader: bool, system_language: str) -> str:
+def html_blog_page_rss2(authorized: bool, session,
+                        base_dir: str, http_prefix: str, translate: {},
+                        nickname: str, domain: str, port: int,
+                        noOfItems: int, pageNumber: int,
+                        includeHeader: bool, system_language: str) -> str:
     """Returns an RSS version 2 feed containing posts
     """
     if ' ' in nickname or '@' in nickname or \
@@ -640,11 +641,11 @@ def htmlBlogPageRSS2(authorized: bool, session,
                 continue
 
             blogRSS2 += \
-                _htmlBlogPostRSS2(authorized, base_dir,
-                                  http_prefix, translate,
-                                  nickname, domain,
-                                  domain_full, item,
-                                  None, True, system_language)
+                _html_blog_post_rss2(authorized, base_dir,
+                                     http_prefix, translate,
+                                     nickname, domain,
+                                     domain_full, item,
+                                     None, True, system_language)
 
     if includeHeader:
         return blogRSS2 + rss2Footer()
@@ -652,11 +653,11 @@ def htmlBlogPageRSS2(authorized: bool, session,
         return blogRSS2
 
 
-def htmlBlogPageRSS3(authorized: bool, session,
-                     base_dir: str, http_prefix: str, translate: {},
-                     nickname: str, domain: str, port: int,
-                     noOfItems: int, pageNumber: int,
-                     system_language: str) -> str:
+def html_blog_page_rss3(authorized: bool, session,
+                        base_dir: str, http_prefix: str, translate: {},
+                        nickname: str, domain: str, port: int,
+                        noOfItems: int, pageNumber: int,
+                        system_language: str) -> str:
     """Returns an RSS version 3 feed containing posts
     """
     if ' ' in nickname or '@' in nickname or \
@@ -686,12 +687,12 @@ def htmlBlogPageRSS3(authorized: bool, session,
                 continue
 
             blogRSS3 += \
-                _htmlBlogPostRSS3(authorized, base_dir,
-                                  http_prefix, translate,
-                                  nickname, domain,
-                                  domain_full, item,
-                                  None, True,
-                                  system_language)
+                _html_blog_post_rss3(authorized, base_dir,
+                                     http_prefix, translate,
+                                     nickname, domain,
+                                     domain_full, item,
+                                     None, True,
+                                     system_language)
 
     return blogRSS3
 
@@ -727,12 +728,12 @@ def _singleBlogAccountNickname(base_dir: str) -> str:
     return None
 
 
-def htmlBlogView(authorized: bool,
-                 session, base_dir: str, http_prefix: str,
-                 translate: {}, domain: str, port: int,
-                 noOfItems: int,
-                 peertube_instances: [], system_language: str,
-                 person_cache: {}, debug: bool) -> str:
+def html_blog_view(authorized: bool,
+                   session, base_dir: str, http_prefix: str,
+                   translate: {}, domain: str, port: int,
+                   noOfItems: int,
+                   peertube_instances: [], system_language: str,
+                   person_cache: {}, debug: bool) -> str:
     """Show the blog main page
     """
     blogStr = ''
@@ -747,11 +748,11 @@ def htmlBlogView(authorized: bool,
     if _noOfBlogAccounts(base_dir) <= 1:
         nickname = _singleBlogAccountNickname(base_dir)
         if nickname:
-            return htmlBlogPage(authorized, session,
-                                base_dir, http_prefix, translate,
-                                nickname, domain, port,
-                                noOfItems, 1, peertube_instances,
-                                system_language, person_cache, debug)
+            return html_blog_page(authorized, session,
+                                  base_dir, http_prefix, translate,
+                                  nickname, domain, port,
+                                  noOfItems, 1, peertube_instances,
+                                  system_language, person_cache, debug)
 
     domain_full = get_full_domain(domain, port)
 
@@ -772,12 +773,12 @@ def htmlBlogView(authorized: bool,
     return blogStr + htmlFooter()
 
 
-def htmlEditBlog(media_instance: bool, translate: {},
-                 base_dir: str, http_prefix: str,
-                 path: str,
-                 pageNumber: int,
-                 nickname: str, domain: str,
-                 postUrl: str, system_language: str) -> str:
+def html_edit_blog(media_instance: bool, translate: {},
+                   base_dir: str, http_prefix: str,
+                   path: str,
+                   pageNumber: int,
+                   nickname: str, domain: str,
+                   postUrl: str, system_language: str) -> str:
     """Edit a blog post after it was created
     """
     post_filename = locate_post(base_dir, nickname, domain, postUrl)
@@ -917,9 +918,9 @@ def htmlEditBlog(media_instance: bool, translate: {},
     return editBlogForm
 
 
-def pathContainsBlogLink(base_dir: str,
-                         http_prefix: str, domain: str,
-                         domain_full: str, path: str) -> (str, str):
+def path_contains_blog_link(base_dir: str,
+                            http_prefix: str, domain: str,
+                            domain_full: str, path: str) -> (str, str):
     """If the path contains a blog entry then return its filename
     """
     if '/users/' not in path:
@@ -947,7 +948,7 @@ def pathContainsBlogLink(base_dir: str,
     return locate_post(base_dir, nickname, domain, messageId), nickname
 
 
-def getBlogAddress(actor_json: {}) -> str:
+def get_blog_address(actor_json: {}) -> str:
     """Returns blog address for the given actor
     """
     return get_actor_property_url(actor_json, 'Blog')

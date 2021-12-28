@@ -70,7 +70,7 @@ from webapp_utils import editTextField
 from webapp_utils import editTextArea
 from webapp_utils import beginEditSection
 from webapp_utils import endEditSection
-from blog import getBlogAddress
+from blog import get_blog_address
 from webapp_post import individualPostAsHtml
 from webapp_timeline import htmlIndividualShare
 from blocking import get_cw_list_variable
@@ -634,7 +634,7 @@ def htmlProfile(signing_priv_key_pem: str,
     donateSection = ''
     donateUrl = get_donation_url(profile_json)
     websiteUrl = get_website(profile_json, translate)
-    blogAddress = getBlogAddress(profile_json)
+    blogAddress = get_blog_address(profile_json)
     EnigmaPubKey = get_enigma_pub_key(profile_json)
     PGPpubKey = get_pgp_pub_key(profile_json)
     PGPfingerprint = get_pgp_fingerprint(profile_json)
@@ -2135,7 +2135,7 @@ def htmlEditProfile(css_cache: {}, translate: {}, base_dir: str, path: str,
         xmppAddress = get_xmpp_address(actor_json)
         matrixAddress = get_matrix_address(actor_json)
         ssbAddress = get_ssb_address(actor_json)
-        blogAddress = getBlogAddress(actor_json)
+        blogAddress = get_blog_address(actor_json)
         toxAddress = get_tox_address(actor_json)
         briarAddress = get_briar_address(actor_json)
         jamiAddress = get_jami_address(actor_json)

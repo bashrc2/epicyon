@@ -21,7 +21,7 @@ from person import remove_account
 from person import activate_account
 from person import deactivate_account
 from skills import setSkillLevel
-from roles import setRole
+from roles import set_role
 from webfinger import webfingerHandle
 from bookmarks import sendBookmarkViaServer
 from bookmarks import sendUndoBookmarkViaServer
@@ -2828,7 +2828,7 @@ if args.testdata:
                  True, False, 'likewhateveryouwantscoob')
     setSkillLevel(base_dir, nickname, domain, 'testing', 60)
     setSkillLevel(base_dir, nickname, domain, 'typing', 50)
-    setRole(base_dir, nickname, domain, 'admin')
+    set_role(base_dir, nickname, domain, 'admin')
     setAvailability(base_dir, nickname, domain, 'busy')
 
     addShare(base_dir,

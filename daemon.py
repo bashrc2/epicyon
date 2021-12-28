@@ -142,20 +142,20 @@ from blocking import remove_global_block
 from blocking import is_blocked_hashtag
 from blocking import is_blocked_domain
 from blocking import get_domain_blocklist
-from roles import getActorRolesList
-from roles import setRole
-from roles import clearModeratorStatus
-from roles import clearEditorStatus
-from roles import clearCounselorStatus
-from roles import clearArtistStatus
-from blog import pathContainsBlogLink
-from blog import htmlBlogPageRSS2
-from blog import htmlBlogPageRSS3
-from blog import htmlBlogView
-from blog import htmlBlogPage
-from blog import htmlBlogPost
-from blog import htmlEditBlog
-from blog import getBlogAddress
+from roles import get_actor_roles_list
+from roles import set_role
+from roles import clear_moderator_status
+from roles import clear_editor_status
+from roles import clear_counselor_status
+from roles import clear_artist_status
+from blog import path_contains_blog_link
+from blog import html_blog_page_rss2
+from blog import html_blog_page_rss3
+from blog import html_blog_view
+from blog import html_blog_page
+from blog import html_blog_post
+from blog import html_edit_blog
+from blog import get_blog_address
 from webapp_themeDesigner import htmlThemeDesigner
 from webapp_minimalbutton import setMinimal
 from webapp_minimalbutton import isMinimal
@@ -5312,7 +5312,7 @@ class PubServer(BaseHTTPRequestHandler):
                             actorChanged = True
 
                     # change blog address
-                    currentBlogAddress = getBlogAddress(actor_json)
+                    currentBlogAddress = get_blog_address(actor_json)
                     if fields.get('blogAddress'):
                         if fields['blogAddress'] != currentBlogAddress:
                             setBlogAddress(actor_json,
@@ -5639,7 +5639,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 moderatorsFile = \
                                     base_dir + \
                                     '/accounts/moderators.txt'
-                                clearModeratorStatus(base_dir)
+                                clear_moderator_status(base_dir)
                                 if ',' in fields['moderators']:
                                     # if the list was given as comma separated
                                     mods = fields['moderators'].split(',')
@@ -5665,9 +5665,9 @@ class PubServer(BaseHTTPRequestHandler):
                                             '/accounts/' + modNick + \
                                             '@' + domain
                                         if os.path.isdir(modDir):
-                                            setRole(base_dir,
-                                                    modNick, domain,
-                                                    'moderator')
+                                            set_role(base_dir,
+                                                     modNick, domain,
+                                                     'moderator')
                                 else:
                                     # nicknames on separate lines
                                     mods = fields['moderators'].split('\n')
@@ -5696,9 +5696,9 @@ class PubServer(BaseHTTPRequestHandler):
                                             modNick + '@' + \
                                             domain
                                         if os.path.isdir(modDir):
-                                            setRole(base_dir,
-                                                    modNick, domain,
-                                                    'moderator')
+                                            set_role(base_dir,
+                                                     modNick, domain,
+                                                     'moderator')
 
                         # change site editors list
                         if fields.get('editors'):
@@ -5707,7 +5707,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 editorsFile = \
                                     base_dir + \
                                     '/accounts/editors.txt'
-                                clearEditorStatus(base_dir)
+                                clear_editor_status(base_dir)
                                 if ',' in fields['editors']:
                                     # if the list was given as comma separated
                                     eds = fields['editors'].split(',')
@@ -5730,9 +5730,9 @@ class PubServer(BaseHTTPRequestHandler):
                                             '/accounts/' + edNick + \
                                             '@' + domain
                                         if os.path.isdir(edDir):
-                                            setRole(base_dir,
-                                                    edNick, domain,
-                                                    'editor')
+                                            set_role(base_dir,
+                                                     edNick, domain,
+                                                     'editor')
                                 else:
                                     # nicknames on separate lines
                                     eds = fields['editors'].split('\n')
@@ -5759,9 +5759,9 @@ class PubServer(BaseHTTPRequestHandler):
                                             edNick + '@' + \
                                             domain
                                         if os.path.isdir(edDir):
-                                            setRole(base_dir,
-                                                    edNick, domain,
-                                                    'editor')
+                                            set_role(base_dir,
+                                                     edNick, domain,
+                                                     'editor')
 
                         # change site counselors list
                         if fields.get('counselors'):
@@ -5770,7 +5770,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 counselorsFile = \
                                     base_dir + \
                                     '/accounts/counselors.txt'
-                                clearCounselorStatus(base_dir)
+                                clear_counselor_status(base_dir)
                                 if ',' in fields['counselors']:
                                     # if the list was given as comma separated
                                     eds = fields['counselors'].split(',')
@@ -5795,9 +5795,9 @@ class PubServer(BaseHTTPRequestHandler):
                                             '/accounts/' + edNick + \
                                             '@' + domain
                                         if os.path.isdir(edDir):
-                                            setRole(base_dir,
-                                                    edNick, domain,
-                                                    'counselor')
+                                            set_role(base_dir,
+                                                     edNick, domain,
+                                                     'counselor')
                                 else:
                                     # nicknames on separate lines
                                     eds = fields['counselors'].split('\n')
@@ -5825,9 +5825,9 @@ class PubServer(BaseHTTPRequestHandler):
                                             edNick + '@' + \
                                             domain
                                         if os.path.isdir(edDir):
-                                            setRole(base_dir,
-                                                    edNick, domain,
-                                                    'counselor')
+                                            set_role(base_dir,
+                                                     edNick, domain,
+                                                     'counselor')
 
                         # change site artists list
                         if fields.get('artists'):
@@ -5836,7 +5836,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 artistsFile = \
                                     base_dir + \
                                     '/accounts/artists.txt'
-                                clearArtistStatus(base_dir)
+                                clear_artist_status(base_dir)
                                 if ',' in fields['artists']:
                                     # if the list was given as comma separated
                                     eds = fields['artists'].split(',')
@@ -5859,9 +5859,9 @@ class PubServer(BaseHTTPRequestHandler):
                                             '/accounts/' + edNick + \
                                             '@' + domain
                                         if os.path.isdir(edDir):
-                                            setRole(base_dir,
-                                                    edNick, domain,
-                                                    'artist')
+                                            set_role(base_dir,
+                                                     edNick, domain,
+                                                     'artist')
                                 else:
                                     # nicknames on separate lines
                                     eds = fields['artists'].split('\n')
@@ -5887,9 +5887,9 @@ class PubServer(BaseHTTPRequestHandler):
                                             edNick + '@' + \
                                             domain
                                         if os.path.isdir(edDir):
-                                            setRole(base_dir,
-                                                    edNick, domain,
-                                                    'artist')
+                                            set_role(base_dir,
+                                                     edNick, domain,
+                                                     'artist')
 
                     # remove scheduled posts
                     if fields.get('removeScheduledPosts'):
@@ -6858,17 +6858,17 @@ class PubServer(BaseHTTPRequestHandler):
                     return
 
                 msg = \
-                    htmlBlogPageRSS2(authorized,
-                                     self.server.session,
-                                     base_dir,
-                                     http_prefix,
-                                     self.server.translate,
-                                     nickname,
-                                     domain,
-                                     port,
-                                     max_posts_in_rss_feed, 1,
-                                     True,
-                                     self.server.system_language)
+                    html_blog_page_rss2(authorized,
+                                        self.server.session,
+                                        base_dir,
+                                        http_prefix,
+                                        self.server.translate,
+                                        nickname,
+                                        domain,
+                                        port,
+                                        max_posts_in_rss_feed, 1,
+                                        True,
+                                        self.server.system_language)
                 if msg is not None:
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
@@ -6908,17 +6908,17 @@ class PubServer(BaseHTTPRequestHandler):
                 nickname = acct.split('@')[0]
                 domain = acct.split('@')[1]
                 msg += \
-                    htmlBlogPageRSS2(authorized,
-                                     self.server.session,
-                                     base_dir,
-                                     http_prefix,
-                                     self.server.translate,
-                                     nickname,
-                                     domain,
-                                     port,
-                                     max_posts_in_rss_feed, 1,
-                                     False,
-                                     self.server.system_language)
+                    html_blog_page_rss2(authorized,
+                                        self.server.session,
+                                        base_dir,
+                                        http_prefix,
+                                        self.server.translate,
+                                        nickname,
+                                        domain,
+                                        port,
+                                        max_posts_in_rss_feed, 1,
+                                        False,
+                                        self.server.system_language)
             break
         if msg:
             msg = rss2Header(http_prefix,
@@ -7026,13 +7026,13 @@ class PubServer(BaseHTTPRequestHandler):
                     self._404()
                     return
                 msg = \
-                    htmlBlogPageRSS3(authorized,
-                                     self.server.session,
-                                     base_dir, http_prefix,
-                                     self.server.translate,
-                                     nickname, domain, port,
-                                     max_posts_in_rss_feed, 1,
-                                     system_language)
+                    html_blog_page_rss3(authorized,
+                                        self.server.session,
+                                        base_dir, http_prefix,
+                                        self.server.translate,
+                                        nickname, domain, port,
+                                        max_posts_in_rss_feed, 1,
+                                        system_language)
                 if msg is not None:
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
@@ -7117,7 +7117,7 @@ class PubServer(BaseHTTPRequestHandler):
                 xmppAddress = get_xmpp_address(actor_json)
                 matrixAddress = get_matrix_address(actor_json)
                 ssbAddress = get_ssb_address(actor_json)
-                blogAddress = getBlogAddress(actor_json)
+                blogAddress = get_blog_address(actor_json)
                 toxAddress = get_tox_address(actor_json)
                 briarAddress = get_briar_address(actor_json)
                 jamiAddress = get_jami_address(actor_json)
@@ -9689,7 +9689,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if self.server.keyShortcuts.get(nickname):
                         accessKeys = self.server.keyShortcuts[nickname]
 
-                    rolesList = getActorRolesList(actor_json)
+                    rolesList = get_actor_roles_list(actor_json)
                     city = \
                         getSpoofedCity(self.server.city,
                                        base_dir, nickname, domain)
@@ -9736,7 +9736,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.debug)
             else:
                 if self._secure_mode():
-                    rolesList = getActorRolesList(actor_json)
+                    rolesList = get_actor_roles_list(actor_json)
                     msg = json.dumps(rolesList,
                                      ensure_ascii=False)
                     msg = msg.encode('utf-8')
@@ -12393,18 +12393,18 @@ class PubServer(BaseHTTPRequestHandler):
             self._404()
             self.server.GETbusy = False
             return True
-        msg = htmlBlogPage(authorized,
-                           self.server.session,
-                           base_dir,
-                           http_prefix,
-                           translate,
-                           nickname,
-                           domain, port,
-                           max_posts_in_blogs_feed, pageNumber,
-                           self.server.peertube_instances,
-                           self.server.system_language,
-                           self.server.person_cache,
-                           self.server.debug)
+        msg = html_blog_page(authorized,
+                             self.server.session,
+                             base_dir,
+                             http_prefix,
+                             translate,
+                             nickname,
+                             domain, port,
+                             max_posts_in_blogs_feed, pageNumber,
+                             self.server.peertube_instances,
+                             self.server.system_language,
+                             self.server.person_cache,
+                             self.server.debug)
         if msg is not None:
             msg = msg.encode('utf-8')
             msglen = len(msg)
@@ -14065,18 +14065,18 @@ class PubServer(BaseHTTPRequestHandler):
                 if not self._establishSession("show the main blog page"):
                     self._404()
                     return
-                msg = htmlBlogView(authorized,
-                                   self.server.session,
-                                   self.server.base_dir,
-                                   self.server.http_prefix,
-                                   self.server.translate,
-                                   self.server.domain,
-                                   self.server.port,
-                                   max_posts_in_blogs_feed,
-                                   self.server.peertube_instances,
-                                   self.server.system_language,
-                                   self.server.person_cache,
-                                   self.server.debug)
+                msg = html_blog_view(authorized,
+                                     self.server.session,
+                                     self.server.base_dir,
+                                     self.server.http_prefix,
+                                     self.server.translate,
+                                     self.server.domain,
+                                     self.server.port,
+                                     max_posts_in_blogs_feed,
+                                     self.server.peertube_instances,
+                                     self.server.system_language,
+                                     self.server.person_cache,
+                                     self.server.debug)
                 if msg is not None:
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
@@ -14161,27 +14161,27 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.debug)
             # show blog post
             blogFilename, nickname = \
-                pathContainsBlogLink(self.server.base_dir,
-                                     self.server.http_prefix,
-                                     self.server.domain,
-                                     self.server.domain_full,
-                                     self.path)
+                path_contains_blog_link(self.server.base_dir,
+                                        self.server.http_prefix,
+                                        self.server.domain,
+                                        self.server.domain_full,
+                                        self.path)
             if blogFilename and nickname:
                 post_json_object = load_json(blogFilename)
                 if is_blog_post(post_json_object):
-                    msg = htmlBlogPost(self.server.session,
-                                       authorized,
-                                       self.server.base_dir,
-                                       self.server.http_prefix,
-                                       self.server.translate,
-                                       nickname, self.server.domain,
-                                       self.server.domain_full,
-                                       post_json_object,
-                                       self.server.peertube_instances,
-                                       self.server.system_language,
-                                       self.server.person_cache,
-                                       self.server.debug,
-                                       self.server.content_license_url)
+                    msg = html_blog_post(self.server.session,
+                                         authorized,
+                                         self.server.base_dir,
+                                         self.server.http_prefix,
+                                         self.server.translate,
+                                         nickname, self.server.domain,
+                                         self.server.domain_full,
+                                         post_json_object,
+                                         self.server.peertube_instances,
+                                         self.server.system_language,
+                                         self.server.person_cache,
+                                         self.server.debug,
+                                         self.server.content_license_url)
                     if msg is not None:
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
@@ -15700,14 +15700,15 @@ class PubServer(BaseHTTPRequestHandler):
                         local_actor_url(self.server.http_prefix, nickname,
                                         self.server.domain_full) + \
                         '/statuses/' + messageId
-                    msg = htmlEditBlog(self.server.media_instance,
-                                       self.server.translate,
-                                       self.server.base_dir,
-                                       self.server.http_prefix,
-                                       self.path,
-                                       replyPageNumber,
-                                       nickname, self.server.domain,
-                                       postUrl, self.server.system_language)
+                    msg = html_edit_blog(self.server.media_instance,
+                                         self.server.translate,
+                                         self.server.base_dir,
+                                         self.server.http_prefix,
+                                         self.path,
+                                         replyPageNumber,
+                                         nickname, self.server.domain,
+                                         postUrl,
+                                         self.server.system_language)
                     if msg:
                         msg = msg.encode('utf-8')
                         msglen = len(msg)

@@ -101,8 +101,8 @@ from skills import setSkillLevel
 from skills import actor_skill_value
 from skills import setSkillsFromDict
 from skills import actor_has_skill
-from roles import setRolesFromList
-from roles import setRole
+from roles import set_rolesFromList
+from roles import set_role
 from roles import actorHasRole
 from auth import constantTimeStringCheck
 from auth import create_basic_auth_header
@@ -704,7 +704,7 @@ def createServerAlice(path: str, domain: str, port: int,
     deleteAllPosts(path, nickname, domain, 'inbox')
     deleteAllPosts(path, nickname, domain, 'outbox')
     assert setSkillLevel(path, nickname, domain, 'hacking', 90)
-    assert setRole(path, nickname, domain, 'guru')
+    assert set_role(path, nickname, domain, 'guru')
     if hasFollows:
         follow_person(path, nickname, domain, 'bob', bobAddress,
                       federation_list, False, False)
@@ -5496,7 +5496,7 @@ def _testRoles() -> None:
         ]
     }
     testRolesList = ["admin", "moderator"]
-    setRolesFromList(actor_json, testRolesList)
+    set_rolesFromList(actor_json, testRolesList)
     assert actorHasRole(actor_json, "admin")
     assert actorHasRole(actor_json, "moderator")
     assert not actorHasRole(actor_json, "editor")

@@ -34,9 +34,9 @@ from posts import createOutbox
 from posts import createModeration
 from auth import store_basic_credentials
 from auth import removePassword
-from roles import setRole
-from roles import setRolesFromList
-from roles import getActorRolesList
+from roles import set_role
+from roles import set_rolesFromList
+from roles import get_actor_roles_list
 from media import process_meta_data
 from utils import remove_html
 from utils import contains_invalid_chars
@@ -629,9 +629,9 @@ def createPerson(base_dir: str, nickname: str, domain: str, port: int,
         if nickname != 'news':
             # print(nickname+' becomes the instance admin and a moderator')
             set_config_param(base_dir, 'admin', nickname)
-            setRole(base_dir, nickname, domain, 'admin')
-            setRole(base_dir, nickname, domain, 'moderator')
-            setRole(base_dir, nickname, domain, 'editor')
+            set_role(base_dir, nickname, domain, 'admin')
+            set_role(base_dir, nickname, domain, 'moderator')
+            set_role(base_dir, nickname, domain, 'editor')
 
     if not os.path.isdir(base_dir + '/accounts'):
         os.mkdir(base_dir + '/accounts')
@@ -820,12 +820,12 @@ def person_upgrade_actor(base_dir: str, personJson: {},
 
     # if no roles are defined then ensure that the admin
     # roles are configured
-    rolesList = getActorRolesList(personJson)
+    rolesList = get_actor_roles_list(personJson)
     if not rolesList:
         admin_name = get_config_param(base_dir, 'admin')
         if personJson['id'].endswith('/users/' + admin_name):
             rolesList = ["admin", "moderator", "editor"]
-            setRolesFromList(personJson, rolesList)
+            set_rolesFromList(personJson, rolesList)
             updateActor = True
 
     # remove the old roles format
