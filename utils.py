@@ -2106,9 +2106,9 @@ def is_news_post(post_json_object: {}) -> bool:
     return post_json_object.get('news')
 
 
-def _searchVirtualBoxPosts(base_dir: str, nickname: str, domain: str,
-                           search_str: str, max_results: int,
-                           box_name: str) -> []:
+def _search_virtual_box_posts(base_dir: str, nickname: str, domain: str,
+                              search_str: str, max_results: int,
+                              box_name: str) -> []:
     """Searches through a virtual box, which is typically an index on the inbox
     """
     index_filename = \
@@ -2158,9 +2158,9 @@ def _searchVirtualBoxPosts(base_dir: str, nickname: str, domain: str,
     return res
 
 
-def searchBoxPosts(base_dir: str, nickname: str, domain: str,
-                   search_str: str, max_results: int,
-                   box_name='outbox') -> []:
+def search_box_posts(base_dir: str, nickname: str, domain: str,
+                     search_str: str, max_results: int,
+                     box_name='outbox') -> []:
     """Search your posts and return a list of the filenames
     containing matching strings
     """
@@ -2168,8 +2168,8 @@ def searchBoxPosts(base_dir: str, nickname: str, domain: str,
     # is this a virtual box, such as direct messages?
     if not os.path.isdir(path):
         if os.path.isfile(path + '.index'):
-            return _searchVirtualBoxPosts(base_dir, nickname, domain,
-                                          search_str, max_results, box_name)
+            return _search_virtual_box_posts(base_dir, nickname, domain,
+                                             search_str, max_results, box_name)
         return []
     search_str = search_str.lower().strip()
 
@@ -2397,8 +2397,8 @@ def undo_announce_collection_entry(recent_posts_cache: {},
             if announce_item['actor'] == actor:
                 if debug:
                     print('DEBUG: Announce was removed for ' + actor)
-                anIt = announce_item
-                post_json_object['object']['shares']['items'].remove(anIt)
+                an_it = announce_item
+                post_json_object['object']['shares']['items'].remove(an_it)
                 item_found = True
                 break
     if not item_found:
@@ -2561,10 +2561,10 @@ def camel_case_split(text: str) -> str:
                           '(?<=[A-Z])(?=[A-Z][a-z])|$)', text)
     if not matches:
         return text
-    resultStr = ''
+    result_str = ''
     for word in matches:
-        resultStr += word.group(0) + ' '
-    return resultStr.strip()
+        result_str += word.group(0) + ' '
+    return result_str.strip()
 
 
 def reject_post_id(base_dir: str, nickname: str, domain: str,

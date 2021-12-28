@@ -22,7 +22,7 @@ from utils import get_nickname_from_actor
 from utils import locate_post
 from utils import isPublicPost
 from utils import first_paragraph_from_string
-from utils import searchBoxPosts
+from utils import search_box_posts
 from utils import get_alt_path
 from utils import acct_dir
 from utils import local_actor_url
@@ -616,8 +616,8 @@ def htmlHistorySearch(cssCache: {}, translate: {}, base_dir: str,
     historysearch = historysearch.lower().strip('\n').strip('\r')
 
     boxFilenames = \
-        searchBoxPosts(base_dir, nickname, domain,
-                       historysearch, postsPerPage, boxName)
+        search_box_posts(base_dir, nickname, domain,
+                         historysearch, postsPerPage, boxName)
 
     cssFilename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
