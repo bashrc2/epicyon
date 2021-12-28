@@ -27,7 +27,7 @@ from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from blocking import isBlockedDomain
 from blocking import isBlocked
-from session import createSession
+from session import create_session
 
 
 def htmlModeration(css_cache: {}, defaultTimeline: str,
@@ -122,7 +122,7 @@ def htmlAccountInfo(css_cache: {}, translate: {},
     if domain.endswith('.i2p'):
         proxy_type = None
 
-    session = createSession(proxy_type)
+    session = create_session(proxy_type)
 
     wordFrequency = {}
     originDomain = None

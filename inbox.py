@@ -65,7 +65,7 @@ from categories import getHashtagCategories
 from categories import setHashtagCategory
 from httpsig import getDigestAlgorithmFromHeaders
 from httpsig import verifyPostHeaders
-from session import createSession
+from session import create_session
 from follow import followerApprovalActive
 from follow import isFollowingActor
 from follow import getFollowersOfActor
@@ -4106,7 +4106,7 @@ def runInboxQueue(recent_posts_cache: {}, max_recent_posts: int,
     currSessionTime = int(time.time())
     session_last_update = currSessionTime
     print('Starting new session when starting inbox queue')
-    session = createSession(proxy_type)
+    session = create_session(proxy_type)
     inboxHandle = 'inbox@' + domain
     if debug:
         print('DEBUG: Inbox queue running')
@@ -4164,7 +4164,7 @@ def runInboxQueue(recent_posts_cache: {}, max_recent_posts: int,
         # recreate the session periodically
         if not session or curr_time - session_last_update > 21600:
             print('Regenerating inbox queue session at 6hr interval')
-            session = createSession(proxy_type)
+            session = create_session(proxy_type)
             if not session:
                 continue
             session_last_update = curr_time

@@ -7,7 +7,7 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Moderation"
 
-from session import createSession
+from session import create_session
 from webfinger import webfingerHandle
 from posts import getPersonBox
 from posts import getPostDomains
@@ -27,7 +27,7 @@ def instancesGraph(base_dir: str, handles: str,
     dotGraphStr = 'digraph instances {\n'
     if ',' not in handles:
         return dotGraphStr + '}\n'
-    session = createSession(proxy_type)
+    session = create_session(proxy_type)
     if not session:
         return dotGraphStr + '}\n'
 

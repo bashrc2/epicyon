@@ -41,7 +41,7 @@ from posts import sendPostViaServer
 from posts import getPublicPostsOfPerson
 from posts import getUserUrl
 from posts import checkDomains
-from session import createSession
+from session import create_session
 from session import getJson
 from session import downloadHtml
 from newswire import getRSS
@@ -934,7 +934,7 @@ if args.postsraw:
     sys.exit()
 
 if args.json:
-    session = createSession(None)
+    session = create_session(None)
     profileStr = 'https://www.w3.org/ns/activitystreams'
     asHeader = {
         'Accept': 'application/ld+json; profile="' + profileStr + '"'
@@ -958,7 +958,7 @@ if args.json:
     sys.exit()
 
 if args.htmlpost:
-    session = createSession(None)
+    session = create_session(None)
     profileStr = 'https://www.w3.org/ns/activitystreams'
     asHeader = {
         'Accept': 'text/html; profile="' + profileStr + '"'
@@ -1044,7 +1044,7 @@ if args.domain:
     set_config_param(base_dir, 'domain', domain)
 
 if args.rss:
-    session = createSession(None)
+    session = create_session(None)
     testRSS = getRSS(base_dir, domain, session, args.rss,
                      False, False, 1000, 1000, 1000, 1000, debug)
     pprint(testRSS)
@@ -1182,7 +1182,7 @@ if args.approve:
     if '@' not in args.approve:
         print('syntax: --approve nick@domain')
         sys.exit()
-    session = createSession(proxy_type)
+    session = create_session(proxy_type)
     send_threads = []
     postLog = []
     cached_webfingers = {}
@@ -1210,7 +1210,7 @@ if args.deny:
     if '@' not in args.deny:
         print('syntax: --deny nick@domain')
         sys.exit()
-    session = createSession(proxy_type)
+    session = create_session(proxy_type)
     send_threads = []
     postLog = []
     cached_webfingers = {}
@@ -1261,7 +1261,7 @@ if args.message:
             sys.exit()
     args.password = args.password.replace('\n', '')
 
-    session = createSession(proxy_type)
+    session = create_session(proxy_type)
     if not args.sendto:
         print('Specify an account to sent to: --sendto [nickname@domain]')
         sys.exit()
@@ -1343,7 +1343,7 @@ if args.announce:
             sys.exit()
     args.password = args.password.replace('\n', '')
 
-    session = createSession(proxy_type)
+    session = create_session(proxy_type)
     person_cache = {}
     cached_webfingers = {}
     if not domain:
@@ -1396,7 +1396,7 @@ if args.box:
     if args.secure_mode:
         signing_priv_key_pem = getInstanceActorKey(base_dir, domain)
 
-    session = createSession(proxy_type)
+    session = create_session(proxy_type)
     boxJson = c2sBoxJson(base_dir, session,
                          args.nickname, args.password,
                          domain, port, http_prefix,
@@ -1448,7 +1448,7 @@ if args.itemName:
               'with the --duration option')
         sys.exit()
 
-    session = createSession(proxy_type)
+    session = create_session(proxy_type)
     person_cache = {}
     cached_webfingers = {}
     if not domain:
@@ -1491,7 +1491,7 @@ if args.undoItemName:
         print('Specify a nickname with the --nickname option')
         sys.exit()
 
-    session = createSession(proxy_type)
+    session = create_session(proxy_type)
     person_cache = {}
     cached_webfingers = {}
     if not domain:
@@ -1553,7 +1553,7 @@ if args.wantedItemName:
               'with the --duration option')
         sys.exit()
 
-    session = createSession(proxy_type)
+    session = create_session(proxy_type)
     person_cache = {}
     cached_webfingers = {}
     if not domain:
@@ -1596,7 +1596,7 @@ if args.undoWantedItemName:
         print('Specify a nickname with the --nickname option')
         sys.exit()
 
-    session = createSession(proxy_type)
+    session = create_session(proxy_type)
     person_cache = {}
     cached_webfingers = {}
     if not domain:
@@ -1630,7 +1630,7 @@ if args.like:
             sys.exit()
     args.password = args.password.replace('\n', '')
 
-    session = createSession(proxy_type)
+    session = create_session(proxy_type)
     person_cache = {}
     cached_webfingers = {}
     if not domain:
@@ -1669,7 +1669,7 @@ if args.react:
             sys.exit()
     args.password = args.password.replace('\n', '')
 
-    session = createSession(proxy_type)
+    session = create_session(proxy_type)
     person_cache = {}
     cached_webfingers = {}
     if not domain:
@@ -1702,7 +1702,7 @@ if args.undolike:
             sys.exit()
     args.password = args.password.replace('\n', '')
 
-    session = createSession(proxy_type)
+    session = create_session(proxy_type)
     person_cache = {}
     cached_webfingers = {}
     if not domain:
@@ -1742,7 +1742,7 @@ if args.undoreact:
             sys.exit()
     args.password = args.password.replace('\n', '')
 
-    session = createSession(proxy_type)
+    session = create_session(proxy_type)
     person_cache = {}
     cached_webfingers = {}
     if not domain:
@@ -1776,7 +1776,7 @@ if args.bookmark:
             sys.exit()
     args.password = args.password.replace('\n', '')
 
-    session = createSession(proxy_type)
+    session = create_session(proxy_type)
     person_cache = {}
     cached_webfingers = {}
     if not domain:
@@ -1810,7 +1810,7 @@ if args.unbookmark:
             sys.exit()
     args.password = args.password.replace('\n', '')
 
-    session = createSession(proxy_type)
+    session = create_session(proxy_type)
     person_cache = {}
     cached_webfingers = {}
     if not domain:
@@ -1843,7 +1843,7 @@ if args.delete:
             sys.exit()
     args.password = args.password.replace('\n', '')
 
-    session = createSession(proxy_type)
+    session = create_session(proxy_type)
     person_cache = {}
     cached_webfingers = {}
     if not domain:
@@ -1885,7 +1885,7 @@ if args.follow:
         sys.exit()
     followDomain, followPort = get_domain_from_actor(args.follow)
 
-    session = createSession(proxy_type)
+    session = create_session(proxy_type)
     person_cache = {}
     cached_webfingers = {}
     followHttpPrefix = http_prefix
@@ -1931,7 +1931,7 @@ if args.unfollow:
         sys.exit()
     followDomain, followPort = get_domain_from_actor(args.unfollow)
 
-    session = createSession(proxy_type)
+    session = create_session(proxy_type)
     person_cache = {}
     cached_webfingers = {}
     followHttpPrefix = http_prefix
@@ -1968,7 +1968,7 @@ if args.followingList:
             sys.exit()
     args.password = args.password.replace('\n', '')
 
-    session = createSession(proxy_type)
+    session = create_session(proxy_type)
     person_cache = {}
     cached_webfingers = {}
     followHttpPrefix = http_prefix
@@ -2001,7 +2001,7 @@ if args.followersList:
             sys.exit()
     args.password = args.password.replace('\n', '')
 
-    session = createSession(proxy_type)
+    session = create_session(proxy_type)
     person_cache = {}
     cached_webfingers = {}
     followHttpPrefix = http_prefix
@@ -2035,7 +2035,7 @@ if args.followRequestsList:
             sys.exit()
     args.password = args.password.replace('\n', '')
 
-    session = createSession(proxy_type)
+    session = create_session(proxy_type)
     person_cache = {}
     cached_webfingers = {}
     followHttpPrefix = http_prefix
@@ -2090,7 +2090,7 @@ if args.migrations:
     else:
         http_prefix = 'https'
         port = 443
-    session = createSession(proxy_type)
+    session = create_session(proxy_type)
     if not domain:
         domain = get_config_param(base_dir, 'domain')
     signing_priv_key_pem = None
@@ -2187,7 +2187,7 @@ if args.followers:
     else:
         http_prefix = 'https'
         port = 443
-    session = createSession(proxy_type)
+    session = create_session(proxy_type)
     if nickname == 'inbox':
         nickname = domain
 
@@ -2496,7 +2496,7 @@ if args.skill:
         print('Skill level should be a percentage in the range 0-100')
         sys.exit()
 
-    session = createSession(proxy_type)
+    session = create_session(proxy_type)
     person_cache = {}
     cached_webfingers = {}
     if not domain:
@@ -2531,7 +2531,7 @@ if args.availability:
             sys.exit()
     args.password = args.password.replace('\n', '')
 
-    session = createSession(proxy_type)
+    session = create_session(proxy_type)
     person_cache = {}
     cached_webfingers = {}
     if not domain:
@@ -2645,7 +2645,7 @@ if args.block:
             print(args.block + ' does not look like an actor url')
             sys.exit()
 
-    session = createSession(proxy_type)
+    session = create_session(proxy_type)
     person_cache = {}
     cached_webfingers = {}
     if not domain:
@@ -2677,7 +2677,7 @@ if args.mute:
             sys.exit()
     args.password = args.password.replace('\n', '')
 
-    session = createSession(proxy_type)
+    session = create_session(proxy_type)
     person_cache = {}
     cached_webfingers = {}
     if not domain:
@@ -2709,7 +2709,7 @@ if args.unmute:
             sys.exit()
     args.password = args.password.replace('\n', '')
 
-    session = createSession(proxy_type)
+    session = create_session(proxy_type)
     person_cache = {}
     cached_webfingers = {}
     if not domain:
@@ -2753,7 +2753,7 @@ if args.unblock:
             print(args.unblock + ' does not look like an actor url')
             sys.exit()
 
-    session = createSession(proxy_type)
+    session = create_session(proxy_type)
     person_cache = {}
     cached_webfingers = {}
     if not domain:

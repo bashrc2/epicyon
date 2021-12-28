@@ -35,7 +35,7 @@ from utils import clear_from_post_caches
 from utils import dangerous_markup
 from utils import local_actor_url
 from inbox import storeHashTags
-from session import createSession
+from session import create_session
 
 
 def _updateFeedsOutboxIndex(base_dir: str, domain: str, post_id: str) -> None:
@@ -785,7 +785,7 @@ def runNewswireDaemon(base_dir: str, httpd,
         # has the session been created yet?
         if not httpd.session:
             print('Newswire daemon waiting for session')
-            httpd.session = createSession(httpd.proxy_type)
+            httpd.session = create_session(httpd.proxy_type)
             if not httpd.session:
                 print('Newswire daemon has no session')
                 time.sleep(60)

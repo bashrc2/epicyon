@@ -21,7 +21,7 @@ import pyqrcode
 from hashlib import sha256
 from hashlib import md5
 from shutil import copyfile
-from session import createSession
+from session import create_session
 from webfinger import webfingerMeta
 from webfinger import webfingerNodeInfo
 from webfinger import webfingerLookup
@@ -701,7 +701,7 @@ class PubServer(BaseHTTPRequestHandler):
         if self.server.session:
             return True
         print('DEBUG: creating new session during ' + callingFunction)
-        self.server.session = createSession(self.server.proxy_type)
+        self.server.session = create_session(self.server.proxy_type)
         if self.server.session:
             return True
         print('ERROR: GET failed to create session during ' +
@@ -17477,7 +17477,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         if not self._establishSession("POST"):
             fitnessPerformance(POSTstartTime, self.server.fitness,
-                               '_POST', 'createSession',
+                               '_POST', 'create_session',
                                self.server.debug)
             self._404()
             return

@@ -60,7 +60,7 @@ from utils import get_user_paths
 from utils import get_group_paths
 from utils import local_actor_url
 from utils import dangerous_svg
-from session import createSession
+from session import create_session
 from session import getJson
 from webfinger import webfingerHandle
 from pprint import pprint
@@ -1518,7 +1518,7 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
     if existingSession:
         session = existingSession
     else:
-        session = createSession(proxy_type)
+        session = create_session(proxy_type)
     if nickname == 'inbox':
         nickname = domain
 

@@ -20,21 +20,22 @@ from http.client import HTTPConnection
 base_directory = None
 
 
-def createSession(proxy_type: str):
+def create_session(proxy_type: str):
     session = None
     try:
         session = requests.session()
     except requests.exceptions.RequestException as ex:
-        print('WARN: requests error during createSession ' + str(ex))
+        print('WARN: requests error during create_session ' + str(ex))
         return None
     except SocketError as ex:
         if ex.errno == errno.ECONNRESET:
-            print('WARN: connection was reset during createSession ' + str(ex))
+            print('WARN: connection was reset during create_session ' +
+                  str(ex))
         else:
-            print('WARN: socket error during createSession ' + str(ex))
+            print('WARN: socket error during create_session ' + str(ex))
         return None
     except ValueError as ex:
-        print('WARN: error during createSession ' + str(ex))
+        print('WARN: error during create_session ' + str(ex))
         return None
     if not session:
         return None

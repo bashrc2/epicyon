@@ -34,7 +34,7 @@ from cache import storePersonInCache
 from cache import getPersonFromCache
 from threads import threadWithTrace
 from daemon import runDaemon
-from session import createSession
+from session import create_session
 from session import getJson
 from posts import getActorFromInReplyTo
 from posts import regenerateIndexForBox
@@ -1179,7 +1179,7 @@ def testPostMessageBetweenServers(base_dir: str) -> None:
     print('\n\n*******************************************************')
     print('Alice sends to Bob')
     os.chdir(aliceDir)
-    sessionAlice = createSession(proxy_type)
+    sessionAlice = create_session(proxy_type)
     inReplyTo = None
     inReplyToAtomUri = None
     subject = None
@@ -1313,7 +1313,7 @@ def testPostMessageBetweenServers(base_dir: str) -> None:
     follow_person(aliceDir, 'alice', aliceDomain, 'bob',
                   bobDomainStr, federation_list, False, False)
 
-    sessionBob = createSession(proxy_type)
+    sessionBob = create_session(proxy_type)
     bobPostLog = []
     bobPersonCache = {}
     bobCachedWebfingers = {}
@@ -1511,7 +1511,7 @@ def testFollowBetweenServers(base_dir: str) -> None:
     print('*********************************************************')
     print('Alice sends a follow request to Bob')
     os.chdir(aliceDir)
-    sessionAlice = createSession(proxy_type)
+    sessionAlice = create_session(proxy_type)
     inReplyTo = None
     inReplyToAtomUri = None
     subject = None
@@ -1699,7 +1699,7 @@ def testSharedItemsFederation(base_dir: str) -> None:
     time.sleep(1)
 
     signing_priv_key_pem = None
-    sessionClient = createSession(proxy_type)
+    sessionClient = create_session(proxy_type)
 
     # Get Bob's instance actor
     print('\n\n*********************************************************')
@@ -1729,7 +1729,7 @@ def testSharedItemsFederation(base_dir: str) -> None:
     print('*********************************************************')
     print('Alice sends a follow request to Bob')
     os.chdir(aliceDir)
-    sessionAlice = createSession(proxy_type)
+    sessionAlice = create_session(proxy_type)
     inReplyTo = None
     inReplyToAtomUri = None
     subject = None
@@ -1809,7 +1809,7 @@ def testSharedItemsFederation(base_dir: str) -> None:
     sharedItemPrice = "1.30"
     sharedItemCurrency = "EUR"
     signing_priv_key_pem = None
-    sessionBob = createSession(proxy_type)
+    sessionBob = create_session(proxy_type)
     shareJson = \
         sendShareViaServer(bobDir, sessionBob,
                            'bob', bobPassword,
@@ -2130,7 +2130,7 @@ def testGroupFollow(base_dir: str) -> None:
     print('*********************************************************')
     print('Alice has some outbox posts')
     aliceOutbox = 'http://' + aliceAddress + '/users/alice/outbox'
-    session = createSession(None)
+    session = create_session(None)
     profileStr = 'https://www.w3.org/ns/activitystreams'
     asHeader = {
         'Accept': 'application/ld+json; profile="' + profileStr + '"'
@@ -2165,7 +2165,7 @@ def testGroupFollow(base_dir: str) -> None:
     print('*********************************************************')
     print('Alice sends a follow request to the test group')
     os.chdir(aliceDir)
-    sessionAlice = createSession(proxy_type)
+    sessionAlice = create_session(proxy_type)
     inReplyTo = None
     inReplyToAtomUri = None
     subject = None
@@ -2242,7 +2242,7 @@ def testGroupFollow(base_dir: str) -> None:
     print('*********************************************************')
     print('Bob sends a follow request to the test group')
     os.chdir(bobDir)
-    sessionBob = createSession(proxy_type)
+    sessionBob = create_session(proxy_type)
     inReplyTo = None
     inReplyToAtomUri = None
     subject = None
@@ -2856,7 +2856,7 @@ def testClientToServer(base_dir: str):
     print('\n\n*******************************************************')
     print('EVENT: Alice sends to Bob via c2s')
 
-    sessionAlice = createSession(proxy_type)
+    sessionAlice = create_session(proxy_type)
     followersOnly = False
     attachedImageFilename = base_dir + '/img/logo.png'
     mediaType = getAttachmentMediaType(attachedImageFilename)
@@ -3036,7 +3036,7 @@ def testClientToServer(base_dir: str):
     assert 'alice@' + aliceDomain + ':' + str(alicePort) in \
         open(bobDir + '/accounts/bob@' + bobDomain + '/following.txt').read()
 
-    sessionBob = createSession(proxy_type)
+    sessionBob = create_session(proxy_type)
     password = 'bobpass'
     outboxPath = bobDir + '/accounts/bob@' + bobDomain + '/outbox'
     inboxPath = aliceDir + '/accounts/alice@' + aliceDomain + '/inbox'
@@ -5112,7 +5112,7 @@ def testUpdateActor(base_dir: str):
     print('\n\n*******************************************************')
     print('Alice updates her PGP key')
 
-    sessionAlice = createSession(proxy_type)
+    sessionAlice = create_session(proxy_type)
     cached_webfingers = {}
     person_cache = {}
     password = 'alicepass'

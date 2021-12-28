@@ -9,7 +9,7 @@ __module_group__ = "Timeline"
 
 import os
 from shutil import copyfile
-from session import createSession
+from session import create_session
 from auth import createPassword
 from posts import isImageMedia
 from posts import outboxMessageCreateWrap
@@ -485,7 +485,7 @@ def postMessageToOutbox(session, translate: {},
                   'for the post associated with the Announce activity')
     if not server.session:
         print('DEBUG: creating new session for c2s')
-        server.session = createSession(proxy_type)
+        server.session = create_session(proxy_type)
         if not server.session:
             print('ERROR: Failed to create session for postMessageToOutbox')
             return False

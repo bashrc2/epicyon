@@ -23,7 +23,7 @@ from cache import storePersonInCache
 from cache import getPersonFromCache
 from cache import expirePersonCache
 from pprint import pprint
-from session import createSession
+from session import create_session
 from session import getJson
 from session import postJson
 from session import postJsonString
@@ -4077,7 +4077,7 @@ def getPublicPostsOfPerson(base_dir: str, nickname: str, domain: str,
             print('Signing key missing')
 
     print('Starting new session for getting public posts')
-    session = createSession(proxy_type)
+    session = create_session(proxy_type)
     if not session:
         if debug:
             print('Session was not created')
@@ -4140,7 +4140,7 @@ def getPublicPostDomains(session, base_dir: str, nickname: str, domain: str,
     """ Returns a list of domains referenced within public posts
     """
     if not session:
-        session = createSession(proxy_type)
+        session = create_session(proxy_type)
     if not session:
         return domainList
     person_cache = {}
@@ -4236,7 +4236,7 @@ def getPublicPostInfo(session, base_dir: str, nickname: str, domain: str,
     """ Returns a dict of domains referenced within public posts
     """
     if not session:
-        session = createSession(proxy_type)
+        session = create_session(proxy_type)
     if not session:
         return {}
     person_cache = {}

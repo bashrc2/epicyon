@@ -21,7 +21,7 @@ from auth import constantTimeStringCheck
 from posts import getPersonBox
 from session import postJson
 from session import postImage
-from session import createSession
+from session import create_session
 from utils import has_object_stringType
 from utils import date_string_to_seconds
 from utils import date_seconds_to_string
@@ -1741,7 +1741,7 @@ def runFederatedSharesDaemon(base_dir: str, httpd, http_prefix: str,
             time.sleep(fileCheckIntervalSec)
             continue
 
-        session = createSession(proxy_type)
+        session = create_session(proxy_type)
         for sharesFileType in get_shares_files_list():
             _updateFederatedSharesCache(session,
                                         shared_items_federated_domains,
