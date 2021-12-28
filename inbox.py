@@ -53,7 +53,7 @@ from utils import get_domain_from_actor
 from utils import get_nickname_from_actor
 from utils import locate_post
 from utils import deletePost
-from utils import removeModerationPostFromIndex
+from utils import remove_moderation_post_from_index
 from utils import load_json
 from utils import save_json
 from utils import undo_likes_collection_entry
@@ -1777,7 +1777,7 @@ def _receiveDelete(session, handle: str, isGroup: bool, base_dir: str,
         print('DEBUG: unknown recipient of like - ' + handle)
     # if this post in the outbox of the person?
     messageId = remove_id_ending(message_json['object'])
-    removeModerationPostFromIndex(base_dir, messageId, debug)
+    remove_moderation_post_from_index(base_dir, messageId, debug)
     handleNickname = handle.split('@')[0]
     handleDomain = handle.split('@')[1]
     post_filename = locate_post(base_dir, handleNickname,

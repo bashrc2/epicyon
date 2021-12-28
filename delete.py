@@ -18,7 +18,7 @@ from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
 from utils import locate_post
 from utils import deletePost
-from utils import removeModerationPostFromIndex
+from utils import remove_moderation_post_from_index
 from utils import local_actor_url
 from session import postJson
 from webfinger import webfingerHandle
@@ -160,7 +160,7 @@ def outboxDelete(base_dir: str, http_prefix: str,
             print("DEBUG: you can't delete a post which " +
                   "wasn't created by you (domain does not match)")
         return
-    removeModerationPostFromIndex(base_dir, messageId, debug)
+    remove_moderation_post_from_index(base_dir, messageId, debug)
     post_filename = locate_post(base_dir, deleteNickname, deleteDomain,
                                 messageId)
     if not post_filename:

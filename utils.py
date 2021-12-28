@@ -1488,8 +1488,8 @@ def _removeAttachment(base_dir: str, http_prefix: str, domain: str,
     post_json['attachment'] = []
 
 
-def removeModerationPostFromIndex(base_dir: str, post_url: str,
-                                  debug: bool) -> None:
+def remove_moderation_post_from_index(base_dir: str, post_url: str,
+                                      debug: bool) -> None:
     """Removes a url from the moderation index
     """
     moderation_index_file = base_dir + '/accounts/moderation.txt'
@@ -1557,8 +1557,8 @@ def _deletePostRemoveReplies(base_dir: str, nickname: str, domain: str,
               str(replies_filename))
 
 
-def _isBookmarked(base_dir: str, nickname: str, domain: str,
-                  post_filename: str) -> bool:
+def _is_bookmarked(base_dir: str, nickname: str, domain: str,
+                   post_filename: str) -> bool:
     """Returns True if the given post is bookmarked
     """
     bookmarks_index_filename = \
@@ -1737,7 +1737,7 @@ def deletePost(base_dir: str, http_prefix: str,
         return
 
     # don't allow deletion of bookmarked posts
-    if _isBookmarked(base_dir, nickname, domain, post_filename):
+    if _is_bookmarked(base_dir, nickname, domain, post_filename):
         return
 
     # don't remove replies to blog posts
@@ -1777,7 +1777,7 @@ def deletePost(base_dir: str, http_prefix: str,
             if post_json_object['object'].get('moderationStatus'):
                 if post_json_object.get('id'):
                     post_id = remove_id_ending(post_json_object['id'])
-                    removeModerationPostFromIndex(base_dir, post_id, debug)
+                    remove_moderation_post_from_index(base_dir, post_id, debug)
 
     # remove any hashtags index entries
     if has_object:
@@ -1900,8 +1900,8 @@ def validNickname(domain: str, nickname: str) -> bool:
     if not isValidLanguage(nickname):
         return False
     forbidden_chars = ('.', ' ', '/', '?', ':', ';', '@', '#', '!')
-    for c in forbidden_chars:
-        if c in nickname:
+    for char in forbidden_chars:
+        if char in nickname:
             return False
     # this should only apply for the shared inbox
     if nickname == domain:
