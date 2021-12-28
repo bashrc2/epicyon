@@ -12,7 +12,7 @@ import time
 from shutil import copyfile
 from utils import get_config_param
 from utils import no_of_accounts
-from utils import getNicknameValidationPattern
+from utils import get_nickname_validation_pattern
 from webapp_utils import setCustomBackground
 from webapp_utils import htmlHeaderWithWebsiteMarkup
 from webapp_utils import htmlFooter
@@ -155,7 +155,7 @@ def htmlLogin(css_cache: {}, translate: {},
                                     http_prefix, domain,
                                     system_language)
 
-    nicknamePattern = getNicknameValidationPattern()
+    nicknamePattern = get_nickname_validation_pattern()
     instanceTitle = get_config_param(base_dir, 'instanceTitle')
     loginForm += \
         '<br>\n' + \

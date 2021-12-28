@@ -287,7 +287,7 @@ from utils import set_config_param
 from utils import get_config_param
 from utils import remove_id_ending
 from utils import undo_likes_collection_entry
-from utils import deletePost
+from utils import delete_post
 from utils import is_blog_post
 from utils import remove_avatar_from_cache
 from utils import locate_post
@@ -2012,12 +2012,12 @@ class PubServer(BaseHTTPRequestHandler):
                             if canRemovePost(base_dir,
                                              nickname, domain, port,
                                              moderationText):
-                                deletePost(base_dir,
-                                           http_prefix,
-                                           nickname, domain,
-                                           post_filename,
-                                           debug,
-                                           self.server.recent_posts_cache)
+                                delete_post(base_dir,
+                                            http_prefix,
+                                            nickname, domain,
+                                            post_filename,
+                                            debug,
+                                            self.server.recent_posts_cache)
                         if nickname != 'news':
                             # if this is a local blog post then also remove it
                             # from the news actor
@@ -2028,12 +2028,12 @@ class PubServer(BaseHTTPRequestHandler):
                                 if canRemovePost(base_dir,
                                                  'news', domain, port,
                                                  moderationText):
-                                    deletePost(base_dir,
-                                               http_prefix,
-                                               'news', domain,
-                                               post_filename,
-                                               debug,
-                                               self.server.recent_posts_cache)
+                                    delete_post(base_dir,
+                                                http_prefix,
+                                                'news', domain,
+                                                post_filename,
+                                                debug,
+                                                self.server.recent_posts_cache)
 
         self._redirect_headers(actorStr + '/moderation',
                                cookie, calling_domain)
@@ -7880,9 +7880,9 @@ class PubServer(BaseHTTPRequestHandler):
                     post_filename = \
                         locate_post(base_dir, nickname, domain, announceUrl)
             if post_filename:
-                deletePost(base_dir, http_prefix,
-                           nickname, domain, post_filename,
-                           debug, recent_posts_cache)
+                delete_post(base_dir, http_prefix,
+                            nickname, domain, post_filename,
+                            debug, recent_posts_cache)
 
         self._postToOutbox(newUndoAnnounce,
                            self.server.project_version, self.postToNickname)

@@ -1530,9 +1530,9 @@ def _is_reply_to_blog_post(base_dir: str, nickname: str, domain: str,
     return False
 
 
-def _deletePostRemoveReplies(base_dir: str, nickname: str, domain: str,
-                             http_prefix: str, post_filename: str,
-                             recent_posts_cache: {}, debug: bool) -> None:
+def _delete_post_remove_replies(base_dir: str, nickname: str, domain: str,
+                                http_prefix: str, post_filename: str,
+                                recent_posts_cache: {}, debug: bool) -> None:
     """Removes replies when deleting a post
     """
     replies_filename = post_filename.replace('.json', '.replies')
@@ -1546,15 +1546,15 @@ def _deletePostRemoveReplies(base_dir: str, nickname: str, domain: str,
             if not reply_file:
                 continue
             if os.path.isfile(reply_file):
-                deletePost(base_dir, http_prefix,
-                           nickname, domain, reply_file, debug,
-                           recent_posts_cache)
+                delete_post(base_dir, http_prefix,
+                            nickname, domain, reply_file, debug,
+                            recent_posts_cache)
     # remove the replies file
     try:
         os.remove(replies_filename)
     except OSError:
-        print('EX: _deletePostRemoveReplies unable to delete replies file ' +
-              str(replies_filename))
+        print('EX: _delete_post_remove_replies ' +
+              'unable to delete replies file ' + str(replies_filename))
 
 
 def _is_bookmarked(base_dir: str, nickname: str, domain: str,
@@ -1603,8 +1603,8 @@ def remove_post_from_cache(post_json_object: {},
             del recent_posts_cache['html'][post_id]
 
 
-def _deleteCachedHtml(base_dir: str, nickname: str, domain: str,
-                      post_json_object: {}):
+def _delete_cached_html(base_dir: str, nickname: str, domain: str,
+                        post_json_object: {}):
     """Removes cached html file for the given post
     """
     cached_post_filename = \
@@ -1614,12 +1614,12 @@ def _deleteCachedHtml(base_dir: str, nickname: str, domain: str,
             try:
                 os.remove(cached_post_filename)
             except OSError:
-                print('EX: _deleteCachedHtml ' +
+                print('EX: _delete_cached_html ' +
                       'unable to delete cached post file ' +
                       str(cached_post_filename))
 
 
-def _deleteHashtagsOnPost(base_dir: str, post_json_object: {}) -> None:
+def _delete_hashtags_on_post(base_dir: str, post_json_object: {}) -> None:
     """Removes hashtags when a post is deleted
     """
     remove_hashtag_index = False
@@ -1665,8 +1665,8 @@ def _deleteHashtagsOnPost(base_dir: str, post_json_object: {}) -> None:
             try:
                 os.remove(tag_index_filename)
             except OSError:
-                print('EX: _deleteHashtagsOnPost unable to delete tag index ' +
-                      str(tag_index_filename))
+                print('EX: _delete_hashtags_on_post ' +
+                      'unable to delete tag index ' + str(tag_index_filename))
         else:
             # write the new hashtag index without the given post in it
             with open(tag_index_filename, 'w+') as index_file:
@@ -1716,23 +1716,23 @@ def _deleteConversationPost(base_dir: str, nickname: str, domain: str,
                   str(conversation_filename))
 
 
-def deletePost(base_dir: str, http_prefix: str,
-               nickname: str, domain: str, post_filename: str,
-               debug: bool, recent_posts_cache: {}) -> None:
+def delete_post(base_dir: str, http_prefix: str,
+                nickname: str, domain: str, post_filename: str,
+                debug: bool, recent_posts_cache: {}) -> None:
     """Recursively deletes a post and its replies and attachments
     """
     post_json_object = load_json(post_filename, 1)
     if not post_json_object:
         # remove any replies
-        _deletePostRemoveReplies(base_dir, nickname, domain,
-                                 http_prefix, post_filename,
-                                 recent_posts_cache, debug)
+        _delete_post_remove_replies(base_dir, nickname, domain,
+                                    http_prefix, post_filename,
+                                    recent_posts_cache, debug)
         # finally, remove the post itself
         try:
             os.remove(post_filename)
         except OSError:
             if debug:
-                print('EX: deletePost unable to delete post ' +
+                print('EX: delete_post unable to delete post ' +
                       str(post_filename))
         return
 
@@ -1761,11 +1761,11 @@ def deletePost(base_dir: str, http_prefix: str,
             try:
                 os.remove(ext_filename)
             except OSError:
-                print('EX: deletePost unable to remove ext ' +
+                print('EX: delete_post unable to remove ext ' +
                       str(ext_filename))
 
     # remove cached html version of the post
-    _deleteCachedHtml(base_dir, nickname, domain, post_json_object)
+    _delete_cached_html(base_dir, nickname, domain, post_json_object)
 
     has_object = False
     if post_json_object.get('object'):
@@ -1781,21 +1781,22 @@ def deletePost(base_dir: str, http_prefix: str,
 
     # remove any hashtags index entries
     if has_object:
-        _deleteHashtagsOnPost(base_dir, post_json_object)
+        _delete_hashtags_on_post(base_dir, post_json_object)
 
     # remove any replies
-    _deletePostRemoveReplies(base_dir, nickname, domain,
-                             http_prefix, post_filename,
-                             recent_posts_cache, debug)
+    _delete_post_remove_replies(base_dir, nickname, domain,
+                                http_prefix, post_filename,
+                                recent_posts_cache, debug)
     # finally, remove the post itself
     try:
         os.remove(post_filename)
     except OSError:
         if debug:
-            print('EX: deletePost unable to delete post ' + str(post_filename))
+            print('EX: delete_post unable to delete post ' +
+                  str(post_filename))
 
 
-def isValidLanguage(text: str) -> bool:
+def is_valid_language(text: str) -> bool:
     """Returns true if the given text contains a valid
     natural language string
     """
@@ -1844,7 +1845,7 @@ def isValidLanguage(text: str) -> bool:
     return False
 
 
-def _getReservedWords() -> str:
+def _get_reserved_words() -> str:
     return ('inbox', 'dm', 'outbox', 'following',
             'public', 'followers', 'category',
             'channel', 'calendar', 'video-channels',
@@ -1868,10 +1869,10 @@ def _getReservedWords() -> str:
             'ontologies', 'data')
 
 
-def getNicknameValidationPattern() -> str:
+def get_nickname_validation_pattern() -> str:
     """Returns a html text input validation pattern for nickname
     """
-    reserved_names = _getReservedWords()
+    reserved_names = _get_reserved_words()
     pattern = ''
     for word in reserved_names:
         if pattern:
@@ -1881,10 +1882,10 @@ def getNicknameValidationPattern() -> str:
     return pattern + '.*${1,30}'
 
 
-def _isReservedName(nickname: str) -> bool:
+def _is_reserved_name(nickname: str) -> bool:
     """Is the given nickname reserved for some special function?
     """
-    reserved_names = _getReservedWords()
+    reserved_names = _get_reserved_words()
     if nickname in reserved_names:
         return True
     return False
@@ -1897,7 +1898,7 @@ def valid_nickname(domain: str, nickname: str) -> bool:
         return False
     if len(nickname) > 30:
         return False
-    if not isValidLanguage(nickname):
+    if not is_valid_language(nickname):
         return False
     forbidden_chars = ('.', ' ', '/', '?', ':', ';', '@', '#', '!')
     for char in forbidden_chars:
@@ -1906,7 +1907,7 @@ def valid_nickname(domain: str, nickname: str) -> bool:
     # this should only apply for the shared inbox
     if nickname == domain:
         return False
-    if _isReservedName(nickname):
+    if _is_reserved_name(nickname):
         return False
     return True
 

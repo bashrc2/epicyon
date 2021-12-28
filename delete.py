@@ -17,7 +17,7 @@ from utils import remove_id_ending
 from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
 from utils import locate_post
-from utils import deletePost
+from utils import delete_post
 from utils import remove_moderation_post_from_index
 from utils import local_actor_url
 from session import postJson
@@ -168,8 +168,8 @@ def outboxDelete(base_dir: str, http_prefix: str,
             print('DEBUG: c2s delete post not found in inbox or outbox')
             print(messageId)
         return True
-    deletePost(base_dir, http_prefix, deleteNickname, deleteDomain,
-               post_filename, debug, recent_posts_cache)
+    delete_post(base_dir, http_prefix, deleteNickname, deleteDomain,
+                post_filename, debug, recent_posts_cache)
     if debug:
         print('DEBUG: post deleted via c2s - ' + post_filename)
 

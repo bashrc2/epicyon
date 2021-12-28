@@ -51,49 +51,49 @@ def htmlCalendarDeleteConfirm(css_cache: {}, translate: {}, base_dir: str,
     if not post_json_object:
         return None
 
-    deletePostStr = None
+    delete_postStr = None
     cssFilename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
         cssFilename = base_dir + '/epicyon.css'
 
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
-    deletePostStr = \
+    delete_postStr = \
         htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
-    deletePostStr += \
+    delete_postStr += \
         '<center><h1>' + postTime + ' ' + str(year) + '/' + \
         str(monthNumber) + \
         '/' + str(dayNumber) + '</h1></center>'
-    deletePostStr += '<center>'
-    deletePostStr += '  <p class="followText">' + \
+    delete_postStr += '<center>'
+    delete_postStr += '  <p class="followText">' + \
         translate['Delete this event'] + '</p>'
 
     postActor = get_alt_path(actor, domain_full, calling_domain)
-    deletePostStr += \
+    delete_postStr += \
         '  <form method="POST" action="' + postActor + '/rmpost">\n'
-    deletePostStr += '    <input type="hidden" name="year" value="' + \
+    delete_postStr += '    <input type="hidden" name="year" value="' + \
         str(year) + '">\n'
-    deletePostStr += '    <input type="hidden" name="month" value="' + \
+    delete_postStr += '    <input type="hidden" name="month" value="' + \
         str(monthNumber) + '">\n'
-    deletePostStr += '    <input type="hidden" name="day" value="' + \
+    delete_postStr += '    <input type="hidden" name="day" value="' + \
         str(dayNumber) + '">\n'
-    deletePostStr += \
+    delete_postStr += \
         '    <input type="hidden" name="pageNumber" value="1">\n'
-    deletePostStr += \
+    delete_postStr += \
         '    <input type="hidden" name="messageId" value="' + \
         messageId + '">\n'
-    deletePostStr += \
+    delete_postStr += \
         '    <button type="submit" class="button" name="submitYes">' + \
         translate['Yes'] + '</button>\n'
-    deletePostStr += \
+    delete_postStr += \
         '    <a href="' + actor + '/calendar?year=' + \
         str(year) + '?month=' + \
         str(monthNumber) + '"><button class="button">' + \
         translate['No'] + '</button></a>\n'
-    deletePostStr += '  </form>\n'
-    deletePostStr += '</center>\n'
-    deletePostStr += htmlFooter()
-    return deletePostStr
+    delete_postStr += '  </form>\n'
+    delete_postStr += '</center>\n'
+    delete_postStr += htmlFooter()
+    return delete_postStr
 
 
 def _htmlCalendarDay(person_cache: {}, css_cache: {}, translate: {},

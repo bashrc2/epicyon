@@ -52,7 +52,7 @@ from utils import get_status_number
 from utils import get_domain_from_actor
 from utils import get_nickname_from_actor
 from utils import locate_post
-from utils import deletePost
+from utils import delete_post
 from utils import remove_moderation_post_from_index
 from utils import load_json
 from utils import save_json
@@ -1787,9 +1787,9 @@ def _receiveDelete(session, handle: str, isGroup: bool, base_dir: str,
             print('DEBUG: delete post not found in inbox or outbox')
             print(messageId)
         return True
-    deletePost(base_dir, http_prefix, handleNickname,
-               handleDomain, post_filename, debug,
-               recent_posts_cache)
+    delete_post(base_dir, http_prefix, handleNickname,
+                handleDomain, post_filename, debug,
+                recent_posts_cache)
     if debug:
         print('DEBUG: post deleted - ' + post_filename)
 
@@ -1798,9 +1798,9 @@ def _receiveDelete(session, handle: str, isGroup: bool, base_dir: str,
         post_filename = locate_post(base_dir, 'news',
                                     handleDomain, messageId)
         if post_filename:
-            deletePost(base_dir, http_prefix, 'news',
-                       handleDomain, post_filename, debug,
-                       recent_posts_cache)
+            delete_post(base_dir, http_prefix, 'news',
+                        handleDomain, post_filename, debug,
+                        recent_posts_cache)
             if debug:
                 print('DEBUG: blog post deleted - ' + post_filename)
     return True
@@ -3607,9 +3607,9 @@ def _inboxAfterInitial(recent_posts_cache: {}, max_recent_posts: int,
 
             # If this was an edit then delete the previous version of the post
             if editedFilename:
-                deletePost(base_dir, http_prefix,
-                           nickname, domain, editedFilename,
-                           debug, recent_posts_cache)
+                delete_post(base_dir, http_prefix,
+                            nickname, domain, editedFilename,
+                            debug, recent_posts_cache)
 
             # store the id of the last post made by this actor
             _storeLastPostId(base_dir, nickname, domain, post_json_object)

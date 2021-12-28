@@ -55,16 +55,16 @@ def htmlConfirmDelete(css_cache: {},
     if not post_json_object:
         return None
 
-    deletePostStr = None
+    delete_postStr = None
     cssFilename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
         cssFilename = base_dir + '/epicyon.css'
 
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
-    deletePostStr = \
+    delete_postStr = \
         htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
-    deletePostStr += \
+    delete_postStr += \
         individualPostAsHtml(signing_priv_key_pem,
                              True, recent_posts_cache, max_recent_posts,
                              translate, pageNumber,
@@ -80,30 +80,30 @@ def htmlConfirmDelete(css_cache: {},
                              theme_name, system_language, max_like_count,
                              False, False, False, False, False, False,
                              cw_lists, lists_enabled)
-    deletePostStr += '<center>'
-    deletePostStr += \
+    delete_postStr += '<center>'
+    delete_postStr += \
         '  <p class="followText">' + \
         translate['Delete this post?'] + '</p>'
 
     postActor = get_alt_path(actor, domain_full, calling_domain)
-    deletePostStr += \
+    delete_postStr += \
         '  <form method="POST" action="' + postActor + '/rmpost">\n'
-    deletePostStr += \
+    delete_postStr += \
         '    <input type="hidden" name="pageNumber" value="' + \
         str(pageNumber) + '">\n'
-    deletePostStr += \
+    delete_postStr += \
         '    <input type="hidden" name="messageId" value="' + \
         messageId + '">\n'
-    deletePostStr += \
+    delete_postStr += \
         '    <button type="submit" class="button" name="submitYes">' + \
         translate['Yes'] + '</button>\n'
-    deletePostStr += \
+    delete_postStr += \
         '    <a href="' + actor + '/inbox"><button class="button">' + \
         translate['No'] + '</button></a>\n'
-    deletePostStr += '  </form>\n'
-    deletePostStr += '</center>\n'
-    deletePostStr += htmlFooter()
-    return deletePostStr
+    delete_postStr += '  </form>\n'
+    delete_postStr += '</center>\n'
+    delete_postStr += htmlFooter()
+    return delete_postStr
 
 
 def htmlConfirmRemoveSharedItem(css_cache: {}, translate: {}, base_dir: str,

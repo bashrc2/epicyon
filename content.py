@@ -13,7 +13,7 @@ import urllib.parse
 from shutil import copyfile
 from utils import dangerous_svg
 from utils import remove_domain_port
-from utils import isValidLanguage
+from utils import is_valid_language
 from utils import get_image_extensions
 from utils import load_json
 from utils import save_json
@@ -478,7 +478,7 @@ def validHashTag(hashtag: str) -> bool:
                      'ŴŵÝýŸÿŶŷŹźŽžŻż')
     if set(hashtag).issubset(validChars):
         return True
-    if isValidLanguage(hashtag):
+    if is_valid_language(hashtag):
         return True
     return False
 

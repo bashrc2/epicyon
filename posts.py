@@ -56,7 +56,7 @@ from utils import create_person_dir
 from utils import url_permitted
 from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
-from utils import deletePost
+from utils import delete_post
 from utils import valid_nickname
 from utils import locate_post
 from utils import load_json
@@ -4034,8 +4034,8 @@ def archivePostsForPerson(http_prefix: str, nickname: str, domain: str,
                         os.rename(extPath,
                                   archivePath.replace('.json', '.json.' + ext))
         else:
-            deletePost(base_dir, http_prefix, nickname, domain,
-                       filePath, False, recent_posts_cache)
+            delete_post(base_dir, http_prefix, nickname, domain,
+                        filePath, False, recent_posts_cache)
 
         # remove cached html posts
         postCacheFilename = \
