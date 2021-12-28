@@ -510,6 +510,7 @@ def set_config_param(base_dir: str, variable_name: str,
     config_json = {}
     if os.path.isfile(config_filename):
         config_json = load_json(config_filename)
+    variable_name = _convert_to_camel_case(variable_name)
     config_json[variable_name] = variable_value
     save_json(config_json, config_filename)
 
@@ -521,6 +522,7 @@ def get_config_param(base_dir: str, variable_name: str):
     config_filename = base_dir + '/config.json'
     config_json = load_json(config_filename)
     if config_json:
+        variable_name = _convert_to_camel_case(variable_name)
         if variable_name in config_json:
             return config_json[variable_name]
     return None
@@ -2568,6 +2570,23 @@ def camel_case_split(text: str) -> str:
     return result_str.strip()
 
 
+def _convert_to_camel_case(text: str) -> str:
+    """Convers a snake case string to camel case
+    """
+    if '_' not in text:
+        return text
+    words = text.split('_')
+    result = ''
+    ctr = 0
+    for wrd in words:
+        if ctr > 0:
+            result += wrd.title()
+        else:
+            result = wrd.lower()
+        ctr += 1
+    return result
+
+
 def reject_post_id(base_dir: str, nickname: str, domain: str,
                    post_id: str, recent_posts_cache: {}) -> None:
     """ Marks the given post as rejected,
@@ -3202,7 +3221,7 @@ def has_object_stringType(post_json_object: {}, debug: bool) -> bool:
     if post_json_object['object'].get('type'):
         if isinstance(post_json_object['object']['type'], str):
             return True
-        elif debug:
+        if debug:
             if post_json_object.get('type'):
                 print('DEBUG: ' + post_json_object['type'] +
                       ' type within object is not a string')
@@ -3236,7 +3255,7 @@ def has_object_string(post_json_object: {}, debug: bool) -> bool:
     if post_json_object.get('object'):
         if isinstance(post_json_object['object'], str):
             return True
-        elif debug:
+        if debug:
             if post_json_object.get('type'):
                 print('DEBUG: ' + post_json_object['type'] +
                       ' object is not a string')
