@@ -2100,7 +2100,7 @@ def isBlogPost(post_json_object: {}) -> bool:
     return True
 
 
-def isNewsPost(post_json_object: {}) -> bool:
+def is_news_post(post_json_object: {}) -> bool:
     """Is the given post a blog post?
     """
     return post_json_object.get('news')

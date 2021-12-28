@@ -42,7 +42,7 @@ from utils import load_json
 from utils import get_cached_post_directory
 from utils import get_cached_post_filename
 from utils import get_protocol_prefixes
-from utils import isNewsPost
+from utils import is_news_post
 from utils import isBlogPost
 from utils import get_display_name
 from utils import isPublicPost
@@ -484,7 +484,7 @@ def _getEditIconHtml(base_dir: str, nickname: str, domain_full: str,
             editBlogPostStr = 'Edit blog post'
             if translate.get(editBlogPostStr):
                 editBlogPostStr = translate[editBlogPostStr]
-            if not isNewsPost(post_json_object):
+            if not is_news_post(post_json_object):
                 editStr += \
                     '        ' + \
                     '<a class="imageAnchor" href="/users/' + \
@@ -806,7 +806,7 @@ def _getDeleteIconHtml(nickname: str, domain_full: str,
         ('/' + domain_full + '/' in postActor and
          messageId.startswith(postActor))):
         if '/users/' + nickname + '/' in messageId:
-            if not isNewsPost(post_json_object):
+            if not is_news_post(post_json_object):
                 deleteThisPostStr = 'Delete this post'
                 if translate.get(deleteThisPostStr):
                     deleteThisPostStr = translate[deleteThisPostStr]
@@ -1308,7 +1308,7 @@ def _getFooterWithIcons(showIcons: bool,
     footerStr += '      <div class="' + containerClassIcons + '">\n'
     footerStr += replyStr + announceStr + likeStr + bookmarkStr + reactionStr
     footerStr += deleteStr + muteStr + editStr
-    if not isNewsPost(post_json_object):
+    if not is_news_post(post_json_object):
         footerStr += '        <a href="' + publishedLink + '" class="' + \
             timeClass + '">' + publishedStr + '</a>\n'
     else:
@@ -1798,7 +1798,7 @@ def individualPostAsHtml(signing_priv_key_pem: str,
        domain + ':' + str(port) + '/users/' in publishedLink:
         publishedLink = '/users/' + publishedLink.split('/users/')[1]
 
-    if not isNewsPost(post_json_object):
+    if not is_news_post(post_json_object):
         footerStr = '<a href="' + publishedLink + \
             '" class="' + timeClass + '">' + publishedStr + '</a>\n'
     else:
