@@ -12,7 +12,7 @@ from shutil import copyfile
 from session import create_session
 from auth import createPassword
 from posts import isImageMedia
-from posts import outboxMessageCreateWrap
+from posts import outbox_message_create_wrap
 from posts import save_post_to_box
 from posts import sendToFollowersThread
 from posts import sendToNamedAddressesThread
@@ -215,10 +215,10 @@ def postMessageToOutbox(session, translate: {},
             if debug:
                 print('DEBUG: POST to outbox - adding Create wrapper')
             message_json = \
-                outboxMessageCreateWrap(http_prefix,
-                                        postToNickname,
-                                        domain, port,
-                                        message_json)
+                outbox_message_create_wrap(http_prefix,
+                                           postToNickname,
+                                           domain, port,
+                                           message_json)
 
     # check that the outgoing post doesn't contain any markup
     # which can be used to implement exploits

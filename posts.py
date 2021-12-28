@@ -90,7 +90,7 @@ from video import convertVideoToNote
 from context import getIndividualPostContext
 
 
-def isModerator(base_dir: str, nickname: str) -> bool:
+def is_moderator(base_dir: str, nickname: str) -> bool:
     """Returns true if the given nickname is a moderator
     """
     moderatorsFile = base_dir + '/accounts/moderators.txt'
@@ -1562,9 +1562,9 @@ def _createPostBase(base_dir: str,
     return newPost
 
 
-def outboxMessageCreateWrap(http_prefix: str,
-                            nickname: str, domain: str, port: int,
-                            message_json: {}) -> {}:
+def outbox_message_create_wrap(http_prefix: str,
+                               nickname: str, domain: str, port: int,
+                               message_json: {}) -> {}:
     """Wraps a received message in a Create
     https://www.w3.org/TR/activitypub/#object-without-create
     """
@@ -1634,8 +1634,8 @@ def _postIsAddressedToFollowers(base_dir: str,
     return addressedToFollowers
 
 
-def pinPost(base_dir: str, nickname: str, domain: str,
-            pinnedContent: str, followersOnly: bool) -> None:
+def pin_post(base_dir: str, nickname: str, domain: str,
+             pinnedContent: str, followersOnly: bool) -> None:
     """Pins the given post Id to the profile of then given account
     """
     accountDir = acct_dir(base_dir, nickname, domain)
@@ -1647,7 +1647,7 @@ def pinPost(base_dir: str, nickname: str, domain: str,
         print('EX: unable to write ' + pinnedFilename)
 
 
-def undoPinnedPost(base_dir: str, nickname: str, domain: str) -> None:
+def undo_pinned_post(base_dir: str, nickname: str, domain: str) -> None:
     """Removes pinned content for then given account
     """
     accountDir = acct_dir(base_dir, nickname, domain)
@@ -1656,12 +1656,12 @@ def undoPinnedPost(base_dir: str, nickname: str, domain: str) -> None:
         try:
             os.remove(pinnedFilename)
         except OSError:
-            print('EX: undoPinnedPost unable to delete ' + pinnedFilename)
+            print('EX: undo_pinned_post unable to delete ' + pinnedFilename)
 
 
-def getPinnedPostAsJson(base_dir: str, http_prefix: str,
-                        nickname: str, domain: str,
-                        domain_full: str, system_language: str) -> {}:
+def get_pinned_post_as_json(base_dir: str, http_prefix: str,
+                            nickname: str, domain: str,
+                            domain_full: str, system_language: str) -> {}:
     """Returns the pinned profile post as json
     """
     accountDir = acct_dir(base_dir, nickname, domain)
@@ -1699,15 +1699,15 @@ def getPinnedPostAsJson(base_dir: str, http_prefix: str,
     return pinnedPostJson
 
 
-def jsonPinPost(base_dir: str, http_prefix: str,
-                nickname: str, domain: str,
-                domain_full: str, system_language: str) -> {}:
+def json_pin_post(base_dir: str, http_prefix: str,
+                  nickname: str, domain: str,
+                  domain_full: str, system_language: str) -> {}:
     """Returns a pinned post as json
     """
     pinnedPostJson = \
-        getPinnedPostAsJson(base_dir, http_prefix,
-                            nickname, domain,
-                            domain_full, system_language)
+        get_pinned_post_as_json(base_dir, http_prefix,
+                                nickname, domain,
+                                domain_full, system_language)
     itemsList = []
     if pinnedPostJson:
         itemsList = [pinnedPostJson]
@@ -1754,21 +1754,21 @@ def regenerateIndexForBox(base_dir: str,
     print('Index generated for ' + boxName + '\n' + result)
 
 
-def createPublicPost(base_dir: str,
-                     nickname: str, domain: str, port: int, http_prefix: str,
-                     content: str, followersOnly: bool, saveToFile: bool,
-                     client_to_server: bool, commentsEnabled: bool,
-                     attachImageFilename: str, mediaType: str,
-                     imageDescription: str, city: str,
-                     inReplyTo: str,
-                     inReplyToAtomUri: str, subject: str,
-                     schedulePost: bool,
-                     eventDate: str, eventTime: str,
-                     location: str,
-                     isArticle: bool,
-                     system_language: str,
-                     conversationId: str, low_bandwidth: bool,
-                     content_license_url: str) -> {}:
+def create_public_post(base_dir: str,
+                       nickname: str, domain: str, port: int, http_prefix: str,
+                       content: str, followersOnly: bool, saveToFile: bool,
+                       client_to_server: bool, commentsEnabled: bool,
+                       attachImageFilename: str, mediaType: str,
+                       imageDescription: str, city: str,
+                       inReplyTo: str,
+                       inReplyToAtomUri: str, subject: str,
+                       schedulePost: bool,
+                       eventDate: str, eventTime: str,
+                       location: str,
+                       isArticle: bool,
+                       system_language: str,
+                       conversationId: str, low_bandwidth: bool,
+                       content_license_url: str) -> {}:
     """Public post
     """
     domain_full = get_full_domain(domain, port)
@@ -1833,30 +1833,30 @@ def _appendCitationsToBlogPost(base_dir: str,
             blogJson['object']['tag'].append(tagJson)
 
 
-def createBlogPost(base_dir: str,
-                   nickname: str, domain: str, port: int, http_prefix: str,
-                   content: str, followersOnly: bool, saveToFile: bool,
-                   client_to_server: bool, commentsEnabled: bool,
-                   attachImageFilename: str, mediaType: str,
-                   imageDescription: str, city: str,
-                   inReplyTo: str, inReplyToAtomUri: str,
-                   subject: str, schedulePost: bool,
-                   eventDate: str, eventTime: str,
-                   location: str, system_language: str,
-                   conversationId: str, low_bandwidth: bool,
-                   content_license_url: str) -> {}:
+def create_blog_post(base_dir: str,
+                     nickname: str, domain: str, port: int, http_prefix: str,
+                     content: str, followersOnly: bool, saveToFile: bool,
+                     client_to_server: bool, commentsEnabled: bool,
+                     attachImageFilename: str, mediaType: str,
+                     imageDescription: str, city: str,
+                     inReplyTo: str, inReplyToAtomUri: str,
+                     subject: str, schedulePost: bool,
+                     eventDate: str, eventTime: str,
+                     location: str, system_language: str,
+                     conversationId: str, low_bandwidth: bool,
+                     content_license_url: str) -> {}:
     blogJson = \
-        createPublicPost(base_dir,
-                         nickname, domain, port, http_prefix,
-                         content, followersOnly, saveToFile,
-                         client_to_server, commentsEnabled,
-                         attachImageFilename, mediaType,
-                         imageDescription, city,
-                         inReplyTo, inReplyToAtomUri, subject,
-                         schedulePost,
-                         eventDate, eventTime, location,
-                         True, system_language, conversationId,
-                         low_bandwidth, content_license_url)
+        create_public_post(base_dir,
+                           nickname, domain, port, http_prefix,
+                           content, followersOnly, saveToFile,
+                           client_to_server, commentsEnabled,
+                           attachImageFilename, mediaType,
+                           imageDescription, city,
+                           inReplyTo, inReplyToAtomUri, subject,
+                           schedulePost,
+                           eventDate, eventTime, location,
+                           True, system_language, conversationId,
+                           low_bandwidth, content_license_url)
     blogJson['object']['url'] = \
         blogJson['object']['url'].replace('/@', '/users/')
     _appendCitationsToBlogPost(base_dir, nickname, domain, blogJson)
@@ -1880,31 +1880,32 @@ def createNewsPost(base_dir: str,
     eventTime = None
     location = None
     blog = \
-        createPublicPost(base_dir,
-                         'news', domain, port, http_prefix,
-                         content, followersOnly, saveToFile,
-                         client_to_server, False,
-                         attachImageFilename, mediaType,
-                         imageDescription, city,
-                         inReplyTo, inReplyToAtomUri, subject,
-                         schedulePost,
-                         eventDate, eventTime, location,
-                         True, system_language, conversationId,
-                         low_bandwidth, content_license_url)
+        create_public_post(base_dir,
+                           'news', domain, port, http_prefix,
+                           content, followersOnly, saveToFile,
+                           client_to_server, False,
+                           attachImageFilename, mediaType,
+                           imageDescription, city,
+                           inReplyTo, inReplyToAtomUri, subject,
+                           schedulePost,
+                           eventDate, eventTime, location,
+                           True, system_language, conversationId,
+                           low_bandwidth, content_license_url)
     blog['object']['type'] = 'Article'
     return blog
 
 
-def createQuestionPost(base_dir: str,
-                       nickname: str, domain: str, port: int, http_prefix: str,
-                       content: str, qOptions: [],
-                       followersOnly: bool, saveToFile: bool,
-                       client_to_server: bool, commentsEnabled: bool,
-                       attachImageFilename: str, mediaType: str,
-                       imageDescription: str, city: str,
-                       subject: str, durationDays: int,
-                       system_language: str, low_bandwidth: bool,
-                       content_license_url: str) -> {}:
+def create_question_post(base_dir: str,
+                         nickname: str, domain: str, port: int,
+                         http_prefix: str,
+                         content: str, qOptions: [],
+                         followersOnly: bool, saveToFile: bool,
+                         client_to_server: bool, commentsEnabled: bool,
+                         attachImageFilename: str, mediaType: str,
+                         imageDescription: str, city: str,
+                         subject: str, durationDays: int,
+                         system_language: str, low_bandwidth: bool,
+                         content_license_url: str) -> {}:
     """Question post with multiple choice options
     """
     domain_full = get_full_domain(domain, port)
@@ -1943,18 +1944,19 @@ def createQuestionPost(base_dir: str,
     return message_json
 
 
-def createUnlistedPost(base_dir: str,
-                       nickname: str, domain: str, port: int, http_prefix: str,
-                       content: str, followersOnly: bool, saveToFile: bool,
-                       client_to_server: bool, commentsEnabled: bool,
-                       attachImageFilename: str, mediaType: str,
-                       imageDescription: str, city: str,
-                       inReplyTo: str, inReplyToAtomUri: str,
-                       subject: str, schedulePost: bool,
-                       eventDate: str, eventTime: str,
-                       location: str, system_language: str,
-                       conversationId: str, low_bandwidth: bool,
-                       content_license_url: str) -> {}:
+def create_unlisted_post(base_dir: str,
+                         nickname: str, domain: str, port: int,
+                         http_prefix: str,
+                         content: str, followersOnly: bool, saveToFile: bool,
+                         client_to_server: bool, commentsEnabled: bool,
+                         attachImageFilename: str, mediaType: str,
+                         imageDescription: str, city: str,
+                         inReplyTo: str, inReplyToAtomUri: str,
+                         subject: str, schedulePost: bool,
+                         eventDate: str, eventTime: str,
+                         location: str, system_language: str,
+                         conversationId: str, low_bandwidth: bool,
+                         content_license_url: str) -> {}:
     """Unlisted post. This has the #Public and followers links inverted.
     """
     domain_full = get_full_domain(domain, port)
@@ -1975,21 +1977,21 @@ def createUnlistedPost(base_dir: str,
                            content_license_url)
 
 
-def createFollowersOnlyPost(base_dir: str,
-                            nickname: str, domain: str, port: int,
-                            http_prefix: str,
-                            content: str, followersOnly: bool,
-                            saveToFile: bool,
-                            client_to_server: bool, commentsEnabled: bool,
-                            attachImageFilename: str, mediaType: str,
-                            imageDescription: str, city: str,
-                            inReplyTo: str,
-                            inReplyToAtomUri: str,
-                            subject: str, schedulePost: bool,
-                            eventDate: str, eventTime: str,
-                            location: str, system_language: str,
-                            conversationId: str, low_bandwidth: bool,
-                            content_license_url: str) -> {}:
+def create_followers_only_post(base_dir: str,
+                               nickname: str, domain: str, port: int,
+                               http_prefix: str,
+                               content: str, followersOnly: bool,
+                               saveToFile: bool,
+                               client_to_server: bool, commentsEnabled: bool,
+                               attachImageFilename: str, mediaType: str,
+                               imageDescription: str, city: str,
+                               inReplyTo: str,
+                               inReplyToAtomUri: str,
+                               subject: str, schedulePost: bool,
+                               eventDate: str, eventTime: str,
+                               location: str, system_language: str,
+                               conversationId: str, low_bandwidth: bool,
+                               content_license_url: str) -> {}:
     """Followers only post
     """
     domain_full = get_full_domain(domain, port)
@@ -2046,22 +2048,22 @@ def getMentionedPeople(base_dir: str, http_prefix: str,
     return mentions
 
 
-def createDirectMessagePost(base_dir: str,
-                            nickname: str, domain: str, port: int,
-                            http_prefix: str,
-                            content: str, followersOnly: bool,
-                            saveToFile: bool, client_to_server: bool,
-                            commentsEnabled: bool,
-                            attachImageFilename: str, mediaType: str,
-                            imageDescription: str, city: str,
-                            inReplyTo: str,
-                            inReplyToAtomUri: str,
-                            subject: str, debug: bool,
-                            schedulePost: bool,
-                            eventDate: str, eventTime: str,
-                            location: str, system_language: str,
-                            conversationId: str, low_bandwidth: bool,
-                            content_license_url: str) -> {}:
+def create_direct_message_post(base_dir: str,
+                               nickname: str, domain: str, port: int,
+                               http_prefix: str,
+                               content: str, followersOnly: bool,
+                               saveToFile: bool, client_to_server: bool,
+                               commentsEnabled: bool,
+                               attachImageFilename: str, mediaType: str,
+                               imageDescription: str, city: str,
+                               inReplyTo: str,
+                               inReplyToAtomUri: str,
+                               subject: str, debug: bool,
+                               schedulePost: bool,
+                               eventDate: str, eventTime: str,
+                               location: str, system_language: str,
+                               conversationId: str, low_bandwidth: bool,
+                               content_license_url: str) -> {}:
     """Direct Message post
     """
     content = resolvePetnames(base_dir, nickname, domain, content)
@@ -2099,15 +2101,15 @@ def createDirectMessagePost(base_dir: str,
     return message_json
 
 
-def createReportPost(base_dir: str,
-                     nickname: str, domain: str, port: int, http_prefix: str,
-                     content: str, followersOnly: bool, saveToFile: bool,
-                     client_to_server: bool, commentsEnabled: bool,
-                     attachImageFilename: str, mediaType: str,
-                     imageDescription: str, city: str,
-                     debug: bool, subject: str, system_language: str,
-                     low_bandwidth: bool,
-                     content_license_url: str) -> {}:
+def create_report_post(base_dir: str,
+                       nickname: str, domain: str, port: int, http_prefix: str,
+                       content: str, followersOnly: bool, saveToFile: bool,
+                       client_to_server: bool, commentsEnabled: bool,
+                       attachImageFilename: str, mediaType: str,
+                       imageDescription: str, city: str,
+                       debug: bool, subject: str, system_language: str,
+                       low_bandwidth: bool,
+                       content_license_url: str) -> {}:
     """Send a report to moderators
     """
     domain_full = get_full_domain(domain, port)
@@ -2195,7 +2197,7 @@ def createReportPost(base_dir: str,
             with open(newReportFile, 'w+') as fp:
                 fp.write(toUrl + '/moderation')
         except OSError:
-            print('EX: createReportPost unable to write ' + newReportFile)
+            print('EX: create_report_post unable to write ' + newReportFile)
 
     return post_json_object
 
@@ -2781,8 +2783,8 @@ def sendSignedJson(post_json_object: {}, session, base_dir: str,
     return 0
 
 
-def addToField(activityType: str, post_json_object: {},
-               debug: bool) -> ({}, bool):
+def add_to_field(activityType: str, post_json_object: {},
+                 debug: bool) -> ({}, bool):
     """The Follow/Add/Remove activity doesn't have a 'to' field and so one
     needs to be added so that activity distribution happens in a consistent way
     Returns true if a 'to' field exists or was added
@@ -2905,11 +2907,11 @@ def _sendToNamedAddresses(session, base_dir: str,
             recipientsObject = post_json_object['object']
     else:
         post_json_object, fieldAdded = \
-            addToField('Follow', post_json_object, debug)
+            add_to_field('Follow', post_json_object, debug)
         if not fieldAdded:
             return
         post_json_object, fieldAdded = \
-            addToField('Like', post_json_object, debug)
+            add_to_field('Like', post_json_object, debug)
         if not fieldAdded:
             return
         recipientsObject = post_json_object
@@ -3421,7 +3423,7 @@ def createModeration(base_dir: str, nickname: str, domain: str, port: int,
         'type': 'OrderedCollectionPage'
     }
 
-    if isModerator(base_dir, nickname):
+    if is_moderator(base_dir, nickname):
         moderationIndexFile = base_dir + '/accounts/moderation.txt'
         if os.path.isfile(moderationIndexFile):
             with open(moderationIndexFile, 'r') as f:
@@ -3566,7 +3568,7 @@ def _addPostToTimeline(filePath: str, boxname: str,
     return False
 
 
-def removePostInteractions(post_json_object: {}, force: bool) -> bool:
+def remove_post_interactions(post_json_object: {}, force: bool) -> bool:
     """ Don't show likes, replies, bookmarks, DMs or shares (announces) to
     unauthorized viewers. This makes the timeline less useful to
     marketers and other surveillance-oriented organizations.
@@ -3870,7 +3872,7 @@ def _createBoxIndexed(recent_posts_cache: {},
         p['hasReplies'] = hasReplies
 
         if not authorized:
-            if not removePostInteractions(p, False):
+            if not remove_post_interactions(p, False):
                 continue
 
         boxItems['orderedItems'].append(p)
@@ -3878,10 +3880,10 @@ def _createBoxIndexed(recent_posts_cache: {},
     return boxItems
 
 
-def expireCache(base_dir: str, person_cache: {},
-                http_prefix: str, archive_dir: str,
-                recent_posts_cache: {},
-                maxPostsInBox=32000):
+def expire_cache(base_dir: str, person_cache: {},
+                 http_prefix: str, archive_dir: str,
+                 recent_posts_cache: {},
+                 maxPostsInBox=32000):
     """Thread used to expire actors from the cache and archive old posts
     """
     while True:
@@ -4432,9 +4434,9 @@ def checkDomains(session, base_dir: str,
             print(followerWarningStr)
 
 
-def populateRepliesJson(base_dir: str, nickname: str, domain: str,
-                        postRepliesFilename: str, authorized: bool,
-                        repliesJson: {}) -> None:
+def populate_replies_json(base_dir: str, nickname: str, domain: str,
+                          postRepliesFilename: str, authorized: bool,
+                          repliesJson: {}) -> None:
     pubStr = 'https://www.w3.org/ns/activitystreams#Public'
     # populate the items list with replies
     repliesBoxes = ('outbox', 'inbox')
@@ -4708,9 +4710,9 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
 
         # wrap in create to be consistent with other posts
         announcedJson = \
-            outboxMessageCreateWrap(http_prefix,
-                                    actorNickname, actorDomain, actorPort,
-                                    announcedJson)
+            outbox_message_create_wrap(http_prefix,
+                                       actorNickname, actorDomain, actorPort,
+                                       announcedJson)
         if announcedJson['type'] != 'Create':
             # Create wrap failed
             _rejectAnnounce(announceFilename,

@@ -11,7 +11,7 @@ import os
 from shutil import copyfile
 from petnames import getPetName
 from person import isPersonSnoozed
-from posts import isModerator
+from posts import is_moderator
 from utils import get_full_domain
 from utils import get_config_param
 from utils import is_dormant
@@ -291,8 +291,8 @@ def htmlPersonOptions(defaultTimeline: str,
             if optionsDomainFull == domain_full:
                 adminNickname = get_config_param(base_dir, 'admin')
                 if (nickname == adminNickname or
-                    (isModerator(base_dir, nickname) and
-                     not isModerator(base_dir, optionsNickname))):
+                    (is_moderator(base_dir, nickname) and
+                     not is_moderator(base_dir, optionsNickname))):
                     newswireBlockedFilename = \
                         base_dir + '/accounts/' + \
                         optionsNickname + '@' + optionsDomain + '/.nonewswire'
@@ -332,8 +332,8 @@ def htmlPersonOptions(defaultTimeline: str,
             if news_instance and optionsDomainFull == domain_full:
                 adminNickname = get_config_param(base_dir, 'admin')
                 if (nickname == adminNickname or
-                    (isModerator(base_dir, nickname) and
-                     not isModerator(base_dir, optionsNickname))):
+                    (is_moderator(base_dir, nickname) and
+                     not is_moderator(base_dir, optionsNickname))):
                     checkboxStr = \
                         '    <input type="checkbox" ' + \
                         'class="profilecheckbox" ' + \
@@ -396,7 +396,7 @@ def htmlPersonOptions(defaultTimeline: str,
             accessKeys['reportButton'] + '">' + \
             translate['Report'] + '</button>\n'
 
-        if isModerator(base_dir, nickname):
+        if is_moderator(base_dir, nickname):
             optionsStr += \
                 '    <button type="submit" class="button" ' + \
                 'name="submitPersonInfo" accesskey="' + \

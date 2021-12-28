@@ -22,7 +22,7 @@ from utils import is_editor
 from utils import get_config_param
 from utils import remove_domain_port
 from utils import acct_dir
-from posts import isModerator
+from posts import is_moderator
 from newswire import getNewswireFaviconUrl
 from webapp_utils import getRightImageFile
 from webapp_utils import htmlHeaderWithExternalStyle
@@ -472,7 +472,7 @@ def htmlNewswireMobile(css_cache: {}, base_dir: str, nickname: str,
         moderator = False
     else:
         # is the user a moderator?
-        moderator = isModerator(base_dir, nickname)
+        moderator = is_moderator(base_dir, nickname)
 
         # is the user a site editor?
         editor = is_editor(base_dir, nickname)
@@ -535,7 +535,7 @@ def htmlEditNewswire(css_cache: {}, translate: {}, base_dir: str, path: str,
         return ''
 
     # is the user a moderator?
-    if not isModerator(base_dir, nickname):
+    if not is_moderator(base_dir, nickname):
         return ''
 
     cssFilename = base_dir + '/epicyon-links.css'

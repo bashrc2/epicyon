@@ -35,7 +35,7 @@ from webapp_post import individualPostAsHtml
 from webapp_column_left import getLeftColumnContent
 from webapp_column_right import getRightColumnContent
 from webapp_headerbuttons import headerButtonsTimeline
-from posts import isModerator
+from posts import is_moderator
 from announce import isSelfAnnounce
 
 
@@ -543,7 +543,7 @@ def htmlTimeline(css_cache: {}, defaultTimeline: str,
 
     # is the user a moderator?
     if not moderator:
-        moderator = isModerator(base_dir, nickname)
+        moderator = is_moderator(base_dir, nickname)
 
     # is the user a site editor?
     if not editor:
@@ -1080,9 +1080,9 @@ def _htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
     isAdminAccount = False
     if adminActor and actor == adminActor:
         isAdminAccount = True
-    isModeratorAccount = False
-    if isModerator(base_dir, nickname):
-        isModeratorAccount = True
+    is_moderatorAccount = False
+    if is_moderator(base_dir, nickname):
+        is_moderatorAccount = True
 
     for published, sharedItem in sharesJson.items():
         showContactButton = False
@@ -1091,7 +1091,7 @@ def _htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
         showRemoveButton = False
         if '___' + domain in sharedItem['shareId']:
             if sharedItem['actor'] == actor or \
-               isAdminAccount or isModeratorAccount:
+               isAdminAccount or is_moderatorAccount:
                 showRemoveButton = True
         timelineStr += \
             htmlIndividualShare(domain, sharedItem['shareId'],

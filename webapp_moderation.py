@@ -19,7 +19,7 @@ from utils import get_config_param
 from utils import local_actor_url
 from posts import downloadFollowCollection
 from posts import getPublicPostInfo
-from posts import isModerator
+from posts import is_moderator
 from webapp_timeline import htmlTimeline
 # from webapp_utils import getPersonAvatarUrl
 from webapp_utils import getContentWarningButton
@@ -340,7 +340,7 @@ def htmlModerationInfo(css_cache: {}, translate: {},
         infoForm += '<img loading="lazy" style="width:90%" '
         infoForm += 'src="' + avatarUrl + '" />'
         infoForm += '<br><center>'
-        if isModerator(base_dir, acctNickname):
+        if is_moderator(base_dir, acctNickname):
             infoForm += '<b><u>' + acctNickname + '</u></b>'
         else:
             infoForm += acctNickname

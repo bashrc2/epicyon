@@ -96,7 +96,7 @@ from httpsig import messageContentDigest
 from posts import editedPostFilename
 from posts import save_post_to_box
 from posts import isCreateInsideAnnounce
-from posts import createDirectMessagePost
+from posts import create_direct_message_post
 from posts import validContentWarning
 from posts import downloadAnnounce
 from posts import isMuted
@@ -2860,17 +2860,18 @@ def _bounceDM(senderPostId: str, session, http_prefix: str,
     conversationId = None
     low_bandwidth = False
     post_json_object = \
-        createDirectMessagePost(base_dir, nickname, domain, port,
-                                http_prefix, content, followersOnly,
-                                saveToFile, client_to_server,
-                                commentsEnabled,
-                                attachImageFilename, mediaType,
-                                imageDescription, city,
-                                inReplyTo, inReplyToAtomUri,
-                                subject, debug, schedulePost,
-                                eventDate, eventTime, location,
-                                system_language, conversationId, low_bandwidth,
-                                content_license_url)
+        create_direct_message_post(base_dir, nickname, domain, port,
+                                   http_prefix, content, followersOnly,
+                                   saveToFile, client_to_server,
+                                   commentsEnabled,
+                                   attachImageFilename, mediaType,
+                                   imageDescription, city,
+                                   inReplyTo, inReplyToAtomUri,
+                                   subject, debug, schedulePost,
+                                   eventDate, eventTime, location,
+                                   system_language, conversationId,
+                                   low_bandwidth,
+                                   content_license_url)
     if not post_json_object:
         print('WARN: unable to create bounce message to ' + sendingHandle)
         return False
@@ -3637,7 +3638,7 @@ def _inboxAfterInitial(recent_posts_cache: {}, max_recent_posts: int,
     return True
 
 
-def clearQueueItems(base_dir: str, queue: []) -> None:
+def clear_queue_items(base_dir: str, queue: []) -> None:
     """Clears the queue for each account
     """
     ctr = 0
@@ -3653,7 +3654,8 @@ def clearQueueItems(base_dir: str, queue: []) -> None:
                         os.remove(os.path.join(queueDir, qfile))
                         ctr += 1
                     except OSError:
-                        print('EX: clearQueueItems unable to delete ' + qfile)
+                        print('EX: clear_queue_items unable to delete ' +
+                              qfile)
                 break
         break
     if ctr > 0:

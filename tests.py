@@ -38,11 +38,11 @@ from session import create_session
 from session import getJson
 from posts import getActorFromInReplyTo
 from posts import regenerateIndexForBox
-from posts import removePostInteractions
+from posts import remove_post_interactions
 from posts import getMentionedPeople
 from posts import validContentWarning
 from posts import deleteAllPosts
-from posts import createPublicPost
+from posts import create_public_post
 from posts import sendPost
 from posts import noOfFollowersOnDomain
 from posts import groupFollowersByDomain
@@ -729,49 +729,49 @@ def createServerAlice(path: str, domain: str, port: int,
         testIsArticle = False
         conversationId = None
         content_license_url = 'https://creativecommons.org/licenses/by/4.0'
-        createPublicPost(path, nickname, domain, port, http_prefix,
-                         "No wise fish would go anywhere without a porpoise",
-                         testFollowersOnly,
-                         testSaveToFile,
-                         client_to_server,
-                         testCommentsEnabled,
-                         testAttachImageFilename,
-                         testMediaType,
-                         testImageDescription, testCity,
-                         testInReplyTo, testInReplyToAtomUri,
-                         testSubject, testSchedulePost,
-                         testEventDate, testEventTime, testLocation,
-                         testIsArticle, system_language, conversationId,
-                         low_bandwidth, content_license_url)
-        createPublicPost(path, nickname, domain, port, http_prefix,
-                         "Curiouser and curiouser!",
-                         testFollowersOnly,
-                         testSaveToFile,
-                         client_to_server,
-                         testCommentsEnabled,
-                         testAttachImageFilename,
-                         testMediaType,
-                         testImageDescription, testCity,
-                         testInReplyTo, testInReplyToAtomUri,
-                         testSubject, testSchedulePost,
-                         testEventDate, testEventTime, testLocation,
-                         testIsArticle, system_language, conversationId,
-                         low_bandwidth, content_license_url)
-        createPublicPost(path, nickname, domain, port, http_prefix,
-                         "In the gardens of memory, in the palace " +
-                         "of dreams, that is where you and I shall meet",
-                         testFollowersOnly,
-                         testSaveToFile,
-                         client_to_server,
-                         testCommentsEnabled,
-                         testAttachImageFilename,
-                         testMediaType,
-                         testImageDescription, testCity,
-                         testInReplyTo, testInReplyToAtomUri,
-                         testSubject, testSchedulePost,
-                         testEventDate, testEventTime, testLocation,
-                         testIsArticle, system_language, conversationId,
-                         low_bandwidth, content_license_url)
+        create_public_post(path, nickname, domain, port, http_prefix,
+                           "No wise fish would go anywhere without a porpoise",
+                           testFollowersOnly,
+                           testSaveToFile,
+                           client_to_server,
+                           testCommentsEnabled,
+                           testAttachImageFilename,
+                           testMediaType,
+                           testImageDescription, testCity,
+                           testInReplyTo, testInReplyToAtomUri,
+                           testSubject, testSchedulePost,
+                           testEventDate, testEventTime, testLocation,
+                           testIsArticle, system_language, conversationId,
+                           low_bandwidth, content_license_url)
+        create_public_post(path, nickname, domain, port, http_prefix,
+                           "Curiouser and curiouser!",
+                           testFollowersOnly,
+                           testSaveToFile,
+                           client_to_server,
+                           testCommentsEnabled,
+                           testAttachImageFilename,
+                           testMediaType,
+                           testImageDescription, testCity,
+                           testInReplyTo, testInReplyToAtomUri,
+                           testSubject, testSchedulePost,
+                           testEventDate, testEventTime, testLocation,
+                           testIsArticle, system_language, conversationId,
+                           low_bandwidth, content_license_url)
+        create_public_post(path, nickname, domain, port, http_prefix,
+                           "In the gardens of memory, in the palace " +
+                           "of dreams, that is where you and I shall meet",
+                           testFollowersOnly,
+                           testSaveToFile,
+                           client_to_server,
+                           testCommentsEnabled,
+                           testAttachImageFilename,
+                           testMediaType,
+                           testImageDescription, testCity,
+                           testInReplyTo, testInReplyToAtomUri,
+                           testSubject, testSchedulePost,
+                           testEventDate, testEventTime, testLocation,
+                           testIsArticle, system_language, conversationId,
+                           low_bandwidth, content_license_url)
         regenerateIndexForBox(path, nickname, domain, 'outbox')
     global testServerAliceRunning
     testServerAliceRunning = True
@@ -871,49 +871,49 @@ def createServerBob(path: str, domain: str, port: int,
         testIsArticle = False
         conversationId = None
         content_license_url = 'https://creativecommons.org/licenses/by/4.0'
-        createPublicPost(path, nickname, domain, port, http_prefix,
-                         "It's your life, live it your way.",
-                         testFollowersOnly,
-                         testSaveToFile,
-                         client_to_server,
-                         testCommentsEnabled,
-                         testAttachImageFilename,
-                         testMediaType,
-                         testImageDescription, testCity,
-                         testInReplyTo, testInReplyToAtomUri,
-                         testSubject, testSchedulePost,
-                         testEventDate, testEventTime, testLocation,
-                         testIsArticle, system_language, conversationId,
-                         low_bandwidth, content_license_url)
-        createPublicPost(path, nickname, domain, port, http_prefix,
-                         "One of the things I've realised is that " +
-                         "I am very simple",
-                         testFollowersOnly,
-                         testSaveToFile,
-                         client_to_server,
-                         testCommentsEnabled,
-                         testAttachImageFilename,
-                         testMediaType,
-                         testImageDescription, testCity,
-                         testInReplyTo, testInReplyToAtomUri,
-                         testSubject, testSchedulePost,
-                         testEventDate, testEventTime, testLocation,
-                         testIsArticle, system_language, conversationId,
-                         low_bandwidth, content_license_url)
-        createPublicPost(path, nickname, domain, port, http_prefix,
-                         "Quantum physics is a bit of a passion of mine",
-                         testFollowersOnly,
-                         testSaveToFile,
-                         client_to_server,
-                         testCommentsEnabled,
-                         testAttachImageFilename,
-                         testMediaType,
-                         testImageDescription, testCity,
-                         testInReplyTo, testInReplyToAtomUri,
-                         testSubject, testSchedulePost,
-                         testEventDate, testEventTime, testLocation,
-                         testIsArticle, system_language, conversationId,
-                         low_bandwidth, content_license_url)
+        create_public_post(path, nickname, domain, port, http_prefix,
+                           "It's your life, live it your way.",
+                           testFollowersOnly,
+                           testSaveToFile,
+                           client_to_server,
+                           testCommentsEnabled,
+                           testAttachImageFilename,
+                           testMediaType,
+                           testImageDescription, testCity,
+                           testInReplyTo, testInReplyToAtomUri,
+                           testSubject, testSchedulePost,
+                           testEventDate, testEventTime, testLocation,
+                           testIsArticle, system_language, conversationId,
+                           low_bandwidth, content_license_url)
+        create_public_post(path, nickname, domain, port, http_prefix,
+                           "One of the things I've realised is that " +
+                           "I am very simple",
+                           testFollowersOnly,
+                           testSaveToFile,
+                           client_to_server,
+                           testCommentsEnabled,
+                           testAttachImageFilename,
+                           testMediaType,
+                           testImageDescription, testCity,
+                           testInReplyTo, testInReplyToAtomUri,
+                           testSubject, testSchedulePost,
+                           testEventDate, testEventTime, testLocation,
+                           testIsArticle, system_language, conversationId,
+                           low_bandwidth, content_license_url)
+        create_public_post(path, nickname, domain, port, http_prefix,
+                           "Quantum physics is a bit of a passion of mine",
+                           testFollowersOnly,
+                           testSaveToFile,
+                           client_to_server,
+                           testCommentsEnabled,
+                           testAttachImageFilename,
+                           testMediaType,
+                           testImageDescription, testCity,
+                           testInReplyTo, testInReplyToAtomUri,
+                           testSubject, testSchedulePost,
+                           testEventDate, testEventTime, testLocation,
+                           testIsArticle, system_language, conversationId,
+                           low_bandwidth, content_license_url)
         regenerateIndexForBox(path, nickname, domain, 'outbox')
     global testServerBobRunning
     testServerBobRunning = True
@@ -2710,15 +2710,15 @@ def _testCreatePerson(base_dir: str):
     conversationId = None
     low_bandwidth = True
     content_license_url = 'https://creativecommons.org/licenses/by/4.0'
-    createPublicPost(base_dir, nickname, domain, port, http_prefix,
-                     content, followersOnly, saveToFile, client_to_server,
-                     commentsEnabled, attachImageFilename, mediaType,
-                     'Not suitable for Vogons', 'London, England',
-                     testInReplyTo, testInReplyToAtomUri,
-                     testSubject, testSchedulePost,
-                     testEventDate, testEventTime, testLocation,
-                     testIsArticle, system_language, conversationId,
-                     low_bandwidth, content_license_url)
+    create_public_post(base_dir, nickname, domain, port, http_prefix,
+                       content, followersOnly, saveToFile, client_to_server,
+                       commentsEnabled, attachImageFilename, mediaType,
+                       'Not suitable for Vogons', 'London, England',
+                       testInReplyTo, testInReplyToAtomUri,
+                       testSubject, testSchedulePost,
+                       testEventDate, testEventTime, testLocation,
+                       testIsArticle, system_language, conversationId,
+                       low_bandwidth, content_license_url)
 
     os.chdir(currDir)
     shutil.rmtree(base_dir, ignore_errors=False, onerror=None)
@@ -4255,16 +4255,16 @@ def _testReplyToPublicPost(base_dir: str) -> None:
     low_bandwidth = True
     content_license_url = 'https://creativecommons.org/licenses/by/4.0'
     reply = \
-        createPublicPost(base_dir, nickname, domain, port, http_prefix,
-                         content, followersOnly, saveToFile,
-                         client_to_server, commentsEnabled,
-                         attachImageFilename, mediaType,
-                         imageDescription, city, testInReplyTo,
-                         testInReplyToAtomUri,
-                         testSubject, testSchedulePost,
-                         testEventDate, testEventTime, testLocation,
-                         testIsArticle, system_language, conversationId,
-                         low_bandwidth, content_license_url)
+        create_public_post(base_dir, nickname, domain, port, http_prefix,
+                           content, followersOnly, saveToFile,
+                           client_to_server, commentsEnabled,
+                           attachImageFilename, mediaType,
+                           imageDescription, city, testInReplyTo,
+                           testInReplyToAtomUri,
+                           testSubject, testSchedulePost,
+                           testEventDate, testEventTime, testLocation,
+                           testIsArticle, system_language, conversationId,
+                           low_bandwidth, content_license_url)
     # print(str(reply))
     assert reply['object']['content'] == \
         '<p><span class=\"h-card\">' + \
@@ -4624,7 +4624,7 @@ def _testFunctions():
         'fitnessThread',
         'threadSendPost',
         'sendToFollowers',
-        'expireCache',
+        'expire_cache',
         'getMutualsOfPerson',
         'runPostsQueue',
         'runSharesExpire',
@@ -4801,16 +4801,16 @@ def _testLinksWithinPost(base_dir: str) -> None:
     content_license_url = 'https://creativecommons.org/licenses/by/4.0'
 
     post_json_object = \
-        createPublicPost(base_dir, nickname, domain, port, http_prefix,
-                         content, followersOnly, saveToFile,
-                         client_to_server, commentsEnabled,
-                         attachImageFilename, mediaType,
-                         imageDescription, city,
-                         testInReplyTo, testInReplyToAtomUri,
-                         testSubject, testSchedulePost,
-                         testEventDate, testEventTime, testLocation,
-                         testIsArticle, system_language, conversationId,
-                         low_bandwidth, content_license_url)
+        create_public_post(base_dir, nickname, domain, port, http_prefix,
+                           content, followersOnly, saveToFile,
+                           client_to_server, commentsEnabled,
+                           attachImageFilename, mediaType,
+                           imageDescription, city,
+                           testInReplyTo, testInReplyToAtomUri,
+                           testSubject, testSchedulePost,
+                           testEventDate, testEventTime, testLocation,
+                           testIsArticle, system_language, conversationId,
+                           low_bandwidth, content_license_url)
 
     assert post_json_object['object']['content'] == \
         '<p>This is a test post with links.<br><br>' + \
@@ -4837,17 +4837,17 @@ def _testLinksWithinPost(base_dir: str) -> None:
         "taggedthing\" class=\"mention hashtag\" rel=\"tag\" " + \
         "target=\"_blank\">#<span>taggedthing</span></a></p>"
     post_json_object = \
-        createPublicPost(base_dir, nickname, domain, port, http_prefix,
-                         content,
-                         False, False,
-                         False, True,
-                         None, None,
-                         False, None,
-                         testInReplyTo, testInReplyToAtomUri,
-                         testSubject, testSchedulePost,
-                         testEventDate, testEventTime, testLocation,
-                         testIsArticle, system_language, conversationId,
-                         low_bandwidth, content_license_url)
+        create_public_post(base_dir, nickname, domain, port, http_prefix,
+                           content,
+                           False, False,
+                           False, True,
+                           None, None,
+                           False, None,
+                           testInReplyTo, testInReplyToAtomUri,
+                           testSubject, testSchedulePost,
+                           testEventDate, testEventTime, testLocation,
+                           testIsArticle, system_language, conversationId,
+                           low_bandwidth, content_license_url)
     assert post_json_object['object']['content'] == content
     assert post_json_object['object']['contentMap'][system_language] == content
 
@@ -5201,14 +5201,14 @@ def _testRemovePostInteractions() -> None:
             }
         }
     }
-    removePostInteractions(post_json_object, True)
+    remove_post_interactions(post_json_object, True)
     assert post_json_object['object']['likes']['items'] == []
     assert post_json_object['object']['replies'] == {}
     assert post_json_object['object']['shares'] == {}
     assert post_json_object['object']['bookmarks'] == {}
     assert post_json_object['object']['ignores'] == {}
     post_json_object['object']['to'] = ["some private address"]
-    assert not removePostInteractions(post_json_object, False)
+    assert not remove_post_interactions(post_json_object, False)
 
 
 def _testSpoofGeolocation() -> None:
@@ -5788,16 +5788,16 @@ def _testCanReplyTo(base_dir: str) -> None:
     content_license_url = 'https://creativecommons.org/licenses/by/4.0'
 
     post_json_object = \
-        createPublicPost(base_dir, nickname, domain, port, http_prefix,
-                         content, followersOnly, saveToFile,
-                         client_to_server, commentsEnabled,
-                         attachImageFilename, mediaType,
-                         imageDescription, city,
-                         testInReplyTo, testInReplyToAtomUri,
-                         testSubject, testSchedulePost,
-                         testEventDate, testEventTime, testLocation,
-                         testIsArticle, system_language, conversationId,
-                         low_bandwidth, content_license_url)
+        create_public_post(base_dir, nickname, domain, port, http_prefix,
+                           content, followersOnly, saveToFile,
+                           client_to_server, commentsEnabled,
+                           attachImageFilename, mediaType,
+                           imageDescription, city,
+                           testInReplyTo, testInReplyToAtomUri,
+                           testSubject, testSchedulePost,
+                           testEventDate, testEventTime, testLocation,
+                           testIsArticle, system_language, conversationId,
+                           low_bandwidth, content_license_url)
     # set the date on the post
     currDateStr = "2021-09-08T20:45:00Z"
     post_json_object['published'] = currDateStr

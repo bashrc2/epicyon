@@ -28,7 +28,7 @@ from cache import storePersonInCache
 from content import addHtmlTags
 from content import replaceEmojiFromTags
 from person import getPersonAvatarUrl
-from posts import isModerator
+from posts import is_moderator
 from blocking import isBlocked
 
 
@@ -1469,7 +1469,7 @@ def htmlSearchResultShare(base_dir: str, sharedItem: {}, translate: {},
     nickname = get_nickname_from_actor(actor)
     if actor.endswith('/users/' + contactNickname):
         showRemoveButton = True
-    elif isModerator(base_dir, nickname):
+    elif is_moderator(base_dir, nickname):
         showRemoveButton = True
     else:
         adminNickname = get_config_param(base_dir, 'admin')

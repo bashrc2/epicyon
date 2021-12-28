@@ -78,24 +78,24 @@ from person import person_unsnooze
 from posts import get_original_post_from_announce_url
 from posts import save_post_to_box
 from posts import get_instance_actor_key
-from posts import removePostInteractions
-from posts import outboxMessageCreateWrap
-from posts import getPinnedPostAsJson
-from posts import pinPost
-from posts import jsonPinPost
-from posts import undoPinnedPost
-from posts import isModerator
-from posts import createQuestionPost
-from posts import createPublicPost
-from posts import createBlogPost
-from posts import createReportPost
-from posts import createUnlistedPost
-from posts import createFollowersOnlyPost
-from posts import createDirectMessagePost
-from posts import populateRepliesJson
-from posts import addToField
-from posts import expireCache
-from inbox import clearQueueItems
+from posts import remove_post_interactions
+from posts import outbox_message_create_wrap
+from posts import get_pinned_post_as_json
+from posts import pin_post
+from posts import json_pin_post
+from posts import undo_pinned_post
+from posts import is_moderator
+from posts import create_question_post
+from posts import create_public_post
+from posts import create_blog_post
+from posts import create_report_post
+from posts import create_unlisted_post
+from posts import create_followers_only_post
+from posts import create_direct_message_post
+from posts import populate_replies_json
+from posts import add_to_field
+from posts import expire_cache
+from inbox import clear_queue_items
 from inbox import inboxPermittedMessage
 from inbox import inboxMessageHasParams
 from inbox import runInboxQueue
@@ -500,25 +500,25 @@ class PubServer(BaseHTTPRequestHandler):
                               nickname, self.server.domain)
 
         message_json = \
-            createPublicPost(self.server.base_dir,
-                             nickname,
-                             self.server.domain, self.server.port,
-                             self.server.http_prefix,
-                             answer, False, False, False,
-                             commentsEnabled,
-                             attachImageFilename, mediaType,
-                             imageDescription, city,
-                             inReplyTo,
-                             inReplyToAtomUri,
-                             subject,
-                             schedulePost,
-                             eventDate,
-                             eventTime,
-                             location, False,
-                             self.server.system_language,
-                             conversationId,
-                             self.server.low_bandwidth,
-                             self.server.content_license_url)
+            create_public_post(self.server.base_dir,
+                               nickname,
+                               self.server.domain, self.server.port,
+                               self.server.http_prefix,
+                               answer, False, False, False,
+                               commentsEnabled,
+                               attachImageFilename, mediaType,
+                               imageDescription, city,
+                               inReplyTo,
+                               inReplyToAtomUri,
+                               subject,
+                               schedulePost,
+                               eventDate,
+                               eventTime,
+                               location, False,
+                               self.server.system_language,
+                               conversationId,
+                               self.server.low_bandwidth,
+                               self.server.content_license_url)
         if message_json:
             # name field contains the answer
             message_json['object']['name'] = answer
@@ -1481,7 +1481,7 @@ class PubServer(BaseHTTPRequestHandler):
             else:
                 print('Queue: Inbox queue is full')
             self._503()
-            clearQueueItems(self.server.base_dir, self.server.inbox_queue)
+            clear_queue_items(self.server.base_dir, self.server.inbox_queue)
             if not self.server.restartInboxQueueInProgress:
                 self.server.restartInboxQueue = True
             self.server.POSTbusy = False
@@ -1510,12 +1510,12 @@ class PubServer(BaseHTTPRequestHandler):
         originalMessageJson = message_json.copy()
 
         # whether to add a 'to' field to the message
-        addToFieldTypes = (
+        add_to_fieldTypes = (
             'Follow', 'Like', 'EmojiReact', 'Add', 'Remove', 'Ignore'
         )
-        for addToType in addToFieldTypes:
+        for addToType in add_to_fieldTypes:
             message_json, toFieldExists = \
-                addToField(addToType, message_json, self.server.debug)
+                add_to_field(addToType, message_json, self.server.debug)
 
         beginSaveTime = time.time()
         # save the json for later queue processing
@@ -1841,7 +1841,7 @@ class PubServer(BaseHTTPRequestHandler):
         usersPath = path.replace('/moderationaction', '')
         nickname = usersPath.replace('/users/', '')
         actorStr = self._get_instance_url(calling_domain) + usersPath
-        if not isModerator(self.server.base_dir, nickname):
+        if not is_moderator(self.server.base_dir, nickname):
             self._redirect_headers(actorStr + '/moderation',
                                    cookie, calling_domain)
             self.server.POSTbusy = False
@@ -2488,8 +2488,8 @@ class PubServer(BaseHTTPRequestHandler):
             adminNickname = get_config_param(self.server.base_dir, 'admin')
             if (chooserNickname != optionsNickname and
                 (chooserNickname == adminNickname or
-                 (isModerator(self.server.base_dir, chooserNickname) and
-                  not isModerator(self.server.base_dir, optionsNickname)))):
+                 (is_moderator(self.server.base_dir, chooserNickname) and
+                  not is_moderator(self.server.base_dir, optionsNickname)))):
                 postsToNews = None
                 if 'postsToNews=' in optionsConfirmParams:
                     postsToNews = optionsConfirmParams.split('postsToNews=')[1]
@@ -2533,8 +2533,8 @@ class PubServer(BaseHTTPRequestHandler):
             adminNickname = get_config_param(self.server.base_dir, 'admin')
             if (chooserNickname != optionsNickname and
                 (chooserNickname == adminNickname or
-                 (isModerator(self.server.base_dir, chooserNickname) and
-                  not isModerator(self.server.base_dir, optionsNickname)))):
+                 (is_moderator(self.server.base_dir, chooserNickname) and
+                  not is_moderator(self.server.base_dir, optionsNickname)))):
                 postsToFeatures = None
                 if 'postsToFeatures=' in optionsConfirmParams:
                     postsToFeatures = \
@@ -2579,8 +2579,8 @@ class PubServer(BaseHTTPRequestHandler):
             adminNickname = get_config_param(self.server.base_dir, 'admin')
             if (chooserNickname != optionsNickname and
                 (chooserNickname == adminNickname or
-                 (isModerator(self.server.base_dir, chooserNickname) and
-                  not isModerator(self.server.base_dir, optionsNickname)))):
+                 (is_moderator(self.server.base_dir, chooserNickname) and
+                  not is_moderator(self.server.base_dir, optionsNickname)))):
                 modPostsToNews = None
                 if 'modNewsPosts=' in optionsConfirmParams:
                     modPostsToNews = \
@@ -2746,7 +2746,7 @@ class PubServer(BaseHTTPRequestHandler):
         # person options screen, Info button
         # See htmlPersonOptions
         if '&submitPersonInfo=' in optionsConfirmParams:
-            if isModerator(self.server.base_dir, chooserNickname):
+            if is_moderator(self.server.base_dir, chooserNickname):
                 if debug:
                     print('Showing info for ' + optionsActor)
                 signing_priv_key_pem = self.server.signing_priv_key_pem
@@ -3869,7 +3869,7 @@ class PubServer(BaseHTTPRequestHandler):
             actor = originPathStr
             actorNickname = get_nickname_from_actor(actor)
             if actor == shareActor or actor == adminActor or \
-               isModerator(base_dir, actorNickname):
+               is_moderator(base_dir, actorNickname):
                 itemID = removeShareConfirmParams.split('itemID=')[1]
                 if '&' in itemID:
                     itemID = itemID.split('&')[0]
@@ -3936,7 +3936,7 @@ class PubServer(BaseHTTPRequestHandler):
             actor = originPathStr
             actorNickname = get_nickname_from_actor(actor)
             if actor == shareActor or actor == adminActor or \
-               isModerator(base_dir, actorNickname):
+               is_moderator(base_dir, actorNickname):
                 itemID = removeShareConfirmParams.split('itemID=')[1]
                 if '&' in itemID:
                     itemID = itemID.split('&')[0]
@@ -4318,7 +4318,7 @@ class PubServer(BaseHTTPRequestHandler):
             nickname = get_nickname_from_actor(actorStr)
             moderator = None
             if nickname:
-                moderator = isModerator(base_dir, nickname)
+                moderator = is_moderator(base_dir, nickname)
             if not nickname or not moderator:
                 if not nickname:
                     print('WARN: nickname not found in ' + actorStr)
@@ -6377,7 +6377,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       'unable to delete ' +
                                       allowedInstancesFilename)
 
-                    if isModerator(self.server.base_dir, nickname):
+                    if is_moderator(self.server.base_dir, nickname):
                         # set selected content warning lists
                         newListsEnabled = ''
                         for name, item in self.server.cw_lists.items():
@@ -7949,7 +7949,7 @@ class PubServer(BaseHTTPRequestHandler):
             nickname = nickname.split('/')[0]
         print('Newswire item date: ' + dateStr)
         if newswire.get(dateStr):
-            if isModerator(base_dir, nickname):
+            if is_moderator(base_dir, nickname):
                 newswireItem = newswire[dateStr]
                 print('Voting on newswire item: ' + str(newswireItem))
                 votesIndex = 2
@@ -8004,7 +8004,7 @@ class PubServer(BaseHTTPRequestHandler):
         if '/' in nickname:
             nickname = nickname.split('/')[0]
         if newswire.get(dateStr):
-            if isModerator(base_dir, nickname):
+            if is_moderator(base_dir, nickname):
                 votesIndex = 2
                 filenameIndex = 3
                 newswireItem = newswire[dateStr]
@@ -9568,9 +9568,9 @@ class PubServer(BaseHTTPRequestHandler):
             }
 
             # populate the items list with replies
-            populateRepliesJson(base_dir, nickname, domain,
-                                postRepliesFilename,
-                                authorized, repliesJson)
+            populate_replies_json(base_dir, nickname, domain,
+                                  postRepliesFilename,
+                                  authorized, repliesJson)
 
             # send the replies json
             if self._requestHTTP():
@@ -9977,7 +9977,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._404()
                 self.server.GETbusy = False
                 return True
-            removePostInteractions(pjo, True)
+            remove_post_interactions(pjo, True)
         if self._requestHTTP():
             msg = \
                 htmlIndividualPost(self.server.css_cache,
@@ -10950,7 +10950,7 @@ class PubServer(BaseHTTPRequestHandler):
                     currNickname = path.split('/users/')[1]
                     if '/' in currNickname:
                         currNickname = currNickname.split('/')[0]
-                    moderator = isModerator(base_dir, currNickname)
+                    moderator = is_moderator(base_dir, currNickname)
                     editor = is_editor(base_dir, currNickname)
                     artist = is_artist(base_dir, currNickname)
                     full_width_tl_button_header = \
@@ -12153,8 +12153,8 @@ class PubServer(BaseHTTPRequestHandler):
         actor/collections/featured
         """
         featuredCollection = \
-            jsonPinPost(base_dir, http_prefix,
-                        nickname, domain, domain_full, system_language)
+            json_pin_post(base_dir, http_prefix,
+                          nickname, domain, domain_full, system_language)
         msg = json.dumps(featuredCollection,
                          ensure_ascii=False).encode('utf-8')
         msglen = len(msg)
@@ -13038,7 +13038,7 @@ class PubServer(BaseHTTPRequestHandler):
         nickname = get_nickname_from_actor(path)
         if not nickname:
             return False
-        if not isModerator(base_dir, nickname):
+        if not is_moderator(base_dir, nickname):
             return False
         crawlersList = []
         curr_time = int(time.time())
@@ -13963,20 +13963,20 @@ class PubServer(BaseHTTPRequestHandler):
             if '/' in nickname:
                 nickname = nickname.split('/')[0]
             pinnedPostJson = \
-                getPinnedPostAsJson(self.server.base_dir,
-                                    self.server.http_prefix,
-                                    nickname, self.server.domain,
-                                    self.server.domain_full,
-                                    self.server.system_language)
+                get_pinned_post_as_json(self.server.base_dir,
+                                        self.server.http_prefix,
+                                        nickname, self.server.domain,
+                                        self.server.domain_full,
+                                        self.server.system_language)
             message_json = {}
             if pinnedPostJson:
                 post_id = remove_id_ending(pinnedPostJson['id'])
                 message_json = \
-                    outboxMessageCreateWrap(self.server.http_prefix,
-                                            nickname,
-                                            self.server.domain,
-                                            self.server.port,
-                                            pinnedPostJson)
+                    outbox_message_create_wrap(self.server.http_prefix,
+                                               nickname,
+                                               self.server.domain,
+                                               self.server.port,
+                                               pinnedPostJson)
                 message_json['id'] = post_id + '/activity'
                 message_json['object']['id'] = post_id
                 message_json['object']['url'] = replace_users_with_at(post_id)
@@ -16108,7 +16108,7 @@ class PubServer(BaseHTTPRequestHandler):
             nickname = self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname = nickname.split('/')[0]
-            if not isModerator(self.server.base_dir, nickname):
+            if not is_moderator(self.server.base_dir, nickname):
                 self._400()
                 self.server.GETbusy = False
                 return
@@ -16147,7 +16147,7 @@ class PubServer(BaseHTTPRequestHandler):
             nickname = self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname = nickname.split('/')[0]
-            if not isModerator(self.server.base_dir, nickname):
+            if not is_moderator(self.server.base_dir, nickname):
                 self._400()
                 self.server.GETbusy = False
                 return
@@ -16615,8 +16615,8 @@ class PubServer(BaseHTTPRequestHandler):
                     # is the post message empty?
                     if not fields['message']:
                         # remove the pinned content from profile screen
-                        undoPinnedPost(self.server.base_dir,
-                                       nickname, self.server.domain)
+                        undo_pinned_post(self.server.base_dir,
+                                         nickname, self.server.domain)
                         return 1
 
                 city = getSpoofedCity(self.server.city,
@@ -16626,24 +16626,26 @@ class PubServer(BaseHTTPRequestHandler):
                 if fields.get('conversationId'):
                     conversationId = fields['conversationId']
                 message_json = \
-                    createPublicPost(self.server.base_dir,
-                                     nickname,
-                                     self.server.domain,
-                                     self.server.port,
-                                     self.server.http_prefix,
-                                     mentionsStr + fields['message'],
-                                     False, False, False, commentsEnabled,
-                                     filename, attachmentMediaType,
-                                     fields['imageDescription'],
-                                     city,
-                                     fields['replyTo'], fields['replyTo'],
-                                     fields['subject'], fields['schedulePost'],
-                                     fields['eventDate'], fields['eventTime'],
-                                     fields['location'], False,
-                                     self.server.system_language,
-                                     conversationId,
-                                     self.server.low_bandwidth,
-                                     self.server.content_license_url)
+                    create_public_post(self.server.base_dir,
+                                       nickname,
+                                       self.server.domain,
+                                       self.server.port,
+                                       self.server.http_prefix,
+                                       mentionsStr + fields['message'],
+                                       False, False, False, commentsEnabled,
+                                       filename, attachmentMediaType,
+                                       fields['imageDescription'],
+                                       city,
+                                       fields['replyTo'], fields['replyTo'],
+                                       fields['subject'],
+                                       fields['schedulePost'],
+                                       fields['eventDate'],
+                                       fields['eventTime'],
+                                       fields['location'], False,
+                                       self.server.system_language,
+                                       conversationId,
+                                       self.server.low_bandwidth,
+                                       self.server.content_license_url)
                 if message_json:
                     if fields['schedulePost']:
                         return 1
@@ -16653,9 +16655,9 @@ class PubServer(BaseHTTPRequestHandler):
                             get_base_content_from_post(message_json,
                                                        sys_language)
                         followersOnly = False
-                        pinPost(self.server.base_dir,
-                                nickname, self.server.domain, contentStr,
-                                followersOnly)
+                        pin_post(self.server.base_dir,
+                                 nickname, self.server.domain, contentStr,
+                                 followersOnly)
                         return 1
                     if self._postToOutbox(message_json,
                                           self.server.project_version,
@@ -16711,25 +16713,25 @@ class PubServer(BaseHTTPRequestHandler):
                 if fields.get('conversationId'):
                     conversationId = fields['conversationId']
                 message_json = \
-                    createBlogPost(self.server.base_dir, nickname,
-                                   self.server.domain, self.server.port,
-                                   self.server.http_prefix,
-                                   fields['message'],
-                                   followersOnly, saveToFile,
-                                   client_to_server, commentsEnabled,
-                                   filename, attachmentMediaType,
-                                   fields['imageDescription'],
-                                   city,
-                                   fields['replyTo'], fields['replyTo'],
-                                   fields['subject'],
-                                   fields['schedulePost'],
-                                   fields['eventDate'],
-                                   fields['eventTime'],
-                                   fields['location'],
-                                   self.server.system_language,
-                                   conversationId,
-                                   self.server.low_bandwidth,
-                                   self.server.content_license_url)
+                    create_blog_post(self.server.base_dir, nickname,
+                                     self.server.domain, self.server.port,
+                                     self.server.http_prefix,
+                                     fields['message'],
+                                     followersOnly, saveToFile,
+                                     client_to_server, commentsEnabled,
+                                     filename, attachmentMediaType,
+                                     fields['imageDescription'],
+                                     city,
+                                     fields['replyTo'], fields['replyTo'],
+                                     fields['subject'],
+                                     fields['schedulePost'],
+                                     fields['eventDate'],
+                                     fields['eventTime'],
+                                     fields['location'],
+                                     self.server.system_language,
+                                     conversationId,
+                                     self.server.low_bandwidth,
+                                     self.server.content_license_url)
                 if message_json:
                     if fields['schedulePost']:
                         return 1
@@ -16862,27 +16864,27 @@ class PubServer(BaseHTTPRequestHandler):
                     conversationId = fields['conversationId']
 
                 message_json = \
-                    createUnlistedPost(self.server.base_dir,
-                                       nickname,
-                                       self.server.domain, self.server.port,
-                                       self.server.http_prefix,
-                                       mentionsStr + fields['message'],
-                                       followersOnly, saveToFile,
-                                       client_to_server, commentsEnabled,
-                                       filename, attachmentMediaType,
-                                       fields['imageDescription'],
-                                       city,
-                                       fields['replyTo'],
-                                       fields['replyTo'],
-                                       fields['subject'],
-                                       fields['schedulePost'],
-                                       fields['eventDate'],
-                                       fields['eventTime'],
-                                       fields['location'],
-                                       self.server.system_language,
-                                       conversationId,
-                                       self.server.low_bandwidth,
-                                       self.server.content_license_url)
+                    create_unlisted_post(self.server.base_dir,
+                                         nickname,
+                                         self.server.domain, self.server.port,
+                                         self.server.http_prefix,
+                                         mentionsStr + fields['message'],
+                                         followersOnly, saveToFile,
+                                         client_to_server, commentsEnabled,
+                                         filename, attachmentMediaType,
+                                         fields['imageDescription'],
+                                         city,
+                                         fields['replyTo'],
+                                         fields['replyTo'],
+                                         fields['subject'],
+                                         fields['schedulePost'],
+                                         fields['eventDate'],
+                                         fields['eventTime'],
+                                         fields['location'],
+                                         self.server.system_language,
+                                         conversationId,
+                                         self.server.low_bandwidth,
+                                         self.server.content_license_url)
                 if message_json:
                     if fields['schedulePost']:
                         return 1
@@ -16912,29 +16914,29 @@ class PubServer(BaseHTTPRequestHandler):
                     conversationId = fields['conversationId']
 
                 message_json = \
-                    createFollowersOnlyPost(self.server.base_dir,
-                                            nickname,
-                                            self.server.domain,
-                                            self.server.port,
-                                            self.server.http_prefix,
-                                            mentionsStr + fields['message'],
-                                            followersOnly, saveToFile,
-                                            client_to_server,
-                                            commentsEnabled,
-                                            filename, attachmentMediaType,
-                                            fields['imageDescription'],
-                                            city,
-                                            fields['replyTo'],
-                                            fields['replyTo'],
-                                            fields['subject'],
-                                            fields['schedulePost'],
-                                            fields['eventDate'],
-                                            fields['eventTime'],
-                                            fields['location'],
-                                            self.server.system_language,
-                                            conversationId,
-                                            self.server.low_bandwidth,
-                                            self.server.content_license_url)
+                    create_followers_only_post(self.server.base_dir,
+                                               nickname,
+                                               self.server.domain,
+                                               self.server.port,
+                                               self.server.http_prefix,
+                                               mentionsStr + fields['message'],
+                                               followersOnly, saveToFile,
+                                               client_to_server,
+                                               commentsEnabled,
+                                               filename, attachmentMediaType,
+                                               fields['imageDescription'],
+                                               city,
+                                               fields['replyTo'],
+                                               fields['replyTo'],
+                                               fields['subject'],
+                                               fields['schedulePost'],
+                                               fields['eventDate'],
+                                               fields['eventTime'],
+                                               fields['location'],
+                                               self.server.system_language,
+                                               conversationId,
+                                               self.server.low_bandwidth,
+                                               self.server.content_license_url)
                 if message_json:
                     if fields['schedulePost']:
                         return 1
@@ -16968,30 +16970,32 @@ class PubServer(BaseHTTPRequestHandler):
                     content_license_url = self.server.content_license_url
 
                     message_json = \
-                        createDirectMessagePost(self.server.base_dir,
-                                                nickname,
-                                                self.server.domain,
-                                                self.server.port,
-                                                self.server.http_prefix,
-                                                mentionsStr +
-                                                fields['message'],
-                                                followersOnly, saveToFile,
-                                                client_to_server,
-                                                commentsEnabled,
-                                                filename, attachmentMediaType,
-                                                fields['imageDescription'],
-                                                city,
-                                                fields['replyTo'],
-                                                fields['replyTo'],
-                                                fields['subject'],
-                                                True, fields['schedulePost'],
-                                                fields['eventDate'],
-                                                fields['eventTime'],
-                                                fields['location'],
-                                                self.server.system_language,
-                                                conversationId,
-                                                self.server.low_bandwidth,
-                                                content_license_url)
+                        create_direct_message_post(self.server.base_dir,
+                                                   nickname,
+                                                   self.server.domain,
+                                                   self.server.port,
+                                                   self.server.http_prefix,
+                                                   mentionsStr +
+                                                   fields['message'],
+                                                   followersOnly, saveToFile,
+                                                   client_to_server,
+                                                   commentsEnabled,
+                                                   filename,
+                                                   attachmentMediaType,
+                                                   fields['imageDescription'],
+                                                   city,
+                                                   fields['replyTo'],
+                                                   fields['replyTo'],
+                                                   fields['subject'],
+                                                   True,
+                                                   fields['schedulePost'],
+                                                   fields['eventDate'],
+                                                   fields['eventTime'],
+                                                   fields['location'],
+                                                   self.server.system_language,
+                                                   conversationId,
+                                                   self.server.low_bandwidth,
+                                                   content_license_url)
                 if message_json:
                     if fields['schedulePost']:
                         return 1
@@ -17025,27 +17029,28 @@ class PubServer(BaseHTTPRequestHandler):
                 commentsEnabled = False
                 conversationId = None
                 message_json = \
-                    createDirectMessagePost(self.server.base_dir,
-                                            nickname,
-                                            self.server.domain,
-                                            self.server.port,
-                                            self.server.http_prefix,
-                                            mentionsStr + fields['message'],
-                                            followersOnly, saveToFile,
-                                            client_to_server, commentsEnabled,
-                                            filename, attachmentMediaType,
-                                            fields['imageDescription'],
-                                            city,
-                                            None, None,
-                                            fields['subject'],
-                                            True, fields['schedulePost'],
-                                            fields['eventDate'],
-                                            fields['eventTime'],
-                                            fields['location'],
-                                            self.server.system_language,
-                                            conversationId,
-                                            self.server.low_bandwidth,
-                                            self.server.content_license_url)
+                    create_direct_message_post(self.server.base_dir,
+                                               nickname,
+                                               self.server.domain,
+                                               self.server.port,
+                                               self.server.http_prefix,
+                                               mentionsStr + fields['message'],
+                                               followersOnly, saveToFile,
+                                               client_to_server,
+                                               commentsEnabled,
+                                               filename, attachmentMediaType,
+                                               fields['imageDescription'],
+                                               city,
+                                               None, None,
+                                               fields['subject'],
+                                               True, fields['schedulePost'],
+                                               fields['eventDate'],
+                                               fields['eventTime'],
+                                               fields['location'],
+                                               self.server.system_language,
+                                               conversationId,
+                                               self.server.low_bandwidth,
+                                               self.server.content_license_url)
                 if message_json:
                     if fields['schedulePost']:
                         return 1
@@ -17070,19 +17075,19 @@ class PubServer(BaseHTTPRequestHandler):
                                       nickname,
                                       self.server.domain)
                 message_json = \
-                    createReportPost(self.server.base_dir,
-                                     nickname,
-                                     self.server.domain, self.server.port,
-                                     self.server.http_prefix,
-                                     mentionsStr + fields['message'],
-                                     True, False, False, True,
-                                     filename, attachmentMediaType,
-                                     fields['imageDescription'],
-                                     city,
-                                     self.server.debug, fields['subject'],
-                                     self.server.system_language,
-                                     self.server.low_bandwidth,
-                                     self.server.content_license_url)
+                    create_report_post(self.server.base_dir,
+                                       nickname,
+                                       self.server.domain, self.server.port,
+                                       self.server.http_prefix,
+                                       mentionsStr + fields['message'],
+                                       True, False, False, True,
+                                       filename, attachmentMediaType,
+                                       fields['imageDescription'],
+                                       city,
+                                       self.server.debug, fields['subject'],
+                                       self.server.system_language,
+                                       self.server.low_bandwidth,
+                                       self.server.content_license_url)
                 if message_json:
                     if self._postToOutbox(message_json,
                                           self.server.project_version,
@@ -17109,22 +17114,22 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.domain)
                 intDuration = int(fields['duration'])
                 message_json = \
-                    createQuestionPost(self.server.base_dir,
-                                       nickname,
-                                       self.server.domain,
-                                       self.server.port,
-                                       self.server.http_prefix,
-                                       fields['message'], qOptions,
-                                       False, False, False,
-                                       commentsEnabled,
-                                       filename, attachmentMediaType,
-                                       fields['imageDescription'],
-                                       city,
-                                       fields['subject'],
-                                       intDuration,
-                                       self.server.system_language,
-                                       self.server.low_bandwidth,
-                                       self.server.content_license_url)
+                    create_question_post(self.server.base_dir,
+                                         nickname,
+                                         self.server.domain,
+                                         self.server.port,
+                                         self.server.http_prefix,
+                                         fields['message'], qOptions,
+                                         False, False, False,
+                                         commentsEnabled,
+                                         filename, attachmentMediaType,
+                                         fields['imageDescription'],
+                                         city,
+                                         fields['subject'],
+                                         intDuration,
+                                         self.server.system_language,
+                                         self.server.low_bandwidth,
+                                         self.server.content_license_url)
                 if message_json:
                     if self.server.debug:
                         print('DEBUG: new Question')
@@ -18876,7 +18881,7 @@ def runDaemon(content_license_url: str,
 
     print('Creating cache expiry thread')
     httpd.thrCache = \
-        threadWithTrace(target=expireCache,
+        threadWithTrace(target=expire_cache,
                         args=(base_dir, httpd.person_cache,
                               httpd.http_prefix,
                               archive_dir,

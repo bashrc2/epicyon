@@ -36,7 +36,7 @@ from person import person_box_json
 from person import getActorJson
 from person import getPersonAvatarUrl
 from posts import getPersonBox
-from posts import isModerator
+from posts import is_moderator
 from posts import parseUserFeed
 from posts import isCreateInsideAnnounce
 from donate import get_donation_url
@@ -1760,7 +1760,7 @@ def _htmlEditProfileFiltering(base_dir: str, nickname: str, domain: str,
         'style="height:200px" spellcheck="false">' + \
         allowedInstancesStr + '</textarea>\n'
 
-    if isModerator(base_dir, nickname):
+    if is_moderator(base_dir, nickname):
         editProfileForm += \
             '<a href="/users/' + nickname + '/crawlers">' + \
             translate['Known Web Crawlers'] + '</a><br>\n'

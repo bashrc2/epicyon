@@ -22,7 +22,7 @@ from follow import isFollowingActor
 from posts import postIsMuted
 from posts import getPersonBox
 from posts import downloadAnnounce
-from posts import populateRepliesJson
+from posts import populate_replies_json
 from utils import remove_hash_from_post_id
 from utils import remove_html
 from utils import get_actor_languages_list
@@ -2119,8 +2119,8 @@ def htmlIndividualPost(css_cache: {},
             repliesJson = {
                 'orderedItems': []
             }
-            populateRepliesJson(base_dir, nickname, domain,
-                                repliesFilename, authorized, repliesJson)
+            populate_replies_json(base_dir, nickname, domain,
+                                  repliesFilename, authorized, repliesJson)
             # add items to the html output
             for item in repliesJson['orderedItems']:
                 postStr += \
