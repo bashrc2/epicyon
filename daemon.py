@@ -280,7 +280,7 @@ from utils import get_image_extensions
 from utils import media_file_mime_type
 from utils import getCSS
 from utils import first_paragraph_from_string
-from utils import clearFromPostCaches
+from utils import clear_from_post_caches
 from utils import contains_invalid_chars
 from utils import is_system_account
 from utils import set_config_param
@@ -4661,9 +4661,9 @@ class PubServer(BaseHTTPRequestHandler):
                     # remove any previous cached news posts
                     newsId = remove_id_ending(post_json_object['object']['id'])
                     newsId = newsId.replace('/', '#')
-                    clearFromPostCaches(base_dir,
-                                        self.server.recent_posts_cache,
-                                        newsId)
+                    clear_from_post_caches(base_dir,
+                                           self.server.recent_posts_cache,
+                                           newsId)
 
                     # save the news post
                     save_json(post_json_object, post_filename)

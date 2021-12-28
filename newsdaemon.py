@@ -31,7 +31,7 @@ from utils import get_full_domain
 from utils import load_json
 from utils import save_json
 from utils import get_status_number
-from utils import clearFromPostCaches
+from utils import clear_from_post_caches
 from utils import dangerous_markup
 from utils import local_actor_url
 from inbox import storeHashTags
@@ -730,7 +730,7 @@ def _convertRSStoActivityPub(base_dir: str, http_prefix: str,
                           http_prefix, domain_full,
                           blog, translate)
 
-            clearFromPostCaches(base_dir, recent_posts_cache, post_id)
+            clear_from_post_caches(base_dir, recent_posts_cache, post_id)
             if save_json(blog, filename):
                 _updateFeedsOutboxIndex(base_dir, domain, post_id + '.json')
 

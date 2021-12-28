@@ -1296,8 +1296,8 @@ def locate_news_arrival(base_dir: str, domain: str,
     return None
 
 
-def clearFromPostCaches(base_dir: str, recent_posts_cache: {},
-                        post_id: str) -> None:
+def clear_from_post_caches(base_dir: str, recent_posts_cache: {},
+                           post_id: str) -> None:
     """Clears cached html for the given post, so that edits
     to news will appear
     """
@@ -1308,13 +1308,13 @@ def clearFromPostCaches(base_dir: str, recent_posts_cache: {},
                 continue
             if acct.startswith('inbox@'):
                 continue
-            cacheDir = os.path.join(base_dir + '/accounts', acct)
-            post_filename = cacheDir + filename
+            cache_dir = os.path.join(base_dir + '/accounts', acct)
+            post_filename = cache_dir + filename
             if os.path.isfile(post_filename):
                 try:
                     os.remove(post_filename)
                 except OSError:
-                    print('EX: clearFromPostCaches file not removed ' +
+                    print('EX: clear_from_post_caches file not removed ' +
                           str(post_filename))
             # if the post is in the recent posts cache then remove it
             if recent_posts_cache.get('index'):
@@ -1346,15 +1346,15 @@ def locate_post(base_dir: str, nickname: str, domain: str,
 
     # search boxes
     boxes = ('inbox', 'outbox', 'tlblogs')
-    accountDir = acct_dir(base_dir, nickname, domain) + '/'
+    account_dir = acct_dir(base_dir, nickname, domain) + '/'
     for boxName in boxes:
-        post_filename = accountDir + boxName + '/' + postUrl
+        post_filename = account_dir + boxName + '/' + postUrl
         if os.path.isfile(post_filename):
             return post_filename
 
     # check news posts
-    accountDir = base_dir + '/accounts/news' + '@' + domain + '/'
-    post_filename = accountDir + 'outbox/' + postUrl
+    account_dir = base_dir + '/accounts/news' + '@' + domain + '/'
+    post_filename = account_dir + 'outbox/' + postUrl
     if os.path.isfile(post_filename):
         return post_filename
 
