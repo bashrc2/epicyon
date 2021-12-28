@@ -24,13 +24,13 @@ from shutil import copyfile
 from session import create_session
 from webfinger import webfinger_meta
 from webfinger import webfinger_node_info
-from webfinger import webfingerLookup
-from webfinger import webfingerUpdate
-from mastoapiv1 import mastoApiV1Response
-from metadata import metaDataNodeInfo
-from metadata import metadataCustomEmoji
-from enigma import getEnigmaPubKey
-from enigma import setEnigmaPubKey
+from webfinger import webfinger_lookup
+from webfinger import webfinger_update
+from mastoapiv1 import masto_api_v1_response
+from metadata import meta_data_node_info
+from metadata import metadata_custom_emoji
+from enigma import get_enigma_pub_key
+from enigma import set_enigma_pub_key
 from pgp import getEmailAddress
 from pgp import setEmailAddress
 from pgp import getPGPpubKey
@@ -1062,23 +1062,24 @@ class PubServer(BaseHTTPRequestHandler):
         self._update_known_crawlers(uaStr)
 
         broch_mode = broch_modeIsActive(base_dir)
-        sendJson, sendJsonStr = mastoApiV1Response(path,
-                                                   calling_domain,
-                                                   uaStr,
-                                                   authorized,
-                                                   http_prefix,
-                                                   base_dir,
-                                                   nickname, domain,
-                                                   domain_full,
-                                                   onion_domain,
-                                                   i2p_domain,
-                                                   translate,
-                                                   registration,
-                                                   system_language,
-                                                   project_version,
-                                                   customEmoji,
-                                                   show_node_info_accounts,
-                                                   broch_mode)
+        sendJson, sendJsonStr = \
+            masto_api_v1_response(path,
+                                  calling_domain,
+                                  uaStr,
+                                  authorized,
+                                  http_prefix,
+                                  base_dir,
+                                  nickname, domain,
+                                  domain_full,
+                                  onion_domain,
+                                  i2p_domain,
+                                  translate,
+                                  registration,
+                                  system_language,
+                                  project_version,
+                                  customEmoji,
+                                  show_node_info_accounts,
+                                  broch_mode)
 
         if sendJson is not None:
             msg = json.dumps(sendJson).encode('utf-8')
@@ -1146,11 +1147,11 @@ class PubServer(BaseHTTPRequestHandler):
         instanceUrl = self._get_instance_url(calling_domain)
         aboutUrl = instanceUrl + '/about'
         termsOfServiceUrl = instanceUrl + '/terms'
-        info = metaDataNodeInfo(self.server.base_dir,
-                                aboutUrl, termsOfServiceUrl,
-                                self.server.registration,
-                                nodeInfoVersion,
-                                show_node_info_accounts)
+        info = meta_data_node_info(self.server.base_dir,
+                                   aboutUrl, termsOfServiceUrl,
+                                   self.server.registration,
+                                   nodeInfoVersion,
+                                   show_node_info_accounts)
         if info:
             msg = json.dumps(info).encode('utf-8')
             msglen = len(msg)
@@ -1243,9 +1244,9 @@ class PubServer(BaseHTTPRequestHandler):
             print('DEBUG: WEBFINGER lookup ' + self.path + ' ' +
                   str(self.server.base_dir))
         wfResult = \
-            webfingerLookup(self.path, self.server.base_dir,
-                            self.server.domain, self.server.onion_domain,
-                            self.server.port, self.server.debug)
+            webfinger_lookup(self.path, self.server.base_dir,
+                             self.server.domain, self.server.onion_domain,
+                             self.server.port, self.server.debug)
         if wfResult:
             msg = json.dumps(wfResult).encode('utf-8')
             msglen = len(msg)
@@ -5382,15 +5383,15 @@ class PubServer(BaseHTTPRequestHandler):
                             actorChanged = True
 
                     # change Enigma public key
-                    currentEnigmaPubKey = getEnigmaPubKey(actor_json)
+                    currentEnigmaPubKey = get_enigma_pub_key(actor_json)
                     if fields.get('enigmapubkey'):
                         if fields['enigmapubkey'] != currentEnigmaPubKey:
-                            setEnigmaPubKey(actor_json,
-                                            fields['enigmapubkey'])
+                            set_enigma_pub_key(actor_json,
+                                               fields['enigmapubkey'])
                             actorChanged = True
                     else:
                         if currentEnigmaPubKey:
-                            setEnigmaPubKey(actor_json, '')
+                            set_enigma_pub_key(actor_json, '')
                             actorChanged = True
 
                     # change PGP public key
@@ -6488,10 +6489,10 @@ class PubServer(BaseHTTPRequestHandler):
                         addActorUpdateTimestamp(actor_json)
                         # save the actor
                         save_json(actor_json, actorFilename)
-                        webfingerUpdate(base_dir,
-                                        nickname, domain,
-                                        onion_domain,
-                                        self.server.cached_webfingers)
+                        webfinger_update(base_dir,
+                                         nickname, domain,
+                                         onion_domain,
+                                         self.server.cached_webfingers)
                         # also copy to the actors cache and
                         # person_cache in memory
                         storePersonInCache(base_dir,
@@ -7121,7 +7122,7 @@ class PubServer(BaseHTTPRequestHandler):
                 jamiAddress = getJamiAddress(actor_json)
                 cwtchAddress = getCwtchAddress(actor_json)
                 emailAddress = getEmailAddress(actor_json)
-                EnigmaPubKey = getEnigmaPubKey(actor_json)
+                EnigmaPubKey = get_enigma_pub_key(actor_json)
                 PGPpubKey = getPGPpubKey(actor_json)
                 PGPfingerprint = getPGPfingerprint(actor_json)
                 if actor_json.get('alsoKnownAs'):
@@ -18795,7 +18796,7 @@ def runDaemon(content_license_url: str,
 
     # get the list of custom emoji, for use by the mastodon api
     httpd.customEmoji = \
-        metadataCustomEmoji(base_dir, http_prefix, httpd.domain_full)
+        metadata_custom_emoji(base_dir, http_prefix, httpd.domain_full)
 
     # whether to enable broch mode, which locks down the instance
     setBrochMode(base_dir, httpd.domain_full, broch_mode)

@@ -8,7 +8,7 @@ __status__ = "Production"
 __module_group__ = "Profile Metadata"
 
 
-def getEnigmaPubKey(actor_json: {}) -> str:
+def get_enigma_pub_key(actor_json: {}) -> str:
     """Returns Enigma public key for the given actor
     """
     if not actor_json.get('attachment'):
@@ -28,7 +28,7 @@ def getEnigmaPubKey(actor_json: {}) -> str:
     return ''
 
 
-def setEnigmaPubKey(actor_json: {}, enigmaPubKey: str) -> None:
+def set_enigma_pub_key(actor_json: {}, enigmaPubKey: str) -> None:
     """Sets a Enigma public key for the given actor
     """
     removeKey = False

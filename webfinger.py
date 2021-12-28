@@ -214,9 +214,9 @@ def webfinger_meta(http_prefix: str, domain_full: str) -> str:
     return metaStr
 
 
-def webfingerLookup(path: str, base_dir: str,
-                    domain: str, onion_domain: str,
-                    port: int, debug: bool) -> {}:
+def webfinger_lookup(path: str, base_dir: str,
+                     domain: str, onion_domain: str,
+                     port: int, debug: bool) -> {}:
     """Lookup the webfinger endpoint for an account
     """
     if not path.startswith('/.well-known/webfinger?'):
@@ -279,7 +279,7 @@ def webfingerLookup(path: str, base_dir: str,
     return wfJson
 
 
-def _webfingerUpdateAvatar(wfJson: {}, actor_json: {}) -> bool:
+def _webfinger_updateAvatar(wfJson: {}, actor_json: {}) -> bool:
     """Updates the avatar image link
     """
     found = False
@@ -337,7 +337,7 @@ def _webfingerAddBlogLink(wfJson: {}, actor_json: {}) -> bool:
     return True
 
 
-def _webfingerUpdateFromProfile(wfJson: {}, actor_json: {}) -> bool:
+def _webfinger_updateFromProfile(wfJson: {}, actor_json: {}) -> bool:
     """Updates webfinger Email/blog/xmpp links from profile
     Returns true if one or more tags has been changed
     """
@@ -411,7 +411,7 @@ def _webfingerUpdateFromProfile(wfJson: {}, actor_json: {}) -> bool:
         wfJson['aliases'].remove(fullAlias)
         changed = True
 
-    if _webfingerUpdateAvatar(wfJson, actor_json):
+    if _webfinger_updateAvatar(wfJson, actor_json):
         changed = True
 
     if _webfingerAddBlogLink(wfJson, actor_json):
@@ -420,9 +420,9 @@ def _webfingerUpdateFromProfile(wfJson: {}, actor_json: {}) -> bool:
     return changed
 
 
-def webfingerUpdate(base_dir: str, nickname: str, domain: str,
-                    onion_domain: str,
-                    cached_webfingers: {}) -> None:
+def webfinger_update(base_dir: str, nickname: str, domain: str,
+                     onion_domain: str,
+                     cached_webfingers: {}) -> None:
     handle = nickname + '@' + domain
     wfSubdir = '/wfendpoints'
     if not os.path.isdir(base_dir + wfSubdir):
@@ -446,6 +446,6 @@ def webfingerUpdate(base_dir: str, nickname: str, domain: str,
     if not actor_json:
         return
 
-    if _webfingerUpdateFromProfile(wfJson, actor_json):
+    if _webfinger_updateFromProfile(wfJson, actor_json):
         if save_json(wfJson, filename):
             storeWebfingerInCache(handle, wfJson, cached_webfingers)

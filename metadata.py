@@ -31,11 +31,11 @@ def _getStatusCount(base_dir: str) -> int:
     return statusCtr
 
 
-def metaDataNodeInfo(base_dir: str,
-                     aboutUrl: str,
-                     termsOfServiceUrl: str,
-                     registration: bool, version: str,
-                     showAccounts: bool) -> {}:
+def meta_data_node_info(base_dir: str,
+                        aboutUrl: str,
+                        termsOfServiceUrl: str,
+                        registration: bool, version: str,
+                        showAccounts: bool) -> {}:
     """ /nodeinfo/2.0 endpoint
     Also see https://socialhub.activitypub.rocks/t/
     fep-f1d5-nodeinfo-in-fediverse-software/1190/4
@@ -207,8 +207,8 @@ def metaDataInstance(showAccounts: bool,
     return instance
 
 
-def metadataCustomEmoji(base_dir: str,
-                        http_prefix: str, domain_full: str) -> {}:
+def metadata_custom_emoji(base_dir: str,
+                          http_prefix: str, domain_full: str) -> {}:
     """Returns the custom emoji
     Endpoint /api/v1/custom_emojis
     See https://docs.joinmastodon.org/methods/instance/custom_emojis

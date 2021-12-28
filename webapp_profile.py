@@ -47,7 +47,7 @@ from ssb import getSSBAddress
 from pgp import getEmailAddress
 from pgp import getPGPfingerprint
 from pgp import getPGPpubKey
-from enigma import getEnigmaPubKey
+from enigma import get_enigma_pub_key
 from tox import getToxAddress
 from briar import getBriarAddress
 from jami import getJamiAddress
@@ -635,7 +635,7 @@ def htmlProfile(signing_priv_key_pem: str,
     donateUrl = getDonationUrl(profile_json)
     websiteUrl = getWebsite(profile_json, translate)
     blogAddress = getBlogAddress(profile_json)
-    EnigmaPubKey = getEnigmaPubKey(profile_json)
+    EnigmaPubKey = get_enigma_pub_key(profile_json)
     PGPpubKey = getPGPpubKey(profile_json)
     PGPfingerprint = getPGPfingerprint(profile_json)
     emailAddress = getEmailAddress(profile_json)
@@ -2141,7 +2141,7 @@ def htmlEditProfile(css_cache: {}, translate: {}, base_dir: str, path: str,
         jamiAddress = getJamiAddress(actor_json)
         cwtchAddress = getCwtchAddress(actor_json)
         emailAddress = getEmailAddress(actor_json)
-        EnigmaPubKey = getEnigmaPubKey(actor_json)
+        EnigmaPubKey = get_enigma_pub_key(actor_json)
         PGPpubKey = getPGPpubKey(actor_json)
         PGPfingerprint = getPGPfingerprint(actor_json)
         if actor_json.get('name'):

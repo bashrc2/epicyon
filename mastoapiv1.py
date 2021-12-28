@@ -81,20 +81,20 @@ def _getMastoApiV1Account(base_dir: str, nickname: str, domain: str) -> {}:
     return mastoAccountJson
 
 
-def mastoApiV1Response(path: str, calling_domain: str,
-                       uaStr: str,
-                       authorized: bool,
-                       http_prefix: str,
-                       base_dir: str, nickname: str, domain: str,
-                       domain_full: str,
-                       onion_domain: str, i2p_domain: str,
-                       translate: {},
-                       registration: bool,
-                       system_language: str,
-                       project_version: str,
-                       customEmoji: [],
-                       show_node_info_accounts: bool,
-                       broch_mode: bool) -> ({}, str):
+def masto_api_v1_response(path: str, calling_domain: str,
+                          uaStr: str,
+                          authorized: bool,
+                          http_prefix: str,
+                          base_dir: str, nickname: str, domain: str,
+                          domain_full: str,
+                          onion_domain: str, i2p_domain: str,
+                          translate: {},
+                          registration: bool,
+                          system_language: str,
+                          project_version: str,
+                          customEmoji: [],
+                          show_node_info_accounts: bool,
+                          broch_mode: bool) -> ({}, str):
     """This is a vestigil mastodon API for the purpose
        of returning an empty result to sites like
        https://mastopeek.app-dist.eu
