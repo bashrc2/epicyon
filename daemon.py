@@ -367,27 +367,27 @@ import os
 
 
 # maximum number of posts to list in outbox feed
-maxPostsInFeed = 12
+max_posts_in_feed = 12
 
 # maximum number of posts in a hashtag feed
-maxPostsInHashtagFeed = 6
+max_posts_in_hashtag_feed = 6
 
 # reduced posts for media feed because it can take a while
-maxPostsInMediaFeed = 6
+max_posts_in_media_feed = 6
 
 # Blogs can be longer, so don't show many per page
-maxPostsInBlogsFeed = 4
+max_posts_in_blogs_feed = 4
 
-maxPostsInNewsFeed = 10
+max_posts_in_news_feed = 10
 
 # Maximum number of entries in returned rss.xml
-maxPostsInRSSFeed = 10
+max_posts_in_rss_feed = 10
 
 # number of follows/followers per page
-followsPerPage = 6
+follows_per_page = 6
 
 # number of item shares per page
-sharesPerPage = 12
+shares_per_page = 12
 
 
 def save_domain_qrcode(base_dir: str, http_prefix: str,
@@ -3302,7 +3302,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.translate,
                                       base_dir,
                                       searchStr[1:], 1,
-                                      maxPostsInHashtagFeed,
+                                      max_posts_in_hashtag_feed,
                                       self.server.session,
                                       self.server.cached_webfingers,
                                       self.server.person_cache,
@@ -3394,7 +3394,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       nickname,
                                       domain,
                                       searchStr,
-                                      maxPostsInFeed,
+                                      max_posts_in_feed,
                                       pageNumber,
                                       self.server.project_version,
                                       self.server.recent_posts_cache,
@@ -3462,7 +3462,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       nickname,
                                       domain,
                                       searchStr,
-                                      maxPostsInFeed,
+                                      max_posts_in_feed,
                                       pageNumber,
                                       self.server.project_version,
                                       self.server.recent_posts_cache,
@@ -3628,7 +3628,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.translate,
                                           base_dir,
                                           searchStr[1:], pageNumber,
-                                          maxPostsInFeed,
+                                          max_posts_in_feed,
                                           http_prefix,
                                           domain_full,
                                           actorStr, calling_domain,
@@ -3651,7 +3651,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.translate,
                                           base_dir,
                                           searchStr, pageNumber,
-                                          maxPostsInFeed,
+                                          max_posts_in_feed,
                                           http_prefix,
                                           domain_full,
                                           actorStr, calling_domain,
@@ -6864,7 +6864,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      nickname,
                                      domain,
                                      port,
-                                     maxPostsInRSSFeed, 1,
+                                     max_posts_in_rss_feed, 1,
                                      True,
                                      self.server.system_language)
                 if msg is not None:
@@ -6914,7 +6914,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      nickname,
                                      domain,
                                      port,
-                                     maxPostsInRSSFeed, 1,
+                                     max_posts_in_rss_feed, 1,
                                      False,
                                      self.server.system_language)
             break
@@ -7029,7 +7029,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      base_dir, http_prefix,
                                      self.server.translate,
                                      nickname, domain, port,
-                                     maxPostsInRSSFeed, 1,
+                                     max_posts_in_rss_feed, 1,
                                      system_language)
                 if msg is not None:
                     msg = msg.encode('utf-8')
@@ -7536,7 +7536,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.max_recent_posts,
                               self.server.translate,
                               base_dir, hashtag, pageNumber,
-                              maxPostsInHashtagFeed, self.server.session,
+                              max_posts_in_hashtag_feed, self.server.session,
                               self.server.cached_webfingers,
                               self.server.person_cache,
                               http_prefix,
@@ -7599,7 +7599,7 @@ class PubServer(BaseHTTPRequestHandler):
                              self.server.max_recent_posts,
                              self.server.translate,
                              base_dir, hashtag,
-                             maxPostsInFeed, self.server.session,
+                             max_posts_in_feed, self.server.session,
                              self.server.cached_webfingers,
                              self.server.person_cache,
                              http_prefix,
@@ -10177,7 +10177,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   port,
                                   path,
                                   http_prefix,
-                                  maxPostsInFeed, 'inbox',
+                                  max_posts_in_feed, 'inbox',
                                   authorized,
                                   0,
                                   self.server.positive_voting,
@@ -10209,7 +10209,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               port,
                                               path + '?page=1',
                                               http_prefix,
-                                              maxPostsInFeed, 'inbox',
+                                              max_posts_in_feed, 'inbox',
                                               authorized,
                                               0,
                                               self.server.positive_voting,
@@ -10235,7 +10235,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         recent_posts_cache,
                                         max_recent_posts,
                                         translate,
-                                        pageNumber, maxPostsInFeed,
+                                        pageNumber, max_posts_in_feed,
                                         session,
                                         base_dir,
                                         cached_webfingers,
@@ -10336,7 +10336,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   port,
                                   path,
                                   http_prefix,
-                                  maxPostsInFeed, 'dm',
+                                  max_posts_in_feed, 'dm',
                                   authorized,
                                   0, self.server.positive_voting,
                                   self.server.voting_time_mins)
@@ -10362,7 +10362,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               port,
                                               path + '?page=1',
                                               http_prefix,
-                                              maxPostsInFeed, 'dm',
+                                              max_posts_in_feed, 'dm',
                                               authorized,
                                               0,
                                               self.server.positive_voting,
@@ -10388,7 +10388,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.recent_posts_cache,
                                          self.server.max_recent_posts,
                                          self.server.translate,
-                                         pageNumber, maxPostsInFeed,
+                                         pageNumber, max_posts_in_feed,
                                          self.server.session,
                                          base_dir,
                                          self.server.cached_webfingers,
@@ -10481,7 +10481,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   port,
                                   path,
                                   http_prefix,
-                                  maxPostsInFeed, 'tlreplies',
+                                  max_posts_in_feed, 'tlreplies',
                                   True,
                                   0, self.server.positive_voting,
                                   self.server.voting_time_mins)
@@ -10508,7 +10508,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           port,
                                           path + '?page=1',
                                           http_prefix,
-                                          maxPostsInFeed, 'tlreplies',
+                                          max_posts_in_feed, 'tlreplies',
                                           True,
                                           0, self.server.positive_voting,
                                           self.server.voting_time_mins)
@@ -10533,7 +10533,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.recent_posts_cache,
                                          self.server.max_recent_posts,
                                          self.server.translate,
-                                         pageNumber, maxPostsInFeed,
+                                         pageNumber, max_posts_in_feed,
                                          self.server.session,
                                          base_dir,
                                          self.server.cached_webfingers,
@@ -10626,7 +10626,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   port,
                                   path,
                                   http_prefix,
-                                  maxPostsInMediaFeed, 'tlmedia',
+                                  max_posts_in_media_feed, 'tlmedia',
                                   True,
                                   0, self.server.positive_voting,
                                   self.server.voting_time_mins)
@@ -10653,7 +10653,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           port,
                                           path + '?page=1',
                                           http_prefix,
-                                          maxPostsInMediaFeed, 'tlmedia',
+                                          max_posts_in_media_feed, 'tlmedia',
                                           True,
                                           0, self.server.positive_voting,
                                           self.server.voting_time_mins)
@@ -10674,7 +10674,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.recent_posts_cache,
                                        self.server.max_recent_posts,
                                        self.server.translate,
-                                       pageNumber, maxPostsInMediaFeed,
+                                       pageNumber, max_posts_in_media_feed,
                                        self.server.session,
                                        base_dir,
                                        self.server.cached_webfingers,
@@ -10768,7 +10768,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   port,
                                   path,
                                   http_prefix,
-                                  maxPostsInBlogsFeed, 'tlblogs',
+                                  max_posts_in_blogs_feed, 'tlblogs',
                                   True,
                                   0, self.server.positive_voting,
                                   self.server.voting_time_mins)
@@ -10795,7 +10795,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           port,
                                           path + '?page=1',
                                           http_prefix,
-                                          maxPostsInBlogsFeed, 'tlblogs',
+                                          max_posts_in_blogs_feed, 'tlblogs',
                                           True,
                                           0, self.server.positive_voting,
                                           self.server.voting_time_mins)
@@ -10816,7 +10816,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.recent_posts_cache,
                                        self.server.max_recent_posts,
                                        self.server.translate,
-                                       pageNumber, maxPostsInBlogsFeed,
+                                       pageNumber, max_posts_in_blogs_feed,
                                        self.server.session,
                                        base_dir,
                                        self.server.cached_webfingers,
@@ -10911,7 +10911,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   port,
                                   path,
                                   http_prefix,
-                                  maxPostsInNewsFeed, 'tlnews',
+                                  max_posts_in_news_feed, 'tlnews',
                                   True,
                                   self.server.newswire_votes_threshold,
                                   self.server.positive_voting,
@@ -10939,7 +10939,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           port,
                                           path + '?page=1',
                                           http_prefix,
-                                          maxPostsInBlogsFeed, 'tlnews',
+                                          max_posts_in_blogs_feed, 'tlnews',
                                           True,
                                           self.server.newswire_votes_threshold,
                                           self.server.positive_voting,
@@ -10967,7 +10967,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.recent_posts_cache,
                                       self.server.max_recent_posts,
                                       self.server.translate,
-                                      pageNumber, maxPostsInNewsFeed,
+                                      pageNumber, max_posts_in_news_feed,
                                       self.server.session,
                                       base_dir,
                                       self.server.cached_webfingers,
@@ -11062,7 +11062,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   port,
                                   path,
                                   http_prefix,
-                                  maxPostsInNewsFeed, 'tlfeatures',
+                                  max_posts_in_news_feed, 'tlfeatures',
                                   True,
                                   self.server.newswire_votes_threshold,
                                   self.server.positive_voting,
@@ -11090,7 +11090,8 @@ class PubServer(BaseHTTPRequestHandler):
                                           port,
                                           path + '?page=1',
                                           http_prefix,
-                                          maxPostsInBlogsFeed, 'tlfeatures',
+                                          max_posts_in_blogs_feed,
+                                          'tlfeatures',
                                           True,
                                           self.server.newswire_votes_threshold,
                                           self.server.positive_voting,
@@ -11119,7 +11120,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.recent_posts_cache,
                                           self.server.max_recent_posts,
                                           self.server.translate,
-                                          pageNumber, maxPostsInBlogsFeed,
+                                          pageNumber, max_posts_in_blogs_feed,
                                           self.server.session,
                                           base_dir,
                                           self.server.cached_webfingers,
@@ -11230,7 +11231,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.recent_posts_cache,
                                    self.server.max_recent_posts,
                                    self.server.translate,
-                                   pageNumber, maxPostsInFeed,
+                                   pageNumber, max_posts_in_feed,
                                    self.server.session,
                                    base_dir,
                                    self.server.cached_webfingers,
@@ -11315,7 +11316,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.recent_posts_cache,
                                    self.server.max_recent_posts,
                                    self.server.translate,
-                                   pageNumber, maxPostsInFeed,
+                                   pageNumber, max_posts_in_feed,
                                    self.server.session,
                                    base_dir,
                                    self.server.cached_webfingers,
@@ -11384,7 +11385,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   port,
                                   path,
                                   http_prefix,
-                                  maxPostsInFeed, 'tlbookmarks',
+                                  max_posts_in_feed, 'tlbookmarks',
                                   authorized,
                                   0, self.server.positive_voting,
                                   self.server.voting_time_mins)
@@ -11411,7 +11412,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               port,
                                               path + '?page=1',
                                               http_prefix,
-                                              maxPostsInFeed,
+                                              max_posts_in_feed,
                                               'tlbookmarks',
                                               authorized,
                                               0, self.server.positive_voting,
@@ -11437,7 +11438,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.recent_posts_cache,
                                           self.server.max_recent_posts,
                                           self.server.translate,
-                                          pageNumber, maxPostsInFeed,
+                                          pageNumber, max_posts_in_feed,
                                           self.server.session,
                                           base_dir,
                                           self.server.cached_webfingers,
@@ -11525,7 +11526,7 @@ class PubServer(BaseHTTPRequestHandler):
             personBoxJson(self.server.recent_posts_cache,
                           self.server.session,
                           base_dir, domain, port, path,
-                          http_prefix, maxPostsInFeed, 'outbox',
+                          http_prefix, max_posts_in_feed, 'outbox',
                           authorized,
                           self.server.newswire_votes_threshold,
                           self.server.positive_voting,
@@ -11553,7 +11554,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   base_dir, domain, port,
                                   path + pageStr,
                                   http_prefix,
-                                  maxPostsInFeed, 'outbox',
+                                  max_posts_in_feed, 'outbox',
                                   authorized,
                                   self.server.newswire_votes_threshold,
                                   self.server.positive_voting,
@@ -11577,7 +11578,7 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.recent_posts_cache,
                                self.server.max_recent_posts,
                                self.server.translate,
-                               pageNumber, maxPostsInFeed,
+                               pageNumber, max_posts_in_feed,
                                self.server.session,
                                base_dir,
                                self.server.cached_webfingers,
@@ -11657,7 +11658,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   port,
                                   path,
                                   http_prefix,
-                                  maxPostsInFeed, 'moderation',
+                                  max_posts_in_feed, 'moderation',
                                   True,
                                   0, self.server.positive_voting,
                                   self.server.voting_time_mins)
@@ -11683,7 +11684,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               port,
                                               path + '?page=1',
                                               http_prefix,
-                                              maxPostsInFeed, 'moderation',
+                                              max_posts_in_feed, 'moderation',
                                               True,
                                               0, self.server.positive_voting,
                                               self.server.voting_time_mins)
@@ -11710,7 +11711,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.recent_posts_cache,
                                            self.server.max_recent_posts,
                                            self.server.translate,
-                                           pageNumber, maxPostsInFeed,
+                                           pageNumber, max_posts_in_feed,
                                            self.server.session,
                                            base_dir,
                                            self.server.cached_webfingers,
@@ -11792,7 +11793,8 @@ class PubServer(BaseHTTPRequestHandler):
         """
         shares = \
             getSharesFeedForPerson(base_dir, domain, port, path,
-                                   http_prefix, sharesFileType, sharesPerPage)
+                                   http_prefix, sharesFileType,
+                                   shares_per_page)
         if shares:
             if self._requestHTTP():
                 pageNumber = 1
@@ -11803,7 +11805,7 @@ class PubServer(BaseHTTPRequestHandler):
                         getSharesFeedForPerson(base_dir, domain, port,
                                                path + '?page=true',
                                                http_prefix, sharesFileType,
-                                               sharesPerPage)
+                                               shares_per_page)
                 else:
                     pageNumberStr = path.split('?page=')[1]
                     if '#' in pageNumberStr:
@@ -11863,7 +11865,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.max_like_count,
                                     self.server.shared_items_federated_domains,
                                     shares,
-                                    pageNumber, sharesPerPage,
+                                    pageNumber, shares_per_page,
                                     self.server.cw_lists,
                                     self.server.lists_enabled,
                                     self.server.content_license_url)
@@ -11908,7 +11910,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         following = \
             getFollowingFeed(base_dir, domain, port, path,
-                             http_prefix, authorized, followsPerPage,
+                             http_prefix, authorized, follows_per_page,
                              'following')
         if following:
             if self._requestHTTP():
@@ -11922,7 +11924,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          port,
                                          path + '?page=true',
                                          http_prefix,
-                                         authorized, followsPerPage)
+                                         authorized, follows_per_page)
                 else:
                     pageNumberStr = path.split('?page=')[1]
                     if '#' in pageNumberStr:
@@ -11985,7 +11987,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.shared_items_federated_domains,
                                     following,
                                     pageNumber,
-                                    followsPerPage,
+                                    follows_per_page,
                                     self.server.cw_lists,
                                     self.server.lists_enabled,
                                     content_license_url).encode('utf-8')
@@ -12027,7 +12029,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         followers = \
             getFollowingFeed(base_dir, domain, port, path, http_prefix,
-                             authorized, followsPerPage, 'followers')
+                             authorized, follows_per_page, 'followers')
         if followers:
             if self._requestHTTP():
                 pageNumber = 1
@@ -12040,7 +12042,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          port,
                                          path + '?page=1',
                                          http_prefix,
-                                         authorized, followsPerPage,
+                                         authorized, follows_per_page,
                                          'followers')
                 else:
                     pageNumberStr = path.split('?page=')[1]
@@ -12105,7 +12107,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.shared_items_federated_domains,
                                     followers,
                                     pageNumber,
-                                    followsPerPage,
+                                    follows_per_page,
                                     self.server.cw_lists,
                                     self.server.lists_enabled,
                                     content_license_url).encode('utf-8')
@@ -12390,7 +12392,7 @@ class PubServer(BaseHTTPRequestHandler):
                            translate,
                            nickname,
                            domain, port,
-                           maxPostsInBlogsFeed, pageNumber,
+                           max_posts_in_blogs_feed, pageNumber,
                            self.server.peertube_instances,
                            self.server.system_language,
                            self.server.person_cache,
@@ -14062,7 +14064,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.translate,
                                    self.server.domain,
                                    self.server.port,
-                                   maxPostsInBlogsFeed,
+                                   max_posts_in_blogs_feed,
                                    self.server.peertube_instances,
                                    self.server.system_language,
                                    self.server.person_cache,

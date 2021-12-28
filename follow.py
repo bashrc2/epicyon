@@ -426,14 +426,14 @@ def getNoOfFollowers(base_dir: str,
 
 def getFollowingFeed(base_dir: str, domain: str, port: int, path: str,
                      http_prefix: str, authorized: bool,
-                     followsPerPage=12,
+                     follows_per_page=12,
                      followFile='following') -> {}:
     """Returns the following and followers feeds from GET requests.
     This accesses the following.txt or followers.txt and builds a collection.
     """
     # Show a small number of follows to non-authorized viewers
     if not authorized:
-        followsPerPage = 6
+        follows_per_page = 6
 
     if '/' + followFile not in path:
         return None
@@ -546,11 +546,11 @@ def getFollowingFeed(base_dir: str, domain: str, port: int, path: str,
                     appendStr = \
                         line.lower().replace('\n', '').replace('\r', '')
                     following['orderedItems'].append(appendStr)
-        if pageCtr >= followsPerPage:
+        if pageCtr >= follows_per_page:
             pageCtr = 0
             currPage += 1
     following['totalItems'] = totalCtr
-    lastPage = int(totalCtr / followsPerPage)
+    lastPage = int(totalCtr / follows_per_page)
     if lastPage < 1:
         lastPage = 1
     if nextPageNumber > lastPage:

@@ -450,7 +450,7 @@ def getSharesFeedForPerson(base_dir: str,
                            domain: str, port: int,
                            path: str, http_prefix: str,
                            sharesFileType: str,
-                           sharesPerPage: int) -> {}:
+                           shares_per_page: int) -> {}:
     """Returns the shares for an account from GET requests
     """
     if '/' + sharesFileType not in path:
@@ -537,11 +537,11 @@ def getSharesFeedForPerson(base_dir: str,
             if currPage == pageNumber:
                 item['shareId'] = itemID
                 shares['orderedItems'].append(item)
-            if pageCtr >= sharesPerPage:
+            if pageCtr >= shares_per_page:
                 pageCtr = 0
                 currPage += 1
     shares['totalItems'] = totalCtr
-    lastPage = int(totalCtr / sharesPerPage)
+    lastPage = int(totalCtr / shares_per_page)
     if lastPage < 1:
         lastPage = 1
     if nextPageNumber > lastPage:
