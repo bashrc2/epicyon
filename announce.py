@@ -104,107 +104,109 @@ def outbox_announce(recent_posts_cache: {},
     return False
 
 
-def announced_by_person(isAnnounced: bool, postActor: str,
+def announced_by_person(is_announced: bool, post_actor: str,
                         nickname: str, domain_full: str) -> bool:
     """Returns True if the given post is announced by the given person
     """
-    if not postActor:
+    if not post_actor:
         return False
-    if isAnnounced and \
-       postActor.endswith(domain_full + '/users/' + nickname):
+    if is_announced and \
+       post_actor.endswith(domain_full + '/users/' + nickname):
         return True
     return False
 
 
 def create_announce(session, base_dir: str, federation_list: [],
                     nickname: str, domain: str, port: int,
-                    toUrl: str, ccUrl: str, http_prefix: str,
-                    objectUrl: str, saveToFile: bool,
+                    to_url: str, ccUrl: str, http_prefix: str,
+                    object_url: str, saveToFile: bool,
                     client_to_server: bool,
                     send_threads: [], postLog: [],
                     person_cache: {}, cached_webfingers: {},
                     debug: bool, project_version: str,
                     signing_priv_key_pem: str) -> {}:
     """Creates an announce message
-    Typically toUrl will be https://www.w3.org/ns/activitystreams#Public
+    Typically to_url will be https://www.w3.org/ns/activitystreams#Public
     and ccUrl might be a specific person favorited or repeated and the
-    followers url objectUrl is typically the url of the message,
+    followers url object_url is typically the url of the message,
     corresponding to url or atomUri in createPostBase
     """
-    if not url_permitted(objectUrl, federation_list):
+    if not url_permitted(object_url, federation_list):
         return None
 
     domain = remove_domain_port(domain)
-    fullDomain = get_full_domain(domain, port)
+    full_domain = get_full_domain(domain, port)
 
-    statusNumber, published = get_status_number()
-    newAnnounceId = http_prefix + '://' + fullDomain + \
-        '/users/' + nickname + '/statuses/' + statusNumber
-    atomUriStr = local_actor_url(http_prefix, nickname, fullDomain) + \
-        '/statuses/' + statusNumber
-    newAnnounce = {
+    status_number, published = get_status_number()
+    new_announce_id = http_prefix + '://' + full_domain + \
+        '/users/' + nickname + '/statuses/' + status_number
+    atom_uri_str = local_actor_url(http_prefix, nickname, full_domain) + \
+        '/statuses/' + status_number
+    new_announce = {
         "@context": "https://www.w3.org/ns/activitystreams",
-        'actor': local_actor_url(http_prefix, nickname, fullDomain),
-        'atomUri': atomUriStr,
+        'actor': local_actor_url(http_prefix, nickname, full_domain),
+        'atomUri': atom_uri_str,
         'cc': [],
-        'id': newAnnounceId + '/activity',
-        'object': objectUrl,
+        'id': new_announce_id + '/activity',
+        'object': object_url,
         'published': published,
-        'to': [toUrl],
+        'to': [to_url],
         'type': 'Announce'
     }
     if ccUrl:
         if len(ccUrl) > 0:
-            newAnnounce['cc'] = [ccUrl]
+            new_announce['cc'] = [ccUrl]
     if saveToFile:
-        outboxDir = create_outbox_dir(nickname, domain, base_dir)
-        filename = outboxDir + '/' + newAnnounceId.replace('/', '#') + '.json'
-        save_json(newAnnounce, filename)
+        outbox_dir = create_outbox_dir(nickname, domain, base_dir)
+        filename = \
+            outbox_dir + '/' + new_announce_id.replace('/', '#') + '.json'
+        save_json(new_announce, filename)
 
-    announceNickname = None
-    announceDomain = None
-    announcePort = None
+    announce_nickname = None
+    announce_domain = None
+    announce_port = None
     group_account = False
-    if has_users_path(objectUrl):
-        announceNickname = get_nickname_from_actor(objectUrl)
-        announceDomain, announcePort = get_domain_from_actor(objectUrl)
-        if '/' + str(announceNickname) + '/' in objectUrl:
-            announceActor = \
-                objectUrl.split('/' + announceNickname + '/')[0] + \
-                '/' + announceNickname
-            if has_group_type(base_dir, announceActor, person_cache):
+    if has_users_path(object_url):
+        announce_nickname = get_nickname_from_actor(object_url)
+        announce_domain, announce_port = get_domain_from_actor(object_url)
+        if '/' + str(announce_nickname) + '/' in object_url:
+            announce_actor = \
+                object_url.split('/' + announce_nickname + '/')[0] + \
+                '/' + announce_nickname
+            if has_group_type(base_dir, announce_actor, person_cache):
                 group_account = True
 
-    if announceNickname and announceDomain:
-        send_signed_json(newAnnounce, session, base_dir,
+    if announce_nickname and announce_domain:
+        send_signed_json(new_announce, session, base_dir,
                          nickname, domain, port,
-                         announceNickname, announceDomain, announcePort, None,
+                         announce_nickname, announce_domain,
+                         announce_port, None,
                          http_prefix, True, client_to_server, federation_list,
                          send_threads, postLog, cached_webfingers,
                          person_cache,
                          debug, project_version, None, group_account,
                          signing_priv_key_pem, 639633)
 
-    return newAnnounce
+    return new_announce
 
 
 def announce_public(session, base_dir: str, federation_list: [],
                     nickname: str, domain: str, port: int, http_prefix: str,
-                    objectUrl: str, client_to_server: bool,
+                    object_url: str, client_to_server: bool,
                     send_threads: [], postLog: [],
                     person_cache: {}, cached_webfingers: {},
                     debug: bool, project_version: str,
                     signing_priv_key_pem: str) -> {}:
     """Makes a public announcement
     """
-    fromDomain = get_full_domain(domain, port)
+    from_domain = get_full_domain(domain, port)
 
-    toUrl = 'https://www.w3.org/ns/activitystreams#Public'
-    ccUrl = local_actor_url(http_prefix, nickname, fromDomain) + '/followers'
+    to_url = 'https://www.w3.org/ns/activitystreams#Public'
+    ccUrl = local_actor_url(http_prefix, nickname, from_domain) + '/followers'
     return create_announce(session, base_dir, federation_list,
                            nickname, domain, port,
-                           toUrl, ccUrl, http_prefix,
-                           objectUrl, True, client_to_server,
+                           to_url, ccUrl, http_prefix,
+                           object_url, True, client_to_server,
                            send_threads, postLog,
                            person_cache, cached_webfingers,
                            debug, project_version,
@@ -213,8 +215,8 @@ def announce_public(session, base_dir: str, federation_list: [],
 
 def send_announce_via_server(base_dir: str, session,
                              fromNickname: str, password: str,
-                             fromDomain: str, fromPort: int,
-                             http_prefix: str, repeatObjectUrl: str,
+                             from_domain: str, fromPort: int,
+                             http_prefix: str, repeat_object_url: str,
                              cached_webfingers: {}, person_cache: {},
                              debug: bool, project_version: str,
                              signing_priv_key_pem: str) -> {}:
@@ -224,90 +226,89 @@ def send_announce_via_server(base_dir: str, session,
         print('WARN: No session for send_announce_via_server')
         return 6
 
-    fromDomainFull = get_full_domain(fromDomain, fromPort)
+    from_domain_full = get_full_domain(from_domain, fromPort)
 
-    toUrl = 'https://www.w3.org/ns/activitystreams#Public'
-    actorStr = local_actor_url(http_prefix, fromNickname, fromDomainFull)
-    ccUrl = actorStr + '/followers'
+    to_url = 'https://www.w3.org/ns/activitystreams#Public'
+    actor_str = local_actor_url(http_prefix, fromNickname, from_domain_full)
+    cc_url = actor_str + '/followers'
 
-    statusNumber, published = get_status_number()
-    newAnnounceId = actorStr + '/statuses/' + statusNumber
-    newAnnounceJson = {
+    status_number, published = get_status_number()
+    new_announce_id = actor_str + '/statuses/' + status_number
+    new_announce_json = {
         "@context": "https://www.w3.org/ns/activitystreams",
-        'actor': actorStr,
-        'atomUri': newAnnounceId,
-        'cc': [ccUrl],
-        'id': newAnnounceId + '/activity',
-        'object': repeatObjectUrl,
+        'actor': actor_str,
+        'atomUri': new_announce_id,
+        'cc': [cc_url],
+        'id': new_announce_id + '/activity',
+        'object': repeat_object_url,
         'published': published,
-        'to': [toUrl],
+        'to': [to_url],
         'type': 'Announce'
     }
 
-    handle = http_prefix + '://' + fromDomainFull + '/@' + fromNickname
+    handle = http_prefix + '://' + from_domain_full + '/@' + fromNickname
 
     # lookup the inbox for the To handle
-    wfRequest = webfinger_handle(session, handle, http_prefix,
-                                 cached_webfingers,
-                                 fromDomain, project_version, debug, False,
-                                 signing_priv_key_pem)
-    if not wfRequest:
+    wf_request = webfinger_handle(session, handle, http_prefix,
+                                  cached_webfingers,
+                                  from_domain, project_version, debug, False,
+                                  signing_priv_key_pem)
+    if not wf_request:
         if debug:
             print('DEBUG: announce webfinger failed for ' + handle)
         return 1
-    if not isinstance(wfRequest, dict):
+    if not isinstance(wf_request, dict):
         print('WARN: announce webfinger for ' + handle +
-              ' did not return a dict. ' + str(wfRequest))
+              ' did not return a dict. ' + str(wf_request))
         return 1
 
-    postToBox = 'outbox'
+    post_to_box = 'outbox'
 
     # get the actor inbox for the To handle
-    originDomain = fromDomain
-    (inboxUrl, pubKeyId, pubKey, fromPersonId,
-     sharedInbox, avatarUrl,
-     displayName, _) = get_person_box(signing_priv_key_pem,
-                                      originDomain,
-                                      base_dir, session, wfRequest,
-                                      person_cache,
-                                      project_version, http_prefix,
-                                      fromNickname, fromDomain,
-                                      postToBox, 73528)
+    origin_domain = from_domain
+    (inbox_url, _, _, from_person_id,
+     _, _, _, _) = get_person_box(signing_priv_key_pem,
+                                  origin_domain,
+                                  base_dir, session, wf_request,
+                                  person_cache,
+                                  project_version, http_prefix,
+                                  fromNickname, from_domain,
+                                  post_to_box, 73528)
 
-    if not inboxUrl:
+    if not inbox_url:
         if debug:
-            print('DEBUG: announce no ' + postToBox +
+            print('DEBUG: announce no ' + post_to_box +
                   ' was found for ' + handle)
         return 3
-    if not fromPersonId:
+    if not from_person_id:
         if debug:
             print('DEBUG: announce no actor was found for ' + handle)
         return 4
 
-    authHeader = create_basic_auth_header(fromNickname, password)
+    auth_header = create_basic_auth_header(fromNickname, password)
 
     headers = {
-        'host': fromDomain,
+        'host': from_domain,
         'Content-type': 'application/json',
-        'Authorization': authHeader
+        'Authorization': auth_header
     }
-    postResult = post_json(http_prefix, fromDomainFull,
-                           session, newAnnounceJson, [], inboxUrl,
-                           headers, 3, True)
-    if not postResult:
+    post_result = post_json(http_prefix, from_domain_full,
+                            session, new_announce_json, [], inbox_url,
+                            headers, 3, True)
+    if not post_result:
         print('WARN: announce not posted')
 
     if debug:
         print('DEBUG: c2s POST announce success')
 
-    return newAnnounceJson
+    return new_announce_json
 
 
 def send_undo_announce_via_server(base_dir: str, session,
-                                  undoPostJsonObject: {},
+                                  undo_post_json_object: {},
                                   nickname: str, password: str,
                                   domain: str, port: int,
-                                  http_prefix: str, repeatObjectUrl: str,
+                                  http_prefix: str, repeat_object_url: str,
                                   cached_webfingers: {}, person_cache: {},
                                   debug: bool, project_version: str,
                                   signing_priv_key_pem: str) -> {}:
@@ -322,70 +323,69 @@ def send_undo_announce_via_server(base_dir: str, session,
     actor = local_actor_url(http_prefix, nickname, domain_full)
     handle = replace_users_with_at(actor)
 
-    statusNumber, published = get_status_number()
-    unAnnounceJson = {
+    status_number, _ = get_status_number()
+    unannounce_json = {
         '@context': 'https://www.w3.org/ns/activitystreams',
-        'id': actor + '/statuses/' + str(statusNumber) + '/undo',
+        'id': actor + '/statuses/' + str(status_number) + '/undo',
         'type': 'Undo',
         'actor': actor,
-        'object': undoPostJsonObject['object']
+        'object': undo_post_json_object['object']
     }
 
     # lookup the inbox for the To handle
-    wfRequest = webfinger_handle(session, handle, http_prefix,
-                                 cached_webfingers,
-                                 domain, project_version, debug, False,
-                                 signing_priv_key_pem)
-    if not wfRequest:
+    wf_request = webfinger_handle(session, handle, http_prefix,
+                                  cached_webfingers,
+                                  domain, project_version, debug, False,
+                                  signing_priv_key_pem)
+    if not wf_request:
         if debug:
             print('DEBUG: undo announce webfinger failed for ' + handle)
         return 1
-    if not isinstance(wfRequest, dict):
+    if not isinstance(wf_request, dict):
         print('WARN: undo announce webfinger for ' + handle +
-              ' did not return a dict. ' + str(wfRequest))
+              ' did not return a dict. ' + str(wf_request))
         return 1
 
-    postToBox = 'outbox'
+    post_to_box = 'outbox'
 
     # get the actor inbox for the To handle
-    originDomain = domain
-    (inboxUrl, pubKeyId, pubKey, fromPersonId,
-     sharedInbox, avatarUrl,
-     displayName, _) = get_person_box(signing_priv_key_pem,
-                                      originDomain,
-                                      base_dir, session, wfRequest,
-                                      person_cache,
-                                      project_version, http_prefix,
-                                      nickname, domain,
-                                      postToBox, 73528)
+    origin_domain = domain
+    (inbox_url, _, _, from_person_id,
+     _, _, _, _) = get_person_box(signing_priv_key_pem,
+                                  origin_domain,
+                                  base_dir, session, wf_request,
+                                  person_cache,
+                                  project_version, http_prefix,
+                                  nickname, domain,
+                                  post_to_box, 73528)
 
-    if not inboxUrl:
+    if not inbox_url:
         if debug:
-            print('DEBUG: undo announce no ' + postToBox +
+            print('DEBUG: undo announce no ' + post_to_box +
                   ' was found for ' + handle)
         return 3
-    if not fromPersonId:
+    if not from_person_id:
         if debug:
             print('DEBUG: undo announce no actor was found for ' + handle)
         return 4
 
-    authHeader = create_basic_auth_header(nickname, password)
+    auth_header = create_basic_auth_header(nickname, password)
 
     headers = {
         'host': domain,
         'Content-type': 'application/json',
-        'Authorization': authHeader
+        'Authorization': auth_header
     }
-    postResult = post_json(http_prefix, domain_full,
-                           session, unAnnounceJson, [], inboxUrl,
-                           headers, 3, True)
-    if not postResult:
+    post_result = post_json(http_prefix, domain_full,
+                            session, unannounce_json, [], inbox_url,
+                            headers, 3, True)
+    if not post_result:
         print('WARN: undo announce not posted')
 
     if debug:
         print('DEBUG: c2s POST undo announce success')
 
-    return unAnnounceJson
+    return unannounce_json
 
 
 def outbox_undo_announce(recent_posts_cache: {},
@@ -409,13 +409,13 @@ def outbox_undo_announce(recent_posts_cache: {},
     if debug:
         print('DEBUG: c2s undo announce request arrived in outbox')
 
-    messageId = remove_id_ending(message_json['object']['object'])
+    message_id = remove_id_ending(message_json['object']['object'])
     domain = remove_domain_port(domain)
-    post_filename = locate_post(base_dir, nickname, domain, messageId)
+    post_filename = locate_post(base_dir, nickname, domain, message_id)
     if not post_filename:
         if debug:
             print('DEBUG: c2s undo announce post not found in inbox or outbox')
-            print(messageId)
+            print(message_id)
         return True
     undo_announce_collection_entry(recent_posts_cache, base_dir, post_filename,
                                    message_json['actor'], domain, debug)

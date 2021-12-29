@@ -103,8 +103,8 @@ def _accept_follow(base_dir: str, domain: str, message_json: {},
     if not nickname:
         print('WARN: no nickname found in ' + this_actor)
         return
-    acceptedDomain, acceptedPort = get_domain_from_actor(this_actor)
-    if not acceptedDomain:
+    accepted_domain, accepted_port = get_domain_from_actor(this_actor)
+    if not accepted_domain:
         if debug:
             print('DEBUG: domain not found in ' + this_actor)
         return
@@ -112,20 +112,20 @@ def _accept_follow(base_dir: str, domain: str, message_json: {},
         if debug:
             print('DEBUG: nickname not found in ' + this_actor)
         return
-    if acceptedPort:
-        if '/' + acceptedDomain + ':' + str(acceptedPort) + \
+    if accepted_port:
+        if '/' + accepted_domain + ':' + str(accepted_port) + \
            '/users/' + nickname not in this_actor:
             if debug:
-                print('Port: ' + str(acceptedPort))
-                print('Expected: /' + acceptedDomain + ':' +
-                      str(acceptedPort) + '/users/' + nickname)
+                print('Port: ' + str(accepted_port))
+                print('Expected: /' + accepted_domain + ':' +
+                      str(accepted_port) + '/users/' + nickname)
                 print('Actual:   ' + this_actor)
                 print('DEBUG: unrecognized actor ' + this_actor)
             return
     else:
-        if not '/' + acceptedDomain + '/users/' + nickname in this_actor:
+        if not '/' + accepted_domain + '/users/' + nickname in this_actor:
             if debug:
-                print('Expected: /' + acceptedDomain + '/users/' + nickname)
+                print('Expected: /' + accepted_domain + '/users/' + nickname)
                 print('Actual:   ' + this_actor)
                 print('DEBUG: unrecognized actor ' + this_actor)
             return
@@ -144,9 +144,9 @@ def _accept_follow(base_dir: str, domain: str, message_json: {},
               followed_actor)
         return
 
-    accepted_domain_full = acceptedDomain
-    if acceptedPort:
-        accepted_domain_full = acceptedDomain + ':' + str(acceptedPort)
+    accepted_domain_full = accepted_domain
+    if accepted_port:
+        accepted_domain_full = accepted_domain + ':' + str(accepted_port)
 
     # has this person already been unfollowed?
     unfollowed_filename = \
@@ -179,13 +179,13 @@ def _accept_follow(base_dir: str, domain: str, message_json: {},
     else:
         if debug:
             print('DEBUG: Unable to create follow - ' +
-                  nickname + '@' + acceptedDomain + ' -> ' +
+                  nickname + '@' + accepted_domain + ' -> ' +
                   followed_nickname + '@' + followed_domain)
 
 
 def receive_accept_reject(session, base_dir: str,
                           http_prefix: str, domain: str, port: int,
-                          send_threads: [], postLog: [],
+                          send_threads: [], post_log: [],
                           cached_webfingers: {},
                           person_cache: {}, message_json: {},
                           federation_list: [],

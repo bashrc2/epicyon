@@ -2997,8 +2997,8 @@ if args.testdata:
                   federation_list, False, False)
     add_follower_of_person(base_dir, nickname, domain, 'drokk', domain_full,
                            federation_list, False, False)
-    add_follower_of_person(base_dir, nickname, domain, 'maxboardroom', domain_full,
-                           federation_list, False, False)
+    add_follower_of_person(base_dir, nickname, domain, 'maxboardroom',
+                           domain_full, federation_list, False, False)
     set_config_param(base_dir, 'admin', nickname)
 
 # set a lower bound to the maximum mentions
