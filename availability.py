@@ -30,23 +30,23 @@ def set_availability(base_dir: str, nickname: str, domain: str,
     # avoid giant strings
     if len(status) > 128:
         return False
-    actorFilename = acct_dir(base_dir, nickname, domain) + '.json'
-    if not os.path.isfile(actorFilename):
+    actor_filename = acct_dir(base_dir, nickname, domain) + '.json'
+    if not os.path.isfile(actor_filename):
         return False
-    actor_json = load_json(actorFilename)
+    actor_json = load_json(actor_filename)
     if actor_json:
         actor_json['availability'] = status
-        save_json(actor_json, actorFilename)
+        save_json(actor_json, actor_filename)
     return True
 
 
 def get_availability(base_dir: str, nickname: str, domain: str) -> str:
     """Returns the availability for a given person
     """
-    actorFilename = acct_dir(base_dir, nickname, domain) + '.json'
-    if not os.path.isfile(actorFilename):
+    actor_filename = acct_dir(base_dir, nickname, domain) + '.json'
+    if not os.path.isfile(actor_filename):
         return False
-    actor_json = load_json(actorFilename)
+    actor_json = load_json(actor_filename)
     if actor_json:
         if not actor_json.get('availability'):
             return None
@@ -67,10 +67,10 @@ def outbox_availability(base_dir: str, nickname: str, message_json: {},
     if not has_object_string(message_json, debug):
         return False
 
-    actorNickname = get_nickname_from_actor(message_json['actor'])
-    if actorNickname != nickname:
+    actor_nickname = get_nickname_from_actor(message_json['actor'])
+    if actor_nickname != nickname:
         return False
-    domain, port = get_domain_from_actor(message_json['actor'])
+    domain, _ = get_domain_from_actor(message_json['actor'])
     status = message_json['object'].replace('"', '')
 
     return set_availability(base_dir, nickname, domain, status)
@@ -92,69 +92,69 @@ def send_availability_via_server(base_dir: str, session,
 
     domain_full = get_full_domain(domain, port)
 
-    toUrl = local_actor_url(http_prefix, nickname, domain_full)
-    ccUrl = toUrl + '/followers'
+    to_url = local_actor_url(http_prefix, nickname, domain_full)
+    cc_url = to_url + '/followers'
 
-    newAvailabilityJson = {
+    new_availability_json = {
         'type': 'Availability',
-        'actor': toUrl,
+        'actor': to_url,
         'object': '"' + status + '"',
-        'to': [toUrl],
-        'cc': [ccUrl]
+        'to': [to_url],
+        'cc': [cc_url]
     }
 
     handle = http_prefix + '://' + domain_full + '/@' + nickname
 
     # lookup the inbox for the To handle
-    wfRequest = webfinger_handle(session, handle, http_prefix,
-                                 cached_webfingers,
-                                 domain, project_version, debug, False,
-                                 signing_priv_key_pem)
-    if not wfRequest:
+    wf_request = webfinger_handle(session, handle, http_prefix,
+                                  cached_webfingers,
+                                  domain, project_version, debug, False,
+                                  signing_priv_key_pem)
+    if not wf_request:
         if debug:
             print('DEBUG: availability webfinger failed for ' + handle)
         return 1
-    if not isinstance(wfRequest, dict):
+    if not isinstance(wf_request, dict):
         print('WARN: availability webfinger for ' + handle +
-              ' did not return a dict. ' + str(wfRequest))
+              ' did not return a dict. ' + str(wf_request))
         return 1
 
-    postToBox = 'outbox'
+    post_to_box = 'outbox'
 
     # get the actor inbox for the To handle
-    originDomain = domain
-    (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
-     displayName, _) = get_person_box(signing_priv_key_pem,
-                                      originDomain,
-                                      base_dir, session, wfRequest,
-                                      person_cache, project_version,
-                                      http_prefix, nickname,
-                                      domain, postToBox, 57262)
+    origin_domain = domain
+    (inbox_url, _, _, from_person_id, _, _,
+     _, _) = get_person_box(signing_priv_key_pem,
+                            origin_domain,
+                            base_dir, session, wf_request,
+                            person_cache, project_version,
+                            http_prefix, nickname,
+                            domain, post_to_box, 57262)
 
-    if not inboxUrl:
+    if not inbox_url:
         if debug:
-            print('DEBUG: availability no ' + postToBox +
+            print('DEBUG: availability no ' + post_to_box +
                   ' was found for ' + handle)
         return 3
-    if not fromPersonId:
+    if not from_person_id:
         if debug:
             print('DEBUG: availability no actor was found for ' + handle)
         return 4
 
-    authHeader = create_basic_auth_header(nickname, password)
+    auth_header = create_basic_auth_header(nickname, password)
 
     headers = {
         'host': domain,
         'Content-type': 'application/json',
-        'Authorization': authHeader
+        'Authorization': auth_header
     }
-    postResult = post_json(http_prefix, domain_full,
-                           session, newAvailabilityJson, [],
-                           inboxUrl, headers, 30, True)
-    if not postResult:
+    post_result = post_json(http_prefix, domain_full,
+                            session, new_availability_json, [],
+                            inbox_url, headers, 30, True)
+    if not post_result:
         print('WARN: availability failed to post')
 
     if debug:
         print('DEBUG: c2s POST availability success')
 
-    return newAvailabilityJson
+    return new_availability_json
