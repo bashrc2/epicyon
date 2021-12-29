@@ -28,11 +28,11 @@ def _hash_password(password: str) -> str:
     return (salt + pwdhash).decode('ascii')
 
 
-def _get_password_hash(salt: str, providedPassword: str) -> str:
+def _get_password_hash(salt: str, provided_password: str) -> str:
     """Returns the hash of a password
     """
     pwdhash = hashlib.pbkdf2_hmac('sha512',
-                                  providedPassword.encode('utf-8'),
+                                  provided_password.encode('utf-8'),
                                   salt.encode('ascii'),
                                   100000)
     return binascii.hexlify(pwdhash).decode('ascii')
@@ -49,8 +49,8 @@ def constant_time_string_check(string1: str, string2: str) -> bool:
         return False
     ctr = 0
     matched = True
-    for ch in string1:
-        if ch != string2[ctr]:
+    for char in string1:
+        if char != string2[ctr]:
             matched = False
         else:
             # this is to make the timing more even
@@ -60,34 +60,35 @@ def constant_time_string_check(string1: str, string2: str) -> bool:
     return matched
 
 
-def _verify_password(storedPassword: str, providedPassword: str) -> bool:
+def _verify_password(stored_password: str, provided_password: str) -> bool:
     """Verify a stored password against one provided by user
     """
-    if not storedPassword:
+    if not stored_password:
         return False
-    if not providedPassword:
+    if not provided_password:
         return False
-    salt = storedPassword[:64]
-    storedPassword = storedPassword[64:]
-    pwHash = _get_password_hash(salt, providedPassword)
-    return constant_time_string_check(pwHash, storedPassword)
+    salt = stored_password[:64]
+    stored_password = stored_password[64:]
+    pw_hash = _get_password_hash(salt, provided_password)
+    return constant_time_string_check(pw_hash, stored_password)
 
 
 def create_basic_auth_header(nickname: str, password: str) -> str:
     """This is only used by tests
     """
-    authStr = \
+    auth_str = \
         nickname.replace('\n', '').replace('\r', '') + \
         ':' + \
         password.replace('\n', '').replace('\r', '')
-    return 'Basic ' + base64.b64encode(authStr.encode('utf-8')).decode('utf-8')
+    return 'Basic ' + \
+        base64.b64encode(auth_str.encode('utf-8')).decode('utf-8')
 
 
-def authorize_basic(base_dir: str, path: str, authHeader: str,
+def authorize_basic(base_dir: str, path: str, auth_header: str,
                     debug: bool) -> bool:
     """HTTP basic auth
     """
-    if ' ' not in authHeader:
+    if ' ' not in auth_header:
         if debug:
             print('DEBUG: basic auth - Authorisation header does not ' +
                   'contain a space character')
@@ -97,19 +98,19 @@ def authorize_basic(base_dir: str, path: str, authHeader: str,
             print('DEBUG: basic auth - ' +
                   'path for Authorization does not contain a user')
         return False
-    pathUsersSection = path.split('/users/')[1]
-    if '/' not in pathUsersSection:
+    path_users_section = path.split('/users/')[1]
+    if '/' not in path_users_section:
         if debug:
             print('DEBUG: basic auth - this is not a users endpoint')
         return False
-    nicknameFromPath = pathUsersSection.split('/')[0]
-    if is_system_account(nicknameFromPath):
+    nickname_from_path = path_users_section.split('/')[0]
+    if is_system_account(nickname_from_path):
         print('basic auth - attempted login using system account ' +
-              nicknameFromPath + ' in path')
+              nickname_from_path + ' in path')
         return False
-    base64Str = \
-        authHeader.split(' ')[1].replace('\n', '').replace('\r', '')
-    plain = base64.b64decode(base64Str).decode('utf-8')
+    base64_str = \
+        auth_header.split(' ')[1].replace('\n', '').replace('\r', '')
+    plain = base64.b64decode(base64_str).decode('utf-8')
     if ':' not in plain:
         if debug:
             print('DEBUG: basic auth header does not contain a ":" ' +
@@ -120,26 +121,26 @@ def authorize_basic(base_dir: str, path: str, authHeader: str,
         print('basic auth - attempted login using system account ' + nickname +
               ' in Auth header')
         return False
-    if nickname != nicknameFromPath:
+    if nickname != nickname_from_path:
         if debug:
-            print('DEBUG: Nickname given in the path (' + nicknameFromPath +
+            print('DEBUG: Nickname given in the path (' + nickname_from_path +
                   ') does not match the one in the Authorization header (' +
                   nickname + ')')
         return False
-    passwordFile = base_dir + '/accounts/passwords'
-    if not os.path.isfile(passwordFile):
+    password_file = base_dir + '/accounts/passwords'
+    if not os.path.isfile(password_file):
         if debug:
             print('DEBUG: passwords file missing')
         return False
-    providedPassword = plain.split(':')[1]
+    provided_password = plain.split(':')[1]
     try:
-        with open(passwordFile, 'r') as passfile:
+        with open(password_file, 'r') as passfile:
             for line in passfile:
                 if not line.startswith(nickname + ':'):
                     continue
-                storedPassword = \
+                stored_password = \
                     line.split(':')[1].replace('\n', '').replace('\r', '')
-                success = _verify_password(storedPassword, providedPassword)
+                success = _verify_password(stored_password, provided_password)
                 if not success:
                     if debug:
                         print('DEBUG: Password check failed for ' + nickname)
@@ -148,7 +149,7 @@ def authorize_basic(base_dir: str, path: str, authHeader: str,
         print('EX: failed to open password file')
         return False
     print('DEBUG: Did not find credentials for ' + nickname +
-          ' in ' + passwordFile)
+          ' in ' + password_file)
     return False
 
 
@@ -164,40 +165,40 @@ def store_basic_credentials(base_dir: str,
     if not os.path.isdir(base_dir + '/accounts'):
         os.mkdir(base_dir + '/accounts')
 
-    passwordFile = base_dir + '/accounts/passwords'
-    storeStr = nickname + ':' + _hash_password(password)
-    if os.path.isfile(passwordFile):
-        if nickname + ':' in open(passwordFile).read():
+    password_file = base_dir + '/accounts/passwords'
+    store_str = nickname + ':' + _hash_password(password)
+    if os.path.isfile(password_file):
+        if nickname + ':' in open(password_file).read():
             try:
-                with open(passwordFile, 'r') as fin:
-                    with open(passwordFile + '.new', 'w+') as fout:
+                with open(password_file, 'r') as fin:
+                    with open(password_file + '.new', 'w+') as fout:
                         for line in fin:
                             if not line.startswith(nickname + ':'):
                                 fout.write(line)
                             else:
-                                fout.write(storeStr + '\n')
+                                fout.write(store_str + '\n')
             except OSError as ex:
-                print('EX: unable to save password ' + passwordFile +
+                print('EX: unable to save password ' + password_file +
                       ' ' + str(ex))
                 return False
 
             try:
-                os.rename(passwordFile + '.new', passwordFile)
+                os.rename(password_file + '.new', password_file)
             except OSError:
                 print('EX: unable to save password 2')
                 return False
         else:
             # append to password file
             try:
-                with open(passwordFile, 'a+') as passfile:
-                    passfile.write(storeStr + '\n')
+                with open(password_file, 'a+') as passfile:
+                    passfile.write(store_str + '\n')
             except OSError:
                 print('EX: unable to append password')
                 return False
     else:
         try:
-            with open(passwordFile, 'w+') as passfile:
-                passfile.write(storeStr + '\n')
+            with open(password_file, 'w+') as passfile:
+                passfile.write(store_str + '\n')
         except OSError:
             print('EX: unable to create password file')
             return False
@@ -208,11 +209,11 @@ def remove_password(base_dir: str, nickname: str) -> None:
     """Removes the password entry for the given nickname
     This is called during account removal
     """
-    passwordFile = base_dir + '/accounts/passwords'
-    if os.path.isfile(passwordFile):
+    password_file = base_dir + '/accounts/passwords'
+    if os.path.isfile(password_file):
         try:
-            with open(passwordFile, 'r') as fin:
-                with open(passwordFile + '.new', 'w+') as fout:
+            with open(password_file, 'r') as fin:
+                with open(password_file + '.new', 'w+') as fout:
                     for line in fin:
                         if not line.startswith(nickname + ':'):
                             fout.write(line)
@@ -221,71 +222,71 @@ def remove_password(base_dir: str, nickname: str) -> None:
             return
 
         try:
-            os.rename(passwordFile + '.new', passwordFile)
+            os.rename(password_file + '.new', password_file)
         except OSError:
             print('EX: unable to remove password from file 2')
             return
 
 
-def authorize(base_dir: str, path: str, authHeader: str, debug: bool) -> bool:
+def authorize(base_dir: str, path: str, auth_header: str, debug: bool) -> bool:
     """Authorize using http header
     """
-    if authHeader.lower().startswith('basic '):
-        return authorize_basic(base_dir, path, authHeader, debug)
+    if auth_header.lower().startswith('basic '):
+        return authorize_basic(base_dir, path, auth_header, debug)
     return False
 
 
 def create_password(length: int):
-    validChars = 'abcdefghijklmnopqrstuvwxyz' + \
+    valid_chars = 'abcdefghijklmnopqrstuvwxyz' + \
         'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
-    return ''.join((secrets.choice(validChars) for i in range(length)))
+    return ''.join((secrets.choice(valid_chars) for i in range(length)))
 
 
-def record_login_failure(base_dir: str, ipAddress: str,
-                         countDict: {}, failTime: int,
-                         logToFile: bool) -> None:
+def record_login_failure(base_dir: str, ip_address: str,
+                         count_dict: {}, fail_time: int,
+                         log_to_file: bool) -> None:
     """Keeps ip addresses and the number of times login failures
     occured for them in a dict
     """
-    if not countDict.get(ipAddress):
-        while len(countDict.items()) > 100:
-            oldestTime = 0
-            oldestIP = None
-            for ipAddr, ipItem in countDict.items():
-                if oldestTime == 0 or ipItem['time'] < oldestTime:
-                    oldestTime = ipItem['time']
-                    oldestIP = ipAddr
-            if oldestIP:
-                del countDict[oldestIP]
-        countDict[ipAddress] = {
+    if not count_dict.get(ip_address):
+        while len(count_dict.items()) > 100:
+            oldest_time = 0
+            oldest_ip = None
+            for ip_addr, ip_item in count_dict.items():
+                if oldest_time == 0 or ip_item['time'] < oldest_time:
+                    oldest_time = ip_item['time']
+                    oldest_ip = ip_addr
+            if oldest_ip:
+                del count_dict[oldest_ip]
+        count_dict[ip_address] = {
             "count": 1,
-            "time": failTime
+            "time": fail_time
         }
     else:
-        countDict[ipAddress]['count'] += 1
-        countDict[ipAddress]['time'] = failTime
-        failCount = countDict[ipAddress]['count']
-        if failCount > 4:
-            print('WARN: ' + str(ipAddress) + ' failed to log in ' +
-                  str(failCount) + ' times')
+        count_dict[ip_address]['count'] += 1
+        count_dict[ip_address]['time'] = fail_time
+        fail_count = count_dict[ip_address]['count']
+        if fail_count > 4:
+            print('WARN: ' + str(ip_address) + ' failed to log in ' +
+                  str(fail_count) + ' times')
 
-    if not logToFile:
+    if not log_to_file:
         return
 
-    failureLog = base_dir + '/accounts/loginfailures.log'
-    writeType = 'a+'
-    if not os.path.isfile(failureLog):
-        writeType = 'w+'
+    failure_log = base_dir + '/accounts/loginfailures.log'
+    write_type = 'a+'
+    if not os.path.isfile(failure_log):
+        write_type = 'w+'
     curr_time = datetime.datetime.utcnow()
-    curr_timeStr = curr_time.strftime("%Y-%m-%d %H:%M:%SZ")
+    curr_time_str = curr_time.strftime("%Y-%m-%d %H:%M:%SZ")
     try:
-        with open(failureLog, writeType) as fp:
+        with open(failure_log, write_type) as fp_fail:
             # here we use a similar format to an ssh log, so that
             # systems such as fail2ban can parse it
-            fp.write(curr_timeStr + ' ' +
-                     'ip-127-0-0-1 sshd[20710]: ' +
-                     'Disconnecting invalid user epicyon ' +
-                     ipAddress + ' port 443: ' +
-                     'Too many authentication failures [preauth]\n')
+            fp_fail.write(curr_time_str + ' ' +
+                          'ip-127-0-0-1 sshd[20710]: ' +
+                          'Disconnecting invalid user epicyon ' +
+                          ip_address + ' port 443: ' +
+                          'Too many authentication failures [preauth]\n')
     except OSError:
-        print('EX: record_login_failure failed ' + str(failureLog))
+        print('EX: record_login_failure failed ' + str(failure_log))
