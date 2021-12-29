@@ -8,7 +8,7 @@ __status__ = "Production"
 __module_group__ = "RSS Feeds"
 
 
-def rss2TagHeader(hashtag: str, http_prefix: str, domain_full: str) -> str:
+def rss2tag_header(hashtag: str, http_prefix: str, domain_full: str) -> str:
     return \
         "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" + \
         "<rss version=\"2.0\">" + \
@@ -18,5 +18,5 @@ def rss2TagHeader(hashtag: str, http_prefix: str, domain_full: str) -> str:
         '/tags/rss2/' + hashtag + '</link>'
 
 
-def rss2TagFooter() -> str:
+def rss2tag_footer() -> str:
     return '</channel></rss>'

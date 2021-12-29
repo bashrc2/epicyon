@@ -26,12 +26,12 @@ from utils import is_pgp_encrypted
 from utils import has_object_dict
 from utils import acct_dir
 from utils import local_actor_url
-from content import htmlReplaceQuoteMarks
+from content import html_replace_quote_marks
 
 speakerRemoveChars = ('.\n', '. ', ',', ';', '?', '!')
 
 
-def getSpeakerPitch(displayName: str, screenreader: str, gender) -> int:
+def get_speaker_pitch(displayName: str, screenreader: str, gender) -> int:
     """Returns the speech synthesis pitch for the given name
     """
     random.seed(displayName)
@@ -51,7 +51,7 @@ def getSpeakerPitch(displayName: str, screenreader: str, gender) -> int:
     return random.randint(rangeMin, rangeMax)
 
 
-def getSpeakerRate(displayName: str, screenreader: str) -> int:
+def get_speaker_rate(displayName: str, screenreader: str) -> int:
     """Returns the speech synthesis rate for the given name
     """
     random.seed(displayName)
@@ -60,14 +60,14 @@ def getSpeakerRate(displayName: str, screenreader: str) -> int:
     return random.randint(50, 120)
 
 
-def getSpeakerRange(displayName: str) -> int:
+def get_speaker_range(displayName: str) -> int:
     """Returns the speech synthesis range for the given name
     """
     random.seed(displayName)
     return random.randint(300, 800)
 
 
-def _speakerPronounce(base_dir: str, sayText: str, translate: {}) -> str:
+def _speaker_pronounce(base_dir: str, sayText: str, translate: {}) -> str:
     """Screen readers may not always pronounce correctly, so you
     can have a file which specifies conversions. File should contain
     line items such as:
@@ -164,8 +164,8 @@ def _speakerPronounce(base_dir: str, sayText: str, translate: {}) -> str:
     return sayText
 
 
-def speakerReplaceLinks(sayText: str, translate: {},
-                        detectedLinks: []) -> str:
+def speaker_replace_links(sayText: str, translate: {},
+                          detectedLinks: []) -> str:
     """Replaces any links in the given text with "link to [domain]".
     Instead of reading out potentially very long and meaningless links
     """
@@ -216,7 +216,7 @@ def speakerReplaceLinks(sayText: str, translate: {},
     return sayText.replace('..', '.')
 
 
-def _addSSMLemphasis(sayText: str) -> str:
+def _add_ssm_lemphasis(sayText: str) -> str:
     """Adds emphasis to *emphasised* text
     """
     if '*' not in sayText:
@@ -238,7 +238,7 @@ def _addSSMLemphasis(sayText: str) -> str:
     return sayText
 
 
-def _removeEmojiFromText(sayText: str) -> str:
+def _remove_emoji_from_text(sayText: str) -> str:
     """Removes :emoji: from the given text
     """
     if ':' not in sayText:
@@ -257,16 +257,16 @@ def _removeEmojiFromText(sayText: str) -> str:
     return sayText.replace('  ', ' ').strip()
 
 
-def _speakerEndpointJson(displayName: str, summary: str,
-                         content: str, sayContent: str,
-                         imageDescription: str,
-                         links: [], gender: str, post_id: str,
-                         postDM: bool, postReply: bool,
-                         followRequestsExist: bool,
-                         followRequestsList: [],
-                         likedBy: str, published: str, postCal: bool,
-                         postShare: bool, theme_name: str,
-                         isDirect: bool, replyToYou: bool) -> {}:
+def _speaker_endpoint_json(displayName: str, summary: str,
+                           content: str, sayContent: str,
+                           imageDescription: str,
+                           links: [], gender: str, post_id: str,
+                           postDM: bool, postReply: bool,
+                           followRequestsExist: bool,
+                           followRequestsList: [],
+                           likedBy: str, published: str, postCal: bool,
+                           postShare: bool, theme_name: str,
+                           isDirect: bool, replyToYou: bool) -> {}:
     """Returns a json endpoint for the TTS speaker
     """
     speakerJson = {
@@ -296,7 +296,7 @@ def _speakerEndpointJson(displayName: str, summary: str,
     return speakerJson
 
 
-def _SSMLheader(system_language: str, instanceTitle: str) -> str:
+def _ssm_lheader(system_language: str, instanceTitle: str) -> str:
     """Returns a header for an SSML document
     """
     return '<?xml version="1.0"?>\n' + \
@@ -311,11 +311,11 @@ def _SSMLheader(system_language: str, instanceTitle: str) -> str:
         '  </metadata>\n'
 
 
-def _speakerEndpointSSML(displayName: str, summary: str,
-                         content: str, imageDescription: str,
-                         links: [], language: str,
-                         instanceTitle: str,
-                         gender: str) -> str:
+def _speaker_endpoint_ssml(displayName: str, summary: str,
+                           content: str, imageDescription: str,
+                           links: [], language: str,
+                           instanceTitle: str,
+                           gender: str) -> str:
     """Returns an SSML endpoint for the TTS speaker
     https://en.wikipedia.org/wiki/Speech_Synthesis_Markup_Language
     https://www.w3.org/TR/speech-synthesis/
@@ -335,9 +335,9 @@ def _speakerEndpointSSML(displayName: str, summary: str,
             else:
                 gender = 'neutral'
 
-    content = _addSSMLemphasis(content)
+    content = _add_ssm_lemphasis(content)
     voiceParams = 'name="' + displayName + '" gender="' + gender + '"'
-    return _SSMLheader(langShort, instanceTitle) + \
+    return _ssm_lheader(langShort, instanceTitle) + \
         '  <p>\n' + \
         '    <s xml:lang="' + language + '">\n' + \
         '      <voice ' + voiceParams + '>\n' + \
@@ -348,11 +348,11 @@ def _speakerEndpointSSML(displayName: str, summary: str,
         '</speak>\n'
 
 
-def getSSMLbox(base_dir: str, path: str,
-               domain: str,
-               system_language: str,
-               instanceTitle: str,
-               boxName: str) -> str:
+def get_ssm_lbox(base_dir: str, path: str,
+                 domain: str,
+                 system_language: str,
+                 instanceTitle: str,
+                 boxName: str) -> str:
     """Returns SSML for the given timeline
     """
     nickname = path.split('/users/')[1]
@@ -368,16 +368,16 @@ def getSSMLbox(base_dir: str, path: str,
     gender = None
     if speakerJson.get('gender'):
         gender = speakerJson['gender']
-    return _speakerEndpointSSML(speakerJson['name'],
-                                speakerJson['summary'],
-                                speakerJson['say'],
-                                speakerJson['imageDescription'],
-                                speakerJson['detectedLinks'],
-                                system_language,
-                                instanceTitle, gender)
+    return _speaker_endpoint_ssml(speakerJson['name'],
+                                  speakerJson['summary'],
+                                  speakerJson['say'],
+                                  speakerJson['imageDescription'],
+                                  speakerJson['detectedLinks'],
+                                  system_language,
+                                  instanceTitle, gender)
 
 
-def speakableText(base_dir: str, content: str, translate: {}) -> (str, []):
+def speakable_text(base_dir: str, content: str, translate: {}) -> (str, []):
     """Convert the given text to a speakable version
     which includes changes for prononciation
     """
@@ -388,25 +388,25 @@ def speakableText(base_dir: str, content: str, translate: {}) -> (str, []):
     # replace some emoji before removing html
     if ' <3' in content:
         content = content.replace(' <3', ' ' + translate['heart'])
-    content = remove_html(htmlReplaceQuoteMarks(content))
+    content = remove_html(html_replace_quote_marks(content))
     detectedLinks = []
-    content = speakerReplaceLinks(content, translate, detectedLinks)
+    content = speaker_replace_links(content, translate, detectedLinks)
     # replace all double spaces
     while '  ' in content:
         content = content.replace('  ', ' ')
     content = content.replace(' . ', '. ').strip()
-    sayContent = _speakerPronounce(base_dir, content, translate)
+    sayContent = _speaker_pronounce(base_dir, content, translate)
     # replace all double spaces
     while '  ' in sayContent:
         sayContent = sayContent.replace('  ', ' ')
     return sayContent.replace(' . ', '. ').strip(), detectedLinks
 
 
-def _postToSpeakerJson(base_dir: str, http_prefix: str,
-                       nickname: str, domain: str, domain_full: str,
-                       post_json_object: {}, person_cache: {},
-                       translate: {}, announcingActor: str,
-                       theme_name: str) -> {}:
+def _post_to_speaker_json(base_dir: str, http_prefix: str,
+                          nickname: str, domain: str, domain_full: str,
+                          post_json_object: {}, person_cache: {},
+                          translate: {}, announcingActor: str,
+                          theme_name: str) -> {}:
     """Converts an ActivityPub post into some Json containing
     speech synthesis parameters.
     NOTE: There currently appears to be no standardized json
@@ -426,14 +426,14 @@ def _postToSpeakerJson(base_dir: str, http_prefix: str,
         # replace some emoji before removing html
         if ' <3' in content:
             content = content.replace(' <3', ' ' + translate['heart'])
-        content = remove_html(htmlReplaceQuoteMarks(content))
-        content = speakerReplaceLinks(content, translate, detectedLinks)
+        content = remove_html(html_replace_quote_marks(content))
+        content = speaker_replace_links(content, translate, detectedLinks)
         # replace all double spaces
         while '  ' in content:
             content = content.replace('  ', ' ')
         content = content.replace(' . ', '. ').strip()
         sayContent = content
-        sayContent = _speakerPronounce(base_dir, content, translate)
+        sayContent = _speaker_pronounce(base_dir, content, translate)
         # replace all double spaces
         while '  ' in sayContent:
             sayContent = sayContent.replace('  ', ' ')
@@ -473,7 +473,7 @@ def _postToSpeakerJson(base_dir: str, http_prefix: str,
         get_display_name(base_dir, post_json_object['actor'], person_cache)
     if not speakerName:
         return
-    speakerName = _removeEmojiFromText(speakerName)
+    speakerName = _remove_emoji_from_text(speakerName)
     speakerName = speakerName.replace('_', ' ')
     speakerName = camel_case_split(speakerName)
     gender = get_gender_from_bio(base_dir, post_json_object['actor'],
@@ -523,30 +523,30 @@ def _postToSpeakerJson(base_dir: str, http_prefix: str,
     shareFilename = accountsDir + '/.newShare'
     postShare = os.path.isfile(shareFilename)
 
-    return _speakerEndpointJson(speakerName, summary,
-                                content, sayContent, imageDescription,
-                                detectedLinks, gender, post_id,
-                                postDM, postReply,
-                                followRequestsExist,
-                                followRequestsList,
-                                likedBy, published,
-                                postCal, postShare, theme_name,
-                                isDirect, replyToYou)
+    return _speaker_endpoint_json(speakerName, summary,
+                                  content, sayContent, imageDescription,
+                                  detectedLinks, gender, post_id,
+                                  postDM, postReply,
+                                  followRequestsExist,
+                                  followRequestsList,
+                                  likedBy, published,
+                                  postCal, postShare, theme_name,
+                                  isDirect, replyToYou)
 
 
-def updateSpeaker(base_dir: str, http_prefix: str,
-                  nickname: str, domain: str, domain_full: str,
-                  post_json_object: {}, person_cache: {},
-                  translate: {}, announcingActor: str,
-                  theme_name: str) -> None:
+def update_speaker(base_dir: str, http_prefix: str,
+                   nickname: str, domain: str, domain_full: str,
+                   post_json_object: {}, person_cache: {},
+                   translate: {}, announcingActor: str,
+                   theme_name: str) -> None:
     """ Generates a json file which can be used for TTS announcement
     of incoming inbox posts
     """
     speakerJson = \
-        _postToSpeakerJson(base_dir, http_prefix,
-                           nickname, domain, domain_full,
-                           post_json_object, person_cache,
-                           translate, announcingActor,
-                           theme_name)
+        _post_to_speaker_json(base_dir, http_prefix,
+                              nickname, domain, domain_full,
+                              post_json_object, person_cache,
+                              translate, announcingActor,
+                              theme_name)
     speakerFilename = acct_dir(base_dir, nickname, domain) + '/speaker.json'
     save_json(speakerJson, speakerFilename)

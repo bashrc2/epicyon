@@ -11,7 +11,7 @@ import os
 from utils import acct_dir
 
 
-def isMinimal(base_dir: str, domain: str, nickname: str) -> bool:
+def is_minimal(base_dir: str, domain: str, nickname: str) -> bool:
     """Returns true if minimal buttons should be shown
        for the given account
     """
@@ -24,8 +24,8 @@ def isMinimal(base_dir: str, domain: str, nickname: str) -> bool:
     return True
 
 
-def setMinimal(base_dir: str, domain: str, nickname: str,
-               minimal: bool) -> None:
+def set_minimal(base_dir: str, domain: str, nickname: str,
+                minimal: bool) -> None:
     """Sets whether an account should display minimal buttons
     """
     accountDir = acct_dir(base_dir, nickname, domain)
@@ -37,7 +37,7 @@ def setMinimal(base_dir: str, domain: str, nickname: str,
         try:
             os.remove(minimalFilename)
         except OSError:
-            print('EX: setMinimal unable to delete ' + minimalFilename)
+            print('EX: set_minimal unable to delete ' + minimalFilename)
     elif not minimal and not minimalFileExists:
         try:
             with open(minimalFilename, 'w+') as fp:

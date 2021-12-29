@@ -17,76 +17,76 @@ from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
 from utils import get_config_param
 from utils import local_actor_url
-from posts import downloadFollowCollection
-from posts import getPublicPostInfo
+from posts import download_follow_collection
+from posts import get_public_post_info
 from posts import is_moderator
-from webapp_timeline import htmlTimeline
-# from webapp_utils import getPersonAvatarUrl
-from webapp_utils import getContentWarningButton
-from webapp_utils import htmlHeaderWithExternalStyle
-from webapp_utils import htmlFooter
+from webapp_timeline import html_timeline
+# from webapp_utils import get_person_avatar_url
+from webapp_utils import get_content_warning_button
+from webapp_utils import html_header_with_external_style
+from webapp_utils import html_footer
 from blocking import is_blocked_domain
-from blocking import isBlocked
+from blocking import is_blocked
 from session import create_session
 
 
-def htmlModeration(css_cache: {}, defaultTimeline: str,
-                   recent_posts_cache: {}, max_recent_posts: int,
-                   translate: {}, pageNumber: int, itemsPerPage: int,
-                   session, base_dir: str, wfRequest: {}, person_cache: {},
-                   nickname: str, domain: str, port: int, inboxJson: {},
-                   allow_deletion: bool,
-                   http_prefix: str, project_version: str,
-                   yt_replace_domain: str,
-                   twitter_replacement_domain: str,
-                   show_published_date_only: bool,
-                   newswire: {}, positive_voting: bool,
-                   show_publish_as_icon: bool,
-                   full_width_tl_button_header: bool,
-                   icons_as_buttons: bool,
-                   rss_icon_at_top: bool,
-                   publish_button_at_top: bool,
-                   authorized: bool, moderationActionStr: str,
-                   theme: str, peertube_instances: [],
-                   allow_local_network_access: bool,
-                   text_mode_banner: str,
-                   accessKeys: {}, system_language: str,
-                   max_like_count: int,
-                   shared_items_federated_domains: [],
-                   signing_priv_key_pem: str,
-                   cw_lists: {}, lists_enabled: str) -> str:
+def html_moderation(css_cache: {}, defaultTimeline: str,
+                    recent_posts_cache: {}, max_recent_posts: int,
+                    translate: {}, pageNumber: int, itemsPerPage: int,
+                    session, base_dir: str, wfRequest: {}, person_cache: {},
+                    nickname: str, domain: str, port: int, inboxJson: {},
+                    allow_deletion: bool,
+                    http_prefix: str, project_version: str,
+                    yt_replace_domain: str,
+                    twitter_replacement_domain: str,
+                    show_published_date_only: bool,
+                    newswire: {}, positive_voting: bool,
+                    show_publish_as_icon: bool,
+                    full_width_tl_button_header: bool,
+                    icons_as_buttons: bool,
+                    rss_icon_at_top: bool,
+                    publish_button_at_top: bool,
+                    authorized: bool, moderationActionStr: str,
+                    theme: str, peertube_instances: [],
+                    allow_local_network_access: bool,
+                    text_mode_banner: str,
+                    accessKeys: {}, system_language: str,
+                    max_like_count: int,
+                    shared_items_federated_domains: [],
+                    signing_priv_key_pem: str,
+                    cw_lists: {}, lists_enabled: str) -> str:
     """Show the moderation feed as html
     This is what you see when selecting the "mod" timeline
     """
     artist = is_artist(base_dir, nickname)
-    return htmlTimeline(css_cache, defaultTimeline,
-                        recent_posts_cache, max_recent_posts,
-                        translate, pageNumber,
-                        itemsPerPage, session, base_dir,
-                        wfRequest, person_cache,
-                        nickname, domain, port, inboxJson, 'moderation',
-                        allow_deletion, http_prefix,
-                        project_version, True, False,
-                        yt_replace_domain,
-                        twitter_replacement_domain,
-                        show_published_date_only,
-                        newswire, False, False, artist, positive_voting,
-                        show_publish_as_icon,
-                        full_width_tl_button_header,
-                        icons_as_buttons, rss_icon_at_top,
-                        publish_button_at_top,
-                        authorized, moderationActionStr, theme,
-                        peertube_instances, allow_local_network_access,
-                        text_mode_banner, accessKeys, system_language,
-                        max_like_count, shared_items_federated_domains,
-                        signing_priv_key_pem, cw_lists, lists_enabled)
+    return html_timeline(css_cache, defaultTimeline,
+                         recent_posts_cache, max_recent_posts,
+                         translate, pageNumber,
+                         itemsPerPage, session, base_dir,
+                         wfRequest, person_cache,
+                         nickname, domain, port, inboxJson, 'moderation',
+                         allow_deletion, http_prefix,
+                         project_version, True, False,
+                         yt_replace_domain,
+                         twitter_replacement_domain,
+                         show_published_date_only,
+                         newswire, False, False, artist, positive_voting,
+                         show_publish_as_icon,
+                         full_width_tl_button_header,
+                         icons_as_buttons, rss_icon_at_top,
+                         publish_button_at_top,
+                         authorized, moderationActionStr, theme,
+                         peertube_instances, allow_local_network_access,
+                         text_mode_banner, accessKeys, system_language,
+                         max_like_count, shared_items_federated_domains,
+                         signing_priv_key_pem, cw_lists, lists_enabled)
 
 
-def htmlAccountInfo(css_cache: {}, translate: {},
-                    base_dir: str, http_prefix: str,
-                    nickname: str, domain: str, port: int,
-                    searchHandle: str, debug: bool,
-                    system_language: str, signing_priv_key_pem: str) -> str:
+def html_account_info(css_cache: {}, translate: {},
+                      base_dir: str, http_prefix: str,
+                      nickname: str, domain: str, port: int,
+                      searchHandle: str, debug: bool,
+                      system_language: str, signing_priv_key_pem: str) -> str:
     """Shows which domains a search handle interacts with.
     This screen is shown if a moderator enters a handle and selects info
     on the moderation screen
@@ -101,7 +101,8 @@ def htmlAccountInfo(css_cache: {}, translate: {},
 
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
-    infoForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
+    infoForm = \
+        html_header_with_external_style(cssFilename, instanceTitle, None)
 
     searchNickname = get_nickname_from_actor(searchHandle)
     searchDomain, searchPort = get_domain_from_actor(searchHandle)
@@ -126,40 +127,41 @@ def htmlAccountInfo(css_cache: {}, translate: {},
 
     wordFrequency = {}
     originDomain = None
-    domainDict = getPublicPostInfo(session,
-                                   base_dir, searchNickname, searchDomain,
-                                   originDomain,
-                                   proxy_type, searchPort,
-                                   http_prefix, debug,
-                                   __version__, wordFrequency, system_language,
-                                   signing_priv_key_pem)
+    domainDict = get_public_post_info(session,
+                                      base_dir, searchNickname, searchDomain,
+                                      originDomain,
+                                      proxy_type, searchPort,
+                                      http_prefix, debug,
+                                      __version__, wordFrequency,
+                                      system_language,
+                                      signing_priv_key_pem)
 
     # get a list of any blocked followers
     followersList = \
-        downloadFollowCollection(signing_priv_key_pem,
-                                 'followers', session,
-                                 http_prefix, searchActor, 1, 5, debug)
+        download_follow_collection(signing_priv_key_pem,
+                                   'followers', session,
+                                   http_prefix, searchActor, 1, 5, debug)
     blockedFollowers = []
     for followerActor in followersList:
         followerNickname = get_nickname_from_actor(followerActor)
         followerDomain, followerPort = get_domain_from_actor(followerActor)
         followerDomainFull = get_full_domain(followerDomain, followerPort)
-        if isBlocked(base_dir, nickname, domain,
-                     followerNickname, followerDomainFull):
+        if is_blocked(base_dir, nickname, domain,
+                      followerNickname, followerDomainFull):
             blockedFollowers.append(followerActor)
 
     # get a list of any blocked following
     followingList = \
-        downloadFollowCollection(signing_priv_key_pem,
-                                 'following', session,
-                                 http_prefix, searchActor, 1, 5, debug)
+        download_follow_collection(signing_priv_key_pem,
+                                   'following', session,
+                                   http_prefix, searchActor, 1, 5, debug)
     blockedFollowing = []
     for followingActor in followingList:
         followingNickname = get_nickname_from_actor(followingActor)
         followingDomain, followingPort = get_domain_from_actor(followingActor)
         followingDomainFull = get_full_domain(followingDomain, followingPort)
-        if isBlocked(base_dir, nickname, domain,
-                     followingNickname, followingDomainFull):
+        if is_blocked(base_dir, nickname, domain,
+                      followingNickname, followingDomainFull):
             blockedFollowing.append(followingActor)
 
     infoForm += '<div class="accountInfoDomains">\n'
@@ -185,8 +187,8 @@ def htmlAccountInfo(css_cache: {}, translate: {},
             if blockedPostsLinks:
                 blockNoStr = 'blockNumber' + str(ctr)
                 blockedPostsHtml = \
-                    getContentWarningButton(blockNoStr,
-                                            translate, blockedPostsLinks)
+                    get_content_warning_button(blockNoStr,
+                                               translate, blockedPostsLinks)
                 ctr += 1
 
             infoForm += \
@@ -269,13 +271,13 @@ def htmlAccountInfo(css_cache: {}, translate: {},
             infoForm += wordSwarm
             infoForm += '</div>\n'
 
-    infoForm += htmlFooter()
+    infoForm += html_footer()
     return infoForm
 
 
-def htmlModerationInfo(css_cache: {}, translate: {},
-                       base_dir: str, http_prefix: str,
-                       nickname: str) -> str:
+def html_moderation_info(css_cache: {}, translate: {},
+                         base_dir: str, http_prefix: str,
+                         nickname: str) -> str:
     msgStr1 = \
         'These are globally blocked for all accounts on this instance'
     msgStr2 = \
@@ -288,7 +290,8 @@ def htmlModerationInfo(css_cache: {}, translate: {},
 
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
-    infoForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
+    infoForm = html_header_with_external_style(cssFilename,
+                                               instanceTitle, None)
 
     infoForm += \
         '<center><h1><a href="/users/' + nickname + '/moderation">' + \
@@ -410,5 +413,5 @@ def htmlModerationInfo(css_cache: {}, translate: {},
             '<center><p>' + \
             translate[msgStr2] + \
             '</p></center>\n'
-    infoForm += htmlFooter()
+    infoForm += html_footer()
     return infoForm

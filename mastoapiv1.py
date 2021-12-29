@@ -11,10 +11,10 @@ import os
 from utils import load_json
 from utils import get_config_param
 from utils import acct_dir
-from metadata import metaDataInstance
+from metadata import meta_data_instance
 
 
-def _getMastApiV1Id(path: str) -> int:
+def _get_mast_api_v1id(path: str) -> int:
     """Extracts the mastodon Id number from the given path
     """
     mastoId = None
@@ -30,27 +30,27 @@ def _getMastApiV1Id(path: str) -> int:
     return None
 
 
-def getMastoApiV1IdFromNickname(nickname: str) -> int:
+def get_masto_api_v1id_from_nickname(nickname: str) -> int:
     """Given an account nickname return the corresponding mastodon id
     """
     return int.from_bytes(nickname.encode('utf-8'), 'little')
 
 
-def _intToBytes(num: int) -> str:
+def _int_to_bytes(num: int) -> str:
     if num == 0:
         return b""
     else:
-        return _intToBytes(num // 256) + bytes([num % 256])
+        return _int_to_bytes(num // 256) + bytes([num % 256])
 
 
-def getNicknameFromMastoApiV1Id(mastoId: int) -> str:
+def get_nickname_from_masto_api_v1id(mastoId: int) -> str:
     """Given the mastodon Id return the nickname
     """
-    nickname = _intToBytes(mastoId).decode()
+    nickname = _int_to_bytes(mastoId).decode()
     return nickname[::-1]
 
 
-def _getMastoApiV1Account(base_dir: str, nickname: str, domain: str) -> {}:
+def _get_masto_api_v1account(base_dir: str, nickname: str, domain: str) -> {}:
     """See https://github.com/McKael/mastodon-documentation/
     blob/master/Using-the-API/API.md#account
     Authorization has already been performed
@@ -62,7 +62,7 @@ def _getMastoApiV1Account(base_dir: str, nickname: str, domain: str) -> {}:
     if not accountJson:
         return {}
     mastoAccountJson = {
-        "id": getMastoApiV1IdFromNickname(nickname),
+        "id": get_masto_api_v1id_from_nickname(nickname),
         "username": nickname,
         "acct": nickname,
         "display_name": accountJson['name'],
@@ -107,7 +107,7 @@ def masto_api_v1_response(path: str, calling_domain: str,
     # parts of the api needing authorization
     if authorized and nickname:
         if path == '/api/v1/accounts/verify_credentials':
-            sendJson = _getMastoApiV1Account(base_dir, nickname, domain)
+            sendJson = _get_masto_api_v1account(base_dir, nickname, domain)
             sendJsonStr = \
                 'masto API account sent for ' + nickname + ' ' + uaStr
 
@@ -115,9 +115,9 @@ def masto_api_v1_response(path: str, calling_domain: str,
     callingInfo = ' ' + uaStr + ', ' + calling_domain
 
     # Parts of the api which don't need authorization
-    mastoId = _getMastApiV1Id(path)
+    mastoId = _get_mast_api_v1id(path)
     if mastoId is not None:
-        pathNickname = getNicknameFromMastoApiV1Id(mastoId)
+        pathNickname = get_nickname_from_masto_api_v1id(mastoId)
         if pathNickname:
             originalPath = path
             if '/followers?' in path or \
@@ -153,7 +153,7 @@ def masto_api_v1_response(path: str, calling_domain: str,
                     callingInfo
             else:
                 sendJson = \
-                    _getMastoApiV1Account(base_dir, pathNickname, domain)
+                    _get_masto_api_v1account(base_dir, pathNickname, domain)
                 sendJsonStr = \
                     'masto API account sent for ' + nickname + \
                     callingInfo
@@ -218,18 +218,18 @@ def masto_api_v1_response(path: str, calling_domain: str,
             show_node_info_accounts = False
 
         sendJson = \
-            metaDataInstance(show_node_info_accounts,
-                             instanceTitle,
-                             instanceDescriptionShort,
-                             instanceDescription,
-                             http_prefix,
-                             base_dir,
-                             adminNickname,
-                             domain,
-                             domain_full,
-                             registration,
-                             system_language,
-                             project_version)
+            meta_data_instance(show_node_info_accounts,
+                               instanceTitle,
+                               instanceDescriptionShort,
+                               instanceDescription,
+                               http_prefix,
+                               base_dir,
+                               adminNickname,
+                               domain,
+                               domain_full,
+                               registration,
+                               system_language,
+                               project_version)
         sendJsonStr = 'masto API instance metadata sent ' + uaStr
     elif path.startswith('/api/v1/instance/peers'):
         # This is just a dummy result.

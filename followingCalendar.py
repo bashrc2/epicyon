@@ -10,11 +10,11 @@ __module_group__ = "Calendar"
 import os
 
 
-def _dirAcct(base_dir: str, nickname: str, domain: str) -> str:
+def _dir_acct(base_dir: str, nickname: str, domain: str) -> str:
     return base_dir + '/accounts/' + nickname + '@' + domain
 
 
-def _portDomainRemove(domain: str) -> str:
+def _port_domain_remove(domain: str) -> str:
     """If the domain has a port appended then remove it
     eg. mydomain.com:80 becomes mydomain.com
     same as remove_domain_port in utils.py
@@ -26,9 +26,9 @@ def _portDomainRemove(domain: str) -> str:
     return domain
 
 
-def receivingCalendarEvents(base_dir: str, nickname: str, domain: str,
-                            followingNickname: str,
-                            followingDomain: str) -> bool:
+def receiving_calendar_events(base_dir: str, nickname: str, domain: str,
+                              followingNickname: str,
+                              followingDomain: str) -> bool:
     """Returns true if receiving calendar events from the given
     account from following.txt
     """
@@ -36,11 +36,11 @@ def receivingCalendarEvents(base_dir: str, nickname: str, domain: str,
         # reminder post
         return True
     calendarFilename = \
-        _dirAcct(base_dir, nickname, domain) + '/followingCalendar.txt'
+        _dir_acct(base_dir, nickname, domain) + '/followingCalendar.txt'
     handle = followingNickname + '@' + followingDomain
     if not os.path.isfile(calendarFilename):
         followingFilename = \
-            _dirAcct(base_dir, nickname, domain) + '/following.txt'
+            _dir_acct(base_dir, nickname, domain) + '/following.txt'
         if not os.path.isfile(followingFilename):
             return False
         # create a new calendar file from the following file
@@ -49,26 +49,27 @@ def receivingCalendarEvents(base_dir: str, nickname: str, domain: str,
             with open(followingFilename, 'r') as followingFile:
                 followingHandles = followingFile.read()
         except OSError:
-            print('EX: receivingCalendarEvents ' + followingFilename)
+            print('EX: receiving_calendar_events ' + followingFilename)
         if followingHandles:
             try:
                 with open(calendarFilename, 'w+') as fp:
                     fp.write(followingHandles)
             except OSError:
-                print('EX: receivingCalendarEvents 2 ' + calendarFilename)
+                print('EX: receiving_calendar_events 2 ' + calendarFilename)
     return handle + '\n' in open(calendarFilename).read()
 
 
-def _receiveCalendarEvents(base_dir: str, nickname: str, domain: str,
-                           followingNickname: str,
-                           followingDomain: str,
-                           add: bool) -> None:
+def _receive_calendar_events(base_dir: str, nickname: str, domain: str,
+                             followingNickname: str,
+                             followingDomain: str,
+                             add: bool) -> None:
     """Adds or removes a handle from the following.txt list into a list
     indicating whether to receive calendar events from that account
     """
     # check that a following file exists
-    domain = _portDomainRemove(domain)
-    followingFilename = _dirAcct(base_dir, nickname, domain) + '/following.txt'
+    domain = _port_domain_remove(domain)
+    followingFilename = \
+        _dir_acct(base_dir, nickname, domain) + '/following.txt'
     if not os.path.isfile(followingFilename):
         print("WARN: following.txt doesn't exist for " +
               nickname + '@' + domain)
@@ -81,7 +82,7 @@ def _receiveCalendarEvents(base_dir: str, nickname: str, domain: str,
         return
 
     calendarFilename = \
-        _dirAcct(base_dir, nickname, domain) + '/followingCalendar.txt'
+        _dir_acct(base_dir, nickname, domain) + '/followingCalendar.txt'
 
     # get the contents of the calendar file, which is
     # a set of handles
@@ -92,7 +93,7 @@ def _receiveCalendarEvents(base_dir: str, nickname: str, domain: str,
             with open(calendarFilename, 'r') as calendarFile:
                 followingHandles = calendarFile.read()
         except OSError:
-            print('EX: _receiveCalendarEvents ' + calendarFilename)
+            print('EX: _receive_calendar_events ' + calendarFilename)
     else:
         # create a new calendar file from the following file
         print('Creating calendar file ' + calendarFilename)
@@ -101,7 +102,7 @@ def _receiveCalendarEvents(base_dir: str, nickname: str, domain: str,
             with open(followingFilename, 'r') as followingFile:
                 followingHandles = followingFile.read()
         except OSError:
-            print('EX: _receiveCalendarEvents 2 ' + calendarFilename)
+            print('EX: _receive_calendar_events 2 ' + calendarFilename)
         if add:
             try:
                 with open(calendarFilename, 'w+') as fp:
@@ -121,7 +122,7 @@ def _receiveCalendarEvents(base_dir: str, nickname: str, domain: str,
             with open(calendarFilename, 'w+') as fp:
                 fp.write(followingHandles)
         except OSError:
-            print('EX: _receiveCalendarEvents 3 ' + calendarFilename)
+            print('EX: _receive_calendar_events 3 ' + calendarFilename)
     else:
         print(handle + ' not in followingCalendar.txt')
         # not already in the calendar file
@@ -132,18 +133,18 @@ def _receiveCalendarEvents(base_dir: str, nickname: str, domain: str,
                 with open(calendarFilename, 'w+') as fp:
                     fp.write(followingHandles)
             except OSError:
-                print('EX: _receiveCalendarEvents 4 ' + calendarFilename)
+                print('EX: _receive_calendar_events 4 ' + calendarFilename)
 
 
 def add_person_to_calendar(base_dir: str, nickname: str, domain: str,
                            followingNickname: str,
                            followingDomain: str) -> None:
-    _receiveCalendarEvents(base_dir, nickname, domain,
-                           followingNickname, followingDomain, True)
+    _receive_calendar_events(base_dir, nickname, domain,
+                             followingNickname, followingDomain, True)
 
 
-def removePersonFromCalendar(base_dir: str, nickname: str, domain: str,
-                             followingNickname: str,
-                             followingDomain: str) -> None:
-    _receiveCalendarEvents(base_dir, nickname, domain,
-                           followingNickname, followingDomain, False)
+def remove_person_from_calendar(base_dir: str, nickname: str, domain: str,
+                                followingNickname: str,
+                                followingDomain: str) -> None:
+    _receive_calendar_events(base_dir, nickname, domain,
+                             followingNickname, followingDomain, False)

@@ -27,47 +27,47 @@ from utils import get_domain_from_actor
 from utils import is_pgp_encrypted
 from utils import local_actor_url
 from session import create_session
-from speaker import speakableText
-from speaker import getSpeakerPitch
-from speaker import getSpeakerRate
-from speaker import getSpeakerRange
-from like import sendLikeViaServer
-from like import sendUndoLikeViaServer
-from follow import approveFollowRequestViaServer
-from follow import denyFollowRequestViaServer
-from follow import getFollowRequestsViaServer
-from follow import getFollowingViaServer
-from follow import getFollowersViaServer
+from speaker import speakable_text
+from speaker import get_speaker_pitch
+from speaker import get_speaker_rate
+from speaker import get_speaker_range
+from like import send_like_via_server
+from like import send_undo_like_via_server
+from follow import approve_follow_request_via_server
+from follow import deny_follow_request_via_server
+from follow import get_follow_requests_via_server
+from follow import get_following_via_server
+from follow import get_followers_via_server
 from follow import send_follow_requestViaServer
-from follow import sendUnfollowRequestViaServer
-from posts import sendBlockViaServer
-from posts import sendUndoBlockViaServer
-from posts import sendMuteViaServer
-from posts import sendUndoMuteViaServer
-from posts import sendPostViaServer
-from posts import c2sBoxJson
-from posts import downloadAnnounce
-from announce import sendAnnounceViaServer
-from announce import sendUndoAnnounceViaServer
-from pgp import pgpLocalPublicKey
-from pgp import pgpDecrypt
-from pgp import hasLocalPGPkey
-from pgp import pgpEncryptToActor
-from pgp import pgpPublicKeyUpload
-from like import noOfLikes
-from bookmarks import sendBookmarkViaServer
-from bookmarks import sendUndoBookmarkViaServer
-from delete import sendDeleteViaServer
-from person import getActorJson
+from follow import send_unfollow_request_via_server
+from posts import send_block_via_server
+from posts import send_undo_block_via_server
+from posts import send_mute_via_server
+from posts import send_undo_mute_via_server
+from posts import send_post_via_server
+from posts import c2s_box_json
+from posts import download_announce
+from announce import send_announce_via_server
+from announce import send_undo_announce_via_server
+from pgp import pgp_local_public_key
+from pgp import pgp_decrypt
+from pgp import has_local_pg_pkey
+from pgp import pgp_encrypt_to_actor
+from pgp import pgp_public_key_upload
+from like import no_of_likes
+from bookmarks import send_bookmark_via_server
+from bookmarks import send_undo_bookmark_via_server
+from delete import send_delete_via_server
+from person import get_actor_json
 
 
-def _desktopHelp() -> None:
+def _desktop_help() -> None:
     """Shows help
     """
-    _desktopClearScreen()
+    _desktop_clear_screen()
     indent = '   '
     print('')
-    print(indent + _highlightText('Help Commands:'))
+    print(indent + _highlight_text('Help Commands:'))
     print('')
     print(indent + 'quit                                  ' +
           'Exit from the desktop client')
@@ -134,7 +134,7 @@ def _desktopHelp() -> None:
     print('')
 
 
-def _createDesktopConfig(actor: str) -> None:
+def _create_desktop_config(actor: str) -> None:
     """Sets up directories for desktop client configuration
     """
     homeDir = str(Path.home())
@@ -152,11 +152,11 @@ def _createDesktopConfig(actor: str) -> None:
         os.mkdir(readPostsDir)
 
 
-def _markPostAsRead(actor: str, post_id: str, postCategory: str) -> None:
+def _mark_post_as_read(actor: str, post_id: str, postCategory: str) -> None:
     """Marks the given post as read by the given actor
     """
     homeDir = str(Path.home())
-    _createDesktopConfig(actor)
+    _create_desktop_config(actor)
     nickname = get_nickname_from_actor(actor)
     domain, port = get_domain_from_actor(actor)
     handle = nickname + '@' + domain
@@ -182,11 +182,11 @@ def _markPostAsRead(actor: str, post_id: str, postCategory: str) -> None:
             readFile.write(post_id + '\n')
 
 
-def _hasReadPost(actor: str, post_id: str, postCategory: str) -> bool:
+def _has_read_post(actor: str, post_id: str, postCategory: str) -> bool:
     """Returns true if the given post has been read by the actor
     """
     homeDir = str(Path.home())
-    _createDesktopConfig(actor)
+    _create_desktop_config(actor)
     nickname = get_nickname_from_actor(actor)
     domain, port = get_domain_from_actor(actor)
     handle = nickname + '@' + domain
@@ -200,7 +200,7 @@ def _hasReadPost(actor: str, post_id: str, postCategory: str) -> bool:
     return False
 
 
-def _postIsToYou(actor: str, post_json_object: {}) -> bool:
+def _post_is_to_you(actor: str, post_json_object: {}) -> bool:
     """Returns true if the post is to the actor
     """
     toYourActor = False
@@ -220,8 +220,8 @@ def _postIsToYou(actor: str, post_json_object: {}) -> bool:
     return toYourActor
 
 
-def _newDesktopNotifications(actor: str, inboxJson: {},
-                             notifyJson: {}) -> None:
+def _new_desktop_notifications(actor: str, inboxJson: {},
+                               notifyJson: {}) -> None:
     """Looks for changes in the inbox and adds notifications
     """
     notifyJson['dmNotifyChanged'] = False
@@ -239,11 +239,11 @@ def _newDesktopNotifications(actor: str, inboxJson: {},
             continue
         if post_json_object['type'] == 'Announce':
             continue
-        if not _postIsToYou(actor, post_json_object):
+        if not _post_is_to_you(actor, post_json_object):
             continue
         if is_dm(post_json_object):
             if not DMdone:
-                if not _hasReadPost(actor, post_json_object['id'], 'dm'):
+                if not _has_read_post(actor, post_json_object['id'], 'dm'):
                     changed = False
                     if not notifyJson.get('dmPostId'):
                         changed = True
@@ -257,7 +257,8 @@ def _newDesktopNotifications(actor: str, inboxJson: {},
                     DMdone = True
         else:
             if not replyDone:
-                if not _hasReadPost(actor, post_json_object['id'], 'replies'):
+                if not _has_read_post(actor, post_json_object['id'],
+                                      'replies'):
                     changed = False
                     if not notifyJson.get('repliesPostId'):
                         changed = True
@@ -272,13 +273,13 @@ def _newDesktopNotifications(actor: str, inboxJson: {},
                     replyDone = True
 
 
-def _desktopClearScreen() -> None:
+def _desktop_clear_screen() -> None:
     """Clears the screen
     """
     os.system('cls' if os.name == 'nt' else 'clear')
 
 
-def _desktopShowBanner() -> None:
+def _desktop_show_banner() -> None:
     """Shows the banner at the top
     """
     bannerFilename = 'banner.txt'
@@ -293,7 +294,7 @@ def _desktopShowBanner() -> None:
             print(banner + '\n')
 
 
-def _desktopWaitForCmd(timeout: int, debug: bool) -> str:
+def _desktop_wait_for_cmd(timeout: int, debug: bool) -> str:
     """Waits for a command to be entered with a timeout
     Returns the command, or None on timeout
     """
@@ -310,8 +311,8 @@ def _desktopWaitForCmd(timeout: int, debug: bool) -> str:
         return None
 
 
-def _speakerEspeak(espeak, pitch: int, rate: int, srange: int,
-                   sayText: str) -> None:
+def _speaker_espeak(espeak, pitch: int, rate: int, srange: int,
+                    sayText: str) -> None:
     """Speaks the given text with espeak
     """
     espeak.set_parameter(espeak.Parameter.Pitch, pitch)
@@ -320,8 +321,8 @@ def _speakerEspeak(espeak, pitch: int, rate: int, srange: int,
     espeak.synth(html.unescape(sayText))
 
 
-def _speakerPicospeaker(pitch: int, rate: int, system_language: str,
-                        sayText: str) -> None:
+def _speaker_picospeaker(pitch: int, rate: int, system_language: str,
+                         sayText: str) -> None:
     """TTS using picospeaker
     """
     speakerLang = 'en-GB'
@@ -344,7 +345,8 @@ def _speakerPicospeaker(pitch: int, rate: int, system_language: str,
     os.system(speakerCmd)
 
 
-def _playNotificationSound(soundFilename: str, player: str = 'ffplay') -> None:
+def _play_notification_sound(soundFilename: str,
+                             player: str = 'ffplay') -> None:
     """Plays a sound
     """
     if not os.path.isfile(soundFilename):
@@ -355,8 +357,8 @@ def _playNotificationSound(soundFilename: str, player: str = 'ffplay') -> None:
                   ' -autoexit -hide_banner -nodisp 2> /dev/null')
 
 
-def _desktopNotification(notificationType: str,
-                         title: str, message: str) -> None:
+def _desktop_notification(notificationType: str,
+                          title: str, message: str) -> None:
     """Shows a desktop notification
     """
     if not notificationType:
@@ -379,49 +381,49 @@ def _desktopNotification(notificationType: str,
                   title + "\", '" + message + "'")
 
 
-def _textToSpeech(sayStr: str, screenreader: str,
-                  pitch: int, rate: int, srange: int,
-                  system_language: str, espeak=None) -> None:
+def _text_to_speech(sayStr: str, screenreader: str,
+                    pitch: int, rate: int, srange: int,
+                    system_language: str, espeak=None) -> None:
     """Say something via TTS
     """
     # speak the post content
     if screenreader == 'espeak':
-        _speakerEspeak(espeak, pitch, rate, srange, sayStr)
+        _speaker_espeak(espeak, pitch, rate, srange, sayStr)
     elif screenreader == 'picospeaker':
-        _speakerPicospeaker(pitch, rate, system_language, sayStr)
+        _speaker_picospeaker(pitch, rate, system_language, sayStr)
 
 
-def _sayCommand(content: str, sayStr: str, screenreader: str,
-                system_language: str,
-                espeak=None,
-                speakerName: str = 'screen reader',
-                speakerGender: str = 'They/Them') -> None:
+def _say_command(content: str, sayStr: str, screenreader: str,
+                 system_language: str,
+                 espeak=None,
+                 speakerName: str = 'screen reader',
+                 speakerGender: str = 'They/Them') -> None:
     """Speaks a command
     """
     print(content)
     if not screenreader:
         return
 
-    pitch = getSpeakerPitch(speakerName,
-                            screenreader, speakerGender)
-    rate = getSpeakerRate(speakerName, screenreader)
-    srange = getSpeakerRange(speakerName)
+    pitch = get_speaker_pitch(speakerName,
+                              screenreader, speakerGender)
+    rate = get_speaker_rate(speakerName, screenreader)
+    srange = get_speaker_range(speakerName)
 
-    _textToSpeech(sayStr, screenreader,
-                  pitch, rate, srange,
-                  system_language, espeak)
+    _text_to_speech(sayStr, screenreader,
+                    pitch, rate, srange,
+                    system_language, espeak)
 
 
-def _desktopReplyToPost(session, post_id: str,
-                        base_dir: str, nickname: str, password: str,
-                        domain: str, port: int, http_prefix: str,
-                        cached_webfingers: {}, person_cache: {},
-                        debug: bool, subject: str,
-                        screenreader: str, system_language: str,
-                        espeak, conversationId: str,
-                        low_bandwidth: bool,
-                        content_license_url: str,
-                        signing_priv_key_pem: str) -> None:
+def _desktop_reply_to_post(session, post_id: str,
+                           base_dir: str, nickname: str, password: str,
+                           domain: str, port: int, http_prefix: str,
+                           cached_webfingers: {}, person_cache: {},
+                           debug: bool, subject: str,
+                           screenreader: str, system_language: str,
+                           espeak, conversationId: str,
+                           low_bandwidth: bool,
+                           content_license_url: str,
+                           signing_priv_key_pem: str) -> None:
     """Use the desktop client to send a reply to the most recent post
     """
     if '://' not in post_id:
@@ -429,31 +431,31 @@ def _desktopReplyToPost(session, post_id: str,
     toNickname = get_nickname_from_actor(post_id)
     toDomain, toPort = get_domain_from_actor(post_id)
     sayStr = 'Replying to ' + toNickname + '@' + toDomain
-    _sayCommand(sayStr, sayStr,
-                screenreader, system_language, espeak)
+    _say_command(sayStr, sayStr,
+                 screenreader, system_language, espeak)
     sayStr = 'Type your reply message, then press Enter.'
-    _sayCommand(sayStr, sayStr, screenreader, system_language, espeak)
+    _say_command(sayStr, sayStr, screenreader, system_language, espeak)
     replyMessage = input()
     if not replyMessage:
         sayStr = 'No reply was entered.'
-        _sayCommand(sayStr, sayStr, screenreader, system_language, espeak)
+        _say_command(sayStr, sayStr, screenreader, system_language, espeak)
         return
     replyMessage = replyMessage.strip()
     if not replyMessage:
         sayStr = 'No reply was entered.'
-        _sayCommand(sayStr, sayStr, screenreader, system_language, espeak)
+        _say_command(sayStr, sayStr, screenreader, system_language, espeak)
         return
     print('')
     sayStr = 'You entered this reply:'
-    _sayCommand(sayStr, sayStr, screenreader, system_language, espeak)
-    _sayCommand(replyMessage, replyMessage, screenreader,
-                system_language, espeak)
+    _say_command(sayStr, sayStr, screenreader, system_language, espeak)
+    _say_command(replyMessage, replyMessage, screenreader,
+                 system_language, espeak)
     sayStr = 'Send this reply, yes or no?'
-    _sayCommand(sayStr, sayStr, screenreader, system_language, espeak)
+    _say_command(sayStr, sayStr, screenreader, system_language, espeak)
     yesno = input()
     if 'y' not in yesno.lower():
         sayStr = 'Abandoning reply'
-        _sayCommand(sayStr, sayStr, screenreader, system_language, espeak)
+        _say_command(sayStr, sayStr, screenreader, system_language, espeak)
         return
     ccUrl = None
     followersOnly = False
@@ -465,61 +467,61 @@ def _desktopReplyToPost(session, post_id: str,
     commentsEnabled = True
     city = 'London, England'
     sayStr = 'Sending reply'
-    _sayCommand(sayStr, sayStr, screenreader, system_language, espeak)
-    if sendPostViaServer(signing_priv_key_pem, __version__,
-                         base_dir, session, nickname, password,
-                         domain, port,
-                         toNickname, toDomain, toPort, ccUrl,
-                         http_prefix, replyMessage, followersOnly,
-                         commentsEnabled, attach, mediaType,
-                         attachedImageDescription, city,
-                         cached_webfingers, person_cache, isArticle,
-                         system_language, low_bandwidth,
-                         content_license_url,
-                         debug, post_id, post_id,
-                         conversationId, subject) == 0:
+    _say_command(sayStr, sayStr, screenreader, system_language, espeak)
+    if send_post_via_server(signing_priv_key_pem, __version__,
+                            base_dir, session, nickname, password,
+                            domain, port,
+                            toNickname, toDomain, toPort, ccUrl,
+                            http_prefix, replyMessage, followersOnly,
+                            commentsEnabled, attach, mediaType,
+                            attachedImageDescription, city,
+                            cached_webfingers, person_cache, isArticle,
+                            system_language, low_bandwidth,
+                            content_license_url,
+                            debug, post_id, post_id,
+                            conversationId, subject) == 0:
         sayStr = 'Reply sent'
     else:
         sayStr = 'Reply failed'
-    _sayCommand(sayStr, sayStr, screenreader, system_language, espeak)
+    _say_command(sayStr, sayStr, screenreader, system_language, espeak)
 
 
-def _desktopNewPost(session,
-                    base_dir: str, nickname: str, password: str,
-                    domain: str, port: int, http_prefix: str,
-                    cached_webfingers: {}, person_cache: {},
-                    debug: bool,
-                    screenreader: str, system_language: str,
-                    espeak, low_bandwidth: bool,
-                    content_license_url: str,
-                    signing_priv_key_pem: str) -> None:
+def _desktop_new_post(session,
+                      base_dir: str, nickname: str, password: str,
+                      domain: str, port: int, http_prefix: str,
+                      cached_webfingers: {}, person_cache: {},
+                      debug: bool,
+                      screenreader: str, system_language: str,
+                      espeak, low_bandwidth: bool,
+                      content_license_url: str,
+                      signing_priv_key_pem: str) -> None:
     """Use the desktop client to create a new post
     """
     conversationId = None
     sayStr = 'Create new post'
-    _sayCommand(sayStr, sayStr, screenreader, system_language, espeak)
+    _say_command(sayStr, sayStr, screenreader, system_language, espeak)
     sayStr = 'Type your post, then press Enter.'
-    _sayCommand(sayStr, sayStr, screenreader, system_language, espeak)
+    _say_command(sayStr, sayStr, screenreader, system_language, espeak)
     newMessage = input()
     if not newMessage:
         sayStr = 'No post was entered.'
-        _sayCommand(sayStr, sayStr, screenreader, system_language, espeak)
+        _say_command(sayStr, sayStr, screenreader, system_language, espeak)
         return
     newMessage = newMessage.strip()
     if not newMessage:
         sayStr = 'No post was entered.'
-        _sayCommand(sayStr, sayStr, screenreader, system_language, espeak)
+        _say_command(sayStr, sayStr, screenreader, system_language, espeak)
         return
     print('')
     sayStr = 'You entered this public post:'
-    _sayCommand(sayStr, sayStr, screenreader, system_language, espeak)
-    _sayCommand(newMessage, newMessage, screenreader, system_language, espeak)
+    _say_command(sayStr, sayStr, screenreader, system_language, espeak)
+    _say_command(newMessage, newMessage, screenreader, system_language, espeak)
     sayStr = 'Send this post, yes or no?'
-    _sayCommand(sayStr, sayStr, screenreader, system_language, espeak)
+    _say_command(sayStr, sayStr, screenreader, system_language, espeak)
     yesno = input()
     if 'y' not in yesno.lower():
         sayStr = 'Abandoning new post'
-        _sayCommand(sayStr, sayStr, screenreader, system_language, espeak)
+        _say_command(sayStr, sayStr, screenreader, system_language, espeak)
         return
     ccUrl = None
     followersOnly = False
@@ -532,32 +534,32 @@ def _desktopNewPost(session,
     commentsEnabled = True
     subject = None
     sayStr = 'Sending'
-    _sayCommand(sayStr, sayStr, screenreader, system_language, espeak)
-    if sendPostViaServer(signing_priv_key_pem, __version__,
-                         base_dir, session, nickname, password,
-                         domain, port,
-                         None, '#Public', port, ccUrl,
-                         http_prefix, newMessage, followersOnly,
-                         commentsEnabled, attach, mediaType,
-                         attachedImageDescription, city,
-                         cached_webfingers, person_cache, isArticle,
-                         system_language, low_bandwidth,
-                         content_license_url,
-                         debug, None, None,
-                         conversationId, subject) == 0:
+    _say_command(sayStr, sayStr, screenreader, system_language, espeak)
+    if send_post_via_server(signing_priv_key_pem, __version__,
+                            base_dir, session, nickname, password,
+                            domain, port,
+                            None, '#Public', port, ccUrl,
+                            http_prefix, newMessage, followersOnly,
+                            commentsEnabled, attach, mediaType,
+                            attachedImageDescription, city,
+                            cached_webfingers, person_cache, isArticle,
+                            system_language, low_bandwidth,
+                            content_license_url,
+                            debug, None, None,
+                            conversationId, subject) == 0:
         sayStr = 'Post sent'
     else:
         sayStr = 'Post failed'
-    _sayCommand(sayStr, sayStr, screenreader, system_language, espeak)
+    _say_command(sayStr, sayStr, screenreader, system_language, espeak)
 
 
-def _safeMessage(content: str) -> str:
+def _safe_message(content: str) -> str:
     """Removes anything potentially unsafe from a string
     """
     return content.replace('`', '').replace('$(', '$ (')
 
 
-def _timelineIsEmpty(boxJson: {}) -> bool:
+def _timeline_is_empty(boxJson: {}) -> bool:
     """Returns true if the given timeline is empty
     """
     empty = False
@@ -571,17 +573,17 @@ def _timelineIsEmpty(boxJson: {}) -> bool:
     return empty
 
 
-def _getFirstItemId(boxJson: {}) -> str:
+def _get_first_item_id(boxJson: {}) -> str:
     """Returns the id of the first item in the timeline
     """
-    if _timelineIsEmpty(boxJson):
+    if _timeline_is_empty(boxJson):
         return
     if len(boxJson['orderedItems']) == 0:
         return
     return boxJson['orderedItems'][0]['id']
 
 
-def _textOnlyContent(content: str) -> str:
+def _text_only_content(content: str) -> str:
     """Remove formatting from the given string
     """
     content = urllib.parse.unquote_plus(content)
@@ -589,7 +591,7 @@ def _textOnlyContent(content: str) -> str:
     return remove_html(content)
 
 
-def _getImageDescription(post_json_object: {}) -> str:
+def _get_image_description(post_json_object: {}) -> str:
     """Returns a image description/s on a post
     """
     imageDescription = ''
@@ -618,7 +620,7 @@ def _getImageDescription(post_json_object: {}) -> str:
     return imageDescription
 
 
-def _showLikesOnPost(post_json_object: {}, maxLikes: int) -> None:
+def _show_likes_on_post(post_json_object: {}, maxLikes: int) -> None:
     """Shows the likes on a post
     """
     if not has_object_dict(post_json_object):
@@ -641,7 +643,7 @@ def _showLikesOnPost(post_json_object: {}, maxLikes: int) -> None:
             break
 
 
-def _showRepliesOnPost(post_json_object: {}, max_replies: int) -> None:
+def _show_replies_on_post(post_json_object: {}, max_replies: int) -> None:
     """Shows the replies on a post
     """
     if not has_object_dict(post_json_object):
@@ -664,22 +666,22 @@ def _showRepliesOnPost(post_json_object: {}, max_replies: int) -> None:
             break
 
 
-def _readLocalBoxPost(session, nickname: str, domain: str,
-                      http_prefix: str, base_dir: str, boxName: str,
-                      pageNumber: int, index: int, boxJson: {},
-                      system_language: str,
-                      screenreader: str, espeak,
-                      translate: {}, yourActor: str,
-                      domain_full: str, person_cache: {},
-                      signing_priv_key_pem: str,
-                      blockedCache: {}) -> {}:
+def _read_local_box_post(session, nickname: str, domain: str,
+                         http_prefix: str, base_dir: str, boxName: str,
+                         pageNumber: int, index: int, boxJson: {},
+                         system_language: str,
+                         screenreader: str, espeak,
+                         translate: {}, yourActor: str,
+                         domain_full: str, person_cache: {},
+                         signing_priv_key_pem: str,
+                         blockedCache: {}) -> {}:
     """Reads a post from the given timeline
     Returns the post json
     """
-    if _timelineIsEmpty(boxJson):
+    if _timeline_is_empty(boxJson):
         return {}
 
-    post_json_object = _desktopGetBoxPostObject(boxJson, index)
+    post_json_object = _desktop_get_box_post_object(boxJson, index)
     if not post_json_object:
         return {}
     gender = 'They/Them'
@@ -690,7 +692,7 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
     sayStr = 'Reading ' + boxNameStr + ' post ' + str(index) + \
         ' from page ' + str(pageNumber) + '.'
     sayStr2 = sayStr.replace(' dm ', ' DM ')
-    _sayCommand(sayStr, sayStr2, screenreader, system_language, espeak)
+    _say_command(sayStr, sayStr2, screenreader, system_language, espeak)
     print('')
 
     if post_json_object['type'] == 'Announce':
@@ -701,19 +703,19 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
         yt_replace_domain = None
         twitter_replacement_domain = None
         post_json_object2 = \
-            downloadAnnounce(session, base_dir,
-                             http_prefix,
-                             nickname, domain,
-                             post_json_object,
-                             __version__, translate,
-                             yt_replace_domain,
-                             twitter_replacement_domain,
-                             allow_local_network_access,
-                             recent_posts_cache, False,
-                             system_language,
-                             domain_full, person_cache,
-                             signing_priv_key_pem,
-                             blockedCache)
+            download_announce(session, base_dir,
+                              http_prefix,
+                              nickname, domain,
+                              post_json_object,
+                              __version__, translate,
+                              yt_replace_domain,
+                              twitter_replacement_domain,
+                              allow_local_network_access,
+                              recent_posts_cache, False,
+                              system_language,
+                              domain_full, person_cache,
+                              signing_priv_key_pem,
+                              blockedCache)
         if post_json_object2:
             if has_object_dict(post_json_object2):
                 if post_json_object2['object'].get('attributedTo') and \
@@ -727,19 +729,19 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
                         nameStr += ' ' + translate['announces'] + ' ' + \
                             get_nickname_from_actor(actor)
                         sayStr = nameStr
-                        _sayCommand(sayStr, sayStr, screenreader,
-                                    system_language, espeak)
+                        _say_command(sayStr, sayStr, screenreader,
+                                     system_language, espeak)
                         print('')
                         if screenreader:
                             time.sleep(2)
                         content = \
-                            _textOnlyContent(content)
-                        content += _getImageDescription(post_json_object2)
+                            _text_only_content(content)
+                        content += _get_image_description(post_json_object2)
                         messageStr, detectedLinks = \
-                            speakableText(base_dir, content, translate)
+                            speakable_text(base_dir, content, translate)
                         sayStr = content
-                        _sayCommand(sayStr, messageStr, screenreader,
-                                    system_language, espeak)
+                        _say_command(sayStr, messageStr, screenreader,
+                                     system_language, espeak)
                         return post_json_object2
         return {}
 
@@ -752,27 +754,27 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
         return {}
     actor = attributedTo
     nameStr = get_nickname_from_actor(actor)
-    content = _textOnlyContent(content)
-    content += _getImageDescription(post_json_object)
+    content = _text_only_content(content)
+    content += _get_image_description(post_json_object)
 
     if is_pgp_encrypted(content):
         sayStr = 'Encrypted message. Please enter your passphrase.'
-        _sayCommand(sayStr, sayStr, screenreader, system_language, espeak)
-        content = pgpDecrypt(domain, content, actor, signing_priv_key_pem)
+        _say_command(sayStr, sayStr, screenreader, system_language, espeak)
+        content = pgp_decrypt(domain, content, actor, signing_priv_key_pem)
         if is_pgp_encrypted(content):
             sayStr = 'Message could not be decrypted'
-            _sayCommand(sayStr, sayStr, screenreader, system_language, espeak)
+            _say_command(sayStr, sayStr, screenreader, system_language, espeak)
             return {}
 
-    content = _safeMessage(content)
-    messageStr, detectedLinks = speakableText(base_dir, content, translate)
+    content = _safe_message(content)
+    messageStr, detectedLinks = speakable_text(base_dir, content, translate)
 
     if screenreader:
         time.sleep(2)
 
     # say the speaker's name
-    _sayCommand(nameStr, nameStr, screenreader,
-                system_language, espeak, nameStr, gender)
+    _say_command(nameStr, nameStr, screenreader,
+                 system_language, espeak, nameStr, gender)
     print('')
 
     if post_json_object['object'].get('inReplyTo'):
@@ -782,25 +784,25 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
         time.sleep(2)
 
     # speak the post content
-    _sayCommand(content, messageStr, screenreader,
-                system_language, espeak, nameStr, gender)
+    _say_command(content, messageStr, screenreader,
+                 system_language, espeak, nameStr, gender)
 
-    _showLikesOnPost(post_json_object, 10)
-    _showRepliesOnPost(post_json_object, 10)
+    _show_likes_on_post(post_json_object, 10)
+    _show_replies_on_post(post_json_object, 10)
 
     # if the post is addressed to you then mark it as read
-    if _postIsToYou(yourActor, post_json_object):
+    if _post_is_to_you(yourActor, post_json_object):
         if is_dm(post_json_object):
-            _markPostAsRead(yourActor, post_json_object['id'], 'dm')
+            _mark_post_as_read(yourActor, post_json_object['id'], 'dm')
         else:
-            _markPostAsRead(yourActor, post_json_object['id'], 'replies')
+            _mark_post_as_read(yourActor, post_json_object['id'], 'replies')
 
     return post_json_object
 
 
-def _desktopShowActor(base_dir: str, actor_json: {}, translate: {},
-                      system_language: str, screenreader: str,
-                      espeak) -> None:
+def _desktop_show_actor(base_dir: str, actor_json: {}, translate: {},
+                        system_language: str, screenreader: str,
+                        espeak) -> None:
     """Shows information for the given actor
     """
     actor = actor_json['id']
@@ -810,11 +812,11 @@ def _desktopShowActor(base_dir: str, actor_json: {}, translate: {},
     handle = '@' + actorNickname + '@' + actorDomainFull
 
     sayStr = 'Profile for ' + html.unescape(handle)
-    _sayCommand(sayStr, sayStr, screenreader, system_language, espeak)
+    _say_command(sayStr, sayStr, screenreader, system_language, espeak)
     print(actor)
     if actor_json.get('movedTo'):
         sayStr = 'Moved to ' + html.unescape(actor_json['movedTo'])
-        _sayCommand(sayStr, sayStr, screenreader, system_language, espeak)
+        _say_command(sayStr, sayStr, screenreader, system_language, espeak)
     if actor_json.get('alsoKnownAs'):
         alsoKnownAsStr = ''
         ctr = 0
@@ -825,29 +827,30 @@ def _desktopShowActor(base_dir: str, actor_json: {}, translate: {},
             alsoKnownAsStr += altActor
 
         sayStr = 'Also known as ' + html.unescape(alsoKnownAsStr)
-        _sayCommand(sayStr, sayStr, screenreader, system_language, espeak)
+        _say_command(sayStr, sayStr, screenreader, system_language, espeak)
     if actor_json.get('summary'):
         sayStr = html.unescape(remove_html(actor_json['summary']))
         sayStr = sayStr.replace('"', "'")
-        sayStr2 = speakableText(base_dir, sayStr, translate)[0]
-        _sayCommand(sayStr, sayStr2, screenreader, system_language, espeak)
+        sayStr2 = speakable_text(base_dir, sayStr, translate)[0]
+        _say_command(sayStr, sayStr2, screenreader, system_language, espeak)
 
 
-def _desktopShowProfile(session, nickname: str, domain: str,
-                        http_prefix: str, base_dir: str, boxName: str,
-                        pageNumber: int, index: int, boxJson: {},
-                        system_language: str,
-                        screenreader: str, espeak,
-                        translate: {}, yourActor: str,
-                        post_json_object: {}, signing_priv_key_pem: str) -> {}:
+def _desktop_show_profile(session, nickname: str, domain: str,
+                          http_prefix: str, base_dir: str, boxName: str,
+                          pageNumber: int, index: int, boxJson: {},
+                          system_language: str,
+                          screenreader: str, espeak,
+                          translate: {}, yourActor: str,
+                          post_json_object: {},
+                          signing_priv_key_pem: str) -> {}:
     """Shows the profile of the actor for the given post
     Returns the actor json
     """
-    if _timelineIsEmpty(boxJson):
+    if _timeline_is_empty(boxJson):
         return {}
 
     if not post_json_object:
-        post_json_object = _desktopGetBoxPostObject(boxJson, index)
+        post_json_object = _desktop_get_box_post_object(boxJson, index)
         if not post_json_object:
             return {}
 
@@ -870,37 +873,37 @@ def _desktopShowProfile(session, nickname: str, domain: str,
     if 'http://' in actor:
         isHttp = True
     actor_json, asHeader = \
-        getActorJson(domain, actor, isHttp, False, False, True,
-                     signing_priv_key_pem, session)
+        get_actor_json(domain, actor, isHttp, False, False, True,
+                       signing_priv_key_pem, session)
 
-    _desktopShowActor(base_dir, actor_json, translate,
-                      system_language, screenreader, espeak)
+    _desktop_show_actor(base_dir, actor_json, translate,
+                        system_language, screenreader, espeak)
 
     return actor_json
 
 
-def _desktopShowProfileFromHandle(session, nickname: str, domain: str,
-                                  http_prefix: str, base_dir: str,
-                                  boxName: str, handle: str,
-                                  system_language: str,
-                                  screenreader: str, espeak,
-                                  translate: {}, yourActor: str,
-                                  post_json_object: {},
-                                  signing_priv_key_pem: str) -> {}:
+def _desktop_show_profile_from_handle(session, nickname: str, domain: str,
+                                      http_prefix: str, base_dir: str,
+                                      boxName: str, handle: str,
+                                      system_language: str,
+                                      screenreader: str, espeak,
+                                      translate: {}, yourActor: str,
+                                      post_json_object: {},
+                                      signing_priv_key_pem: str) -> {}:
     """Shows the profile for a handle
     Returns the actor json
     """
     actor_json, asHeader = \
-        getActorJson(domain, handle, False, False, False, True,
-                     signing_priv_key_pem, session)
+        get_actor_json(domain, handle, False, False, False, True,
+                       signing_priv_key_pem, session)
 
-    _desktopShowActor(base_dir, actor_json, translate,
-                      system_language, screenreader, espeak)
+    _desktop_show_actor(base_dir, actor_json, translate,
+                        system_language, screenreader, espeak)
 
     return actor_json
 
 
-def _desktopGetBoxPostObject(boxJson: {}, index: int) -> {}:
+def _desktop_get_box_post_object(boxJson: {}, index: int) -> {}:
     """Gets the post with the given index from the timeline
     """
     ctr = 0
@@ -928,7 +931,7 @@ def _desktopGetBoxPostObject(boxJson: {}, index: int) -> {}:
     return None
 
 
-def _formatPublished(published: str) -> str:
+def _format_published(published: str) -> str:
     """Formats the published time for display on timeline
     """
     dateStr = published.split('T')[0]
@@ -940,7 +943,7 @@ def _formatPublished(published: str) -> str:
     return monthStr + '-' + dayStr + ' ' + hourStr + ':' + minStr + 'Z'
 
 
-def _padToWidth(content: str, width: int) -> str:
+def _pad_to_width(content: str, width: int) -> str:
     """Pads the given string to the given width
     """
     if len(content) > width:
@@ -951,20 +954,20 @@ def _padToWidth(content: str, width: int) -> str:
     return content
 
 
-def _highlightText(text: str) -> str:
+def _highlight_text(text: str) -> str:
     """Returns a highlighted version of the given text
     """
     return '\33[7m' + text + '\33[0m'
 
 
-def _desktopShowBox(indent: str,
-                    followRequestsJson: {},
-                    yourActor: str, boxName: str, boxJson: {},
-                    translate: {},
-                    screenreader: str, system_language: str, espeak,
-                    pageNumber: int,
-                    newReplies: bool,
-                    newDMs: bool) -> bool:
+def _desktop_show_box(indent: str,
+                      followRequestsJson: {},
+                      yourActor: str, boxName: str, boxJson: {},
+                      translate: {},
+                      screenreader: str, system_language: str, espeak,
+                      pageNumber: int,
+                      newReplies: bool,
+                      newDMs: bool) -> bool:
     """Shows online timeline
     """
     numberWidth = 2
@@ -972,15 +975,15 @@ def _desktopShowBox(indent: str,
     contentWidth = 50
 
     # title
-    _desktopClearScreen()
-    _desktopShowBanner()
+    _desktop_clear_screen()
+    _desktop_show_banner()
 
     notificationIcons = ''
     if boxName.startswith('tl'):
         boxNameStr = boxName[2:]
     else:
         boxNameStr = boxName
-    titleStr = _highlightText(boxNameStr.upper())
+    titleStr = _highlight_text(boxNameStr.upper())
     # if newDMs:
     #     notificationIcons += ' 📩'
     # if newReplies:
@@ -992,12 +995,12 @@ def _desktopShowBox(indent: str,
         titleStr += notificationIcons
     print(indent + titleStr + '\n')
 
-    if _timelineIsEmpty(boxJson):
+    if _timeline_is_empty(boxJson):
         boxStr = boxNameStr
         if boxName == 'dm':
             boxStr = 'DM'
         sayStr = indent + 'You have no ' + boxStr + ' posts yet.'
-        _sayCommand(sayStr, sayStr, screenreader, system_language, espeak)
+        _say_command(sayStr, sayStr, screenreader, system_language, espeak)
         print('')
         return False
 
@@ -1011,10 +1014,11 @@ def _desktopShowBox(indent: str,
                 if isinstance(post_json_object['object'], str):
                     authorActor = post_json_object['actor']
                     name = get_nickname_from_actor(authorActor) + ' ⮌'
-                    name = _padToWidth(name, nameWidth)
+                    name = _pad_to_width(name, nameWidth)
                     ctrStr = str(ctr)
-                    posStr = _padToWidth(ctrStr, numberWidth)
-                    published = _formatPublished(post_json_object['published'])
+                    posStr = _pad_to_width(ctrStr, numberWidth)
+                    published = \
+                        _format_published(post_json_object['published'])
                     announcedNickname = \
                         get_nickname_from_actor(post_json_object['object'])
                     announcedDomain, announcedPort = \
@@ -1023,7 +1027,7 @@ def _desktopShowBox(indent: str,
                     lineStr = \
                         indent + str(posStr) + ' | ' + name + ' | ' + \
                         published + ' | ' + \
-                        _padToWidth(announcedHandle, contentWidth)
+                        _pad_to_width(announcedHandle, contentWidth)
                     print(lineStr)
                     ctr += 1
                     continue
@@ -1035,14 +1039,14 @@ def _desktopShowBox(indent: str,
         if not post_json_object['object'].get('content'):
             continue
         ctrStr = str(ctr)
-        posStr = _padToWidth(ctrStr, numberWidth)
+        posStr = _pad_to_width(ctrStr, numberWidth)
 
         authorActor = post_json_object['object']['attributedTo']
         contentWarning = None
         if post_json_object['object'].get('summary'):
             contentWarning = '⚡' + \
-                _padToWidth(post_json_object['object']['summary'],
-                            contentWidth)
+                _pad_to_width(post_json_object['object']['summary'],
+                              contentWidth)
         name = get_nickname_from_actor(authorActor)
 
         # append icons to the end of the name
@@ -1060,7 +1064,7 @@ def _desktopShowBox(indent: str,
                         name += '↰'
                         if i > 10:
                             break
-        likesCount = noOfLikes(post_json_object)
+        likesCount = no_of_likes(post_json_object)
         if likesCount > 10:
             likesCount = 10
         for like in range(likesCount):
@@ -1068,13 +1072,13 @@ def _desktopShowBox(indent: str,
                 spaceAdded = True
                 name += ' '
             name += '❤'
-        name = _padToWidth(name, nameWidth)
+        name = _pad_to_width(name, nameWidth)
 
-        published = _formatPublished(post_json_object['published'])
+        published = _format_published(post_json_object['published'])
 
         contentStr = get_base_content_from_post(post_json_object,
                                                 system_language)
-        content = _textOnlyContent(contentStr)
+        content = _text_only_content(contentStr)
         if boxName != 'dm':
             if is_dm(post_json_object):
                 content = '📧' + content
@@ -1083,7 +1087,7 @@ def _desktopShowBox(indent: str,
                 content = '🔒' + content
             elif '://' in content:
                 content = '🔗' + content
-            content = _padToWidth(content, contentWidth)
+            content = _pad_to_width(content, contentWidth)
         else:
             # display content warning
             if is_pgp_encrypted(content):
@@ -1102,16 +1106,16 @@ def _desktopShowBox(indent: str,
         lineStr = indent + str(posStr) + ' | ' + name + ' | ' + \
             published + ' | ' + content
         if boxName == 'inbox' and \
-           _postIsToYou(yourActor, post_json_object):
-            if not _hasReadPost(yourActor, post_json_object['id'], 'dm'):
-                if not _hasReadPost(yourActor, post_json_object['id'],
-                                    'replies'):
-                    lineStr = _highlightText(lineStr)
+           _post_is_to_you(yourActor, post_json_object):
+            if not _has_read_post(yourActor, post_json_object['id'], 'dm'):
+                if not _has_read_post(yourActor, post_json_object['id'],
+                                      'replies'):
+                    lineStr = _highlight_text(lineStr)
         print(lineStr)
         ctr += 1
 
     if followRequestsJson:
-        _desktopShowFollowRequests(followRequestsJson, translate)
+        _desktop_show_follow_requests(followRequestsJson, translate)
 
     print('')
 
@@ -1121,20 +1125,20 @@ def _desktopShowBox(indent: str,
     sayStr2 = sayStr.replace('\33[3m', '').replace('\33[0m', '')
     sayStr2 = sayStr2.replace('show dm', 'show DM')
     sayStr2 = sayStr2.replace('dm post', 'Direct message post')
-    _sayCommand(sayStr, sayStr2, screenreader, system_language, espeak)
+    _say_command(sayStr, sayStr2, screenreader, system_language, espeak)
     print('')
     return True
 
 
-def _desktopNewDM(session, toHandle: str,
-                  base_dir: str, nickname: str, password: str,
-                  domain: str, port: int, http_prefix: str,
-                  cached_webfingers: {}, person_cache: {},
-                  debug: bool,
-                  screenreader: str, system_language: str,
-                  espeak, low_bandwidth: bool,
-                  content_license_url: str,
-                  signing_priv_key_pem: str) -> None:
+def _desktop_new_dm(session, toHandle: str,
+                    base_dir: str, nickname: str, password: str,
+                    domain: str, port: int, http_prefix: str,
+                    cached_webfingers: {}, person_cache: {},
+                    debug: bool,
+                    screenreader: str, system_language: str,
+                    espeak, low_bandwidth: bool,
+                    content_license_url: str,
+                    signing_priv_key_pem: str) -> None:
     """Use the desktop client to create a new direct message
     which can include multiple destination handles
     """
@@ -1149,26 +1153,26 @@ def _desktopNewDM(session, toHandle: str,
 
     for handle in handlesList:
         handle = handle.strip()
-        _desktopNewDMbase(session, handle,
-                          base_dir, nickname, password,
-                          domain, port, http_prefix,
-                          cached_webfingers, person_cache,
-                          debug,
-                          screenreader, system_language,
-                          espeak, low_bandwidth,
-                          content_license_url,
-                          signing_priv_key_pem)
+        _desktop_new_d_mbase(session, handle,
+                             base_dir, nickname, password,
+                             domain, port, http_prefix,
+                             cached_webfingers, person_cache,
+                             debug,
+                             screenreader, system_language,
+                             espeak, low_bandwidth,
+                             content_license_url,
+                             signing_priv_key_pem)
 
 
-def _desktopNewDMbase(session, toHandle: str,
-                      base_dir: str, nickname: str, password: str,
-                      domain: str, port: int, http_prefix: str,
-                      cached_webfingers: {}, person_cache: {},
-                      debug: bool,
-                      screenreader: str, system_language: str,
-                      espeak, low_bandwidth: bool,
-                      content_license_url: str,
-                      signing_priv_key_pem: str) -> None:
+def _desktop_new_d_mbase(session, toHandle: str,
+                         base_dir: str, nickname: str, password: str,
+                         domain: str, port: int, http_prefix: str,
+                         cached_webfingers: {}, person_cache: {},
+                         debug: bool,
+                         screenreader: str, system_language: str,
+                         espeak, low_bandwidth: bool,
+                         content_license_url: str,
+                         signing_priv_key_pem: str) -> None:
     """Use the desktop client to create a new direct message
     """
     conversationId = None
@@ -1184,22 +1188,22 @@ def _desktopNewDMbase(session, toHandle: str,
         toDomain = toHandle.split('@')[1]
 
     sayStr = 'Create new direct message to ' + toHandle
-    _sayCommand(sayStr, sayStr, screenreader, system_language, espeak)
+    _say_command(sayStr, sayStr, screenreader, system_language, espeak)
     sayStr = 'Type your direct message, then press Enter.'
-    _sayCommand(sayStr, sayStr, screenreader, system_language, espeak)
+    _say_command(sayStr, sayStr, screenreader, system_language, espeak)
     newMessage = input()
     if not newMessage:
         sayStr = 'No direct message was entered.'
-        _sayCommand(sayStr, sayStr, screenreader, system_language, espeak)
+        _say_command(sayStr, sayStr, screenreader, system_language, espeak)
         return
     newMessage = newMessage.strip()
     if not newMessage:
         sayStr = 'No direct message was entered.'
-        _sayCommand(sayStr, sayStr, screenreader, system_language, espeak)
+        _say_command(sayStr, sayStr, screenreader, system_language, espeak)
         return
     sayStr = 'You entered this direct message to ' + toHandle + ':'
-    _sayCommand(sayStr, sayStr, screenreader, system_language, espeak)
-    _sayCommand(newMessage, newMessage, screenreader, system_language, espeak)
+    _say_command(sayStr, sayStr, screenreader, system_language, espeak)
+    _say_command(newMessage, newMessage, screenreader, system_language, espeak)
     ccUrl = None
     followersOnly = False
     attach = None
@@ -1213,11 +1217,11 @@ def _desktopNewDMbase(session, toHandle: str,
 
     # if there is a local PGP key then attempt to encrypt the DM
     # using the PGP public key of the recipient
-    if hasLocalPGPkey():
+    if has_local_pg_pkey():
         sayStr = \
             'Local PGP key detected...' + \
             'Fetching PGP public key for ' + toHandle
-        _sayCommand(sayStr, sayStr, screenreader, system_language, espeak)
+        _say_command(sayStr, sayStr, screenreader, system_language, espeak)
         paddedMessage = newMessage
         if len(paddedMessage) < 32:
             # add some padding before and after
@@ -1227,47 +1231,48 @@ def _desktopNewDMbase(session, toHandle: str,
             for after in range(randint(1, 16)):
                 paddedMessage += ' '
         cipherText = \
-            pgpEncryptToActor(domain, paddedMessage, toHandle,
-                              signing_priv_key_pem)
+            pgp_encrypt_to_actor(domain, paddedMessage, toHandle,
+                                 signing_priv_key_pem)
         if not cipherText:
             sayStr = \
                 toHandle + ' has no PGP public key. ' + \
                 'Your message will be sent in clear text'
-            _sayCommand(sayStr, sayStr, screenreader, system_language, espeak)
+            _say_command(sayStr, sayStr, screenreader, system_language, espeak)
         else:
             newMessage = cipherText
             sayStr = 'Message encrypted'
-            _sayCommand(sayStr, sayStr, screenreader, system_language, espeak)
+            _say_command(sayStr, sayStr, screenreader, system_language, espeak)
 
     sayStr = 'Send this direct message, yes or no?'
-    _sayCommand(sayStr, sayStr, screenreader, system_language, espeak)
+    _say_command(sayStr, sayStr, screenreader, system_language, espeak)
     yesno = input()
     if 'y' not in yesno.lower():
         sayStr = 'Abandoning new direct message'
-        _sayCommand(sayStr, sayStr, screenreader, system_language, espeak)
+        _say_command(sayStr, sayStr, screenreader, system_language, espeak)
         return
 
     sayStr = 'Sending'
-    _sayCommand(sayStr, sayStr, screenreader, system_language, espeak)
-    if sendPostViaServer(signing_priv_key_pem, __version__,
-                         base_dir, session, nickname, password,
-                         domain, port,
-                         toNickname, toDomain, toPort, ccUrl,
-                         http_prefix, newMessage, followersOnly,
-                         commentsEnabled, attach, mediaType,
-                         attachedImageDescription, city,
-                         cached_webfingers, person_cache, isArticle,
-                         system_language, low_bandwidth,
-                         content_license_url,
-                         debug, None, None,
-                         conversationId, subject) == 0:
+    _say_command(sayStr, sayStr, screenreader, system_language, espeak)
+    if send_post_via_server(signing_priv_key_pem, __version__,
+                            base_dir, session, nickname, password,
+                            domain, port,
+                            toNickname, toDomain, toPort, ccUrl,
+                            http_prefix, newMessage, followersOnly,
+                            commentsEnabled, attach, mediaType,
+                            attachedImageDescription, city,
+                            cached_webfingers, person_cache, isArticle,
+                            system_language, low_bandwidth,
+                            content_license_url,
+                            debug, None, None,
+                            conversationId, subject) == 0:
         sayStr = 'Direct message sent'
     else:
         sayStr = 'Direct message failed'
-    _sayCommand(sayStr, sayStr, screenreader, system_language, espeak)
+    _say_command(sayStr, sayStr, screenreader, system_language, espeak)
 
 
-def _desktopShowFollowRequests(followRequestsJson: {}, translate: {}) -> None:
+def _desktop_show_follow_requests(followRequestsJson: {},
+                                  translate: {}) -> None:
     """Shows any follow requests
     """
     if not isinstance(followRequestsJson, dict):
@@ -1289,9 +1294,9 @@ def _desktopShowFollowRequests(followRequestsJson: {}, translate: {}) -> None:
               handleNickname + '@' + handleDomainFull)
 
 
-def _desktopShowFollowing(followingJson: {}, translate: {},
-                          pageNumber: int, indent: str,
-                          followType='following') -> None:
+def _desktop_show_following(followingJson: {}, translate: {},
+                            pageNumber: int, indent: str,
+                            followType='following') -> None:
     """Shows a page of accounts followed
     """
     if not isinstance(followingJson, dict):
@@ -1315,17 +1320,17 @@ def _desktopShowFollowing(followingJson: {}, translate: {},
               handleNickname + '@' + handleDomainFull)
 
 
-def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
-                     nickname: str, domain: str, port: int,
-                     password: str, screenreader: str,
-                     system_language: str,
-                     notificationSounds: bool,
-                     notificationType: str,
-                     noKeyPress: bool,
-                     storeInboxPosts: bool,
-                     showNewPosts: bool,
-                     language: str,
-                     debug: bool, low_bandwidth: bool) -> None:
+def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
+                       nickname: str, domain: str, port: int,
+                       password: str, screenreader: str,
+                       system_language: str,
+                       notificationSounds: bool,
+                       notificationType: str,
+                       noKeyPress: bool,
+                       storeInboxPosts: bool,
+                       showNewPosts: bool,
+                       language: str,
+                       debug: bool, low_bandwidth: bool) -> None:
     """Runs the desktop and screen reader client,
     which announces new inbox items
     """
@@ -1340,8 +1345,8 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
     if showNewPosts:
         indent = ''
 
-    _desktopClearScreen()
-    _desktopShowBanner()
+    _desktop_clear_screen()
+    _desktop_show_banner()
 
     espeak = None
     if screenreader:
@@ -1354,8 +1359,8 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
 
         sayStr = indent + 'Running ' + screenreader + ' for ' + \
             nickname + '@' + domain
-        _sayCommand(sayStr, sayStr, screenreader,
-                    system_language, espeak)
+        _say_command(sayStr, sayStr, screenreader,
+                     system_language, espeak)
     else:
         print(indent + 'Running desktop notifications for ' +
               nickname + '@' + domain)
@@ -1363,8 +1368,8 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
         sayStr = indent + 'Notification sounds on'
     else:
         sayStr = indent + 'Notification sounds off'
-    _sayCommand(sayStr, sayStr, screenreader,
-                system_language, espeak)
+    _say_command(sayStr, sayStr, screenreader,
+                 system_language, espeak)
 
     curr_timeline = 'inbox'
     pageNumber = 1
@@ -1395,19 +1400,19 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
     pgpKeyUpload = False
 
     sayStr = indent + 'Loading translations file'
-    _sayCommand(sayStr, sayStr, screenreader,
-                system_language, espeak)
+    _say_command(sayStr, sayStr, screenreader,
+                 system_language, espeak)
     translate, system_language = \
         load_translations_from_file(base_dir, language)
 
     sayStr = indent + 'Connecting...'
-    _sayCommand(sayStr, sayStr, screenreader,
-                system_language, espeak)
+    _say_command(sayStr, sayStr, screenreader,
+                 system_language, espeak)
     session = create_session(proxy_type)
 
     sayStr = indent + '/q or /quit to exit'
-    _sayCommand(sayStr, sayStr, screenreader,
-                system_language, espeak)
+    _say_command(sayStr, sayStr, screenreader,
+                 system_language, espeak)
 
     domain_full = get_full_domain(domain, port)
     yourActor = local_actor_url(http_prefix, nickname, domain_full)
@@ -1425,79 +1430,80 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
     desktopShown = False
     while (1):
         if not pgpKeyUpload:
-            if not hasLocalPGPkey():
+            if not has_local_pg_pkey():
                 print('No PGP public key was found')
             else:
                 sayStr = indent + 'Uploading PGP public key'
-                _sayCommand(sayStr, sayStr, screenreader,
-                            system_language, espeak)
-                pgpPublicKeyUpload(base_dir, session,
-                                   nickname, password,
-                                   domain, port, http_prefix,
-                                   cached_webfingers, person_cache,
-                                   debug, False,
-                                   signing_priv_key_pem)
+                _say_command(sayStr, sayStr, screenreader,
+                             system_language, espeak)
+                pgp_public_key_upload(base_dir, session,
+                                      nickname, password,
+                                      domain, port, http_prefix,
+                                      cached_webfingers, person_cache,
+                                      debug, False,
+                                      signing_priv_key_pem)
                 sayStr = indent + 'PGP public key uploaded'
-                _sayCommand(sayStr, sayStr, screenreader,
-                            system_language, espeak)
+                _say_command(sayStr, sayStr, screenreader,
+                             system_language, espeak)
             pgpKeyUpload = True
 
-        boxJson = c2sBoxJson(base_dir, session,
-                             nickname, password,
-                             domain, port, http_prefix,
-                             curr_timeline, pageNumber,
-                             debug, signing_priv_key_pem)
+        boxJson = c2s_box_json(base_dir, session,
+                               nickname, password,
+                               domain, port, http_prefix,
+                               curr_timeline, pageNumber,
+                               debug, signing_priv_key_pem)
 
         followRequestsJson = \
-            getFollowRequestsViaServer(base_dir, session,
-                                       nickname, password,
-                                       domain, port,
-                                       http_prefix, 1,
-                                       cached_webfingers, person_cache,
-                                       debug, __version__,
-                                       signing_priv_key_pem)
+            get_follow_requests_via_server(base_dir, session,
+                                           nickname, password,
+                                           domain, port,
+                                           http_prefix, 1,
+                                           cached_webfingers, person_cache,
+                                           debug, __version__,
+                                           signing_priv_key_pem)
 
         if not (curr_timeline == 'inbox' and pageNumber == 1):
             # monitor the inbox to generate notifications
-            inboxJson = c2sBoxJson(base_dir, session,
-                                   nickname, password,
-                                   domain, port, http_prefix,
-                                   'inbox', 1, debug,
-                                   signing_priv_key_pem)
+            inboxJson = c2s_box_json(base_dir, session,
+                                     nickname, password,
+                                     domain, port, http_prefix,
+                                     'inbox', 1, debug,
+                                     signing_priv_key_pem)
         else:
             inboxJson = boxJson
         newDMsExist = False
         newRepliesExist = False
         if inboxJson:
-            _newDesktopNotifications(yourActor, inboxJson, notifyJson)
+            _new_desktop_notifications(yourActor, inboxJson, notifyJson)
             if notifyJson.get('dmNotify'):
                 newDMsExist = True
                 if notifyJson.get('dmNotifyChanged'):
-                    _desktopNotification(notificationType,
-                                         "Epicyon",
-                                         "New DM " + yourActor + '/dm')
+                    _desktop_notification(notificationType,
+                                          "Epicyon",
+                                          "New DM " + yourActor + '/dm')
                     if notificationSounds:
-                        _playNotificationSound(dmSoundFilename, player)
+                        _play_notification_sound(dmSoundFilename, player)
             if notifyJson.get('repliesNotify'):
                 newRepliesExist = True
                 if notifyJson.get('repliesNotifyChanged'):
-                    _desktopNotification(notificationType,
-                                         "Epicyon",
-                                         "New reply " + yourActor + '/replies')
+                    _desktop_notification(notificationType,
+                                          "Epicyon",
+                                          "New reply " +
+                                          yourActor + '/replies')
                     if notificationSounds:
-                        _playNotificationSound(replySoundFilename, player)
+                        _play_notification_sound(replySoundFilename, player)
 
         if boxJson:
-            timelineFirstId = _getFirstItemId(boxJson)
+            timelineFirstId = _get_first_item_id(boxJson)
             if timelineFirstId != prevTimelineFirstId:
-                _desktopClearScreen()
-                _desktopShowBox(indent, followRequestsJson,
-                                yourActor, curr_timeline, boxJson,
-                                translate,
-                                None, system_language, espeak,
-                                pageNumber,
-                                newRepliesExist,
-                                newDMsExist)
+                _desktop_clear_screen()
+                _desktop_show_box(indent, followRequestsJson,
+                                  yourActor, curr_timeline, boxJson,
+                                  translate,
+                                  None, system_language, espeak,
+                                  pageNumber,
+                                  newRepliesExist,
+                                  newDMsExist)
                 desktopShown = True
             prevTimelineFirstId = timelineFirstId
         else:
@@ -1506,8 +1512,8 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                 if not session:
                     print('No session\n')
 
-                _desktopClearScreen()
-                _desktopShowBanner()
+                _desktop_clear_screen()
+                _desktop_show_banner()
                 print('No posts\n')
                 if proxy_type == 'tor':
                     print('You may need to run the desktop client ' +
@@ -1517,7 +1523,7 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
         if noKeyPress:
             time.sleep(10)
         else:
-            commandStr = _desktopWaitForCmd(30, debug)
+            commandStr = _desktop_wait_for_cmd(30, debug)
         if commandStr:
             refreshTimeline = False
 
@@ -1527,62 +1533,62 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                commandStr == 'quit' or \
                commandStr == 'exit':
                 sayStr = 'Quit'
-                _sayCommand(sayStr, sayStr, screenreader,
-                            system_language, espeak)
+                _say_command(sayStr, sayStr, screenreader,
+                             system_language, espeak)
                 if screenreader:
-                    commandStr = _desktopWaitForCmd(2, debug)
+                    commandStr = _desktop_wait_for_cmd(2, debug)
                 break
             elif commandStr.startswith('show dm'):
                 pageNumber = 1
                 prevTimelineFirstId = ''
                 curr_timeline = 'dm'
-                boxJson = c2sBoxJson(base_dir, session,
-                                     nickname, password,
-                                     domain, port, http_prefix,
-                                     curr_timeline, pageNumber,
-                                     debug, signing_priv_key_pem)
+                boxJson = c2s_box_json(base_dir, session,
+                                       nickname, password,
+                                       domain, port, http_prefix,
+                                       curr_timeline, pageNumber,
+                                       debug, signing_priv_key_pem)
                 if boxJson:
-                    _desktopShowBox(indent, followRequestsJson,
-                                    yourActor, curr_timeline, boxJson,
-                                    translate,
-                                    screenreader, system_language, espeak,
-                                    pageNumber,
-                                    newRepliesExist, newDMsExist)
+                    _desktop_show_box(indent, followRequestsJson,
+                                      yourActor, curr_timeline, boxJson,
+                                      translate,
+                                      screenreader, system_language, espeak,
+                                      pageNumber,
+                                      newRepliesExist, newDMsExist)
                 newDMsExist = False
             elif commandStr.startswith('show rep'):
                 pageNumber = 1
                 prevTimelineFirstId = ''
                 curr_timeline = 'tlreplies'
-                boxJson = c2sBoxJson(base_dir, session,
-                                     nickname, password,
-                                     domain, port, http_prefix,
-                                     curr_timeline, pageNumber,
-                                     debug, signing_priv_key_pem)
+                boxJson = c2s_box_json(base_dir, session,
+                                       nickname, password,
+                                       domain, port, http_prefix,
+                                       curr_timeline, pageNumber,
+                                       debug, signing_priv_key_pem)
                 if boxJson:
-                    _desktopShowBox(indent, followRequestsJson,
-                                    yourActor, curr_timeline, boxJson,
-                                    translate,
-                                    screenreader, system_language, espeak,
-                                    pageNumber,
-                                    newRepliesExist, newDMsExist)
+                    _desktop_show_box(indent, followRequestsJson,
+                                      yourActor, curr_timeline, boxJson,
+                                      translate,
+                                      screenreader, system_language, espeak,
+                                      pageNumber,
+                                      newRepliesExist, newDMsExist)
                 # Turn off the replies indicator
                 newRepliesExist = False
             elif commandStr.startswith('show b'):
                 pageNumber = 1
                 prevTimelineFirstId = ''
                 curr_timeline = 'tlbookmarks'
-                boxJson = c2sBoxJson(base_dir, session,
-                                     nickname, password,
-                                     domain, port, http_prefix,
-                                     curr_timeline, pageNumber,
-                                     debug, signing_priv_key_pem)
+                boxJson = c2s_box_json(base_dir, session,
+                                       nickname, password,
+                                       domain, port, http_prefix,
+                                       curr_timeline, pageNumber,
+                                       debug, signing_priv_key_pem)
                 if boxJson:
-                    _desktopShowBox(indent, followRequestsJson,
-                                    yourActor, curr_timeline, boxJson,
-                                    translate,
-                                    screenreader, system_language, espeak,
-                                    pageNumber,
-                                    newRepliesExist, newDMsExist)
+                    _desktop_show_box(indent, followRequestsJson,
+                                      yourActor, curr_timeline, boxJson,
+                                      translate,
+                                      screenreader, system_language, espeak,
+                                      pageNumber,
+                                      newRepliesExist, newDMsExist)
                 # Turn off the replies indicator
                 newRepliesExist = False
             elif (commandStr.startswith('show sen') or
@@ -1590,18 +1596,18 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                 pageNumber = 1
                 prevTimelineFirstId = ''
                 curr_timeline = 'outbox'
-                boxJson = c2sBoxJson(base_dir, session,
-                                     nickname, password,
-                                     domain, port, http_prefix,
-                                     curr_timeline, pageNumber,
-                                     debug, signing_priv_key_pem)
+                boxJson = c2s_box_json(base_dir, session,
+                                       nickname, password,
+                                       domain, port, http_prefix,
+                                       curr_timeline, pageNumber,
+                                       debug, signing_priv_key_pem)
                 if boxJson:
-                    _desktopShowBox(indent, followRequestsJson,
-                                    yourActor, curr_timeline, boxJson,
-                                    translate,
-                                    screenreader, system_language, espeak,
-                                    pageNumber,
-                                    newRepliesExist, newDMsExist)
+                    _desktop_show_box(indent, followRequestsJson,
+                                      yourActor, curr_timeline, boxJson,
+                                      translate,
+                                      screenreader, system_language, espeak,
+                                      pageNumber,
+                                      newRepliesExist, newDMsExist)
             elif (commandStr == 'show' or commandStr.startswith('show in') or
                   commandStr == 'clear'):
                 pageNumber = 1
@@ -1617,41 +1623,42 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                 if pageNumber < 1:
                     pageNumber = 1
                 prevTimelineFirstId = ''
-                boxJson = c2sBoxJson(base_dir, session,
-                                     nickname, password,
-                                     domain, port, http_prefix,
-                                     curr_timeline, pageNumber,
-                                     debug, signing_priv_key_pem)
+                boxJson = c2s_box_json(base_dir, session,
+                                       nickname, password,
+                                       domain, port, http_prefix,
+                                       curr_timeline, pageNumber,
+                                       debug, signing_priv_key_pem)
                 if boxJson:
-                    _desktopShowBox(indent, followRequestsJson,
-                                    yourActor, curr_timeline, boxJson,
-                                    translate,
-                                    screenreader, system_language, espeak,
-                                    pageNumber,
-                                    newRepliesExist, newDMsExist)
+                    _desktop_show_box(indent, followRequestsJson,
+                                      yourActor, curr_timeline, boxJson,
+                                      translate,
+                                      screenreader, system_language, espeak,
+                                      pageNumber,
+                                      newRepliesExist, newDMsExist)
             elif commandStr.startswith('read ') or commandStr == 'read':
                 if commandStr == 'read':
                     postIndexStr = '1'
                 else:
                     postIndexStr = commandStr.split('read ')[1]
                 if boxJson and postIndexStr.isdigit():
-                    _desktopClearScreen()
-                    _desktopShowBanner()
+                    _desktop_clear_screen()
+                    _desktop_show_banner()
                     postIndex = int(postIndexStr)
                     post_json_object = \
-                        _readLocalBoxPost(session, nickname, domain,
-                                          http_prefix, base_dir, curr_timeline,
-                                          pageNumber, postIndex, boxJson,
-                                          system_language, screenreader,
-                                          espeak, translate, yourActor,
-                                          domain_full, person_cache,
-                                          signing_priv_key_pem,
-                                          blockedCache)
+                        _read_local_box_post(session, nickname, domain,
+                                             http_prefix, base_dir,
+                                             curr_timeline,
+                                             pageNumber, postIndex, boxJson,
+                                             system_language, screenreader,
+                                             espeak, translate, yourActor,
+                                             domain_full, person_cache,
+                                             signing_priv_key_pem,
+                                             blockedCache)
                     print('')
                     sayStr = 'Press Enter to continue...'
-                    sayStr2 = _highlightText(sayStr)
-                    _sayCommand(sayStr2, sayStr,
-                                screenreader, system_language, espeak)
+                    sayStr2 = _highlight_text(sayStr)
+                    _say_command(sayStr2, sayStr,
+                                 screenreader, system_language, espeak)
                     input()
                     prevTimelineFirstId = ''
                     refreshTimeline = True
@@ -1661,15 +1668,16 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                 if commandStr == 'profile':
                     if post_json_object:
                         actor_json = \
-                            _desktopShowProfile(session, nickname, domain,
-                                                http_prefix, base_dir,
-                                                curr_timeline,
-                                                pageNumber, postIndex,
-                                                boxJson,
-                                                system_language, screenreader,
-                                                espeak, translate, yourActor,
-                                                post_json_object,
-                                                signing_priv_key_pem)
+                            _desktop_show_profile(session, nickname, domain,
+                                                  http_prefix, base_dir,
+                                                  curr_timeline,
+                                                  pageNumber, postIndex,
+                                                  boxJson,
+                                                  system_language,
+                                                  screenreader,
+                                                  espeak, translate, yourActor,
+                                                  post_json_object,
+                                                  signing_priv_key_pem)
                     else:
                         postIndexStr = '1'
                 else:
@@ -1677,42 +1685,43 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
 
                 if not postIndexStr.isdigit():
                     profileHandle = postIndexStr
-                    _desktopClearScreen()
-                    _desktopShowBanner()
-                    _desktopShowProfileFromHandle(session, nickname, domain,
-                                                  http_prefix, base_dir,
-                                                  curr_timeline,
-                                                  profileHandle,
-                                                  system_language,
-                                                  screenreader,
-                                                  espeak, translate,
-                                                  yourActor,
-                                                  None,
-                                                  signing_priv_key_pem)
+                    _desktop_clear_screen()
+                    _desktop_show_banner()
+                    _desktop_show_profile_from_handle(session,
+                                                      nickname, domain,
+                                                      http_prefix, base_dir,
+                                                      curr_timeline,
+                                                      profileHandle,
+                                                      system_language,
+                                                      screenreader,
+                                                      espeak, translate,
+                                                      yourActor,
+                                                      None,
+                                                      signing_priv_key_pem)
                     sayStr = 'Press Enter to continue...'
-                    sayStr2 = _highlightText(sayStr)
-                    _sayCommand(sayStr2, sayStr,
-                                screenreader, system_language, espeak)
+                    sayStr2 = _highlight_text(sayStr)
+                    _say_command(sayStr2, sayStr,
+                                 screenreader, system_language, espeak)
                     input()
                     prevTimelineFirstId = ''
                     refreshTimeline = True
                 elif not actor_json and boxJson:
-                    _desktopClearScreen()
-                    _desktopShowBanner()
+                    _desktop_clear_screen()
+                    _desktop_show_banner()
                     postIndex = int(postIndexStr)
                     actor_json = \
-                        _desktopShowProfile(session, nickname, domain,
-                                            http_prefix, base_dir,
-                                            curr_timeline,
-                                            pageNumber, postIndex,
-                                            boxJson,
-                                            system_language, screenreader,
-                                            espeak, translate, yourActor,
-                                            None, signing_priv_key_pem)
+                        _desktop_show_profile(session, nickname, domain,
+                                              http_prefix, base_dir,
+                                              curr_timeline,
+                                              pageNumber, postIndex,
+                                              boxJson,
+                                              system_language, screenreader,
+                                              espeak, translate, yourActor,
+                                              None, signing_priv_key_pem)
                     sayStr = 'Press Enter to continue...'
-                    sayStr2 = _highlightText(sayStr)
-                    _sayCommand(sayStr2, sayStr,
-                                screenreader, system_language, espeak)
+                    sayStr2 = _highlight_text(sayStr)
+                    _say_command(sayStr2, sayStr,
+                                 screenreader, system_language, espeak)
                     input()
                     prevTimelineFirstId = ''
                     refreshTimeline = True
@@ -1729,16 +1738,16 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                             conversationId = \
                                 post_json_object['object']['conversation']
                         sessionReply = create_session(proxy_type)
-                        _desktopReplyToPost(sessionReply, post_id,
-                                            base_dir, nickname, password,
-                                            domain, port, http_prefix,
-                                            cached_webfingers, person_cache,
-                                            debug, subject,
-                                            screenreader, system_language,
-                                            espeak, conversationId,
-                                            low_bandwidth,
-                                            content_license_url,
-                                            signing_priv_key_pem)
+                        _desktop_reply_to_post(sessionReply, post_id,
+                                               base_dir, nickname, password,
+                                               domain, port, http_prefix,
+                                               cached_webfingers, person_cache,
+                                               debug, subject,
+                                               screenreader, system_language,
+                                               espeak, conversationId,
+                                               low_bandwidth,
+                                               content_license_url,
+                                               signing_priv_key_pem)
                 refreshTimeline = True
                 print('')
             elif (commandStr == 'post' or commandStr == 'p' or
@@ -1766,7 +1775,19 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                     elif commandStr.startswith('direct message '):
                         toHandle = commandStr.split('direct message ', 1)[1]
                     if toHandle:
-                        _desktopNewDM(sessionPost, toHandle,
+                        _desktop_new_dm(sessionPost, toHandle,
+                                        base_dir, nickname, password,
+                                        domain, port, http_prefix,
+                                        cached_webfingers, person_cache,
+                                        debug,
+                                        screenreader, system_language,
+                                        espeak, low_bandwidth,
+                                        content_license_url,
+                                        signing_priv_key_pem)
+                        refreshTimeline = True
+                else:
+                    # public post
+                    _desktop_new_post(sessionPost,
                                       base_dir, nickname, password,
                                       domain, port, http_prefix,
                                       cached_webfingers, person_cache,
@@ -1775,18 +1796,6 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                                       espeak, low_bandwidth,
                                       content_license_url,
                                       signing_priv_key_pem)
-                        refreshTimeline = True
-                else:
-                    # public post
-                    _desktopNewPost(sessionPost,
-                                    base_dir, nickname, password,
-                                    domain, port, http_prefix,
-                                    cached_webfingers, person_cache,
-                                    debug,
-                                    screenreader, system_language,
-                                    espeak, low_bandwidth,
-                                    content_license_url,
-                                    signing_priv_key_pem)
                     refreshTimeline = True
                 print('')
             elif commandStr == 'like' or commandStr.startswith('like '):
@@ -1797,23 +1806,23 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                         currIndex = int(postIndex)
                 if currIndex > 0 and boxJson:
                     post_json_object = \
-                        _desktopGetBoxPostObject(boxJson, currIndex)
+                        _desktop_get_box_post_object(boxJson, currIndex)
                 if post_json_object:
                     if post_json_object.get('id'):
                         likeActor = post_json_object['object']['attributedTo']
                         sayStr = 'Liking post by ' + \
                             get_nickname_from_actor(likeActor)
-                        _sayCommand(sayStr, sayStr,
-                                    screenreader,
-                                    system_language, espeak)
+                        _say_command(sayStr, sayStr,
+                                     screenreader,
+                                     system_language, espeak)
                         sessionLike = create_session(proxy_type)
-                        sendLikeViaServer(base_dir, sessionLike,
-                                          nickname, password,
-                                          domain, port, http_prefix,
-                                          post_json_object['id'],
-                                          cached_webfingers, person_cache,
-                                          False, __version__,
-                                          signing_priv_key_pem)
+                        send_like_via_server(base_dir, sessionLike,
+                                             nickname, password,
+                                             domain, port, http_prefix,
+                                             post_json_object['id'],
+                                             cached_webfingers, person_cache,
+                                             False, __version__,
+                                             signing_priv_key_pem)
                         refreshTimeline = True
                 print('')
             elif (commandStr == 'undo mute' or
@@ -1836,25 +1845,25 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                         currIndex = int(postIndex)
                 if currIndex > 0 and boxJson:
                     post_json_object = \
-                        _desktopGetBoxPostObject(boxJson, currIndex)
+                        _desktop_get_box_post_object(boxJson, currIndex)
                 if post_json_object:
                     if post_json_object.get('id'):
                         muteActor = post_json_object['object']['attributedTo']
                         sayStr = 'Unmuting post by ' + \
                             get_nickname_from_actor(muteActor)
-                        _sayCommand(sayStr, sayStr,
-                                    screenreader,
-                                    system_language, espeak)
+                        _say_command(sayStr, sayStr,
+                                     screenreader,
+                                     system_language, espeak)
                         sessionMute = create_session(proxy_type)
-                        sendUndoMuteViaServer(base_dir, sessionMute,
-                                              nickname, password,
-                                              domain, port,
-                                              http_prefix,
-                                              post_json_object['id'],
-                                              cached_webfingers,
-                                              person_cache,
-                                              False, __version__,
-                                              signing_priv_key_pem)
+                        send_undo_mute_via_server(base_dir, sessionMute,
+                                                  nickname, password,
+                                                  domain, port,
+                                                  http_prefix,
+                                                  post_json_object['id'],
+                                                  cached_webfingers,
+                                                  person_cache,
+                                                  False, __version__,
+                                                  signing_priv_key_pem)
                         refreshTimeline = True
                 print('')
             elif (commandStr == 'mute' or
@@ -1868,23 +1877,24 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                         currIndex = int(postIndex)
                 if currIndex > 0 and boxJson:
                     post_json_object = \
-                        _desktopGetBoxPostObject(boxJson, currIndex)
+                        _desktop_get_box_post_object(boxJson, currIndex)
                 if post_json_object:
                     if post_json_object.get('id'):
                         muteActor = post_json_object['object']['attributedTo']
                         sayStr = 'Muting post by ' + \
                             get_nickname_from_actor(muteActor)
-                        _sayCommand(sayStr, sayStr,
-                                    screenreader,
-                                    system_language, espeak)
+                        _say_command(sayStr, sayStr,
+                                     screenreader,
+                                     system_language, espeak)
                         sessionMute = create_session(proxy_type)
-                        sendMuteViaServer(base_dir, sessionMute,
-                                          nickname, password,
-                                          domain, port,
-                                          http_prefix, post_json_object['id'],
-                                          cached_webfingers, person_cache,
-                                          False, __version__,
-                                          signing_priv_key_pem)
+                        send_mute_via_server(base_dir, sessionMute,
+                                             nickname, password,
+                                             domain, port,
+                                             http_prefix,
+                                             post_json_object['id'],
+                                             cached_webfingers, person_cache,
+                                             False, __version__,
+                                             signing_priv_key_pem)
                         refreshTimeline = True
                 print('')
             elif (commandStr == 'undo bookmark' or
@@ -1909,24 +1919,25 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                         currIndex = int(postIndex)
                 if currIndex > 0 and boxJson:
                     post_json_object = \
-                        _desktopGetBoxPostObject(boxJson, currIndex)
+                        _desktop_get_box_post_object(boxJson, currIndex)
                 if post_json_object:
                     if post_json_object.get('id'):
                         bmActor = post_json_object['object']['attributedTo']
                         sayStr = 'Unbookmarking post by ' + \
                             get_nickname_from_actor(bmActor)
-                        _sayCommand(sayStr, sayStr,
-                                    screenreader,
-                                    system_language, espeak)
+                        _say_command(sayStr, sayStr,
+                                     screenreader,
+                                     system_language, espeak)
                         sessionbm = create_session(proxy_type)
-                        sendUndoBookmarkViaServer(base_dir, sessionbm,
-                                                  nickname, password,
-                                                  domain, port, http_prefix,
-                                                  post_json_object['id'],
-                                                  cached_webfingers,
-                                                  person_cache,
-                                                  False, __version__,
-                                                  signing_priv_key_pem)
+                        send_undo_bookmark_via_server(base_dir, sessionbm,
+                                                      nickname, password,
+                                                      domain, port,
+                                                      http_prefix,
+                                                      post_json_object['id'],
+                                                      cached_webfingers,
+                                                      person_cache,
+                                                      False, __version__,
+                                                      signing_priv_key_pem)
                         refreshTimeline = True
                 print('')
             elif (commandStr == 'bookmark' or
@@ -1940,23 +1951,24 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                         currIndex = int(postIndex)
                 if currIndex > 0 and boxJson:
                     post_json_object = \
-                        _desktopGetBoxPostObject(boxJson, currIndex)
+                        _desktop_get_box_post_object(boxJson, currIndex)
                 if post_json_object:
                     if post_json_object.get('id'):
                         bmActor = post_json_object['object']['attributedTo']
                         sayStr = 'Bookmarking post by ' + \
                             get_nickname_from_actor(bmActor)
-                        _sayCommand(sayStr, sayStr,
-                                    screenreader,
-                                    system_language, espeak)
+                        _say_command(sayStr, sayStr,
+                                     screenreader,
+                                     system_language, espeak)
                         sessionbm = create_session(proxy_type)
-                        sendBookmarkViaServer(base_dir, sessionbm,
-                                              nickname, password,
-                                              domain, port, http_prefix,
-                                              post_json_object['id'],
-                                              cached_webfingers, person_cache,
-                                              False, __version__,
-                                              signing_priv_key_pem)
+                        send_bookmark_via_server(base_dir, sessionbm,
+                                                 nickname, password,
+                                                 domain, port, http_prefix,
+                                                 post_json_object['id'],
+                                                 cached_webfingers,
+                                                 person_cache,
+                                                 False, __version__,
+                                                 signing_priv_key_pem)
                         refreshTimeline = True
                 print('')
             elif (commandStr.startswith('undo block ') or
@@ -1970,7 +1982,7 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                         currIndex = int(postIndex)
                 if currIndex > 0 and boxJson:
                     post_json_object = \
-                        _desktopGetBoxPostObject(boxJson, currIndex)
+                        _desktop_get_box_post_object(boxJson, currIndex)
                 if post_json_object:
                     if post_json_object.get('id') and \
                        post_json_object.get('object'):
@@ -1980,19 +1992,21 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                                     post_json_object['object']['attributedTo']
                                 sayStr = 'Unblocking ' + \
                                     get_nickname_from_actor(blockActor)
-                                _sayCommand(sayStr, sayStr,
-                                            screenreader,
-                                            system_language, espeak)
+                                _say_command(sayStr, sayStr,
+                                             screenreader,
+                                             system_language, espeak)
                                 sessionBlock = create_session(proxy_type)
-                                sendUndoBlockViaServer(base_dir, sessionBlock,
-                                                       nickname, password,
-                                                       domain, port,
-                                                       http_prefix,
-                                                       blockActor,
-                                                       cached_webfingers,
-                                                       person_cache,
-                                                       False, __version__,
-                                                       signing_priv_key_pem)
+                                sign_priv_key_pem = signing_priv_key_pem
+                                send_undo_block_via_server(base_dir,
+                                                           sessionBlock,
+                                                           nickname, password,
+                                                           domain, port,
+                                                           http_prefix,
+                                                           blockActor,
+                                                           cached_webfingers,
+                                                           person_cache,
+                                                           False, __version__,
+                                                           sign_priv_key_pem)
                 refreshTimeline = True
                 print('')
             elif commandStr.startswith('block '):
@@ -2016,7 +2030,7 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                                                     blockDomain)
                 if currIndex > 0 and boxJson and not blockActor:
                     post_json_object = \
-                        _desktopGetBoxPostObject(boxJson, currIndex)
+                        _desktop_get_box_post_object(boxJson, currIndex)
                 if post_json_object and not blockActor:
                     if post_json_object.get('id') and \
                        post_json_object.get('object'):
@@ -2027,19 +2041,19 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                 if blockActor:
                     sayStr = 'Blocking ' + \
                         get_nickname_from_actor(blockActor)
-                    _sayCommand(sayStr, sayStr,
-                                screenreader,
-                                system_language, espeak)
+                    _say_command(sayStr, sayStr,
+                                 screenreader,
+                                 system_language, espeak)
                     sessionBlock = create_session(proxy_type)
-                    sendBlockViaServer(base_dir, sessionBlock,
-                                       nickname, password,
-                                       domain, port,
-                                       http_prefix,
-                                       blockActor,
-                                       cached_webfingers,
-                                       person_cache,
-                                       False, __version__,
-                                       signing_priv_key_pem)
+                    send_block_via_server(base_dir, sessionBlock,
+                                          nickname, password,
+                                          domain, port,
+                                          http_prefix,
+                                          blockActor,
+                                          cached_webfingers,
+                                          person_cache,
+                                          False, __version__,
+                                          signing_priv_key_pem)
                 refreshTimeline = True
                 print('')
             elif commandStr == 'unlike' or commandStr == 'undo like':
@@ -2050,7 +2064,7 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                         currIndex = int(postIndex)
                 if currIndex > 0 and boxJson:
                     post_json_object = \
-                        _desktopGetBoxPostObject(boxJson, currIndex)
+                        _desktop_get_box_post_object(boxJson, currIndex)
                 if post_json_object:
                     if post_json_object.get('id'):
                         unlikeActor = \
@@ -2058,17 +2072,18 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                         sayStr = \
                             'Undoing like of post by ' + \
                             get_nickname_from_actor(unlikeActor)
-                        _sayCommand(sayStr, sayStr,
-                                    screenreader,
-                                    system_language, espeak)
+                        _say_command(sayStr, sayStr,
+                                     screenreader,
+                                     system_language, espeak)
                         sessionUnlike = create_session(proxy_type)
-                        sendUndoLikeViaServer(base_dir, sessionUnlike,
-                                              nickname, password,
-                                              domain, port, http_prefix,
-                                              post_json_object['id'],
-                                              cached_webfingers, person_cache,
-                                              False, __version__,
-                                              signing_priv_key_pem)
+                        send_undo_like_via_server(base_dir, sessionUnlike,
+                                                  nickname, password,
+                                                  domain, port, http_prefix,
+                                                  post_json_object['id'],
+                                                  cached_webfingers,
+                                                  person_cache,
+                                                  False, __version__,
+                                                  signing_priv_key_pem)
                         refreshTimeline = True
                 print('')
             elif (commandStr.startswith('announce') or
@@ -2081,7 +2096,7 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                         currIndex = int(postIndex)
                 if currIndex > 0 and boxJson:
                     post_json_object = \
-                        _desktopGetBoxPostObject(boxJson, currIndex)
+                        _desktop_get_box_post_object(boxJson, currIndex)
                 if post_json_object:
                     if post_json_object.get('id'):
                         post_id = post_json_object['id']
@@ -2089,17 +2104,18 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                             post_json_object['object']['attributedTo']
                         sayStr = 'Announcing post by ' + \
                             get_nickname_from_actor(announceActor)
-                        _sayCommand(sayStr, sayStr,
-                                    screenreader,
-                                    system_language, espeak)
+                        _say_command(sayStr, sayStr,
+                                     screenreader,
+                                     system_language, espeak)
                         sessionAnnounce = create_session(proxy_type)
-                        sendAnnounceViaServer(base_dir, sessionAnnounce,
-                                              nickname, password,
-                                              domain, port,
-                                              http_prefix, post_id,
-                                              cached_webfingers, person_cache,
-                                              True, __version__,
-                                              signing_priv_key_pem)
+                        send_announce_via_server(base_dir, sessionAnnounce,
+                                                 nickname, password,
+                                                 domain, port,
+                                                 http_prefix, post_id,
+                                                 cached_webfingers,
+                                                 person_cache,
+                                                 True, __version__,
+                                                 signing_priv_key_pem)
                         refreshTimeline = True
                 print('')
             elif (commandStr.startswith('unannounce') or
@@ -2114,7 +2130,7 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                         currIndex = int(postIndex)
                 if currIndex > 0 and boxJson:
                     post_json_object = \
-                        _desktopGetBoxPostObject(boxJson, currIndex)
+                        _desktop_get_box_post_object(boxJson, currIndex)
                 if post_json_object:
                     if post_json_object.get('id'):
                         post_id = post_json_object['id']
@@ -2122,19 +2138,20 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                             post_json_object['object']['attributedTo']
                         sayStr = 'Undoing announce post by ' + \
                             get_nickname_from_actor(announceActor)
-                        _sayCommand(sayStr, sayStr,
-                                    screenreader,
-                                    system_language, espeak)
+                        _say_command(sayStr, sayStr,
+                                     screenreader,
+                                     system_language, espeak)
                         sessionAnnounce = create_session(proxy_type)
-                        sendUndoAnnounceViaServer(base_dir, sessionAnnounce,
-                                                  post_json_object,
-                                                  nickname, password,
-                                                  domain, port,
-                                                  http_prefix, post_id,
-                                                  cached_webfingers,
-                                                  person_cache,
-                                                  True, __version__,
-                                                  signing_priv_key_pem)
+                        send_undo_announce_via_server(base_dir,
+                                                      sessionAnnounce,
+                                                      post_json_object,
+                                                      nickname, password,
+                                                      domain, port,
+                                                      http_prefix, post_id,
+                                                      cached_webfingers,
+                                                      person_cache,
+                                                      True, __version__,
+                                                      signing_priv_key_pem)
                         refreshTimeline = True
                 print('')
             elif (commandStr == 'follow requests' or
@@ -2145,17 +2162,18 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                     if pageNum.isdigit():
                         currPage = int(pageNum)
                 followRequestsJson = \
-                    getFollowRequestsViaServer(base_dir, session,
-                                               nickname, password,
-                                               domain, port,
-                                               http_prefix, currPage,
-                                               cached_webfingers, person_cache,
-                                               debug, __version__,
-                                               signing_priv_key_pem)
+                    get_follow_requests_via_server(base_dir, session,
+                                                   nickname, password,
+                                                   domain, port,
+                                                   http_prefix, currPage,
+                                                   cached_webfingers,
+                                                   person_cache,
+                                                   debug, __version__,
+                                                   signing_priv_key_pem)
                 if followRequestsJson:
                     if isinstance(followRequestsJson, dict):
-                        _desktopShowFollowRequests(followRequestsJson,
-                                                   translate)
+                        _desktop_show_follow_requests(followRequestsJson,
+                                                      translate)
                 print('')
             elif (commandStr == 'following' or
                   commandStr.startswith('following ')):
@@ -2165,18 +2183,18 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                     if pageNum.isdigit():
                         currPage = int(pageNum)
                 followingJson = \
-                    getFollowingViaServer(base_dir, session,
-                                          nickname, password,
-                                          domain, port,
-                                          http_prefix, currPage,
-                                          cached_webfingers, person_cache,
-                                          debug, __version__,
-                                          signing_priv_key_pem)
+                    get_following_via_server(base_dir, session,
+                                             nickname, password,
+                                             domain, port,
+                                             http_prefix, currPage,
+                                             cached_webfingers, person_cache,
+                                             debug, __version__,
+                                             signing_priv_key_pem)
                 if followingJson:
                     if isinstance(followingJson, dict):
-                        _desktopShowFollowing(followingJson, translate,
-                                              currPage, indent,
-                                              'following')
+                        _desktop_show_following(followingJson, translate,
+                                                currPage, indent,
+                                                'following')
                 print('')
             elif (commandStr == 'followers' or
                   commandStr.startswith('followers ')):
@@ -2186,18 +2204,18 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                     if pageNum.isdigit():
                         currPage = int(pageNum)
                 followersJson = \
-                    getFollowersViaServer(base_dir, session,
-                                          nickname, password,
-                                          domain, port,
-                                          http_prefix, currPage,
-                                          cached_webfingers, person_cache,
-                                          debug, __version__,
-                                          signing_priv_key_pem)
+                    get_followers_via_server(base_dir, session,
+                                             nickname, password,
+                                             domain, port,
+                                             http_prefix, currPage,
+                                             cached_webfingers, person_cache,
+                                             debug, __version__,
+                                             signing_priv_key_pem)
                 if followersJson:
                     if isinstance(followersJson, dict):
-                        _desktopShowFollowing(followersJson, translate,
-                                              currPage, indent,
-                                              'followers')
+                        _desktop_show_following(followersJson, translate,
+                                                currPage, indent,
+                                                'followers')
                 print('')
             elif (commandStr == 'follow' or
                   commandStr.startswith('follow ')):
@@ -2218,8 +2236,8 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                     if followNickname and followDomain:
                         sayStr = 'Sending follow request to ' + \
                             followNickname + '@' + followDomain
-                        _sayCommand(sayStr, sayStr,
-                                    screenreader, system_language, espeak)
+                        _say_command(sayStr, sayStr,
+                                     screenreader, system_language, espeak)
                         sessionFollow = create_session(proxy_type)
                         send_follow_requestViaServer(base_dir,
                                                      sessionFollow,
@@ -2238,8 +2256,8 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                             sayStr = followHandle + ' is not valid'
                         else:
                             sayStr = 'Specify a handle to follow'
-                        _sayCommand(sayStr,
-                                    screenreader, system_language, espeak)
+                        _say_command(sayStr,
+                                     screenreader, system_language, espeak)
                     print('')
             elif (commandStr.startswith('unfollow ') or
                   commandStr.startswith('stop following ')):
@@ -2254,24 +2272,25 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                     if followNickname and followDomain:
                         sayStr = 'Stop following ' + \
                             followNickname + '@' + followDomain
-                        _sayCommand(sayStr, sayStr,
-                                    screenreader, system_language, espeak)
+                        _say_command(sayStr, sayStr,
+                                     screenreader, system_language, espeak)
                         sessionUnfollow = create_session(proxy_type)
-                        sendUnfollowRequestViaServer(base_dir, sessionUnfollow,
-                                                     nickname, password,
-                                                     domain, port,
-                                                     followNickname,
-                                                     followDomain,
-                                                     followPort,
-                                                     http_prefix,
-                                                     cached_webfingers,
-                                                     person_cache,
-                                                     debug, __version__,
-                                                     signing_priv_key_pem)
+                        send_unfollow_request_via_server(base_dir,
+                                                         sessionUnfollow,
+                                                         nickname, password,
+                                                         domain, port,
+                                                         followNickname,
+                                                         followDomain,
+                                                         followPort,
+                                                         http_prefix,
+                                                         cached_webfingers,
+                                                         person_cache,
+                                                         debug, __version__,
+                                                         signing_priv_key_pem)
                     else:
                         sayStr = followHandle + ' is not valid'
-                        _sayCommand(sayStr, sayStr,
-                                    screenreader, system_language, espeak)
+                        _say_command(sayStr, sayStr,
+                                     screenreader, system_language, espeak)
                     print('')
             elif commandStr.startswith('approve '):
                 approveHandle = commandStr.replace('approve ', '').strip()
@@ -2285,26 +2304,27 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                     if approveNickname and approveDomain:
                         sayStr = 'Sending approve follow request for ' + \
                             approveNickname + '@' + approveDomain
-                        _sayCommand(sayStr, sayStr,
-                                    screenreader, system_language, espeak)
+                        _say_command(sayStr, sayStr,
+                                     screenreader, system_language, espeak)
                         sessionApprove = create_session(proxy_type)
-                        approveFollowRequestViaServer(base_dir, sessionApprove,
-                                                      nickname, password,
-                                                      domain, port,
-                                                      http_prefix,
-                                                      approveHandle,
-                                                      cached_webfingers,
-                                                      person_cache,
-                                                      debug,
-                                                      __version__,
-                                                      signing_priv_key_pem)
+                        approve_follow_request_via_server(base_dir,
+                                                          sessionApprove,
+                                                          nickname, password,
+                                                          domain, port,
+                                                          http_prefix,
+                                                          approveHandle,
+                                                          cached_webfingers,
+                                                          person_cache,
+                                                          debug,
+                                                          __version__,
+                                                          signing_priv_key_pem)
                     else:
                         if approveHandle:
                             sayStr = approveHandle + ' is not valid'
                         else:
                             sayStr = 'Specify a handle to approve'
-                        _sayCommand(sayStr,
-                                    screenreader, system_language, espeak)
+                        _say_command(sayStr,
+                                     screenreader, system_language, espeak)
                     print('')
             elif commandStr.startswith('deny '):
                 denyHandle = commandStr.replace('deny ', '').strip()
@@ -2318,26 +2338,26 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                     if denyNickname and denyDomain:
                         sayStr = 'Sending deny follow request for ' + \
                             denyNickname + '@' + denyDomain
-                        _sayCommand(sayStr, sayStr,
-                                    screenreader, system_language, espeak)
+                        _say_command(sayStr, sayStr,
+                                     screenreader, system_language, espeak)
                         sessionDeny = create_session(proxy_type)
-                        denyFollowRequestViaServer(base_dir, sessionDeny,
-                                                   nickname, password,
-                                                   domain, port,
-                                                   http_prefix,
-                                                   denyHandle,
-                                                   cached_webfingers,
-                                                   person_cache,
-                                                   debug,
-                                                   __version__,
-                                                   signing_priv_key_pem)
+                        deny_follow_request_via_server(base_dir, sessionDeny,
+                                                       nickname, password,
+                                                       domain, port,
+                                                       http_prefix,
+                                                       denyHandle,
+                                                       cached_webfingers,
+                                                       person_cache,
+                                                       debug,
+                                                       __version__,
+                                                       signing_priv_key_pem)
                     else:
                         if denyHandle:
                             sayStr = denyHandle + ' is not valid'
                         else:
                             sayStr = 'Specify a handle to deny'
-                        _sayCommand(sayStr,
-                                    screenreader, system_language, espeak)
+                        _say_command(sayStr,
+                                     screenreader, system_language, espeak)
                     print('')
             elif (commandStr == 'repeat' or commandStr == 'replay' or
                   commandStr == 'rp' or commandStr == 'again' or
@@ -2345,27 +2365,27 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                 if screenreader and nameStr and \
                    gender and messageStr and content:
                     sayStr = 'Repeating ' + nameStr
-                    _sayCommand(sayStr, sayStr, screenreader,
-                                system_language, espeak,
-                                nameStr, gender)
+                    _say_command(sayStr, sayStr, screenreader,
+                                 system_language, espeak,
+                                 nameStr, gender)
                     time.sleep(2)
-                    _sayCommand(content, messageStr, screenreader,
-                                system_language, espeak,
-                                nameStr, gender)
+                    _say_command(content, messageStr, screenreader,
+                                 system_language, espeak,
+                                 nameStr, gender)
                     print('')
             elif (commandStr == 'sounds on' or
                   commandStr == 'sound on' or
                   commandStr == 'sound'):
                 sayStr = 'Notification sounds on'
-                _sayCommand(sayStr, sayStr, screenreader,
-                            system_language, espeak)
+                _say_command(sayStr, sayStr, screenreader,
+                             system_language, espeak)
                 notificationSounds = True
             elif (commandStr == 'sounds off' or
                   commandStr == 'sound off' or
                   commandStr == 'nosound'):
                 sayStr = 'Notification sounds off'
-                _sayCommand(sayStr, sayStr, screenreader,
-                            system_language, espeak)
+                _say_command(sayStr, sayStr, screenreader,
+                             system_language, espeak)
                 notificationSounds = False
             elif (commandStr == 'speak' or
                   commandStr == 'screen reader on' or
@@ -2375,8 +2395,8 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                 if originalScreenReader:
                     screenreader = originalScreenReader
                     sayStr = 'Screen reader on'
-                    _sayCommand(sayStr, sayStr, screenreader,
-                                system_language, espeak)
+                    _say_command(sayStr, sayStr, screenreader,
+                                 system_language, espeak)
                 else:
                     print('No --screenreader option was specified')
             elif (commandStr == 'mute' or
@@ -2387,8 +2407,8 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                 if originalScreenReader:
                     screenreader = None
                     sayStr = 'Screen reader off'
-                    _sayCommand(sayStr, sayStr, originalScreenReader,
-                                system_language, espeak)
+                    _say_command(sayStr, sayStr, originalScreenReader,
+                                 system_language, espeak)
                 else:
                     print('No --screenreader option was specified')
             elif commandStr.startswith('open'):
@@ -2399,7 +2419,7 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                         currIndex = int(postIndex)
                 if currIndex > 0 and boxJson:
                     post_json_object = \
-                        _desktopGetBoxPostObject(boxJson, currIndex)
+                        _desktop_get_box_post_object(boxJson, currIndex)
                 if post_json_object:
                     if post_json_object['type'] == 'Announce':
                         recent_posts_cache = {}
@@ -2407,19 +2427,19 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                         yt_replace_domain = None
                         twitter_replacement_domain = None
                         post_json_object2 = \
-                            downloadAnnounce(session, base_dir,
-                                             http_prefix,
-                                             nickname, domain,
-                                             post_json_object,
-                                             __version__, translate,
-                                             yt_replace_domain,
-                                             twitter_replacement_domain,
-                                             allow_local_network_access,
-                                             recent_posts_cache, False,
-                                             system_language,
-                                             domain_full, person_cache,
-                                             signing_priv_key_pem,
-                                             blockedCache)
+                            download_announce(session, base_dir,
+                                              http_prefix,
+                                              nickname, domain,
+                                              post_json_object,
+                                              __version__, translate,
+                                              yt_replace_domain,
+                                              twitter_replacement_domain,
+                                              allow_local_network_access,
+                                              recent_posts_cache, False,
+                                              system_language,
+                                              domain_full, person_cache,
+                                              signing_priv_key_pem,
+                                              blockedCache)
                         if post_json_object2:
                             post_json_object = post_json_object2
                 if post_json_object:
@@ -2427,7 +2447,7 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                         get_base_content_from_post(post_json_object,
                                                    system_language)
                     messageStr, detectedLinks = \
-                        speakableText(base_dir, content, translate)
+                        speakable_text(base_dir, content, translate)
                     linkOpened = False
                     for url in detectedLinks:
                         if '://' in url:
@@ -2435,25 +2455,25 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                             linkOpened = True
                     if linkOpened:
                         sayStr = 'Opened web links'
-                        _sayCommand(sayStr, sayStr, originalScreenReader,
-                                    system_language, espeak)
+                        _say_command(sayStr, sayStr, originalScreenReader,
+                                     system_language, espeak)
                     else:
                         sayStr = 'There are no web links to open.'
-                        _sayCommand(sayStr, sayStr, originalScreenReader,
-                                    system_language, espeak)
+                        _say_command(sayStr, sayStr, originalScreenReader,
+                                     system_language, espeak)
                 print('')
             elif commandStr.startswith('pgp') or commandStr.startswith('gpg'):
-                if not hasLocalPGPkey():
+                if not has_local_pg_pkey():
                     print('No PGP public key was found')
                 else:
-                    print(pgpLocalPublicKey())
+                    print(pgp_local_public_key())
                 print('')
             elif commandStr.startswith('h'):
-                _desktopHelp()
+                _desktop_help()
                 sayStr = 'Press Enter to continue...'
-                sayStr2 = _highlightText(sayStr)
-                _sayCommand(sayStr2, sayStr,
-                            screenreader, system_language, espeak)
+                sayStr2 = _highlight_text(sayStr)
+                _say_command(sayStr2, sayStr,
+                             screenreader, system_language, espeak)
                 input()
                 prevTimelineFirstId = ''
                 refreshTimeline = True
@@ -2468,15 +2488,15 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                         currIndex = int(postIndex)
                 if currIndex > 0 and boxJson:
                     post_json_object = \
-                        _desktopGetBoxPostObject(boxJson, currIndex)
+                        _desktop_get_box_post_object(boxJson, currIndex)
                 if post_json_object:
                     if post_json_object.get('id'):
                         rmActor = post_json_object['object']['attributedTo']
                         if rmActor != yourActor:
                             sayStr = 'You can only delete your own posts'
-                            _sayCommand(sayStr, sayStr,
-                                        screenreader,
-                                        system_language, espeak)
+                            _say_command(sayStr, sayStr,
+                                         screenreader,
+                                         system_language, espeak)
                         else:
                             print('')
                             if post_json_object['object'].get('summary'):
@@ -2487,32 +2507,32 @@ def runDesktopClient(base_dir: str, proxy_type: str, http_prefix: str,
                             print(contentStr)
                             print('')
                             sayStr = 'Confirm delete, yes or no?'
-                            _sayCommand(sayStr, sayStr, screenreader,
-                                        system_language, espeak)
+                            _say_command(sayStr, sayStr, screenreader,
+                                         system_language, espeak)
                             yesno = input()
                             if 'y' not in yesno.lower():
                                 sayStr = 'Deleting post'
-                                _sayCommand(sayStr, sayStr,
-                                            screenreader,
-                                            system_language, espeak)
+                                _say_command(sayStr, sayStr,
+                                             screenreader,
+                                             system_language, espeak)
                                 sessionrm = create_session(proxy_type)
-                                sendDeleteViaServer(base_dir, sessionrm,
-                                                    nickname, password,
-                                                    domain, port,
-                                                    http_prefix,
-                                                    post_json_object['id'],
-                                                    cached_webfingers,
-                                                    person_cache,
-                                                    False, __version__,
-                                                    signing_priv_key_pem)
+                                send_delete_via_server(base_dir, sessionrm,
+                                                       nickname, password,
+                                                       domain, port,
+                                                       http_prefix,
+                                                       post_json_object['id'],
+                                                       cached_webfingers,
+                                                       person_cache,
+                                                       False, __version__,
+                                                       signing_priv_key_pem)
                                 refreshTimeline = True
                 print('')
 
             if refreshTimeline:
                 if boxJson:
-                    _desktopShowBox(indent, followRequestsJson,
-                                    yourActor, curr_timeline, boxJson,
-                                    translate,
-                                    screenreader, system_language,
-                                    espeak, pageNumber,
-                                    newRepliesExist, newDMsExist)
+                    _desktop_show_box(indent, followRequestsJson,
+                                      yourActor, curr_timeline, boxJson,
+                                      translate,
+                                      screenreader, system_language,
+                                      espeak, pageNumber,
+                                      newRepliesExist, newDMsExist)

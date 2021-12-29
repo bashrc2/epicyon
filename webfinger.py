@@ -9,9 +9,9 @@ __module_group__ = "ActivityPub"
 
 import os
 import urllib.parse
-from session import getJson
-from cache import storeWebfingerInCache
-from cache import getWebfingerFromCache
+from session import get_json
+from cache import store_webfinger_in_cache
+from cache import get_webfinger_from_cache
 from utils import get_full_domain
 from utils import load_json
 from utils import load_json_onionify
@@ -23,7 +23,7 @@ from utils import get_group_paths
 from utils import local_actor_url
 
 
-def _parseHandle(handle: str) -> (str, str, bool):
+def _parse_handle(handle: str) -> (str, str, bool):
     """Parses a handle and returns nickname and domain
     """
     group_account = False
@@ -60,25 +60,25 @@ def _parseHandle(handle: str) -> (str, str, bool):
     return None, None, False
 
 
-def webfingerHandle(session, handle: str, http_prefix: str,
-                    cached_webfingers: {},
-                    fromDomain: str, project_version: str,
-                    debug: bool, group_account: bool,
-                    signing_priv_key_pem: str) -> {}:
+def webfinger_handle(session, handle: str, http_prefix: str,
+                     cached_webfingers: {},
+                     fromDomain: str, project_version: str,
+                     debug: bool, group_account: bool,
+                     signing_priv_key_pem: str) -> {}:
     """Gets webfinger result for the given ActivityPub handle
     """
     if not session:
         if debug:
-            print('WARN: No session specified for webfingerHandle')
+            print('WARN: No session specified for webfinger_handle')
         return None
 
-    nickname, domain, grpAccount = _parseHandle(handle)
+    nickname, domain, grpAccount = _parse_handle(handle)
     if not nickname:
         return None
     wfDomain = remove_domain_port(domain)
 
     wfHandle = nickname + '@' + wfDomain
-    wf = getWebfingerFromCache(wfHandle, cached_webfingers)
+    wf = get_webfinger_from_cache(wfHandle, cached_webfingers)
     if wf:
         if debug:
             print('Webfinger from cache: ' + str(wf))
@@ -92,14 +92,14 @@ def webfingerHandle(session, handle: str, http_prefix: str,
     }
     try:
         result = \
-            getJson(signing_priv_key_pem, session, url, hdr, par,
-                    debug, project_version, http_prefix, fromDomain)
+            get_json(signing_priv_key_pem, session, url, hdr, par,
+                     debug, project_version, http_prefix, fromDomain)
     except Exception as ex:
-        print('ERROR: webfingerHandle ' + str(ex))
+        print('ERROR: webfinger_handle ' + str(ex))
         return None
 
     if result:
-        storeWebfingerInCache(wfHandle, result, cached_webfingers)
+        store_webfinger_in_cache(wfHandle, result, cached_webfingers)
     else:
         if debug:
             print("WARN: Unable to webfinger " + url + ' ' +
@@ -111,8 +111,8 @@ def webfingerHandle(session, handle: str, http_prefix: str,
     return result
 
 
-def storeWebfingerEndpoint(nickname: str, domain: str, port: int,
-                           base_dir: str, wfJson: {}) -> bool:
+def store_webfinger_endpoint(nickname: str, domain: str, port: int,
+                             base_dir: str, wfJson: {}) -> bool:
     """Stores webfinger endpoint for a user to a file
     """
     originalDomain = domain
@@ -130,9 +130,9 @@ def storeWebfingerEndpoint(nickname: str, domain: str, port: int,
     return True
 
 
-def createWebfingerEndpoint(nickname: str, domain: str, port: int,
-                            http_prefix: str, publicKeyPem: str,
-                            group_account: bool) -> {}:
+def create_webfinger_endpoint(nickname: str, domain: str, port: int,
+                              http_prefix: str, publicKeyPem: str,
+                              group_account: bool) -> {}:
     """Creates a webfinger endpoint for a user
     """
     originalDomain = domain
@@ -306,7 +306,7 @@ def _webfinger_updateAvatar(wfJson: {}, actor_json: {}) -> bool:
     return True
 
 
-def _webfingerAddBlogLink(wfJson: {}, actor_json: {}) -> bool:
+def _webfinger_add_blog_link(wfJson: {}, actor_json: {}) -> bool:
     """Adds a blog link to webfinger if needed
     """
     found = False
@@ -414,7 +414,7 @@ def _webfinger_updateFromProfile(wfJson: {}, actor_json: {}) -> bool:
     if _webfinger_updateAvatar(wfJson, actor_json):
         changed = True
 
-    if _webfingerAddBlogLink(wfJson, actor_json):
+    if _webfinger_add_blog_link(wfJson, actor_json):
         changed = True
 
     return changed
@@ -448,4 +448,4 @@ def webfinger_update(base_dir: str, nickname: str, domain: str,
 
     if _webfinger_updateFromProfile(wfJson, actor_json):
         if save_json(wfJson, filename):
-            storeWebfingerInCache(handle, wfJson, cached_webfingers)
+            store_webfinger_in_cache(handle, wfJson, cached_webfingers)

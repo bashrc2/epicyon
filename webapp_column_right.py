@@ -9,8 +9,8 @@ __module_group__ = "Web Interface Columns"
 
 import os
 from datetime import datetime
-from content import removeLongWords
-from content import limitRepeatedWords
+from content import remove_long_words
+from content import limit_repeated_words
 from utils import get_fav_filename_from_url
 from utils import get_base_content_from_post
 from utils import remove_html
@@ -23,17 +23,17 @@ from utils import get_config_param
 from utils import remove_domain_port
 from utils import acct_dir
 from posts import is_moderator
-from newswire import getNewswireFaviconUrl
-from webapp_utils import getRightImageFile
-from webapp_utils import htmlHeaderWithExternalStyle
-from webapp_utils import htmlFooter
-from webapp_utils import getBannerFile
-from webapp_utils import htmlPostSeparator
-from webapp_utils import headerButtonsFrontScreen
-from webapp_utils import editTextField
+from newswire import get_newswire_favicon_url
+from webapp_utils import get_right_image_file
+from webapp_utils import html_header_with_external_style
+from webapp_utils import html_footer
+from webapp_utils import get_banner_file
+from webapp_utils import html_post_separator
+from webapp_utils import header_buttons_front_screen
+from webapp_utils import edit_text_field
 
 
-def _votesIndicator(totalVotes: int, positive_voting: bool) -> str:
+def _votes_indicator(totalVotes: int, positive_voting: bool) -> str:
     """Returns an indicator of the number of votes on a newswire item
     """
     if totalVotes <= 0:
@@ -47,20 +47,20 @@ def _votesIndicator(totalVotes: int, positive_voting: bool) -> str:
     return totalVotesStr
 
 
-def getRightColumnContent(base_dir: str, nickname: str, domain_full: str,
-                          http_prefix: str, translate: {},
-                          moderator: bool, editor: bool,
-                          newswire: {}, positive_voting: bool,
-                          showBackButton: bool, timelinePath: str,
-                          showPublishButton: bool,
-                          show_publish_as_icon: bool,
-                          rss_icon_at_top: bool,
-                          publish_button_at_top: bool,
-                          authorized: bool,
-                          showHeaderImage: bool,
-                          theme: str,
-                          defaultTimeline: str,
-                          accessKeys: {}) -> str:
+def get_right_column_content(base_dir: str, nickname: str, domain_full: str,
+                             http_prefix: str, translate: {},
+                             moderator: bool, editor: bool,
+                             newswire: {}, positive_voting: bool,
+                             showBackButton: bool, timelinePath: str,
+                             showPublishButton: bool,
+                             show_publish_as_icon: bool,
+                             rss_icon_at_top: bool,
+                             publish_button_at_top: bool,
+                             authorized: bool,
+                             showHeaderImage: bool,
+                             theme: str,
+                             defaultTimeline: str,
+                             accessKeys: {}) -> str:
     """Returns html content for the right column
     """
     htmlStr = ''
@@ -95,7 +95,7 @@ def getRightColumnContent(base_dir: str, nickname: str, domain_full: str,
     editImageClass = ''
     if showHeaderImage:
         rightImageFile, rightColumnImageFilename = \
-            getRightImageFile(base_dir, nickname, domain, theme)
+            get_right_image_file(base_dir, nickname, domain, theme)
 
         # show the image at the top of the column
         editImageClass = 'rightColEdit'
@@ -198,8 +198,8 @@ def getRightColumnContent(base_dir: str, nickname: str, domain_full: str,
 
     # show the newswire lines
     newswireContentStr = \
-        _htmlNewswire(base_dir, newswire, nickname, moderator, translate,
-                      positive_voting)
+        _html_newswire(base_dir, newswire, nickname, moderator, translate,
+                       positive_voting)
     htmlStr += newswireContentStr
 
     # show the rss icon at the bottom, typically on the right hand side
@@ -208,17 +208,17 @@ def getRightColumnContent(base_dir: str, nickname: str, domain_full: str,
     return htmlStr
 
 
-def _getBrokenFavSubstitute() -> str:
+def _get_broken_fav_substitute() -> str:
     """Substitute link used if a favicon is not available
     """
     return " onerror=\"this.onerror=null; this.src='/newswire_favicon.ico'\""
 
 
-def _htmlNewswire(base_dir: str, newswire: {}, nickname: str, moderator: bool,
-                  translate: {}, positive_voting: bool) -> str:
+def _html_newswire(base_dir: str, newswire: {}, nickname: str, moderator: bool,
+                   translate: {}, positive_voting: bool) -> str:
     """Converts a newswire dict into html
     """
-    separatorStr = htmlPostSeparator(base_dir, 'right')
+    separatorStr = html_post_separator(base_dir, 'right')
     htmlStr = ''
     for dateStr, item in newswire.items():
         item[0] = remove_html(item[0]).strip()
@@ -233,14 +233,14 @@ def _htmlNewswire(base_dir: str, newswire: {}, nickname: str, moderator: bool,
             publishedDate = \
                 datetime.strptime(dateStr, "%Y-%m-%d %H:%M:%S%z")
         except BaseException:
-            print('EX: _htmlNewswire bad date format ' + dateStr)
+            print('EX: _html_newswire bad date format ' + dateStr)
             continue
         dateShown = publishedDate.strftime("%Y-%m-%d %H:%M")
 
         dateStrLink = dateStr.replace('T', ' ')
         dateStrLink = dateStrLink.replace('Z', '')
         url = item[1]
-        faviconUrl = getNewswireFaviconUrl(url)
+        faviconUrl = get_newswire_favicon_url(url)
         faviconLink = ''
         if faviconUrl:
             cachedFaviconFilename = \
@@ -261,7 +261,7 @@ def _htmlNewswire(base_dir: str, newswire: {}, nickname: str, moderator: bool,
 
             faviconLink = \
                 '<img loading="lazy" src="' + faviconUrl + '" ' + \
-                'alt="" ' + _getBrokenFavSubstitute() + '/>'
+                'alt="" ' + _get_broken_fav_substitute() + '/>'
         moderatedItem = item[5]
         htmlStr += separatorStr
         if moderatedItem and 'vote:' + nickname in item[2]:
@@ -270,10 +270,10 @@ def _htmlNewswire(base_dir: str, newswire: {}, nickname: str, moderator: bool,
             if moderator:
                 totalVotes = votes_on_newswire_item(item[2])
                 totalVotesStr = \
-                    _votesIndicator(totalVotes, positive_voting)
+                    _votes_indicator(totalVotes, positive_voting)
 
-            title = removeLongWords(item[0], 16, []).replace('\n', '<br>')
-            title = limitRepeatedWords(title, 6)
+            title = remove_long_words(item[0], 16, []).replace('\n', '<br>')
+            title = limit_repeated_words(title, 6)
             htmlStr += '<p class="newswireItemVotedOn">' + \
                 '<a href="' + url + '" target="_blank" ' + \
                 'rel="nofollow noopener noreferrer">' + \
@@ -299,10 +299,10 @@ def _htmlNewswire(base_dir: str, newswire: {}, nickname: str, moderator: bool,
                     # show a number of ticks or crosses for how many
                     # votes for or against
                     totalVotesStr = \
-                        _votesIndicator(totalVotes, positive_voting)
+                        _votes_indicator(totalVotes, positive_voting)
 
-            title = removeLongWords(item[0], 16, []).replace('\n', '<br>')
-            title = limitRepeatedWords(title, 6)
+            title = remove_long_words(item[0], 16, []).replace('\n', '<br>')
+            title = limit_repeated_words(title, 6)
             if moderator and moderatedItem:
                 htmlStr += '<p class="newswireItemModerated">' + \
                     '<a href="' + url + '" target="_blank" ' + \
@@ -329,14 +329,14 @@ def _htmlNewswire(base_dir: str, newswire: {}, nickname: str, moderator: bool,
     return htmlStr
 
 
-def htmlCitations(base_dir: str, nickname: str, domain: str,
-                  http_prefix: str, defaultTimeline: str,
-                  translate: {}, newswire: {}, css_cache: {},
-                  blogTitle: str, blogContent: str,
-                  blogImageFilename: str,
-                  blogImageAttachmentMediaType: str,
-                  blogImageDescription: str,
-                  theme: str) -> str:
+def html_citations(base_dir: str, nickname: str, domain: str,
+                   http_prefix: str, defaultTimeline: str,
+                   translate: {}, newswire: {}, css_cache: {},
+                   blogTitle: str, blogContent: str,
+                   blogImageFilename: str,
+                   blogImageAttachmentMediaType: str,
+                   blogImageDescription: str,
+                   theme: str) -> str:
     """Show the citations screen when creating a blog
     """
     htmlStr = ''
@@ -366,11 +366,11 @@ def htmlCitations(base_dir: str, nickname: str, domain: str,
 
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
-    htmlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
+    htmlStr = html_header_with_external_style(cssFilename, instanceTitle, None)
 
     # top banner
     bannerFile, bannerFilename = \
-        getBannerFile(base_dir, nickname, domain, theme)
+        get_banner_file(base_dir, nickname, domain, theme)
     htmlStr += \
         '<a href="/users/' + nickname + '/newblog" title="' + \
         translate['Go Back'] + '" alt="' + \
@@ -425,8 +425,8 @@ def htmlCitations(base_dir: str, nickname: str, domain: str,
                 datetime.strptime(dateStr, "%Y-%m-%d %H:%M:%S%z")
             dateShown = publishedDate.strftime("%Y-%m-%d %H:%M")
 
-            title = removeLongWords(item[0], 16, []).replace('\n', '<br>')
-            title = limitRepeatedWords(title, 6)
+            title = remove_long_words(item[0], 16, []).replace('\n', '<br>')
+            title = limit_repeated_words(title, 6)
             link = item[1]
 
             citationValue = \
@@ -442,22 +442,22 @@ def htmlCitations(base_dir: str, nickname: str, domain: str,
             ctr += 1
 
     htmlStr += '</form>\n'
-    return htmlStr + htmlFooter()
+    return htmlStr + html_footer()
 
 
-def htmlNewswireMobile(css_cache: {}, base_dir: str, nickname: str,
-                       domain: str, domain_full: str,
-                       http_prefix: str, translate: {},
-                       newswire: {},
-                       positive_voting: bool,
-                       timelinePath: str,
-                       show_publish_as_icon: bool,
-                       authorized: bool,
-                       rss_icon_at_top: bool,
-                       icons_as_buttons: bool,
-                       defaultTimeline: str,
-                       theme: str,
-                       accessKeys: {}) -> str:
+def html_newswire_mobile(css_cache: {}, base_dir: str, nickname: str,
+                         domain: str, domain_full: str,
+                         http_prefix: str, translate: {},
+                         newswire: {},
+                         positive_voting: bool,
+                         timelinePath: str,
+                         show_publish_as_icon: bool,
+                         authorized: bool,
+                         rss_icon_at_top: bool,
+                         icons_as_buttons: bool,
+                         defaultTimeline: str,
+                         theme: str,
+                         accessKeys: {}) -> str:
     """Shows the mobile version of the newswire right column
     """
     htmlStr = ''
@@ -481,10 +481,10 @@ def htmlNewswireMobile(css_cache: {}, base_dir: str, nickname: str,
 
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
-    htmlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
+    htmlStr = html_header_with_external_style(cssFilename, instanceTitle, None)
 
     bannerFile, bannerFilename = \
-        getBannerFile(base_dir, nickname, domain, theme)
+        get_banner_file(base_dir, nickname, domain, theme)
     htmlStr += \
         '<a href="/users/' + nickname + '/' + defaultTimeline + '" ' + \
         'accesskey="' + accessKeys['menuTimeline'] + '">' + \
@@ -495,18 +495,18 @@ def htmlNewswireMobile(css_cache: {}, base_dir: str, nickname: str,
     htmlStr += '<div class="col-right-mobile">\n'
 
     htmlStr += '<center>' + \
-        headerButtonsFrontScreen(translate, nickname,
-                                 'newswire', authorized,
-                                 icons_as_buttons) + '</center>'
+        header_buttons_front_screen(translate, nickname,
+                                    'newswire', authorized,
+                                    icons_as_buttons) + '</center>'
     htmlStr += \
-        getRightColumnContent(base_dir, nickname, domain_full,
-                              http_prefix, translate,
-                              moderator, editor,
-                              newswire, positive_voting,
-                              False, timelinePath, showPublishButton,
-                              show_publish_as_icon, rss_icon_at_top, False,
-                              authorized, False, theme,
-                              defaultTimeline, accessKeys)
+        get_right_column_content(base_dir, nickname, domain_full,
+                                 http_prefix, translate,
+                                 moderator, editor,
+                                 newswire, positive_voting,
+                                 False, timelinePath, showPublishButton,
+                                 show_publish_as_icon, rss_icon_at_top, False,
+                                 authorized, False, theme,
+                                 defaultTimeline, accessKeys)
     if editor and not newswire:
         htmlStr += '<br><br><br>\n'
         htmlStr += '<center>\n  '
@@ -515,14 +515,14 @@ def htmlNewswireMobile(css_cache: {}, base_dir: str, nickname: str,
     # end of col-right-mobile
     htmlStr += '</div\n>'
 
-    htmlStr += htmlFooter()
+    htmlStr += html_footer()
     return htmlStr
 
 
-def htmlEditNewswire(css_cache: {}, translate: {}, base_dir: str, path: str,
-                     domain: str, port: int, http_prefix: str,
-                     defaultTimeline: str, theme: str,
-                     accessKeys: {}) -> str:
+def html_edit_newswire(css_cache: {}, translate: {}, base_dir: str, path: str,
+                       domain: str, port: int, http_prefix: str,
+                       defaultTimeline: str, theme: str,
+                       accessKeys: {}) -> str:
     """Shows the edit newswire screen
     """
     if '/users/' not in path:
@@ -544,12 +544,12 @@ def htmlEditNewswire(css_cache: {}, translate: {}, base_dir: str, path: str,
 
     # filename of the banner shown at the top
     bannerFile, bannerFilename = \
-        getBannerFile(base_dir, nickname, domain, theme)
+        get_banner_file(base_dir, nickname, domain, theme)
 
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
     editNewswireForm = \
-        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
+        html_header_with_external_style(cssFilename, instanceTitle, None)
 
     # top banner
     editNewswireForm += \
@@ -592,7 +592,8 @@ def htmlEditNewswire(css_cache: {}, translate: {}, base_dir: str, path: str,
         translate['Add RSS feed links below.'] + \
         '<br>'
     newFeedStr = translate['New feed URL']
-    editNewswireForm += editTextField(None, 'newNewswireFeed', '', newFeedStr)
+    editNewswireForm += \
+        edit_text_field(None, 'newNewswireFeed', '', newFeedStr)
     editNewswireForm += \
         '  <textarea id="message" name="editedNewswire" ' + \
         'style="height:80vh" spellcheck="false">' + \
@@ -637,14 +638,14 @@ def htmlEditNewswire(css_cache: {}, translate: {}, base_dir: str, path: str,
     editNewswireForm += \
         '</div>'
 
-    editNewswireForm += htmlFooter()
+    editNewswireForm += html_footer()
     return editNewswireForm
 
 
-def htmlEditNewsPost(css_cache: {}, translate: {}, base_dir: str, path: str,
-                     domain: str, port: int,
-                     http_prefix: str, postUrl: str,
-                     system_language: str) -> str:
+def html_edit_news_post(css_cache: {}, translate: {}, base_dir: str, path: str,
+                        domain: str, port: int,
+                        http_prefix: str, postUrl: str,
+                        system_language: str) -> str:
     """Edits a news post on the news/features timeline
     """
     if '/users/' not in path:
@@ -674,7 +675,7 @@ def htmlEditNewsPost(css_cache: {}, translate: {}, base_dir: str, path: str,
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
     editNewsPostForm = \
-        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
+        html_header_with_external_style(cssFilename, instanceTitle, None)
     editNewsPostForm += \
         '<form enctype="multipart/form-data" method="POST" ' + \
         'accept-charset="UTF-8" action="' + path + '/newseditdata">\n'
@@ -715,5 +716,5 @@ def htmlEditNewsPost(css_cache: {}, translate: {}, base_dir: str, path: str,
     editNewsPostForm += \
         '</div>'
 
-    editNewsPostForm += htmlFooter()
+    editNewsPostForm += html_footer()
     return editNewsPostForm

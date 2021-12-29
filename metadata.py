@@ -14,7 +14,7 @@ from utils import no_of_accounts
 from utils import no_of_active_accounts_monthly
 
 
-def _getStatusCount(base_dir: str) -> int:
+def _get_status_count(base_dir: str) -> int:
     """Get the total number of posts
     """
     statusCtr = 0
@@ -50,7 +50,7 @@ def meta_data_node_info(base_dir: str,
         activeAccounts = no_of_accounts(base_dir)
         activeAccountsMonthly = no_of_active_accounts_monthly(base_dir, 1)
         activeAccountsHalfYear = no_of_active_accounts_monthly(base_dir, 6)
-        localPosts = _getStatusCount(base_dir)
+        localPosts = _get_status_count(base_dir)
     else:
         activeAccounts = 1
         activeAccountsMonthly = 1
@@ -81,14 +81,14 @@ def meta_data_node_info(base_dir: str,
     return nodeinfo
 
 
-def metaDataInstance(showAccounts: bool,
-                     instanceTitle: str,
-                     instanceDescriptionShort: str,
-                     instanceDescription: str,
-                     http_prefix: str, base_dir: str,
-                     adminNickname: str, domain: str, domain_full: str,
-                     registration: bool, system_language: str,
-                     version: str) -> {}:
+def meta_data_instance(showAccounts: bool,
+                       instanceTitle: str,
+                       instanceDescriptionShort: str,
+                       instanceDescription: str,
+                       http_prefix: str, base_dir: str,
+                       adminNickname: str, domain: str, domain_full: str,
+                       registration: bool, system_language: str,
+                       version: str) -> {}:
     """ /api/v1/instance endpoint
     """
     adminActorFilename = \
@@ -98,7 +98,7 @@ def metaDataInstance(showAccounts: bool,
 
     adminActor = load_json(adminActorFilename, 0)
     if not adminActor:
-        print('WARN: json load exception metaDataInstance')
+        print('WARN: json load exception meta_data_instance')
         return {}
 
     rulesList = []
@@ -133,7 +133,7 @@ def metaDataInstance(showAccounts: bool,
 
     if showAccounts:
         activeAccounts = no_of_accounts(base_dir)
-        localPosts = _getStatusCount(base_dir)
+        localPosts = _get_status_count(base_dir)
     else:
         activeAccounts = 1
         localPosts = 1

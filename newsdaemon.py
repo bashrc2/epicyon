@@ -20,11 +20,11 @@ import html
 from shutil import rmtree
 from subprocess import Popen
 from collections import OrderedDict
-from newswire import getDictFromNewswire
-# from posts import sendSignedJson
-from posts import createNewsPost
-from posts import archivePostsForPerson
-from content import validHashTag
+from newswire import get_dict_from_newswire
+# from posts import send_signed_json
+from posts import create_news_post
+from posts import archive_posts_for_person
+from content import valid_hash_tag
 from utils import get_base_content_from_post
 from utils import remove_html
 from utils import get_full_domain
@@ -34,11 +34,12 @@ from utils import get_status_number
 from utils import clear_from_post_caches
 from utils import dangerous_markup
 from utils import local_actor_url
-from inbox import storeHashTags
+from inbox import store_hash_tags
 from session import create_session
 
 
-def _updateFeedsOutboxIndex(base_dir: str, domain: str, post_id: str) -> None:
+def _update_feeds_outbox_index(base_dir: str, domain: str,
+                               post_id: str) -> None:
     """Updates the index used for imported RSS feeds
     """
     basePath = base_dir + '/accounts/news@' + domain
@@ -64,7 +65,8 @@ def _updateFeedsOutboxIndex(base_dir: str, domain: str, post_id: str) -> None:
             print('EX: unable to write ' + indexFilename)
 
 
-def _saveArrivedTime(base_dir: str, post_filename: str, arrived: str) -> None:
+def _save_arrived_time(base_dir: str, post_filename: str,
+                       arrived: str) -> None:
     """Saves the time when an rss post arrived to a file
     """
     try:
@@ -74,7 +76,7 @@ def _saveArrivedTime(base_dir: str, post_filename: str, arrived: str) -> None:
         print('EX: unable to write ' + post_filename + '.arrived')
 
 
-def _removeControlCharacters(content: str) -> str:
+def _remove_control_characters(content: str) -> str:
     """Remove escaped html
     """
     if '&' in content:
@@ -82,8 +84,8 @@ def _removeControlCharacters(content: str) -> str:
     return content
 
 
-def _hashtagLogicalNot(tree: [], hashtags: [], moderated: bool,
-                       content: str, url: str) -> bool:
+def _hashtag_logical_not(tree: [], hashtags: [], moderated: bool,
+                         content: str, url: str) -> bool:
     """ NOT
     """
     if len(tree) != 2:
@@ -91,13 +93,13 @@ def _hashtagLogicalNot(tree: [], hashtags: [], moderated: bool,
     if isinstance(tree[1], str):
         return tree[1] not in hashtags
     elif isinstance(tree[1], list):
-        return not hashtagRuleResolve(tree[1], hashtags,
-                                      moderated, content, url)
+        return not hashtag_rule_resolve(tree[1], hashtags,
+                                        moderated, content, url)
     return False
 
 
-def _hashtagLogicalContains(tree: [], hashtags: [], moderated: bool,
-                            content: str, url: str) -> bool:
+def _hashtag_logical_contains(tree: [], hashtags: [], moderated: bool,
+                              content: str, url: str) -> bool:
     """ Contains
     """
     if len(tree) != 2:
@@ -117,8 +119,8 @@ def _hashtagLogicalContains(tree: [], hashtags: [], moderated: bool,
     return False
 
 
-def _hashtagLogicalFrom(tree: [], hashtags: [], moderated: bool,
-                        content: str, url: str) -> bool:
+def _hashtag_logical_from(tree: [], hashtags: [], moderated: bool,
+                          content: str, url: str) -> bool:
     """ FROM
     """
     if len(tree) != 2:
@@ -136,8 +138,8 @@ def _hashtagLogicalFrom(tree: [], hashtags: [], moderated: bool,
     return False
 
 
-def _hashtagLogicalAnd(tree: [], hashtags: [], moderated: bool,
-                       content: str, url: str) -> bool:
+def _hashtag_logical_and(tree: [], hashtags: [], moderated: bool,
+                         content: str, url: str) -> bool:
     """ AND
     """
     if len(tree) < 3:
@@ -147,16 +149,16 @@ def _hashtagLogicalAnd(tree: [], hashtags: [], moderated: bool,
         if isinstance(tree[argIndex], str):
             argValue = (tree[argIndex] in hashtags)
         elif isinstance(tree[argIndex], list):
-            argValue = hashtagRuleResolve(tree[argIndex],
-                                          hashtags, moderated,
-                                          content, url)
+            argValue = hashtag_rule_resolve(tree[argIndex],
+                                            hashtags, moderated,
+                                            content, url)
         if not argValue:
             return False
     return True
 
 
-def _hashtagLogicalOr(tree: [], hashtags: [], moderated: bool,
-                      content: str, url: str) -> bool:
+def _hashtag_logical_or(tree: [], hashtags: [], moderated: bool,
+                        content: str, url: str) -> bool:
     """ OR
     """
     if len(tree) < 3:
@@ -166,16 +168,16 @@ def _hashtagLogicalOr(tree: [], hashtags: [], moderated: bool,
         if isinstance(tree[argIndex], str):
             argValue = (tree[argIndex] in hashtags)
         elif isinstance(tree[argIndex], list):
-            argValue = hashtagRuleResolve(tree[argIndex],
-                                          hashtags, moderated,
-                                          content, url)
+            argValue = hashtag_rule_resolve(tree[argIndex],
+                                            hashtags, moderated,
+                                            content, url)
         if argValue:
             return True
     return False
 
 
-def _hashtagLogicalXor(tree: [], hashtags: [], moderated: bool,
-                       content: str, url: str) -> bool:
+def _hashtag_logical_xor(tree: [], hashtags: [], moderated: bool,
+                         content: str, url: str) -> bool:
     """ XOR
     """
     if len(tree) < 3:
@@ -186,9 +188,9 @@ def _hashtagLogicalXor(tree: [], hashtags: [], moderated: bool,
         if isinstance(tree[argIndex], str):
             argValue = (tree[argIndex] in hashtags)
         elif isinstance(tree[argIndex], list):
-            argValue = hashtagRuleResolve(tree[argIndex],
-                                          hashtags, moderated,
-                                          content, url)
+            argValue = hashtag_rule_resolve(tree[argIndex],
+                                            hashtags, moderated,
+                                            content, url)
         if argValue:
             trueCtr += 1
     if trueCtr == 1:
@@ -196,25 +198,26 @@ def _hashtagLogicalXor(tree: [], hashtags: [], moderated: bool,
     return False
 
 
-def hashtagRuleResolve(tree: [], hashtags: [], moderated: bool,
-                       content: str, url: str) -> bool:
+def hashtag_rule_resolve(tree: [], hashtags: [], moderated: bool,
+                         content: str, url: str) -> bool:
     """Returns whether the tree for a hashtag rule evaluates to true or false
     """
     if not tree:
         return False
 
     if tree[0] == 'not':
-        return _hashtagLogicalNot(tree, hashtags, moderated, content, url)
+        return _hashtag_logical_not(tree, hashtags, moderated, content, url)
     elif tree[0] == 'contains':
-        return _hashtagLogicalContains(tree, hashtags, moderated, content, url)
+        return _hashtag_logical_contains(tree, hashtags, moderated,
+                                         content, url)
     elif tree[0] == 'from':
-        return _hashtagLogicalFrom(tree, hashtags, moderated, content, url)
+        return _hashtag_logical_from(tree, hashtags, moderated, content, url)
     elif tree[0] == 'and':
-        return _hashtagLogicalAnd(tree, hashtags, moderated, content, url)
+        return _hashtag_logical_and(tree, hashtags, moderated, content, url)
     elif tree[0] == 'or':
-        return _hashtagLogicalOr(tree, hashtags, moderated, content, url)
+        return _hashtag_logical_or(tree, hashtags, moderated, content, url)
     elif tree[0] == 'xor':
-        return _hashtagLogicalXor(tree, hashtags, moderated, content, url)
+        return _hashtag_logical_xor(tree, hashtags, moderated, content, url)
     elif tree[0].startswith('#') and len(tree) == 1:
         return tree[0] in hashtags
     elif tree[0].startswith('moderated'):
@@ -225,10 +228,10 @@ def hashtagRuleResolve(tree: [], hashtags: [], moderated: bool,
     return False
 
 
-def hashtagRuleTree(operators: [],
-                    conditionsStr: str,
-                    tagsInConditions: [],
-                    moderated: bool) -> []:
+def hashtag_rule_tree(operators: [],
+                      conditionsStr: str,
+                      tagsInConditions: [],
+                      moderated: bool) -> []:
     """Walks the tree
     """
     if not operators and conditionsStr:
@@ -276,19 +279,19 @@ def hashtagRuleTree(operators: [],
             else:
                 sections = conditionsStr.split(op + ' ', 1)
             for subConditionStr in sections:
-                result = hashtagRuleTree(operators[ctr + 1:],
-                                         subConditionStr,
-                                         tagsInConditions, moderated)
+                result = hashtag_rule_tree(operators[ctr + 1:],
+                                           subConditionStr,
+                                           tagsInConditions, moderated)
                 if result:
                     tree.append(result)
             break
     return tree
 
 
-def _hashtagAdd(base_dir: str, http_prefix: str, domain_full: str,
-                post_json_object: {},
-                actionStr: str, hashtags: [], system_language: str,
-                translate: {}) -> None:
+def _hashtag_add(base_dir: str, http_prefix: str, domain_full: str,
+                 post_json_object: {},
+                 actionStr: str, hashtags: [], system_language: str,
+                 translate: {}) -> None:
     """Adds a hashtag via a hashtag rule
     """
     addHashtag = actionStr.split('add ', 1)[1].strip()
@@ -298,7 +301,7 @@ def _hashtagAdd(base_dir: str, http_prefix: str, domain_full: str,
     if addHashtag not in hashtags:
         hashtags.append(addHashtag)
     htId = addHashtag.replace('#', '')
-    if not validHashTag(htId):
+    if not valid_hash_tag(htId):
         return
 
     hashtagUrl = http_prefix + "://" + domain_full + "/tags/" + htId
@@ -336,13 +339,14 @@ def _hashtagAdd(base_dir: str, http_prefix: str, domain_full: str,
     domain = domain_full
     if ':' in domain:
         domain = domain.split(':')[0]
-    storeHashTags(base_dir, 'news', domain,
-                  http_prefix, domain_full,
-                  post_json_object, translate)
+    store_hash_tags(base_dir, 'news', domain,
+                    http_prefix, domain_full,
+                    post_json_object, translate)
 
 
-def _hashtagRemove(http_prefix: str, domain_full: str, post_json_object: {},
-                   actionStr: str, hashtags: [], system_language: str) -> None:
+def _hashtag_remove(http_prefix: str, domain_full: str, post_json_object: {},
+                    actionStr: str, hashtags: [],
+                    system_language: str) -> None:
     """Removes a hashtag via a hashtag rule
     """
     rmHashtag = actionStr.split('remove ', 1)[1].strip()
@@ -373,16 +377,16 @@ def _hashtagRemove(http_prefix: str, domain_full: str, post_json_object: {},
         post_json_object['object']['tag'].remove(rmTagObject)
 
 
-def _newswireHashtagProcessing(session, base_dir: str, post_json_object: {},
-                               hashtags: [], http_prefix: str,
-                               domain: str, port: int,
-                               person_cache: {},
-                               cached_webfingers: {},
-                               federation_list: [],
-                               send_threads: [], postLog: [],
-                               moderated: bool, url: str,
-                               system_language: str,
-                               translate: {}) -> bool:
+def _newswire_hashtag_processing(session, base_dir: str, post_json_object: {},
+                                 hashtags: [], http_prefix: str,
+                                 domain: str, port: int,
+                                 person_cache: {},
+                                 cached_webfingers: {},
+                                 federation_list: [],
+                                 send_threads: [], postLog: [],
+                                 moderated: bool, url: str,
+                                 system_language: str,
+                                 translate: {}) -> bool:
     """Applies hashtag rules to a news post.
     Returns true if the post should be saved to the news timeline
     of this instance
@@ -417,31 +421,31 @@ def _newswireHashtagProcessing(session, base_dir: str, post_json_object: {},
         conditionsStr = ruleStr.split('if ', 1)[1]
         conditionsStr = conditionsStr.split(' then ')[0]
         tagsInConditions = []
-        tree = hashtagRuleTree(operators, conditionsStr,
-                               tagsInConditions, moderated)
-        if not hashtagRuleResolve(tree, hashtags, moderated, content, url):
+        tree = hashtag_rule_tree(operators, conditionsStr,
+                                 tagsInConditions, moderated)
+        if not hashtag_rule_resolve(tree, hashtags, moderated, content, url):
             continue
         # the condition matches, so do something
         actionStr = ruleStr.split(' then ')[1].strip()
 
         if actionStr.startswith('add '):
             # add a hashtag
-            _hashtagAdd(base_dir, http_prefix, domain_full,
-                        post_json_object, actionStr, hashtags, system_language,
-                        translate)
+            _hashtag_add(base_dir, http_prefix, domain_full,
+                         post_json_object, actionStr, hashtags,
+                         system_language, translate)
         elif actionStr.startswith('remove '):
             # remove a hashtag
-            _hashtagRemove(http_prefix, domain_full, post_json_object,
-                           actionStr, hashtags, system_language)
+            _hashtag_remove(http_prefix, domain_full, post_json_object,
+                            actionStr, hashtags, system_language)
         elif actionStr.startswith('block') or actionStr.startswith('drop'):
             # Block this item
             return False
     return True
 
 
-def _createNewsMirror(base_dir: str, domain: str,
-                      post_idNumber: str, url: str,
-                      max_mirrored_articles: int) -> bool:
+def _create_news_mirror(base_dir: str, domain: str,
+                        post_idNumber: str, url: str,
+                        max_mirrored_articles: int) -> bool:
     """Creates a local mirror of a news article
     """
     if '|' in url or '>' in url:
@@ -534,20 +538,20 @@ def _createNewsMirror(base_dir: str, domain: str,
     return True
 
 
-def _convertRSStoActivityPub(base_dir: str, http_prefix: str,
-                             domain: str, port: int,
-                             newswire: {},
-                             translate: {},
-                             recent_posts_cache: {}, max_recent_posts: int,
-                             session, cached_webfingers: {},
-                             person_cache: {},
-                             federation_list: [],
-                             send_threads: [], postLog: [],
-                             max_mirrored_articles: int,
-                             allow_local_network_access: bool,
-                             system_language: str,
-                             low_bandwidth: bool,
-                             content_license_url: str) -> None:
+def _convert_rs_sto_activity_pub(base_dir: str, http_prefix: str,
+                                 domain: str, port: int,
+                                 newswire: {},
+                                 translate: {},
+                                 recent_posts_cache: {}, max_recent_posts: int,
+                                 session, cached_webfingers: {},
+                                 person_cache: {},
+                                 federation_list: [],
+                                 send_threads: [], postLog: [],
+                                 max_mirrored_articles: int,
+                                 allow_local_network_access: bool,
+                                 system_language: str,
+                                 low_bandwidth: bool,
+                                 content_license_url: str) -> None:
     """Converts rss items in a newswire into posts
     """
     if not newswire:
@@ -597,7 +601,7 @@ def _convertRSStoActivityPub(base_dir: str, http_prefix: str,
             newswire[originalDateStr][3] = filename
             continue
 
-        rssTitle = _removeControlCharacters(item[0])
+        rssTitle = _remove_control_characters(item[0])
         url = item[1]
         if dangerous_markup(url, allow_local_network_access) or \
            dangerous_markup(rssTitle, allow_local_network_access):
@@ -632,21 +636,21 @@ def _convertRSStoActivityPub(base_dir: str, http_prefix: str,
         imageDescription = None
         city = 'London, England'
         conversationId = None
-        blog = createNewsPost(base_dir,
-                              domain, port, http_prefix,
-                              rssDescription,
-                              followersOnly, saveToFile,
-                              attachImageFilename, mediaType,
-                              imageDescription, city,
-                              rssTitle, system_language,
-                              conversationId, low_bandwidth,
-                              content_license_url)
+        blog = create_news_post(base_dir,
+                                domain, port, http_prefix,
+                                rssDescription,
+                                followersOnly, saveToFile,
+                                attachImageFilename, mediaType,
+                                imageDescription, city,
+                                rssTitle, system_language,
+                                conversationId, low_bandwidth,
+                                content_license_url)
         if not blog:
             continue
 
         if mirrored:
-            if not _createNewsMirror(base_dir, domain, statusNumber,
-                                     url, max_mirrored_articles):
+            if not _create_news_mirror(base_dir, domain, statusNumber,
+                                       url, max_mirrored_articles):
                 continue
 
         idStr = \
@@ -680,14 +684,15 @@ def _convertRSStoActivityPub(base_dir: str, http_prefix: str,
 
         moderated = item[5]
 
-        savePost = _newswireHashtagProcessing(session, base_dir,
-                                              blog, hashtags,
-                                              http_prefix, domain, port,
-                                              person_cache, cached_webfingers,
-                                              federation_list,
-                                              send_threads, postLog,
-                                              moderated, url, system_language,
-                                              translate)
+        savePost = \
+            _newswire_hashtag_processing(session, base_dir,
+                                         blog, hashtags,
+                                         http_prefix, domain, port,
+                                         person_cache, cached_webfingers,
+                                         federation_list,
+                                         send_threads, postLog,
+                                         moderated, url, system_language,
+                                         translate)
 
         # save the post and update the index
         if savePost:
@@ -721,31 +726,31 @@ def _convertRSStoActivityPub(base_dir: str, http_prefix: str,
                     blog['object']['contentMap'][system_language] = content
 
             # update the newswire tags if new ones have been found by
-            # _newswireHashtagProcessing
+            # _newswire_hashtag_processing
             for tag in hashtags:
                 if tag not in newswire[originalDateStr][6]:
                     newswire[originalDateStr][6].append(tag)
 
-            storeHashTags(base_dir, 'news', domain,
-                          http_prefix, domain_full,
-                          blog, translate)
+            store_hash_tags(base_dir, 'news', domain,
+                            http_prefix, domain_full,
+                            blog, translate)
 
             clear_from_post_caches(base_dir, recent_posts_cache, post_id)
             if save_json(blog, filename):
-                _updateFeedsOutboxIndex(base_dir, domain, post_id + '.json')
+                _update_feeds_outbox_index(base_dir, domain, post_id + '.json')
 
                 # Save a file containing the time when the post arrived
                 # this can then later be used to construct the news timeline
                 # excluding items during the voting period
                 if moderated:
-                    _saveArrivedTime(base_dir, filename,
-                                     blog['object']['arrived'])
+                    _save_arrived_time(base_dir, filename,
+                                       blog['object']['arrived'])
                 else:
                     if os.path.isfile(filename + '.arrived'):
                         try:
                             os.remove(filename + '.arrived')
                         except OSError:
-                            print('EX: _convertRSStoActivityPub ' +
+                            print('EX: _convert_rs_sto_activity_pub ' +
                                   'unable to delete ' + filename + '.arrived')
 
                 # setting the url here links to the activitypub object
@@ -757,7 +762,7 @@ def _convertRSStoActivityPub(base_dir: str, http_prefix: str,
                 newswire[originalDateStr][3] = filename
 
 
-def _mergeWithPreviousNewswire(oldNewswire: {}, newNewswire: {}) -> None:
+def _merge_with_previous_newswire(oldNewswire: {}, newNewswire: {}) -> None:
     """Preserve any votes or generated activitypub post filename
     as rss feeds are updated
     """
@@ -771,9 +776,9 @@ def _mergeWithPreviousNewswire(oldNewswire: {}, newNewswire: {}) -> None:
             newNewswire[published][i] = fields[i]
 
 
-def runNewswireDaemon(base_dir: str, httpd,
-                      http_prefix: str, domain: str, port: int,
-                      translate: {}) -> None:
+def run_newswire_daemon(base_dir: str, httpd,
+                        http_prefix: str, domain: str, port: int,
+                        translate: {}) -> None:
     """Periodically updates RSS feeds
     """
     newswireStateFilename = base_dir + '/accounts/.newswirestate.json'
@@ -796,15 +801,15 @@ def runNewswireDaemon(base_dir: str, httpd,
         # try to update the feeds
         print('Updating newswire feeds')
         newNewswire = \
-            getDictFromNewswire(httpd.session, base_dir, domain,
-                                httpd.max_newswire_postsPerSource,
-                                httpd.max_newswire_feed_size_kb,
-                                httpd.maxTags,
-                                httpd.max_feed_item_size_kb,
-                                httpd.max_newswire_posts,
-                                httpd.maxCategoriesFeedItemSizeKb,
-                                httpd.system_language,
-                                httpd.debug)
+            get_dict_from_newswire(httpd.session, base_dir, domain,
+                                   httpd.max_newswire_postsPerSource,
+                                   httpd.max_newswire_feed_size_kb,
+                                   httpd.maxTags,
+                                   httpd.max_feed_item_size_kb,
+                                   httpd.max_newswire_posts,
+                                   httpd.maxCategoriesFeedItemSizeKb,
+                                   httpd.system_language,
+                                   httpd.debug)
 
         if not httpd.newswire:
             print('Newswire feeds not updated')
@@ -813,7 +818,7 @@ def runNewswireDaemon(base_dir: str, httpd,
                 httpd.newswire = load_json(newswireStateFilename)
 
         print('Merging with previous newswire')
-        _mergeWithPreviousNewswire(httpd.newswire, newNewswire)
+        _merge_with_previous_newswire(httpd.newswire, newNewswire)
 
         httpd.newswire = newNewswire
         if newNewswire:
@@ -823,22 +828,22 @@ def runNewswireDaemon(base_dir: str, httpd,
             print('No new newswire')
 
         print('Converting newswire to activitypub format')
-        _convertRSStoActivityPub(base_dir,
-                                 http_prefix, domain, port,
-                                 newNewswire, translate,
-                                 httpd.recent_posts_cache,
-                                 httpd.max_recent_posts,
-                                 httpd.session,
-                                 httpd.cached_webfingers,
-                                 httpd.person_cache,
-                                 httpd.federation_list,
-                                 httpd.send_threads,
-                                 httpd.postLog,
-                                 httpd.max_mirrored_articles,
-                                 httpd.allow_local_network_access,
-                                 httpd.system_language,
-                                 httpd.low_bandwidth,
-                                 httpd.content_license_url)
+        _convert_rs_sto_activity_pub(base_dir,
+                                     http_prefix, domain, port,
+                                     newNewswire, translate,
+                                     httpd.recent_posts_cache,
+                                     httpd.max_recent_posts,
+                                     httpd.session,
+                                     httpd.cached_webfingers,
+                                     httpd.person_cache,
+                                     httpd.federation_list,
+                                     httpd.send_threads,
+                                     httpd.postLog,
+                                     httpd.max_mirrored_articles,
+                                     httpd.allow_local_network_access,
+                                     httpd.system_language,
+                                     httpd.low_bandwidth,
+                                     httpd.content_license_url)
         print('Newswire feed converted to ActivityPub')
 
         if httpd.max_news_posts > 0:
@@ -846,11 +851,11 @@ def runNewswireDaemon(base_dir: str, httpd,
             archiveSubdir = \
                 archive_dir + '/accounts/news@' + domain + '/outbox'
             print('Archiving news posts')
-            archivePostsForPerson(http_prefix, 'news',
-                                  domain, base_dir, 'outbox',
-                                  archiveSubdir,
-                                  httpd.recent_posts_cache,
-                                  httpd.max_news_posts)
+            archive_posts_for_person(http_prefix, 'news',
+                                     domain, base_dir, 'outbox',
+                                     archiveSubdir,
+                                     httpd.recent_posts_cache,
+                                     httpd.max_news_posts)
 
         # wait a while before the next feeds update
         for tick in range(120):
@@ -861,17 +866,17 @@ def runNewswireDaemon(base_dir: str, httpd,
                 try:
                     os.remove(refreshFilename)
                 except OSError:
-                    print('EX: runNewswireDaemon unable to delete ' +
+                    print('EX: run_newswire_daemon unable to delete ' +
                           str(refreshFilename))
                 break
 
 
-def runNewswireWatchdog(project_version: str, httpd) -> None:
+def run_newswire_watchdog(project_version: str, httpd) -> None:
     """This tries to keep the newswire update thread running even if it dies
     """
     print('Starting newswire watchdog')
     newswireOriginal = \
-        httpd.thrPostSchedule.clone(runNewswireDaemon)
+        httpd.thrPostSchedule.clone(run_newswire_daemon)
     httpd.thrNewswireDaemon.start()
     while True:
         time.sleep(50)
@@ -879,6 +884,6 @@ def runNewswireWatchdog(project_version: str, httpd) -> None:
             continue
         httpd.thrNewswireDaemon.kill()
         httpd.thrNewswireDaemon = \
-            newswireOriginal.clone(runNewswireDaemon)
+            newswireOriginal.clone(run_newswire_daemon)
         httpd.thrNewswireDaemon.start()
         print('Restarting newswire daemon...')

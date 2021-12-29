@@ -12,12 +12,12 @@ from utils import is_account_dir
 from utils import load_json
 from utils import get_config_param
 from utils import acct_dir
-from webapp_utils import htmlHeaderWithExternalStyle
-from webapp_utils import htmlFooter
+from webapp_utils import html_header_with_external_style
+from webapp_utils import html_footer
 
 
-def loadAccessKeysForAccounts(base_dir: str, keyShortcuts: {},
-                              accessKeysTemplate: {}) -> None:
+def load_access_keys_for_accounts(base_dir: str, keyShortcuts: {},
+                                  accessKeysTemplate: {}) -> None:
     """Loads key shortcuts for each account
     """
     for subdir, dirs, files in os.walk(base_dir + '/accounts'):
@@ -39,11 +39,11 @@ def loadAccessKeysForAccounts(base_dir: str, keyShortcuts: {},
         break
 
 
-def htmlAccessKeys(css_cache: {}, base_dir: str,
-                   nickname: str, domain: str,
-                   translate: {}, accessKeys: {},
-                   defaultAccessKeys: {},
-                   defaultTimeline: str) -> str:
+def html_access_keys(css_cache: {}, base_dir: str,
+                     nickname: str, domain: str,
+                     translate: {}, accessKeys: {},
+                     defaultAccessKeys: {},
+                     defaultTimeline: str) -> str:
     """Show and edit key shortcuts
     """
     accessKeysFilename = \
@@ -61,7 +61,7 @@ def htmlAccessKeys(css_cache: {}, base_dir: str,
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
     accessKeysForm = \
-        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
+        html_header_with_external_style(cssFilename, instanceTitle, None)
     accessKeysForm += '<div class="container">\n'
 
     accessKeysForm += \
@@ -113,5 +113,5 @@ def htmlAccessKeys(css_cache: {}, base_dir: str,
     accessKeysForm += '    </table>\n'
     accessKeysForm += '  </form>\n'
     accessKeysForm += '</div>\n'
-    accessKeysForm += htmlFooter()
+    accessKeysForm += html_footer()
     return accessKeysForm

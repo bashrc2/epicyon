@@ -13,56 +13,56 @@ import sys
 import time
 import argparse
 import getpass
-from person import getActorJson
-from person import createPerson
-from person import createGroup
-from person import setProfileImage
+from person import get_actor_json
+from person import create_person
+from person import create_group
+from person import set_profile_image
 from person import remove_account
 from person import activate_account
 from person import deactivate_account
-from skills import setSkillLevel
+from skills import set_skill_level
 from roles import set_role
-from webfinger import webfingerHandle
-from bookmarks import sendBookmarkViaServer
-from bookmarks import sendUndoBookmarkViaServer
+from webfinger import webfinger_handle
+from bookmarks import send_bookmark_via_server
+from bookmarks import send_undo_bookmark_via_server
 from posts import get_instance_actor_key
-from posts import sendMuteViaServer
-from posts import sendUndoMuteViaServer
-from posts import c2sBoxJson
-from posts import downloadFollowCollection
-from posts import getPublicPostDomains
-from posts import getPublicPostDomainsBlocked
-from posts import sendBlockViaServer
-from posts import sendUndoBlockViaServer
+from posts import send_mute_via_server
+from posts import send_undo_mute_via_server
+from posts import c2s_box_json
+from posts import download_follow_collection
+from posts import get_public_post_domains
+from posts import get_public_post_domains_blocked
+from posts import send_block_via_server
+from posts import send_undo_block_via_server
 from posts import create_public_post
-from posts import deleteAllPosts
-from posts import archivePosts
-from posts import sendPostViaServer
-from posts import getPublicPostsOfPerson
-from posts import getUserUrl
-from posts import checkDomains
+from posts import delete_all_posts
+from posts import archive_posts
+from posts import send_post_via_server
+from posts import get_public_posts_of_person
+from posts import get_user_url
+from posts import check_domains
 from session import create_session
-from session import getJson
-from session import downloadHtml
-from newswire import getRSS
-from filters import addFilter
-from filters import removeFilter
+from session import get_json
+from session import download_html
+from newswire import get_rss
+from filters import add_filter
+from filters import remove_filter
 from pprint import pprint
-from daemon import runDaemon
-from follow import getFollowRequestsViaServer
-from follow import getFollowingViaServer
-from follow import getFollowersViaServer
-from follow import clearFollows
-from follow import followerOfPerson
+from daemon import run_daemon
+from follow import get_follow_requests_via_server
+from follow import get_following_via_server
+from follow import get_followers_via_server
+from follow import clear_follows
+from follow import add_follower_of_person
 from follow import send_follow_requestViaServer
-from follow import sendUnfollowRequestViaServer
-from tests import testSharedItemsFederation
-from tests import testGroupFollow
-from tests import testPostMessageBetweenServers
-from tests import testFollowBetweenServers
-from tests import testClientToServer
-from tests import testUpdateActor
-from tests import runAllTests
+from follow import send_unfollow_request_via_server
+from tests import test_shared_items_federation
+from tests import test_group_follow
+from tests import test_post_message_between_servers
+from tests import test_follow_between_servers
+from tests import test_client_to_server
+from tests import test_update_actor
+from tests import run_all_tests
 from auth import store_basic_credentials
 from auth import create_password
 from utils import remove_domain_port
@@ -77,29 +77,29 @@ from utils import follow_person
 from utils import valid_nickname
 from utils import get_protocol_prefixes
 from utils import acct_dir
-from media import archiveMedia
-from media import getAttachmentMediaType
-from delete import sendDeleteViaServer
-from like import sendLikeViaServer
-from like import sendUndoLikeViaServer
-from reaction import sendReactionViaServer
-from reaction import sendUndoReactionViaServer
-from reaction import validEmojiContent
-from skills import sendSkillViaServer
-from availability import setAvailability
-from availability import sendAvailabilityViaServer
-from manualapprove import manualDenyFollowRequest
-from manualapprove import manualApproveFollowRequest
-from shares import sendShareViaServer
-from shares import sendUndoShareViaServer
-from shares import sendWantedViaServer
-from shares import sendUndoWantedViaServer
-from shares import addShare
-from theme import setTheme
-from announce import sendAnnounceViaServer
-from socnet import instancesGraph
-from migrate import migrateAccounts
-from desktop_client import runDesktopClient
+from media import archive_media
+from media import get_attachment_media_type
+from delete import send_delete_via_server
+from like import send_like_via_server
+from like import send_undo_like_via_server
+from reaction import send_reaction_via_server
+from reaction import send_undo_reaction_via_server
+from reaction import valid_emoji_content
+from skills import send_skill_via_server
+from availability import set_availability
+from availability import send_availability_via_server
+from manualapprove import manual_deny_follow_request
+from manualapprove import manual_approve_follow_request
+from shares import send_share_via_server
+from shares import send_undo_share_via_server
+from shares import send_wanted_via_server
+from shares import send_undo_wanted_via_server
+from shares import add_share
+from theme import set_theme
+from announce import send_announce_via_server
+from socnet import instances_graph
+from migrate import migrate_accounts
+from desktop_client import run_desktop_client
 
 
 def str2bool(v) -> bool:
@@ -278,7 +278,7 @@ parser.add_argument('--postDomainsBlocked', dest='postDomainsBlocked',
                     type=str, default=None,
                     help='Show blocked domains referenced in public '
                     'posts for the given handle')
-parser.add_argument('--checkDomains', dest='checkDomains', type=str,
+parser.add_argument('--check_domains', dest='check_domains', type=str,
                     default=None,
                     help='Check domains of non-mutual followers for '
                     'domains which are globally blocked by this instance')
@@ -659,17 +659,17 @@ else:
         debug = True
 
 if args.tests:
-    runAllTests()
+    run_all_tests()
     sys.exit()
 if args.testsnetwork:
     print('Network Tests')
     base_dir = os.getcwd()
-    testSharedItemsFederation(base_dir)
-    testGroupFollow(base_dir)
-    testPostMessageBetweenServers(base_dir)
-    testFollowBetweenServers(base_dir)
-    testClientToServer(base_dir)
-    testUpdateActor(base_dir)
+    test_shared_items_federation(base_dir)
+    test_group_follow(base_dir)
+    test_post_message_between_servers(base_dir)
+    test_follow_between_servers(base_dir)
+    test_client_to_server(base_dir)
+    test_update_actor(base_dir)
     print('All tests succeeded')
     sys.exit()
 
@@ -727,10 +727,10 @@ if args.posts:
     if not args.language:
         args.language = 'en'
     signing_priv_key_pem = get_instance_actor_key(base_dir, originDomain)
-    getPublicPostsOfPerson(base_dir, nickname, domain, False, True,
-                           proxy_type, args.port, http_prefix, debug,
-                           __version__, args.language,
-                           signing_priv_key_pem, originDomain)
+    get_public_posts_of_person(base_dir, nickname, domain, False, True,
+                               proxy_type, args.port, http_prefix, debug,
+                               __version__, args.language,
+                               signing_priv_key_pem, originDomain)
     sys.exit()
 
 if args.postDomains:
@@ -769,15 +769,16 @@ if args.postDomains:
         originDomain = args.domain
     if args.secure_mode:
         signing_priv_key_pem = get_instance_actor_key(base_dir, originDomain)
-    domainList = getPublicPostDomains(None,
-                                      base_dir, nickname, domain,
-                                      originDomain,
-                                      proxy_type, args.port,
-                                      http_prefix, debug,
-                                      __version__,
-                                      wordFrequency, domainList,
-                                      args.language,
-                                      signing_priv_key_pem)
+    domainList = \
+        get_public_post_domains(None,
+                                base_dir, nickname, domain,
+                                originDomain,
+                                proxy_type, args.port,
+                                http_prefix, debug,
+                                __version__,
+                                wordFrequency, domainList,
+                                args.language,
+                                signing_priv_key_pem)
     for postDomain in domainList:
         print(postDomain)
     sys.exit()
@@ -817,34 +818,35 @@ if args.postDomainsBlocked:
     signing_priv_key_pem = None
     if args.secure_mode:
         signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
-    domainList = getPublicPostDomainsBlocked(None,
-                                             base_dir, nickname, domain,
-                                             proxy_type, args.port,
-                                             http_prefix, debug,
-                                             __version__,
-                                             wordFrequency, domainList,
-                                             args.language,
-                                             signing_priv_key_pem)
+    domainList = \
+        get_public_post_domains_blocked(None,
+                                        base_dir, nickname, domain,
+                                        proxy_type, args.port,
+                                        http_prefix, debug,
+                                        __version__,
+                                        wordFrequency, domainList,
+                                        args.language,
+                                        signing_priv_key_pem)
     for postDomain in domainList:
         print(postDomain)
     sys.exit()
 
-if args.checkDomains:
+if args.check_domains:
     # Domains which were referenced in public posts by a
     # given handle but which are globally blocked on this instance
-    if '@' not in args.checkDomains:
-        if '/users/' in args.checkDomains:
+    if '@' not in args.check_domains:
+        if '/users/' in args.check_domains:
             postsNickname = get_nickname_from_actor(args.posts)
             postsDomain, postsPort = get_domain_from_actor(args.posts)
-            args.checkDomains = \
+            args.check_domains = \
                 get_full_domain(postsNickname + '@' + postsDomain, postsPort)
         else:
-            print('Syntax: --checkDomains nickname@domain')
+            print('Syntax: --check_domains nickname@domain')
             sys.exit()
     if not args.http:
         args.port = 443
-    nickname = args.checkDomains.split('@')[0]
-    domain = args.checkDomains.split('@')[1]
+    nickname = args.check_domains.split('@')[0]
+    domain = args.check_domains.split('@')[1]
     proxy_type = None
     if args.tor or domain.endswith('.onion'):
         proxy_type = 'tor'
@@ -862,13 +864,13 @@ if args.checkDomains:
     signing_priv_key_pem = None
     if args.secure_mode:
         signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
-    checkDomains(None,
-                 base_dir, nickname, domain,
-                 proxy_type, args.port,
-                 http_prefix, debug,
-                 __version__,
-                 maxBlockedDomains, False, args.language,
-                 signing_priv_key_pem)
+    check_domains(None,
+                  base_dir, nickname, domain,
+                  proxy_type, args.port,
+                  http_prefix, debug,
+                  __version__,
+                  maxBlockedDomains, False, args.language,
+                  signing_priv_key_pem)
     sys.exit()
 
 if args.socnet:
@@ -890,11 +892,11 @@ if args.socnet:
     signing_priv_key_pem = None
     if args.secure_mode:
         signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
-    dotGraph = instancesGraph(base_dir, args.socnet,
-                              proxy_type, args.port,
-                              http_prefix, debug,
-                              __version__, args.language,
-                              signing_priv_key_pem)
+    dotGraph = instances_graph(base_dir, args.socnet,
+                               proxy_type, args.port,
+                               http_prefix, debug,
+                               __version__, args.language,
+                               signing_priv_key_pem)
     try:
         with open('socnet.dot', 'w+') as fp:
             fp.write(dotGraph)
@@ -927,10 +929,10 @@ if args.postsraw:
     if not args.language:
         args.language = 'en'
     signing_priv_key_pem = get_instance_actor_key(base_dir, originDomain)
-    getPublicPostsOfPerson(base_dir, nickname, domain, False, False,
-                           proxy_type, args.port, http_prefix, debug,
-                           __version__, args.language,
-                           signing_priv_key_pem, originDomain)
+    get_public_posts_of_person(base_dir, nickname, domain, False, False,
+                               proxy_type, args.port, http_prefix, debug,
+                               __version__, args.language,
+                               signing_priv_key_pem, originDomain)
     sys.exit()
 
 if args.json:
@@ -951,8 +953,8 @@ if args.json:
             print('Obtained instance actor signing key')
         else:
             print('Did not obtain instance actor key for ' + domain)
-    testJson = getJson(signing_priv_key_pem, session, args.json, asHeader,
-                       None, debug, __version__, http_prefix, domain)
+    testJson = get_json(signing_priv_key_pem, session, args.json, asHeader,
+                        None, debug, __version__, http_prefix, domain)
     if testJson:
         pprint(testJson)
     sys.exit()
@@ -975,9 +977,9 @@ if args.htmlpost:
             print('Obtained instance actor signing key')
         else:
             print('Did not obtain instance actor key for ' + domain)
-    testHtml = downloadHtml(signing_priv_key_pem, session, args.htmlpost,
-                            asHeader, None, debug, __version__,
-                            http_prefix, domain)
+    testHtml = download_html(signing_priv_key_pem, session, args.htmlpost,
+                             asHeader, None, debug, __version__,
+                             http_prefix, domain)
     if testHtml:
         print(testHtml)
     sys.exit()
@@ -1045,8 +1047,8 @@ if args.domain:
 
 if args.rss:
     session = create_session(None)
-    testRSS = getRSS(base_dir, domain, session, args.rss,
-                     False, False, 1000, 1000, 1000, 1000, debug)
+    testRSS = get_rss(base_dir, domain, session, args.rss,
+                      False, False, 1000, 1000, 1000, 1000, debug)
     pprint(testRSS)
     sys.exit()
 
@@ -1192,15 +1194,15 @@ if args.approve:
     signing_priv_key_pem = None
     if args.secure_mode:
         signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
-    manualApproveFollowRequest(session, base_dir,
-                               http_prefix,
-                               args.nickname, domain, port,
-                               args.approve,
-                               federation_list,
-                               send_threads, postLog,
-                               cached_webfingers, person_cache,
-                               debug, __version__,
-                               signing_priv_key_pem)
+    manual_approve_follow_request(session, base_dir,
+                                  http_prefix,
+                                  args.nickname, domain, port,
+                                  args.approve,
+                                  federation_list,
+                                  send_threads, postLog,
+                                  cached_webfingers, person_cache,
+                                  debug, __version__,
+                                  signing_priv_key_pem)
     sys.exit()
 
 if args.deny:
@@ -1220,15 +1222,15 @@ if args.deny:
     signing_priv_key_pem = None
     if args.secure_mode:
         signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
-    manualDenyFollowRequest(session, base_dir,
-                            http_prefix,
-                            args.nickname, domain, port,
-                            args.deny,
-                            federation_list,
-                            send_threads, postLog,
-                            cached_webfingers, person_cache,
-                            debug, __version__,
-                            signing_priv_key_pem)
+    manual_deny_follow_request(session, base_dir,
+                               http_prefix,
+                               args.nickname, domain, port,
+                               args.deny,
+                               federation_list,
+                               send_threads, postLog,
+                               cached_webfingers, person_cache,
+                               debug, __version__,
+                               signing_priv_key_pem)
     sys.exit()
 
 if args.followerspending:
@@ -1304,7 +1306,7 @@ if args.message:
     attach = args.attach
     mediaType = None
     if attach:
-        mediaType = getAttachmentMediaType(attach)
+        mediaType = get_attachment_media_type(attach)
     replyTo = args.replyto
     followersOnly = False
     isArticle = False
@@ -1315,17 +1317,17 @@ if args.message:
         signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
     print('Sending post to ' + args.sendto)
 
-    sendPostViaServer(signing_priv_key_pem, __version__,
-                      base_dir, session, args.nickname, args.password,
-                      domain, port,
-                      toNickname, toDomain, toPort, ccUrl,
-                      http_prefix, sendMessage, followersOnly,
-                      args.commentsEnabled, attach, mediaType,
-                      attachedImageDescription, city,
-                      cached_webfingers, person_cache, isArticle,
-                      args.language, args.low_bandwidth,
-                      args.content_license_url, args.debug,
-                      replyTo, replyTo, args.conversationId, subject)
+    send_post_via_server(signing_priv_key_pem, __version__,
+                         base_dir, session, args.nickname, args.password,
+                         domain, port,
+                         toNickname, toDomain, toPort, ccUrl,
+                         http_prefix, sendMessage, followersOnly,
+                         args.commentsEnabled, attach, mediaType,
+                         attachedImageDescription, city,
+                         cached_webfingers, person_cache, isArticle,
+                         args.language, args.low_bandwidth,
+                         args.content_license_url, args.debug,
+                         replyTo, replyTo, args.conversationId, subject)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1353,11 +1355,11 @@ if args.announce:
         signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
     print('Sending announce/repeat of ' + args.announce)
 
-    sendAnnounceViaServer(base_dir, session, args.nickname, args.password,
-                          domain, port,
-                          http_prefix, args.announce,
-                          cached_webfingers, person_cache,
-                          True, __version__, signing_priv_key_pem)
+    send_announce_via_server(base_dir, session, args.nickname, args.password,
+                             domain, port,
+                             http_prefix, args.announce,
+                             cached_webfingers, person_cache,
+                             True, __version__, signing_priv_key_pem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1397,11 +1399,11 @@ if args.box:
         signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
 
     session = create_session(proxy_type)
-    boxJson = c2sBoxJson(base_dir, session,
-                         args.nickname, args.password,
-                         domain, port, http_prefix,
-                         args.box, args.pageNumber,
-                         args.debug, signing_priv_key_pem)
+    boxJson = c2s_box_json(base_dir, session,
+                           args.nickname, args.password,
+                           domain, port, http_prefix,
+                           args.box, args.pageNumber,
+                           args.debug, signing_priv_key_pem)
     if boxJson:
         pprint(boxJson)
     else:
@@ -1458,22 +1460,22 @@ if args.itemName:
         signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
     print('Sending shared item: ' + args.itemName)
 
-    sendShareViaServer(base_dir, session,
-                       args.nickname, args.password,
-                       domain, port,
-                       http_prefix,
-                       args.itemName,
-                       args.summary,
-                       args.itemImage,
-                       args.itemQty,
-                       args.itemType,
-                       args.itemCategory,
-                       args.location,
-                       args.duration,
-                       cached_webfingers, person_cache,
-                       debug, __version__,
-                       args.itemPrice, args.itemCurrency,
-                       signing_priv_key_pem)
+    send_share_via_server(base_dir, session,
+                          args.nickname, args.password,
+                          domain, port,
+                          http_prefix,
+                          args.itemName,
+                          args.summary,
+                          args.itemImage,
+                          args.itemQty,
+                          args.itemType,
+                          args.itemCategory,
+                          args.location,
+                          args.duration,
+                          cached_webfingers, person_cache,
+                          debug, __version__,
+                          args.itemPrice, args.itemCurrency,
+                          signing_priv_key_pem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1501,13 +1503,13 @@ if args.undoItemName:
         signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
     print('Sending undo of shared item: ' + args.undoItemName)
 
-    sendUndoShareViaServer(base_dir, session,
-                           args.nickname, args.password,
-                           domain, port,
-                           http_prefix,
-                           args.undoItemName,
-                           cached_webfingers, person_cache,
-                           debug, __version__, signing_priv_key_pem)
+    send_undo_share_via_server(base_dir, session,
+                               args.nickname, args.password,
+                               domain, port,
+                               http_prefix,
+                               args.undoItemName,
+                               cached_webfingers, person_cache,
+                               debug, __version__, signing_priv_key_pem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1563,22 +1565,22 @@ if args.wantedItemName:
         signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
     print('Sending wanted item: ' + args.wantedItemName)
 
-    sendWantedViaServer(base_dir, session,
-                        args.nickname, args.password,
-                        domain, port,
-                        http_prefix,
-                        args.wantedItemName,
-                        args.summary,
-                        args.itemImage,
-                        args.itemQty,
-                        args.itemType,
-                        args.itemCategory,
-                        args.location,
-                        args.duration,
-                        cached_webfingers, person_cache,
-                        debug, __version__,
-                        args.itemPrice, args.itemCurrency,
-                        signing_priv_key_pem)
+    send_wanted_via_server(base_dir, session,
+                           args.nickname, args.password,
+                           domain, port,
+                           http_prefix,
+                           args.wantedItemName,
+                           args.summary,
+                           args.itemImage,
+                           args.itemQty,
+                           args.itemType,
+                           args.itemCategory,
+                           args.location,
+                           args.duration,
+                           cached_webfingers, person_cache,
+                           debug, __version__,
+                           args.itemPrice, args.itemCurrency,
+                           signing_priv_key_pem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1606,13 +1608,13 @@ if args.undoWantedItemName:
         signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
     print('Sending undo of wanted item: ' + args.undoWantedItemName)
 
-    sendUndoWantedViaServer(base_dir, session,
-                            args.nickname, args.password,
-                            domain, port,
-                            http_prefix,
-                            args.undoWantedItemName,
-                            cached_webfingers, person_cache,
-                            debug, __version__, signing_priv_key_pem)
+    send_undo_wanted_via_server(base_dir, session,
+                                args.nickname, args.password,
+                                domain, port,
+                                http_prefix,
+                                args.undoWantedItemName,
+                                cached_webfingers, person_cache,
+                                debug, __version__, signing_priv_key_pem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1640,12 +1642,12 @@ if args.like:
         signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
     print('Sending like of ' + args.like)
 
-    sendLikeViaServer(base_dir, session,
-                      args.nickname, args.password,
-                      domain, port,
-                      http_prefix, args.like,
-                      cached_webfingers, person_cache,
-                      True, __version__, signing_priv_key_pem)
+    send_like_via_server(base_dir, session,
+                         args.nickname, args.password,
+                         domain, port,
+                         http_prefix, args.like,
+                         cached_webfingers, person_cache,
+                         True, __version__, signing_priv_key_pem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1658,7 +1660,7 @@ if args.react:
     if not args.emoji:
         print('Specify a reaction emoji with the --emoji option')
         sys.exit()
-    if not validEmojiContent(args.emoji):
+    if not valid_emoji_content(args.emoji):
         print('This is not a valid emoji')
         sys.exit()
 
@@ -1679,12 +1681,12 @@ if args.react:
         signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
     print('Sending emoji reaction ' + args.emoji + ' to ' + args.react)
 
-    sendReactionViaServer(base_dir, session,
-                          args.nickname, args.password,
-                          domain, port,
-                          http_prefix, args.react, args.emoji,
-                          cached_webfingers, person_cache,
-                          True, __version__, signing_priv_key_pem)
+    send_reaction_via_server(base_dir, session,
+                             args.nickname, args.password,
+                             domain, port,
+                             http_prefix, args.react, args.emoji,
+                             cached_webfingers, person_cache,
+                             True, __version__, signing_priv_key_pem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1712,13 +1714,13 @@ if args.undolike:
         signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
     print('Sending undo like of ' + args.undolike)
 
-    sendUndoLikeViaServer(base_dir, session,
-                          args.nickname, args.password,
-                          domain, port,
-                          http_prefix, args.undolike,
-                          cached_webfingers, person_cache,
-                          True, __version__,
-                          signing_priv_key_pem)
+    send_undo_like_via_server(base_dir, session,
+                              args.nickname, args.password,
+                              domain, port,
+                              http_prefix, args.undolike,
+                              cached_webfingers, person_cache,
+                              True, __version__,
+                              signing_priv_key_pem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1731,7 +1733,7 @@ if args.undoreact:
     if not args.emoji:
         print('Specify a reaction emoji with the --emoji option')
         sys.exit()
-    if not validEmojiContent(args.emoji):
+    if not valid_emoji_content(args.emoji):
         print('This is not a valid emoji')
         sys.exit()
 
@@ -1752,13 +1754,13 @@ if args.undoreact:
         signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
     print('Sending undo emoji reaction ' + args.emoji + ' to ' + args.react)
 
-    sendUndoReactionViaServer(base_dir, session,
-                              args.nickname, args.password,
-                              domain, port,
-                              http_prefix, args.undoreact, args.emoji,
-                              cached_webfingers, person_cache,
-                              True, __version__,
-                              signing_priv_key_pem)
+    send_undo_reaction_via_server(base_dir, session,
+                                  args.nickname, args.password,
+                                  domain, port,
+                                  http_prefix, args.undoreact, args.emoji,
+                                  cached_webfingers, person_cache,
+                                  True, __version__,
+                                  signing_priv_key_pem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1786,13 +1788,13 @@ if args.bookmark:
         signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
     print('Sending bookmark of ' + args.bookmark)
 
-    sendBookmarkViaServer(base_dir, session,
-                          args.nickname, args.password,
-                          domain, port,
-                          http_prefix, args.bookmark,
-                          cached_webfingers, person_cache,
-                          True, __version__,
-                          signing_priv_key_pem)
+    send_bookmark_via_server(base_dir, session,
+                             args.nickname, args.password,
+                             domain, port,
+                             http_prefix, args.bookmark,
+                             cached_webfingers, person_cache,
+                             True, __version__,
+                             signing_priv_key_pem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1820,12 +1822,12 @@ if args.unbookmark:
         signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
     print('Sending undo bookmark of ' + args.unbookmark)
 
-    sendUndoBookmarkViaServer(base_dir, session,
-                              args.nickname, args.password,
-                              domain, port,
-                              http_prefix, args.unbookmark,
-                              cached_webfingers, person_cache,
-                              True, __version__, signing_priv_key_pem)
+    send_undo_bookmark_via_server(base_dir, session,
+                                  args.nickname, args.password,
+                                  domain, port,
+                                  http_prefix, args.unbookmark,
+                                  cached_webfingers, person_cache,
+                                  True, __version__, signing_priv_key_pem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1853,12 +1855,12 @@ if args.delete:
         signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
     print('Sending delete request of ' + args.delete)
 
-    sendDeleteViaServer(base_dir, session,
-                        args.nickname, args.password,
-                        domain, port,
-                        http_prefix, args.delete,
-                        cached_webfingers, person_cache,
-                        True, __version__, signing_priv_key_pem)
+    send_delete_via_server(base_dir, session,
+                           args.nickname, args.password,
+                           domain, port,
+                           http_prefix, args.delete,
+                           cached_webfingers, person_cache,
+                           True, __version__, signing_priv_key_pem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1943,13 +1945,13 @@ if args.unfollow:
     if args.secure_mode:
         signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
 
-    sendUnfollowRequestViaServer(base_dir, session,
-                                 args.nickname, args.password,
-                                 domain, port,
-                                 followNickname, followDomain, followPort,
-                                 http_prefix,
-                                 cached_webfingers, person_cache,
-                                 debug, __version__, signing_priv_key_pem)
+    send_unfollow_request_via_server(base_dir, session,
+                                     args.nickname, args.password,
+                                     domain, port,
+                                     followNickname, followDomain, followPort,
+                                     http_prefix,
+                                     cached_webfingers, person_cache,
+                                     debug, __version__, signing_priv_key_pem)
     for t in range(20):
         time.sleep(1)
         # TODO some method to know if it worked
@@ -1979,12 +1981,12 @@ if args.followingList:
         signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
 
     followingJson = \
-        getFollowingViaServer(base_dir, session,
-                              args.nickname, args.password,
-                              domain, port,
-                              http_prefix, args.pageNumber,
-                              cached_webfingers, person_cache,
-                              debug, __version__, signing_priv_key_pem)
+        get_following_via_server(base_dir, session,
+                                 args.nickname, args.password,
+                                 domain, port,
+                                 http_prefix, args.pageNumber,
+                                 cached_webfingers, person_cache,
+                                 debug, __version__, signing_priv_key_pem)
     if followingJson:
         pprint(followingJson)
     sys.exit()
@@ -2012,13 +2014,13 @@ if args.followersList:
         signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
 
     followersJson = \
-        getFollowersViaServer(base_dir, session,
-                              args.nickname, args.password,
-                              domain, port,
-                              http_prefix, args.pageNumber,
-                              cached_webfingers, person_cache,
-                              debug, __version__,
-                              signing_priv_key_pem)
+        get_followers_via_server(base_dir, session,
+                                 args.nickname, args.password,
+                                 domain, port,
+                                 http_prefix, args.pageNumber,
+                                 cached_webfingers, person_cache,
+                                 debug, __version__,
+                                 signing_priv_key_pem)
     if followersJson:
         pprint(followersJson)
     sys.exit()
@@ -2046,12 +2048,13 @@ if args.followRequestsList:
         signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
 
     followRequestsJson = \
-        getFollowRequestsViaServer(base_dir, session,
-                                   args.nickname, args.password,
-                                   domain, port,
-                                   http_prefix, args.pageNumber,
-                                   cached_webfingers, person_cache,
-                                   debug, __version__, signing_priv_key_pem)
+        get_follow_requests_via_server(base_dir, session,
+                                       args.nickname, args.password,
+                                       domain, port,
+                                       http_prefix, args.pageNumber,
+                                       cached_webfingers, person_cache,
+                                       debug, __version__,
+                                       signing_priv_key_pem)
     if followRequestsJson:
         pprint(followRequestsJson)
     sys.exit()
@@ -2096,9 +2099,9 @@ if args.migrations:
     signing_priv_key_pem = None
     if args.secure_mode:
         signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
-    ctr = migrateAccounts(base_dir, session,
-                          http_prefix, cached_webfingers,
-                          True, signing_priv_key_pem)
+    ctr = migrate_accounts(base_dir, session,
+                           http_prefix, cached_webfingers,
+                           True, signing_priv_key_pem)
     if ctr == 0:
         print('No followed accounts have moved')
     else:
@@ -2115,8 +2118,8 @@ if args.actor:
             print('Obtained instance actor signing key')
         else:
             print('Did not obtain instance actor key for ' + domain)
-    getActorJson(domain, args.actor, args.http, args.gnunet,
-                 debug, False, signing_priv_key_pem, None)
+    get_actor_json(domain, args.actor, args.http, args.gnunet,
+                   debug, False, signing_priv_key_pem, None)
     sys.exit()
 
 if args.followers:
@@ -2198,10 +2201,10 @@ if args.followers:
     signing_priv_key_pem = None
     if args.secure_mode:
         signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
-    wfRequest = webfingerHandle(session, handle,
-                                http_prefix, cached_webfingers,
-                                hostDomain, __version__, debug, False,
-                                signing_priv_key_pem)
+    wfRequest = webfinger_handle(session, handle,
+                                 http_prefix, cached_webfingers,
+                                 hostDomain, __version__, debug, False,
+                                 signing_priv_key_pem)
     if not wfRequest:
         print('Unable to webfinger ' + handle)
         sys.exit()
@@ -2223,7 +2226,7 @@ if args.followers:
         'Accept': 'application/activity+json; profile="' + profileStr + '"'
     }
     if not personUrl:
-        personUrl = getUserUrl(wfRequest, 0, args.debug)
+        personUrl = get_user_url(wfRequest, 0, args.debug)
     if nickname == domain:
         personUrl = personUrl.replace('/users/', '/actor/')
         personUrl = personUrl.replace('/accounts/', '/actor/')
@@ -2247,9 +2250,9 @@ if args.followers:
     if args.secure_mode:
         signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
     followersList = \
-        downloadFollowCollection(signing_priv_key_pem,
-                                 'followers', session,
-                                 http_prefix, personUrl, 1, 3, args.debug)
+        download_follow_collection(signing_priv_key_pem,
+                                   'followers', session,
+                                   http_prefix, personUrl, 1, 3, args.debug)
     if followersList:
         for actor in followersList:
             print(actor)
@@ -2295,8 +2298,8 @@ if args.addaccount:
        domain.endswith('.i2p'):
         port = 80
         http_prefix = 'http'
-    createPerson(base_dir, nickname, domain, port, http_prefix,
-                 True, not args.noapproval, args.password.strip())
+    create_person(base_dir, nickname, domain, port, http_prefix,
+                  True, not args.noapproval, args.password.strip())
     if os.path.isdir(accountDir):
         print('Account created for ' + nickname + '@' + domain)
     else:
@@ -2331,8 +2334,8 @@ if args.addgroup:
     if os.path.isdir(accountDir):
         print('Group already exists')
         sys.exit()
-    createGroup(base_dir, nickname, domain, port, http_prefix,
-                True, args.password.strip())
+    create_group(base_dir, nickname, domain, port, http_prefix,
+                 True, args.password.strip())
     if os.path.isdir(accountDir):
         print('Group created for ' + nickname + '@' + domain)
     else:
@@ -2434,8 +2437,9 @@ if args.archive:
         print('Archiving with deletion of old posts...')
     else:
         print('Archiving to ' + args.archive + '...')
-    archiveMedia(base_dir, args.archive, args.archiveWeeks)
-    archivePosts(base_dir, http_prefix, args.archive, {}, args.archiveMaxPosts)
+    archive_media(base_dir, args.archive, args.archiveWeeks)
+    archive_posts(base_dir, http_prefix, args.archive, {},
+                  args.archiveMaxPosts)
     print('Archiving complete')
     sys.exit()
 
@@ -2451,9 +2455,9 @@ if args.avatar:
         print('Specify a nickname with --nickname [name]')
         sys.exit()
     city = 'London, England'
-    if setProfileImage(base_dir, http_prefix, args.nickname, domain,
-                       port, args.avatar, 'avatar', '128x128', city,
-                       args.content_license_url):
+    if set_profile_image(base_dir, http_prefix, args.nickname, domain,
+                         port, args.avatar, 'avatar', '128x128', city,
+                         args.content_license_url):
         print('Avatar added for ' + args.nickname)
     else:
         print('Avatar was not added for ' + args.nickname)
@@ -2467,9 +2471,9 @@ if args.backgroundImage:
         print('Specify a nickname with --nickname [name]')
         sys.exit()
     city = 'London, England'
-    if setProfileImage(base_dir, http_prefix, args.nickname, domain,
-                       port, args.backgroundImage, 'background',
-                       '256x256', city, args.content_license_url):
+    if set_profile_image(base_dir, http_prefix, args.nickname, domain,
+                         port, args.backgroundImage, 'background',
+                         '256x256', city, args.content_license_url):
         print('Background image added for ' + args.nickname)
     else:
         print('Background image was not added for ' + args.nickname)
@@ -2507,13 +2511,13 @@ if args.skill:
     print('Sending ' + args.skill + ' skill level ' +
           str(args.skillLevelPercent) + ' for ' + nickname)
 
-    sendSkillViaServer(base_dir, session,
-                       nickname, args.password,
-                       domain, port,
-                       http_prefix,
-                       args.skill, args.skillLevelPercent,
-                       cached_webfingers, person_cache,
-                       True, __version__, signing_priv_key_pem)
+    send_skill_via_server(base_dir, session,
+                          nickname, args.password,
+                          domain, port,
+                          http_prefix,
+                          args.skill, args.skillLevelPercent,
+                          cached_webfingers, person_cache,
+                          True, __version__, signing_priv_key_pem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -2542,12 +2546,12 @@ if args.availability:
     print('Sending availability status of ' + nickname +
           ' as ' + args.availability)
 
-    sendAvailabilityViaServer(base_dir, session, nickname, args.password,
-                              domain, port,
-                              http_prefix,
-                              args.availability,
-                              cached_webfingers, person_cache,
-                              True, __version__, signing_priv_key_pem)
+    send_availability_via_server(base_dir, session, nickname, args.password,
+                                 domain, port,
+                                 http_prefix,
+                                 args.availability,
+                                 cached_webfingers, person_cache,
+                                 True, __version__, signing_priv_key_pem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -2590,16 +2594,16 @@ if args.desktop:
     # only store inbox posts if we are not running as a daemon
     storeInboxPosts = not args.noKeyPress
 
-    runDesktopClient(base_dir, proxy_type, http_prefix,
-                     nickname, domain, port, args.password,
-                     args.screenreader, args.language,
-                     args.notificationSounds,
-                     args.notificationType,
-                     args.noKeyPress,
-                     storeInboxPosts,
-                     args.notifyShowNewPosts,
-                     args.language,
-                     args.debug, args.low_bandwidth)
+    run_desktop_client(base_dir, proxy_type, http_prefix,
+                       nickname, domain, port, args.password,
+                       args.screenreader, args.language,
+                       args.notificationSounds,
+                       args.notificationType,
+                       args.noKeyPress,
+                       storeInboxPosts,
+                       args.notifyShowNewPosts,
+                       args.language,
+                       args.debug, args.low_bandwidth)
     sys.exit()
 
 if federation_list:
@@ -2655,11 +2659,11 @@ if args.block:
         signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
     print('Sending block of ' + args.block)
 
-    sendBlockViaServer(base_dir, session, nickname, args.password,
-                       domain, port,
-                       http_prefix, args.block,
-                       cached_webfingers, person_cache,
-                       True, __version__, signing_priv_key_pem)
+    send_block_via_server(base_dir, session, nickname, args.password,
+                          domain, port,
+                          http_prefix, args.block,
+                          cached_webfingers, person_cache,
+                          True, __version__, signing_priv_key_pem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -2687,11 +2691,11 @@ if args.mute:
         signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
     print('Sending mute of ' + args.mute)
 
-    sendMuteViaServer(base_dir, session, nickname, args.password,
-                      domain, port,
-                      http_prefix, args.mute,
-                      cached_webfingers, person_cache,
-                      True, __version__, signing_priv_key_pem)
+    send_mute_via_server(base_dir, session, nickname, args.password,
+                         domain, port,
+                         http_prefix, args.mute,
+                         cached_webfingers, person_cache,
+                         True, __version__, signing_priv_key_pem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -2719,11 +2723,11 @@ if args.unmute:
         signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
     print('Sending undo mute of ' + args.unmute)
 
-    sendUndoMuteViaServer(base_dir, session, nickname, args.password,
-                          domain, port,
-                          http_prefix, args.unmute,
-                          cached_webfingers, person_cache,
-                          True, __version__, signing_priv_key_pem)
+    send_undo_mute_via_server(base_dir, session, nickname, args.password,
+                              domain, port,
+                              http_prefix, args.unmute,
+                              cached_webfingers, person_cache,
+                              True, __version__, signing_priv_key_pem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -2763,11 +2767,11 @@ if args.unblock:
         signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
     print('Sending undo block of ' + args.unblock)
 
-    sendUndoBlockViaServer(base_dir, session, nickname, args.password,
-                           domain, port,
-                           http_prefix, args.unblock,
-                           cached_webfingers, person_cache,
-                           True, __version__, signing_priv_key_pem)
+    send_undo_block_via_server(base_dir, session, nickname, args.password,
+                               domain, port,
+                               http_prefix, args.unblock,
+                               cached_webfingers, person_cache,
+                               True, __version__, signing_priv_key_pem)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -2777,7 +2781,7 @@ if args.filterStr:
     if not args.nickname:
         print('Please specify a nickname')
         sys.exit()
-    if addFilter(base_dir, args.nickname, domain, args.filterStr):
+    if add_filter(base_dir, args.nickname, domain, args.filterStr):
         print('Filter added to ' + args.nickname + ': ' + args.filterStr)
     sys.exit()
 
@@ -2785,7 +2789,7 @@ if args.unfilterStr:
     if not args.nickname:
         print('Please specify a nickname')
         sys.exit()
-    if removeFilter(base_dir, args.nickname, domain, args.unfilterStr):
+    if remove_filter(base_dir, args.nickname, domain, args.unfilterStr):
         print('Filter removed from ' + args.nickname + ': ' + args.unfilterStr)
     sys.exit()
 
@@ -2815,47 +2819,47 @@ if args.testdata:
     set_config_param(base_dir, 'registrationsRemaining',
                      str(maxRegistrations))
 
-    createPerson(base_dir, 'maxboardroom', domain, port, http_prefix,
-                 True, False, password)
-    createPerson(base_dir, 'ultrapancake', domain, port, http_prefix,
-                 True, False, password)
-    createPerson(base_dir, 'drokk', domain, port, http_prefix,
-                 True, False, password)
-    createPerson(base_dir, 'sausagedog', domain, port, http_prefix,
-                 True, False, password)
+    create_person(base_dir, 'maxboardroom', domain, port, http_prefix,
+                  True, False, password)
+    create_person(base_dir, 'ultrapancake', domain, port, http_prefix,
+                  True, False, password)
+    create_person(base_dir, 'drokk', domain, port, http_prefix,
+                  True, False, password)
+    create_person(base_dir, 'sausagedog', domain, port, http_prefix,
+                  True, False, password)
 
-    createPerson(base_dir, nickname, domain, port, http_prefix,
-                 True, False, 'likewhateveryouwantscoob')
-    setSkillLevel(base_dir, nickname, domain, 'testing', 60)
-    setSkillLevel(base_dir, nickname, domain, 'typing', 50)
+    create_person(base_dir, nickname, domain, port, http_prefix,
+                  True, False, 'likewhateveryouwantscoob')
+    set_skill_level(base_dir, nickname, domain, 'testing', 60)
+    set_skill_level(base_dir, nickname, domain, 'typing', 50)
     set_role(base_dir, nickname, domain, 'admin')
-    setAvailability(base_dir, nickname, domain, 'busy')
+    set_availability(base_dir, nickname, domain, 'busy')
 
-    addShare(base_dir,
-             http_prefix, nickname, domain, port,
-             "spanner",
-             "It's a spanner",
-             "img/shares1.png",
-             1, "tool",
-             "mechanical",
-             "City", "0", "GBP",
-             "2 months",
-             debug, city, args.language, {}, 'shares', args.low_bandwidth,
-             args.content_license_url)
-    addShare(base_dir,
-             http_prefix, nickname, domain, port,
-             "witch hat",
-             "Spooky",
-             "img/shares2.png",
-             1, "hat",
-             "clothing",
-             "City", "0", "GBP",
-             "3 months",
-             debug, city, args.language, {}, 'shares', args.low_bandwidth,
-             args.content_license_url)
+    add_share(base_dir,
+              http_prefix, nickname, domain, port,
+              "spanner",
+              "It's a spanner",
+              "img/shares1.png",
+              1, "tool",
+              "mechanical",
+              "City", "0", "GBP",
+              "2 months",
+              debug, city, args.language, {}, 'shares', args.low_bandwidth,
+              args.content_license_url)
+    add_share(base_dir,
+              http_prefix, nickname, domain, port,
+              "witch hat",
+              "Spooky",
+              "img/shares2.png",
+              1, "hat",
+              "clothing",
+              "City", "0", "GBP",
+              "3 months",
+              debug, city, args.language, {}, 'shares', args.low_bandwidth,
+              args.content_license_url)
 
-    deleteAllPosts(base_dir, nickname, domain, 'inbox')
-    deleteAllPosts(base_dir, nickname, domain, 'outbox')
+    delete_all_posts(base_dir, nickname, domain, 'inbox')
+    delete_all_posts(base_dir, nickname, domain, 'outbox')
 
     testFollowersOnly = False
     testSaveToFile = True
@@ -2982,7 +2986,7 @@ if args.testdata:
                        testIsArticle, args.language, conversationId,
                        low_bandwidth, args.content_license_url)
     domain_full = domain + ':' + str(port)
-    clearFollows(base_dir, nickname, domain)
+    clear_follows(base_dir, nickname, domain)
     follow_person(base_dir, nickname, domain, 'maxboardroom', domain_full,
                   federation_list, False, False)
     follow_person(base_dir, nickname, domain, 'ultrapancake', domain_full,
@@ -2991,10 +2995,10 @@ if args.testdata:
                   federation_list, False, False)
     follow_person(base_dir, nickname, domain, 'drokk', domain_full,
                   federation_list, False, False)
-    followerOfPerson(base_dir, nickname, domain, 'drokk', domain_full,
-                     federation_list, False, False)
-    followerOfPerson(base_dir, nickname, domain, 'maxboardroom', domain_full,
-                     federation_list, False, False)
+    add_follower_of_person(base_dir, nickname, domain, 'drokk', domain_full,
+                           federation_list, False, False)
+    add_follower_of_person(base_dir, nickname, domain, 'maxboardroom', domain_full,
+                           federation_list, False, False)
     set_config_param(base_dir, 'admin', nickname)
 
 # set a lower bound to the maximum mentions
@@ -3181,8 +3185,8 @@ if twitterDomain:
     if '.' in twitterDomain:
         args.twitter_replacement_domain = twitterDomain
 
-if setTheme(base_dir, theme_name, domain,
-            args.allow_local_network_access, args.language):
+if set_theme(base_dir, theme_name, domain,
+             args.allow_local_network_access, args.language):
     print('Theme set to ' + theme_name)
 
 # whether new registrations are open or closed
@@ -3211,52 +3215,52 @@ if args.defaultCurrency:
         print('Default currency set to ' + args.defaultCurrency)
 
 if __name__ == "__main__":
-    runDaemon(content_license_url,
-              lists_enabled,
-              args.default_reply_interval_hrs,
-              args.low_bandwidth, args.max_like_count,
-              shared_items_federated_domains,
-              user_agents_blocked,
-              args.log_login_failures,
-              args.city,
-              args.show_node_info_accounts,
-              args.show_node_info_version,
-              args.broch_mode,
-              args.verify_all_signatures,
-              args.send_threads_timeout_mins,
-              args.dormant_months,
-              args.max_newswire_posts,
-              args.allow_local_network_access,
-              args.max_feed_item_size_kb,
-              args.publish_button_at_top,
-              args.rss_icon_at_top,
-              args.icons_as_buttons,
-              args.full_width_tl_button_header,
-              args.show_publish_as_icon,
-              args.max_followers,
-              args.max_news_posts,
-              args.max_mirrored_articles,
-              args.max_newswire_feed_size_kb,
-              args.max_newswire_postsPerSource,
-              args.dateonly,
-              args.votingtime,
-              args.positivevoting,
-              args.minimumvotes,
-              args.newsinstance,
-              args.blogsinstance, args.mediainstance,
-              args.max_recent_posts,
-              not args.nosharedinbox,
-              registration, args.language, __version__,
-              instance_id, args.client, base_dir,
-              domain, onion_domain, i2p_domain,
-              args.yt_replace_domain,
-              args.twitter_replacement_domain,
-              port, proxy_port, http_prefix,
-              federation_list, args.max_mentions,
-              args.max_emoji, args.secure_mode,
-              proxy_type, args.max_replies,
-              args.domain_max_posts_per_day,
-              args.account_max_posts_per_day,
-              args.allowdeletion, debug, False,
-              args.instance_only_skills_search, [],
-              not args.noapproval)
+    run_daemon(content_license_url,
+               lists_enabled,
+               args.default_reply_interval_hrs,
+               args.low_bandwidth, args.max_like_count,
+               shared_items_federated_domains,
+               user_agents_blocked,
+               args.log_login_failures,
+               args.city,
+               args.show_node_info_accounts,
+               args.show_node_info_version,
+               args.broch_mode,
+               args.verify_all_signatures,
+               args.send_threads_timeout_mins,
+               args.dormant_months,
+               args.max_newswire_posts,
+               args.allow_local_network_access,
+               args.max_feed_item_size_kb,
+               args.publish_button_at_top,
+               args.rss_icon_at_top,
+               args.icons_as_buttons,
+               args.full_width_tl_button_header,
+               args.show_publish_as_icon,
+               args.max_followers,
+               args.max_news_posts,
+               args.max_mirrored_articles,
+               args.max_newswire_feed_size_kb,
+               args.max_newswire_postsPerSource,
+               args.dateonly,
+               args.votingtime,
+               args.positivevoting,
+               args.minimumvotes,
+               args.newsinstance,
+               args.blogsinstance, args.mediainstance,
+               args.max_recent_posts,
+               not args.nosharedinbox,
+               registration, args.language, __version__,
+               instance_id, args.client, base_dir,
+               domain, onion_domain, i2p_domain,
+               args.yt_replace_domain,
+               args.twitter_replacement_domain,
+               port, proxy_port, http_prefix,
+               federation_list, args.max_mentions,
+               args.max_emoji, args.secure_mode,
+               proxy_type, args.max_replies,
+               args.domain_max_posts_per_day,
+               args.account_max_posts_per_day,
+               args.allowdeletion, debug, False,
+               args.instance_only_skills_search, [],
+               not args.noapproval)

@@ -12,10 +12,10 @@ from utils import remove_domain_port
 from utils import acct_dir
 
 
-def _notifyOnPostArrival(base_dir: str, nickname: str, domain: str,
-                         followingNickname: str,
-                         followingDomain: str,
-                         add: bool) -> None:
+def _notify_on_post_arrival(base_dir: str, nickname: str, domain: str,
+                            followingNickname: str,
+                            followingDomain: str,
+                            add: bool) -> None:
     """Adds or removes a handle from the following.txt list into a list
     indicating whether to notify when a new post arrives from that account
     """
@@ -73,23 +73,23 @@ def _notifyOnPostArrival(base_dir: str, nickname: str, domain: str,
                 fp.write(followingHandles)
 
 
-def addNotifyOnPost(base_dir: str, nickname: str, domain: str,
-                    followingNickname: str,
-                    followingDomain: str) -> None:
-    _notifyOnPostArrival(base_dir, nickname, domain,
-                         followingNickname, followingDomain, True)
-
-
-def removeNotifyOnPost(base_dir: str, nickname: str, domain: str,
+def add_notify_on_post(base_dir: str, nickname: str, domain: str,
                        followingNickname: str,
                        followingDomain: str) -> None:
-    _notifyOnPostArrival(base_dir, nickname, domain,
-                         followingNickname, followingDomain, False)
+    _notify_on_post_arrival(base_dir, nickname, domain,
+                            followingNickname, followingDomain, True)
 
 
-def notifyWhenPersonPosts(base_dir: str, nickname: str, domain: str,
+def remove_notify_on_post(base_dir: str, nickname: str, domain: str,
                           followingNickname: str,
-                          followingDomain: str) -> bool:
+                          followingDomain: str) -> None:
+    _notify_on_post_arrival(base_dir, nickname, domain,
+                            followingNickname, followingDomain, False)
+
+
+def notify_when_person_posts(base_dir: str, nickname: str, domain: str,
+                             followingNickname: str,
+                             followingDomain: str) -> bool:
     """Returns true if receiving notifications when the given publishes a post
     """
     if followingNickname == nickname and followingDomain == domain:

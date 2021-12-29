@@ -11,11 +11,11 @@ import os
 from shutil import copyfile
 from session import create_session
 from auth import create_password
-from posts import isImageMedia
+from posts import is_image_media
 from posts import outbox_message_create_wrap
 from posts import save_post_to_box
-from posts import sendToFollowersThread
-from posts import sendToNamedAddressesThread
+from posts import send_to_followers_thread
+from posts import send_to_named_addresses_thread
 from utils import has_object_stringType
 from utils import get_base_content_from_post
 from utils import has_object_dict
@@ -31,37 +31,37 @@ from utils import acct_dir
 from utils import local_actor_url
 from utils import has_actor
 from blocking import is_blocked_domain
-from blocking import outboxBlock
-from blocking import outboxUndoBlock
-from blocking import outboxMute
-from blocking import outboxUndoMute
+from blocking import outbox_block
+from blocking import outbox_undo_block
+from blocking import outbox_mute
+from blocking import outbox_undo_mute
 from media import replace_you_tube
 from media import replace_twitter
-from media import getMediaPath
-from media import createMediaDirs
-from inbox import inboxUpdateIndex
-from announce import outboxAnnounce
-from announce import outboxUndoAnnounce
-from follow import outboxUndoFollow
+from media import get_media_path
+from media import create_media_dirs
+from inbox import inbox_update_index
+from announce import outbox_announce
+from announce import outbox_undo_announce
+from follow import outbox_undo_follow
 from follow import follower_approval_active
-from skills import outboxSkills
-from availability import outboxAvailability
-from like import outboxLike
-from like import outboxUndoLike
-from reaction import outboxReaction
-from reaction import outboxUndoReaction
-from bookmarks import outboxBookmark
-from bookmarks import outboxUndoBookmark
-from delete import outboxDelete
-from shares import outboxShareUpload
-from shares import outboxUndoShareUpload
-from webapp_post import individualPostAsHtml
+from skills import outbox_skills
+from availability import outbox_availability
+from like import outbox_like
+from like import outbox_undo_like
+from reaction import outbox_reaction
+from reaction import outbox_undo_reaction
+from bookmarks import outbox_bookmark
+from bookmarks import outbox_undo_bookmark
+from delete import outbox_delete
+from shares import outbox_share_upload
+from shares import outbox_undo_share_upload
+from webapp_post import individual_post_as_html
 
 
-def _outboxPersonReceiveUpdate(recent_posts_cache: {},
-                               base_dir: str, http_prefix: str,
-                               nickname: str, domain: str, port: int,
-                               message_json: {}, debug: bool) -> None:
+def _person_receive_update_outbox(recent_posts_cache: {},
+                                  base_dir: str, http_prefix: str,
+                                  nickname: str, domain: str, port: int,
+                                  message_json: {}, debug: bool) -> None:
     """ Receive an actor update from c2s
     For example, setting the PGP key from the desktop client
     """
@@ -177,30 +177,30 @@ def _outboxPersonReceiveUpdate(recent_posts_cache: {},
         print('DEBUG: actor update via c2s - ' + nickname + '@' + domain)
 
 
-def postMessageToOutbox(session, translate: {},
-                        message_json: {}, postToNickname: str,
-                        server, base_dir: str, http_prefix: str,
-                        domain: str, domain_full: str,
-                        onion_domain: str, i2p_domain: str, port: int,
-                        recent_posts_cache: {}, followers_threads: [],
-                        federation_list: [], send_threads: [],
-                        postLog: [], cached_webfingers: {},
-                        person_cache: {}, allow_deletion: bool,
-                        proxy_type: str, version: str, debug: bool,
-                        yt_replace_domain: str,
-                        twitter_replacement_domain: str,
-                        show_published_date_only: bool,
-                        allow_local_network_access: bool,
-                        city: str, system_language: str,
-                        shared_items_federated_domains: [],
-                        sharedItemFederationTokens: {},
-                        low_bandwidth: bool,
-                        signing_priv_key_pem: str,
-                        peertube_instances: str, theme: str,
-                        max_like_count: int,
-                        max_recent_posts: int, cw_lists: {},
-                        lists_enabled: str,
-                        content_license_url: str) -> bool:
+def post_message_to_outbox(session, translate: {},
+                           message_json: {}, postToNickname: str,
+                           server, base_dir: str, http_prefix: str,
+                           domain: str, domain_full: str,
+                           onion_domain: str, i2p_domain: str, port: int,
+                           recent_posts_cache: {}, followers_threads: [],
+                           federation_list: [], send_threads: [],
+                           postLog: [], cached_webfingers: {},
+                           person_cache: {}, allow_deletion: bool,
+                           proxy_type: str, version: str, debug: bool,
+                           yt_replace_domain: str,
+                           twitter_replacement_domain: str,
+                           show_published_date_only: bool,
+                           allow_local_network_access: bool,
+                           city: str, system_language: str,
+                           shared_items_federated_domains: [],
+                           sharedItemFederationTokens: {},
+                           low_bandwidth: bool,
+                           signing_priv_key_pem: str,
+                           peertube_instances: str, theme: str,
+                           max_like_count: int,
+                           max_recent_posts: int, cw_lists: {},
+                           lists_enabled: str,
+                           content_license_url: str) -> bool:
     """post is received by the outbox
     Client to server message post
     https://www.w3.org/TR/activitypub/#client-to-server-outbox-delivery
@@ -326,10 +326,10 @@ def postMessageToOutbox(session, translate: {},
                     del message_json['object']['attachment']
                 else:
                     # generate a path for the uploaded image
-                    mPath = getMediaPath()
+                    mPath = get_media_path()
                     mediaPath = mPath + '/' + \
                         create_password(16).lower() + '.' + fileExtension
-                    createMediaDirs(base_dir, mPath)
+                    create_media_dirs(base_dir, mPath)
                     mediaFilename = base_dir + '/' + mediaPath
                     # move the uploaded image to its new path
                     os.rename(uploadMediaFilename, mediaFilename)
@@ -390,9 +390,9 @@ def postMessageToOutbox(session, translate: {},
                     if not os.path.isdir(blogsDir):
                         os.mkdir(blogsDir)
                     copyfile(savedFilename, blogsDir + '/' + savedPostId)
-                    inboxUpdateIndex('tlblogs', base_dir,
-                                     'news@' + domain,
-                                     savedFilename, debug)
+                    inbox_update_index('tlblogs', base_dir,
+                                       'news@' + domain,
+                                       savedFilename, debug)
 
                 # clear the citations file if it exists
                 citationsFilename = \
@@ -402,7 +402,7 @@ def postMessageToOutbox(session, translate: {},
                     try:
                         os.remove(citationsFilename)
                     except OSError:
-                        print('EX: postMessageToOutbox unable to delete ' +
+                        print('EX: post_message_to_outbox unable to delete ' +
                               citationsFilename)
 
         # The following activity types get added to the index files
@@ -420,19 +420,20 @@ def postMessageToOutbox(session, translate: {},
 
                 # should this also go to the media timeline?
                 if boxNameIndex == 'inbox':
-                    if isImageMedia(session, base_dir, http_prefix,
-                                    postToNickname, domain,
-                                    message_json,
-                                    translate,
-                                    yt_replace_domain,
-                                    twitter_replacement_domain,
-                                    allow_local_network_access,
-                                    recent_posts_cache, debug, system_language,
-                                    domain_full, person_cache,
-                                    signing_priv_key_pem):
-                        inboxUpdateIndex('tlmedia', base_dir,
-                                         postToNickname + '@' + domain,
-                                         savedFilename, debug)
+                    if is_image_media(session, base_dir, http_prefix,
+                                      postToNickname, domain,
+                                      message_json,
+                                      translate,
+                                      yt_replace_domain,
+                                      twitter_replacement_domain,
+                                      allow_local_network_access,
+                                      recent_posts_cache, debug,
+                                      system_language,
+                                      domain_full, person_cache,
+                                      signing_priv_key_pem):
+                        inbox_update_index('tlmedia', base_dir,
+                                           postToNickname + '@' + domain,
+                                           savedFilename, debug)
 
                 if boxNameIndex == 'inbox' and outboxName == 'tlblogs':
                     continue
@@ -442,9 +443,9 @@ def postMessageToOutbox(session, translate: {},
                 if selfActor not in message_json['to']:
                     # show sent post within the inbox,
                     # as is the typical convention
-                    inboxUpdateIndex(boxNameIndex, base_dir,
-                                     postToNickname + '@' + domain,
-                                     savedFilename, debug)
+                    inbox_update_index(boxNameIndex, base_dir,
+                                       postToNickname + '@' + domain,
+                                       savedFilename, debug)
 
                     # regenerate the html
                     useCacheOnly = False
@@ -453,33 +454,33 @@ def postMessageToOutbox(session, translate: {},
                     manuallyApproveFollowers = \
                         follower_approval_active(base_dir,
                                                  postToNickname, domain)
-                    individualPostAsHtml(signing_priv_key_pem,
-                                         False, recent_posts_cache,
-                                         max_recent_posts,
-                                         translate, pageNumber,
-                                         base_dir, session,
-                                         cached_webfingers,
-                                         person_cache,
-                                         postToNickname, domain, port,
-                                         message_json, None, True,
-                                         allow_deletion,
-                                         http_prefix, __version__,
-                                         boxNameIndex,
-                                         yt_replace_domain,
-                                         twitter_replacement_domain,
-                                         show_published_date_only,
-                                         peertube_instances,
-                                         allow_local_network_access,
-                                         theme, system_language,
-                                         max_like_count,
-                                         boxNameIndex != 'dm',
-                                         showIndividualPostIcons,
-                                         manuallyApproveFollowers,
-                                         False, True, useCacheOnly,
-                                         cw_lists, lists_enabled)
+                    individual_post_as_html(signing_priv_key_pem,
+                                            False, recent_posts_cache,
+                                            max_recent_posts,
+                                            translate, pageNumber,
+                                            base_dir, session,
+                                            cached_webfingers,
+                                            person_cache,
+                                            postToNickname, domain, port,
+                                            message_json, None, True,
+                                            allow_deletion,
+                                            http_prefix, __version__,
+                                            boxNameIndex,
+                                            yt_replace_domain,
+                                            twitter_replacement_domain,
+                                            show_published_date_only,
+                                            peertube_instances,
+                                            allow_local_network_access,
+                                            theme, system_language,
+                                            max_like_count,
+                                            boxNameIndex != 'dm',
+                                            showIndividualPostIcons,
+                                            manuallyApproveFollowers,
+                                            False, True, useCacheOnly,
+                                            cw_lists, lists_enabled)
 
-    if outboxAnnounce(recent_posts_cache,
-                      base_dir, message_json, debug):
+    if outbox_announce(recent_posts_cache,
+                       base_dir, message_json, debug):
         if debug:
             print('DEBUG: Updated announcements (shares) collection ' +
                   'for the post associated with the Announce activity')
@@ -487,7 +488,7 @@ def postMessageToOutbox(session, translate: {},
         print('DEBUG: creating new session for c2s')
         server.session = create_session(proxy_type)
         if not server.session:
-            print('ERROR: Failed to create session for postMessageToOutbox')
+            print('ERROR: Failed to create session for post_message_to_outbox')
             return False
     if debug:
         print('DEBUG: sending c2s post to followers')
@@ -510,137 +511,137 @@ def postMessageToOutbox(session, translate: {},
         followers_threads.pop(0)
     # create a thread to send the post to followers
     followersThread = \
-        sendToFollowersThread(server.session,
-                              base_dir,
-                              postToNickname,
-                              domain, onion_domain, i2p_domain,
-                              port, http_prefix,
-                              federation_list,
-                              send_threads,
-                              postLog,
-                              cached_webfingers,
-                              person_cache,
-                              message_json, debug,
-                              version,
-                              shared_items_federated_domains,
-                              sharedItemFederationTokens,
-                              signing_priv_key_pem)
+        send_to_followers_thread(server.session,
+                                 base_dir,
+                                 postToNickname,
+                                 domain, onion_domain, i2p_domain,
+                                 port, http_prefix,
+                                 federation_list,
+                                 send_threads,
+                                 postLog,
+                                 cached_webfingers,
+                                 person_cache,
+                                 message_json, debug,
+                                 version,
+                                 shared_items_federated_domains,
+                                 sharedItemFederationTokens,
+                                 signing_priv_key_pem)
     followers_threads.append(followersThread)
 
     if debug:
         print('DEBUG: handle any unfollow requests')
-    outboxUndoFollow(base_dir, message_json, debug)
+    outbox_undo_follow(base_dir, message_json, debug)
 
     if debug:
         print('DEBUG: handle skills changes requests')
-    outboxSkills(base_dir, postToNickname, message_json, debug)
+    outbox_skills(base_dir, postToNickname, message_json, debug)
 
     if debug:
         print('DEBUG: handle availability changes requests')
-    outboxAvailability(base_dir, postToNickname, message_json, debug)
+    outbox_availability(base_dir, postToNickname, message_json, debug)
 
     if debug:
         print('DEBUG: handle any like requests')
-    outboxLike(recent_posts_cache,
-               base_dir, http_prefix,
-               postToNickname, domain, port,
-               message_json, debug)
+    outbox_like(recent_posts_cache,
+                base_dir, http_prefix,
+                postToNickname, domain, port,
+                message_json, debug)
     if debug:
         print('DEBUG: handle any undo like requests')
-    outboxUndoLike(recent_posts_cache,
-                   base_dir, http_prefix,
-                   postToNickname, domain, port,
-                   message_json, debug)
+    outbox_undo_like(recent_posts_cache,
+                     base_dir, http_prefix,
+                     postToNickname, domain, port,
+                     message_json, debug)
 
     if debug:
         print('DEBUG: handle any emoji reaction requests')
-    outboxReaction(recent_posts_cache,
-                   base_dir, http_prefix,
-                   postToNickname, domain, port,
-                   message_json, debug)
+    outbox_reaction(recent_posts_cache,
+                    base_dir, http_prefix,
+                    postToNickname, domain, port,
+                    message_json, debug)
     if debug:
         print('DEBUG: handle any undo emoji reaction requests')
-    outboxUndoReaction(recent_posts_cache,
-                       base_dir, http_prefix,
-                       postToNickname, domain, port,
-                       message_json, debug)
+    outbox_undo_reaction(recent_posts_cache,
+                         base_dir, http_prefix,
+                         postToNickname, domain, port,
+                         message_json, debug)
 
     if debug:
         print('DEBUG: handle any undo announce requests')
-    outboxUndoAnnounce(recent_posts_cache,
-                       base_dir, http_prefix,
-                       postToNickname, domain, port,
-                       message_json, debug)
+    outbox_undo_announce(recent_posts_cache,
+                         base_dir, http_prefix,
+                         postToNickname, domain, port,
+                         message_json, debug)
 
     if debug:
         print('DEBUG: handle any bookmark requests')
-    outboxBookmark(recent_posts_cache,
-                   base_dir, http_prefix,
-                   postToNickname, domain, port,
-                   message_json, debug)
+    outbox_bookmark(recent_posts_cache,
+                    base_dir, http_prefix,
+                    postToNickname, domain, port,
+                    message_json, debug)
     if debug:
         print('DEBUG: handle any undo bookmark requests')
-    outboxUndoBookmark(recent_posts_cache,
-                       base_dir, http_prefix,
-                       postToNickname, domain, port,
-                       message_json, debug)
+    outbox_undo_bookmark(recent_posts_cache,
+                         base_dir, http_prefix,
+                         postToNickname, domain, port,
+                         message_json, debug)
 
     if debug:
         print('DEBUG: handle delete requests')
-    outboxDelete(base_dir, http_prefix,
-                 postToNickname, domain,
-                 message_json, debug,
-                 allow_deletion,
-                 recent_posts_cache)
+    outbox_delete(base_dir, http_prefix,
+                  postToNickname, domain,
+                  message_json, debug,
+                  allow_deletion,
+                  recent_posts_cache)
 
     if debug:
         print('DEBUG: handle block requests')
-    outboxBlock(base_dir, http_prefix,
-                postToNickname, domain,
-                port,
-                message_json, debug)
+    outbox_block(base_dir, http_prefix,
+                 postToNickname, domain,
+                 port,
+                 message_json, debug)
 
     if debug:
         print('DEBUG: handle undo block requests')
-    outboxUndoBlock(base_dir, http_prefix,
-                    postToNickname, domain,
-                    port, message_json, debug)
+    outbox_undo_block(base_dir, http_prefix,
+                      postToNickname, domain,
+                      port, message_json, debug)
 
     if debug:
         print('DEBUG: handle mute requests')
-    outboxMute(base_dir, http_prefix,
-               postToNickname, domain,
-               port,
-               message_json, debug,
-               recent_posts_cache)
+    outbox_mute(base_dir, http_prefix,
+                postToNickname, domain,
+                port,
+                message_json, debug,
+                recent_posts_cache)
 
     if debug:
         print('DEBUG: handle undo mute requests')
-    outboxUndoMute(base_dir, http_prefix,
-                   postToNickname, domain,
-                   port,
-                   message_json, debug,
-                   recent_posts_cache)
+    outbox_undo_mute(base_dir, http_prefix,
+                     postToNickname, domain,
+                     port,
+                     message_json, debug,
+                     recent_posts_cache)
 
     if debug:
         print('DEBUG: handle share uploads')
-    outboxShareUpload(base_dir, http_prefix, postToNickname, domain,
-                      port, message_json, debug, city,
-                      system_language, translate, low_bandwidth,
-                      content_license_url)
+    outbox_share_upload(base_dir, http_prefix, postToNickname, domain,
+                        port, message_json, debug, city,
+                        system_language, translate, low_bandwidth,
+                        content_license_url)
 
     if debug:
         print('DEBUG: handle undo share uploads')
-    outboxUndoShareUpload(base_dir, http_prefix,
-                          postToNickname, domain,
-                          port, message_json, debug)
+    outbox_undo_share_upload(base_dir, http_prefix,
+                             postToNickname, domain,
+                             port, message_json, debug)
 
     if debug:
         print('DEBUG: handle actor updates from c2s')
-    _outboxPersonReceiveUpdate(recent_posts_cache,
-                               base_dir, http_prefix,
-                               postToNickname, domain, port,
-                               message_json, debug)
+    _person_receive_update_outbox(recent_posts_cache,
+                                  base_dir, http_prefix,
+                                  postToNickname, domain, port,
+                                  message_json, debug)
 
     if debug:
         print('DEBUG: sending c2s post to named addresses')
@@ -652,19 +653,19 @@ def postMessageToOutbox(session, translate: {},
             print('c2s sender: ' +
                   postToNickname + '@' + domain + ':' + str(port))
     namedAddressesThread = \
-        sendToNamedAddressesThread(server.session, base_dir,
-                                   postToNickname,
-                                   domain, onion_domain, i2p_domain, port,
-                                   http_prefix,
-                                   federation_list,
-                                   send_threads,
-                                   postLog,
-                                   cached_webfingers,
-                                   person_cache,
-                                   message_json, debug,
-                                   version,
-                                   shared_items_federated_domains,
-                                   sharedItemFederationTokens,
-                                   signing_priv_key_pem)
+        send_to_named_addresses_thread(server.session, base_dir,
+                                       postToNickname,
+                                       domain, onion_domain, i2p_domain, port,
+                                       http_prefix,
+                                       federation_list,
+                                       send_threads,
+                                       postLog,
+                                       cached_webfingers,
+                                       person_cache,
+                                       message_json, debug,
+                                       version,
+                                       shared_items_federated_domains,
+                                       sharedItemFederationTokens,
+                                       signing_priv_key_pem)
     followers_threads.append(namedAddressesThread)
     return True

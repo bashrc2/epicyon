@@ -9,14 +9,14 @@ __module_group__ = "Core"
 
 import os
 import time
-from webapp_utils import htmlHeaderWithExternalStyle
-from webapp_utils import htmlFooter
+from webapp_utils import html_header_with_external_style
+from webapp_utils import html_footer
 from utils import get_config_param
 from utils import save_json
 
 
-def fitnessPerformance(startTime, fitnessState: {},
-                       fitnessId: str, watchPoint: str, debug: bool) -> None:
+def fitness_performance(startTime, fitnessState: {},
+                        fitnessId: str, watchPoint: str, debug: bool) -> None:
     """Log a performance watchpoint
     """
     if 'performance' not in fitnessState:
@@ -45,7 +45,7 @@ def fitnessPerformance(startTime, fitnessState: {},
               watchPoint + '/' + str(total * 1000 / ctr))
 
 
-def sortedWatchPoints(fitness: {}, fitnessId: str) -> []:
+def sorted_watch_points(fitness: {}, fitnessId: str) -> []:
     """Returns a sorted list of watchpoints
     times are in mS
     """
@@ -64,11 +64,11 @@ def sortedWatchPoints(fitness: {}, fitnessId: str) -> []:
     return result
 
 
-def htmlWatchPointsGraph(base_dir: str, fitness: {}, fitnessId: str,
-                         maxEntries: int) -> str:
+def html_watch_points_graph(base_dir: str, fitness: {}, fitnessId: str,
+                            maxEntries: int) -> str:
     """Returns the html for a graph of watchpoints
     """
-    watchPointsList = sortedWatchPoints(fitness, fitnessId)
+    watchPointsList = sorted_watch_points(fitness, fitnessId)
 
     cssFilename = base_dir + '/epicyon-graph.css'
     if os.path.isfile(base_dir + '/graph.css'):
@@ -76,7 +76,7 @@ def htmlWatchPointsGraph(base_dir: str, fitness: {}, fitnessId: str,
 
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
-    htmlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
+    htmlStr = html_header_with_external_style(cssFilename, instanceTitle, None)
     htmlStr += \
         '<table class="graph">\n' + \
         '<caption>Watchpoints for ' + fitnessId + '</caption>\n' + \
@@ -113,11 +113,11 @@ def htmlWatchPointsGraph(base_dir: str, fitness: {}, fitnessId: str,
         if ctr >= maxEntries:
             break
 
-    htmlStr += '</tbody></table>\n' + htmlFooter()
+    htmlStr += '</tbody></table>\n' + html_footer()
     return htmlStr
 
 
-def fitnessThread(base_dir: str, fitness: {}):
+def fitness_thread(base_dir: str, fitness: {}):
     """Thread used to save fitness function scores
     """
     fitness_filename = base_dir + '/accounts/fitness.json'

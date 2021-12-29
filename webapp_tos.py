@@ -11,13 +11,13 @@ import os
 from shutil import copyfile
 from utils import get_config_param
 from utils import local_actor_url
-from webapp_utils import htmlHeaderWithExternalStyle
-from webapp_utils import htmlFooter
-from markdown import markdownToHtml
+from webapp_utils import html_header_with_external_style
+from webapp_utils import html_footer
+from markdown import markdown_to_html
 
 
-def htmlTermsOfService(css_cache: {}, base_dir: str,
-                       http_prefix: str, domain_full: str) -> str:
+def html_terms_of_service(css_cache: {}, base_dir: str,
+                          http_prefix: str, domain_full: str) -> str:
     """Show the terms of service screen
     """
     adminNickname = get_config_param(base_dir, 'admin')
@@ -33,7 +33,7 @@ def htmlTermsOfService(css_cache: {}, base_dir: str,
     TOSText = 'Terms of Service go here.'
     if os.path.isfile(base_dir + '/accounts/tos.md'):
         with open(base_dir + '/accounts/tos.md', 'r') as file:
-            TOSText = markdownToHtml(file.read())
+            TOSText = markdown_to_html(file.read())
 
     TOSForm = ''
     cssFilename = base_dir + '/epicyon-profile.css'
@@ -42,7 +42,7 @@ def htmlTermsOfService(css_cache: {}, base_dir: str,
 
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
-    TOSForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
+    TOSForm = html_header_with_external_style(cssFilename, instanceTitle, None)
     TOSForm += '<div class="container">' + TOSText + '</div>\n'
     if adminNickname:
         adminActor = local_actor_url(http_prefix, adminNickname, domain_full)
@@ -51,5 +51,5 @@ def htmlTermsOfService(css_cache: {}, base_dir: str,
             '<p class="administeredby">Administered by <a href="' + \
             adminActor + '">' + adminNickname + '</a></p>\n' + \
             '</center></div>\n'
-    TOSForm += htmlFooter()
+    TOSForm += html_footer()
     return TOSForm

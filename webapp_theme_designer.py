@@ -1,4 +1,4 @@
-__filename__ = "webapp_themeDesigner.py"
+__filename__ = "webapp_theme_designer.py"
 __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
 __version__ = "1.2.0"
@@ -10,9 +10,9 @@ __module_group__ = "Web Interface"
 import os
 from utils import load_json
 from utils import get_config_param
-from webapp_utils import htmlHeaderWithExternalStyle
-from webapp_utils import htmlFooter
-from webapp_utils import getBannerFile
+from webapp_utils import html_header_with_external_style
+from webapp_utils import html_footer
+from webapp_utils import get_banner_file
 
 
 color_to_hex = {
@@ -166,10 +166,10 @@ color_to_hex = {
 }
 
 
-def htmlThemeDesigner(css_cache: {}, base_dir: str,
-                      nickname: str, domain: str,
-                      translate: {}, defaultTimeline: str,
-                      theme_name: str, accessKeys: {}) -> str:
+def html_theme_designer(css_cache: {}, base_dir: str,
+                        nickname: str, domain: str,
+                        translate: {}, defaultTimeline: str,
+                        theme_name: str, accessKeys: {}) -> str:
     """Edit theme settings
     """
     themeFilename = base_dir + '/theme/' + theme_name + '/theme.json'
@@ -193,9 +193,9 @@ def htmlThemeDesigner(css_cache: {}, base_dir: str,
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
     themeForm = \
-        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
+        html_header_with_external_style(cssFilename, instanceTitle, None)
     bannerFile, bannerFilename = \
-        getBannerFile(base_dir, nickname, domain, theme_name)
+        get_banner_file(base_dir, nickname, domain, theme_name)
     themeForm += \
         '<a href="/users/' + nickname + '/' + defaultTimeline + '" ' + \
         'accesskey="' + accessKeys['menuTimeline'] + '">' + \
@@ -312,7 +312,7 @@ def htmlThemeDesigner(css_cache: {}, base_dir: str,
     exportImportStr += \
         '      <label class="labels">' + \
         translate['Import Theme'] + '</label>\n'
-    exportImportStr += '      <input type="file" id="importTheme" '
+    exportImportStr += '      <input type="file" id="import_theme" '
     exportImportStr += 'name="submitImportTheme" '
     exportImportStr += 'accept="' + themeFormats + '">\n'
     exportImportStr += \
@@ -327,5 +327,5 @@ def htmlThemeDesigner(css_cache: {}, base_dir: str,
     themeForm += switchStr + exportImportStr
     themeForm += '  </form>\n'
     themeForm += '</div>\n'
-    themeForm += htmlFooter()
+    themeForm += html_footer()
     return themeForm

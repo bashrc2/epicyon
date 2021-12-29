@@ -11,7 +11,7 @@ import os
 from utils import acct_dir
 
 
-def addFilter(base_dir: str, nickname: str, domain: str, words: str) -> bool:
+def add_filter(base_dir: str, nickname: str, domain: str, words: str) -> bool:
     """Adds a filter for particular words within the content of a incoming posts
     """
     filtersFilename = acct_dir(base_dir, nickname, domain) + '/filters.txt'
@@ -26,7 +26,7 @@ def addFilter(base_dir: str, nickname: str, domain: str, words: str) -> bool:
     return True
 
 
-def addGlobalFilter(base_dir: str, words: str) -> bool:
+def add_global_filter(base_dir: str, words: str) -> bool:
     """Adds a global filter for particular words within
     the content of a incoming posts
     """
@@ -46,8 +46,8 @@ def addGlobalFilter(base_dir: str, words: str) -> bool:
     return True
 
 
-def removeFilter(base_dir: str, nickname: str, domain: str,
-                 words: str) -> bool:
+def remove_filter(base_dir: str, nickname: str, domain: str,
+                  words: str) -> bool:
     """Removes a word filter
     """
     filtersFilename = acct_dir(base_dir, nickname, domain) + '/filters.txt'
@@ -71,7 +71,7 @@ def removeFilter(base_dir: str, nickname: str, domain: str,
     return False
 
 
-def removeGlobalFilter(base_dir: str, words: str) -> bool:
+def remove_global_filter(base_dir: str, words: str) -> bool:
     """Removes a global word filter
     """
     filtersFilename = base_dir + '/accounts/filters.txt'
@@ -96,7 +96,7 @@ def removeGlobalFilter(base_dir: str, words: str) -> bool:
     return False
 
 
-def _isTwitterPost(content: str) -> bool:
+def _is_twitter_post(content: str) -> bool:
     """Returns true if the given post content is a retweet or twitter crosspost
     """
     if '/twitter.' in content or '@twitter.' in content:
@@ -106,7 +106,7 @@ def _isTwitterPost(content: str) -> bool:
     return False
 
 
-def _isFilteredBase(filename: str, content: str) -> bool:
+def _is_filtered_base(filename: str, content: str) -> bool:
     """Uses the given file containing filtered words to check
     the given content
     """
@@ -131,23 +131,24 @@ def _isFilteredBase(filename: str, content: str) -> bool:
                             return False
                     return True
     except OSError as ex:
-        print('EX: _isFilteredBase ' + filename + ' ' + str(ex))
+        print('EX: _is_filtered_base ' + filename + ' ' + str(ex))
     return False
 
 
-def isFilteredGlobally(base_dir: str, content: str) -> bool:
+def is_filtered_globally(base_dir: str, content: str) -> bool:
     """Is the given content globally filtered?
     """
     globalFiltersFilename = base_dir + '/accounts/filters.txt'
-    if _isFilteredBase(globalFiltersFilename, content):
+    if _is_filtered_base(globalFiltersFilename, content):
         return True
     return False
 
 
-def isFilteredBio(base_dir: str, nickname: str, domain: str, bio: str) -> bool:
+def is_filtered_bio(base_dir: str,
+                    nickname: str, domain: str, bio: str) -> bool:
     """Should the given actor bio be filtered out?
     """
-    if isFilteredGlobally(base_dir, bio):
+    if is_filtered_globally(base_dir, bio):
         return True
 
     if not nickname or not domain:
@@ -155,17 +156,17 @@ def isFilteredBio(base_dir: str, nickname: str, domain: str, bio: str) -> bool:
 
     accountFiltersFilename = \
         acct_dir(base_dir, nickname, domain) + '/filters_bio.txt'
-    return _isFilteredBase(accountFiltersFilename, bio)
+    return _is_filtered_base(accountFiltersFilename, bio)
 
 
-def isFiltered(base_dir: str, nickname: str, domain: str,
-               content: str) -> bool:
+def is_filtered(base_dir: str, nickname: str, domain: str,
+                content: str) -> bool:
     """Should the given content be filtered out?
     This is a simple type of filter which just matches words, not a regex
     You can add individual words or use word1+word2 to indicate that two
     words must be present although not necessarily adjacent
     """
-    if isFilteredGlobally(base_dir, content):
+    if is_filtered_globally(base_dir, content):
         return True
 
     if not nickname or not domain:
@@ -174,9 +175,9 @@ def isFiltered(base_dir: str, nickname: str, domain: str,
     # optionally remove retweets
     removeTwitter = acct_dir(base_dir, nickname, domain) + '/.removeTwitter'
     if os.path.isfile(removeTwitter):
-        if _isTwitterPost(content):
+        if _is_twitter_post(content):
             return True
 
     accountFiltersFilename = \
         acct_dir(base_dir, nickname, domain) + '/filters.txt'
-    return _isFilteredBase(accountFiltersFilename, content)
+    return _is_filtered_base(accountFiltersFilename, content)

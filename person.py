@@ -19,21 +19,21 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives import serialization
 from shutil import copyfile
-from webfinger import createWebfingerEndpoint
-from webfinger import storeWebfingerEndpoint
-from posts import getUserUrl
-from posts import createDMTimeline
-from posts import createRepliesTimeline
-from posts import createMediaTimeline
-from posts import createNewsTimeline
-from posts import createBlogsTimeline
-from posts import createFeaturesTimeline
-from posts import createBookmarksTimeline
-from posts import createInbox
-from posts import createOutbox
-from posts import createModeration
+from webfinger import create_webfinger_endpoint
+from webfinger import store_webfinger_endpoint
+from posts import get_user_url
+from posts import create_dm_timeline
+from posts import create_replies_timeline
+from posts import create_media_timeline
+from posts import create_news_timeline
+from posts import create_blogs_timeline
+from posts import create_features_timeline
+from posts import create_bookmarks_timeline
+from posts import create_inbox
+from posts import create_outbox
+from posts import create_moderation
 from auth import store_basic_credentials
-from auth import removePassword
+from auth import remove_password
 from roles import set_role
 from roles import set_rolesFromList
 from roles import get_actor_roles_list
@@ -61,16 +61,16 @@ from utils import get_group_paths
 from utils import local_actor_url
 from utils import dangerous_svg
 from session import create_session
-from session import getJson
-from webfinger import webfingerHandle
+from session import get_json
+from webfinger import webfinger_handle
 from pprint import pprint
-from cache import getPersonFromCache
-from cache import storePersonInCache
-from filters import isFilteredBio
+from cache import get_person_from_cache
+from cache import store_person_in_cache
+from filters import is_filtered_bio
 from follow import is_following_actor
 
 
-def generateRSAKey() -> (str, str):
+def generate_rsa_key() -> (str, str):
     key = rsa.generate_private_key(
         public_exponent=65537,
         key_size=2048,
@@ -91,11 +91,11 @@ def generateRSAKey() -> (str, str):
     return privateKeyPem, publicKeyPem
 
 
-def setProfileImage(base_dir: str, http_prefix: str,
-                    nickname: str, domain: str,
-                    port: int, image_filename: str, imageType: str,
-                    resolution: str, city: str,
-                    content_license_url: str) -> bool:
+def set_profile_image(base_dir: str, http_prefix: str,
+                      nickname: str, domain: str,
+                      port: int, image_filename: str, imageType: str,
+                      resolution: str, city: str,
+                      content_license_url: str) -> bool:
     """Saves the given image file as an avatar or background
     image for the given person
     """
@@ -164,7 +164,7 @@ def setProfileImage(base_dir: str, http_prefix: str,
     return False
 
 
-def _accountExists(base_dir: str, nickname: str, domain: str) -> bool:
+def _account_exists(base_dir: str, nickname: str, domain: str) -> bool:
     """Returns true if the given account exists
     """
     domain = remove_domain_port(domain)
@@ -348,21 +348,21 @@ def get_default_person_context() -> str:
     }
 
 
-def _createPersonBase(base_dir: str, nickname: str, domain: str, port: int,
-                      http_prefix: str, saveToFile: bool,
-                      manual_follower_approval: bool,
-                      group_account: bool,
-                      password: str) -> (str, str, {}, {}):
+def _create_person_base(base_dir: str, nickname: str, domain: str, port: int,
+                        http_prefix: str, saveToFile: bool,
+                        manual_follower_approval: bool,
+                        group_account: bool,
+                        password: str) -> (str, str, {}, {}):
     """Returns the private key, public key, actor and webfinger endpoint
     """
-    privateKeyPem, publicKeyPem = generateRSAKey()
+    privateKeyPem, publicKeyPem = generate_rsa_key()
     webfingerEndpoint = \
-        createWebfingerEndpoint(nickname, domain, port,
-                                http_prefix, publicKeyPem,
-                                group_account)
+        create_webfinger_endpoint(nickname, domain, port,
+                                  http_prefix, publicKeyPem,
+                                  group_account)
     if saveToFile:
-        storeWebfingerEndpoint(nickname, domain, port,
-                               base_dir, webfingerEndpoint)
+        store_webfinger_endpoint(nickname, domain, port,
+                                 base_dir, webfingerEndpoint)
 
     handle = nickname + '@' + domain
     originalDomain = domain
@@ -544,7 +544,7 @@ def register_account(base_dir: str, http_prefix: str, domain: str, port: int,
                      manual_follower_approval: bool) -> bool:
     """Registers a new account from the web interface
     """
-    if _accountExists(base_dir, nickname, domain):
+    if _account_exists(base_dir, nickname, domain):
         return False
     if not valid_nickname(domain, nickname):
         print('REGISTER: Nickname ' + nickname + ' is invalid')
@@ -553,26 +553,26 @@ def register_account(base_dir: str, http_prefix: str, domain: str, port: int,
         print('REGISTER: Password should be at least 8 characters')
         return False
     (privateKeyPem, publicKeyPem,
-     newPerson, webfingerEndpoint) = createPerson(base_dir, nickname,
-                                                  domain, port,
-                                                  http_prefix, True,
-                                                  manual_follower_approval,
-                                                  password)
+     newPerson, webfingerEndpoint) = create_person(base_dir, nickname,
+                                                   domain, port,
+                                                   http_prefix, True,
+                                                   manual_follower_approval,
+                                                   password)
     if privateKeyPem:
         return True
     return False
 
 
-def createGroup(base_dir: str, nickname: str, domain: str, port: int,
-                http_prefix: str, saveToFile: bool,
-                password: str = None) -> (str, str, {}, {}):
+def create_group(base_dir: str, nickname: str, domain: str, port: int,
+                 http_prefix: str, saveToFile: bool,
+                 password: str = None) -> (str, str, {}, {}):
     """Returns a group
     """
     (privateKeyPem, publicKeyPem,
-     newPerson, webfingerEndpoint) = createPerson(base_dir, nickname,
-                                                  domain, port,
-                                                  http_prefix, saveToFile,
-                                                  False, password, True)
+     newPerson, webfingerEndpoint) = create_person(base_dir, nickname,
+                                                   domain, port,
+                                                   http_prefix, saveToFile,
+                                                   False, password, True)
 
     return privateKeyPem, publicKeyPem, newPerson, webfingerEndpoint
 
@@ -591,11 +591,11 @@ def save_person_qrcode(base_dir: str,
     url.png(qrcodeFilename, scale)
 
 
-def createPerson(base_dir: str, nickname: str, domain: str, port: int,
-                 http_prefix: str, saveToFile: bool,
-                 manual_follower_approval: bool,
-                 password: str,
-                 group_account: bool = False) -> (str, str, {}, {}):
+def create_person(base_dir: str, nickname: str, domain: str, port: int,
+                  http_prefix: str, saveToFile: bool,
+                  manual_follower_approval: bool,
+                  password: str,
+                  group_account: bool = False) -> (str, str, {}, {}):
     """Returns the private key, public key, actor and webfinger endpoint
     """
     if not valid_nickname(domain, nickname):
@@ -618,13 +618,13 @@ def createPerson(base_dir: str, nickname: str, domain: str, port: int,
     manual_follower = manual_follower_approval
 
     (privateKeyPem, publicKeyPem,
-     newPerson, webfingerEndpoint) = _createPersonBase(base_dir, nickname,
-                                                       domain, port,
-                                                       http_prefix,
-                                                       saveToFile,
-                                                       manual_follower,
-                                                       group_account,
-                                                       password)
+     newPerson, webfingerEndpoint) = _create_person_base(base_dir, nickname,
+                                                         domain, port,
+                                                         http_prefix,
+                                                         saveToFile,
+                                                         manual_follower,
+                                                         group_account,
+                                                         password)
     if not get_config_param(base_dir, 'admin'):
         if nickname != 'news':
             # print(nickname+' becomes the instance admin and a moderator')
@@ -711,16 +711,16 @@ def create_shared_inbox(base_dir: str, nickname: str, domain: str, port: int,
                         http_prefix: str) -> (str, str, {}, {}):
     """Generates the shared inbox
     """
-    return _createPersonBase(base_dir, nickname, domain, port, http_prefix,
-                             True, True, False, None)
+    return _create_person_base(base_dir, nickname, domain, port, http_prefix,
+                               True, True, False, None)
 
 
 def create_news_inbox(base_dir: str, domain: str, port: int,
                       http_prefix: str) -> (str, str, {}, {}):
     """Generates the news inbox
     """
-    return createPerson(base_dir, 'news', domain, port,
-                        http_prefix, True, True, None)
+    return create_person(base_dir, 'news', domain, port,
+                         http_prefix, True, True, None)
 
 
 def person_upgrade_actor(base_dir: str, personJson: {},
@@ -949,59 +949,59 @@ def person_box_json(recent_posts_cache: {},
     if not valid_nickname(domain, nickname):
         return None
     if boxname == 'inbox':
-        return createInbox(recent_posts_cache,
-                           session, base_dir, nickname, domain, port,
-                           http_prefix,
-                           noOfItems, headerOnly, pageNumber)
+        return create_inbox(recent_posts_cache,
+                            session, base_dir, nickname, domain, port,
+                            http_prefix,
+                            noOfItems, headerOnly, pageNumber)
     elif boxname == 'dm':
-        return createDMTimeline(recent_posts_cache,
-                                session, base_dir, nickname, domain, port,
-                                http_prefix,
-                                noOfItems, headerOnly, pageNumber)
+        return create_dm_timeline(recent_posts_cache,
+                                  session, base_dir, nickname, domain, port,
+                                  http_prefix,
+                                  noOfItems, headerOnly, pageNumber)
     elif boxname == 'tlbookmarks' or boxname == 'bookmarks':
-        return createBookmarksTimeline(session, base_dir, nickname, domain,
+        return create_bookmarks_timeline(session, base_dir, nickname, domain,
+                                         port, http_prefix,
+                                         noOfItems, headerOnly,
+                                         pageNumber)
+    elif boxname == 'tlreplies':
+        return create_replies_timeline(recent_posts_cache,
+                                       session, base_dir, nickname, domain,
                                        port, http_prefix,
                                        noOfItems, headerOnly,
                                        pageNumber)
-    elif boxname == 'tlreplies':
-        return createRepliesTimeline(recent_posts_cache,
-                                     session, base_dir, nickname, domain,
-                                     port, http_prefix,
-                                     noOfItems, headerOnly,
-                                     pageNumber)
     elif boxname == 'tlmedia':
-        return createMediaTimeline(session, base_dir, nickname, domain, port,
-                                   http_prefix, noOfItems, headerOnly,
-                                   pageNumber)
+        return create_media_timeline(session, base_dir, nickname, domain, port,
+                                     http_prefix, noOfItems, headerOnly,
+                                     pageNumber)
     elif boxname == 'tlnews':
-        return createNewsTimeline(session, base_dir, nickname, domain, port,
-                                  http_prefix, noOfItems, headerOnly,
-                                  newswire_votes_threshold, positive_voting,
-                                  voting_time_mins, pageNumber)
+        return create_news_timeline(session, base_dir, nickname, domain, port,
+                                    http_prefix, noOfItems, headerOnly,
+                                    newswire_votes_threshold, positive_voting,
+                                    voting_time_mins, pageNumber)
     elif boxname == 'tlfeatures':
-        return createFeaturesTimeline(session, base_dir,
-                                      nickname, domain, port,
-                                      http_prefix, noOfItems, headerOnly,
-                                      pageNumber)
+        return create_features_timeline(session, base_dir,
+                                        nickname, domain, port,
+                                        http_prefix, noOfItems, headerOnly,
+                                        pageNumber)
     elif boxname == 'tlblogs':
-        return createBlogsTimeline(session, base_dir, nickname, domain, port,
-                                   http_prefix, noOfItems, headerOnly,
-                                   pageNumber)
+        return create_blogs_timeline(session, base_dir, nickname, domain, port,
+                                     http_prefix, noOfItems, headerOnly,
+                                     pageNumber)
     elif boxname == 'outbox':
-        return createOutbox(session, base_dir, nickname, domain, port,
-                            http_prefix,
-                            noOfItems, headerOnly, authorized,
-                            pageNumber)
+        return create_outbox(session, base_dir, nickname, domain, port,
+                             http_prefix,
+                             noOfItems, headerOnly, authorized,
+                             pageNumber)
     elif boxname == 'moderation':
-        return createModeration(base_dir, nickname, domain, port,
-                                http_prefix,
-                                noOfItems, headerOnly,
-                                pageNumber)
+        return create_moderation(base_dir, nickname, domain, port,
+                                 http_prefix,
+                                 noOfItems, headerOnly,
+                                 pageNumber)
     return None
 
 
-def setDisplayNickname(base_dir: str, nickname: str, domain: str,
-                       displayName: str) -> bool:
+def set_display_nickname(base_dir: str, nickname: str, domain: str,
+                         displayName: str) -> bool:
     if len(displayName) > 32:
         return False
     handle = nickname + '@' + domain
@@ -1017,7 +1017,7 @@ def setDisplayNickname(base_dir: str, nickname: str, domain: str,
     return True
 
 
-def setBio(base_dir: str, nickname: str, domain: str, bio: str) -> bool:
+def set_bio(base_dir: str, nickname: str, domain: str, bio: str) -> bool:
     """Only used within tests
     """
     if len(bio) > 32:
@@ -1136,8 +1136,8 @@ def can_remove_post(base_dir: str, nickname: str,
     return True
 
 
-def _removeTagsForNickname(base_dir: str, nickname: str,
-                           domain: str, port: int) -> None:
+def _remove_tags_for_nickname(base_dir: str, nickname: str,
+                              domain: str, port: int) -> None:
     """Removes tags for a nickname
     """
     if not os.path.isdir(base_dir + '/tags'):
@@ -1153,7 +1153,7 @@ def _removeTagsForNickname(base_dir: str, nickname: str,
         try:
             tagFilename = os.path.join(directory, filename)
         except BaseException:
-            print('EX: _removeTagsForNickname unable to join ' +
+            print('EX: _remove_tags_for_nickname unable to join ' +
                   str(directory) + ' ' + str(filename))
             continue
         if not os.path.isfile(tagFilename):
@@ -1194,8 +1194,8 @@ def remove_account(base_dir: str, nickname: str,
 
     reenable_account(base_dir, nickname)
     handle = nickname + '@' + domain
-    removePassword(base_dir, nickname)
-    _removeTagsForNickname(base_dir, nickname, domain, port)
+    remove_password(base_dir, nickname)
+    _remove_tags_for_nickname(base_dir, nickname, domain, port)
     if os.path.isdir(base_dir + '/deactivated/' + handle):
         shutil.rmtree(base_dir + '/deactivated/' + handle,
                       ignore_errors=False, onerror=None)
@@ -1302,8 +1302,8 @@ def activate_account(base_dir: str, nickname: str, domain: str) -> None:
     refresh_newswire(base_dir)
 
 
-def isPersonSnoozed(base_dir: str, nickname: str, domain: str,
-                    snoozeActor: str) -> bool:
+def is_person_snoozed(base_dir: str, nickname: str, domain: str,
+                      snoozeActor: str) -> bool:
     """Returns true if the given actor is snoozed
     """
     snoozedFilename = acct_dir(base_dir, nickname, domain) + '/snoozed.txt'
@@ -1417,7 +1417,7 @@ def set_person_notes(base_dir: str, nickname: str, domain: str,
     return True
 
 
-def _detectUsersPath(url: str) -> str:
+def _detect_users_path(url: str) -> str:
     """Tries to detect the /users/ path
     """
     if '/' not in url:
@@ -1429,19 +1429,19 @@ def _detectUsersPath(url: str) -> str:
     return '/users/'
 
 
-def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
-                 debug: bool, quiet: bool,
-                 signing_priv_key_pem: str,
-                 existingSession) -> ({}, {}):
+def get_actor_json(hostDomain: str, handle: str, http: bool, gnunet: bool,
+                   debug: bool, quiet: bool,
+                   signing_priv_key_pem: str,
+                   existingSession) -> ({}, {}):
     """Returns the actor json
     """
     if debug:
-        print('getActorJson for ' + handle)
+        print('get_actor_json for ' + handle)
     originalActor = handle
     group_account = False
 
     # try to determine the users path
-    detectedUsersPath = _detectUsersPath(handle)
+    detectedUsersPath = _detect_users_path(handle)
     if '/@' in handle or \
        detectedUsersPath in handle or \
        handle.startswith('http') or \
@@ -1453,7 +1453,7 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
         originalHandle = handle
         if not has_users_path(originalHandle):
             if not quiet or debug:
-                print('getActorJson: Expected actor format: ' +
+                print('get_actor_json: Expected actor format: ' +
                       'https://domain/@nick or https://domain' +
                       detectedUsersPath + 'nick')
             return None, None
@@ -1483,7 +1483,7 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
         # format: @nick@domain
         if '@' not in handle:
             if not quiet:
-                print('getActorJson Syntax: --actor nickname@domain')
+                print('get_actor_json Syntax: --actor nickname@domain')
             return None, None
         if handle.startswith('@'):
             handle = handle[1:]
@@ -1493,7 +1493,7 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
             group_account = True
         if '@' not in handle:
             if not quiet:
-                print('getActorJsonSyntax: --actor nickname@domain')
+                print('get_actor_jsonSyntax: --actor nickname@domain')
             return None, None
         nickname = handle.split('@')[0]
         domain = handle.split('@')[1]
@@ -1536,17 +1536,17 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
         personUrl = originalActor
     else:
         handle = nickname + '@' + domain
-        wfRequest = webfingerHandle(session, handle,
-                                    http_prefix, cached_webfingers,
-                                    hostDomain, __version__, debug,
-                                    group_account, signing_priv_key_pem)
+        wfRequest = webfinger_handle(session, handle,
+                                     http_prefix, cached_webfingers,
+                                     hostDomain, __version__, debug,
+                                     group_account, signing_priv_key_pem)
         if not wfRequest:
             if not quiet:
-                print('getActorJson Unable to webfinger ' + handle)
+                print('get_actor_json Unable to webfinger ' + handle)
             return None, None
         if not isinstance(wfRequest, dict):
             if not quiet:
-                print('getActorJson Webfinger for ' + handle +
+                print('get_actor_json Webfinger for ' + handle +
                       ' did not return a dict. ' + str(wfRequest))
             return None, None
 
@@ -1555,7 +1555,7 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
 
         if wfRequest.get('errors'):
             if not quiet or debug:
-                print('getActorJson wfRequest error: ' +
+                print('get_actor_json wfRequest error: ' +
                       str(wfRequest['errors']))
             if has_users_path(handle):
                 personUrl = originalActor
@@ -1569,7 +1569,7 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
         "activity+json", "ld+json", "jrd+json"
     )
     if not personUrl and wfRequest:
-        personUrl = getUserUrl(wfRequest, 0, debug)
+        personUrl = get_user_url(wfRequest, 0, debug)
     if nickname == domain:
         paths = get_user_paths()
         for userPath in paths:
@@ -1596,8 +1596,8 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
             'Accept': headerMimeType + '; profile="' + profileStr + '"'
         }
         personJson = \
-            getJson(signing_priv_key_pem, session, personUrl, asHeader, None,
-                    debug, __version__, http_prefix, hostDomain, 20, quiet)
+            get_json(signing_priv_key_pem, session, personUrl, asHeader, None,
+                     debug, __version__, http_prefix, hostDomain, 20, quiet)
         if personJson:
             if not quiet:
                 pprint(personJson)
@@ -1605,12 +1605,13 @@ def getActorJson(hostDomain: str, handle: str, http: bool, gnunet: bool,
     return None, None
 
 
-def getPersonAvatarUrl(base_dir: str, personUrl: str, person_cache: {},
-                       allowDownloads: bool) -> str:
+def get_person_avatar_url(base_dir: str, personUrl: str, person_cache: {},
+                          allowDownloads: bool) -> str:
     """Returns the avatar url for the person
     """
     personJson = \
-        getPersonFromCache(base_dir, personUrl, person_cache, allowDownloads)
+        get_person_from_cache(base_dir, personUrl, person_cache,
+                              allowDownloads)
     if not personJson:
         return None
 
@@ -1656,12 +1657,12 @@ def add_actor_update_timestamp(actor_json: {}) -> None:
     actor_json['image']['updated'] = currDateStr
 
 
-def validSendingActor(session, base_dir: str,
-                      nickname: str, domain: str,
-                      person_cache: {},
-                      post_json_object: {},
-                      signing_priv_key_pem: str,
-                      debug: bool, unit_test: bool) -> bool:
+def valid_sending_actor(session, base_dir: str,
+                        nickname: str, domain: str,
+                        person_cache: {},
+                        post_json_object: {},
+                        signing_priv_key_pem: str,
+                        debug: bool, unit_test: bool) -> bool:
     """When a post arrives in the inbox this is used to check that
     the sending actor is valid
     """
@@ -1677,13 +1678,14 @@ def validSendingActor(session, base_dir: str,
         return True
 
     # get their actor
-    actor_json = getPersonFromCache(base_dir, sendingActor, person_cache, True)
+    actor_json = \
+        get_person_from_cache(base_dir, sendingActor, person_cache, True)
     downloadedActor = False
     if not actor_json:
         # download the actor
-        actor_json, _ = getActorJson(domain, sendingActor,
-                                     True, False, debug, True,
-                                     signing_priv_key_pem, session)
+        actor_json, _ = get_actor_json(domain, sendingActor,
+                                       True, False, debug, True,
+                                       signing_priv_key_pem, session)
         if actor_json:
             downloadedActor = True
     if not actor_json:
@@ -1728,7 +1730,7 @@ def validSendingActor(session, base_dir: str,
         if contains_invalid_chars(bioStr):
             print('REJECT: post actor bio contains invalid characters')
             return False
-        if isFilteredBio(base_dir, nickname, domain, bioStr):
+        if is_filtered_bio(base_dir, nickname, domain, bioStr):
             print('REJECT: post actor bio contains filtered text')
             return False
     else:
@@ -1767,6 +1769,6 @@ def validSendingActor(session, base_dir: str,
     if downloadedActor:
         # if the actor is valid and was downloaded then
         # store it in the cache, but don't write it to file
-        storePersonInCache(base_dir, sendingActor, actor_json, person_cache,
-                           False)
+        store_person_in_cache(base_dir, sendingActor, actor_json, person_cache,
+                              False)
     return True

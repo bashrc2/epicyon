@@ -55,20 +55,20 @@ def _create_accept_reject(base_dir: str, federation_list: [],
     return new_accept
 
 
-def createAccept(base_dir: str, federation_list: [],
-                 nickname: str, domain: str, port: int,
-                 toUrl: str, ccUrl: str, http_prefix: str,
-                 objectJson: {}) -> {}:
+def create_accept(base_dir: str, federation_list: [],
+                  nickname: str, domain: str, port: int,
+                  toUrl: str, ccUrl: str, http_prefix: str,
+                  objectJson: {}) -> {}:
     return _create_accept_reject(base_dir, federation_list,
                                  nickname, domain, port,
                                  toUrl, ccUrl, http_prefix,
                                  objectJson, 'Accept')
 
 
-def createReject(base_dir: str, federation_list: [],
-                 nickname: str, domain: str, port: int,
-                 toUrl: str, ccUrl: str, http_prefix: str,
-                 objectJson: {}) -> {}:
+def create_reject(base_dir: str, federation_list: [],
+                  nickname: str, domain: str, port: int,
+                  toUrl: str, ccUrl: str, http_prefix: str,
+                  objectJson: {}) -> {}:
     return _create_accept_reject(base_dir, federation_list,
                                  nickname, domain, port,
                                  toUrl, ccUrl,
@@ -183,13 +183,13 @@ def _accept_follow(base_dir: str, domain: str, message_json: {},
                   followed_nickname + '@' + followed_domain)
 
 
-def receiveAcceptReject(session, base_dir: str,
-                        http_prefix: str, domain: str, port: int,
-                        send_threads: [], postLog: [],
-                        cached_webfingers: {},
-                        person_cache: {}, message_json: {},
-                        federation_list: [],
-                        debug: bool) -> bool:
+def receive_accept_reject(session, base_dir: str,
+                          http_prefix: str, domain: str, port: int,
+                          send_threads: [], postLog: [],
+                          cached_webfingers: {},
+                          person_cache: {}, message_json: {},
+                          federation_list: [],
+                          debug: bool) -> bool:
     """Receives an Accept or Reject within the POST section of HTTPServer
     """
     if message_json['type'] != 'Accept' and message_json['type'] != 'Reject':

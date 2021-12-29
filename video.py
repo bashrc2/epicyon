@@ -11,13 +11,13 @@ from utils import get_full_domain
 from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
 from utils import remove_id_ending
-from blocking import isBlocked
-from filters import isFiltered
+from blocking import is_blocked
+from filters import is_filtered
 
 
-def convertVideoToNote(base_dir: str, nickname: str, domain: str,
-                       system_language: str,
-                       post_json_object: {}, blockedCache: {}) -> {}:
+def convert_video_to_note(base_dir: str, nickname: str, domain: str,
+                          system_language: str,
+                          post_json_object: {}, blockedCache: {}) -> {}:
     """Converts a PeerTube Video ActivityPub(ish) object into
     a Note, so that it can then be displayed in a timeline
     """
@@ -68,14 +68,14 @@ def convertVideoToNote(base_dir: str, nickname: str, domain: str,
     if not postDomain:
         return None
     postDomainFull = get_full_domain(postDomain, postDomainPort)
-    if isBlocked(base_dir, nickname, domain,
-                 postNickname, postDomainFull, blockedCache):
+    if is_blocked(base_dir, nickname, domain,
+                  postNickname, postDomainFull, blockedCache):
         return None
 
     # check that the content is valid
-    if isFiltered(base_dir, nickname, domain, post_json_object['name']):
+    if is_filtered(base_dir, nickname, domain, post_json_object['name']):
         return None
-    if isFiltered(base_dir, nickname, domain, post_json_object['content']):
+    if is_filtered(base_dir, nickname, domain, post_json_object['content']):
         return None
 
     # get the content
@@ -83,8 +83,8 @@ def convertVideoToNote(base_dir: str, nickname: str, domain: str,
     if post_json_object.get('license'):
         if isinstance(post_json_object['license'], dict):
             if post_json_object['license'].get('name'):
-                if isFiltered(base_dir, nickname, domain,
-                              post_json_object['license']['name']):
+                if is_filtered(base_dir, nickname, domain,
+                               post_json_object['license']['name']):
                     return None
                 content += '<p>' + post_json_object['license']['name'] + '</p>'
     content += post_json_object['content']

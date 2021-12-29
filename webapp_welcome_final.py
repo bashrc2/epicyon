@@ -11,15 +11,15 @@ import os
 from shutil import copyfile
 from utils import remove_html
 from utils import get_config_param
-from webapp_utils import htmlHeaderWithExternalStyle
-from webapp_utils import htmlFooter
-from markdown import markdownToHtml
+from webapp_utils import html_header_with_external_style
+from webapp_utils import html_footer
+from markdown import markdown_to_html
 
 
-def htmlWelcomeFinal(base_dir: str, nickname: str, domain: str,
-                     http_prefix: str, domain_full: str,
-                     language: str, translate: {},
-                     theme_name: str) -> str:
+def html_welcome_final(base_dir: str, nickname: str, domain: str,
+                       http_prefix: str, domain_full: str,
+                       language: str, translate: {},
+                       theme_name: str) -> str:
     """Returns the final welcome screen after first login
     """
     # set a custom background for the welcome screen
@@ -54,14 +54,15 @@ def htmlWelcomeFinal(base_dir: str, nickname: str, domain: str,
         with open(finalFilename, 'r') as finalFile:
             finalText = finalFile.read()
             finalText = finalText.replace('INSTANCE', instanceTitle)
-            finalText = markdownToHtml(remove_html(finalText))
+            finalText = markdown_to_html(remove_html(finalText))
 
     finalForm = ''
     cssFilename = base_dir + '/epicyon-welcome.css'
     if os.path.isfile(base_dir + '/welcome.css'):
         cssFilename = base_dir + '/welcome.css'
 
-    finalForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
+    finalForm = \
+        html_header_with_external_style(cssFilename, instanceTitle, None)
 
     finalForm += \
         '<div class="container">' + finalText + '</div>\n' + \
@@ -76,5 +77,5 @@ def htmlWelcomeFinal(base_dir: str, nickname: str, domain: str,
         '</div>\n'
 
     finalForm += '</form>\n'
-    finalForm += htmlFooter()
+    finalForm += html_footer()
     return finalForm

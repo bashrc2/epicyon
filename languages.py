@@ -15,10 +15,10 @@ from utils import remove_html
 from utils import has_object_dict
 from utils import get_config_param
 from utils import local_actor_url
-from cache import getPersonFromCache
+from cache import get_person_from_cache
 
 
-def getActorLanguages(actor_json: {}) -> str:
+def get_actor_languages(actor_json: {}) -> str:
     """Returns a string containing languages used by the given actor
     """
     lang_list = get_actor_languages_list(actor_json)
@@ -33,8 +33,8 @@ def getActorLanguages(actor_json: {}) -> str:
     return languagesStr
 
 
-def setActorLanguages(base_dir: str, actor_json: {},
-                      languagesStr: str) -> None:
+def set_actor_languages(base_dir: str, actor_json: {},
+                        languagesStr: str) -> None:
     """Sets the languages used by the given actor
     """
     separator = ','
@@ -90,10 +90,10 @@ def setActorLanguages(base_dir: str, actor_json: {},
     actor_json['attachment'].append(newLanguages)
 
 
-def understoodPostLanguage(base_dir: str, nickname: str, domain: str,
-                           message_json: {}, system_language: str,
-                           http_prefix: str, domain_full: str,
-                           person_cache: {}) -> bool:
+def understood_post_language(base_dir: str, nickname: str, domain: str,
+                             message_json: {}, system_language: str,
+                             http_prefix: str, domain_full: str,
+                             person_cache: {}) -> bool:
     """Returns true if the post is written in a language
     understood by this account
     """
@@ -107,7 +107,8 @@ def understoodPostLanguage(base_dir: str, nickname: str, domain: str,
     if msgObject['contentMap'].get(system_language):
         return True
     personUrl = local_actor_url(http_prefix, nickname, domain_full)
-    actor_json = getPersonFromCache(base_dir, personUrl, person_cache, False)
+    actor_json = \
+        get_person_from_cache(base_dir, personUrl, person_cache, False)
     if not actor_json:
         print('WARN: unable to load actor to check languages ' + personUrl)
         return False
@@ -123,14 +124,14 @@ def understoodPostLanguage(base_dir: str, nickname: str, domain: str,
         libretranslateApiKey = \
             get_config_param(base_dir, "libretranslateApiKey")
         lang_list = \
-            libretranslateLanguages(libretranslateUrl, libretranslateApiKey)
+            libretranslate_languages(libretranslateUrl, libretranslateApiKey)
         for lang in lang_list:
             if msgObject['contentMap'].get(lang):
                 return True
     return False
 
 
-def libretranslateLanguages(url: str, apiKey: str = None) -> []:
+def libretranslate_languages(url: str, apiKey: str = None) -> []:
     """Returns a list of supported languages
     """
     if not url:
@@ -174,7 +175,7 @@ def libretranslateLanguages(url: str, apiKey: str = None) -> []:
     return lang_list
 
 
-def getLinksFromContent(content: str) -> {}:
+def get_links_from_content(content: str) -> {}:
     """Returns a list of links within the given content
     """
     if '<a href' not in content:
@@ -199,7 +200,7 @@ def getLinksFromContent(content: str) -> {}:
     return links
 
 
-def addLinksToContent(content: str, links: {}) -> str:
+def add_links_to_content(content: str, links: {}) -> str:
     """Adds links back into plain text
     """
     for linkText, url in links.items():
@@ -237,7 +238,7 @@ def libretranslate(url: str, text: str,
     originalText = text
 
     # get any links from the text
-    links = getLinksFromContent(text)
+    links = get_links_from_content(text)
 
     # LibreTranslate doesn't like markup
     text = remove_html(text)
@@ -271,12 +272,12 @@ def libretranslate(url: str, text: str,
 
     # append links form the original text
     if links:
-        translatedText = addLinksToContent(translatedText, links)
+        translatedText = add_links_to_content(translatedText, links)
     return translatedText
 
 
-def autoTranslatePost(base_dir: str, post_json_object: {},
-                      system_language: str, translate: {}) -> str:
+def auto_translate_post(base_dir: str, post_json_object: {},
+                        system_language: str, translate: {}) -> str:
     """Tries to automatically translate the given post
     """
     if not has_object_dict(post_json_object):
@@ -293,7 +294,7 @@ def autoTranslatePost(base_dir: str, post_json_object: {},
         return ''
     libretranslateApiKey = get_config_param(base_dir, "libretranslateApiKey")
     lang_list = \
-        libretranslateLanguages(libretranslateUrl, libretranslateApiKey)
+        libretranslate_languages(libretranslateUrl, libretranslateApiKey)
     for lang in lang_list:
         if msgObject['contentMap'].get(lang):
             content = msgObject['contentMap'][lang]

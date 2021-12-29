@@ -26,14 +26,14 @@ from utils import local_actor_url
 from utils import replace_users_with_at
 from utils import has_actor
 from utils import has_object_stringType
-from posts import sendSignedJson
-from posts import getPersonBox
-from session import postJson
-from webfinger import webfingerHandle
+from posts import send_signed_json
+from posts import get_person_box
+from session import post_json
+from webfinger import webfinger_handle
 from auth import create_basic_auth_header
 
 
-def isSelfAnnounce(post_json_object: {}) -> bool:
+def is_self_announce(post_json_object: {}) -> bool:
     """Is the given post a self announce?
     """
     if not post_json_object.get('actor'):
@@ -51,8 +51,8 @@ def isSelfAnnounce(post_json_object: {}) -> bool:
     return post_json_object['actor'] in post_json_object['object']
 
 
-def outboxAnnounce(recent_posts_cache: {},
-                   base_dir: str, message_json: {}, debug: bool) -> bool:
+def outbox_announce(recent_posts_cache: {},
+                    base_dir: str, message_json: {}, debug: bool) -> bool:
     """ Adds or removes announce entries from the shares collection
     within a given post
     """
@@ -67,7 +67,7 @@ def outboxAnnounce(recent_posts_cache: {},
     if message_json['type'] == 'Announce':
         if not isinstance(message_json['object'], str):
             return False
-        if isSelfAnnounce(message_json):
+        if is_self_announce(message_json):
             return False
         nickname = get_nickname_from_actor(message_json['actor'])
         if not nickname:
@@ -104,8 +104,8 @@ def outboxAnnounce(recent_posts_cache: {},
     return False
 
 
-def announcedByPerson(isAnnounced: bool, postActor: str,
-                      nickname: str, domain_full: str) -> bool:
+def announced_by_person(isAnnounced: bool, postActor: str,
+                        nickname: str, domain_full: str) -> bool:
     """Returns True if the given post is announced by the given person
     """
     if not postActor:
@@ -116,15 +116,15 @@ def announcedByPerson(isAnnounced: bool, postActor: str,
     return False
 
 
-def createAnnounce(session, base_dir: str, federation_list: [],
-                   nickname: str, domain: str, port: int,
-                   toUrl: str, ccUrl: str, http_prefix: str,
-                   objectUrl: str, saveToFile: bool,
-                   client_to_server: bool,
-                   send_threads: [], postLog: [],
-                   person_cache: {}, cached_webfingers: {},
-                   debug: bool, project_version: str,
-                   signing_priv_key_pem: str) -> {}:
+def create_announce(session, base_dir: str, federation_list: [],
+                    nickname: str, domain: str, port: int,
+                    toUrl: str, ccUrl: str, http_prefix: str,
+                    objectUrl: str, saveToFile: bool,
+                    client_to_server: bool,
+                    send_threads: [], postLog: [],
+                    person_cache: {}, cached_webfingers: {},
+                    debug: bool, project_version: str,
+                    signing_priv_key_pem: str) -> {}:
     """Creates an announce message
     Typically toUrl will be https://www.w3.org/ns/activitystreams#Public
     and ccUrl might be a specific person favorited or repeated and the
@@ -176,51 +176,52 @@ def createAnnounce(session, base_dir: str, federation_list: [],
                 group_account = True
 
     if announceNickname and announceDomain:
-        sendSignedJson(newAnnounce, session, base_dir,
-                       nickname, domain, port,
-                       announceNickname, announceDomain, announcePort, None,
-                       http_prefix, True, client_to_server, federation_list,
-                       send_threads, postLog, cached_webfingers, person_cache,
-                       debug, project_version, None, group_account,
-                       signing_priv_key_pem, 639633)
+        send_signed_json(newAnnounce, session, base_dir,
+                         nickname, domain, port,
+                         announceNickname, announceDomain, announcePort, None,
+                         http_prefix, True, client_to_server, federation_list,
+                         send_threads, postLog, cached_webfingers,
+                         person_cache,
+                         debug, project_version, None, group_account,
+                         signing_priv_key_pem, 639633)
 
     return newAnnounce
 
 
-def announcePublic(session, base_dir: str, federation_list: [],
-                   nickname: str, domain: str, port: int, http_prefix: str,
-                   objectUrl: str, client_to_server: bool,
-                   send_threads: [], postLog: [],
-                   person_cache: {}, cached_webfingers: {},
-                   debug: bool, project_version: str,
-                   signing_priv_key_pem: str) -> {}:
+def announce_public(session, base_dir: str, federation_list: [],
+                    nickname: str, domain: str, port: int, http_prefix: str,
+                    objectUrl: str, client_to_server: bool,
+                    send_threads: [], postLog: [],
+                    person_cache: {}, cached_webfingers: {},
+                    debug: bool, project_version: str,
+                    signing_priv_key_pem: str) -> {}:
     """Makes a public announcement
     """
     fromDomain = get_full_domain(domain, port)
 
     toUrl = 'https://www.w3.org/ns/activitystreams#Public'
     ccUrl = local_actor_url(http_prefix, nickname, fromDomain) + '/followers'
-    return createAnnounce(session, base_dir, federation_list,
-                          nickname, domain, port,
-                          toUrl, ccUrl, http_prefix,
-                          objectUrl, True, client_to_server,
-                          send_threads, postLog,
-                          person_cache, cached_webfingers,
-                          debug, project_version,
-                          signing_priv_key_pem)
+    return create_announce(session, base_dir, federation_list,
+                           nickname, domain, port,
+                           toUrl, ccUrl, http_prefix,
+                           objectUrl, True, client_to_server,
+                           send_threads, postLog,
+                           person_cache, cached_webfingers,
+                           debug, project_version,
+                           signing_priv_key_pem)
 
 
-def sendAnnounceViaServer(base_dir: str, session,
-                          fromNickname: str, password: str,
-                          fromDomain: str, fromPort: int,
-                          http_prefix: str, repeatObjectUrl: str,
-                          cached_webfingers: {}, person_cache: {},
-                          debug: bool, project_version: str,
-                          signing_priv_key_pem: str) -> {}:
+def send_announce_via_server(base_dir: str, session,
+                             fromNickname: str, password: str,
+                             fromDomain: str, fromPort: int,
+                             http_prefix: str, repeatObjectUrl: str,
+                             cached_webfingers: {}, person_cache: {},
+                             debug: bool, project_version: str,
+                             signing_priv_key_pem: str) -> {}:
     """Creates an announce message via c2s
     """
     if not session:
-        print('WARN: No session for sendAnnounceViaServer')
+        print('WARN: No session for send_announce_via_server')
         return 6
 
     fromDomainFull = get_full_domain(fromDomain, fromPort)
@@ -246,10 +247,10 @@ def sendAnnounceViaServer(base_dir: str, session,
     handle = http_prefix + '://' + fromDomainFull + '/@' + fromNickname
 
     # lookup the inbox for the To handle
-    wfRequest = webfingerHandle(session, handle, http_prefix,
-                                cached_webfingers,
-                                fromDomain, project_version, debug, False,
-                                signing_priv_key_pem)
+    wfRequest = webfinger_handle(session, handle, http_prefix,
+                                 cached_webfingers,
+                                 fromDomain, project_version, debug, False,
+                                 signing_priv_key_pem)
     if not wfRequest:
         if debug:
             print('DEBUG: announce webfinger failed for ' + handle)
@@ -265,13 +266,13 @@ def sendAnnounceViaServer(base_dir: str, session,
     originDomain = fromDomain
     (inboxUrl, pubKeyId, pubKey, fromPersonId,
      sharedInbox, avatarUrl,
-     displayName, _) = getPersonBox(signing_priv_key_pem,
-                                    originDomain,
-                                    base_dir, session, wfRequest,
-                                    person_cache,
-                                    project_version, http_prefix,
-                                    fromNickname, fromDomain,
-                                    postToBox, 73528)
+     displayName, _) = get_person_box(signing_priv_key_pem,
+                                      originDomain,
+                                      base_dir, session, wfRequest,
+                                      person_cache,
+                                      project_version, http_prefix,
+                                      fromNickname, fromDomain,
+                                      postToBox, 73528)
 
     if not inboxUrl:
         if debug:
@@ -290,9 +291,9 @@ def sendAnnounceViaServer(base_dir: str, session,
         'Content-type': 'application/json',
         'Authorization': authHeader
     }
-    postResult = postJson(http_prefix, fromDomainFull,
-                          session, newAnnounceJson, [], inboxUrl,
-                          headers, 3, True)
+    postResult = post_json(http_prefix, fromDomainFull,
+                           session, newAnnounceJson, [], inboxUrl,
+                           headers, 3, True)
     if not postResult:
         print('WARN: announce not posted')
 
@@ -302,18 +303,18 @@ def sendAnnounceViaServer(base_dir: str, session,
     return newAnnounceJson
 
 
-def sendUndoAnnounceViaServer(base_dir: str, session,
-                              undoPostJsonObject: {},
-                              nickname: str, password: str,
-                              domain: str, port: int,
-                              http_prefix: str, repeatObjectUrl: str,
-                              cached_webfingers: {}, person_cache: {},
-                              debug: bool, project_version: str,
-                              signing_priv_key_pem: str) -> {}:
+def send_undo_announce_via_server(base_dir: str, session,
+                                  undoPostJsonObject: {},
+                                  nickname: str, password: str,
+                                  domain: str, port: int,
+                                  http_prefix: str, repeatObjectUrl: str,
+                                  cached_webfingers: {}, person_cache: {},
+                                  debug: bool, project_version: str,
+                                  signing_priv_key_pem: str) -> {}:
     """Undo an announce message via c2s
     """
     if not session:
-        print('WARN: No session for sendUndoAnnounceViaServer')
+        print('WARN: No session for send_undo_announce_via_server')
         return 6
 
     domain_full = get_full_domain(domain, port)
@@ -331,10 +332,10 @@ def sendUndoAnnounceViaServer(base_dir: str, session,
     }
 
     # lookup the inbox for the To handle
-    wfRequest = webfingerHandle(session, handle, http_prefix,
-                                cached_webfingers,
-                                domain, project_version, debug, False,
-                                signing_priv_key_pem)
+    wfRequest = webfinger_handle(session, handle, http_prefix,
+                                 cached_webfingers,
+                                 domain, project_version, debug, False,
+                                 signing_priv_key_pem)
     if not wfRequest:
         if debug:
             print('DEBUG: undo announce webfinger failed for ' + handle)
@@ -350,13 +351,13 @@ def sendUndoAnnounceViaServer(base_dir: str, session,
     originDomain = domain
     (inboxUrl, pubKeyId, pubKey, fromPersonId,
      sharedInbox, avatarUrl,
-     displayName, _) = getPersonBox(signing_priv_key_pem,
-                                    originDomain,
-                                    base_dir, session, wfRequest,
-                                    person_cache,
-                                    project_version, http_prefix,
-                                    nickname, domain,
-                                    postToBox, 73528)
+     displayName, _) = get_person_box(signing_priv_key_pem,
+                                      originDomain,
+                                      base_dir, session, wfRequest,
+                                      person_cache,
+                                      project_version, http_prefix,
+                                      nickname, domain,
+                                      postToBox, 73528)
 
     if not inboxUrl:
         if debug:
@@ -375,9 +376,9 @@ def sendUndoAnnounceViaServer(base_dir: str, session,
         'Content-type': 'application/json',
         'Authorization': authHeader
     }
-    postResult = postJson(http_prefix, domain_full,
-                          session, unAnnounceJson, [], inboxUrl,
-                          headers, 3, True)
+    postResult = post_json(http_prefix, domain_full,
+                           session, unAnnounceJson, [], inboxUrl,
+                           headers, 3, True)
     if not postResult:
         print('WARN: undo announce not posted')
 
@@ -387,10 +388,10 @@ def sendUndoAnnounceViaServer(base_dir: str, session,
     return unAnnounceJson
 
 
-def outboxUndoAnnounce(recent_posts_cache: {},
-                       base_dir: str, http_prefix: str,
-                       nickname: str, domain: str, port: int,
-                       message_json: {}, debug: bool) -> None:
+def outbox_undo_announce(recent_posts_cache: {},
+                         base_dir: str, http_prefix: str,
+                         nickname: str, domain: str, port: int,
+                         message_json: {}, debug: bool) -> None:
     """ When an undo announce is received by the outbox from c2s
     """
     if not message_json.get('type'):

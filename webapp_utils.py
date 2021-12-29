@@ -10,7 +10,7 @@ __module_group__ = "Web Interface"
 import os
 from shutil import copyfile
 from collections import OrderedDict
-from session import getJson
+from session import get_json
 from utils import is_account_dir
 from utils import remove_html
 from utils import get_protocol_prefixes
@@ -24,15 +24,15 @@ from utils import get_audio_extensions
 from utils import get_video_extensions
 from utils import get_image_extensions
 from utils import local_actor_url
-from cache import storePersonInCache
-from content import addHtmlTags
-from content import replaceEmojiFromTags
-from person import getPersonAvatarUrl
+from cache import store_person_in_cache
+from content import add_html_tags
+from content import replace_emoji_from_tags
+from person import get_person_avatar_url
 from posts import is_moderator
-from blocking import isBlocked
+from blocking import is_blocked
 
 
-def getBrokenLinkSubstitute() -> str:
+def get_broken_link_substitute() -> str:
     """Returns html used to show a default image if the link to
     an image is broken
     """
@@ -40,8 +40,8 @@ def getBrokenLinkSubstitute() -> str:
         "/icons/avatar_default.png'\""
 
 
-def htmlFollowingList(css_cache: {}, base_dir: str,
-                      followingFilename: str) -> str:
+def html_following_list(css_cache: {}, base_dir: str,
+                        followingFilename: str) -> str:
     """Returns a list of handles being followed
     """
     with open(followingFilename, 'r') as followingFile:
@@ -56,18 +56,19 @@ def htmlFollowingList(css_cache: {}, base_dir: str,
             instanceTitle = \
                 get_config_param(base_dir, 'instanceTitle')
             followingListHtml = \
-                htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
+                html_header_with_external_style(cssFilename,
+                                                instanceTitle, None)
             for followingAddress in followingList:
                 if followingAddress:
                     followingListHtml += \
                         '<h3>@' + followingAddress + '</h3>'
-            followingListHtml += htmlFooter()
+            followingListHtml += html_footer()
             msg = followingListHtml
         return msg
     return ''
 
 
-def htmlHashtagBlocked(css_cache: {}, base_dir: str, translate: {}) -> str:
+def html_hashtag_blocked(css_cache: {}, base_dir: str, translate: {}) -> str:
     """Show the screen for a blocked hashtag
     """
     blockedHashtagForm = ''
@@ -78,7 +79,7 @@ def htmlHashtagBlocked(css_cache: {}, base_dir: str, translate: {}) -> str:
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
     blockedHashtagForm = \
-        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
+        html_header_with_external_style(cssFilename, instanceTitle, None)
     blockedHashtagForm += '<div><center>\n'
     blockedHashtagForm += \
         '  <p class="screentitle">' + \
@@ -87,14 +88,14 @@ def htmlHashtagBlocked(css_cache: {}, base_dir: str, translate: {}) -> str:
         '  <p>See <a href="/terms">' + \
         translate['Terms of Service'] + '</a></p>\n'
     blockedHashtagForm += '</center></div>\n'
-    blockedHashtagForm += htmlFooter()
+    blockedHashtagForm += html_footer()
     return blockedHashtagForm
 
 
-def headerButtonsFrontScreen(translate: {},
-                             nickname: str, boxName: str,
-                             authorized: bool,
-                             icons_as_buttons: bool) -> str:
+def header_buttons_front_screen(translate: {},
+                                nickname: str, boxName: str,
+                                authorized: bool,
+                                icons_as_buttons: bool) -> str:
     """Returns the header buttons for the front page of a news instance
     """
     headerStr = ''
@@ -160,8 +161,8 @@ def headerButtonsFrontScreen(translate: {},
     return headerStr
 
 
-def getContentWarningButton(postID: str, translate: {},
-                            content: str) -> str:
+def get_content_warning_button(postID: str, translate: {},
+                               content: str) -> str:
     """Returns the markup for a content warning button
     """
     return '       <details><summary class="cw">' + \
@@ -170,7 +171,8 @@ def getContentWarningButton(postID: str, translate: {},
         '</div></details>\n'
 
 
-def _setActorPropertyUrl(actor_json: {}, property_name: str, url: str) -> None:
+def _set_actor_property_url(actor_json: {},
+                            property_name: str, url: str) -> None:
     """Sets a url for the given actor property
     """
     if not actor_json.get('attachment'):
@@ -227,17 +229,17 @@ def _setActorPropertyUrl(actor_json: {}, property_name: str, url: str) -> None:
     actor_json['attachment'].append(newAddress)
 
 
-def setBlogAddress(actor_json: {}, blogAddress: str) -> None:
+def set_blog_address(actor_json: {}, blogAddress: str) -> None:
     """Sets an blog address for the given actor
     """
-    _setActorPropertyUrl(actor_json, 'Blog', remove_html(blogAddress))
+    _set_actor_property_url(actor_json, 'Blog', remove_html(blogAddress))
 
 
-def updateAvatarImageCache(signing_priv_key_pem: str,
-                           session, base_dir: str, http_prefix: str,
-                           actor: str, avatarUrl: str,
-                           person_cache: {}, allowDownloads: bool,
-                           force: bool = False, debug: bool = False) -> str:
+def update_avatar_image_cache(signing_priv_key_pem: str,
+                              session, base_dir: str, http_prefix: str,
+                              actor: str, avatarUrl: str,
+                              person_cache: {}, allowDownloads: bool,
+                              force: bool = False, debug: bool = False) -> str:
     """Updates the cached avatar for the given actor
     """
     if not avatarUrl:
@@ -284,7 +286,8 @@ def updateAvatarImageCache(signing_priv_key_pem: str,
                     try:
                         os.remove(avatarImageFilename)
                     except OSError:
-                        print('EX: updateAvatarImageCache unable to delete ' +
+                        print('EX: ' +
+                              'update_avatar_image_cache unable to delete ' +
                               avatarImageFilename)
             else:
                 with open(avatarImageFilename, 'wb') as f:
@@ -305,8 +308,9 @@ def updateAvatarImageCache(signing_priv_key_pem: str,
                 'Accept': 'application/ld+json; profile="' + prof + '"'
             }
         personJson = \
-            getJson(signing_priv_key_pem, session, actor, sessionHeaders, None,
-                    debug, __version__, http_prefix, None)
+            get_json(signing_priv_key_pem, session, actor,
+                     sessionHeaders, None,
+                     debug, __version__, http_prefix, None)
         if personJson:
             if not personJson.get('id'):
                 return None
@@ -324,15 +328,15 @@ def updateAvatarImageCache(signing_priv_key_pem: str,
                       "public keys don't match when downloading actor for " +
                       actor)
                 return None
-            storePersonInCache(base_dir, actor, personJson, person_cache,
-                               allowDownloads)
-            return getPersonAvatarUrl(base_dir, actor, person_cache,
-                                      allowDownloads)
+            store_person_in_cache(base_dir, actor, personJson, person_cache,
+                                  allowDownloads)
+            return get_person_avatar_url(base_dir, actor, person_cache,
+                                         allowDownloads)
         return None
     return avatarImageFilename.replace(base_dir + '/cache', '')
 
 
-def scheduledPostsExist(base_dir: str, nickname: str, domain: str) -> bool:
+def scheduled_posts_exist(base_dir: str, nickname: str, domain: str) -> bool:
     """Returns true if there are posts scheduled to be delivered
     """
     scheduleIndexFilename = \
@@ -344,11 +348,11 @@ def scheduledPostsExist(base_dir: str, nickname: str, domain: str) -> bool:
     return False
 
 
-def sharesTimelineJson(actor: str, pageNumber: int, itemsPerPage: int,
-                       base_dir: str, domain: str, nickname: str,
-                       maxSharesPerAccount: int,
-                       shared_items_federated_domains: [],
-                       sharesFileType: str) -> ({}, bool):
+def shares_timeline_json(actor: str, pageNumber: int, itemsPerPage: int,
+                         base_dir: str, domain: str, nickname: str,
+                         maxSharesPerAccount: int,
+                         shared_items_federated_domains: [],
+                         sharesFileType: str) -> ({}, bool):
     """Get a page on the shared items timeline as json
     maxSharesPerAccount helps to avoid one person dominating the timeline
     by sharing a large number of things
@@ -368,8 +372,8 @@ def sharesTimelineJson(actor: str, pageNumber: int, itemsPerPage: int,
             accountNickname = handle.split('@')[0]
             # Don't include shared items from blocked accounts
             if accountNickname != nickname:
-                if isBlocked(base_dir, nickname, domain,
-                             accountNickname, domain, None):
+                if is_blocked(base_dir, nickname, domain,
+                              accountNickname, domain, None):
                     continue
             # actor who owns this share
             owner = actor.split('/users/')[0] + '/users/' + accountNickname
@@ -411,8 +415,8 @@ def sharesTimelineJson(actor: str, pageNumber: int, itemsPerPage: int,
                         shareActor = shareActor.replace('___', '://')
                         shareActor = shareActor.replace('--', '/')
                         shareNickname = get_nickname_from_actor(shareActor)
-                        if isBlocked(base_dir, nickname, domain,
-                                     shareNickname, federatedDomain, None):
+                        if is_blocked(base_dir, nickname, domain,
+                                      shareNickname, federatedDomain, None):
                             continue
                         item['actor'] = shareActor
                         item['shareId'] = itemID
@@ -446,7 +450,7 @@ def sharesTimelineJson(actor: str, pageNumber: int, itemsPerPage: int,
     return resultJson, lastPage
 
 
-def postContainsPublic(post_json_object: {}) -> bool:
+def post_contains_public(post_json_object: {}) -> bool:
     """Does the given post contain #Public
     """
     containsPublic = False
@@ -466,8 +470,8 @@ def postContainsPublic(post_json_object: {}) -> bool:
     return containsPublic
 
 
-def _getImageFile(base_dir: str, name: str, directory: str,
-                  nickname: str, domain: str, theme: str) -> (str, str):
+def _get_image_file(base_dir: str, name: str, directory: str,
+                    nickname: str, domain: str, theme: str) -> (str, str):
     """
     returns the filenames for an image with the given name
     """
@@ -494,36 +498,37 @@ def _getImageFile(base_dir: str, name: str, directory: str,
     return bannerFile, bannerFilename
 
 
-def getBannerFile(base_dir: str,
-                  nickname: str, domain: str, theme: str) -> (str, str):
+def get_banner_file(base_dir: str,
+                    nickname: str, domain: str, theme: str) -> (str, str):
     accountDir = acct_dir(base_dir, nickname, domain)
-    return _getImageFile(base_dir, 'banner', accountDir,
-                         nickname, domain, theme)
+    return _get_image_file(base_dir, 'banner', accountDir,
+                           nickname, domain, theme)
 
 
-def getSearchBannerFile(base_dir: str,
+def get_search_banner_file(base_dir: str,
+                           nickname: str, domain: str,
+                           theme: str) -> (str, str):
+    accountDir = acct_dir(base_dir, nickname, domain)
+    return _get_image_file(base_dir, 'search_banner', accountDir,
+                           nickname, domain, theme)
+
+
+def get_left_image_file(base_dir: str,
                         nickname: str, domain: str, theme: str) -> (str, str):
     accountDir = acct_dir(base_dir, nickname, domain)
-    return _getImageFile(base_dir, 'search_banner', accountDir,
-                         nickname, domain, theme)
+    return _get_image_file(base_dir, 'left_col_image', accountDir,
+                           nickname, domain, theme)
 
 
-def getLeftImageFile(base_dir: str,
-                     nickname: str, domain: str, theme: str) -> (str, str):
+def get_right_image_file(base_dir: str,
+                         nickname: str, domain: str, theme: str) -> (str, str):
     accountDir = acct_dir(base_dir, nickname, domain)
-    return _getImageFile(base_dir, 'left_col_image', accountDir,
-                         nickname, domain, theme)
+    return _get_image_file(base_dir, 'right_col_image',
+                           accountDir, nickname, domain, theme)
 
 
-def getRightImageFile(base_dir: str,
-                      nickname: str, domain: str, theme: str) -> (str, str):
-    accountDir = acct_dir(base_dir, nickname, domain)
-    return _getImageFile(base_dir, 'right_col_image',
-                         accountDir, nickname, domain, theme)
-
-
-def htmlHeaderWithExternalStyle(cssFilename: str, instanceTitle: str,
-                                metadata: str, lang='en') -> str:
+def html_header_with_external_style(cssFilename: str, instanceTitle: str,
+                                    metadata: str, lang='en') -> str:
     if metadata is None:
         metadata = ''
     cssFile = '/' + cssFilename.split('/')[-1]
@@ -549,16 +554,17 @@ def htmlHeaderWithExternalStyle(cssFilename: str, instanceTitle: str,
     return htmlStr
 
 
-def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
-                               actor_json: {}, city: str,
-                               content_license_url: str,
-                               lang='en') -> str:
+def html_header_with_person_markup(cssFilename: str, instanceTitle: str,
+                                   actor_json: {}, city: str,
+                                   content_license_url: str,
+                                   lang='en') -> str:
     """html header which includes person markup
     https://schema.org/Person
     """
     if not actor_json:
         htmlStr = \
-            htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None, lang)
+            html_header_with_external_style(cssFilename,
+                                            instanceTitle, None, lang)
         return htmlStr
 
     cityMarkup = ''
@@ -729,14 +735,14 @@ def htmlHeaderWithPersonMarkup(cssFilename: str, instanceTitle: str,
                     "\" property=\"og:" + ogTag + "\" />\n"
 
     htmlStr = \
-        htmlHeaderWithExternalStyle(cssFilename, instanceTitle,
-                                    ogMetadata + profileMarkup, lang)
+        html_header_with_external_style(cssFilename, instanceTitle,
+                                        ogMetadata + profileMarkup, lang)
     return htmlStr
 
 
-def htmlHeaderWithWebsiteMarkup(cssFilename: str, instanceTitle: str,
-                                http_prefix: str, domain: str,
-                                system_language: str) -> str:
+def html_header_with_website_markup(cssFilename: str, instanceTitle: str,
+                                    http_prefix: str, domain: str,
+                                    system_language: str) -> str:
     """html header which includes website markup
     https://schema.org/WebSite
     """
@@ -786,19 +792,19 @@ def htmlHeaderWithWebsiteMarkup(cssFilename: str, instanceTitle: str,
         '    <meta content="summary_large_image" property="twitter:card" />\n'
 
     htmlStr = \
-        htmlHeaderWithExternalStyle(cssFilename, instanceTitle,
-                                    ogMetadata + websiteMarkup,
-                                    system_language)
+        html_header_with_external_style(cssFilename, instanceTitle,
+                                        ogMetadata + websiteMarkup,
+                                        system_language)
     return htmlStr
 
 
-def htmlHeaderWithBlogMarkup(cssFilename: str, instanceTitle: str,
-                             http_prefix: str, domain: str, nickname: str,
-                             system_language: str,
-                             published: str, modified: str,
-                             title: str, snippet: str,
-                             translate: {}, url: str,
-                             content_license_url: str) -> str:
+def html_header_with_blog_markup(cssFilename: str, instanceTitle: str,
+                                 http_prefix: str, domain: str, nickname: str,
+                                 system_language: str,
+                                 published: str, modified: str,
+                                 title: str, snippet: str,
+                                 translate: {}, url: str,
+                                 content_license_url: str) -> str:
     """html header which includes blog post markup
     https://schema.org/BlogPosting
     """
@@ -845,20 +851,21 @@ def htmlHeaderWithBlogMarkup(cssFilename: str, instanceTitle: str,
         modified + '" />\n'
 
     htmlStr = \
-        htmlHeaderWithExternalStyle(cssFilename, instanceTitle,
-                                    ogMetadata + blogMarkup, system_language)
+        html_header_with_external_style(cssFilename, instanceTitle,
+                                        ogMetadata + blogMarkup,
+                                        system_language)
     return htmlStr
 
 
-def htmlFooter() -> str:
+def html_footer() -> str:
     htmlStr = '  </body>\n'
     htmlStr += '</html>\n'
     return htmlStr
 
 
-def loadIndividualPostAsHtmlFromCache(base_dir: str,
-                                      nickname: str, domain: str,
-                                      post_json_object: {}) -> str:
+def load_individual_post_as_html_from_cache(base_dir: str,
+                                            nickname: str, domain: str,
+                                            post_json_object: {}) -> str:
     """If a cached html version of the given post exists then load it and
     return the html text
     This is much quicker than generating the html from the json object
@@ -880,7 +887,7 @@ def loadIndividualPostAsHtmlFromCache(base_dir: str,
                 postHtml = file.read()
                 break
         except Exception as ex:
-            print('ERROR: loadIndividualPostAsHtmlFromCache ' +
+            print('ERROR: load_individual_post_as_html_from_cache ' +
                   str(tries) + ' ' + str(ex))
             # no sleep
             tries += 1
@@ -888,9 +895,9 @@ def loadIndividualPostAsHtmlFromCache(base_dir: str,
         return postHtml
 
 
-def addEmojiToDisplayName(session, base_dir: str, http_prefix: str,
-                          nickname: str, domain: str,
-                          displayName: str, inProfileName: bool) -> str:
+def add_emoji_to_display_name(session, base_dir: str, http_prefix: str,
+                              nickname: str, domain: str,
+                              displayName: str, inProfileName: bool) -> str:
     """Adds emoji icons to display names or CW on individual posts
     """
     if ':' not in displayName:
@@ -900,8 +907,8 @@ def addEmojiToDisplayName(session, base_dir: str, http_prefix: str,
     emojiTags = {}
 #    print('TAG: displayName before tags: ' + displayName)
     displayName = \
-        addHtmlTags(base_dir, http_prefix,
-                    nickname, domain, displayName, [], emojiTags)
+        add_html_tags(base_dir, http_prefix,
+                      nickname, domain, displayName, [], emojiTags)
     displayName = displayName.replace('<p>', '').replace('</p>', '')
 #    print('TAG: displayName after tags: ' + displayName)
     # convert the emoji dictionary to a list
@@ -911,14 +918,14 @@ def addEmojiToDisplayName(session, base_dir: str, http_prefix: str,
 #    print('TAG: emoji tags list: ' + str(emojiTagsList))
     if not inProfileName:
         displayName = \
-            replaceEmojiFromTags(session, base_dir,
-                                 displayName, emojiTagsList, 'post header',
-                                 False)
+            replace_emoji_from_tags(session, base_dir,
+                                    displayName, emojiTagsList, 'post header',
+                                    False)
     else:
         displayName = \
-            replaceEmojiFromTags(session, base_dir,
-                                 displayName, emojiTagsList, 'profile',
-                                 False)
+            replace_emoji_from_tags(session, base_dir,
+                                    displayName, emojiTagsList, 'profile',
+                                    False)
 #    print('TAG: displayName after tags 2: ' + displayName)
 
     # remove any stray emoji
@@ -936,7 +943,7 @@ def addEmojiToDisplayName(session, base_dir: str, http_prefix: str,
     return displayName
 
 
-def _isImageMimeType(mimeType: str) -> bool:
+def _is_image_mime_type(mimeType: str) -> bool:
     """Is the given mime type an image?
     """
     if mimeType == 'image/svg+xml':
@@ -950,7 +957,7 @@ def _isImageMimeType(mimeType: str) -> bool:
     return False
 
 
-def _isVideoMimeType(mimeType: str) -> bool:
+def _is_video_mime_type(mimeType: str) -> bool:
     """Is the given mime type a video?
     """
     if not mimeType.startswith('video/'):
@@ -962,7 +969,7 @@ def _isVideoMimeType(mimeType: str) -> bool:
     return False
 
 
-def _isAudioMimeType(mimeType: str) -> bool:
+def _is_audio_mime_type(mimeType: str) -> bool:
     """Is the given mime type an audio file?
     """
     if mimeType == 'audio/mpeg':
@@ -976,7 +983,7 @@ def _isAudioMimeType(mimeType: str) -> bool:
     return False
 
 
-def _isAttachedImage(attachmentFilename: str) -> bool:
+def _is_attached_image(attachmentFilename: str) -> bool:
     """Is the given attachment filename an image?
     """
     if '.' not in attachmentFilename:
@@ -990,7 +997,7 @@ def _isAttachedImage(attachmentFilename: str) -> bool:
     return False
 
 
-def _isAttachedVideo(attachmentFilename: str) -> bool:
+def _is_attached_video(attachmentFilename: str) -> bool:
     """Is the given attachment filename a video?
     """
     if '.' not in attachmentFilename:
@@ -1004,11 +1011,12 @@ def _isAttachedVideo(attachmentFilename: str) -> bool:
     return False
 
 
-def getPostAttachmentsAsHtml(post_json_object: {}, boxName: str, translate: {},
-                             isMuted: bool, avatarLink: str,
-                             replyStr: str, announceStr: str, likeStr: str,
-                             bookmarkStr: str, deleteStr: str,
-                             muteStr: str) -> (str, str):
+def get_post_attachments_as_html(post_json_object: {}, boxName: str,
+                                 translate: {},
+                                 is_muted: bool, avatarLink: str,
+                                 replyStr: str, announceStr: str, likeStr: str,
+                                 bookmarkStr: str, deleteStr: str,
+                                 muteStr: str) -> (str, str):
     """Returns a string representing any attachments
     """
     attachmentStr = ''
@@ -1030,9 +1038,9 @@ def getPostAttachmentsAsHtml(post_json_object: {}, boxName: str, translate: {},
         imageDescription = ''
         if attach.get('name'):
             imageDescription = attach['name'].replace('"', "'")
-        if _isImageMimeType(mediaType):
+        if _is_image_mime_type(mediaType):
             imageUrl = attach['url']
-            if _isAttachedImage(attach['url']) and 'svg' not in mediaType:
+            if _is_attached_image(attach['url']) and 'svg' not in mediaType:
                 if not attachmentStr:
                     attachmentStr += '<div class="media">\n'
                     mediaStyleAdded = True
@@ -1041,7 +1049,7 @@ def getPostAttachmentsAsHtml(post_json_object: {}, boxName: str, translate: {},
                     attachmentStr += '<br>'
                 if boxName == 'tlmedia':
                     galleryStr += '<div class="gallery">\n'
-                    if not isMuted:
+                    if not is_muted:
                         galleryStr += '  <a href="' + imageUrl + '">\n'
                         galleryStr += \
                             '    <img loading="lazy" src="' + \
@@ -1051,7 +1059,7 @@ def getPostAttachmentsAsHtml(post_json_object: {}, boxName: str, translate: {},
                         imagePostUrl = post_json_object['object']['url']
                     else:
                         imagePostUrl = post_json_object['object']['id']
-                    if imageDescription and not isMuted:
+                    if imageDescription and not is_muted:
                         galleryStr += \
                             '  <a href="' + imagePostUrl + \
                             '" class="gallerytext"><div ' + \
@@ -1076,14 +1084,14 @@ def getPostAttachmentsAsHtml(post_json_object: {}, boxName: str, translate: {},
                     '" alt="' + imageDescription + '" title="' + \
                     imageDescription + '" class="attachment"></a>\n'
                 attachmentCtr += 1
-        elif _isVideoMimeType(mediaType):
-            if _isAttachedVideo(attach['url']):
+        elif _is_video_mime_type(mediaType):
+            if _is_attached_video(attach['url']):
                 extension = attach['url'].split('.')[-1]
                 if attachmentCtr > 0:
                     attachmentStr += '<br>'
                 if boxName == 'tlmedia':
                     galleryStr += '<div class="gallery">\n'
-                    if not isMuted:
+                    if not is_muted:
                         galleryStr += '  <a href="' + attach['url'] + '">\n'
                         galleryStr += \
                             '    <figure id="videoContainer" ' + \
@@ -1105,7 +1113,7 @@ def getPostAttachmentsAsHtml(post_json_object: {}, boxName: str, translate: {},
                         videoPostUrl = post_json_object['object']['url']
                     else:
                         videoPostUrl = post_json_object['object']['id']
-                    if imageDescription and not isMuted:
+                    if imageDescription and not is_muted:
                         galleryStr += \
                             '  <a href="' + videoPostUrl + \
                             '" class="gallerytext"><div ' + \
@@ -1138,7 +1146,7 @@ def getPostAttachmentsAsHtml(post_json_object: {}, boxName: str, translate: {},
                     translate['Your browser does not support the video tag.']
                 attachmentStr += '</video></figure></center>'
                 attachmentCtr += 1
-        elif _isAudioMimeType(mediaType):
+        elif _is_audio_mime_type(mediaType):
             extension = '.mp3'
             if attach['url'].endswith('.ogg'):
                 extension = '.ogg'
@@ -1147,7 +1155,7 @@ def getPostAttachmentsAsHtml(post_json_object: {}, boxName: str, translate: {},
                     attachmentStr += '<br>'
                 if boxName == 'tlmedia':
                     galleryStr += '<div class="gallery">\n'
-                    if not isMuted:
+                    if not is_muted:
                         galleryStr += '  <a href="' + attach['url'] + '">\n'
                         galleryStr += '    <audio controls>\n'
                         galleryStr += \
@@ -1164,7 +1172,7 @@ def getPostAttachmentsAsHtml(post_json_object: {}, boxName: str, translate: {},
                         audioPostUrl = post_json_object['object']['url']
                     else:
                         audioPostUrl = post_json_object['object']['id']
-                    if imageDescription and not isMuted:
+                    if imageDescription and not is_muted:
                         galleryStr += \
                             '  <a href="' + audioPostUrl + \
                             '" class="gallerytext"><div ' + \
@@ -1199,7 +1207,7 @@ def getPostAttachmentsAsHtml(post_json_object: {}, boxName: str, translate: {},
     return attachmentStr, galleryStr
 
 
-def htmlPostSeparator(base_dir: str, column: str) -> str:
+def html_post_separator(base_dir: str, column: str) -> str:
     """Returns the html for a timeline post separator image
     """
     theme = get_config_param(base_dir, 'theme')
@@ -1219,7 +1227,7 @@ def htmlPostSeparator(base_dir: str, column: str) -> str:
     return separatorStr
 
 
-def htmlHighlightLabel(label: str, highlight: bool) -> str:
+def html_highlight_label(label: str, highlight: bool) -> str:
     """If the given text should be highlighted then return
     the appropriate markup.
     This is so that in shell browsers, like lynx, it's possible
@@ -1230,28 +1238,28 @@ def htmlHighlightLabel(label: str, highlight: bool) -> str:
     return '*' + str(label) + '*'
 
 
-def getAvatarImageUrl(session,
-                      base_dir: str, http_prefix: str,
-                      postActor: str, person_cache: {},
-                      avatarUrl: str, allowDownloads: bool,
-                      signing_priv_key_pem: str) -> str:
+def get_avatar_image_url(session,
+                         base_dir: str, http_prefix: str,
+                         postActor: str, person_cache: {},
+                         avatarUrl: str, allowDownloads: bool,
+                         signing_priv_key_pem: str) -> str:
     """Returns the avatar image url
     """
     # get the avatar image url for the post actor
     if not avatarUrl:
         avatarUrl = \
-            getPersonAvatarUrl(base_dir, postActor, person_cache,
-                               allowDownloads)
+            get_person_avatar_url(base_dir, postActor, person_cache,
+                                  allowDownloads)
         avatarUrl = \
-            updateAvatarImageCache(signing_priv_key_pem,
-                                   session, base_dir, http_prefix,
-                                   postActor, avatarUrl, person_cache,
-                                   allowDownloads)
+            update_avatar_image_cache(signing_priv_key_pem,
+                                      session, base_dir, http_prefix,
+                                      postActor, avatarUrl, person_cache,
+                                      allowDownloads)
     else:
-        updateAvatarImageCache(signing_priv_key_pem,
-                               session, base_dir, http_prefix,
-                               postActor, avatarUrl, person_cache,
-                               allowDownloads)
+        update_avatar_image_cache(signing_priv_key_pem,
+                                  session, base_dir, http_prefix,
+                                  postActor, avatarUrl, person_cache,
+                                  allowDownloads)
 
     if not avatarUrl:
         avatarUrl = postActor + '/avatar.png'
@@ -1259,16 +1267,16 @@ def getAvatarImageUrl(session,
     return avatarUrl
 
 
-def htmlHideFromScreenReader(htmlStr: str) -> str:
+def html_hide_from_screen_reader(htmlStr: str) -> str:
     """Returns html which is hidden from screen readers
     """
     return '<span aria-hidden="true">' + htmlStr + '</span>'
 
 
-def htmlKeyboardNavigation(banner: str, links: {}, accessKeys: {},
-                           subHeading: str = None,
-                           usersPath: str = None, translate: {} = None,
-                           followApprovals: bool = False) -> str:
+def html_keyboard_navigation(banner: str, links: {}, accessKeys: {},
+                             subHeading: str = None,
+                             usersPath: str = None, translate: {} = None,
+                             followApprovals: bool = False) -> str:
     """Given a set of links return the html for keyboard navigation
     """
     htmlStr = '<div class="transparent"><ul>\n'
@@ -1300,7 +1308,7 @@ def htmlKeyboardNavigation(banner: str, links: {}, accessKeys: {},
     return htmlStr
 
 
-def beginEditSection(label: str) -> str:
+def begin_edit_section(label: str) -> str:
     """returns the html for begining a dropdown section on edit profile screen
     """
     return \
@@ -1308,14 +1316,14 @@ def beginEditSection(label: str) -> str:
         '<div class="container">'
 
 
-def endEditSection() -> str:
+def end_edit_section() -> str:
     """returns the html for ending a dropdown section on edit profile screen
     """
     return '    </div></details>\n'
 
 
-def editTextField(label: str, name: str, value: str = "",
-                  placeholder: str = "", required: bool = False) -> str:
+def edit_text_field(label: str, name: str, value: str = "",
+                    placeholder: str = "", required: bool = False) -> str:
     """Returns html for editing a text field
     """
     if value is None:
@@ -1336,9 +1344,9 @@ def editTextField(label: str, name: str, value: str = "",
     return textFieldStr
 
 
-def editNumberField(label: str, name: str, value: int,
-                    minValue: int, maxValue: int,
-                    placeholder: int) -> str:
+def edit_number_field(label: str, name: str, value: int,
+                      minValue: int, maxValue: int,
+                      placeholder: int) -> str:
     """Returns html for editing an integer number field
     """
     if value is None:
@@ -1353,8 +1361,8 @@ def editNumberField(label: str, name: str, value: int,
         'min="' + str(minValue) + '" max="' + str(maxValue) + '" step="1">\n'
 
 
-def editCurrencyField(label: str, name: str, value: str,
-                      placeholder: str, required: bool) -> str:
+def edit_currency_field(label: str, name: str, value: str,
+                        placeholder: str, required: bool) -> str:
     """Returns html for editing a currency field
     """
     if value is None:
@@ -1374,7 +1382,7 @@ def editCurrencyField(label: str, name: str, value: str,
         requiredStr + '>\n'
 
 
-def editCheckBox(label: str, name: str, checked: bool) -> str:
+def edit_check_box(label: str, name: str, checked: bool) -> str:
     """Returns html for editing a checkbox field
     """
     checkedStr = ''
@@ -1386,8 +1394,8 @@ def editCheckBox(label: str, name: str, checked: bool) -> str:
         'name="' + name + '"' + checkedStr + '> ' + label + '<br>\n'
 
 
-def editTextArea(label: str, name: str, value: str,
-                 height: int, placeholder: str, spellcheck: bool) -> str:
+def edit_text_area(label: str, name: str, value: str,
+                   height: int, placeholder: str, spellcheck: bool) -> str:
     """Returns html for editing a textarea field
     """
     if value is None:
@@ -1405,11 +1413,11 @@ def editTextArea(label: str, name: str, value: str,
     return text
 
 
-def htmlSearchResultShare(base_dir: str, sharedItem: {}, translate: {},
-                          http_prefix: str, domain_full: str,
-                          contactNickname: str, itemID: str,
-                          actor: str, sharesFileType: str,
-                          category: str) -> str:
+def html_search_result_share(base_dir: str, sharedItem: {}, translate: {},
+                             http_prefix: str, domain_full: str,
+                             contactNickname: str, itemID: str,
+                             actor: str, sharesFileType: str,
+                             category: str) -> str:
     """Returns the html for an individual shared item
     """
     sharedItemsForm = '<div class="container">\n'
@@ -1492,12 +1500,12 @@ def htmlSearchResultShare(base_dir: str, sharedItem: {}, translate: {},
     return sharedItemsForm
 
 
-def htmlShowShare(base_dir: str, domain: str, nickname: str,
-                  http_prefix: str, domain_full: str,
-                  itemID: str, translate: {},
-                  shared_items_federated_domains: [],
-                  defaultTimeline: str, theme: str,
-                  sharesFileType: str, category: str) -> str:
+def html_show_share(base_dir: str, domain: str, nickname: str,
+                    http_prefix: str, domain_full: str,
+                    itemID: str, translate: {},
+                    shared_items_federated_domains: [],
+                    defaultTimeline: str, theme: str,
+                    sharesFileType: str, category: str) -> str:
     """Shows an individual shared item after selecting it from the left column
     """
     sharesJson = None
@@ -1549,7 +1557,7 @@ def htmlShowShare(base_dir: str, domain: str, nickname: str,
 
     # filename of the banner shown at the top
     bannerFile, bannerFilename = \
-        getBannerFile(base_dir, nickname, domain, theme)
+        get_banner_file(base_dir, nickname, domain, theme)
 
     shareStr = \
         '<header>\n' + \
@@ -1560,9 +1568,9 @@ def htmlShowShare(base_dir: str, domain: str, nickname: str,
         'src="/users/' + nickname + '/' + bannerFile + '" /></a>\n' + \
         '</header><br>\n'
     shareStr += \
-        htmlSearchResultShare(base_dir, sharedItem, translate, http_prefix,
-                              domain_full, contactNickname, itemID,
-                              actor, sharesFileType, category)
+        html_search_result_share(base_dir, sharedItem, translate, http_prefix,
+                                 domain_full, contactNickname, itemID,
+                                 actor, sharesFileType, category)
 
     cssFilename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
@@ -1570,12 +1578,13 @@ def htmlShowShare(base_dir: str, domain: str, nickname: str,
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
 
-    return htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None) + \
-        shareStr + htmlFooter()
+    return html_header_with_external_style(cssFilename,
+                                           instanceTitle, None) + \
+        shareStr + html_footer()
 
 
-def setCustomBackground(base_dir: str, background: str,
-                        newBackground: str) -> str:
+def set_custom_background(base_dir: str, background: str,
+                          newBackground: str) -> str:
     """Sets a custom background
     Returns the extension, if found
     """

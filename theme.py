@@ -20,10 +20,10 @@ from shutil import copyfile
 from shutil import make_archive
 from shutil import unpack_archive
 from shutil import rmtree
-from content import dangerousCSS
+from content import dangerous_css
 
 
-def importTheme(base_dir: str, filename: str) -> bool:
+def import_theme(base_dir: str, filename: str) -> bool:
     """Imports a theme
     """
     if not os.path.isfile(filename):
@@ -72,13 +72,13 @@ def importTheme(base_dir: str, filename: str) -> bool:
     copytree(tempThemeDir, themeDir)
     if os.path.isdir(tempThemeDir):
         rmtree(tempThemeDir, ignore_errors=False, onerror=None)
-    if scanThemesForScripts(themeDir):
+    if scan_themes_for_scripts(themeDir):
         rmtree(themeDir, ignore_errors=False, onerror=None)
         return False
     return os.path.isfile(themeDir + '/theme.json')
 
 
-def exportTheme(base_dir: str, theme: str) -> bool:
+def export_theme(base_dir: str, theme: str) -> bool:
     """Exports a theme as a zip file
     """
     themeDir = base_dir + '/theme/' + theme
@@ -91,17 +91,17 @@ def exportTheme(base_dir: str, theme: str) -> bool:
         try:
             os.remove(exportFilename)
         except OSError:
-            print('EX: exportTheme unable to delete ' + str(exportFilename))
+            print('EX: export_theme unable to delete ' + str(exportFilename))
     try:
         make_archive(base_dir + '/exports/' + theme, 'zip', themeDir)
     except BaseException:
-        print('EX: exportTheme unable to archive ' +
+        print('EX: export_theme unable to archive ' +
               base_dir + '/exports/' + str(theme))
         pass
     return os.path.isfile(exportFilename)
 
 
-def _getThemeFiles() -> []:
+def _get_theme_files() -> []:
     """Gets the list of theme style sheets
     """
     return ('epicyon.css', 'login.css', 'follow.css',
@@ -110,7 +110,7 @@ def _getThemeFiles() -> []:
             'welcome.css', 'graph.css')
 
 
-def isNewsThemeName(base_dir: str, theme_name: str) -> bool:
+def is_news_theme_name(base_dir: str, theme_name: str) -> bool:
     """Returns true if the given theme is a news instance
     """
     themeDir = base_dir + '/theme/' + theme_name
@@ -119,7 +119,7 @@ def isNewsThemeName(base_dir: str, theme_name: str) -> bool:
     return False
 
 
-def getThemesList(base_dir: str) -> []:
+def get_themes_list(base_dir: str) -> []:
     """Returns the list of available themes
     Note that these should be capitalized, since they're
     also used to create the web interface dropdown list
@@ -137,8 +137,8 @@ def getThemesList(base_dir: str) -> []:
     return themes
 
 
-def _copyThemeHelpFiles(base_dir: str, theme_name: str,
-                        system_language: str) -> None:
+def _copy_theme_help_files(base_dir: str, theme_name: str,
+                           system_language: str) -> None:
     """Copies any theme specific help files from the welcome subdirectory
     """
     if not system_language:
@@ -161,7 +161,7 @@ def _copyThemeHelpFiles(base_dir: str, theme_name: str,
         break
 
 
-def _setThemeInConfig(base_dir: str, name: str) -> bool:
+def _set_theme_in_config(base_dir: str, name: str) -> bool:
     """Sets the theme with the given name within config.json
     """
     config_filename = base_dir + '/config.json'
@@ -174,7 +174,7 @@ def _setThemeInConfig(base_dir: str, name: str) -> bool:
     return save_json(configJson, config_filename)
 
 
-def _setNewswirePublishAsIcon(base_dir: str, useIcon: bool) -> bool:
+def _set_newswire_publish_as_icon(base_dir: str, useIcon: bool) -> bool:
     """Shows the newswire publish action as an icon or a button
     """
     config_filename = base_dir + '/config.json'
@@ -187,7 +187,7 @@ def _setNewswirePublishAsIcon(base_dir: str, useIcon: bool) -> bool:
     return save_json(configJson, config_filename)
 
 
-def _setIconsAsButtons(base_dir: str, useButtons: bool) -> bool:
+def _set_icons_as_buttons(base_dir: str, useButtons: bool) -> bool:
     """Whether to show icons in the header (inbox, outbox, etc)
     as buttons
     """
@@ -201,7 +201,7 @@ def _setIconsAsButtons(base_dir: str, useButtons: bool) -> bool:
     return save_json(configJson, config_filename)
 
 
-def _setRssIconAtTop(base_dir: str, atTop: bool) -> bool:
+def _set_rss_icon_at_top(base_dir: str, atTop: bool) -> bool:
     """Whether to show RSS icon at the top of the timeline
     """
     config_filename = base_dir + '/config.json'
@@ -214,7 +214,7 @@ def _setRssIconAtTop(base_dir: str, atTop: bool) -> bool:
     return save_json(configJson, config_filename)
 
 
-def _setPublishButtonAtTop(base_dir: str, atTop: bool) -> bool:
+def _set_publish_button_at_top(base_dir: str, atTop: bool) -> bool:
     """Whether to show the publish button above the title image
     in the newswire column
     """
@@ -228,7 +228,8 @@ def _setPublishButtonAtTop(base_dir: str, atTop: bool) -> bool:
     return save_json(configJson, config_filename)
 
 
-def _setFullWidthTimelineButtonHeader(base_dir: str, fullWidth: bool) -> bool:
+def _set_full_width_timeline_button_header(base_dir: str,
+                                           fullWidth: bool) -> bool:
     """Shows the timeline button header containing inbox, outbox,
     calendar, etc as full width
     """
@@ -242,7 +243,7 @@ def _setFullWidthTimelineButtonHeader(base_dir: str, fullWidth: bool) -> bool:
     return save_json(configJson, config_filename)
 
 
-def getTheme(base_dir: str) -> str:
+def get_theme(base_dir: str) -> str:
     """Gets the current theme name from config.json
     """
     config_filename = base_dir + '/config.json'
@@ -254,21 +255,21 @@ def getTheme(base_dir: str) -> str:
     return 'default'
 
 
-def _removeTheme(base_dir: str):
+def _remove_theme(base_dir: str):
     """Removes the current theme style sheets
     """
-    themeFiles = _getThemeFiles()
+    themeFiles = _get_theme_files()
     for filename in themeFiles:
         if not os.path.isfile(base_dir + '/' + filename):
             continue
         try:
             os.remove(base_dir + '/' + filename)
         except OSError:
-            print('EX: _removeTheme unable to delete ' +
+            print('EX: _remove_theme unable to delete ' +
                   base_dir + '/' + filename)
 
 
-def setCSSparam(css: str, param: str, value: str) -> str:
+def set_cs_sparam(css: str, param: str, value: str) -> str:
     """Sets a CSS parameter to a given value
     """
     # is this just a simple string replacement?
@@ -317,14 +318,14 @@ def setCSSparam(css: str, param: str, value: str) -> str:
     return newcss.strip()
 
 
-def _setThemeFromDict(base_dir: str, name: str,
-                      themeParams: {}, bgParams: {},
-                      allow_local_network_access: bool) -> None:
+def _set_theme_from_dict(base_dir: str, name: str,
+                         themeParams: {}, bgParams: {},
+                         allow_local_network_access: bool) -> None:
     """Uses a dictionary to set a theme
     """
     if name:
-        _setThemeInConfig(base_dir, name)
-    themeFiles = _getThemeFiles()
+        _set_theme_in_config(base_dir, name)
+    themeFiles = _get_theme_files()
     for filename in themeFiles:
         # check for custom css within the theme directory
         templateFilename = base_dir + '/theme/' + name + '/epicyon-' + filename
@@ -334,7 +335,7 @@ def _setThemeFromDict(base_dir: str, name: str,
 
         # Ensure that any custom CSS is mostly harmless.
         # If not then just use the defaults
-        if dangerousCSS(templateFilename, allow_local_network_access) or \
+        if dangerous_css(templateFilename, allow_local_network_access) or \
            not os.path.isfile(templateFilename):
             # use default css
             templateFilename = base_dir + '/epicyon-' + filename
@@ -349,35 +350,35 @@ def _setThemeFromDict(base_dir: str, name: str,
             for paramName, paramValue in themeParams.items():
                 if paramName == 'newswire-publish-icon':
                     if paramValue.lower() == 'true':
-                        _setNewswirePublishAsIcon(base_dir, True)
+                        _set_newswire_publish_as_icon(base_dir, True)
                     else:
-                        _setNewswirePublishAsIcon(base_dir, False)
+                        _set_newswire_publish_as_icon(base_dir, False)
                     continue
                 elif paramName == 'full-width-timeline-buttons':
                     if paramValue.lower() == 'true':
-                        _setFullWidthTimelineButtonHeader(base_dir, True)
+                        _set_full_width_timeline_button_header(base_dir, True)
                     else:
-                        _setFullWidthTimelineButtonHeader(base_dir, False)
+                        _set_full_width_timeline_button_header(base_dir, False)
                     continue
                 elif paramName == 'icons-as-buttons':
                     if paramValue.lower() == 'true':
-                        _setIconsAsButtons(base_dir, True)
+                        _set_icons_as_buttons(base_dir, True)
                     else:
-                        _setIconsAsButtons(base_dir, False)
+                        _set_icons_as_buttons(base_dir, False)
                     continue
                 elif paramName == 'rss-icon-at-top':
                     if paramValue.lower() == 'true':
-                        _setRssIconAtTop(base_dir, True)
+                        _set_rss_icon_at_top(base_dir, True)
                     else:
-                        _setRssIconAtTop(base_dir, False)
+                        _set_rss_icon_at_top(base_dir, False)
                     continue
                 elif paramName == 'publish-button-at-top':
                     if paramValue.lower() == 'true':
-                        _setPublishButtonAtTop(base_dir, True)
+                        _set_publish_button_at_top(base_dir, True)
                     else:
-                        _setPublishButtonAtTop(base_dir, False)
+                        _set_publish_button_at_top(base_dir, False)
                     continue
-                css = setCSSparam(css, paramName, paramValue)
+                css = set_cs_sparam(css, paramName, paramValue)
             filename = base_dir + '/' + filename
             with open(filename, 'w+') as cssfile:
                 cssfile.write(css)
@@ -387,11 +388,11 @@ def _setThemeFromDict(base_dir: str, name: str,
     )
     for s in screenName:
         if bgParams.get(s):
-            _setBackgroundFormat(base_dir, name, s, bgParams[s])
+            _set_background_format(base_dir, name, s, bgParams[s])
 
 
-def _setBackgroundFormat(base_dir: str, name: str,
-                         backgroundType: str, extension: str) -> None:
+def _set_background_format(base_dir: str, name: str,
+                           backgroundType: str, extension: str) -> None:
     """Sets the background file extension
     """
     if extension == 'jpg':
@@ -406,10 +407,10 @@ def _setBackgroundFormat(base_dir: str, name: str,
             cssfile2.write(css)
 
 
-def enableGrayscale(base_dir: str) -> None:
+def enable_grayscale(base_dir: str) -> None:
     """Enables grayscale for the current theme
     """
-    themeFiles = _getThemeFiles()
+    themeFiles = _get_theme_files()
     for filename in themeFiles:
         templateFilename = base_dir + '/' + filename
         if not os.path.isfile(templateFilename):
@@ -429,10 +430,10 @@ def enableGrayscale(base_dir: str) -> None:
             grayfile.write(' ')
 
 
-def disableGrayscale(base_dir: str) -> None:
+def disable_grayscale(base_dir: str) -> None:
     """Disables grayscale for the current theme
     """
-    themeFiles = _getThemeFiles()
+    themeFiles = _get_theme_files()
     for filename in themeFiles:
         templateFilename = base_dir + '/' + filename
         if not os.path.isfile(templateFilename):
@@ -450,11 +451,11 @@ def disableGrayscale(base_dir: str) -> None:
         try:
             os.remove(grayscaleFilename)
         except OSError:
-            print('EX: disableGrayscale unable to delete ' +
+            print('EX: disable_grayscale unable to delete ' +
                   grayscaleFilename)
 
 
-def _setCustomFont(base_dir: str):
+def _set_custom_font(base_dir: str):
     """Uses a dictionary to set a theme
     """
     customFontExt = None
@@ -473,7 +474,7 @@ def _setCustomFont(base_dir: str):
     if not customFontExt:
         return
 
-    themeFiles = _getThemeFiles()
+    themeFiles = _get_theme_files()
     for filename in themeFiles:
         templateFilename = base_dir + '/' + filename
         if not os.path.isfile(templateFilename):
@@ -481,30 +482,30 @@ def _setCustomFont(base_dir: str):
         with open(templateFilename, 'r') as cssfile:
             css = cssfile.read()
             css = \
-                setCSSparam(css, "*src",
-                            "url('./fonts/custom." +
-                            customFontExt +
-                            "') format('" +
-                            customFontType + "')")
-            css = setCSSparam(css, "*font-family", "'CustomFont'")
+                set_cs_sparam(css, "*src",
+                              "url('./fonts/custom." +
+                              customFontExt +
+                              "') format('" +
+                              customFontType + "')")
+            css = set_cs_sparam(css, "*font-family", "'CustomFont'")
             filename = base_dir + '/' + filename
             with open(filename, 'w+') as cssfile:
                 cssfile.write(css)
 
 
-def setThemeFromDesigner(base_dir: str, theme_name: str, domain: str,
-                         themeParams: {},
-                         allow_local_network_access: bool,
-                         system_language: str):
+def set_theme_from_designer(base_dir: str, theme_name: str, domain: str,
+                            themeParams: {},
+                            allow_local_network_access: bool,
+                            system_language: str):
     customThemeFilename = base_dir + '/accounts/theme.json'
     save_json(themeParams, customThemeFilename)
-    setTheme(base_dir, theme_name, domain,
-             allow_local_network_access, system_language)
+    set_theme(base_dir, theme_name, domain,
+              allow_local_network_access, system_language)
 
 
-def resetThemeDesignerSettings(base_dir: str, theme_name: str, domain: str,
-                               allow_local_network_access: bool,
-                               system_language: str) -> None:
+def reset_theme_designer_settings(base_dir: str, theme_name: str, domain: str,
+                                  allow_local_network_access: bool,
+                                  system_language: str) -> None:
     """Resets the theme designer settings
     """
     customVariablesFile = base_dir + '/accounts/theme.json'
@@ -515,9 +516,9 @@ def resetThemeDesignerSettings(base_dir: str, theme_name: str, domain: str,
             print('EX: unable to remove theme designer settings on reset')
 
 
-def _readVariablesFile(base_dir: str, theme_name: str,
-                       variablesFile: str,
-                       allow_local_network_access: bool) -> None:
+def _read_variables_file(base_dir: str, theme_name: str,
+                         variablesFile: str,
+                         allow_local_network_access: bool) -> None:
     """Reads variables from a file in the theme directory
     """
     themeParams = load_json(variablesFile, 0)
@@ -538,14 +539,14 @@ def _readVariablesFile(base_dir: str, theme_name: str,
         "options": "jpg",
         "search": "jpg"
     }
-    _setThemeFromDict(base_dir, theme_name, themeParams, bgParams,
-                      allow_local_network_access)
+    _set_theme_from_dict(base_dir, theme_name, themeParams, bgParams,
+                         allow_local_network_access)
 
 
-def _setThemeDefault(base_dir: str, allow_local_network_access: bool):
+def _set_theme_default(base_dir: str, allow_local_network_access: bool):
     name = 'default'
-    _removeTheme(base_dir)
-    _setThemeInConfig(base_dir, name)
+    _remove_theme(base_dir)
+    _set_theme_in_config(base_dir, name)
     bgParams = {
         "login": "jpg",
         "follow": "jpg",
@@ -562,11 +563,11 @@ def _setThemeDefault(base_dir: str, allow_local_network_access: bool):
         "banner-height-mobile": "10vh",
         "search-banner-height-mobile": "15vh"
     }
-    _setThemeFromDict(base_dir, name, themeParams, bgParams,
-                      allow_local_network_access)
+    _set_theme_from_dict(base_dir, name, themeParams, bgParams,
+                         allow_local_network_access)
 
 
-def _setThemeFonts(base_dir: str, theme_name: str) -> None:
+def _set_theme_fonts(base_dir: str, theme_name: str) -> None:
     """Adds custom theme fonts
     """
     theme_name_lower = theme_name.lower()
@@ -590,7 +591,7 @@ def _setThemeFonts(base_dir: str, theme_name: str) -> None:
         break
 
 
-def getTextModeBanner(base_dir: str) -> str:
+def get_text_mode_banner(base_dir: str) -> str:
     """Returns the banner used for shell browsers, like Lynx
     """
     text_mode_bannerFilename = base_dir + '/accounts/banner.txt'
@@ -602,7 +603,7 @@ def getTextModeBanner(base_dir: str) -> str:
     return None
 
 
-def getTextModeLogo(base_dir: str) -> str:
+def get_text_mode_logo(base_dir: str) -> str:
     """Returns the login screen logo used for shell browsers, like Lynx
     """
     textModeLogoFilename = base_dir + '/accounts/logo.txt'
@@ -616,7 +617,7 @@ def getTextModeLogo(base_dir: str) -> str:
     return None
 
 
-def _setTextModeTheme(base_dir: str, name: str) -> None:
+def _set_text_mode_theme(base_dir: str, name: str) -> None:
     # set the text mode logo which appears on the login screen
     # in browsers such as Lynx
     textModeLogoFilename = \
@@ -626,7 +627,7 @@ def _setTextModeTheme(base_dir: str, name: str) -> None:
             copyfile(textModeLogoFilename,
                      base_dir + '/accounts/logo.txt')
         except OSError:
-            print('EX: _setTextModeTheme unable to copy ' +
+            print('EX: _set_text_mode_theme unable to copy ' +
                   textModeLogoFilename + ' ' +
                   base_dir + '/accounts/logo.txt')
     else:
@@ -634,7 +635,7 @@ def _setTextModeTheme(base_dir: str, name: str) -> None:
             copyfile(base_dir + '/img/logo.txt',
                      base_dir + '/accounts/logo.txt')
         except OSError:
-            print('EX: _setTextModeTheme unable to copy ' +
+            print('EX: _set_text_mode_theme unable to copy ' +
                   base_dir + '/img/logo.txt ' +
                   base_dir + '/accounts/logo.txt')
 
@@ -645,19 +646,19 @@ def _setTextModeTheme(base_dir: str, name: str) -> None:
         try:
             os.remove(base_dir + '/accounts/banner.txt')
         except OSError:
-            print('EX: _setTextModeTheme unable to delete ' +
+            print('EX: _set_text_mode_theme unable to delete ' +
                   base_dir + '/accounts/banner.txt')
     if os.path.isfile(text_mode_bannerFilename):
         try:
             copyfile(text_mode_bannerFilename,
                      base_dir + '/accounts/banner.txt')
         except OSError:
-            print('EX: _setTextModeTheme unable to copy ' +
+            print('EX: _set_text_mode_theme unable to copy ' +
                   text_mode_bannerFilename + ' ' +
                   base_dir + '/accounts/banner.txt')
 
 
-def _setThemeImages(base_dir: str, name: str) -> None:
+def _set_theme_images(base_dir: str, name: str) -> None:
     """Changes the profile background image
     and banner to the defaults
     """
@@ -674,7 +675,7 @@ def _setThemeImages(base_dir: str, name: str) -> None:
     rightColImageFilename = \
         base_dir + '/theme/' + theme_name_lower + '/right_col_image.png'
 
-    _setTextModeTheme(base_dir, theme_name_lower)
+    _set_text_mode_theme(base_dir, theme_name_lower)
 
     backgroundNames = ('login', 'shares', 'delete', 'follow',
                        'options', 'block', 'search', 'calendar',
@@ -705,7 +706,7 @@ def _setThemeImages(base_dir: str, name: str) -> None:
                                      backgroundType + '-background.' + ext)
                             continue
                         except OSError:
-                            print('EX: _setThemeImages unable to copy ' +
+                            print('EX: _set_theme_images unable to copy ' +
                                   backgroundImageFilename)
                     # background image was not found
                     # so remove any existing file
@@ -715,7 +716,7 @@ def _setThemeImages(base_dir: str, name: str) -> None:
                             os.remove(base_dir + '/accounts/' +
                                       backgroundType + '-background.' + ext)
                         except OSError:
-                            print('EX: _setThemeImages unable to delete ' +
+                            print('EX: _set_theme_images unable to delete ' +
                                   base_dir + '/accounts/' +
                                   backgroundType + '-background.' + ext)
 
@@ -725,14 +726,14 @@ def _setThemeImages(base_dir: str, name: str) -> None:
                     copyfile(profileImageFilename,
                              accountDir + '/image.png')
                 except OSError:
-                    print('EX: _setThemeImages unable to copy ' +
+                    print('EX: _set_theme_images unable to copy ' +
                           profileImageFilename)
 
                 try:
                     copyfile(bannerFilename,
                              accountDir + '/banner.png')
                 except OSError:
-                    print('EX: _setThemeImages unable to copy ' +
+                    print('EX: _set_theme_images unable to copy ' +
                           bannerFilename)
 
                 try:
@@ -740,7 +741,7 @@ def _setThemeImages(base_dir: str, name: str) -> None:
                         copyfile(searchBannerFilename,
                                  accountDir + '/search_banner.png')
                 except OSError:
-                    print('EX: _setThemeImages unable to copy ' +
+                    print('EX: _set_theme_images unable to copy ' +
                           searchBannerFilename)
 
                 try:
@@ -752,10 +753,10 @@ def _setThemeImages(base_dir: str, name: str) -> None:
                         try:
                             os.remove(accountDir + '/left_col_image.png')
                         except OSError:
-                            print('EX: _setThemeImages unable to delete ' +
+                            print('EX: _set_theme_images unable to delete ' +
                                   accountDir + '/left_col_image.png')
                 except OSError:
-                    print('EX: _setThemeImages unable to copy ' +
+                    print('EX: _set_theme_images unable to copy ' +
                           leftColImageFilename)
 
                 try:
@@ -768,17 +769,18 @@ def _setThemeImages(base_dir: str, name: str) -> None:
                             try:
                                 os.remove(accountDir + '/right_col_image.png')
                             except OSError:
-                                print('EX: _setThemeImages unable to delete ' +
+                                print('EX: _set_theme_images ' +
+                                      'unable to delete ' +
                                       accountDir + '/right_col_image.png')
                 except OSError:
-                    print('EX: _setThemeImages unable to copy ' +
+                    print('EX: _set_theme_images unable to copy ' +
                           rightColImageFilename)
         break
 
 
-def setNewsAvatar(base_dir: str, name: str,
-                  http_prefix: str,
-                  domain: str, domain_full: str) -> None:
+def set_news_avatar(base_dir: str, name: str,
+                    http_prefix: str,
+                    domain: str, domain_full: str) -> None:
     """Sets the avatar for the news account
     """
     nickname = 'news'
@@ -796,14 +798,14 @@ def setNewsAvatar(base_dir: str, name: str,
         try:
             os.remove(filename)
         except OSError:
-            print('EX: setNewsAvatar unable to delete ' + filename)
+            print('EX: set_news_avatar unable to delete ' + filename)
     if os.path.isdir(base_dir + '/cache/avatars'):
         copyfile(newFilename, filename)
     accountDir = acct_dir(base_dir, nickname, domain)
     copyfile(newFilename, accountDir + '/avatar.png')
 
 
-def _setClearCacheFlag(base_dir: str) -> None:
+def _set_clear_cache_flag(base_dir: str) -> None:
     """Sets a flag which can be used by an external system
     (eg. a script in a cron job) to clear the browser cache
     """
@@ -814,51 +816,51 @@ def _setClearCacheFlag(base_dir: str) -> None:
         flagFile.write('\n')
 
 
-def setTheme(base_dir: str, name: str, domain: str,
-             allow_local_network_access: bool, system_language: str) -> bool:
+def set_theme(base_dir: str, name: str, domain: str,
+              allow_local_network_access: bool, system_language: str) -> bool:
     """Sets the theme with the given name as the current theme
     """
     result = False
 
-    prevThemeName = getTheme(base_dir)
+    prevThemeName = get_theme(base_dir)
 
     # if the theme has changed then remove any custom settings
     if prevThemeName != name:
-        resetThemeDesignerSettings(base_dir, name, domain,
-                                   allow_local_network_access,
-                                   system_language)
+        reset_theme_designer_settings(base_dir, name, domain,
+                                      allow_local_network_access,
+                                      system_language)
 
-    _removeTheme(base_dir)
+    _remove_theme(base_dir)
 
-    themes = getThemesList(base_dir)
+    themes = get_themes_list(base_dir)
     for theme_name in themes:
         theme_name_lower = theme_name.lower()
         if name == theme_name_lower:
             allow_access = allow_local_network_access
             try:
-                globals()['setTheme' + theme_name](base_dir, allow_access)
+                globals()['set_theme' + theme_name](base_dir, allow_access)
             except BaseException:
-                print('EX: setTheme unable to set theme ' + theme_name)
+                print('EX: set_theme unable to set theme ' + theme_name)
 
             if prevThemeName:
                 if prevThemeName.lower() != theme_name_lower:
                     # change the banner and profile image
                     # to the default for the theme
-                    _setThemeImages(base_dir, name)
-                    _setThemeFonts(base_dir, name)
+                    _set_theme_images(base_dir, name)
+                    _set_theme_fonts(base_dir, name)
             result = True
 
     if not result:
         # default
-        _setThemeDefault(base_dir, allow_local_network_access)
+        _set_theme_default(base_dir, allow_local_network_access)
         result = True
 
     variablesFile = base_dir + '/theme/' + name + '/theme.json'
     if os.path.isfile(variablesFile):
-        _readVariablesFile(base_dir, name, variablesFile,
-                           allow_local_network_access)
+        _read_variables_file(base_dir, name, variablesFile,
+                             allow_local_network_access)
 
-    _setCustomFont(base_dir)
+    _set_custom_font(base_dir)
 
     # set the news avatar
     newsAvatarThemeFilename = \
@@ -871,27 +873,27 @@ def setTheme(base_dir: str, name: str, domain: str,
 
     grayscaleFilename = base_dir + '/accounts/.grayscale'
     if os.path.isfile(grayscaleFilename):
-        enableGrayscale(base_dir)
+        enable_grayscale(base_dir)
     else:
-        disableGrayscale(base_dir)
+        disable_grayscale(base_dir)
 
-    _copyThemeHelpFiles(base_dir, name, system_language)
-    _setThemeInConfig(base_dir, name)
-    _setClearCacheFlag(base_dir)
+    _copy_theme_help_files(base_dir, name, system_language)
+    _set_theme_in_config(base_dir, name)
+    _set_clear_cache_flag(base_dir)
     return result
 
 
-def updateDefaultThemesList(base_dir: str) -> None:
+def update_default_themes_list(base_dir: str) -> None:
     """Recreates the list of default themes
     """
-    theme_names = getThemesList(base_dir)
+    theme_names = get_themes_list(base_dir)
     defaultThemesFilename = base_dir + '/defaultthemes.txt'
     with open(defaultThemesFilename, 'w+') as defaultThemesFile:
         for name in theme_names:
             defaultThemesFile.write(name + '\n')
 
 
-def scanThemesForScripts(base_dir: str) -> bool:
+def scan_themes_for_scripts(base_dir: str) -> bool:
     """Scans the theme directory for any svg files containing scripts
     """
     for subdir, dirs, files in os.walk(base_dir + '/theme'):

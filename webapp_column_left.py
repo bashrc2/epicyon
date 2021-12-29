@@ -14,30 +14,30 @@ from utils import is_editor
 from utils import is_artist
 from utils import remove_domain_port
 from utils import local_actor_url
-from webapp_utils import sharesTimelineJson
-from webapp_utils import htmlPostSeparator
-from webapp_utils import getLeftImageFile
-from webapp_utils import headerButtonsFrontScreen
-from webapp_utils import htmlHeaderWithExternalStyle
-from webapp_utils import htmlFooter
-from webapp_utils import getBannerFile
-from webapp_utils import editTextField
-from shares import shareCategoryIcon
+from webapp_utils import shares_timeline_json
+from webapp_utils import html_post_separator
+from webapp_utils import get_left_image_file
+from webapp_utils import header_buttons_front_screen
+from webapp_utils import html_header_with_external_style
+from webapp_utils import html_footer
+from webapp_utils import get_banner_file
+from webapp_utils import edit_text_field
+from shares import share_category_icon
 
 
-def _linksExist(base_dir: str) -> bool:
+def _links_exist(base_dir: str) -> bool:
     """Returns true if links have been created
     """
     linksFilename = base_dir + '/accounts/links.txt'
     return os.path.isfile(linksFilename)
 
 
-def _getLeftColumnShares(base_dir: str,
-                         http_prefix: str, domain: str, domain_full: str,
-                         nickname: str,
-                         maxSharesInLeftColumn: int,
-                         translate: {},
-                         shared_items_federated_domains: []) -> []:
+def _get_left_column_shares(base_dir: str,
+                            http_prefix: str, domain: str, domain_full: str,
+                            nickname: str,
+                            maxSharesInLeftColumn: int,
+                            translate: {},
+                            shared_items_federated_domains: []) -> []:
     """get any shares and turn them into the left column links format
     """
     pageNumber = 1
@@ -45,9 +45,9 @@ def _getLeftColumnShares(base_dir: str,
     # NOTE: this could potentially be slow if the number of federated
     # shared items is large
     sharesJson, lastPage = \
-        sharesTimelineJson(actor, pageNumber, maxSharesInLeftColumn,
-                           base_dir, domain, nickname, maxSharesInLeftColumn,
-                           shared_items_federated_domains, 'shares')
+        shares_timeline_json(actor, pageNumber, maxSharesInLeftColumn,
+                             base_dir, domain, nickname, maxSharesInLeftColumn,
+                             shared_items_federated_domains, 'shares')
     if not sharesJson:
         return []
 
@@ -58,11 +58,11 @@ def _getLeftColumnShares(base_dir: str,
         if '<' in sharedesc or '?' in sharedesc:
             continue
         shareId = item['shareId']
-        # selecting this link calls htmlShowShare
+        # selecting this link calls html_show_share
         shareLink = actor + '?showshare=' + shareId
         if item.get('category'):
             shareLink += '?category=' + item['category']
-            shareCategory = shareCategoryIcon(item['category'])
+            shareCategory = share_category_icon(item['category'])
 
         linksList.append(shareCategory + sharedesc + ' ' + shareLink)
         ctr += 1
@@ -74,12 +74,12 @@ def _getLeftColumnShares(base_dir: str,
     return linksList
 
 
-def _getLeftColumnWanted(base_dir: str,
-                         http_prefix: str, domain: str, domain_full: str,
-                         nickname: str,
-                         maxSharesInLeftColumn: int,
-                         translate: {},
-                         shared_items_federated_domains: []) -> []:
+def _get_left_column_wanted(base_dir: str,
+                            http_prefix: str, domain: str, domain_full: str,
+                            nickname: str,
+                            maxSharesInLeftColumn: int,
+                            translate: {},
+                            shared_items_federated_domains: []) -> []:
     """get any wanted items and turn them into the left column links format
     """
     pageNumber = 1
@@ -87,9 +87,9 @@ def _getLeftColumnWanted(base_dir: str,
     # NOTE: this could potentially be slow if the number of federated
     # wanted items is large
     sharesJson, lastPage = \
-        sharesTimelineJson(actor, pageNumber, maxSharesInLeftColumn,
-                           base_dir, domain, nickname, maxSharesInLeftColumn,
-                           shared_items_federated_domains, 'wanted')
+        shares_timeline_json(actor, pageNumber, maxSharesInLeftColumn,
+                             base_dir, domain, nickname, maxSharesInLeftColumn,
+                             shared_items_federated_domains, 'wanted')
     if not sharesJson:
         return []
 
@@ -100,7 +100,7 @@ def _getLeftColumnWanted(base_dir: str,
         if '<' in sharedesc or ';' in sharedesc:
             continue
         shareId = item['shareId']
-        # selecting this link calls htmlShowShare
+        # selecting this link calls html_show_share
         shareLink = actor + '?showwanted=' + shareId
         linksList.append(sharedesc + ' ' + shareLink)
         ctr += 1
@@ -112,25 +112,25 @@ def _getLeftColumnWanted(base_dir: str,
     return linksList
 
 
-def getLeftColumnContent(base_dir: str, nickname: str, domain_full: str,
-                         http_prefix: str, translate: {},
-                         editor: bool, artist: bool,
-                         showBackButton: bool, timelinePath: str,
-                         rss_icon_at_top: bool, showHeaderImage: bool,
-                         frontPage: bool, theme: str,
-                         accessKeys: {},
-                         shared_items_federated_domains: []) -> str:
+def get_left_column_content(base_dir: str, nickname: str, domain_full: str,
+                            http_prefix: str, translate: {},
+                            editor: bool, artist: bool,
+                            showBackButton: bool, timelinePath: str,
+                            rss_icon_at_top: bool, showHeaderImage: bool,
+                            frontPage: bool, theme: str,
+                            accessKeys: {},
+                            shared_items_federated_domains: []) -> str:
     """Returns html content for the left column
     """
     htmlStr = ''
 
-    separatorStr = htmlPostSeparator(base_dir, 'left')
+    separatorStr = html_post_separator(base_dir, 'left')
     domain = remove_domain_port(domain_full)
 
     editImageClass = ''
     if showHeaderImage:
         leftImageFile, leftColumnImageFilename = \
-            getLeftImageFile(base_dir, nickname, domain, theme)
+            get_left_image_file(base_dir, nickname, domain, theme)
 
         # show the image at the top of the column
         editImageClass = 'leftColEdit'
@@ -217,18 +217,18 @@ def getLeftColumnContent(base_dir: str, nickname: str, domain_full: str,
         # show a number of shares
         maxSharesInLeftColumn = 3
         sharesList = \
-            _getLeftColumnShares(base_dir,
-                                 http_prefix, domain, domain_full, nickname,
-                                 maxSharesInLeftColumn, translate,
-                                 shared_items_federated_domains)
+            _get_left_column_shares(base_dir,
+                                    http_prefix, domain, domain_full, nickname,
+                                    maxSharesInLeftColumn, translate,
+                                    shared_items_federated_domains)
         if linksList and sharesList:
             linksList = sharesList + linksList
 
         wantedList = \
-            _getLeftColumnWanted(base_dir,
-                                 http_prefix, domain, domain_full, nickname,
-                                 maxSharesInLeftColumn, translate,
-                                 shared_items_federated_domains)
+            _get_left_column_wanted(base_dir,
+                                    http_prefix, domain, domain_full, nickname,
+                                    maxSharesInLeftColumn, translate,
+                                    shared_items_federated_domains)
         if linksList and wantedList:
             linksList = wantedList + linksList
 
@@ -348,15 +348,15 @@ def getLeftColumnContent(base_dir: str, nickname: str, domain_full: str,
     return htmlStr
 
 
-def htmlLinksMobile(css_cache: {}, base_dir: str,
-                    nickname: str, domain_full: str,
-                    http_prefix: str, translate,
-                    timelinePath: str, authorized: bool,
-                    rss_icon_at_top: bool,
-                    icons_as_buttons: bool,
-                    defaultTimeline: str,
-                    theme: str, accessKeys: {},
-                    shared_items_federated_domains: []) -> str:
+def html_links_mobile(css_cache: {}, base_dir: str,
+                      nickname: str, domain_full: str,
+                      http_prefix: str, translate,
+                      timelinePath: str, authorized: bool,
+                      rss_icon_at_top: bool,
+                      icons_as_buttons: bool,
+                      defaultTimeline: str,
+                      theme: str, accessKeys: {},
+                      shared_items_federated_domains: []) -> str:
     """Show the left column links within mobile view
     """
     htmlStr = ''
@@ -378,9 +378,9 @@ def htmlLinksMobile(css_cache: {}, base_dir: str,
 
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
-    htmlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
+    htmlStr = html_header_with_external_style(cssFilename, instanceTitle, None)
     bannerFile, bannerFilename = \
-        getBannerFile(base_dir, nickname, domain, theme)
+        get_banner_file(base_dir, nickname, domain, theme)
     htmlStr += \
         '<a href="/users/' + nickname + '/' + defaultTimeline + '" ' + \
         'accesskey="' + accessKeys['menuTimeline'] + '">' + \
@@ -390,18 +390,18 @@ def htmlLinksMobile(css_cache: {}, base_dir: str,
 
     htmlStr += '<div class="col-left-mobile">\n'
     htmlStr += '<center>' + \
-        headerButtonsFrontScreen(translate, nickname,
-                                 'links', authorized,
-                                 icons_as_buttons) + '</center>'
+        header_buttons_front_screen(translate, nickname,
+                                    'links', authorized,
+                                    icons_as_buttons) + '</center>'
     htmlStr += \
-        getLeftColumnContent(base_dir, nickname, domain_full,
-                             http_prefix, translate,
-                             editor, artist,
-                             False, timelinePath,
-                             rss_icon_at_top, False, False,
-                             theme, accessKeys,
-                             shared_items_federated_domains)
-    if editor and not _linksExist(base_dir):
+        get_left_column_content(base_dir, nickname, domain_full,
+                                http_prefix, translate,
+                                editor, artist,
+                                False, timelinePath,
+                                rss_icon_at_top, False, False,
+                                theme, accessKeys,
+                                shared_items_federated_domains)
+    if editor and not _links_exist(base_dir):
         htmlStr += '<br><br><br>\n<center>\n  '
         htmlStr += translate['Select the edit icon to add web links']
         htmlStr += '\n</center>\n'
@@ -409,14 +409,14 @@ def htmlLinksMobile(css_cache: {}, base_dir: str,
     # end of col-left-mobile
     htmlStr += '</div>\n'
 
-    htmlStr += '</div>\n' + htmlFooter()
+    htmlStr += '</div>\n' + html_footer()
     return htmlStr
 
 
-def htmlEditLinks(css_cache: {}, translate: {}, base_dir: str, path: str,
-                  domain: str, port: int, http_prefix: str,
-                  defaultTimeline: str, theme: str,
-                  accessKeys: {}) -> str:
+def html_edit_links(css_cache: {}, translate: {}, base_dir: str, path: str,
+                    domain: str, port: int, http_prefix: str,
+                    defaultTimeline: str, theme: str,
+                    accessKeys: {}) -> str:
     """Shows the edit links screen
     """
     if '/users/' not in path:
@@ -438,12 +438,12 @@ def htmlEditLinks(css_cache: {}, translate: {}, base_dir: str, path: str,
 
     # filename of the banner shown at the top
     bannerFile, bannerFilename = \
-        getBannerFile(base_dir, nickname, domain, theme)
+        get_banner_file(base_dir, nickname, domain, theme)
 
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
     editLinksForm = \
-        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
+        html_header_with_external_style(cssFilename, instanceTitle, None)
 
     # top banner
     editLinksForm += \
@@ -487,7 +487,7 @@ def htmlEditLinks(css_cache: {}, translate: {}, base_dir: str, path: str,
         translate['One link per line. Description followed by the link.'] + \
         '<br>'
     newColLinkStr = translate['New link title and URL']
-    editLinksForm += editTextField(None, 'newColLink', '', newColLinkStr)
+    editLinksForm += edit_text_field(None, 'newColLink', '', newColLinkStr)
     editLinksForm += \
         '  <textarea id="message" name="editedLinks" ' + \
         'style="height:80vh" spellcheck="false">' + linksStr + '</textarea>'
@@ -536,5 +536,5 @@ def htmlEditLinks(css_cache: {}, translate: {}, base_dir: str, path: str,
             editLinksForm += \
                 '</div>'
 
-    editLinksForm += htmlFooter()
+    editLinksForm += html_footer()
     return editLinksForm

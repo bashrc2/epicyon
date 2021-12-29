@@ -17,17 +17,17 @@ from utils import get_config_param
 from utils import acct_dir
 from utils import get_currencies
 from utils import get_category_types
-from webapp_utils import getBannerFile
-from webapp_utils import htmlHeaderWithExternalStyle
-from webapp_utils import htmlFooter
-from webapp_utils import editTextField
-from webapp_utils import editNumberField
-from webapp_utils import editCurrencyField
-from webapp_post import individualPostAsHtml
+from webapp_utils import get_banner_file
+from webapp_utils import html_header_with_external_style
+from webapp_utils import html_footer
+from webapp_utils import edit_text_field
+from webapp_utils import edit_number_field
+from webapp_utils import edit_currency_field
+from webapp_post import individual_post_as_html
 
 
-def _htmlFollowingDataList(base_dir: str, nickname: str,
-                           domain: str, domain_full: str) -> str:
+def _html_following_data_list(base_dir: str, nickname: str,
+                              domain: str, domain_full: str) -> str:
     """Returns a datalist of handles being followed
     """
     listStr = '<datalist id="followingHandles">\n'
@@ -66,21 +66,21 @@ def _htmlFollowingDataList(base_dir: str, nickname: str,
     return listStr
 
 
-def _htmlNewPostDropDown(scopeIcon: str, scopeDescription: str,
-                         replyStr: str,
-                         translate: {},
-                         showPublicOnDropdown: bool,
-                         defaultTimeline: str,
-                         pathBase: str,
-                         dropdownNewPostSuffix: str,
-                         dropdownNewBlogSuffix: str,
-                         dropdownUnlistedSuffix: str,
-                         dropdownFollowersSuffix: str,
-                         dropdownDMSuffix: str,
-                         dropdownReminderSuffix: str,
-                         dropdownReportSuffix: str,
-                         noDropDown: bool,
-                         accessKeys: {}) -> str:
+def _html_new_post_drop_down(scopeIcon: str, scopeDescription: str,
+                             replyStr: str,
+                             translate: {},
+                             showPublicOnDropdown: bool,
+                             defaultTimeline: str,
+                             pathBase: str,
+                             dropdownNewPostSuffix: str,
+                             dropdownNewBlogSuffix: str,
+                             dropdownUnlistedSuffix: str,
+                             dropdownFollowersSuffix: str,
+                             dropdownDMSuffix: str,
+                             dropdownReminderSuffix: str,
+                             dropdownReportSuffix: str,
+                             noDropDown: bool,
+                             accessKeys: {}) -> str:
     """Returns the html for a drop down list of new post types
     """
     dropDownContent = '<nav><div class="newPostDropdown">\n'
@@ -184,33 +184,33 @@ def _htmlNewPostDropDown(scopeIcon: str, scopeDescription: str,
     return dropDownContent
 
 
-def htmlNewPost(css_cache: {}, media_instance: bool, translate: {},
-                base_dir: str, http_prefix: str,
-                path: str, inReplyTo: str,
-                mentions: [],
-                shareDescription: str,
-                reportUrl: str, pageNumber: int,
-                category: str,
-                nickname: str, domain: str,
-                domain_full: str,
-                defaultTimeline: str, newswire: {},
-                theme: str, noDropDown: bool,
-                accessKeys: {}, customSubmitText: str,
-                conversationId: str,
-                recent_posts_cache: {}, max_recent_posts: int,
-                session, cached_webfingers: {},
-                person_cache: {}, port: int,
-                post_json_object: {},
-                project_version: str,
-                yt_replace_domain: str,
-                twitter_replacement_domain: str,
-                show_published_date_only: bool,
-                peertube_instances: [],
-                allow_local_network_access: bool,
-                system_language: str,
-                max_like_count: int, signing_priv_key_pem: str,
-                cw_lists: {}, lists_enabled: str,
-                boxName: str) -> str:
+def html_new_post(css_cache: {}, media_instance: bool, translate: {},
+                  base_dir: str, http_prefix: str,
+                  path: str, inReplyTo: str,
+                  mentions: [],
+                  shareDescription: str,
+                  reportUrl: str, pageNumber: int,
+                  category: str,
+                  nickname: str, domain: str,
+                  domain_full: str,
+                  defaultTimeline: str, newswire: {},
+                  theme: str, noDropDown: bool,
+                  accessKeys: {}, customSubmitText: str,
+                  conversationId: str,
+                  recent_posts_cache: {}, max_recent_posts: int,
+                  session, cached_webfingers: {},
+                  person_cache: {}, port: int,
+                  post_json_object: {},
+                  project_version: str,
+                  yt_replace_domain: str,
+                  twitter_replacement_domain: str,
+                  show_published_date_only: bool,
+                  peertube_instances: [],
+                  allow_local_network_access: bool,
+                  system_language: str,
+                  max_like_count: int, signing_priv_key_pem: str,
+                  cw_lists: {}, lists_enabled: str,
+                  boxName: str) -> str:
     """New post screen
     """
     replyStr = ''
@@ -240,7 +240,7 @@ def htmlNewPost(css_cache: {}, media_instance: bool, translate: {},
 
     # filename of the banner shown at the top
     bannerFile, bannerFilename = \
-        getBannerFile(base_dir, nickname, domain, theme)
+        get_banner_file(base_dir, nickname, domain, theme)
 
     if not path.endswith('/newshare') and not path.endswith('/newwanted'):
         if not path.endswith('/newreport'):
@@ -259,28 +259,29 @@ def htmlNewPost(css_cache: {}, media_instance: bool, translate: {},
                         translate['this post'] + '</a></p>\n'
                     if post_json_object:
                         newPostText += \
-                            individualPostAsHtml(signing_priv_key_pem,
-                                                 True, recent_posts_cache,
-                                                 max_recent_posts,
-                                                 translate, None,
-                                                 base_dir, session,
-                                                 cached_webfingers,
-                                                 person_cache,
-                                                 nickname, domain, port,
-                                                 post_json_object,
-                                                 None, True, False,
-                                                 http_prefix, project_version,
-                                                 boxName,
-                                                 yt_replace_domain,
-                                                 twitter_replacement_domain,
-                                                 show_published_date_only,
-                                                 peertube_instances,
-                                                 allow_local_network_access,
-                                                 theme, system_language,
-                                                 max_like_count,
-                                                 False, False, False,
-                                                 False, False, False,
-                                                 cw_lists, lists_enabled)
+                            individual_post_as_html(signing_priv_key_pem,
+                                                    True, recent_posts_cache,
+                                                    max_recent_posts,
+                                                    translate, None,
+                                                    base_dir, session,
+                                                    cached_webfingers,
+                                                    person_cache,
+                                                    nickname, domain, port,
+                                                    post_json_object,
+                                                    None, True, False,
+                                                    http_prefix,
+                                                    project_version,
+                                                    boxName,
+                                                    yt_replace_domain,
+                                                    twitter_replacement_domain,
+                                                    show_published_date_only,
+                                                    peertube_instances,
+                                                    allow_local_network_access,
+                                                    theme, system_language,
+                                                    max_like_count,
+                                                    False, False, False,
+                                                    False, False, False,
+                                                    cw_lists, lists_enabled)
 
                 replyStr = '<input type="hidden" ' + \
                     'name="replyTo" value="' + inReplyTo + '">\n'
@@ -357,7 +358,7 @@ def htmlNewPost(css_cache: {}, media_instance: bool, translate: {},
 
     newPostImageSection = '    <div class="container">\n'
     newPostImageSection += \
-        editTextField(translate['Image description'], 'imageDescription', '')
+        edit_text_field(translate['Image description'], 'imageDescription', '')
 
     newPostImageSection += \
         '      <input type="file" id="attachpic" name="attachpic"'
@@ -447,11 +448,11 @@ def htmlNewPost(css_cache: {}, media_instance: bool, translate: {},
         endpoint = 'newshare'
         extraFields = '<div class="container">\n'
         extraFields += \
-            editNumberField(translate['Quantity'],
-                            'itemQty', 1, 1, 999999, 1)
+            edit_number_field(translate['Quantity'],
+                              'itemQty', 1, 1, 999999, 1)
         extraFields += '<br>' + \
-            editTextField(translate['Type of shared item. eg. hat'] + ':',
-                          'itemType', '', '', True)
+            edit_text_field(translate['Type of shared item. eg. hat'] + ':',
+                            'itemType', '', '', True)
         categoryTypes = get_category_types(base_dir)
         catStr = translate['Category of shared item. eg. clothing']
         extraFields += '<label class="labels">' + catStr + '</label><br>\n'
@@ -468,17 +469,17 @@ def htmlNewPost(css_cache: {}, media_instance: bool, translate: {},
 
         extraFields += '  </select><br>\n'
         extraFields += \
-            editNumberField(translate['Duration of listing in days'],
-                            'duration', 14, 1, 365, 1)
+            edit_number_field(translate['Duration of listing in days'],
+                              'duration', 14, 1, 365, 1)
         extraFields += '</div>\n'
         extraFields += '<div class="container">\n'
         cityOrLocStr = translate['City or location of the shared item']
-        extraFields += editTextField(cityOrLocStr + ':', 'location', '')
+        extraFields += edit_text_field(cityOrLocStr + ':', 'location', '')
         extraFields += '</div>\n'
         extraFields += '<div class="container">\n'
         extraFields += \
-            editCurrencyField(translate['Price'] + ':', 'itemPrice', '0.00',
-                              '0.00', True)
+            edit_currency_field(translate['Price'] + ':', 'itemPrice', '0.00',
+                                '0.00', True)
         extraFields += '<br>'
         extraFields += \
             '<label class="labels">' + translate['Currency'] + '</label><br>\n'
@@ -512,11 +513,11 @@ def htmlNewPost(css_cache: {}, media_instance: bool, translate: {},
         endpoint = 'newwanted'
         extraFields = '<div class="container">\n'
         extraFields += \
-            editNumberField(translate['Quantity'],
-                            'itemQty', 1, 1, 999999, 1)
+            edit_number_field(translate['Quantity'],
+                              'itemQty', 1, 1, 999999, 1)
         extraFields += '<br>' + \
-            editTextField(translate['Type of wanted item. eg. hat'] + ':',
-                          'itemType', '', '', True)
+            edit_text_field(translate['Type of wanted item. eg. hat'] + ':',
+                            'itemType', '', '', True)
         categoryTypes = get_category_types(base_dir)
         catStr = translate['Category of wanted item. eg. clothes']
         extraFields += '<label class="labels">' + catStr + '</label><br>\n'
@@ -533,17 +534,17 @@ def htmlNewPost(css_cache: {}, media_instance: bool, translate: {},
 
         extraFields += '  </select><br>\n'
         extraFields += \
-            editNumberField(translate['Duration of listing in days'],
-                            'duration', 14, 1, 365, 1)
+            edit_number_field(translate['Duration of listing in days'],
+                              'duration', 14, 1, 365, 1)
         extraFields += '</div>\n'
         extraFields += '<div class="container">\n'
         cityOrLocStr = translate['City or location of the wanted item']
-        extraFields += editTextField(cityOrLocStr + ':', 'location', '')
+        extraFields += edit_text_field(cityOrLocStr + ':', 'location', '')
         extraFields += '</div>\n'
         extraFields += '<div class="container">\n'
         extraFields += \
-            editCurrencyField(translate['Maximum Price'] + ':',
-                              'itemPrice', '0.00', '0.00', True)
+            edit_currency_field(translate['Maximum Price'] + ':',
+                                'itemPrice', '0.00', '0.00', True)
         extraFields += '<br>'
         extraFields += \
             '<label class="labels">' + translate['Currency'] + '</label><br>\n'
@@ -633,11 +634,12 @@ def htmlNewPost(css_cache: {}, media_instance: bool, translate: {},
 
         dateAndLocation += '<div class="container">\n'
         dateAndLocation += \
-            editTextField(translate['Location'], 'location', '')
+            edit_text_field(translate['Location'], 'location', '')
         dateAndLocation += '</div>\n'
 
     instanceTitle = get_config_param(base_dir, 'instanceTitle')
-    newPostForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
+    newPostForm = html_header_with_external_style(cssFilename,
+                                                  instanceTitle, None)
 
     newPostForm += \
         '<header>\n' + \
@@ -706,20 +708,20 @@ def htmlNewPost(css_cache: {}, media_instance: bool, translate: {},
     dropDownContent = ''
     if not reportUrl and not shareDescription:
         dropDownContent = \
-            _htmlNewPostDropDown(scopeIcon, scopeDescription,
-                                 replyStr,
-                                 translate,
-                                 showPublicOnDropdown,
-                                 defaultTimeline,
-                                 pathBase,
-                                 dropdownNewPostSuffix,
-                                 dropdownNewBlogSuffix,
-                                 dropdownUnlistedSuffix,
-                                 dropdownFollowersSuffix,
-                                 dropdownDMSuffix,
-                                 dropdownReminderSuffix,
-                                 dropdownReportSuffix,
-                                 noDropDown, accessKeys)
+            _html_new_post_drop_down(scopeIcon, scopeDescription,
+                                     replyStr,
+                                     translate,
+                                     showPublicOnDropdown,
+                                     defaultTimeline,
+                                     pathBase,
+                                     dropdownNewPostSuffix,
+                                     dropdownNewBlogSuffix,
+                                     dropdownUnlistedSuffix,
+                                     dropdownFollowersSuffix,
+                                     dropdownDMSuffix,
+                                     dropdownReminderSuffix,
+                                     dropdownReportSuffix,
+                                     noDropDown, accessKeys)
     else:
         if not shareDescription:
             # reporting a post to moderator
@@ -792,7 +794,7 @@ def htmlNewPost(css_cache: {}, media_instance: bool, translate: {},
         newPostForm += '</div>\n'
 
     newPostForm += \
-        editTextField(placeholderSubject, 'subject', shareDescription)
+        edit_text_field(placeholderSubject, 'subject', shareDescription)
     newPostForm += ''
 
     selectedStr = ' selected'
@@ -812,7 +814,7 @@ def htmlNewPost(css_cache: {}, media_instance: bool, translate: {},
             '    <input type="text" name="mentions" ' + \
             'list="followingHandles" value="' + mentionsStr + '" selected>\n'
         newPostForm += \
-            _htmlFollowingDataList(base_dir, nickname, domain, domain_full)
+            _html_following_data_list(base_dir, nickname, domain, domain_full)
         newPostForm += ''
         selectedStr = ''
 
@@ -847,5 +849,5 @@ def htmlNewPost(css_cache: {}, media_instance: bool, translate: {},
         newPostForm = \
             newPostForm.replace('<body>', '<body onload="focusOnMessage()">')
 
-    newPostForm += htmlFooter()
+    newPostForm += html_footer()
     return newPostForm

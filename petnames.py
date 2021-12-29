@@ -11,8 +11,8 @@ import os
 from utils import acct_dir
 
 
-def setPetName(base_dir: str, nickname: str, domain: str,
-               handle: str, petname: str) -> bool:
+def set_pet_name(base_dir: str, nickname: str, domain: str,
+                 handle: str, petname: str) -> bool:
     """Adds a new petname
     """
     if '@' not in handle:
@@ -67,8 +67,8 @@ def setPetName(base_dir: str, nickname: str, domain: str,
     return True
 
 
-def getPetName(base_dir: str, nickname: str, domain: str,
-               handle: str) -> str:
+def get_pet_name(base_dir: str, nickname: str, domain: str,
+                 handle: str) -> str:
     """Given a handle returns the petname
     """
     if '@' not in handle:
@@ -96,8 +96,8 @@ def getPetName(base_dir: str, nickname: str, domain: str,
     return ''
 
 
-def _getPetNameHandle(base_dir: str, nickname: str, domain: str,
-                      petname: str) -> str:
+def _get_pet_name_handle(base_dir: str, nickname: str, domain: str,
+                         petname: str) -> str:
     """Given a petname returns the handle
     """
     if petname.startswith('@'):
@@ -117,8 +117,8 @@ def _getPetNameHandle(base_dir: str, nickname: str, domain: str,
     return ''
 
 
-def resolvePetnames(base_dir: str, nickname: str, domain: str,
-                    content: str) -> str:
+def resolve_petnames(base_dir: str, nickname: str, domain: str,
+                     content: str) -> str:
     """Replaces petnames with their full handles
     """
     if not content:
@@ -131,7 +131,7 @@ def resolvePetnames(base_dir: str, nickname: str, domain: str,
         if not wrd.startswith('@'):
             break
         # does a petname handle exist for this?
-        handle = _getPetNameHandle(base_dir, nickname, domain, wrd)
+        handle = _get_pet_name_handle(base_dir, nickname, domain, wrd)
         if not handle:
             continue
         # replace the petname with the handle

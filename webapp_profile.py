@@ -9,7 +9,7 @@ __module_group__ = "Web Interface"
 
 import os
 from pprint import pprint
-from webfinger import webfingerHandle
+from webfinger import webfinger_handle
 from utils import get_display_name
 from utils import is_group_account
 from utils import has_object_dict
@@ -29,16 +29,16 @@ from utils import acct_dir
 from utils import get_supported_languages
 from utils import local_actor_url
 from utils import get_reply_interval_hours
-from languages import getActorLanguages
-from skills import getSkills
-from theme import getThemesList
+from languages import get_actor_languages
+from skills import get_skills
+from theme import get_themes_list
 from person import person_box_json
-from person import getActorJson
-from person import getPersonAvatarUrl
-from posts import getPersonBox
+from person import get_actor_json
+from person import get_person_avatar_url
+from posts import get_person_box
 from posts import is_moderator
-from posts import parseUserFeed
-from posts import isCreateInsideAnnounce
+from posts import parse_user_feed
+from posts import is_create_inside_announce
 from donate import get_donation_url
 from donate import get_website
 from xmpp import get_xmpp_address
@@ -52,37 +52,37 @@ from tox import get_tox_address
 from briar import get_briar_address
 from jami import get_jami_address
 from cwtch import get_cwtch_address
-from filters import isFiltered
-from follow import isFollowerOfPerson
-from follow import getFollowerDomains
-from webapp_frontscreen import htmlFrontScreen
-from webapp_utils import htmlKeyboardNavigation
-from webapp_utils import htmlHideFromScreenReader
-from webapp_utils import scheduledPostsExist
-from webapp_utils import htmlHeaderWithExternalStyle
-from webapp_utils import htmlHeaderWithPersonMarkup
-from webapp_utils import htmlFooter
-from webapp_utils import addEmojiToDisplayName
-from webapp_utils import getBannerFile
-from webapp_utils import htmlPostSeparator
-from webapp_utils import editCheckBox
-from webapp_utils import editTextField
-from webapp_utils import editTextArea
-from webapp_utils import beginEditSection
-from webapp_utils import endEditSection
+from filters import is_filtered
+from follow import is_follower_of_person
+from follow import get_follower_domains
+from webapp_frontscreen import html_front_screen
+from webapp_utils import html_keyboard_navigation
+from webapp_utils import html_hide_from_screen_reader
+from webapp_utils import scheduled_posts_exist
+from webapp_utils import html_header_with_external_style
+from webapp_utils import html_header_with_person_markup
+from webapp_utils import html_footer
+from webapp_utils import add_emoji_to_display_name
+from webapp_utils import get_banner_file
+from webapp_utils import html_post_separator
+from webapp_utils import edit_check_box
+from webapp_utils import edit_text_field
+from webapp_utils import edit_text_area
+from webapp_utils import begin_edit_section
+from webapp_utils import end_edit_section
 from blog import get_blog_address
-from webapp_post import individualPostAsHtml
-from webapp_timeline import htmlIndividualShare
+from webapp_post import individual_post_as_html
+from webapp_timeline import html_individual_share
 from blocking import get_cw_list_variable
 
 
-def _validProfilePreviewPost(post_json_object: {},
-                             personUrl: str) -> (bool, {}):
+def _valid_profile_preview_post(post_json_object: {},
+                                personUrl: str) -> (bool, {}):
     """Returns true if the given post should appear on a person/group profile
     after searching for a handle
     """
     isAnnouncedFeedItem = False
-    if isCreateInsideAnnounce(post_json_object):
+    if is_create_inside_announce(post_json_object):
         isAnnouncedFeedItem = True
         post_json_object = post_json_object['object']
     if not post_json_object.get('type'):
@@ -121,26 +121,26 @@ def _validProfilePreviewPost(post_json_object: {},
     return True, post_json_object
 
 
-def htmlProfileAfterSearch(css_cache: {},
-                           recent_posts_cache: {}, max_recent_posts: int,
-                           translate: {},
-                           base_dir: str, path: str, http_prefix: str,
-                           nickname: str, domain: str, port: int,
-                           profileHandle: str,
-                           session, cached_webfingers: {}, person_cache: {},
-                           debug: bool, project_version: str,
-                           yt_replace_domain: str,
-                           twitter_replacement_domain: str,
-                           show_published_date_only: bool,
-                           defaultTimeline: str,
-                           peertube_instances: [],
-                           allow_local_network_access: bool,
-                           theme_name: str,
-                           accessKeys: {},
-                           system_language: str,
-                           max_like_count: int,
-                           signing_priv_key_pem: str,
-                           cw_lists: {}, lists_enabled: str) -> str:
+def html_profile_after_search(css_cache: {},
+                              recent_posts_cache: {}, max_recent_posts: int,
+                              translate: {},
+                              base_dir: str, path: str, http_prefix: str,
+                              nickname: str, domain: str, port: int,
+                              profileHandle: str,
+                              session, cached_webfingers: {}, person_cache: {},
+                              debug: bool, project_version: str,
+                              yt_replace_domain: str,
+                              twitter_replacement_domain: str,
+                              show_published_date_only: bool,
+                              defaultTimeline: str,
+                              peertube_instances: [],
+                              allow_local_network_access: bool,
+                              theme_name: str,
+                              accessKeys: {},
+                              system_language: str,
+                              max_like_count: int,
+                              signing_priv_key_pem: str,
+                              cw_lists: {}, lists_enabled: str) -> str:
     """Show a profile page after a search for a fediverse address
     """
     http = False
@@ -150,8 +150,8 @@ def htmlProfileAfterSearch(css_cache: {},
     elif http_prefix == 'gnunet':
         gnunet = True
     profile_json, asHeader = \
-        getActorJson(domain, profileHandle, http, gnunet, debug, False,
-                     signing_priv_key_pem, session)
+        get_actor_json(domain, profileHandle, http, gnunet, debug, False,
+                       signing_priv_key_pem, session)
     if not profile_json:
         return None
 
@@ -179,8 +179,8 @@ def htmlProfileAfterSearch(css_cache: {},
         if profile_json['icon'].get('url'):
             avatarUrl = profile_json['icon']['url']
     if not avatarUrl:
-        avatarUrl = getPersonAvatarUrl(base_dir, personUrl,
-                                       person_cache, True)
+        avatarUrl = get_person_avatar_url(base_dir, personUrl,
+                                          person_cache, True)
     displayName = searchNickname
     if profile_json.get('name'):
         displayName = profile_json['name']
@@ -196,10 +196,10 @@ def htmlProfileAfterSearch(css_cache: {},
         displayName += ' ⌂'
 
     followsYou = \
-        isFollowerOfPerson(base_dir,
-                           nickname, domain,
-                           searchNickname,
-                           searchDomainFull)
+        is_follower_of_person(base_dir,
+                              nickname, domain,
+                              searchNickname,
+                              searchDomainFull)
 
     profileDescription = ''
     if profile_json.get('summary'):
@@ -259,17 +259,17 @@ def htmlProfileAfterSearch(css_cache: {},
             joinedDate = profile_json['published']
 
     profileStr = \
-        _getProfileHeaderAfterSearch(base_dir,
-                                     nickname, defaultTimeline,
-                                     searchNickname,
-                                     searchDomainFull,
-                                     translate,
-                                     displayName, followsYou,
-                                     profileDescriptionShort,
-                                     avatarUrl, imageUrl,
-                                     movedTo, profile_json['id'],
-                                     alsoKnownAs, accessKeys,
-                                     joinedDate)
+        _get_profile_header_after_search(base_dir,
+                                         nickname, defaultTimeline,
+                                         searchNickname,
+                                         searchDomainFull,
+                                         translate,
+                                         displayName, followsYou,
+                                         profileDescriptionShort,
+                                         avatarUrl, imageUrl,
+                                         movedTo, profile_json['id'],
+                                         alsoKnownAs, accessKeys,
+                                         joinedDate)
 
     domain_full = get_full_domain(domain, port)
 
@@ -321,60 +321,63 @@ def htmlProfileAfterSearch(css_cache: {},
             '</div>\n'
 
     userFeed = \
-        parseUserFeed(signing_priv_key_pem,
-                      session, outboxUrl, asHeader, project_version,
-                      http_prefix, domain, debug)
+        parse_user_feed(signing_priv_key_pem,
+                        session, outboxUrl, asHeader, project_version,
+                        http_prefix, domain, debug)
     if userFeed:
         i = 0
         for item in userFeed:
             showItem, post_json_object = \
-                _validProfilePreviewPost(item, personUrl)
+                _valid_profile_preview_post(item, personUrl)
             if not showItem:
                 continue
 
             profileStr += \
-                individualPostAsHtml(signing_priv_key_pem,
-                                     True, recent_posts_cache,
-                                     max_recent_posts,
-                                     translate, None, base_dir,
-                                     session, cached_webfingers, person_cache,
-                                     nickname, domain, port,
-                                     post_json_object, avatarUrl,
-                                     False, False,
-                                     http_prefix, project_version, 'inbox',
-                                     yt_replace_domain,
-                                     twitter_replacement_domain,
-                                     show_published_date_only,
-                                     peertube_instances,
-                                     allow_local_network_access,
-                                     theme_name, system_language,
-                                     max_like_count,
-                                     False, False, False, False, False, False,
-                                     cw_lists, lists_enabled)
+                individual_post_as_html(signing_priv_key_pem,
+                                        True, recent_posts_cache,
+                                        max_recent_posts,
+                                        translate, None, base_dir,
+                                        session, cached_webfingers,
+                                        person_cache,
+                                        nickname, domain, port,
+                                        post_json_object, avatarUrl,
+                                        False, False,
+                                        http_prefix, project_version, 'inbox',
+                                        yt_replace_domain,
+                                        twitter_replacement_domain,
+                                        show_published_date_only,
+                                        peertube_instances,
+                                        allow_local_network_access,
+                                        theme_name, system_language,
+                                        max_like_count,
+                                        False, False, False,
+                                        False, False, False,
+                                        cw_lists, lists_enabled)
             i += 1
             if i >= 8:
                 break
 
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
-    return htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None) + \
-        profileStr + htmlFooter()
+    return html_header_with_external_style(cssFilename,
+                                           instanceTitle, None) + \
+        profileStr + html_footer()
 
 
-def _getProfileHeader(base_dir: str, http_prefix: str,
-                      nickname: str, domain: str,
-                      domain_full: str, translate: {},
-                      defaultTimeline: str,
-                      displayName: str,
-                      avatarDescription: str,
-                      profileDescriptionShort: str,
-                      loginButton: str, avatarUrl: str,
-                      theme: str, movedTo: str,
-                      alsoKnownAs: [],
-                      pinnedContent: str,
-                      accessKeys: {},
-                      joinedDate: str,
-                      occupationName: str) -> str:
+def _get_profile_header(base_dir: str, http_prefix: str,
+                        nickname: str, domain: str,
+                        domain_full: str, translate: {},
+                        defaultTimeline: str,
+                        displayName: str,
+                        avatarDescription: str,
+                        profileDescriptionShort: str,
+                        loginButton: str, avatarUrl: str,
+                        theme: str, movedTo: str,
+                        alsoKnownAs: [],
+                        pinnedContent: str,
+                        accessKeys: {},
+                        joinedDate: str,
+                        occupationName: str) -> str:
     """The header of the profile screen, containing background
     image and avatar
     """
@@ -455,19 +458,19 @@ def _getProfileHeader(base_dir: str, http_prefix: str,
     return htmlStr
 
 
-def _getProfileHeaderAfterSearch(base_dir: str,
-                                 nickname: str, defaultTimeline: str,
-                                 searchNickname: str,
-                                 searchDomainFull: str,
-                                 translate: {},
-                                 displayName: str,
-                                 followsYou: bool,
-                                 profileDescriptionShort: str,
-                                 avatarUrl: str, imageUrl: str,
-                                 movedTo: str, actor: str,
-                                 alsoKnownAs: [],
-                                 accessKeys: {},
-                                 joinedDate: str) -> str:
+def _get_profile_header_after_search(base_dir: str,
+                                     nickname: str, defaultTimeline: str,
+                                     searchNickname: str,
+                                     searchDomainFull: str,
+                                     translate: {},
+                                     displayName: str,
+                                     followsYou: bool,
+                                     profileDescriptionShort: str,
+                                     avatarUrl: str, imageUrl: str,
+                                     movedTo: str, actor: str,
+                                     alsoKnownAs: [],
+                                     accessKeys: {},
+                                     joinedDate: str) -> str:
     """The header of a searched for handle, containing background
     image and avatar
     """
@@ -541,66 +544,66 @@ def _getProfileHeaderAfterSearch(base_dir: str,
     return htmlStr
 
 
-def htmlProfile(signing_priv_key_pem: str,
-                rss_icon_at_top: bool,
-                css_cache: {}, icons_as_buttons: bool,
-                defaultTimeline: str,
-                recent_posts_cache: {}, max_recent_posts: int,
-                translate: {}, project_version: str,
-                base_dir: str, http_prefix: str, authorized: bool,
-                profile_json: {}, selected: str,
-                session, cached_webfingers: {}, person_cache: {},
-                yt_replace_domain: str,
-                twitter_replacement_domain: str,
-                show_published_date_only: bool,
-                newswire: {}, theme: str, dormant_months: int,
-                peertube_instances: [],
-                allow_local_network_access: bool,
-                text_mode_banner: str,
-                debug: bool, accessKeys: {}, city: str,
-                system_language: str, max_like_count: int,
-                shared_items_federated_domains: [],
-                extraJson: {}, pageNumber: int,
-                maxItemsPerPage: int,
-                cw_lists: {}, lists_enabled: str,
-                content_license_url: str) -> str:
+def html_profile(signing_priv_key_pem: str,
+                 rss_icon_at_top: bool,
+                 css_cache: {}, icons_as_buttons: bool,
+                 defaultTimeline: str,
+                 recent_posts_cache: {}, max_recent_posts: int,
+                 translate: {}, project_version: str,
+                 base_dir: str, http_prefix: str, authorized: bool,
+                 profile_json: {}, selected: str,
+                 session, cached_webfingers: {}, person_cache: {},
+                 yt_replace_domain: str,
+                 twitter_replacement_domain: str,
+                 show_published_date_only: bool,
+                 newswire: {}, theme: str, dormant_months: int,
+                 peertube_instances: [],
+                 allow_local_network_access: bool,
+                 text_mode_banner: str,
+                 debug: bool, accessKeys: {}, city: str,
+                 system_language: str, max_like_count: int,
+                 shared_items_federated_domains: [],
+                 extraJson: {}, pageNumber: int,
+                 maxItemsPerPage: int,
+                 cw_lists: {}, lists_enabled: str,
+                 content_license_url: str) -> str:
     """Show the profile page as html
     """
     nickname = profile_json['preferredUsername']
     if not nickname:
         return ""
     if is_system_account(nickname):
-        return htmlFrontScreen(signing_priv_key_pem,
-                               rss_icon_at_top,
-                               css_cache, icons_as_buttons,
-                               defaultTimeline,
-                               recent_posts_cache, max_recent_posts,
-                               translate, project_version,
-                               base_dir, http_prefix, authorized,
-                               profile_json, selected,
-                               session, cached_webfingers, person_cache,
-                               yt_replace_domain,
-                               twitter_replacement_domain,
-                               show_published_date_only,
-                               newswire, theme, extraJson,
-                               allow_local_network_access, accessKeys,
-                               system_language, max_like_count,
-                               shared_items_federated_domains, None,
-                               pageNumber, maxItemsPerPage, cw_lists,
-                               lists_enabled)
+        return html_front_screen(signing_priv_key_pem,
+                                 rss_icon_at_top,
+                                 css_cache, icons_as_buttons,
+                                 defaultTimeline,
+                                 recent_posts_cache, max_recent_posts,
+                                 translate, project_version,
+                                 base_dir, http_prefix, authorized,
+                                 profile_json, selected,
+                                 session, cached_webfingers, person_cache,
+                                 yt_replace_domain,
+                                 twitter_replacement_domain,
+                                 show_published_date_only,
+                                 newswire, theme, extraJson,
+                                 allow_local_network_access, accessKeys,
+                                 system_language, max_like_count,
+                                 shared_items_federated_domains, None,
+                                 pageNumber, maxItemsPerPage, cw_lists,
+                                 lists_enabled)
 
     domain, port = get_domain_from_actor(profile_json['id'])
     if not domain:
         return ""
     displayName = \
-        addEmojiToDisplayName(session, base_dir, http_prefix,
-                              nickname, domain,
-                              profile_json['name'], True)
+        add_emoji_to_display_name(session, base_dir, http_prefix,
+                                  nickname, domain,
+                                  profile_json['name'], True)
     domain_full = get_full_domain(domain, port)
     profileDescription = \
-        addEmojiToDisplayName(session, base_dir, http_prefix,
-                              nickname, domain,
-                              profile_json['summary'], False)
+        add_emoji_to_display_name(session, base_dir, http_prefix,
+                                  nickname, domain,
+                                  profile_json['summary'], False)
     postsButton = 'button'
     followingButton = 'button'
     followersButton = 'button'
@@ -744,7 +747,7 @@ def htmlProfile(signing_priv_key_pem: str,
         if selected == 'followers':
             if followApprovals:
                 currFollowerDomains = \
-                    getFollowerDomains(base_dir, nickname, domain)
+                    get_follower_domains(base_dir, nickname, domain)
                 with open(followRequestsFilename, 'r') as f:
                     for followerHandle in f:
                         if len(line) > 0:
@@ -843,16 +846,16 @@ def htmlProfile(signing_priv_key_pem: str,
             pinnedContent = pinFile.read()
 
     profileHeaderStr = \
-        _getProfileHeader(base_dir, http_prefix,
-                          nickname, domain,
-                          domain_full, translate,
-                          defaultTimeline, displayName,
-                          avatarDescription,
-                          profileDescriptionShort,
-                          loginButton, avatarUrl, theme,
-                          movedTo, alsoKnownAs,
-                          pinnedContent, accessKeys,
-                          joinedDate, occupationName)
+        _get_profile_header(base_dir, http_prefix,
+                            nickname, domain,
+                            domain_full, translate,
+                            defaultTimeline, displayName,
+                            avatarDescription,
+                            profileDescriptionShort,
+                            loginButton, avatarUrl, theme,
+                            movedTo, alsoKnownAs,
+                            pinnedContent, accessKeys,
+                            joinedDate, occupationName)
 
     # keyboard navigation
     userPathStr = '/users/' + nickname
@@ -863,22 +866,22 @@ def htmlProfile(signing_priv_key_pem: str,
         isGroup = True
         followersStr = translate['Members']
     menuTimeline = \
-        htmlHideFromScreenReader('🏠') + ' ' + \
+        html_hide_from_screen_reader('🏠') + ' ' + \
         translate['Switch to timeline view']
     menuEdit = \
-        htmlHideFromScreenReader('✍') + ' ' + translate['Edit']
+        html_hide_from_screen_reader('✍') + ' ' + translate['Edit']
     if not isGroup:
         menuFollowing = \
-            htmlHideFromScreenReader('👥') + ' ' + translate['Following']
+            html_hide_from_screen_reader('👥') + ' ' + translate['Following']
     menuFollowers = \
-        htmlHideFromScreenReader('👪') + ' ' + followersStr
+        html_hide_from_screen_reader('👪') + ' ' + followersStr
     if not isGroup:
         menuRoles = \
-            htmlHideFromScreenReader('🤚') + ' ' + translate['Roles']
+            html_hide_from_screen_reader('🤚') + ' ' + translate['Roles']
         menuSkills = \
-            htmlHideFromScreenReader('🛠') + ' ' + translate['Skills']
+            html_hide_from_screen_reader('🛠') + ' ' + translate['Skills']
     menuLogout = \
-        htmlHideFromScreenReader('❎') + ' ' + translate['Logout']
+        html_hide_from_screen_reader('❎') + ' ' + translate['Logout']
     navLinks = {
         menuTimeline: userPathStr + '/' + deft,
         menuEdit: userPathStr + '/editprofile',
@@ -890,7 +893,8 @@ def htmlProfile(signing_priv_key_pem: str,
     }
     if is_artist(base_dir, nickname):
         menuThemeDesigner = \
-            htmlHideFromScreenReader('🎨') + ' ' + translate['Theme Designer']
+            html_hide_from_screen_reader('🎨') + ' ' + \
+            translate['Theme Designer']
         navLinks[menuThemeDesigner] = userPathStr + '/themedesigner'
     navAccessKeys = {}
     for variableName, key in accessKeys.items():
@@ -898,8 +902,8 @@ def htmlProfile(signing_priv_key_pem: str,
             continue
         navAccessKeys[locals()[variableName]] = key
 
-    profileStr = htmlKeyboardNavigation(text_mode_banner,
-                                        navLinks, navAccessKeys)
+    profileStr = html_keyboard_navigation(text_mode_banner,
+                                          navLinks, navAccessKeys)
 
     profileStr += profileHeaderStr + donateSection
     profileStr += '<div class="container" id="buttonheader">\n'
@@ -956,60 +960,62 @@ def htmlProfile(signing_priv_key_pem: str,
 
     if selected == 'posts':
         profileStr += \
-            _htmlProfilePosts(recent_posts_cache, max_recent_posts,
-                              translate,
-                              base_dir, http_prefix, authorized,
-                              nickname, domain, port,
-                              session, cached_webfingers, person_cache,
-                              project_version,
-                              yt_replace_domain,
-                              twitter_replacement_domain,
-                              show_published_date_only,
-                              peertube_instances,
-                              allow_local_network_access,
-                              theme, system_language,
-                              max_like_count,
-                              signing_priv_key_pem,
-                              cw_lists, lists_enabled) + licenseStr
+            _html_profile_posts(recent_posts_cache, max_recent_posts,
+                                translate,
+                                base_dir, http_prefix, authorized,
+                                nickname, domain, port,
+                                session, cached_webfingers, person_cache,
+                                project_version,
+                                yt_replace_domain,
+                                twitter_replacement_domain,
+                                show_published_date_only,
+                                peertube_instances,
+                                allow_local_network_access,
+                                theme, system_language,
+                                max_like_count,
+                                signing_priv_key_pem,
+                                cw_lists, lists_enabled) + licenseStr
     if not isGroup:
         if selected == 'following':
             profileStr += \
-                _htmlProfileFollowing(translate, base_dir, http_prefix,
-                                      authorized, nickname,
-                                      domain, port, session,
-                                      cached_webfingers,
-                                      person_cache, extraJson,
-                                      project_version, ["unfollow"], selected,
-                                      usersPath, pageNumber, maxItemsPerPage,
-                                      dormant_months, debug,
-                                      signing_priv_key_pem)
+                _html_profile_following(translate, base_dir, http_prefix,
+                                        authorized, nickname,
+                                        domain, port, session,
+                                        cached_webfingers,
+                                        person_cache, extraJson,
+                                        project_version, ["unfollow"],
+                                        selected,
+                                        usersPath, pageNumber, maxItemsPerPage,
+                                        dormant_months, debug,
+                                        signing_priv_key_pem)
     if selected == 'followers':
         profileStr += \
-            _htmlProfileFollowing(translate, base_dir, http_prefix,
-                                  authorized, nickname,
-                                  domain, port, session,
-                                  cached_webfingers,
-                                  person_cache, extraJson,
-                                  project_version, ["block"],
-                                  selected, usersPath, pageNumber,
-                                  maxItemsPerPage, dormant_months, debug,
-                                  signing_priv_key_pem)
+            _html_profile_following(translate, base_dir, http_prefix,
+                                    authorized, nickname,
+                                    domain, port, session,
+                                    cached_webfingers,
+                                    person_cache, extraJson,
+                                    project_version, ["block"],
+                                    selected, usersPath, pageNumber,
+                                    maxItemsPerPage, dormant_months, debug,
+                                    signing_priv_key_pem)
     if not isGroup:
         if selected == 'roles':
             profileStr += \
-                _htmlProfileRoles(translate, nickname, domain_full,
-                                  extraJson)
+                _html_profile_roles(translate, nickname, domain_full,
+                                    extraJson)
         elif selected == 'skills':
             profileStr += \
-                _htmlProfileSkills(translate, nickname, domain_full, extraJson)
+                _html_profile_skills(translate, nickname, domain_full,
+                                     extraJson)
 #       elif selected == 'shares':
 #           profileStr += \
-#                _htmlProfileShares(actor, translate,
+#                _html_profile_shares(actor, translate,
 #                                   nickname, domain_full,
 #                                   extraJson, 'shares') + licenseStr
 #        elif selected == 'wanted':
 #            profileStr += \
-#                _htmlProfileShares(actor, translate,
+#                _html_profile_shares(actor, translate,
 #                                   nickname, domain_full,
 #                                   extraJson, 'wanted') + licenseStr
     # end of #timeline
@@ -1018,33 +1024,33 @@ def htmlProfile(signing_priv_key_pem: str,
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
     profileStr = \
-        htmlHeaderWithPersonMarkup(cssFilename, instanceTitle,
-                                   profile_json, city,
-                                   content_license_url) + \
-        profileStr + htmlFooter()
+        html_header_with_person_markup(cssFilename, instanceTitle,
+                                       profile_json, city,
+                                       content_license_url) + \
+        profileStr + html_footer()
     return profileStr
 
 
-def _htmlProfilePosts(recent_posts_cache: {}, max_recent_posts: int,
-                      translate: {},
-                      base_dir: str, http_prefix: str,
-                      authorized: bool,
-                      nickname: str, domain: str, port: int,
-                      session, cached_webfingers: {}, person_cache: {},
-                      project_version: str,
-                      yt_replace_domain: str,
-                      twitter_replacement_domain: str,
-                      show_published_date_only: bool,
-                      peertube_instances: [],
-                      allow_local_network_access: bool,
-                      theme_name: str, system_language: str,
-                      max_like_count: int,
-                      signing_priv_key_pem: str,
-                      cw_lists: {}, lists_enabled: str) -> str:
+def _html_profile_posts(recent_posts_cache: {}, max_recent_posts: int,
+                        translate: {},
+                        base_dir: str, http_prefix: str,
+                        authorized: bool,
+                        nickname: str, domain: str, port: int,
+                        session, cached_webfingers: {}, person_cache: {},
+                        project_version: str,
+                        yt_replace_domain: str,
+                        twitter_replacement_domain: str,
+                        show_published_date_only: bool,
+                        peertube_instances: [],
+                        allow_local_network_access: bool,
+                        theme_name: str, system_language: str,
+                        max_like_count: int,
+                        signing_priv_key_pem: str,
+                        cw_lists: {}, lists_enabled: str) -> str:
     """Shows posts on the profile screen
     These should only be public posts
     """
-    separatorStr = htmlPostSeparator(base_dir, None)
+    separatorStr = html_post_separator(base_dir, None)
     profileStr = ''
     maxItems = 4
     ctr = 0
@@ -1068,25 +1074,27 @@ def _htmlProfilePosts(recent_posts_cache: {}, max_recent_posts: int,
         for item in outboxFeed['orderedItems']:
             if item['type'] == 'Create':
                 postStr = \
-                    individualPostAsHtml(signing_priv_key_pem,
-                                         True, recent_posts_cache,
-                                         max_recent_posts,
-                                         translate, None,
-                                         base_dir, session, cached_webfingers,
-                                         person_cache,
-                                         nickname, domain, port, item,
-                                         None, True, False,
-                                         http_prefix, project_version, 'inbox',
-                                         yt_replace_domain,
-                                         twitter_replacement_domain,
-                                         show_published_date_only,
-                                         peertube_instances,
-                                         allow_local_network_access,
-                                         theme_name, system_language,
-                                         max_like_count,
-                                         False, False, False,
-                                         True, False, False,
-                                         cw_lists, lists_enabled)
+                    individual_post_as_html(signing_priv_key_pem,
+                                            True, recent_posts_cache,
+                                            max_recent_posts,
+                                            translate, None,
+                                            base_dir, session,
+                                            cached_webfingers,
+                                            person_cache,
+                                            nickname, domain, port, item,
+                                            None, True, False,
+                                            http_prefix, project_version,
+                                            'inbox',
+                                            yt_replace_domain,
+                                            twitter_replacement_domain,
+                                            show_published_date_only,
+                                            peertube_instances,
+                                            allow_local_network_access,
+                                            theme_name, system_language,
+                                            max_like_count,
+                                            False, False, False,
+                                            True, False, False,
+                                            cw_lists, lists_enabled)
                 if postStr:
                     profileStr += postStr + separatorStr
                     ctr += 1
@@ -1096,17 +1104,17 @@ def _htmlProfilePosts(recent_posts_cache: {}, max_recent_posts: int,
     return profileStr
 
 
-def _htmlProfileFollowing(translate: {}, base_dir: str, http_prefix: str,
-                          authorized: bool,
-                          nickname: str, domain: str, port: int,
-                          session, cached_webfingers: {}, person_cache: {},
-                          followingJson: {}, project_version: str,
-                          buttons: [],
-                          feedName: str, actor: str,
-                          pageNumber: int,
-                          maxItemsPerPage: int,
-                          dormant_months: int, debug: bool,
-                          signing_priv_key_pem: str) -> str:
+def _html_profile_following(translate: {}, base_dir: str, http_prefix: str,
+                            authorized: bool,
+                            nickname: str, domain: str, port: int,
+                            session, cached_webfingers: {}, person_cache: {},
+                            followingJson: {}, project_version: str,
+                            buttons: [],
+                            feedName: str, actor: str,
+                            pageNumber: int,
+                            maxItemsPerPage: int,
+                            dormant_months: int, debug: bool,
+                            signing_priv_key_pem: str) -> str:
     """Shows following on the profile screen
     """
     profileStr = ''
@@ -1133,13 +1141,13 @@ def _htmlProfileFollowing(translate: {}, base_dir: str, http_prefix: str,
                            dormant_months)
 
         profileStr += \
-            _individualFollowAsHtml(signing_priv_key_pem,
-                                    translate, base_dir, session,
-                                    cached_webfingers, person_cache,
-                                    domain, followingActor,
-                                    authorized, nickname,
-                                    http_prefix, project_version, dormant,
-                                    debug, buttons)
+            _individual_follow_as_html(signing_priv_key_pem,
+                                       translate, base_dir, session,
+                                       cached_webfingers, person_cache,
+                                       domain, followingActor,
+                                       authorized, nickname,
+                                       http_prefix, project_version, dormant,
+                                       debug, buttons)
 
     if authorized and maxItemsPerPage and pageNumber:
         if len(followingJson['orderedItems']) >= maxItemsPerPage:
@@ -1157,8 +1165,8 @@ def _htmlProfileFollowing(translate: {}, base_dir: str, http_prefix: str,
     return profileStr
 
 
-def _htmlProfileRoles(translate: {}, nickname: str, domain: str,
-                      rolesList: []) -> str:
+def _html_profile_roles(translate: {}, nickname: str, domain: str,
+                        rolesList: []) -> str:
     """Shows roles on the profile screen
     """
     profileStr = ''
@@ -1178,8 +1186,8 @@ def _htmlProfileRoles(translate: {}, nickname: str, domain: str,
     return profileStr
 
 
-def _htmlProfileSkills(translate: {}, nickname: str, domain: str,
-                       skillsJson: {}) -> str:
+def _html_profile_skills(translate: {}, nickname: str, domain: str,
+                         skillsJson: {}) -> str:
     """Shows skills on the profile screen
     """
     profileStr = ''
@@ -1194,37 +1202,38 @@ def _htmlProfileSkills(translate: {}, nickname: str, domain: str,
     return profileStr
 
 
-def _htmlProfileShares(actor: str, translate: {},
-                       nickname: str, domain: str, sharesJson: {},
-                       sharesFileType: str) -> str:
+def _html_profile_shares(actor: str, translate: {},
+                         nickname: str, domain: str, sharesJson: {},
+                         sharesFileType: str) -> str:
     """Shows shares on the profile screen
     """
     profileStr = ''
     for item in sharesJson['orderedItems']:
-        profileStr += htmlIndividualShare(domain, item['shareId'],
-                                          actor, item, translate, False, False,
-                                          sharesFileType)
+        profileStr += html_individual_share(domain, item['shareId'],
+                                            actor, item, translate,
+                                            False, False,
+                                            sharesFileType)
     if len(profileStr) > 0:
         profileStr = '<div class="share-title">' + profileStr + '</div>\n'
     return profileStr
 
 
-def _grayscaleEnabled(base_dir: str) -> bool:
+def _grayscale_enabled(base_dir: str) -> bool:
     """Is grayscale UI enabled?
     """
     return os.path.isfile(base_dir + '/accounts/.grayscale')
 
 
-def _htmlThemesDropdown(base_dir: str, translate: {}) -> str:
+def _html_themes_dropdown(base_dir: str, translate: {}) -> str:
     """Returns the html for theme selection dropdown
     """
     # Themes section
-    themes = getThemesList(base_dir)
+    themes = get_themes_list(base_dir)
     themesDropdown = '  <label class="labels">' + \
         translate['Theme'] + '</label><br>\n'
-    grayscale = _grayscaleEnabled(base_dir)
+    grayscale = _grayscale_enabled(base_dir)
     themesDropdown += \
-        editCheckBox(translate['Grayscale'], 'grayscale', grayscale)
+        edit_check_box(translate['Grayscale'], 'grayscale', grayscale)
     themesDropdown += '  <select id="themeDropdown" ' + \
         'name="themeDropdown" class="theme">'
     for theme_name in themes:
@@ -1240,8 +1249,8 @@ def _htmlThemesDropdown(base_dir: str, translate: {}) -> str:
        os.path.isfile(base_dir + '/fonts/custom.otf') or \
        os.path.isfile(base_dir + '/fonts/custom.ttf'):
         themesDropdown += \
-            editCheckBox(translate['Remove the custom font'],
-                         'removeCustomFont', False)
+            edit_check_box(translate['Remove the custom font'],
+                           'removeCustomFont', False)
     theme_name = get_config_param(base_dir, 'theme')
     themesDropdown = \
         themesDropdown.replace('<option value="' + theme_name + '">',
@@ -1250,21 +1259,21 @@ def _htmlThemesDropdown(base_dir: str, translate: {}) -> str:
     return themesDropdown
 
 
-def _htmlEditProfileGraphicDesign(base_dir: str, translate: {}) -> str:
+def _html_edit_profile_graphic_design(base_dir: str, translate: {}) -> str:
     """Graphic design section on Edit Profile screen
     """
     themeFormats = '.zip, .gz'
 
-    graphicsStr = beginEditSection(translate['Graphic Design'])
+    graphicsStr = begin_edit_section(translate['Graphic Design'])
 
     low_bandwidth = get_config_param(base_dir, 'low_bandwidth')
     if not low_bandwidth:
         low_bandwidth = False
-    graphicsStr += _htmlThemesDropdown(base_dir, translate)
+    graphicsStr += _html_themes_dropdown(base_dir, translate)
     graphicsStr += \
         '      <label class="labels">' + \
         translate['Import Theme'] + '</label>\n'
-    graphicsStr += '      <input type="file" id="importTheme" '
+    graphicsStr += '      <input type="file" id="import_theme" '
     graphicsStr += 'name="submitImportTheme" '
     graphicsStr += 'accept="' + themeFormats + '">\n'
     graphicsStr += \
@@ -1274,37 +1283,37 @@ def _htmlEditProfileGraphicDesign(base_dir: str, translate: {}) -> str:
         '      <button type="submit" class="button" ' + \
         'name="submitExportTheme">➤</button><br>\n'
     graphicsStr += \
-        editCheckBox(translate['Low Bandwidth'], 'low_bandwidth',
-                     bool(low_bandwidth))
+        edit_check_box(translate['Low Bandwidth'], 'low_bandwidth',
+                       bool(low_bandwidth))
 
-    graphicsStr += endEditSection()
+    graphicsStr += end_edit_section()
     return graphicsStr
 
 
-def _htmlEditProfileTwitter(base_dir: str, translate: {},
-                            removeTwitter: str) -> str:
+def _html_edit_profile_twitter(base_dir: str, translate: {},
+                               removeTwitter: str) -> str:
     """Edit twitter settings within profile
     """
     # Twitter section
-    twitterStr = beginEditSection(translate['Twitter'])
+    twitterStr = begin_edit_section(translate['Twitter'])
     twitterStr += \
-        editCheckBox(translate['Remove Twitter posts'],
-                     'removeTwitter', removeTwitter)
+        edit_check_box(translate['Remove Twitter posts'],
+                       'removeTwitter', removeTwitter)
     twitter_replacement_domain = get_config_param(base_dir, "twitterdomain")
     if not twitter_replacement_domain:
         twitter_replacement_domain = ''
     twitterStr += \
-        editTextField(translate['Twitter Replacement Domain'],
-                      'twitterdomain', twitter_replacement_domain)
-    twitterStr += endEditSection()
+        edit_text_field(translate['Twitter Replacement Domain'],
+                        'twitterdomain', twitter_replacement_domain)
+    twitterStr += end_edit_section()
     return twitterStr
 
 
-def _htmlEditProfileInstance(base_dir: str, translate: {},
-                             peertube_instances: [],
-                             media_instanceStr: str,
-                             blogs_instanceStr: str,
-                             news_instanceStr: str) -> (str, str, str, str):
+def _html_edit_profile_instance(base_dir: str, translate: {},
+                                peertube_instances: [],
+                                media_instanceStr: str,
+                                blogs_instanceStr: str,
+                                news_instanceStr: str) -> (str, str, str, str):
     """Edit profile instance settings
     """
     imageFormats = get_image_formats()
@@ -1323,27 +1332,27 @@ def _htmlEditProfileInstance(base_dir: str, translate: {},
     if not content_license_url:
         content_license_url = 'https://creativecommons.org/licenses/by/4.0'
 
-    instanceStr = beginEditSection(translate['Instance Settings'])
+    instanceStr = begin_edit_section(translate['Instance Settings'])
 
     instanceStr += \
-        editTextField(translate['Instance Title'],
-                      'instanceTitle', instanceTitle)
+        edit_text_field(translate['Instance Title'],
+                        'instanceTitle', instanceTitle)
     instanceStr += '<br>\n'
     instanceStr += \
-        editTextField(translate['Instance Short Description'],
-                      'instanceDescriptionShort', instanceDescriptionShort)
+        edit_text_field(translate['Instance Short Description'],
+                        'instanceDescriptionShort', instanceDescriptionShort)
     instanceStr += '<br>\n'
     instanceStr += \
-        editTextArea(translate['Instance Description'],
-                     'instanceDescription', instanceDescription, 200,
-                     '', True)
+        edit_text_area(translate['Instance Description'],
+                       'instanceDescription', instanceDescription, 200,
+                       '', True)
     instanceStr += \
-        editTextField(translate['Content License'],
-                      'content_license_url', content_license_url)
+        edit_text_field(translate['Content License'],
+                        'content_license_url', content_license_url)
     instanceStr += '<br>\n'
     instanceStr += \
-        editTextField(translate['Custom post submit button text'],
-                      'customSubmitText', customSubmitText)
+        edit_text_field(translate['Custom post submit button text'],
+                        'customSubmitText', customSubmitText)
     instanceStr += '<br>\n'
     instanceStr += \
         '  <label class="labels">' + \
@@ -1357,51 +1366,51 @@ def _htmlEditProfileInstance(base_dir: str, translate: {},
         translate['Show numbers of accounts within instance metadata']
     if get_config_param(base_dir, "show_node_info_accounts"):
         instanceStr += \
-            editCheckBox(nodeInfoStr, 'show_node_info_accounts', True)
+            edit_check_box(nodeInfoStr, 'show_node_info_accounts', True)
     else:
         instanceStr += \
-            editCheckBox(nodeInfoStr, 'show_node_info_accounts', False)
+            edit_check_box(nodeInfoStr, 'show_node_info_accounts', False)
 
     nodeInfoStr = \
         translate['Show version number within instance metadata']
     if get_config_param(base_dir, "show_node_info_version"):
         instanceStr += \
-            editCheckBox(nodeInfoStr, 'show_node_info_version', True)
+            edit_check_box(nodeInfoStr, 'show_node_info_version', True)
     else:
         instanceStr += \
-            editCheckBox(nodeInfoStr, 'show_node_info_version', False)
+            edit_check_box(nodeInfoStr, 'show_node_info_version', False)
 
     if get_config_param(base_dir, "verify_all_signatures"):
         instanceStr += \
-            editCheckBox(translate['Verify all signatures'],
-                         'verifyallsignatures', True)
+            edit_check_box(translate['Verify all signatures'],
+                           'verifyallsignatures', True)
     else:
         instanceStr += \
-            editCheckBox(translate['Verify all signatures'],
-                         'verifyallsignatures', False)
+            edit_check_box(translate['Verify all signatures'],
+                           'verifyallsignatures', False)
 
     instanceStr += translate['Enabling broch mode'] + '<br>\n'
     if get_config_param(base_dir, "broch_mode"):
         instanceStr += \
-            editCheckBox(translate['Broch mode'], 'broch_mode', True)
+            edit_check_box(translate['Broch mode'], 'broch_mode', True)
     else:
         instanceStr += \
-            editCheckBox(translate['Broch mode'], 'broch_mode', False)
+            edit_check_box(translate['Broch mode'], 'broch_mode', False)
     # Instance type
     instanceStr += \
         '  <br><label class="labels">' + \
         translate['Type of instance'] + '</label><br>\n'
     instanceStr += \
-        editCheckBox(translate['This is a media instance'],
-                     'media_instance', media_instanceStr)
+        edit_check_box(translate['This is a media instance'],
+                       'media_instance', media_instanceStr)
     instanceStr += \
-        editCheckBox(translate['This is a blogging instance'],
-                     'blogs_instance', blogs_instanceStr)
+        edit_check_box(translate['This is a blogging instance'],
+                       'blogs_instance', blogs_instanceStr)
     instanceStr += \
-        editCheckBox(translate['This is a news instance'],
-                     'news_instance', news_instanceStr)
+        edit_check_box(translate['This is a news instance'],
+                       'news_instance', news_instanceStr)
 
-    instanceStr += endEditSection()
+    instanceStr += end_edit_section()
 
     # Role assignments section
     moderators = ''
@@ -1411,7 +1420,7 @@ def _htmlEditProfileInstance(base_dir: str, translate: {},
             moderators = f.read()
     # site moderators
     roleAssignStr = \
-        beginEditSection(translate['Role Assignment']) + \
+        begin_edit_section(translate['Role Assignment']) + \
         '  <b><label class="labels">' + \
         translate['Moderators'] + '</label></b><br>\n' + \
         '  ' + \
@@ -1443,8 +1452,8 @@ def _htmlEditProfileInstance(base_dir: str, translate: {},
         with open(counselorsFile, 'r') as f:
             counselors = f.read()
     roleAssignStr += \
-        editTextArea(translate['Counselors'], 'counselors', counselors,
-                     200, '', False)
+        edit_text_area(translate['Counselors'], 'counselors', counselors,
+                       200, '', False)
 
     # artists
     artists = ''
@@ -1453,77 +1462,77 @@ def _htmlEditProfileInstance(base_dir: str, translate: {},
         with open(artistsFile, 'r') as f:
             artists = f.read()
     roleAssignStr += \
-        editTextArea(translate['Artists'], 'artists', artists,
-                     200, '', False)
-    roleAssignStr += endEditSection()
+        edit_text_area(translate['Artists'], 'artists', artists,
+                       200, '', False)
+    roleAssignStr += end_edit_section()
 
     # Video section
-    peertubeStr = beginEditSection(translate['Video Settings'])
+    peertubeStr = begin_edit_section(translate['Video Settings'])
     peertube_instancesStr = ''
     for url in peertube_instances:
         peertube_instancesStr += url + '\n'
     peertubeStr += \
-        editTextArea(translate['Peertube Instances'], 'ptInstances',
-                     peertube_instancesStr, 200, '', False)
+        edit_text_area(translate['Peertube Instances'], 'ptInstances',
+                       peertube_instancesStr, 200, '', False)
     peertubeStr += \
         '      <br>\n'
     yt_replace_domain = get_config_param(base_dir, "youtubedomain")
     if not yt_replace_domain:
         yt_replace_domain = ''
     peertubeStr += \
-        editTextField(translate['YouTube Replacement Domain'],
-                      'ytdomain', yt_replace_domain)
-    peertubeStr += endEditSection()
+        edit_text_field(translate['YouTube Replacement Domain'],
+                        'ytdomain', yt_replace_domain)
+    peertubeStr += end_edit_section()
 
     libretranslateUrl = get_config_param(base_dir, 'libretranslateUrl')
     libretranslateApiKey = get_config_param(base_dir, 'libretranslateApiKey')
     libretranslateStr = \
-        _htmlEditProfileLibreTranslate(translate,
-                                       libretranslateUrl,
-                                       libretranslateApiKey)
+        _html_edit_profile_libre_translate(translate,
+                                           libretranslateUrl,
+                                           libretranslateApiKey)
 
     return instanceStr, roleAssignStr, peertubeStr, libretranslateStr
 
 
-def _htmlEditProfileDangerZone(translate: {}) -> str:
+def _html_edit_profile_danger_zone(translate: {}) -> str:
     """danger zone section of Edit Profile screen
     """
-    editProfileForm = beginEditSection(translate['Danger Zone'])
+    editProfileForm = begin_edit_section(translate['Danger Zone'])
 
     editProfileForm += \
         '      <b><label class="labels">' + \
         translate['Danger Zone'] + '</label></b><br>\n'
 
     editProfileForm += \
-        editCheckBox(translate['Deactivate this account'],
-                     'deactivateThisAccount', False)
+        edit_check_box(translate['Deactivate this account'],
+                       'deactivateThisAccount', False)
 
-    editProfileForm += endEditSection()
+    editProfileForm += end_edit_section()
     return editProfileForm
 
 
-def _htmlSystemMonitor(nickname: str, translate: {}) -> str:
+def _html_system_monitor(nickname: str, translate: {}) -> str:
     """Links to performance graphs
     """
-    systemMonitorStr = beginEditSection(translate['System Monitor'])
+    systemMonitorStr = begin_edit_section(translate['System Monitor'])
     systemMonitorStr += '<p><a href="/users/' + nickname + \
         '/performance?graph=get">📊 GET</a></p>'
     systemMonitorStr += '<p><a href="/users/' + nickname + \
         '/performance?graph=post">📊 POST</a></p>'
-    systemMonitorStr += endEditSection()
+    systemMonitorStr += end_edit_section()
     return systemMonitorStr
 
 
-def _htmlEditProfileSkills(base_dir: str, nickname: str, domain: str,
-                           translate: {}) -> str:
+def _html_edit_profile_skills(base_dir: str, nickname: str, domain: str,
+                              translate: {}) -> str:
     """skills section of Edit Profile screen
     """
-    skills = getSkills(base_dir, nickname, domain)
+    skills = get_skills(base_dir, nickname, domain)
     skillsStr = ''
     skillCtr = 1
     if skills:
         for skillDesc, skillValue in skills.items():
-            if isFiltered(base_dir, nickname, domain, skillDesc):
+            if is_filtered(base_dir, nickname, domain, skillDesc):
                 continue
             skillsStr += \
                 '<p><input type="text" placeholder="' + translate['Skill'] + \
@@ -1540,14 +1549,14 @@ def _htmlEditProfileSkills(base_dir: str, nickname: str, domain: str,
         '" value="" style="width:40%">' + \
         '<input type="range" min="1" max="100" ' + \
         'class="slider" name="skillValue' + \
-        str(skillCtr) + '" value="50"></p>' + endEditSection()
+        str(skillCtr) + '" value="50"></p>' + end_edit_section()
 
     idx = 'If you want to participate within organizations then you ' + \
         'can indicate some skills that you have and approximate ' + \
         'proficiency levels. This helps organizers to construct ' + \
         'teams with an appropriate combination of skills.'
     editProfileForm = \
-        beginEditSection(translate['Skills']) + \
+        begin_edit_section(translate['Skills']) + \
         '      <b><label class="labels">' + \
         translate['Skills'] + '</label></b><br>\n' + \
         '      <label class="labels">' + \
@@ -1555,8 +1564,8 @@ def _htmlEditProfileSkills(base_dir: str, nickname: str, domain: str,
     return editProfileForm
 
 
-def _htmlEditProfileGitProjects(base_dir: str, nickname: str, domain: str,
-                                translate: {}) -> str:
+def _html_edit_profile_git_projects(base_dir: str, nickname: str, domain: str,
+                                    translate: {}) -> str:
     """git projects section of edit profile screen
     """
     gitProjectsStr = ''
@@ -1566,17 +1575,17 @@ def _htmlEditProfileGitProjects(base_dir: str, nickname: str, domain: str,
         with open(gitProjectsFilename, 'r') as gitProjectsFile:
             gitProjectsStr = gitProjectsFile.read()
 
-    editProfileForm = beginEditSection(translate['Git Projects'])
+    editProfileForm = begin_edit_section(translate['Git Projects'])
     idx = 'List of project names that you wish to receive git patches for'
     editProfileForm += \
-        editTextArea(translate[idx], 'gitProjects', gitProjectsStr,
-                     100, '', False)
-    editProfileForm += endEditSection()
+        edit_text_area(translate[idx], 'gitProjects', gitProjectsStr,
+                       100, '', False)
+    editProfileForm += end_edit_section()
     return editProfileForm
 
 
-def _htmlEditProfileSharedItems(base_dir: str, nickname: str, domain: str,
-                                translate: {}) -> str:
+def _html_edit_profile_shared_items(base_dir: str, nickname: str, domain: str,
+                                    translate: {}) -> str:
     """shared items section of edit profile screen
     """
     sharedItemsStr = ''
@@ -1588,19 +1597,19 @@ def _htmlEditProfileSharedItems(base_dir: str, nickname: str, domain: str,
         for sharedFederatedDomain in shared_items_federated_domainsList:
             sharedItemsStr += sharedFederatedDomain.strip() + '\n'
 
-    editProfileForm = beginEditSection(translate['Shares'])
+    editProfileForm = begin_edit_section(translate['Shares'])
     idx = 'List of domains which can access the shared items catalog'
     editProfileForm += \
-        editTextArea(translate[idx], 'shareDomainList',
-                     sharedItemsStr, 200, '', False)
-    editProfileForm += endEditSection()
+        edit_text_area(translate[idx], 'shareDomainList',
+                       sharedItemsStr, 200, '', False)
+    editProfileForm += end_edit_section()
     return editProfileForm
 
 
-def _htmlEditProfileFiltering(base_dir: str, nickname: str, domain: str,
-                              user_agents_blocked: str,
-                              translate: {}, replyIntervalHours: int,
-                              cw_lists: {}, lists_enabled: str) -> str:
+def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
+                                 user_agents_blocked: str,
+                                 translate: {}, replyIntervalHours: int,
+                                 cw_lists: {}, lists_enabled: str) -> str:
     """Filtering and blocking section of edit profile screen
     """
     filterStr = ''
@@ -1659,7 +1668,7 @@ def _htmlEditProfileFiltering(base_dir: str, nickname: str, domain: str,
         with open(allowedInstancesFilename, 'r') as allowedInstancesFile:
             allowedInstancesStr = allowedInstancesFile.read()
 
-    editProfileForm = beginEditSection(translate['Filtering and Blocking'])
+    editProfileForm = begin_edit_section(translate['Filtering and Blocking'])
 
     idx = 'Hours after posting during which replies are allowed'
     editProfileForm += \
@@ -1722,7 +1731,7 @@ def _htmlEditProfileFiltering(base_dir: str, nickname: str, domain: str,
         '      <br><b><label class="labels">' + \
         translate['Word Replacements'] + '</label></b>\n' + \
         '      <br><label class="labels">A -> B</label>\n' + \
-        '      <textarea id="message" name="switchWords" ' + \
+        '      <textarea id="message" name="switch_words" ' + \
         'style="height:200px" spellcheck="false">' + \
         switchStr + '</textarea>\n' + \
         '      <br><b><label class="labels">' + \
@@ -1740,14 +1749,14 @@ def _htmlEditProfileFiltering(base_dir: str, nickname: str, domain: str,
     idx = 'Blocked accounts, one per line, in the form ' + \
         'nickname@domain or *@blockeddomain'
     editProfileForm += \
-        editTextArea(translate['Blocked accounts'], 'blocked', blockedStr,
-                     200, '', False)
+        edit_text_area(translate['Blocked accounts'], 'blocked', blockedStr,
+                       200, '', False)
 
     idx = 'Direct messages are always allowed from these instances.'
     editProfileForm += \
-        editTextArea(translate['Direct Message permitted instances'],
-                     'dmAllowedInstances', dmAllowedInstancesStr,
-                     200, '', False)
+        edit_text_area(translate['Direct Message permitted instances'],
+                       'dmAllowedInstances', dmAllowedInstancesStr,
+                       200, '', False)
 
     idx = 'Federate only with a defined set of instances. ' + \
         'One domain name per line.'
@@ -1771,9 +1780,9 @@ def _htmlEditProfileFiltering(base_dir: str, nickname: str, domain: str,
                 user_agents_blockedStr += '\n'
             user_agents_blockedStr += ua
         editProfileForm += \
-            editTextArea(translate['Blocked User Agents'],
-                         'user_agents_blockedStr', user_agents_blockedStr,
-                         200, '', False)
+            edit_text_area(translate['Blocked User Agents'],
+                           'user_agents_blockedStr', user_agents_blockedStr,
+                           200, '', False)
 
         cw_listsStr = ''
         for name, item in cw_lists.items():
@@ -1784,22 +1793,22 @@ def _htmlEditProfileFiltering(base_dir: str, nickname: str, domain: str,
                     listIsEnabled = True
             if translate.get(name):
                 name = translate[name]
-            cw_listsStr += editCheckBox(name, variableName, listIsEnabled)
+            cw_listsStr += edit_check_box(name, variableName, listIsEnabled)
         if cw_listsStr:
             idx = 'Add content warnings for the following sites'
             editProfileForm += \
                 '<label class="labels">' + translate[idx] + ':</label>\n' + \
                 '<br>' + cw_listsStr
 
-    editProfileForm += endEditSection()
+    editProfileForm += end_edit_section()
     return editProfileForm
 
 
-def _htmlEditProfileChangePassword(translate: {}) -> str:
+def _html_edit_profile_change_password(translate: {}) -> str:
     """Change password section of edit profile screen
     """
     editProfileForm = \
-        beginEditSection(translate['Change Password']) + \
+        begin_edit_section(translate['Change Password']) + \
         '<label class="labels">' + translate['Change Password'] + \
         '</label><br>\n' + \
         '      <input type="password" name="password" ' + \
@@ -1807,34 +1816,35 @@ def _htmlEditProfileChangePassword(translate: {}) -> str:
         '<label class="labels">' + translate['Confirm Password'] + \
         '</label><br>\n' + \
         '      <input type="password" name="passwordconfirm" value="">\n' + \
-        endEditSection()
+        end_edit_section()
     return editProfileForm
 
 
-def _htmlEditProfileLibreTranslate(translate: {},
-                                   libretranslateUrl: str,
-                                   libretranslateApiKey: str) -> str:
+def _html_edit_profile_libre_translate(translate: {},
+                                       libretranslateUrl: str,
+                                       libretranslateApiKey: str) -> str:
     """Change automatic translation settings
     """
-    editProfileForm = beginEditSection('LibreTranslate')
+    editProfileForm = begin_edit_section('LibreTranslate')
 
     editProfileForm += \
-        editTextField('URL', 'libretranslateUrl', libretranslateUrl,
-                      'http://0.0.0.0:5000')
+        edit_text_field('URL', 'libretranslateUrl', libretranslateUrl,
+                        'http://0.0.0.0:5000')
     editProfileForm += \
-        editTextField('API Key', 'libretranslateApiKey', libretranslateApiKey)
+        edit_text_field('API Key', 'libretranslateApiKey',
+                        libretranslateApiKey)
 
-    editProfileForm += endEditSection()
+    editProfileForm += end_edit_section()
     return editProfileForm
 
 
-def _htmlEditProfileBackground(news_instance: bool, translate: {}) -> str:
+def _html_edit_profile_background(news_instance: bool, translate: {}) -> str:
     """Background images section of edit profile screen
     """
     idx = 'The files attached below should be no larger than ' + \
         '10MB in total uploaded at once.'
     editProfileForm = \
-        beginEditSection(translate['Background Images']) + \
+        begin_edit_section(translate['Background Images']) + \
         '      <label class="labels">' + translate[idx] + '</label><br><br>\n'
 
     if not news_instance:
@@ -1864,105 +1874,105 @@ def _htmlEditProfileBackground(news_instance: bool, translate: {}) -> str:
             'name="right_col_image"' + \
             '            accept="' + imageFormats + '">\n'
 
-    editProfileForm += endEditSection()
+    editProfileForm += end_edit_section()
     return editProfileForm
 
 
-def _htmlEditProfileContactInfo(nickname: str,
-                                emailAddress: str,
-                                xmppAddress: str,
-                                matrixAddress: str,
-                                ssbAddress: str,
-                                toxAddress: str,
-                                briarAddress: str,
-                                jamiAddress: str,
-                                cwtchAddress: str,
-                                translate: {}) -> str:
+def _html_edit_profile_contact_info(nickname: str,
+                                    emailAddress: str,
+                                    xmppAddress: str,
+                                    matrixAddress: str,
+                                    ssbAddress: str,
+                                    toxAddress: str,
+                                    briarAddress: str,
+                                    jamiAddress: str,
+                                    cwtchAddress: str,
+                                    translate: {}) -> str:
     """Contact Information section of edit profile screen
     """
-    editProfileForm = beginEditSection(translate['Contact Details'])
+    editProfileForm = begin_edit_section(translate['Contact Details'])
 
-    editProfileForm += editTextField(translate['Email'],
-                                     'email', emailAddress)
-    editProfileForm += editTextField(translate['XMPP'],
-                                     'xmppAddress', xmppAddress)
-    editProfileForm += editTextField(translate['Matrix'],
-                                     'matrixAddress', matrixAddress)
-    editProfileForm += editTextField('SSB', 'ssbAddress', ssbAddress)
-    editProfileForm += editTextField('Tox', 'toxAddress', toxAddress)
-    editProfileForm += editTextField('Briar', 'briarAddress', briarAddress)
-    editProfileForm += editTextField('Jami', 'jamiAddress', jamiAddress)
-    editProfileForm += editTextField('Cwtch', 'cwtchAddress', cwtchAddress)
+    editProfileForm += edit_text_field(translate['Email'],
+                                       'email', emailAddress)
+    editProfileForm += edit_text_field(translate['XMPP'],
+                                       'xmppAddress', xmppAddress)
+    editProfileForm += edit_text_field(translate['Matrix'],
+                                       'matrixAddress', matrixAddress)
+    editProfileForm += edit_text_field('SSB', 'ssbAddress', ssbAddress)
+    editProfileForm += edit_text_field('Tox', 'toxAddress', toxAddress)
+    editProfileForm += edit_text_field('Briar', 'briarAddress', briarAddress)
+    editProfileForm += edit_text_field('Jami', 'jamiAddress', jamiAddress)
+    editProfileForm += edit_text_field('Cwtch', 'cwtchAddress', cwtchAddress)
     editProfileForm += \
         '<a href="/users/' + nickname + \
         '/followingaccounts"><label class="labels">' + \
         translate['Following'] + '</label></a><br>\n'
 
-    editProfileForm += endEditSection()
+    editProfileForm += end_edit_section()
     return editProfileForm
 
 
-def _htmlEditProfileEncryptionKeys(PGPfingerprint: str,
-                                   PGPpubKey: str,
-                                   EnigmaPubKey: str,
-                                   translate: {}) -> str:
+def _html_edit_profile_encryption_keys(PGPfingerprint: str,
+                                       PGPpubKey: str,
+                                       EnigmaPubKey: str,
+                                       translate: {}) -> str:
     """Contact Information section of edit profile screen
     """
-    editProfileForm = beginEditSection(translate['Encryption Keys'])
+    editProfileForm = begin_edit_section(translate['Encryption Keys'])
 
     enigmaUrl = 'https://github.com/enigma-reloaded/enigma-reloaded'
     editProfileForm += \
-        editTextField('<a href="' + enigmaUrl + '">Enigma</a>',
-                      'enigmapubkey', EnigmaPubKey)
-    editProfileForm += editTextField(translate['PGP Fingerprint'],
-                                     'openpgp', PGPfingerprint)
+        edit_text_field('<a href="' + enigmaUrl + '">Enigma</a>',
+                        'enigmapubkey', EnigmaPubKey)
+    editProfileForm += edit_text_field(translate['PGP Fingerprint'],
+                                       'openpgp', PGPfingerprint)
     editProfileForm += \
-        editTextArea(translate['PGP'], 'pgp', PGPpubKey, 600,
-                     '-----BEGIN PGP PUBLIC KEY BLOCK-----', False)
+        edit_text_area(translate['PGP'], 'pgp', PGPpubKey, 600,
+                       '-----BEGIN PGP PUBLIC KEY BLOCK-----', False)
 
-    editProfileForm += endEditSection()
+    editProfileForm += end_edit_section()
     return editProfileForm
 
 
-def _htmlEditProfileOptions(isAdmin: bool,
-                            manuallyApprovesFollowers: str,
-                            isBot: str, isGroup: str,
-                            followDMs: str, removeTwitter: str,
-                            notifyLikes: str, notifyReactions: str,
-                            hideLikeButton: str,
-                            hideReactionButton: str,
-                            translate: {}) -> str:
+def _html_edit_profile_options(isAdmin: bool,
+                               manuallyApprovesFollowers: str,
+                               isBot: str, isGroup: str,
+                               followDMs: str, removeTwitter: str,
+                               notifyLikes: str, notifyReactions: str,
+                               hideLikeButton: str,
+                               hideReactionButton: str,
+                               translate: {}) -> str:
     """option checkboxes section of edit profile screen
     """
     editProfileForm = '    <div class="container">\n'
     editProfileForm += \
-        editCheckBox(translate['Approve follower requests'],
-                     'approveFollowers', manuallyApprovesFollowers)
+        edit_check_box(translate['Approve follower requests'],
+                       'approveFollowers', manuallyApprovesFollowers)
     editProfileForm += \
-        editCheckBox(translate['This is a bot account'],
-                     'isBot', isBot)
+        edit_check_box(translate['This is a bot account'],
+                       'isBot', isBot)
     if isAdmin:
         editProfileForm += \
-            editCheckBox(translate['This is a group account'],
-                         'isGroup', isGroup)
+            edit_check_box(translate['This is a group account'],
+                           'isGroup', isGroup)
     editProfileForm += \
-        editCheckBox(translate['Only people I follow can send me DMs'],
-                     'followDMs', followDMs)
+        edit_check_box(translate['Only people I follow can send me DMs'],
+                       'followDMs', followDMs)
     editProfileForm += \
-        editCheckBox(translate['Remove Twitter posts'],
-                     'removeTwitter', removeTwitter)
+        edit_check_box(translate['Remove Twitter posts'],
+                       'removeTwitter', removeTwitter)
     editProfileForm += \
-        editCheckBox(translate['Notify when posts are liked'],
-                     'notifyLikes', notifyLikes)
+        edit_check_box(translate['Notify when posts are liked'],
+                       'notifyLikes', notifyLikes)
     editProfileForm += \
-        editCheckBox(translate['Notify on emoji reactions'],
-                     'notifyReactions', notifyReactions)
+        edit_check_box(translate['Notify on emoji reactions'],
+                       'notifyReactions', notifyReactions)
     editProfileForm += \
-        editCheckBox(translate["Don't show the Like button"],
-                     'hideLikeButton', hideLikeButton)
+        edit_check_box(translate["Don't show the Like button"],
+                       'hideLikeButton', hideLikeButton)
     editProfileForm += \
-        editCheckBox(translate["Don't show the Reaction button"],
-                     'hideReactionButton', hideReactionButton)
+        edit_check_box(translate["Don't show the Reaction button"],
+                       'hideReactionButton', hideReactionButton)
     editProfileForm += '    </div>\n'
     return editProfileForm
 
@@ -1983,10 +1993,10 @@ def _get_supported_languagesSorted(base_dir: str) -> str:
     return languagesStr
 
 
-def _htmlEditProfileMain(base_dir: str, displayNickname: str, bioStr: str,
-                         movedTo: str, donateUrl: str, websiteUrl: str,
-                         blogAddress: str, actor_json: {},
-                         translate: {}) -> str:
+def _html_edit_profile_main(base_dir: str, displayNickname: str, bioStr: str,
+                            movedTo: str, donateUrl: str, websiteUrl: str,
+                            blogAddress: str, actor_json: {},
+                            translate: {}) -> str:
     """main info on edit profile screen
     """
     imageFormats = get_image_formats()
@@ -1994,11 +2004,11 @@ def _htmlEditProfileMain(base_dir: str, displayNickname: str, bioStr: str,
     editProfileForm = '    <div class="container">\n'
 
     editProfileForm += \
-        editTextField(translate['Nickname'], 'displayNickname',
-                      displayNickname)
+        edit_text_field(translate['Nickname'], 'displayNickname',
+                        displayNickname)
 
     editProfileForm += \
-        editTextArea(translate['Your bio'], 'bio', bioStr, 200, '', True)
+        edit_text_area(translate['Your bio'], 'bio', bioStr, 200, '', True)
 
     editProfileForm += \
         '      <label class="labels">' + translate['Avatar image'] + \
@@ -2011,8 +2021,8 @@ def _htmlEditProfileMain(base_dir: str, displayNickname: str, bioStr: str,
         occupationName = get_occupation_name(actor_json)
 
     editProfileForm += \
-        editTextField(translate['Occupation'], 'occupationName',
-                      occupationName)
+        edit_text_field(translate['Occupation'], 'occupationName',
+                        occupationName)
 
     alsoKnownAsStr = ''
     if actor_json.get('alsoKnownAs'):
@@ -2025,38 +2035,39 @@ def _htmlEditProfileMain(base_dir: str, displayNickname: str, bioStr: str,
             alsoKnownAsStr += altActor
 
     editProfileForm += \
-        editTextField(translate['Other accounts'], 'alsoKnownAs',
-                      alsoKnownAsStr, 'https://...')
+        edit_text_field(translate['Other accounts'], 'alsoKnownAs',
+                        alsoKnownAsStr, 'https://...')
 
     editProfileForm += \
-        editTextField(translate['Moved to new account address'], 'movedTo',
-                      movedTo, 'https://...')
+        edit_text_field(translate['Moved to new account address'], 'movedTo',
+                        movedTo, 'https://...')
 
     editProfileForm += \
-        editTextField(translate['Donations link'], 'donateUrl',
-                      donateUrl, 'https://...')
+        edit_text_field(translate['Donations link'], 'donateUrl',
+                        donateUrl, 'https://...')
 
     editProfileForm += \
-        editTextField(translate['Website'], 'websiteUrl',
-                      websiteUrl, 'https://...')
+        edit_text_field(translate['Website'], 'websiteUrl',
+                        websiteUrl, 'https://...')
 
     editProfileForm += \
-        editTextField('Blog', 'blogAddress', blogAddress, 'https://...')
+        edit_text_field('Blog', 'blogAddress', blogAddress, 'https://...')
 
     languagesListStr = _get_supported_languagesSorted(base_dir)
-    showLanguages = getActorLanguages(actor_json)
+    showLanguages = get_actor_languages(actor_json)
     editProfileForm += \
-        editTextField(translate['Languages'], 'showLanguages',
-                      showLanguages, languagesListStr)
+        edit_text_field(translate['Languages'], 'showLanguages',
+                        showLanguages, languagesListStr)
 
     editProfileForm += '    </div>\n'
     return editProfileForm
 
 
-def _htmlEditProfileTopBanner(base_dir: str,
-                              nickname: str, domain: str, domain_full: str,
-                              defaultTimeline: str, bannerFile: str,
-                              path: str, accessKeys: {}, translate: {}) -> str:
+def _html_edit_profile_top_banner(base_dir: str,
+                                  nickname: str, domain: str, domain_full: str,
+                                  defaultTimeline: str, bannerFile: str,
+                                  path: str, accessKeys: {},
+                                  translate: {}) -> str:
     """top banner on edit profile screen
     """
     editProfileForm = \
@@ -2080,24 +2091,24 @@ def _htmlEditProfileTopBanner(base_dir: str,
         '      </center>\n'
     editProfileForm += '    </div>\n'
 
-    if scheduledPostsExist(base_dir, nickname, domain):
+    if scheduled_posts_exist(base_dir, nickname, domain):
         editProfileForm += '    <div class="container">\n'
         editProfileForm += \
-            editCheckBox(translate['Remove scheduled posts'],
-                         'removeScheduledPosts', False)
+            edit_check_box(translate['Remove scheduled posts'],
+                           'remove_scheduled_posts', False)
         editProfileForm += '    </div>\n'
     return editProfileForm
 
 
-def htmlEditProfile(css_cache: {}, translate: {}, base_dir: str, path: str,
-                    domain: str, port: int, http_prefix: str,
-                    defaultTimeline: str, theme: str,
-                    peertube_instances: [],
-                    text_mode_banner: str, city: str,
-                    user_agents_blocked: str,
-                    accessKeys: {},
-                    default_reply_interval_hrs: int,
-                    cw_lists: {}, lists_enabled: str) -> str:
+def html_edit_profile(css_cache: {}, translate: {}, base_dir: str, path: str,
+                      domain: str, port: int, http_prefix: str,
+                      defaultTimeline: str, theme: str,
+                      peertube_instances: [],
+                      text_mode_banner: str, city: str,
+                      user_agents_blocked: str,
+                      accessKeys: {},
+                      default_reply_interval_hrs: int,
+                      cw_lists: {}, lists_enabled: str) -> str:
     """Shows the edit profile screen
     """
     path = path.replace('/inbox', '').replace('/outbox', '')
@@ -2113,7 +2124,7 @@ def htmlEditProfile(css_cache: {}, translate: {}, base_dir: str, path: str,
 
     # filename of the banner shown at the top
     bannerFile, bannerFilename = \
-        getBannerFile(base_dir, nickname, domain, theme)
+        get_banner_file(base_dir, nickname, domain, theme)
 
     displayNickname = nickname
     isBot = isGroup = followDMs = removeTwitter = ''
@@ -2145,12 +2156,12 @@ def htmlEditProfile(css_cache: {}, translate: {}, base_dir: str, path: str,
         PGPpubKey = get_pgp_pub_key(actor_json)
         PGPfingerprint = get_pgp_fingerprint(actor_json)
         if actor_json.get('name'):
-            if not isFiltered(base_dir, nickname, domain, actor_json['name']):
+            if not is_filtered(base_dir, nickname, domain, actor_json['name']):
                 displayNickname = actor_json['name']
         if actor_json.get('summary'):
             bioStr = \
                 actor_json['summary'].replace('<p>', '').replace('</p>', '')
-            if isFiltered(base_dir, nickname, domain, bioStr):
+            if is_filtered(base_dir, nickname, domain, bioStr):
                 bioStr = ''
         if actor_json.get('manuallyApprovesFollowers'):
             if actor_json['manuallyApprovesFollowers']:
@@ -2212,38 +2223,38 @@ def htmlEditProfile(css_cache: {}, translate: {}, base_dir: str, path: str,
 
     if is_artist(base_dir, nickname) or \
        path.startswith('/users/' + str(adminNickname) + '/'):
-        graphicsStr = _htmlEditProfileGraphicDesign(base_dir, translate)
+        graphicsStr = _html_edit_profile_graphic_design(base_dir, translate)
 
     isAdmin = False
     if adminNickname:
         if path.startswith('/users/' + adminNickname + '/'):
             isAdmin = True
             twitterStr = \
-                _htmlEditProfileTwitter(base_dir, translate, removeTwitter)
+                _html_edit_profile_twitter(base_dir, translate, removeTwitter)
             # shared items section
             sharesFederationStr = \
-                _htmlEditProfileSharedItems(base_dir, nickname,
-                                            domain, translate)
+                _html_edit_profile_shared_items(base_dir, nickname,
+                                                domain, translate)
             instanceStr, roleAssignStr, peertubeStr, libretranslateStr = \
-                _htmlEditProfileInstance(base_dir, translate,
-                                         peertube_instances,
-                                         media_instanceStr,
-                                         blogs_instanceStr,
-                                         news_instanceStr)
-            systemMonitorStr = _htmlSystemMonitor(nickname, translate)
+                _html_edit_profile_instance(base_dir, translate,
+                                            peertube_instances,
+                                            media_instanceStr,
+                                            blogs_instanceStr,
+                                            news_instanceStr)
+            systemMonitorStr = _html_system_monitor(nickname, translate)
 
     instanceTitle = get_config_param(base_dir, 'instanceTitle')
     editProfileForm = \
-        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
+        html_header_with_external_style(cssFilename, instanceTitle, None)
 
     # keyboard navigation
     userPathStr = '/users/' + nickname
     userTimalineStr = '/users/' + nickname + '/' + defaultTimeline
     menuTimeline = \
-        htmlHideFromScreenReader('🏠') + ' ' + \
+        html_hide_from_screen_reader('🏠') + ' ' + \
         translate['Switch to timeline view']
     menuProfile = \
-        htmlHideFromScreenReader('👤') + ' ' + \
+        html_hide_from_screen_reader('👤') + ' ' + \
         translate['Switch to profile view']
     navLinks = {
         menuProfile: userPathStr,
@@ -2253,47 +2264,47 @@ def htmlEditProfile(css_cache: {}, translate: {}, base_dir: str, path: str,
         menuProfile: 'p',
         menuTimeline: 't'
     }
-    editProfileForm += htmlKeyboardNavigation(text_mode_banner,
-                                              navLinks, navAccessKeys)
+    editProfileForm += html_keyboard_navigation(text_mode_banner,
+                                                navLinks, navAccessKeys)
 
     # top banner
     editProfileForm += \
-        _htmlEditProfileTopBanner(base_dir, nickname, domain, domain_full,
-                                  defaultTimeline, bannerFile,
-                                  path, accessKeys, translate)
+        _html_edit_profile_top_banner(base_dir, nickname, domain, domain_full,
+                                      defaultTimeline, bannerFile,
+                                      path, accessKeys, translate)
 
     # main info
     editProfileForm += \
-        _htmlEditProfileMain(base_dir, displayNickname, bioStr,
-                             movedTo, donateUrl, websiteUrl,
-                             blogAddress, actor_json, translate)
+        _html_edit_profile_main(base_dir, displayNickname, bioStr,
+                                movedTo, donateUrl, websiteUrl,
+                                blogAddress, actor_json, translate)
 
     # Option checkboxes
     editProfileForm += \
-        _htmlEditProfileOptions(isAdmin, manuallyApprovesFollowers,
-                                isBot, isGroup, followDMs, removeTwitter,
-                                notifyLikes, notifyReactions,
-                                hideLikeButton, hideReactionButton,
-                                translate)
+        _html_edit_profile_options(isAdmin, manuallyApprovesFollowers,
+                                   isBot, isGroup, followDMs, removeTwitter,
+                                   notifyLikes, notifyReactions,
+                                   hideLikeButton, hideReactionButton,
+                                   translate)
 
     # Contact information
     editProfileForm += \
-        _htmlEditProfileContactInfo(nickname, emailAddress,
-                                    xmppAddress, matrixAddress,
-                                    ssbAddress, toxAddress,
-                                    briarAddress, jamiAddress,
-                                    cwtchAddress, translate)
+        _html_edit_profile_contact_info(nickname, emailAddress,
+                                        xmppAddress, matrixAddress,
+                                        ssbAddress, toxAddress,
+                                        briarAddress, jamiAddress,
+                                        cwtchAddress, translate)
 
     # Encryption Keys
     editProfileForm += \
-        _htmlEditProfileEncryptionKeys(PGPfingerprint,
-                                       PGPpubKey, EnigmaPubKey, translate)
+        _html_edit_profile_encryption_keys(PGPfingerprint,
+                                           PGPpubKey, EnigmaPubKey, translate)
 
     # Customize images and banners
-    editProfileForm += _htmlEditProfileBackground(news_instance, translate)
+    editProfileForm += _html_edit_profile_background(news_instance, translate)
 
     # Change password
-    editProfileForm += _htmlEditProfileChangePassword(translate)
+    editProfileForm += _html_edit_profile_change_password(translate)
 
     # automatic translations
     editProfileForm += libretranslateStr
@@ -2305,24 +2316,24 @@ def htmlEditProfile(css_cache: {}, translate: {}, base_dir: str, path: str,
     replyIntervalHours = get_reply_interval_hours(base_dir, nickname, domain,
                                                   default_reply_interval_hrs)
     editProfileForm += \
-        _htmlEditProfileFiltering(base_dir, nickname, domain,
-                                  user_agents_blocked, translate,
-                                  replyIntervalHours,
-                                  cw_lists, lists_enabled)
+        _html_edit_profile_filtering(base_dir, nickname, domain,
+                                     user_agents_blocked, translate,
+                                     replyIntervalHours,
+                                     cw_lists, lists_enabled)
 
     # git projects section
     editProfileForm += \
-        _htmlEditProfileGitProjects(base_dir, nickname, domain, translate)
+        _html_edit_profile_git_projects(base_dir, nickname, domain, translate)
 
     # Skills section
     editProfileForm += \
-        _htmlEditProfileSkills(base_dir, nickname, domain, translate)
+        _html_edit_profile_skills(base_dir, nickname, domain, translate)
 
     editProfileForm += roleAssignStr + peertubeStr + graphicsStr
     editProfileForm += sharesFederationStr + twitterStr + instanceStr
 
     # danger zone section
-    editProfileForm += _htmlEditProfileDangerZone(translate)
+    editProfileForm += _html_edit_profile_danger_zone(translate)
 
     editProfileForm += '    <div class="container">\n'
     editProfileForm += \
@@ -2334,30 +2345,30 @@ def htmlEditProfile(css_cache: {}, translate: {}, base_dir: str, path: str,
 
     editProfileForm += '  </div>\n'
     editProfileForm += '</form>\n'
-    editProfileForm += htmlFooter()
+    editProfileForm += html_footer()
     return editProfileForm
 
 
-def _individualFollowAsHtml(signing_priv_key_pem: str,
-                            translate: {},
-                            base_dir: str, session,
-                            cached_webfingers: {},
-                            person_cache: {}, domain: str,
-                            followUrl: str,
-                            authorized: bool,
-                            actorNickname: str,
-                            http_prefix: str,
-                            project_version: str,
-                            dormant: bool,
-                            debug: bool,
-                            buttons=[]) -> str:
+def _individual_follow_as_html(signing_priv_key_pem: str,
+                               translate: {},
+                               base_dir: str, session,
+                               cached_webfingers: {},
+                               person_cache: {}, domain: str,
+                               followUrl: str,
+                               authorized: bool,
+                               actorNickname: str,
+                               http_prefix: str,
+                               project_version: str,
+                               dormant: bool,
+                               debug: bool,
+                               buttons=[]) -> str:
     """An individual follow entry on the profile screen
     """
     followUrlNickname = get_nickname_from_actor(followUrl)
     followUrlDomain, followUrlPort = get_domain_from_actor(followUrl)
     followUrlDomainFull = get_full_domain(followUrlDomain, followUrlPort)
     titleStr = '@' + followUrlNickname + '@' + followUrlDomainFull
-    avatarUrl = getPersonAvatarUrl(base_dir, followUrl, person_cache, True)
+    avatarUrl = get_person_avatar_url(base_dir, followUrl, person_cache, True)
     if not avatarUrl:
         avatarUrl = followUrl + '/avatar.png'
 
@@ -2367,28 +2378,28 @@ def _individualFollowAsHtml(signing_priv_key_pem: str,
         # lookup the correct webfinger for the followUrl
         followUrlHandle = followUrlNickname + '@' + followUrlDomainFull
         followUrlWf = \
-            webfingerHandle(session, followUrlHandle, http_prefix,
-                            cached_webfingers,
-                            domain, __version__, debug, False,
-                            signing_priv_key_pem)
+            webfinger_handle(session, followUrlHandle, http_prefix,
+                             cached_webfingers,
+                             domain, __version__, debug, False,
+                             signing_priv_key_pem)
 
         originDomain = domain
         (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl2,
-         displayName, isGroup) = getPersonBox(signing_priv_key_pem,
-                                              originDomain,
-                                              base_dir, session,
-                                              followUrlWf,
-                                              person_cache, project_version,
-                                              http_prefix, followUrlNickname,
-                                              domain, 'outbox', 43036)
+         displayName, isGroup) = get_person_box(signing_priv_key_pem,
+                                                originDomain,
+                                                base_dir, session,
+                                                followUrlWf,
+                                                person_cache, project_version,
+                                                http_prefix, followUrlNickname,
+                                                domain, 'outbox', 43036)
         if avatarUrl2:
             avatarUrl = avatarUrl2
 
     if displayName:
         displayName = \
-            addEmojiToDisplayName(None, base_dir, http_prefix,
-                                  actorNickname, domain,
-                                  displayName, False)
+            add_emoji_to_display_name(None, base_dir, http_prefix,
+                                      actorNickname, domain,
+                                      displayName, False)
         titleStr = displayName
 
     if dormant:

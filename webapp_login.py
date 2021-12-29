@@ -13,16 +13,16 @@ from shutil import copyfile
 from utils import get_config_param
 from utils import no_of_accounts
 from utils import get_nickname_validation_pattern
-from webapp_utils import setCustomBackground
-from webapp_utils import htmlHeaderWithWebsiteMarkup
-from webapp_utils import htmlFooter
-from webapp_utils import htmlKeyboardNavigation
-from theme import getTextModeLogo
+from webapp_utils import set_custom_background
+from webapp_utils import html_header_with_website_markup
+from webapp_utils import html_footer
+from webapp_utils import html_keyboard_navigation
+from theme import get_text_mode_logo
 
 
-def htmlGetLoginCredentials(loginParams: str,
-                            last_login_time: int,
-                            domain: str) -> (str, str, bool):
+def html_get_login_credentials(loginParams: str,
+                               last_login_time: int,
+                               domain: str) -> (str, str, bool):
     """Receives login credentials via HTTPServer POST
     """
     if not loginParams.startswith('username='):
@@ -54,11 +54,11 @@ def htmlGetLoginCredentials(loginParams: str,
     return nickname, password, register
 
 
-def htmlLogin(css_cache: {}, translate: {},
-              base_dir: str,
-              http_prefix: str, domain: str,
-              system_language: str,
-              autocomplete: bool) -> str:
+def html_login(css_cache: {}, translate: {},
+               base_dir: str,
+               http_prefix: str, domain: str,
+               system_language: str,
+               autocomplete: bool) -> str:
     """Shows the login screen
     """
     accounts = no_of_accounts(base_dir)
@@ -90,11 +90,11 @@ def htmlLogin(css_cache: {}, translate: {},
         loginImageFilename = base_dir + '/accounts/' + loginImage
         copyfile(base_dir + '/img/login.png', loginImageFilename)
 
-    textModeLogo = getTextModeLogo(base_dir)
-    textModeLogoHtml = htmlKeyboardNavigation(textModeLogo, {}, {})
+    textModeLogo = get_text_mode_logo(base_dir)
+    textModeLogoHtml = html_keyboard_navigation(textModeLogo, {}, {})
 
-    setCustomBackground(base_dir, 'login-background-custom',
-                        'login-background')
+    set_custom_background(base_dir, 'login-background-custom',
+                          'login-background')
 
     if accounts > 0:
         loginText = \
@@ -151,9 +151,9 @@ def htmlLogin(css_cache: {}, translate: {},
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
     loginForm = \
-        htmlHeaderWithWebsiteMarkup(cssFilename, instanceTitle,
-                                    http_prefix, domain,
-                                    system_language)
+        html_header_with_website_markup(cssFilename, instanceTitle,
+                                        http_prefix, domain,
+                                        system_language)
 
     nicknamePattern = get_nickname_validation_pattern()
     instanceTitle = get_config_param(base_dir, 'instanceTitle')
@@ -187,5 +187,5 @@ def htmlLogin(css_cache: {}, translate: {},
         '<img loading="lazy" class="license" title="' + \
         translate['Get the source code'] + '" alt="' + \
         translate['Get the source code'] + '" src="/icons/agpl.png" /></a>\n'
-    loginForm += htmlFooter()
+    loginForm += html_footer()
     return loginForm

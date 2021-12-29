@@ -20,23 +20,23 @@ from utils import locate_post
 from utils import delete_post
 from utils import remove_moderation_post_from_index
 from utils import local_actor_url
-from session import postJson
-from webfinger import webfingerHandle
+from session import post_json
+from webfinger import webfinger_handle
 from auth import create_basic_auth_header
-from posts import getPersonBox
+from posts import get_person_box
 
 
-def sendDeleteViaServer(base_dir: str, session,
-                        fromNickname: str, password: str,
-                        fromDomain: str, fromPort: int,
-                        http_prefix: str, deleteObjectUrl: str,
-                        cached_webfingers: {}, person_cache: {},
-                        debug: bool, project_version: str,
-                        signing_priv_key_pem: str) -> {}:
+def send_delete_via_server(base_dir: str, session,
+                           fromNickname: str, password: str,
+                           fromDomain: str, fromPort: int,
+                           http_prefix: str, deleteObjectUrl: str,
+                           cached_webfingers: {}, person_cache: {},
+                           debug: bool, project_version: str,
+                           signing_priv_key_pem: str) -> {}:
     """Creates a delete request message via c2s
     """
     if not session:
-        print('WARN: No session for sendDeleteViaServer')
+        print('WARN: No session for send_delete_via_server')
         return 6
 
     fromDomainFull = get_full_domain(fromDomain, fromPort)
@@ -58,9 +58,9 @@ def sendDeleteViaServer(base_dir: str, session,
 
     # lookup the inbox for the To handle
     wfRequest = \
-        webfingerHandle(session, handle, http_prefix, cached_webfingers,
-                        fromDomain, project_version, debug, False,
-                        signing_priv_key_pem)
+        webfinger_handle(session, handle, http_prefix, cached_webfingers,
+                         fromDomain, project_version, debug, False,
+                         signing_priv_key_pem)
     if not wfRequest:
         if debug:
             print('DEBUG: delete webfinger failed for ' + handle)
@@ -76,10 +76,12 @@ def sendDeleteViaServer(base_dir: str, session,
     originDomain = fromDomain
     (inboxUrl, pubKeyId, pubKey,
      fromPersonId, sharedInbox, avatarUrl,
-     displayName, _) = getPersonBox(signing_priv_key_pem, originDomain,
-                                    base_dir, session, wfRequest, person_cache,
-                                    project_version, http_prefix, fromNickname,
-                                    fromDomain, postToBox, 53036)
+     displayName, _) = get_person_box(signing_priv_key_pem, originDomain,
+                                      base_dir, session,
+                                      wfRequest, person_cache,
+                                      project_version, http_prefix,
+                                      fromNickname,
+                                      fromDomain, postToBox, 53036)
 
     if not inboxUrl:
         if debug:
@@ -99,8 +101,8 @@ def sendDeleteViaServer(base_dir: str, session,
         'Authorization': authHeader
     }
     postResult = \
-        postJson(http_prefix, fromDomainFull,
-                 session, newDeleteJson, [], inboxUrl, headers, 3, True)
+        post_json(http_prefix, fromDomainFull,
+                  session, newDeleteJson, [], inboxUrl, headers, 3, True)
     if not postResult:
         if debug:
             print('DEBUG: POST delete failed for c2s to ' + inboxUrl)
@@ -112,11 +114,11 @@ def sendDeleteViaServer(base_dir: str, session,
     return newDeleteJson
 
 
-def outboxDelete(base_dir: str, http_prefix: str,
-                 nickname: str, domain: str,
-                 message_json: {}, debug: bool,
-                 allow_deletion: bool,
-                 recent_posts_cache: {}) -> None:
+def outbox_delete(base_dir: str, http_prefix: str,
+                  nickname: str, domain: str,
+                  message_json: {}, debug: bool,
+                  allow_deletion: bool,
+                  recent_posts_cache: {}) -> None:
     """ When a delete request is received by the outbox from c2s
     """
     if not message_json.get('type'):
@@ -174,7 +176,7 @@ def outboxDelete(base_dir: str, http_prefix: str,
         print('DEBUG: post deleted via c2s - ' + post_filename)
 
 
-def removeOldHashtags(base_dir: str, maxMonths: int) -> str:
+def remove_old_hashtags(base_dir: str, maxMonths: int) -> str:
     """Remove old hashtags
     """
     if maxMonths > 11:
@@ -202,4 +204,4 @@ def removeOldHashtags(base_dir: str, maxMonths: int) -> str:
         try:
             os.remove(removeFilename)
         except OSError:
-            print('EX: removeOldHashtags unable to delete ' + removeFilename)
+            print('EX: remove_old_hashtags unable to delete ' + removeFilename)

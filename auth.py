@@ -17,7 +17,7 @@ from utils import is_system_account
 from utils import has_users_path
 
 
-def _hashPassword(password: str) -> str:
+def _hash_password(password: str) -> str:
     """Hash a password for storing
     """
     salt = hashlib.sha256(os.urandom(60)).hexdigest().encode('ascii')
@@ -28,7 +28,7 @@ def _hashPassword(password: str) -> str:
     return (salt + pwdhash).decode('ascii')
 
 
-def _getPasswordHash(salt: str, providedPassword: str) -> str:
+def _get_password_hash(salt: str, providedPassword: str) -> str:
     """Returns the hash of a password
     """
     pwdhash = hashlib.pbkdf2_hmac('sha512',
@@ -38,7 +38,7 @@ def _getPasswordHash(salt: str, providedPassword: str) -> str:
     return binascii.hexlify(pwdhash).decode('ascii')
 
 
-def constantTimeStringCheck(string1: str, string2: str) -> bool:
+def constant_time_string_check(string1: str, string2: str) -> bool:
     """Compares two string and returns if they are the same
     using a constant amount of time
     See https://sqreen.github.io/DevelopersSecurityBestPractices/
@@ -60,7 +60,7 @@ def constantTimeStringCheck(string1: str, string2: str) -> bool:
     return matched
 
 
-def _verifyPassword(storedPassword: str, providedPassword: str) -> bool:
+def _verify_password(storedPassword: str, providedPassword: str) -> bool:
     """Verify a stored password against one provided by user
     """
     if not storedPassword:
@@ -69,8 +69,8 @@ def _verifyPassword(storedPassword: str, providedPassword: str) -> bool:
         return False
     salt = storedPassword[:64]
     storedPassword = storedPassword[64:]
-    pwHash = _getPasswordHash(salt, providedPassword)
-    return constantTimeStringCheck(pwHash, storedPassword)
+    pwHash = _get_password_hash(salt, providedPassword)
+    return constant_time_string_check(pwHash, storedPassword)
 
 
 def create_basic_auth_header(nickname: str, password: str) -> str:
@@ -139,7 +139,7 @@ def authorize_basic(base_dir: str, path: str, authHeader: str,
                     continue
                 storedPassword = \
                     line.split(':')[1].replace('\n', '').replace('\r', '')
-                success = _verifyPassword(storedPassword, providedPassword)
+                success = _verify_password(storedPassword, providedPassword)
                 if not success:
                     if debug:
                         print('DEBUG: Password check failed for ' + nickname)
@@ -165,7 +165,7 @@ def store_basic_credentials(base_dir: str,
         os.mkdir(base_dir + '/accounts')
 
     passwordFile = base_dir + '/accounts/passwords'
-    storeStr = nickname + ':' + _hashPassword(password)
+    storeStr = nickname + ':' + _hash_password(password)
     if os.path.isfile(passwordFile):
         if nickname + ':' in open(passwordFile).read():
             try:
@@ -204,7 +204,7 @@ def store_basic_credentials(base_dir: str,
     return True
 
 
-def removePassword(base_dir: str, nickname: str) -> None:
+def remove_password(base_dir: str, nickname: str) -> None:
     """Removes the password entry for the given nickname
     This is called during account removal
     """

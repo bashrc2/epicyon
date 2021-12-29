@@ -15,11 +15,11 @@ from utils import get_status_number
 from utils import load_json
 from utils import is_account_dir
 from utils import acct_dir
-from outbox import postMessageToOutbox
+from outbox import post_message_to_outbox
 
 
-def _updatePostSchedule(base_dir: str, handle: str, httpd,
-                        maxScheduledPosts: int) -> None:
+def _update_post_schedule(base_dir: str, handle: str, httpd,
+                          maxScheduledPosts: int) -> None:
     """Checks if posts are due to be delivered and if so moves them to the outbox
     """
     scheduleIndexFilename = \
@@ -50,7 +50,7 @@ def _updatePostSchedule(base_dir: str, handle: str, httpd,
                     try:
                         os.remove(post_filename)
                     except OSError:
-                        print('EX: _updatePostSchedule unable to delete ' +
+                        print('EX: _update_post_schedule unable to delete ' +
                               str(post_filename))
                 continue
             # create the new index file
@@ -93,48 +93,48 @@ def _updatePostSchedule(base_dir: str, handle: str, httpd,
 
             if nickname:
                 httpd.postToNickname = nickname
-            if not postMessageToOutbox(httpd.session,
-                                       httpd.translate,
-                                       post_json_object, nickname,
-                                       httpd, base_dir,
-                                       httpd.http_prefix,
-                                       httpd.domain,
-                                       httpd.domain_full,
-                                       httpd.onion_domain,
-                                       httpd.i2p_domain,
-                                       httpd.port,
-                                       httpd.recent_posts_cache,
-                                       httpd.followers_threads,
-                                       httpd.federation_list,
-                                       httpd.send_threads,
-                                       httpd.postLog,
-                                       httpd.cached_webfingers,
-                                       httpd.person_cache,
-                                       httpd.allow_deletion,
-                                       httpd.proxy_type,
-                                       httpd.project_version,
-                                       httpd.debug,
-                                       httpd.yt_replace_domain,
-                                       httpd.twitter_replacement_domain,
-                                       httpd.show_published_date_only,
-                                       httpd.allow_local_network_access,
-                                       httpd.city, httpd.system_language,
-                                       httpd.shared_items_federated_domains,
-                                       httpd.sharedItemFederationTokens,
-                                       httpd.low_bandwidth,
-                                       httpd.signing_priv_key_pem,
-                                       httpd.peertube_instances,
-                                       httpd.theme_name,
-                                       httpd.max_like_count,
-                                       httpd.max_recent_posts,
-                                       httpd.cw_lists,
-                                       httpd.lists_enabled,
-                                       httpd.content_license_url):
+            if not post_message_to_outbox(httpd.session,
+                                          httpd.translate,
+                                          post_json_object, nickname,
+                                          httpd, base_dir,
+                                          httpd.http_prefix,
+                                          httpd.domain,
+                                          httpd.domain_full,
+                                          httpd.onion_domain,
+                                          httpd.i2p_domain,
+                                          httpd.port,
+                                          httpd.recent_posts_cache,
+                                          httpd.followers_threads,
+                                          httpd.federation_list,
+                                          httpd.send_threads,
+                                          httpd.postLog,
+                                          httpd.cached_webfingers,
+                                          httpd.person_cache,
+                                          httpd.allow_deletion,
+                                          httpd.proxy_type,
+                                          httpd.project_version,
+                                          httpd.debug,
+                                          httpd.yt_replace_domain,
+                                          httpd.twitter_replacement_domain,
+                                          httpd.show_published_date_only,
+                                          httpd.allow_local_network_access,
+                                          httpd.city, httpd.system_language,
+                                          httpd.shared_items_federated_domains,
+                                          httpd.sharedItemFederationTokens,
+                                          httpd.low_bandwidth,
+                                          httpd.signing_priv_key_pem,
+                                          httpd.peertube_instances,
+                                          httpd.theme_name,
+                                          httpd.max_like_count,
+                                          httpd.max_recent_posts,
+                                          httpd.cw_lists,
+                                          httpd.lists_enabled,
+                                          httpd.content_license_url):
                 indexLines.remove(line)
                 try:
                     os.remove(post_filename)
                 except OSError:
-                    print('EX: _updatePostSchedule unable to delete ' +
+                    print('EX: _update_post_schedule unable to delete ' +
                           str(post_filename))
                 continue
 
@@ -157,7 +157,7 @@ def _updatePostSchedule(base_dir: str, handle: str, httpd,
             scheduleFile.write(line)
 
 
-def runPostSchedule(base_dir: str, httpd, maxScheduledPosts: int):
+def run_post_schedule(base_dir: str, httpd, maxScheduledPosts: int):
     """Dispatches scheduled posts
     """
     while True:
@@ -174,17 +174,17 @@ def runPostSchedule(base_dir: str, httpd, maxScheduledPosts: int):
                     base_dir + '/accounts/' + account + '/schedule.index'
                 if not os.path.isfile(scheduleIndexFilename):
                     continue
-                _updatePostSchedule(base_dir, account,
-                                    httpd, maxScheduledPosts)
+                _update_post_schedule(base_dir, account,
+                                      httpd, maxScheduledPosts)
             break
 
 
-def runPostScheduleWatchdog(project_version: str, httpd) -> None:
+def run_post_schedule_watchdog(project_version: str, httpd) -> None:
     """This tries to keep the scheduled post thread running even if it dies
     """
     print('Starting scheduled post watchdog')
     postScheduleOriginal = \
-        httpd.thrPostSchedule.clone(runPostSchedule)
+        httpd.thrPostSchedule.clone(run_post_schedule)
     httpd.thrPostSchedule.start()
     while True:
         time.sleep(20)
@@ -192,12 +192,12 @@ def runPostScheduleWatchdog(project_version: str, httpd) -> None:
             continue
         httpd.thrPostSchedule.kill()
         httpd.thrPostSchedule = \
-            postScheduleOriginal.clone(runPostSchedule)
+            postScheduleOriginal.clone(run_post_schedule)
         httpd.thrPostSchedule.start()
         print('Restarting scheduled posts...')
 
 
-def removeScheduledPosts(base_dir: str, nickname: str, domain: str) -> None:
+def remove_scheduled_posts(base_dir: str, nickname: str, domain: str) -> None:
     """Removes any scheduled posts
     """
     # remove the index
@@ -207,7 +207,7 @@ def removeScheduledPosts(base_dir: str, nickname: str, domain: str) -> None:
         try:
             os.remove(scheduleIndexFilename)
         except OSError:
-            print('EX: removeScheduledPosts unable to delete ' +
+            print('EX: remove_scheduled_posts unable to delete ' +
                   scheduleIndexFilename)
     # remove the scheduled posts
     scheduledDir = acct_dir(base_dir, nickname, domain) + '/scheduled'
@@ -219,5 +219,5 @@ def removeScheduledPosts(base_dir: str, nickname: str, domain: str) -> None:
             try:
                 os.remove(filePath)
             except OSError:
-                print('EX: removeScheduledPosts unable to delete ' +
+                print('EX: remove_scheduled_posts unable to delete ' +
                       filePath)

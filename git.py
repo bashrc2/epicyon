@@ -13,7 +13,7 @@ from utils import acct_dir
 from utils import has_object_stringType
 
 
-def _gitFormatContent(content: str) -> str:
+def _git_format_content(content: str) -> str:
     """ replace html formatting, so that it's more
     like the original patch file
     """
@@ -25,8 +25,8 @@ def _gitFormatContent(content: str) -> str:
     return patchStr
 
 
-def _getGitProjectName(base_dir: str, nickname: str, domain: str,
-                       subject: str) -> str:
+def _get_git_project_name(base_dir: str, nickname: str, domain: str,
+                          subject: str) -> str:
     """Returns the project name for a git patch
     The project name should be contained within the subject line
     and should match against a list of projects which the account
@@ -43,10 +43,10 @@ def _getGitProjectName(base_dir: str, nickname: str, domain: str,
     return None
 
 
-def isGitPatch(base_dir: str, nickname: str, domain: str,
-               messageType: str,
-               subject: str, content: str,
-               checkProjectName: bool = True) -> bool:
+def is_git_patch(base_dir: str, nickname: str, domain: str,
+                 messageType: str,
+                 subject: str, content: str,
+                 checkProjectName: bool = True) -> bool:
     """Is the given post content a git patch?
     """
     if messageType != 'Note' and \
@@ -75,13 +75,13 @@ def isGitPatch(base_dir: str, nickname: str, domain: str,
             return False
     if checkProjectName:
         projectName = \
-            _getGitProjectName(base_dir, nickname, domain, subject)
+            _get_git_project_name(base_dir, nickname, domain, subject)
         if not projectName:
             return False
     return True
 
 
-def _getGitHash(patchStr: str) -> str:
+def _get_git_hash(patchStr: str) -> str:
     """Returns the commit hash from a given patch
     """
     patchLines = patchStr.split('\n')
@@ -95,7 +95,7 @@ def _getGitHash(patchStr: str) -> str:
     return None
 
 
-def _getPatchDescription(patchStr: str) -> str:
+def _get_patch_description(patchStr: str) -> str:
     """Returns the description from a given patch
     """
     patchLines = patchStr.split('\n')
@@ -111,8 +111,8 @@ def _getPatchDescription(patchStr: str) -> str:
     return description
 
 
-def convertPostToPatch(base_dir: str, nickname: str, domain: str,
-                       post_json_object: {}) -> bool:
+def convert_post_to_patch(base_dir: str, nickname: str, domain: str,
+                          post_json_object: {}) -> bool:
     """Detects whether the given post contains a patch
     and if so then converts it to a Patch ActivityPub type
     """
@@ -128,14 +128,14 @@ def convertPostToPatch(base_dir: str, nickname: str, domain: str,
         return False
     if not isinstance(post_json_object['object']['attributedTo'], str):
         return False
-    if not isGitPatch(base_dir, nickname, domain,
-                      post_json_object['object']['type'],
-                      post_json_object['object']['summary'],
-                      post_json_object['object']['content'],
-                      False):
+    if not is_git_patch(base_dir, nickname, domain,
+                        post_json_object['object']['type'],
+                        post_json_object['object']['summary'],
+                        post_json_object['object']['content'],
+                        False):
         return False
-    patchStr = _gitFormatContent(post_json_object['object']['content'])
-    commitHash = _getGitHash(patchStr)
+    patchStr = _git_format_content(post_json_object['object']['content'])
+    commitHash = _get_git_hash(patchStr)
     if not commitHash:
         return False
     post_json_object['object']['type'] = 'Patch'
@@ -146,7 +146,7 @@ def convertPostToPatch(base_dir: str, nickname: str, domain: str,
     post_json_object['object']['hash'] = commitHash
     post_json_object['object']['description'] = {
         "mediaType": "text/plain",
-        "content": _getPatchDescription(patchStr)
+        "content": _get_patch_description(patchStr)
     }
     # remove content map
     if post_json_object['object'].get('contentMap'):
@@ -155,7 +155,7 @@ def convertPostToPatch(base_dir: str, nickname: str, domain: str,
     return True
 
 
-def _gitAddFromHandle(patchStr: str, handle: str) -> str:
+def _git_add_from_handle(patchStr: str, handle: str) -> str:
     """Adds the activitypub handle of the sender to the patch
     """
     fromStr = 'AP-signed-off-by: '
@@ -172,16 +172,16 @@ def _gitAddFromHandle(patchStr: str, handle: str) -> str:
     return patchStr
 
 
-def receiveGitPatch(base_dir: str, nickname: str, domain: str,
-                    messageType: str, subject: str, content: str,
-                    fromNickname: str, fromDomain: str) -> bool:
+def receive_git_patch(base_dir: str, nickname: str, domain: str,
+                      messageType: str, subject: str, content: str,
+                      fromNickname: str, fromDomain: str) -> bool:
     """Receive a git patch
     """
-    if not isGitPatch(base_dir, nickname, domain,
-                      messageType, subject, content):
+    if not is_git_patch(base_dir, nickname, domain,
+                        messageType, subject, content):
         return False
 
-    patchStr = _gitFormatContent(content)
+    patchStr = _git_format_content(content)
 
     patchLines = patchStr.split('\n')
     patchFilename = None
@@ -195,7 +195,7 @@ def receiveGitPatch(base_dir: str, nickname: str, domain: str,
             patchSubject = patchSubject.replace('[PATCH]', '').strip()
             patchSubject = patchSubject.replace(' ', '_')
             projectName = \
-                _getGitProjectName(base_dir, nickname, domain, subject)
+                _get_git_project_name(base_dir, nickname, domain, subject)
             if not os.path.isdir(patchesDir):
                 os.mkdir(patchesDir)
             projectDir = patchesDir + '/' + projectName
@@ -207,7 +207,7 @@ def receiveGitPatch(base_dir: str, nickname: str, domain: str,
     if not patchFilename:
         return False
     patchStr = \
-        _gitAddFromHandle(patchStr, '@' + fromNickname + '@' + fromDomain)
+        _git_add_from_handle(patchStr, '@' + fromNickname + '@' + fromDomain)
     try:
         with open(patchFilename, 'w+') as patchFile:
             patchFile.write(patchStr)
@@ -217,5 +217,5 @@ def receiveGitPatch(base_dir: str, nickname: str, domain: str,
                 patchFile.write(patchStr)
                 return True
     except OSError as ex:
-        print('EX: receiveGitPatch ' + patchFilename + ' ' + str(ex))
+        print('EX: receive_git_patch ' + patchFilename + ' ' + str(ex))
     return False

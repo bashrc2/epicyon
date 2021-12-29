@@ -20,7 +20,7 @@ from utils import has_object_dict
 from utils import acct_dir
 
 
-def _validUuid(testUuid: str, version: int):
+def _valid_uuid(testUuid: str, version: int):
     """Check if uuid_to_test is a valid UUID
     """
     try:
@@ -31,7 +31,7 @@ def _validUuid(testUuid: str, version: int):
     return str(uuid_obj) == testUuid
 
 
-def _removeEventFromTimeline(eventId: str, tlEventsFilename: str) -> None:
+def _remove_event_from_timeline(eventId: str, tlEventsFilename: str) -> None:
     """Removes the given event Id from the timeline
     """
     if eventId + '\n' not in open(tlEventsFilename).read():
@@ -45,8 +45,8 @@ def _removeEventFromTimeline(eventId: str, tlEventsFilename: str) -> None:
             print('EX: ERROR: unable to save events timeline')
 
 
-def saveEventPost(base_dir: str, handle: str, post_id: str,
-                  eventJson: {}) -> bool:
+def save_event_post(base_dir: str, handle: str, post_id: str,
+                    eventJson: {}) -> bool:
     """Saves an event to the calendar and/or the events timeline
     If an event has extra fields, as per Mobilizon,
     Then it is saved as a separate entity and added to the
@@ -76,7 +76,7 @@ def saveEventPost(base_dir: str, handle: str, post_id: str,
 
     if eventJson.get('name') and eventJson.get('actor') and \
        eventJson.get('uuid') and eventJson.get('content'):
-        if not _validUuid(eventJson['uuid'], 4):
+        if not _valid_uuid(eventJson['uuid'], 4):
             return False
         print('Mobilizon type event')
         # if this is a full description of an event then save it
@@ -97,7 +97,7 @@ def saveEventPost(base_dir: str, handle: str, post_id: str,
         tlEventsFilename = base_dir + '/accounts/' + handle + '/events.txt'
 
         if os.path.isfile(tlEventsFilename):
-            _removeEventFromTimeline(eventId, tlEventsFilename)
+            _remove_event_from_timeline(eventId, tlEventsFilename)
             try:
                 with open(tlEventsFilename, 'r+') as tlEventsFile:
                     content = tlEventsFile.read()
@@ -151,7 +151,7 @@ def saveEventPost(base_dir: str, handle: str, post_id: str,
     return True
 
 
-def _isHappeningEvent(tag: {}) -> bool:
+def _is_happening_event(tag: {}) -> bool:
     """Is this tag an Event or Place ActivityStreams type?
     """
     if not tag.get('type'):
@@ -161,7 +161,7 @@ def _isHappeningEvent(tag: {}) -> bool:
     return True
 
 
-def _isHappeningPost(post_json_object: {}) -> bool:
+def _is_happening_post(post_json_object: {}) -> bool:
     """Is this a post with tags?
     """
     if not post_json_object:
@@ -173,9 +173,9 @@ def _isHappeningPost(post_json_object: {}) -> bool:
     return True
 
 
-def getTodaysEvents(base_dir: str, nickname: str, domain: str,
-                    currYear: int, currMonthNumber: int,
-                    currDayOfMonth: int) -> {}:
+def get_todays_events(base_dir: str, nickname: str, domain: str,
+                      currYear: int, currMonthNumber: int,
+                      currDayOfMonth: int) -> {}:
     """Retrieves calendar events for today
     Returns a dictionary of lists containing Event and Place activities
     """
@@ -211,7 +211,7 @@ def getTodaysEvents(base_dir: str, nickname: str, domain: str,
                 continue
 
             post_json_object = load_json(post_filename)
-            if not _isHappeningPost(post_json_object):
+            if not _is_happening_post(post_json_object):
                 continue
 
             publicEvent = is_public_post(post_json_object)
@@ -219,7 +219,7 @@ def getTodaysEvents(base_dir: str, nickname: str, domain: str,
             postEvent = []
             dayOfMonth = None
             for tag in post_json_object['object']['tag']:
-                if not _isHappeningEvent(tag):
+                if not _is_happening_event(tag):
                     continue
                 # this tag is an event or a place
                 if tag['type'] == 'Event':
@@ -262,8 +262,8 @@ def getTodaysEvents(base_dir: str, nickname: str, domain: str,
     return events
 
 
-def dayEventsCheck(base_dir: str, nickname: str, domain: str,
-                   currDate) -> bool:
+def day_events_check(base_dir: str, nickname: str, domain: str,
+                     currDate) -> bool:
     """Are there calendar events for the given date?
     """
     year = currDate.year
@@ -285,11 +285,11 @@ def dayEventsCheck(base_dir: str, nickname: str, domain: str,
                 continue
 
             post_json_object = load_json(post_filename)
-            if not _isHappeningPost(post_json_object):
+            if not _is_happening_post(post_json_object):
                 continue
 
             for tag in post_json_object['object']['tag']:
-                if not _isHappeningEvent(tag):
+                if not _is_happening_event(tag):
                     continue
                 # this tag is an event or a place
                 if tag['type'] != 'Event':
@@ -312,7 +312,7 @@ def dayEventsCheck(base_dir: str, nickname: str, domain: str,
     return eventsExist
 
 
-def getThisWeeksEvents(base_dir: str, nickname: str, domain: str) -> {}:
+def get_this_weeks_events(base_dir: str, nickname: str, domain: str) -> {}:
     """Retrieves calendar events for this week
     Returns a dictionary indexed by day number of lists containing
     Event and Place activities
@@ -342,13 +342,13 @@ def getThisWeeksEvents(base_dir: str, nickname: str, domain: str) -> {}:
                 continue
 
             post_json_object = load_json(post_filename)
-            if not _isHappeningPost(post_json_object):
+            if not _is_happening_post(post_json_object):
                 continue
 
             postEvent = []
             weekDayIndex = None
             for tag in post_json_object['object']['tag']:
-                if not _isHappeningEvent(tag):
+                if not _is_happening_event(tag):
                     continue
                 # this tag is an event or a place
                 if tag['type'] == 'Event':
@@ -382,8 +382,8 @@ def getThisWeeksEvents(base_dir: str, nickname: str, domain: str) -> {}:
     return events
 
 
-def getCalendarEvents(base_dir: str, nickname: str, domain: str,
-                      year: int, monthNumber: int) -> {}:
+def get_calendar_events(base_dir: str, nickname: str, domain: str,
+                        year: int, monthNumber: int) -> {}:
     """Retrieves calendar events
     Returns a dictionary indexed by day number of lists containing
     Event and Place activities
@@ -407,13 +407,13 @@ def getCalendarEvents(base_dir: str, nickname: str, domain: str,
                 continue
 
             post_json_object = load_json(post_filename)
-            if not _isHappeningPost(post_json_object):
+            if not _is_happening_post(post_json_object):
                 continue
 
             postEvent = []
             dayOfMonth = None
             for tag in post_json_object['object']['tag']:
-                if not _isHappeningEvent(tag):
+                if not _is_happening_event(tag):
                     continue
                 # this tag is an event or a place
                 if tag['type'] == 'Event':
@@ -449,8 +449,8 @@ def getCalendarEvents(base_dir: str, nickname: str, domain: str,
     return events
 
 
-def removeCalendarEvent(base_dir: str, nickname: str, domain: str,
-                        year: int, monthNumber: int, messageId: str) -> None:
+def remove_calendar_event(base_dir: str, nickname: str, domain: str,
+                          year: int, monthNumber: int, messageId: str) -> None:
     """Removes a calendar event
     """
     calendarFilename = \

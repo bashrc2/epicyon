@@ -33,8 +33,8 @@ from utils import get_nickname_from_actor
 from utils import acct_dir
 from utils import local_actor_url
 from utils import has_actor
-from conversation import muteConversation
-from conversation import unmuteConversation
+from conversation import mute_conversation
+from conversation import unmute_conversation
 
 
 def add_global_block(base_dir: str,
@@ -296,7 +296,7 @@ def update_blocked_cache(base_dir: str,
     return curr_time
 
 
-def _getShortDomain(domain: str) -> str:
+def _get_short_domain(domain: str) -> str:
     """ by checking a shorter version we can thwart adversaries
     who constantly change their subdomain
     e.g. subdomain123.mydomain.com becomes mydomain.com
@@ -318,7 +318,7 @@ def is_blocked_domain(base_dir: str, domain: str,
     if is_evil(domain):
         return True
 
-    shortDomain = _getShortDomain(domain)
+    shortDomain = _get_short_domain(domain)
 
     if not broch_mode_is_active(base_dir):
         if blockedCache:
@@ -356,9 +356,9 @@ def is_blocked_domain(base_dir: str, domain: str,
     return False
 
 
-def isBlocked(base_dir: str, nickname: str, domain: str,
-              blockNickname: str, blockDomain: str,
-              blockedCache: [] = None) -> bool:
+def is_blocked(base_dir: str, nickname: str, domain: str,
+               blockNickname: str, blockDomain: str,
+               blockedCache: [] = None) -> bool:
     """Is the given nickname blocked?
     """
     if is_evil(blockDomain):
@@ -388,7 +388,7 @@ def isBlocked(base_dir: str, nickname: str, domain: str,
     else:
         # instance allow list
         allowFilename = base_dir + '/accounts/allowedinstances.txt'
-        shortDomain = _getShortDomain(blockDomain)
+        shortDomain = _get_short_domain(blockDomain)
         if not shortDomain:
             if blockDomain not in open(allowFilename).read():
                 return True
@@ -414,9 +414,9 @@ def isBlocked(base_dir: str, nickname: str, domain: str,
     return False
 
 
-def outboxBlock(base_dir: str, http_prefix: str,
-                nickname: str, domain: str, port: int,
-                message_json: {}, debug: bool) -> bool:
+def outbox_block(base_dir: str, http_prefix: str,
+                 nickname: str, domain: str, port: int,
+                 message_json: {}, debug: bool) -> bool:
     """ When a block request is received by the outbox from c2s
     """
     if not message_json.get('type'):
@@ -463,9 +463,9 @@ def outboxBlock(base_dir: str, http_prefix: str,
     return True
 
 
-def outboxUndoBlock(base_dir: str, http_prefix: str,
-                    nickname: str, domain: str, port: int,
-                    message_json: {}, debug: bool) -> None:
+def outbox_undo_block(base_dir: str, http_prefix: str,
+                      nickname: str, domain: str, port: int,
+                      message_json: {}, debug: bool) -> None:
     """ When an undo block request is received by the outbox from c2s
     """
     if not message_json.get('type'):
@@ -535,10 +535,10 @@ def mute_post(base_dir: str, nickname: str, domain: str, port: int,
         return
     print('mute_post: ' + str(post_json_object))
 
-    postJsonObj = post_json_object
+    post_jsonObj = post_json_object
     alsoUpdatePostId = None
     if has_object_dict(post_json_object):
-        postJsonObj = post_json_object['object']
+        post_jsonObj = post_json_object['object']
     else:
         if has_object_string(post_json_object, debug):
             alsoUpdatePostId = remove_id_ending(post_json_object['object'])
@@ -546,12 +546,12 @@ def mute_post(base_dir: str, nickname: str, domain: str, port: int,
     domain_full = get_full_domain(domain, port)
     actor = local_actor_url(http_prefix, nickname, domain_full)
 
-    if postJsonObj.get('conversation'):
-        muteConversation(base_dir, nickname, domain,
-                         postJsonObj['conversation'])
+    if post_jsonObj.get('conversation'):
+        mute_conversation(base_dir, nickname, domain,
+                          post_jsonObj['conversation'])
 
     # does this post have ignores on it from differenent actors?
-    if not postJsonObj.get('ignores'):
+    if not post_jsonObj.get('ignores'):
         if debug:
             print('DEBUG: Adding initial mute to ' + post_id)
         ignoresJson = {
@@ -564,11 +564,11 @@ def mute_post(base_dir: str, nickname: str, domain: str, port: int,
                 'actor': actor
             }]
         }
-        postJsonObj['ignores'] = ignoresJson
+        post_jsonObj['ignores'] = ignoresJson
     else:
-        if not postJsonObj['ignores'].get('items'):
-            postJsonObj['ignores']['items'] = []
-        itemsList = postJsonObj['ignores']['items']
+        if not post_jsonObj['ignores'].get('items'):
+            post_jsonObj['ignores']['items'] = []
+        itemsList = post_jsonObj['ignores']['items']
         for ignoresItem in itemsList:
             if ignoresItem.get('actor'):
                 if ignoresItem['actor'] == actor:
@@ -579,8 +579,8 @@ def mute_post(base_dir: str, nickname: str, domain: str, port: int,
         }
         igIt = len(itemsList)
         itemsList.append(newIgnore)
-        postJsonObj['ignores']['totalItems'] = igIt
-    postJsonObj['muted'] = True
+        post_jsonObj['ignores']['totalItems'] = igIt
+    post_jsonObj['muted'] = True
     if save_json(post_json_object, post_filename):
         print('mute_post: saved ' + post_filename)
 
@@ -627,10 +627,10 @@ def mute_post(base_dir: str, nickname: str, domain: str, port: int,
         post_filename = locate_post(base_dir, nickname, domain,
                                     alsoUpdatePostId)
         if os.path.isfile(post_filename):
-            postJsonObj = load_json(post_filename)
+            post_jsonObj = load_json(post_filename)
             cachedPostFilename = \
                 get_cached_post_filename(base_dir, nickname, domain,
-                                         postJsonObj)
+                                         post_jsonObj)
             if cachedPostFilename:
                 if os.path.isfile(cachedPostFilename):
                     try:
@@ -675,25 +675,25 @@ def unmute_post(base_dir: str, nickname: str, domain: str, port: int,
                       str(muteFilename))
         print('UNMUTE: ' + muteFilename + ' file removed')
 
-    postJsonObj = post_json_object
+    post_jsonObj = post_json_object
     alsoUpdatePostId = None
     if has_object_dict(post_json_object):
-        postJsonObj = post_json_object['object']
+        post_jsonObj = post_json_object['object']
     else:
         if has_object_string(post_json_object, debug):
             alsoUpdatePostId = remove_id_ending(post_json_object['object'])
 
-    if postJsonObj.get('conversation'):
-        unmuteConversation(base_dir, nickname, domain,
-                           postJsonObj['conversation'])
+    if post_jsonObj.get('conversation'):
+        unmute_conversation(base_dir, nickname, domain,
+                            post_jsonObj['conversation'])
 
-    if postJsonObj.get('ignores'):
+    if post_jsonObj.get('ignores'):
         domain_full = get_full_domain(domain, port)
         actor = local_actor_url(http_prefix, nickname, domain_full)
         totalItems = 0
-        if postJsonObj['ignores'].get('totalItems'):
-            totalItems = postJsonObj['ignores']['totalItems']
-        itemsList = postJsonObj['ignores']['items']
+        if post_jsonObj['ignores'].get('totalItems'):
+            totalItems = post_jsonObj['ignores']['totalItems']
+        itemsList = post_jsonObj['ignores']['items']
         for ignoresItem in itemsList:
             if ignoresItem.get('actor'):
                 if ignoresItem['actor'] == actor:
@@ -704,11 +704,11 @@ def unmute_post(base_dir: str, nickname: str, domain: str, port: int,
         if totalItems == 1:
             if debug:
                 print('DEBUG: mute was removed from post')
-            del postJsonObj['ignores']
+            del post_jsonObj['ignores']
         else:
-            igItLen = len(postJsonObj['ignores']['items'])
-            postJsonObj['ignores']['totalItems'] = igItLen
-    postJsonObj['muted'] = False
+            igItLen = len(post_jsonObj['ignores']['items'])
+            post_jsonObj['ignores']['totalItems'] = igItLen
+    post_jsonObj['muted'] = False
     save_json(post_json_object, post_filename)
 
     # remove cached post so that the muted version gets recreated
@@ -742,10 +742,10 @@ def unmute_post(base_dir: str, nickname: str, domain: str, port: int,
         post_filename = locate_post(base_dir, nickname, domain,
                                     alsoUpdatePostId)
         if os.path.isfile(post_filename):
-            postJsonObj = load_json(post_filename)
+            post_jsonObj = load_json(post_filename)
             cachedPostFilename = \
                 get_cached_post_filename(base_dir, nickname, domain,
-                                         postJsonObj)
+                                         post_jsonObj)
             if cachedPostFilename:
                 if os.path.isfile(cachedPostFilename):
                     try:
@@ -770,10 +770,10 @@ def unmute_post(base_dir: str, nickname: str, domain: str, port: int,
                       alsoUpdatePostId + ' removed referenced html')
 
 
-def outboxMute(base_dir: str, http_prefix: str,
-               nickname: str, domain: str, port: int,
-               message_json: {}, debug: bool,
-               recent_posts_cache: {}) -> None:
+def outbox_mute(base_dir: str, http_prefix: str,
+                nickname: str, domain: str, port: int,
+                message_json: {}, debug: bool,
+                recent_posts_cache: {}) -> None:
     """When a mute is received by the outbox from c2s
     """
     if not message_json.get('type'):
@@ -819,10 +819,10 @@ def outboxMute(base_dir: str, http_prefix: str,
         print('DEBUG: post muted via c2s - ' + post_filename)
 
 
-def outboxUndoMute(base_dir: str, http_prefix: str,
-                   nickname: str, domain: str, port: int,
-                   message_json: {}, debug: bool,
-                   recent_posts_cache: {}) -> None:
+def outbox_undo_mute(base_dir: str, http_prefix: str,
+                     nickname: str, domain: str, port: int,
+                     message_json: {}, debug: bool,
+                     recent_posts_cache: {}) -> None:
     """When an undo mute is received by the outbox from c2s
     """
     if not message_json.get('type'):
@@ -1008,8 +1008,8 @@ def load_cw_lists(base_dir: str, verbose: bool) -> {}:
     return result
 
 
-def addCWfromLists(post_json_object: {}, cw_lists: {}, translate: {},
-                   lists_enabled: str) -> None:
+def add_c_wfrom_lists(post_json_object: {}, cw_lists: {}, translate: {},
+                      lists_enabled: str) -> None:
     """Adds content warnings by matching the post content
     against domains or keywords
     """

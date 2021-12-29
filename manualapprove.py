@@ -8,9 +8,9 @@ __status__ = "Production"
 __module_group__ = "ActivityPub"
 
 import os
-from follow import followedAccountAccepts
-from follow import followedAccountRejects
-from follow import removeFromFollowRequests
+from follow import followed_account_accepts
+from follow import followed_account_rejects
+from follow import remove_from_follow_requests
 from utils import load_json
 from utils import remove_domain_port
 from utils import get_port_from_domain
@@ -19,16 +19,16 @@ from utils import acct_dir
 from threads import thread_with_trace
 
 
-def manualDenyFollowRequest(session, base_dir: str,
-                            http_prefix: str,
-                            nickname: str, domain: str, port: int,
-                            denyHandle: str,
-                            federation_list: [],
-                            send_threads: [], postLog: [],
-                            cached_webfingers: {}, person_cache: {},
-                            debug: bool,
-                            project_version: str,
-                            signing_priv_key_pem: str) -> None:
+def manual_deny_follow_request(session, base_dir: str,
+                               http_prefix: str,
+                               nickname: str, domain: str, port: int,
+                               denyHandle: str,
+                               federation_list: [],
+                               send_threads: [], postLog: [],
+                               cached_webfingers: {}, person_cache: {},
+                               debug: bool,
+                               project_version: str,
+                               signing_priv_key_pem: str) -> None:
     """Manually deny a follow request
     """
     accountsDir = acct_dir(base_dir, nickname, domain)
@@ -37,13 +37,13 @@ def manualDenyFollowRequest(session, base_dir: str,
     rejectedFollowsFilename = accountsDir + '/followrejects.txt'
     if os.path.isfile(rejectedFollowsFilename):
         if denyHandle in open(rejectedFollowsFilename).read():
-            removeFromFollowRequests(base_dir, nickname, domain,
-                                     denyHandle, debug)
+            remove_from_follow_requests(base_dir, nickname, domain,
+                                        denyHandle, debug)
             print(denyHandle + ' has already been rejected as a follower of ' +
                   nickname)
             return
 
-    removeFromFollowRequests(base_dir, nickname, domain, denyHandle, debug)
+    remove_from_follow_requests(base_dir, nickname, domain, denyHandle, debug)
 
     # Store rejected follows
     try:
@@ -59,33 +59,33 @@ def manualDenyFollowRequest(session, base_dir: str,
     if ':' in denyDomain:
         denyPort = get_port_from_domain(denyDomain)
         denyDomain = remove_domain_port(denyDomain)
-    followedAccountRejects(session, base_dir, http_prefix,
-                           nickname, domain, port,
-                           denyNickname, denyDomain, denyPort,
-                           federation_list,
-                           send_threads, postLog,
-                           cached_webfingers, person_cache,
-                           debug, project_version,
-                           signing_priv_key_pem)
+    followed_account_rejects(session, base_dir, http_prefix,
+                             nickname, domain, port,
+                             denyNickname, denyDomain, denyPort,
+                             federation_list,
+                             send_threads, postLog,
+                             cached_webfingers, person_cache,
+                             debug, project_version,
+                             signing_priv_key_pem)
 
     print('Follow request from ' + denyHandle + ' was denied.')
 
 
-def manualDenyFollowRequestThread(session, base_dir: str,
-                                  http_prefix: str,
-                                  nickname: str, domain: str, port: int,
-                                  denyHandle: str,
-                                  federation_list: [],
-                                  send_threads: [], postLog: [],
-                                  cached_webfingers: {}, person_cache: {},
-                                  debug: bool,
-                                  project_version: str,
-                                  signing_priv_key_pem: str) -> None:
+def manual_deny_follow_request_thread(session, base_dir: str,
+                                      http_prefix: str,
+                                      nickname: str, domain: str, port: int,
+                                      denyHandle: str,
+                                      federation_list: [],
+                                      send_threads: [], postLog: [],
+                                      cached_webfingers: {}, person_cache: {},
+                                      debug: bool,
+                                      project_version: str,
+                                      signing_priv_key_pem: str) -> None:
     """Manually deny a follow request, within a thread so that the
     user interface doesn't lag
     """
     thr = \
-        thread_with_trace(target=manualDenyFollowRequest,
+        thread_with_trace(target=manual_deny_follow_request,
                           args=(session, base_dir,
                                 http_prefix,
                                 nickname, domain, port,
@@ -100,7 +100,7 @@ def manualDenyFollowRequestThread(session, base_dir: str,
     send_threads.append(thr)
 
 
-def _approveFollowerHandle(accountDir: str, approveHandle: str) -> None:
+def _approve_follower_handle(accountDir: str, approveHandle: str) -> None:
     """ Record manually approved handles so that if they unfollow and then
      re-follow later then they don't need to be manually approved again
     """
@@ -120,16 +120,16 @@ def _approveFollowerHandle(accountDir: str, approveHandle: str) -> None:
             print('EX: unable to write ' + approvedFilename)
 
 
-def manualApproveFollowRequest(session, base_dir: str,
-                               http_prefix: str,
-                               nickname: str, domain: str, port: int,
-                               approveHandle: str,
-                               federation_list: [],
-                               send_threads: [], postLog: [],
-                               cached_webfingers: {}, person_cache: {},
-                               debug: bool,
-                               project_version: str,
-                               signing_priv_key_pem: str) -> None:
+def manual_approve_follow_request(session, base_dir: str,
+                                  http_prefix: str,
+                                  nickname: str, domain: str, port: int,
+                                  approveHandle: str,
+                                  federation_list: [],
+                                  send_threads: [], postLog: [],
+                                  cached_webfingers: {}, person_cache: {},
+                                  debug: bool,
+                                  project_version: str,
+                                  signing_priv_key_pem: str) -> None:
     """Manually approve a follow request
     """
     handle = nickname + '@' + domain
@@ -207,21 +207,21 @@ def manualApproveFollowRequest(session, base_dir: str,
                             print('Manual follow accept: Sending Accept for ' +
                                   handle + ' follow request from ' +
                                   approveNickname + '@' + approveDomain)
-                            followedAccountAccepts(session, base_dir,
-                                                   http_prefix,
-                                                   nickname, domain, port,
-                                                   approveNickname,
-                                                   approveDomain,
-                                                   approvePort,
-                                                   followJson['actor'],
-                                                   federation_list,
-                                                   followJson,
-                                                   send_threads, postLog,
-                                                   cached_webfingers,
-                                                   person_cache,
-                                                   debug,
-                                                   project_version, False,
-                                                   signing_priv_key_pem)
+                            followed_account_accepts(session, base_dir,
+                                                     http_prefix,
+                                                     nickname, domain, port,
+                                                     approveNickname,
+                                                     approveDomain,
+                                                     approvePort,
+                                                     followJson['actor'],
+                                                     federation_list,
+                                                     followJson,
+                                                     send_threads, postLog,
+                                                     cached_webfingers,
+                                                     person_cache,
+                                                     debug,
+                                                     project_version, False,
+                                                     signing_priv_key_pem)
                     updateApprovedFollowers = True
                 else:
                     # this isn't the approved follow so it will remain
@@ -260,7 +260,7 @@ def manualApproveFollowRequest(session, base_dir: str,
     # in followers.txt
     if approveHandleFull in open(followersFilename).read():
         # mark this handle as approved for following
-        _approveFollowerHandle(accountDir, approveHandle)
+        _approve_follower_handle(accountDir, approveHandle)
         # update the follow requests with the handles not yet approved
         os.rename(approveFollowsFilename + '.new', approveFollowsFilename)
         # remove the .follow file
@@ -269,31 +269,32 @@ def manualApproveFollowRequest(session, base_dir: str,
                 try:
                     os.remove(followActivityfilename)
                 except OSError:
-                    print('EX: manualApproveFollowRequest unable to delete ' +
-                          followActivityfilename)
+                    print('EX: manual_approve_follow_request ' +
+                          'unable to delete ' + followActivityfilename)
     else:
         try:
             os.remove(approveFollowsFilename + '.new')
         except OSError:
-            print('EX: manualApproveFollowRequest unable to delete ' +
+            print('EX: manual_approve_follow_request unable to delete ' +
                   approveFollowsFilename + '.new')
 
 
-def manualApproveFollowRequestThread(session, base_dir: str,
-                                     http_prefix: str,
-                                     nickname: str, domain: str, port: int,
-                                     approveHandle: str,
-                                     federation_list: [],
-                                     send_threads: [], postLog: [],
-                                     cached_webfingers: {}, person_cache: {},
-                                     debug: bool,
-                                     project_version: str,
-                                     signing_priv_key_pem: str) -> None:
+def manual_approve_follow_request_thread(session, base_dir: str,
+                                         http_prefix: str,
+                                         nickname: str, domain: str, port: int,
+                                         approveHandle: str,
+                                         federation_list: [],
+                                         send_threads: [], postLog: [],
+                                         cached_webfingers: {},
+                                         person_cache: {},
+                                         debug: bool,
+                                         project_version: str,
+                                         signing_priv_key_pem: str) -> None:
     """Manually approve a follow request, in a thread so as not to cause
     the UI to lag
     """
     thr = \
-        thread_with_trace(target=manualApproveFollowRequest,
+        thread_with_trace(target=manual_approve_follow_request,
                           args=(session, base_dir,
                                 http_prefix,
                                 nickname, domain, port,

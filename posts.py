@@ -19,19 +19,19 @@ from socket import error as SocketError
 from time import gmtime, strftime
 from collections import OrderedDict
 from threads import thread_with_trace
-from cache import storePersonInCache
-from cache import getPersonFromCache
-from cache import expirePersonCache
+from cache import store_person_in_cache
+from cache import get_person_from_cache
+from cache import expire_person_cache
 from pprint import pprint
 from session import create_session
-from session import getJson
-from session import postJson
-from session import postJsonString
-from session import postImage
-from webfinger import webfingerHandle
-from httpsig import createSignedHeader
-from siteactive import siteIsActive
-from languages import understoodPostLanguage
+from session import get_json
+from session import post_json
+from session import post_json_string
+from session import post_image
+from webfinger import webfinger_handle
+from httpsig import create_signed_header
+from siteactive import site_is_active
+from languages import understood_post_language
 from utils import get_user_paths
 from utils import invalid_ciphertext
 from utils import has_object_stringType
@@ -72,22 +72,22 @@ from utils import local_actor_url
 from media import attach_media
 from media import replace_you_tube
 from media import replace_twitter
-from content import wordsSimilarity
-from content import limitRepeatedWords
-from content import tagExists
-from content import removeLongWords
-from content import addHtmlTags
-from content import replaceEmojiFromTags
-from content import removeTextFormatting
+from content import words_similarity
+from content import limit_repeated_words
+from content import post_tag_exists
+from content import remove_long_words
+from content import add_html_tags
+from content import replace_emoji_from_tags
+from content import remove_text_formatting
 from auth import create_basic_auth_header
-from blocking import isBlocked
+from blocking import is_blocked
 from blocking import is_blocked_domain
-from filters import isFiltered
-from git import convertPostToPatch
-from linked_data_sig import generateJsonSignature
-from petnames import resolvePetnames
-from video import convertVideoToNote
-from context import getIndividualPostContext
+from filters import is_filtered
+from git import convert_post_to_patch
+from linked_data_sig import generate_json_signature
+from petnames import resolve_petnames
+from video import convert_video_to_note
+from context import get_individual_post_context
 
 
 def is_moderator(base_dir: str, nickname: str) -> bool:
@@ -118,8 +118,8 @@ def is_moderator(base_dir: str, nickname: str) -> bool:
     return False
 
 
-def noOfFollowersOnDomain(base_dir: str, handle: str,
-                          domain: str, followFile='followers.txt') -> int:
+def no_of_followers_on_domain(base_dir: str, handle: str,
+                              domain: str, followFile='followers.txt') -> int:
     """Returns the number of followers of the given handle from the given domain
     """
     filename = base_dir + '/accounts/' + handle + '/' + followFile
@@ -138,7 +138,7 @@ def noOfFollowersOnDomain(base_dir: str, handle: str,
     return ctr
 
 
-def _getLocalPrivateKey(base_dir: str, nickname: str, domain: str) -> str:
+def _get_local_private_key(base_dir: str, nickname: str, domain: str) -> str:
     """Returns the private key for a local account
     """
     if not domain or not nickname:
@@ -156,10 +156,10 @@ def get_instance_actor_key(base_dir: str, domain: str) -> str:
     """Returns the private key for the instance actor used for
     signing GET posts
     """
-    return _getLocalPrivateKey(base_dir, 'inbox', domain)
+    return _get_local_private_key(base_dir, 'inbox', domain)
 
 
-def _getLocalPublicKey(base_dir: str, nickname: str, domain: str) -> str:
+def _get_local_public_key(base_dir: str, nickname: str, domain: str) -> str:
     """Returns the public key for a local account
     """
     if not domain or not nickname:
@@ -173,14 +173,14 @@ def _getLocalPublicKey(base_dir: str, nickname: str, domain: str) -> str:
     return None
 
 
-def _getPersonKey(nickname: str, domain: str, base_dir: str,
-                  keyType: str = 'public', debug: bool = False):
+def _get_person_key(nickname: str, domain: str, base_dir: str,
+                    keyType: str = 'public', debug: bool = False):
     """Returns the public or private key of a person
     """
     if keyType == 'private':
-        keyPem = _getLocalPrivateKey(base_dir, nickname, domain)
+        keyPem = _get_local_private_key(base_dir, nickname, domain)
     else:
-        keyPem = _getLocalPublicKey(base_dir, nickname, domain)
+        keyPem = _get_local_public_key(base_dir, nickname, domain)
     if not keyPem:
         if debug:
             print('DEBUG: ' + keyType + ' key file not found')
@@ -192,22 +192,22 @@ def _getPersonKey(nickname: str, domain: str, base_dir: str,
     return keyPem
 
 
-def _cleanHtml(rawHtml: str) -> str:
+def _clean_html(rawHtml: str) -> str:
     # text=BeautifulSoup(rawHtml, 'html.parser').get_text()
     text = rawHtml
     return html.unescape(text)
 
 
-def getUserUrl(wfRequest: {}, sourceId: int, debug: bool) -> str:
+def get_user_url(wfRequest: {}, sourceId: int, debug: bool) -> str:
     """Gets the actor url from a webfinger request
     """
     if not wfRequest.get('links'):
         if sourceId == 72367:
-            print('getUserUrl ' + str(sourceId) +
+            print('get_user_url ' + str(sourceId) +
                   ' failed to get display name for webfinger ' +
                   str(wfRequest))
         else:
-            print('getUserUrl webfinger activity+json contains no links ' +
+            print('get_user_url webfinger activity+json contains no links ' +
                   str(sourceId) + ' ' + str(wfRequest))
         return None
     for link in wfRequest['links']:
@@ -217,7 +217,7 @@ def getUserUrl(wfRequest: {}, sourceId: int, debug: bool) -> str:
             continue
         if '/@' not in link['href']:
             if debug and not has_users_path(link['href']):
-                print('getUserUrl webfinger activity+json ' +
+                print('get_user_url webfinger activity+json ' +
                       'contains single user instance actor ' +
                       str(sourceId) + ' ' + str(link))
         else:
@@ -226,10 +226,10 @@ def getUserUrl(wfRequest: {}, sourceId: int, debug: bool) -> str:
     return None
 
 
-def parseUserFeed(signing_priv_key_pem: str,
-                  session, feedUrl: str, asHeader: {},
-                  project_version: str, http_prefix: str,
-                  originDomain: str, debug: bool, depth: int = 0) -> []:
+def parse_user_feed(signing_priv_key_pem: str,
+                    session, feedUrl: str, asHeader: {},
+                    project_version: str, http_prefix: str,
+                    originDomain: str, debug: bool, depth: int = 0) -> []:
     if depth > 10:
         if debug:
             print('Maximum search depth reached')
@@ -241,8 +241,8 @@ def parseUserFeed(signing_priv_key_pem: str,
         print('http_prefix ' + str(http_prefix))
         print('originDomain ' + str(originDomain))
 
-    feedJson = getJson(signing_priv_key_pem, session, feedUrl, asHeader, None,
-                       debug, project_version, http_prefix, originDomain)
+    feedJson = get_json(signing_priv_key_pem, session, feedUrl, asHeader, None,
+                        debug, project_version, http_prefix, originDomain)
     if not feedJson:
         profileStr = 'https://www.w3.org/ns/activitystreams'
         acceptStr = 'application/ld+json; profile="' + profileStr + '"'
@@ -250,9 +250,9 @@ def parseUserFeed(signing_priv_key_pem: str,
             asHeader = {
                 'Accept': acceptStr
             }
-            feedJson = getJson(signing_priv_key_pem, session, feedUrl,
-                               asHeader, None, debug, project_version,
-                               http_prefix, originDomain)
+            feedJson = get_json(signing_priv_key_pem, session, feedUrl,
+                                asHeader, None, debug, project_version,
+                                http_prefix, originDomain)
     if not feedJson:
         if debug:
             print('No user feed was returned')
@@ -280,10 +280,10 @@ def parseUserFeed(signing_priv_key_pem: str,
         if isinstance(nextUrl, str):
             if '?max_id=0' not in nextUrl:
                 userFeed = \
-                    parseUserFeed(signing_priv_key_pem,
-                                  session, nextUrl, asHeader,
-                                  project_version, http_prefix,
-                                  originDomain, debug, depth + 1)
+                    parse_user_feed(signing_priv_key_pem,
+                                    session, nextUrl, asHeader,
+                                    project_version, http_prefix,
+                                    originDomain, debug, depth + 1)
                 if userFeed:
                     return userFeed
         elif isinstance(nextUrl, dict):
@@ -295,17 +295,17 @@ def parseUserFeed(signing_priv_key_pem: str,
     return None
 
 
-def _getPersonBoxActor(session, base_dir: str, actor: str,
-                       profileStr: str, asHeader: {},
-                       debug: bool, project_version: str,
-                       http_prefix: str, originDomain: str,
-                       person_cache: {},
-                       signing_priv_key_pem: str,
-                       sourceId: int) -> {}:
+def _get_person_box_actor(session, base_dir: str, actor: str,
+                          profileStr: str, asHeader: {},
+                          debug: bool, project_version: str,
+                          http_prefix: str, originDomain: str,
+                          person_cache: {},
+                          signing_priv_key_pem: str,
+                          sourceId: int) -> {}:
     """Returns the actor json for the given actor url
     """
     personJson = \
-        getPersonFromCache(base_dir, actor, person_cache, True)
+        get_person_from_cache(base_dir, actor, person_cache, True)
     if personJson:
         return personJson
 
@@ -313,15 +313,15 @@ def _getPersonBoxActor(session, base_dir: str, actor: str,
         asHeader = {
             'Accept': 'application/ld+json; profile="' + profileStr + '"'
         }
-    personJson = getJson(signing_priv_key_pem, session, actor, asHeader, None,
-                         debug, project_version, http_prefix, originDomain)
+    personJson = get_json(signing_priv_key_pem, session, actor, asHeader, None,
+                          debug, project_version, http_prefix, originDomain)
     if personJson:
         return personJson
     asHeader = {
         'Accept': 'application/ld+json; profile="' + profileStr + '"'
     }
-    personJson = getJson(signing_priv_key_pem, session, actor, asHeader, None,
-                         debug, project_version, http_prefix, originDomain)
+    personJson = get_json(signing_priv_key_pem, session, actor, asHeader, None,
+                          debug, project_version, http_prefix, originDomain)
     if personJson:
         return personJson
     print('Unable to get actor for ' + actor + ' ' + str(sourceId))
@@ -330,12 +330,12 @@ def _getPersonBoxActor(session, base_dir: str, actor: str,
     return None
 
 
-def getPersonBox(signing_priv_key_pem: str, originDomain: str,
-                 base_dir: str, session, wfRequest: {}, person_cache: {},
-                 project_version: str, http_prefix: str,
-                 nickname: str, domain: str,
-                 boxName: str = 'inbox',
-                 sourceId=0) -> (str, str, str, str, str, str, str, bool):
+def get_person_box(signing_priv_key_pem: str, originDomain: str,
+                   base_dir: str, session, wfRequest: {}, person_cache: {},
+                   project_version: str, http_prefix: str,
+                   nickname: str, domain: str,
+                   boxName: str = 'inbox',
+                   sourceId=0) -> (str, str, str, str, str, str, str, bool):
     debug = False
     profileStr = 'https://www.w3.org/ns/activitystreams'
     asHeader = {
@@ -348,11 +348,11 @@ def getPersonBox(signing_priv_key_pem: str, originDomain: str,
     # get the actor / personUrl
     if not wfRequest.get('errors'):
         # get the actor url from webfinger links
-        personUrl = getUserUrl(wfRequest, sourceId, debug)
+        personUrl = get_user_url(wfRequest, sourceId, debug)
     else:
         if nickname == 'dev':
             # try single user instance
-            print('getPersonBox: Trying single user instance with ld+json')
+            print('get_person_box: Trying single user instance with ld+json')
             personUrl = http_prefix + '://' + domain
             asHeader = {
                 'Accept': 'application/ld+json; profile="' + profileStr + '"'
@@ -365,12 +365,12 @@ def getPersonBox(signing_priv_key_pem: str, originDomain: str,
 
     # get the actor json from the url
     personJson = \
-        _getPersonBoxActor(session, base_dir, personUrl,
-                           profileStr, asHeader,
-                           debug, project_version,
-                           http_prefix, originDomain,
-                           person_cache, signing_priv_key_pem,
-                           sourceId)
+        _get_person_box_actor(session, base_dir, personUrl,
+                              profileStr, asHeader,
+                              debug, project_version,
+                              http_prefix, originDomain,
+                              person_cache, signing_priv_key_pem,
+                              sourceId)
     if not personJson:
         return None, None, None, None, None, None, None, None
 
@@ -416,21 +416,21 @@ def getPersonBox(signing_priv_key_pem: str, originDomain: str,
         displayName = personJson['name']
         if dangerous_markup(personJson['name'], False):
             displayName = '*ADVERSARY*'
-        elif isFiltered(base_dir,
-                        nickname, domain,
-                        displayName):
+        elif is_filtered(base_dir,
+                         nickname, domain,
+                         displayName):
             displayName = '*FILTERED*'
         # have they moved?
         if personJson.get('movedTo'):
             displayName += ' ⌂'
 
-    storePersonInCache(base_dir, personUrl, personJson, person_cache, True)
+    store_person_in_cache(base_dir, personUrl, personJson, person_cache, True)
 
     return boxJson, pubKeyId, pubKey, personId, sharedInbox, \
         avatarUrl, displayName, isGroup
 
 
-def _isPublicFeedPost(item: {}, personPosts: {}, debug: bool) -> bool:
+def _is_public_feed_post(item: {}, personPosts: {}, debug: bool) -> bool:
     """Is the given post a public feed post?
     """
     if not isinstance(item, dict):
@@ -504,7 +504,7 @@ def _isPublicFeedPost(item: {}, personPosts: {}, debug: bool) -> bool:
     return True
 
 
-def isCreateInsideAnnounce(item: {}) -> bool:
+def is_create_inside_announce(item: {}) -> bool:
     """ is this a Create inside of an Announce?
     eg. lemmy feed item
     """
@@ -523,15 +523,15 @@ def isCreateInsideAnnounce(item: {}) -> bool:
     return True
 
 
-def _getPosts(session, outboxUrl: str, maxPosts: int,
-              max_mentions: int,
-              max_emoji: int, maxAttachments: int,
-              federation_list: [],
-              person_cache: {}, raw: bool,
-              simple: bool, debug: bool,
-              project_version: str, http_prefix: str,
-              originDomain: str, system_language: str,
-              signing_priv_key_pem: str) -> {}:
+def _get_posts(session, outboxUrl: str, maxPosts: int,
+               max_mentions: int,
+               max_emoji: int, maxAttachments: int,
+               federation_list: [],
+               person_cache: {}, raw: bool,
+               simple: bool, debug: bool,
+               project_version: str, http_prefix: str,
+               originDomain: str, system_language: str,
+               signing_priv_key_pem: str) -> {}:
     """Gets public posts from an outbox
     """
     if debug:
@@ -558,10 +558,10 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
             print('Returning the raw feed')
         result = []
         i = 0
-        userFeed = parseUserFeed(signing_priv_key_pem,
-                                 session, outboxUrl, asHeader,
-                                 project_version, http_prefix,
-                                 originDomain, debug)
+        userFeed = parse_user_feed(signing_priv_key_pem,
+                                   session, outboxUrl, asHeader,
+                                   project_version, http_prefix,
+                                   originDomain, debug)
         for item in userFeed:
             result.append(item)
             i += 1
@@ -572,19 +572,19 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
 
     if debug:
         print('Returning a human readable version of the feed')
-    userFeed = parseUserFeed(signing_priv_key_pem,
-                             session, outboxUrl, asHeader,
-                             project_version, http_prefix,
-                             originDomain, debug)
+    userFeed = parse_user_feed(signing_priv_key_pem,
+                               session, outboxUrl, asHeader,
+                               project_version, http_prefix,
+                               originDomain, debug)
     if not userFeed:
         return personPosts
 
     i = 0
     for item in userFeed:
-        if isCreateInsideAnnounce(item):
+        if is_create_inside_announce(item):
             item = item['object']
 
-        if not _isPublicFeedPost(item, personPosts, debug):
+        if not _is_public_feed_post(item, personPosts, debug):
             continue
 
         thisItem = item
@@ -668,7 +668,7 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
 
         if content:
             if simple:
-                print(_cleanHtml(content) + '\n')
+                print(_clean_html(content) + '\n')
             else:
                 pprint(item)
                 personPosts[item['id']] = {
@@ -676,7 +676,7 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
                     "inreplyto": inReplyTo,
                     "summary": summary,
                     "html": content,
-                    "plaintext": _cleanHtml(content),
+                    "plaintext": _clean_html(content),
                     "attachment": attachment,
                     "mentions": mentions,
                     "emoji": emoji
@@ -688,7 +688,7 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
     return personPosts
 
 
-def _getCommonWords() -> str:
+def _get_common_words() -> str:
     """Returns a list of common words
     """
     return (
@@ -710,7 +710,7 @@ def _getCommonWords() -> str:
     )
 
 
-def _updateWordFrequency(content: str, wordFrequency: {}) -> None:
+def _update_word_frequency(content: str, wordFrequency: {}) -> None:
     """Creates a dictionary containing words and the number of times
     that they appear
     """
@@ -719,7 +719,7 @@ def _updateWordFrequency(content: str, wordFrequency: {}) -> None:
     for ch in removeChars:
         plainText = plainText.replace(ch, ' ')
     wordsList = plainText.split(' ')
-    commonWords = _getCommonWords()
+    commonWords = _get_common_words()
     for word in wordsList:
         wordLen = len(word)
         if wordLen < 3:
@@ -742,17 +742,17 @@ def _updateWordFrequency(content: str, wordFrequency: {}) -> None:
             wordFrequency[word] = 1
 
 
-def getPostDomains(session, outboxUrl: str, maxPosts: int,
-                   max_mentions: int,
-                   max_emoji: int, maxAttachments: int,
-                   federation_list: [],
-                   person_cache: {},
-                   debug: bool,
-                   project_version: str, http_prefix: str,
-                   domain: str,
-                   wordFrequency: {},
-                   domainList: [], system_language: str,
-                   signing_priv_key_pem: str) -> []:
+def get_post_domains(session, outboxUrl: str, maxPosts: int,
+                     max_mentions: int,
+                     max_emoji: int, maxAttachments: int,
+                     federation_list: [],
+                     person_cache: {},
+                     debug: bool,
+                     project_version: str, http_prefix: str,
+                     domain: str,
+                     wordFrequency: {},
+                     domainList: [], system_language: str,
+                     signing_priv_key_pem: str) -> []:
     """Returns a list of domains referenced within public posts
     """
     if not outboxUrl:
@@ -775,9 +775,9 @@ def getPostDomains(session, outboxUrl: str, maxPosts: int,
     postDomains = domainList
 
     i = 0
-    userFeed = parseUserFeed(signing_priv_key_pem,
-                             session, outboxUrl, asHeader,
-                             project_version, http_prefix, domain, debug)
+    userFeed = parse_user_feed(signing_priv_key_pem,
+                               session, outboxUrl, asHeader,
+                               project_version, http_prefix, domain, debug)
     for item in userFeed:
         i += 1
         if i > maxPosts:
@@ -786,7 +786,7 @@ def getPostDomains(session, outboxUrl: str, maxPosts: int,
             continue
         contentStr = get_base_content_from_post(item, system_language)
         if contentStr:
-            _updateWordFrequency(contentStr, wordFrequency)
+            _update_word_frequency(contentStr, wordFrequency)
         if item['object'].get('inReplyTo'):
             if isinstance(item['object']['inReplyTo'], str):
                 postDomain, postPort = \
@@ -808,16 +808,16 @@ def getPostDomains(session, outboxUrl: str, maxPosts: int,
     return postDomains
 
 
-def _getPostsForBlockedDomains(base_dir: str,
-                               session, outboxUrl: str, maxPosts: int,
-                               max_mentions: int,
-                               max_emoji: int, maxAttachments: int,
-                               federation_list: [],
-                               person_cache: {},
-                               debug: bool,
-                               project_version: str, http_prefix: str,
-                               domain: str,
-                               signing_priv_key_pem: str) -> {}:
+def _get_posts_for_blocked_domains(base_dir: str,
+                                   session, outboxUrl: str, maxPosts: int,
+                                   max_mentions: int,
+                                   max_emoji: int, maxAttachments: int,
+                                   federation_list: [],
+                                   person_cache: {},
+                                   debug: bool,
+                                   project_version: str, http_prefix: str,
+                                   domain: str,
+                                   signing_priv_key_pem: str) -> {}:
     """Returns a dictionary of posts for blocked domains
     """
     if not outboxUrl:
@@ -840,9 +840,9 @@ def _getPostsForBlockedDomains(base_dir: str,
     blockedPosts = {}
 
     i = 0
-    userFeed = parseUserFeed(signing_priv_key_pem,
-                             session, outboxUrl, asHeader,
-                             project_version, http_prefix, domain, debug)
+    userFeed = parse_user_feed(signing_priv_key_pem,
+                               session, outboxUrl, asHeader,
+                               project_version, http_prefix, domain, debug)
     for item in userFeed:
         i += 1
         if i > maxPosts:
@@ -885,8 +885,8 @@ def _getPostsForBlockedDomains(base_dir: str,
     return blockedPosts
 
 
-def deleteAllPosts(base_dir: str,
-                   nickname: str, domain: str, boxname: str) -> None:
+def delete_all_posts(base_dir: str,
+                     nickname: str, domain: str, boxname: str) -> None:
     """Deletes all posts for a person from inbox or outbox
     """
     if boxname != 'inbox' and boxname != 'outbox' and \
@@ -902,7 +902,7 @@ def deleteAllPosts(base_dir: str,
             elif os.path.isdir(filePath):
                 shutil.rmtree(filePath, ignore_errors=False, onerror=None)
         except Exception as ex:
-            print('ERROR: deleteAllPosts ' + str(ex))
+            print('ERROR: delete_all_posts ' + str(ex))
 
 
 def save_post_to_box(base_dir: str, http_prefix: str, post_id: str,
@@ -935,7 +935,7 @@ def save_post_to_box(base_dir: str, http_prefix: str, post_id: str,
     return filename
 
 
-def _updateHashtagsIndex(base_dir: str, tag: {}, newPostId: str) -> None:
+def _update_hashtags_index(base_dir: str, tag: {}, newPostId: str) -> None:
     """Writes the post url for hashtags to a file
     This allows posts for a hashtag to be quickly looked up
     """
@@ -968,8 +968,8 @@ def _updateHashtagsIndex(base_dir: str, tag: {}, newPostId: str) -> None:
                       tagsFilename + ' ' + str(ex))
 
 
-def _addSchedulePost(base_dir: str, nickname: str, domain: str,
-                     eventDateStr: str, post_id: str) -> None:
+def _add_schedule_post(base_dir: str, nickname: str, domain: str,
+                       eventDateStr: str, post_id: str) -> None:
     """Adds a scheduled post to the index
     """
     handle = nickname + '@' + domain
@@ -994,7 +994,7 @@ def _addSchedulePost(base_dir: str, nickname: str, domain: str,
             scheduleFile.write(indexStr + '\n')
 
 
-def validContentWarning(cw: str) -> str:
+def valid_content_warning(cw: str) -> str:
     """Returns a validated content warning
     """
     cw = remove_html(cw)
@@ -1005,7 +1005,7 @@ def validContentWarning(cw: str) -> str:
     return remove_invalid_chars(cw)
 
 
-def _loadAutoCW(base_dir: str, nickname: str, domain: str) -> []:
+def _load_auto_cw(base_dir: str, nickname: str, domain: str) -> []:
     """Loads automatic CWs file and returns a list containing
     the lines of the file
     """
@@ -1017,13 +1017,13 @@ def _loadAutoCW(base_dir: str, nickname: str, domain: str) -> []:
     return []
 
 
-def _addAutoCW(base_dir: str, nickname: str, domain: str,
-               subject: str, content: str) -> str:
+def _add_auto_cw(base_dir: str, nickname: str, domain: str,
+                 subject: str, content: str) -> str:
     """Appends any automatic CW to the subject line
     and returns the new subject line
     """
     newSubject = subject
-    autoCWList = _loadAutoCW(base_dir, nickname, domain)
+    autoCWList = _load_auto_cw(base_dir, nickname, domain)
     for cwRule in autoCWList:
         if '->' not in cwRule:
             continue
@@ -1039,9 +1039,9 @@ def _addAutoCW(base_dir: str, nickname: str, domain: str,
     return newSubject
 
 
-def _createPostCWFromReply(base_dir: str, nickname: str, domain: str,
-                           inReplyTo: str,
-                           sensitive: bool, summary: str) -> (bool, str):
+def _create_post_cw_from_reply(base_dir: str, nickname: str, domain: str,
+                               inReplyTo: str,
+                               sensitive: bool, summary: str) -> (bool, str):
     """If this is a reply and the original post has a CW
     then use the same CW
     """
@@ -1063,17 +1063,17 @@ def _createPostCWFromReply(base_dir: str, nickname: str, domain: str,
     return sensitive, summary
 
 
-def _createPostS2S(base_dir: str, nickname: str, domain: str, port: int,
-                   http_prefix: str, content: str, statusNumber: str,
-                   published: str, newPostId: str, postContext: {},
-                   toRecipients: [], toCC: [], inReplyTo: str,
-                   sensitive: bool, commentsEnabled: bool,
-                   tags: [], attachImageFilename: str,
-                   mediaType: str, imageDescription: str, city: str,
-                   postObjectType: str, summary: str,
-                   inReplyToAtomUri: str, system_language: str,
-                   conversationId: str, low_bandwidth: bool,
-                   content_license_url: str) -> {}:
+def _create_post_s2s(base_dir: str, nickname: str, domain: str, port: int,
+                     http_prefix: str, content: str, statusNumber: str,
+                     published: str, newPostId: str, postContext: {},
+                     toRecipients: [], toCC: [], inReplyTo: str,
+                     sensitive: bool, commentsEnabled: bool,
+                     tags: [], attachImageFilename: str,
+                     mediaType: str, imageDescription: str, city: str,
+                     postObjectType: str, summary: str,
+                     inReplyToAtomUri: str, system_language: str,
+                     conversationId: str, low_bandwidth: bool,
+                     content_license_url: str) -> {}:
     """Creates a new server-to-server post
     """
     actorUrl = local_actor_url(http_prefix, nickname, domain)
@@ -1138,17 +1138,17 @@ def _createPostS2S(base_dir: str, nickname: str, domain: str, port: int,
     return newPost
 
 
-def _createPostC2S(base_dir: str, nickname: str, domain: str, port: int,
-                   http_prefix: str, content: str, statusNumber: str,
-                   published: str, newPostId: str, postContext: {},
-                   toRecipients: [], toCC: [], inReplyTo: str,
-                   sensitive: bool, commentsEnabled: bool,
-                   tags: [], attachImageFilename: str,
-                   mediaType: str, imageDescription: str, city: str,
-                   postObjectType: str, summary: str,
-                   inReplyToAtomUri: str, system_language: str,
-                   conversationId: str, low_bandwidth: str,
-                   content_license_url: str) -> {}:
+def _create_post_c2s(base_dir: str, nickname: str, domain: str, port: int,
+                     http_prefix: str, content: str, statusNumber: str,
+                     published: str, newPostId: str, postContext: {},
+                     toRecipients: [], toCC: [], inReplyTo: str,
+                     sensitive: bool, commentsEnabled: bool,
+                     tags: [], attachImageFilename: str,
+                     mediaType: str, imageDescription: str, city: str,
+                     postObjectType: str, summary: str,
+                     inReplyToAtomUri: str, system_language: str,
+                     conversationId: str, low_bandwidth: str,
+                     content_license_url: str) -> {}:
     """Creates a new client-to-server post
     """
     domain_full = get_full_domain(domain, port)
@@ -1203,13 +1203,13 @@ def _createPostC2S(base_dir: str, nickname: str, domain: str, port: int,
     return newPost
 
 
-def _createPostPlaceAndTime(eventDate: str, endDate: str,
-                            eventTime: str, endTime: str,
-                            summary: str, content: str,
-                            schedulePost: bool,
-                            eventUUID: str,
-                            location: str,
-                            tags: []) -> str:
+def _create_post_place_and_time(eventDate: str, endDate: str,
+                                eventTime: str, endTime: str,
+                                summary: str, content: str,
+                                schedulePost: bool,
+                                eventUUID: str,
+                                location: str,
+                                tags: []) -> str:
     """Adds a place and time to the tags on a new post
     """
     endDateStr = None
@@ -1261,7 +1261,7 @@ def _createPostPlaceAndTime(eventDate: str, endDate: str,
     return eventDateStr
 
 
-def _consolidateActorsList(actorsList: []) -> None:
+def _consolidate_actors_list(actorsList: []) -> None:
     """ consolidate duplicated actors
     https://domain/@nick gets merged with https://domain/users/nick
     """
@@ -1284,8 +1284,8 @@ def _consolidateActorsList(actorsList: []) -> None:
             actorsList.remove(ccActor)
 
 
-def _createPostMentions(ccUrl: str, newPost: {},
-                        toRecipients: [], tags: []) -> None:
+def _create_post_mentions(ccUrl: str, newPost: {},
+                          toRecipients: [], tags: []) -> None:
     """Updates mentions for a new post
     """
     if not ccUrl:
@@ -1309,17 +1309,17 @@ def _createPostMentions(ccUrl: str, newPost: {},
                 if tag['href'] not in toCC:
                     newPost['object']['cc'].append(tag['href'])
 
-        _consolidateActorsList(newPost['object']['cc'])
+        _consolidate_actors_list(newPost['object']['cc'])
         newPost['cc'] = newPost['object']['cc']
     else:
         if ccUrl not in newPost['cc']:
             newPost['cc'] = [ccUrl] + newPost['cc']
-        _consolidateActorsList(['cc'])
+        _consolidate_actors_list(['cc'])
 
 
-def _createPostModReport(base_dir: str,
-                         isModerationReport: bool, newPost: {},
-                         newPostId: str) -> None:
+def _create_post_mod_report(base_dir: str,
+                            isModerationReport: bool, newPost: {},
+                            newPostId: str) -> None:
     """ if this is a moderation report then add a status
     """
     if not isModerationReport:
@@ -1335,7 +1335,7 @@ def _createPostModReport(base_dir: str,
         modFile.write(newPostId + '\n')
 
 
-def getActorFromInReplyTo(inReplyTo: str) -> str:
+def get_actor_from_in_reply_to(inReplyTo: str) -> str:
     """Tries to get the replied to actor from the inReplyTo post id
     Note: this will not always be successful for some instance types
     """
@@ -1359,39 +1359,39 @@ def getActorFromInReplyTo(inReplyTo: str) -> str:
     return replyActor
 
 
-def _createPostBase(base_dir: str,
-                    nickname: str, domain: str, port: int,
-                    toUrl: str, ccUrl: str, http_prefix: str, content: str,
-                    followersOnly: bool, saveToFile: bool,
-                    client_to_server: bool, commentsEnabled: bool,
-                    attachImageFilename: str,
-                    mediaType: str, imageDescription: str, city: str,
-                    isModerationReport: bool,
-                    isArticle: bool,
-                    inReplyTo: str,
-                    inReplyToAtomUri: str,
-                    subject: str, schedulePost: bool,
-                    eventDate: str, eventTime: str,
-                    location: str,
-                    eventUUID: str, category: str,
-                    joinMode: str,
-                    endDate: str, endTime: str,
-                    maximumAttendeeCapacity: int,
-                    repliesModerationOption: str,
-                    anonymousParticipationEnabled: bool,
-                    eventStatus: str, ticketUrl: str,
-                    system_language: str,
-                    conversationId: str, low_bandwidth: bool,
-                    content_license_url: str) -> {}:
+def _create_post_base(base_dir: str,
+                      nickname: str, domain: str, port: int,
+                      toUrl: str, ccUrl: str, http_prefix: str, content: str,
+                      followersOnly: bool, saveToFile: bool,
+                      client_to_server: bool, commentsEnabled: bool,
+                      attachImageFilename: str,
+                      mediaType: str, imageDescription: str, city: str,
+                      isModerationReport: bool,
+                      isArticle: bool,
+                      inReplyTo: str,
+                      inReplyToAtomUri: str,
+                      subject: str, schedulePost: bool,
+                      eventDate: str, eventTime: str,
+                      location: str,
+                      eventUUID: str, category: str,
+                      joinMode: str,
+                      endDate: str, endTime: str,
+                      maximumAttendeeCapacity: int,
+                      repliesModerationOption: str,
+                      anonymousParticipationEnabled: bool,
+                      eventStatus: str, ticketUrl: str,
+                      system_language: str,
+                      conversationId: str, low_bandwidth: bool,
+                      content_license_url: str) -> {}:
     """Creates a message
     """
     content = remove_invalid_chars(content)
 
-    subject = _addAutoCW(base_dir, nickname, domain, subject, content)
+    subject = _add_auto_cw(base_dir, nickname, domain, subject, content)
 
     if nickname != 'news':
         mentionedRecipients = \
-            getMentionedPeople(base_dir, http_prefix, content, domain, False)
+            get_mentioned_people(base_dir, http_prefix, content, domain, False)
     else:
         mentionedRecipients = ''
 
@@ -1403,10 +1403,10 @@ def _createPostBase(base_dir: str,
     # add tags
     if nickname != 'news':
         content = \
-            addHtmlTags(base_dir, http_prefix,
-                        nickname, domain, content,
-                        mentionedRecipients,
-                        hashtagsDict, True)
+            add_html_tags(base_dir, http_prefix,
+                          nickname, domain, content,
+                          mentionedRecipients,
+                          hashtagsDict, True)
 
     # replace emoji with unicode
     tags = []
@@ -1416,8 +1416,8 @@ def _createPostBase(base_dir: str,
     # get list of tags
     if nickname != 'news':
         content = \
-            replaceEmojiFromTags(None, base_dir, content, tags, 'content',
-                                 False)
+            replace_emoji_from_tags(None, base_dir, content, tags, 'content',
+                                    False)
     # remove replaced emoji
     hashtagsDictCopy = hashtagsDict.copy()
     for tagName, tag in hashtagsDictCopy.items():
@@ -1434,7 +1434,7 @@ def _createPostBase(base_dir: str,
     sensitive = False
     summary = None
     if subject:
-        summary = remove_invalid_chars(validContentWarning(subject))
+        summary = remove_invalid_chars(valid_content_warning(subject))
         sensitive = True
 
     toRecipients = []
@@ -1461,23 +1461,23 @@ def _createPostBase(base_dir: str,
     # Only posts which are #Public are searchable by hashtag
     if hashtagsDict:
         for tagName, tag in hashtagsDict.items():
-            if not tagExists(tag['type'], tag['name'], tags):
+            if not post_tag_exists(tag['type'], tag['name'], tags):
                 tags.append(tag)
             if isPublic:
-                _updateHashtagsIndex(base_dir, tag, newPostId)
+                _update_hashtags_index(base_dir, tag, newPostId)
         # print('Content tags: ' + str(tags))
 
     sensitive, summary = \
-        _createPostCWFromReply(base_dir, nickname, domain,
-                               inReplyTo, sensitive, summary)
+        _create_post_cw_from_reply(base_dir, nickname, domain,
+                                   inReplyTo, sensitive, summary)
 
     eventDateStr = \
-        _createPostPlaceAndTime(eventDate, endDate,
-                                eventTime, endTime,
-                                summary, content, schedulePost,
-                                eventUUID, location, tags)
+        _create_post_place_and_time(eventDate, endDate,
+                                    eventTime, endTime,
+                                    summary, content, schedulePost,
+                                    eventUUID, location, tags)
 
-    postContext = getIndividualPostContext()
+    postContext = get_individual_post_context()
 
     if not isPublic:
         # make sure that CC doesn't also contain a To address
@@ -1496,7 +1496,7 @@ def _createPostBase(base_dir: str,
         if inReplyTo:
             # If this is a public post then get the actor being
             # replied to end ensure that it is within the CC list
-            replyActor = getActorFromInReplyTo(inReplyTo)
+            replyActor = get_actor_from_in_reply_to(inReplyTo)
             if replyActor:
                 if replyActor not in toCC:
                     toCC.append(replyActor)
@@ -1508,44 +1508,44 @@ def _createPostBase(base_dir: str,
 
     if not client_to_server:
         newPost = \
-            _createPostS2S(base_dir, nickname, domain, port,
-                           http_prefix, content, statusNumber,
-                           published, newPostId, postContext,
-                           toRecipients, toCC, inReplyTo,
-                           sensitive, commentsEnabled,
-                           tags, attachImageFilename,
-                           mediaType, imageDescription, city,
-                           postObjectType, summary,
-                           inReplyToAtomUri, system_language,
-                           conversationId, low_bandwidth,
-                           content_license_url)
+            _create_post_s2s(base_dir, nickname, domain, port,
+                             http_prefix, content, statusNumber,
+                             published, newPostId, postContext,
+                             toRecipients, toCC, inReplyTo,
+                             sensitive, commentsEnabled,
+                             tags, attachImageFilename,
+                             mediaType, imageDescription, city,
+                             postObjectType, summary,
+                             inReplyToAtomUri, system_language,
+                             conversationId, low_bandwidth,
+                             content_license_url)
     else:
         newPost = \
-            _createPostC2S(base_dir, nickname, domain, port,
-                           http_prefix, content, statusNumber,
-                           published, newPostId, postContext,
-                           toRecipients, toCC, inReplyTo,
-                           sensitive, commentsEnabled,
-                           tags, attachImageFilename,
-                           mediaType, imageDescription, city,
-                           postObjectType, summary,
-                           inReplyToAtomUri, system_language,
-                           conversationId, low_bandwidth,
-                           content_license_url)
+            _create_post_c2s(base_dir, nickname, domain, port,
+                             http_prefix, content, statusNumber,
+                             published, newPostId, postContext,
+                             toRecipients, toCC, inReplyTo,
+                             sensitive, commentsEnabled,
+                             tags, attachImageFilename,
+                             mediaType, imageDescription, city,
+                             postObjectType, summary,
+                             inReplyToAtomUri, system_language,
+                             conversationId, low_bandwidth,
+                             content_license_url)
 
-    _createPostMentions(ccUrl, newPost, toRecipients, tags)
+    _create_post_mentions(ccUrl, newPost, toRecipients, tags)
 
-    _createPostModReport(base_dir, isModerationReport, newPost, newPostId)
+    _create_post_mod_report(base_dir, isModerationReport, newPost, newPostId)
 
     # If a patch has been posted - i.e. the output from
     # git format-patch - then convert the activitypub type
-    convertPostToPatch(base_dir, nickname, domain, newPost)
+    convert_post_to_patch(base_dir, nickname, domain, newPost)
 
     if schedulePost:
         if eventDate and eventTime:
             # add an item to the scheduled post index file
-            _addSchedulePost(base_dir, nickname, domain,
-                             eventDateStr, newPostId)
+            _add_schedule_post(base_dir, nickname, domain,
+                               eventDateStr, newPostId)
             save_post_to_box(base_dir, http_prefix, newPostId,
                              nickname, domain, newPost, 'scheduled')
         else:
@@ -1598,10 +1598,10 @@ def outbox_message_create_wrap(http_prefix: str,
     return newPost
 
 
-def _postIsAddressedToFollowers(base_dir: str,
-                                nickname: str, domain: str, port: int,
-                                http_prefix: str,
-                                post_json_object: {}) -> bool:
+def _post_is_addressed_to_followers(base_dir: str,
+                                    nickname: str, domain: str, port: int,
+                                    http_prefix: str,
+                                    post_json_object: {}) -> bool:
     """Returns true if the given post is addressed to followers of the nickname
     """
     domain_full = get_full_domain(domain, port)
@@ -1652,11 +1652,12 @@ def undo_pinned_post(base_dir: str, nickname: str, domain: str) -> None:
     """
     accountDir = acct_dir(base_dir, nickname, domain)
     pinnedFilename = accountDir + '/pinToProfile.txt'
-    if os.path.isfile(pinnedFilename):
-        try:
-            os.remove(pinnedFilename)
-        except OSError:
-            print('EX: undo_pinned_post unable to delete ' + pinnedFilename)
+    if not os.path.isfile(pinnedFilename):
+        return
+    try:
+        os.remove(pinnedFilename)
+    except OSError:
+        print('EX: undo_pinned_post unable to delete ' + pinnedFilename)
 
 
 def get_pinned_post_as_json(base_dir: str, http_prefix: str,
@@ -1713,7 +1714,7 @@ def json_pin_post(base_dir: str, http_prefix: str,
         itemsList = [pinnedPostJson]
 
     actor = local_actor_url(http_prefix, nickname, domain_full)
-    postContext = getIndividualPostContext()
+    postContext = get_individual_post_context()
     return {
         '@context': postContext,
         'id': actor + '/collections/featured',
@@ -1723,8 +1724,8 @@ def json_pin_post(base_dir: str, http_prefix: str,
     }
 
 
-def regenerateIndexForBox(base_dir: str,
-                          nickname: str, domain: str, boxName: str) -> None:
+def regenerate_index_for_box(base_dir: str,
+                             nickname: str, domain: str, boxName: str) -> None:
     """Generates an index for the given box if it doesn't exist
     Used by unit tests to artificially create an index
     """
@@ -1784,28 +1785,28 @@ def create_public_post(base_dir: str,
     eventStatus = None
     ticketUrl = None
     localActor = local_actor_url(http_prefix, nickname, domain_full)
-    return _createPostBase(base_dir, nickname, domain, port,
-                           'https://www.w3.org/ns/activitystreams#Public',
-                           localActor + '/followers',
-                           http_prefix, content, followersOnly, saveToFile,
-                           client_to_server, commentsEnabled,
-                           attachImageFilename, mediaType,
-                           imageDescription, city,
-                           isModerationReport, isArticle,
-                           inReplyTo, inReplyToAtomUri, subject,
-                           schedulePost, eventDate, eventTime, location,
-                           eventUUID, category, joinMode, endDate, endTime,
-                           maximumAttendeeCapacity,
-                           repliesModerationOption,
-                           anonymousParticipationEnabled,
-                           eventStatus, ticketUrl, system_language,
-                           conversationId, low_bandwidth,
-                           content_license_url)
+    return _create_post_base(base_dir, nickname, domain, port,
+                             'https://www.w3.org/ns/activitystreams#Public',
+                             localActor + '/followers',
+                             http_prefix, content, followersOnly, saveToFile,
+                             client_to_server, commentsEnabled,
+                             attachImageFilename, mediaType,
+                             imageDescription, city,
+                             isModerationReport, isArticle,
+                             inReplyTo, inReplyToAtomUri, subject,
+                             schedulePost, eventDate, eventTime, location,
+                             eventUUID, category, joinMode, endDate, endTime,
+                             maximumAttendeeCapacity,
+                             repliesModerationOption,
+                             anonymousParticipationEnabled,
+                             eventStatus, ticketUrl, system_language,
+                             conversationId, low_bandwidth,
+                             content_license_url)
 
 
-def _appendCitationsToBlogPost(base_dir: str,
-                               nickname: str, domain: str,
-                               blogJson: {}) -> None:
+def _append_citations_to_blog_post(base_dir: str,
+                                   nickname: str, domain: str,
+                                   blogJson: {}) -> None:
     """Appends any citations to a new blog post
     """
     # append citations tags, stored in a file
@@ -1859,19 +1860,19 @@ def create_blog_post(base_dir: str,
                            low_bandwidth, content_license_url)
     blogJson['object']['url'] = \
         blogJson['object']['url'].replace('/@', '/users/')
-    _appendCitationsToBlogPost(base_dir, nickname, domain, blogJson)
+    _append_citations_to_blog_post(base_dir, nickname, domain, blogJson)
 
     return blogJson
 
 
-def createNewsPost(base_dir: str,
-                   domain: str, port: int, http_prefix: str,
-                   content: str, followersOnly: bool, saveToFile: bool,
-                   attachImageFilename: str, mediaType: str,
-                   imageDescription: str, city: str,
-                   subject: str, system_language: str,
-                   conversationId: str, low_bandwidth: bool,
-                   content_license_url: str) -> {}:
+def create_news_post(base_dir: str,
+                     domain: str, port: int, http_prefix: str,
+                     content: str, followersOnly: bool, saveToFile: bool,
+                     attachImageFilename: str, mediaType: str,
+                     imageDescription: str, city: str,
+                     subject: str, system_language: str,
+                     conversationId: str, low_bandwidth: bool,
+                     content_license_url: str) -> {}:
     client_to_server = False
     inReplyTo = None
     inReplyToAtomUri = None
@@ -1911,18 +1912,18 @@ def create_question_post(base_dir: str,
     domain_full = get_full_domain(domain, port)
     localActor = local_actor_url(http_prefix, nickname, domain_full)
     message_json = \
-        _createPostBase(base_dir, nickname, domain, port,
-                        'https://www.w3.org/ns/activitystreams#Public',
-                        localActor + '/followers',
-                        http_prefix, content, followersOnly, saveToFile,
-                        client_to_server, commentsEnabled,
-                        attachImageFilename, mediaType,
-                        imageDescription, city,
-                        False, False, None, None, subject,
-                        False, None, None, None, None, None,
-                        None, None, None,
-                        None, None, None, None, None, system_language,
-                        None, low_bandwidth, content_license_url)
+        _create_post_base(base_dir, nickname, domain, port,
+                          'https://www.w3.org/ns/activitystreams#Public',
+                          localActor + '/followers',
+                          http_prefix, content, followersOnly, saveToFile,
+                          client_to_server, commentsEnabled,
+                          attachImageFilename, mediaType,
+                          imageDescription, city,
+                          False, False, None, None, subject,
+                          False, None, None, None, None, None,
+                          None, None, None,
+                          None, None, None, None, None, system_language,
+                          None, low_bandwidth, content_license_url)
     message_json['object']['type'] = 'Question'
     message_json['object']['oneOf'] = []
     message_json['object']['votersCount'] = 0
@@ -1961,20 +1962,20 @@ def create_unlisted_post(base_dir: str,
     """
     domain_full = get_full_domain(domain, port)
     localActor = local_actor_url(http_prefix, nickname, domain_full)
-    return _createPostBase(base_dir, nickname, domain, port,
-                           localActor + '/followers',
-                           'https://www.w3.org/ns/activitystreams#Public',
-                           http_prefix, content, followersOnly, saveToFile,
-                           client_to_server, commentsEnabled,
-                           attachImageFilename, mediaType,
-                           imageDescription, city,
-                           False, False,
-                           inReplyTo, inReplyToAtomUri, subject,
-                           schedulePost, eventDate, eventTime, location,
-                           None, None, None, None, None,
-                           None, None, None, None, None, system_language,
-                           conversationId, low_bandwidth,
-                           content_license_url)
+    return _create_post_base(base_dir, nickname, domain, port,
+                             localActor + '/followers',
+                             'https://www.w3.org/ns/activitystreams#Public',
+                             http_prefix, content, followersOnly, saveToFile,
+                             client_to_server, commentsEnabled,
+                             attachImageFilename, mediaType,
+                             imageDescription, city,
+                             False, False,
+                             inReplyTo, inReplyToAtomUri, subject,
+                             schedulePost, eventDate, eventTime, location,
+                             None, None, None, None, None,
+                             None, None, None, None, None, system_language,
+                             conversationId, low_bandwidth,
+                             content_license_url)
 
 
 def create_followers_only_post(base_dir: str,
@@ -1996,24 +1997,24 @@ def create_followers_only_post(base_dir: str,
     """
     domain_full = get_full_domain(domain, port)
     localActor = local_actor_url(http_prefix, nickname, domain_full)
-    return _createPostBase(base_dir, nickname, domain, port,
-                           localActor + '/followers',
-                           None,
-                           http_prefix, content, followersOnly, saveToFile,
-                           client_to_server, commentsEnabled,
-                           attachImageFilename, mediaType,
-                           imageDescription, city,
-                           False, False,
-                           inReplyTo, inReplyToAtomUri, subject,
-                           schedulePost, eventDate, eventTime, location,
-                           None, None, None, None, None,
-                           None, None, None, None, None, system_language,
-                           conversationId, low_bandwidth,
-                           content_license_url)
+    return _create_post_base(base_dir, nickname, domain, port,
+                             localActor + '/followers',
+                             None,
+                             http_prefix, content, followersOnly, saveToFile,
+                             client_to_server, commentsEnabled,
+                             attachImageFilename, mediaType,
+                             imageDescription, city,
+                             False, False,
+                             inReplyTo, inReplyToAtomUri, subject,
+                             schedulePost, eventDate, eventTime, location,
+                             None, None, None, None, None,
+                             None, None, None, None, None, system_language,
+                             conversationId, low_bandwidth,
+                             content_license_url)
 
 
-def getMentionedPeople(base_dir: str, http_prefix: str,
-                       content: str, domain: str, debug: bool) -> []:
+def get_mentioned_people(base_dir: str, http_prefix: str,
+                         content: str, domain: str, debug: bool) -> []:
     """Extracts a list of mentioned actors from the given message content
     """
     if '@' not in content:
@@ -2066,9 +2067,9 @@ def create_direct_message_post(base_dir: str,
                                content_license_url: str) -> {}:
     """Direct Message post
     """
-    content = resolvePetnames(base_dir, nickname, domain, content)
+    content = resolve_petnames(base_dir, nickname, domain, content)
     mentionedPeople = \
-        getMentionedPeople(base_dir, http_prefix, content, domain, debug)
+        get_mentioned_people(base_dir, http_prefix, content, domain, debug)
     if debug:
         print('mentionedPeople: ' + str(mentionedPeople))
     if not mentionedPeople:
@@ -2076,19 +2077,19 @@ def create_direct_message_post(base_dir: str,
     postTo = None
     postCc = None
     message_json = \
-        _createPostBase(base_dir, nickname, domain, port,
-                        postTo, postCc,
-                        http_prefix, content, followersOnly, saveToFile,
-                        client_to_server, commentsEnabled,
-                        attachImageFilename, mediaType,
-                        imageDescription, city,
-                        False, False,
-                        inReplyTo, inReplyToAtomUri, subject,
-                        schedulePost, eventDate, eventTime, location,
-                        None, None, None, None, None,
-                        None, None, None, None, None, system_language,
-                        conversationId, low_bandwidth,
-                        content_license_url)
+        _create_post_base(base_dir, nickname, domain, port,
+                          postTo, postCc,
+                          http_prefix, content, followersOnly, saveToFile,
+                          client_to_server, commentsEnabled,
+                          attachImageFilename, mediaType,
+                          imageDescription, city,
+                          False, False,
+                          inReplyTo, inReplyToAtomUri, subject,
+                          schedulePost, eventDate, eventTime, location,
+                          None, None, None, None, None,
+                          None, None, None, None, None, system_language,
+                          conversationId, low_bandwidth,
+                          content_license_url)
     # mentioned recipients go into To rather than Cc
     message_json['to'] = message_json['object']['cc']
     message_json['object']['to'] = message_json['to']
@@ -2174,17 +2175,17 @@ def create_report_post(base_dir: str,
         handle = toNickname + '@' + domain
 
         post_json_object = \
-            _createPostBase(base_dir, nickname, domain, port,
-                            toUrl, postCc,
-                            http_prefix, content, followersOnly, saveToFile,
-                            client_to_server, commentsEnabled,
-                            attachImageFilename, mediaType,
-                            imageDescription, city,
-                            True, False, None, None, subject,
-                            False, None, None, None, None, None,
-                            None, None, None,
-                            None, None, None, None, None, system_language,
-                            None, low_bandwidth, content_license_url)
+            _create_post_base(base_dir, nickname, domain, port,
+                              toUrl, postCc,
+                              http_prefix, content, followersOnly, saveToFile,
+                              client_to_server, commentsEnabled,
+                              attachImageFilename, mediaType,
+                              imageDescription, city,
+                              True, False, None, None, subject,
+                              False, None, None, None, None, None,
+                              None, None, None,
+                              None, None, None, None, None, system_language,
+                              None, low_bandwidth, content_license_url)
         if not post_json_object:
             continue
 
@@ -2202,10 +2203,10 @@ def create_report_post(base_dir: str,
     return post_json_object
 
 
-def threadSendPost(session, postJsonStr: str, federation_list: [],
-                   inboxUrl: str, base_dir: str,
-                   signatureHeaderJson: {}, postLog: [],
-                   debug: bool) -> None:
+def thread_send_post(session, post_jsonStr: str, federation_list: [],
+                     inboxUrl: str, base_dir: str,
+                     signatureHeaderJson: {}, postLog: [],
+                     debug: bool) -> None:
     """Sends a with retries
     """
     tries = 0
@@ -2214,30 +2215,30 @@ def threadSendPost(session, postJsonStr: str, federation_list: [],
         postResult = None
         unauthorized = False
         if debug:
-            print('Getting postJsonString for ' + inboxUrl)
+            print('Getting post_json_string for ' + inboxUrl)
         try:
             postResult, unauthorized, returnCode = \
-                postJsonString(session, postJsonStr, federation_list,
-                               inboxUrl, signatureHeaderJson,
-                               debug)
+                post_json_string(session, post_jsonStr, federation_list,
+                                 inboxUrl, signatureHeaderJson,
+                                 debug)
             if returnCode >= 500 and returnCode < 600:
                 # if an instance is returning a code which indicates that
                 # it might have a runtime error, like 503, then don't
                 # continue to post to it
                 break
             if debug:
-                print('Obtained postJsonString for ' + inboxUrl +
+                print('Obtained post_json_string for ' + inboxUrl +
                       ' unauthorized: ' + str(unauthorized))
         except Exception as ex:
-            print('ERROR: postJsonString failed ' + str(ex))
+            print('ERROR: post_json_string failed ' + str(ex))
         if unauthorized:
-            print('WARN: threadSendPost: Post is unauthorized ' +
-                  inboxUrl + ' ' + postJsonStr)
+            print('WARN: thread_send_post: Post is unauthorized ' +
+                  inboxUrl + ' ' + post_jsonStr)
             break
         if postResult:
-            logStr = 'Success on try ' + str(tries) + ': ' + postJsonStr
+            logStr = 'Success on try ' + str(tries) + ': ' + post_jsonStr
         else:
-            logStr = 'Retry ' + str(tries) + ': ' + postJsonStr
+            logStr = 'Retry ' + str(tries) + ': ' + post_jsonStr
         postLog.append(logStr)
         # keep the length of the log finite
         # Don't accumulate massive files on systems with limited resources
@@ -2259,7 +2260,7 @@ def threadSendPost(session, postJsonStr: str, federation_list: [],
             # our work here is done
             break
         if debug:
-            print(postJsonStr)
+            print(post_jsonStr)
             print('DEBUG: json post to ' + inboxUrl +
                   ' failed. Waiting for ' +
                   str(sendIntervalSec) + ' seconds.')
@@ -2267,22 +2268,22 @@ def threadSendPost(session, postJsonStr: str, federation_list: [],
         tries += 1
 
 
-def sendPost(signing_priv_key_pem: str, project_version: str,
-             session, base_dir: str, nickname: str, domain: str, port: int,
-             toNickname: str, toDomain: str, toPort: int, cc: str,
-             http_prefix: str, content: str, followersOnly: bool,
-             saveToFile: bool, client_to_server: bool,
-             commentsEnabled: bool,
-             attachImageFilename: str, mediaType: str,
-             imageDescription: str, city: str,
-             federation_list: [], send_threads: [], postLog: [],
-             cached_webfingers: {}, person_cache: {},
-             isArticle: bool, system_language: str,
-             shared_items_federated_domains: [],
-             sharedItemFederationTokens: {},
-             low_bandwidth: bool, content_license_url: str,
-             debug: bool = False, inReplyTo: str = None,
-             inReplyToAtomUri: str = None, subject: str = None) -> int:
+def send_post(signing_priv_key_pem: str, project_version: str,
+              session, base_dir: str, nickname: str, domain: str, port: int,
+              toNickname: str, toDomain: str, toPort: int, cc: str,
+              http_prefix: str, content: str, followersOnly: bool,
+              saveToFile: bool, client_to_server: bool,
+              commentsEnabled: bool,
+              attachImageFilename: str, mediaType: str,
+              imageDescription: str, city: str,
+              federation_list: [], send_threads: [], postLog: [],
+              cached_webfingers: {}, person_cache: {},
+              isArticle: bool, system_language: str,
+              shared_items_federated_domains: [],
+              sharedItemFederationTokens: {},
+              low_bandwidth: bool, content_license_url: str,
+              debug: bool = False, inReplyTo: str = None,
+              inReplyToAtomUri: str = None, subject: str = None) -> int:
     """Post to another inbox. Used by unit tests.
     """
     withDigest = True
@@ -2297,10 +2298,10 @@ def sendPost(signing_priv_key_pem: str, project_version: str,
     handle = http_prefix + '://' + toDomain + '/@' + toNickname
 
     # lookup the inbox for the To handle
-    wfRequest = webfingerHandle(session, handle, http_prefix,
-                                cached_webfingers,
-                                domain, project_version, debug, False,
-                                signing_priv_key_pem)
+    wfRequest = webfinger_handle(session, handle, http_prefix,
+                                 cached_webfingers,
+                                 domain, project_version, debug, False,
+                                 signing_priv_key_pem)
     if not wfRequest:
         return 1
     if not isinstance(wfRequest, dict):
@@ -2318,13 +2319,13 @@ def sendPost(signing_priv_key_pem: str, project_version: str,
     # get the actor inbox for the To handle
     originDomain = domain
     (inboxUrl, pubKeyId, pubKey, toPersonId, sharedInbox, avatarUrl,
-     displayName, _) = getPersonBox(signing_priv_key_pem,
-                                    originDomain,
-                                    base_dir, session, wfRequest,
-                                    person_cache,
-                                    project_version, http_prefix,
-                                    nickname, domain, postToBox,
-                                    72533)
+     displayName, _) = get_person_box(signing_priv_key_pem,
+                                      originDomain,
+                                      base_dir, session, wfRequest,
+                                      person_cache,
+                                      project_version, http_prefix,
+                                      nickname, domain, postToBox,
+                                      72533)
 
     if not inboxUrl:
         return 3
@@ -2335,22 +2336,22 @@ def sendPost(signing_priv_key_pem: str, project_version: str,
     # sharedInbox is optional
 
     post_json_object = \
-        _createPostBase(base_dir, nickname, domain, port,
-                        toPersonId, cc, http_prefix, content,
-                        followersOnly, saveToFile, client_to_server,
-                        commentsEnabled,
-                        attachImageFilename, mediaType,
-                        imageDescription, city,
-                        False, isArticle, inReplyTo,
-                        inReplyToAtomUri, subject,
-                        False, None, None, None, None, None,
-                        None, None, None,
-                        None, None, None, None, None, system_language,
-                        conversationId, low_bandwidth,
-                        content_license_url)
+        _create_post_base(base_dir, nickname, domain, port,
+                          toPersonId, cc, http_prefix, content,
+                          followersOnly, saveToFile, client_to_server,
+                          commentsEnabled,
+                          attachImageFilename, mediaType,
+                          imageDescription, city,
+                          False, isArticle, inReplyTo,
+                          inReplyToAtomUri, subject,
+                          False, None, None, None, None, None,
+                          None, None, None,
+                          None, None, None, None, None, system_language,
+                          conversationId, low_bandwidth,
+                          content_license_url)
 
     # get the senders private key
-    privateKeyPem = _getPersonKey(nickname, domain, base_dir, 'private')
+    privateKeyPem = _get_person_key(nickname, domain, base_dir, 'private')
     if len(privateKeyPem) == 0:
         return 6
 
@@ -2361,7 +2362,7 @@ def sendPost(signing_priv_key_pem: str, project_version: str,
     if not post_json_object.get('signature'):
         try:
             signedPostJsonObject = post_json_object.copy()
-            generateJsonSignature(signedPostJsonObject, privateKeyPem)
+            generate_json_signature(signedPostJsonObject, privateKeyPem)
             post_json_object = signedPostJsonObject
         except Exception as ex:
             print('WARN: failed to JSON-LD sign post, ' + str(ex))
@@ -2369,14 +2370,14 @@ def sendPost(signing_priv_key_pem: str, project_version: str,
 
     # convert json to string so that there are no
     # subsequent conversions after creating message body digest
-    postJsonStr = json.dumps(post_json_object)
+    post_jsonStr = json.dumps(post_json_object)
 
     # construct the http header, including the message body digest
     signatureHeaderJson = \
-        createSignedHeader(None, privateKeyPem, nickname, domain, port,
-                           toDomain, toPort,
-                           postPath, http_prefix, withDigest, postJsonStr,
-                           None)
+        create_signed_header(None, privateKeyPem, nickname, domain, port,
+                             toDomain, toPort,
+                             postPath, http_prefix, withDigest, post_jsonStr,
+                             None)
 
     # if the "to" domain is within the shared items
     # federation list then send the token for this domain
@@ -2405,9 +2406,9 @@ def sendPost(signing_priv_key_pem: str, project_version: str,
         send_threads.pop(0)
         print('WARN: thread killed')
     thr = \
-        thread_with_trace(target=threadSendPost,
+        thread_with_trace(target=thread_send_post,
                           args=(session,
-                                postJsonStr,
+                                post_jsonStr,
                                 federation_list,
                                 inboxUrl, base_dir,
                                 signatureHeaderJson.copy(),
@@ -2418,27 +2419,28 @@ def sendPost(signing_priv_key_pem: str, project_version: str,
     return 0
 
 
-def sendPostViaServer(signing_priv_key_pem: str, project_version: str,
-                      base_dir: str, session, fromNickname: str, password: str,
-                      fromDomain: str, fromPort: int,
-                      toNickname: str, toDomain: str, toPort: int, cc: str,
-                      http_prefix: str, content: str, followersOnly: bool,
-                      commentsEnabled: bool,
-                      attachImageFilename: str, mediaType: str,
-                      imageDescription: str, city: str,
-                      cached_webfingers: {}, person_cache: {},
-                      isArticle: bool, system_language: str,
-                      low_bandwidth: bool,
-                      content_license_url: str,
-                      debug: bool = False,
-                      inReplyTo: str = None,
-                      inReplyToAtomUri: str = None,
-                      conversationId: str = None,
-                      subject: str = None) -> int:
+def send_post_via_server(signing_priv_key_pem: str, project_version: str,
+                         base_dir: str, session,
+                         fromNickname: str, password: str,
+                         fromDomain: str, fromPort: int,
+                         toNickname: str, toDomain: str, toPort: int, cc: str,
+                         http_prefix: str, content: str, followersOnly: bool,
+                         commentsEnabled: bool,
+                         attachImageFilename: str, mediaType: str,
+                         imageDescription: str, city: str,
+                         cached_webfingers: {}, person_cache: {},
+                         isArticle: bool, system_language: str,
+                         low_bandwidth: bool,
+                         content_license_url: str,
+                         debug: bool = False,
+                         inReplyTo: str = None,
+                         inReplyToAtomUri: str = None,
+                         conversationId: str = None,
+                         subject: str = None) -> int:
     """Send a post via a proxy (c2s)
     """
     if not session:
-        print('WARN: No session for sendPostViaServer')
+        print('WARN: No session for send_post_via_server')
         return 6
 
     fromDomainFull = get_full_domain(fromDomain, fromPort)
@@ -2447,9 +2449,9 @@ def sendPostViaServer(signing_priv_key_pem: str, project_version: str,
 
     # lookup the inbox for the To handle
     wfRequest = \
-        webfingerHandle(session, handle, http_prefix, cached_webfingers,
-                        fromDomainFull, project_version, debug, False,
-                        signing_priv_key_pem)
+        webfinger_handle(session, handle, http_prefix, cached_webfingers,
+                         fromDomainFull, project_version, debug, False,
+                         signing_priv_key_pem)
     if not wfRequest:
         if debug:
             print('DEBUG: post webfinger failed for ' + handle)
@@ -2466,14 +2468,14 @@ def sendPostViaServer(signing_priv_key_pem: str, project_version: str,
     # get the actor inbox for the To handle
     originDomain = fromDomain
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
-     displayName, _) = getPersonBox(signing_priv_key_pem,
-                                    originDomain,
-                                    base_dir, session, wfRequest,
-                                    person_cache,
-                                    project_version, http_prefix,
-                                    fromNickname,
-                                    fromDomainFull, postToBox,
-                                    82796)
+     displayName, _) = get_person_box(signing_priv_key_pem,
+                                      originDomain,
+                                      base_dir, session, wfRequest,
+                                      person_cache,
+                                      project_version, http_prefix,
+                                      fromNickname,
+                                      fromDomainFull, postToBox,
+                                      82796)
     if not inboxUrl:
         if debug:
             print('DEBUG: post no ' + postToBox +
@@ -2503,20 +2505,20 @@ def sendPostViaServer(signing_priv_key_pem: str, project_version: str,
             toPersonId = local_actor_url(http_prefix, toNickname, toDomainFull)
 
     post_json_object = \
-        _createPostBase(base_dir,
-                        fromNickname, fromDomain, fromPort,
-                        toPersonId, cc, http_prefix, content,
-                        followersOnly, saveToFile, client_to_server,
-                        commentsEnabled,
-                        attachImageFilename, mediaType,
-                        imageDescription, city,
-                        False, isArticle, inReplyTo,
-                        inReplyToAtomUri, subject,
-                        False, None, None, None, None, None,
-                        None, None, None,
-                        None, None, None, None, None, system_language,
-                        conversationId, low_bandwidth,
-                        content_license_url)
+        _create_post_base(base_dir,
+                          fromNickname, fromDomain, fromPort,
+                          toPersonId, cc, http_prefix, content,
+                          followersOnly, saveToFile, client_to_server,
+                          commentsEnabled,
+                          attachImageFilename, mediaType,
+                          imageDescription, city,
+                          False, isArticle, inReplyTo,
+                          inReplyToAtomUri, subject,
+                          False, None, None, None, None, None,
+                          None, None, None,
+                          None, None, None, None, None, system_language,
+                          conversationId, low_bandwidth,
+                          content_license_url)
 
     authHeader = create_basic_auth_header(fromNickname, password)
 
@@ -2526,8 +2528,8 @@ def sendPostViaServer(signing_priv_key_pem: str, project_version: str,
             'Authorization': authHeader
         }
         postResult = \
-            postImage(session, attachImageFilename, [],
-                      inboxUrl, headers)
+            post_image(session, attachImageFilename, [],
+                       inboxUrl, headers)
         if not postResult:
             if debug:
                 print('DEBUG: post failed to upload image')
@@ -2540,16 +2542,16 @@ def sendPostViaServer(signing_priv_key_pem: str, project_version: str,
     }
     postDumps = json.dumps(post_json_object)
     postResult, unauthorized, returnCode = \
-        postJsonString(session, postDumps, [],
-                       inboxUrl, headers, debug, 5, True)
+        post_json_string(session, postDumps, [],
+                         inboxUrl, headers, debug, 5, True)
     if not postResult:
         if debug:
             if unauthorized:
                 print('DEBUG: POST failed for c2s to ' +
                       inboxUrl + ' unathorized')
             else:
-                print('DEBUG: POST failed for c2s to '
-                      + inboxUrl + ' return code ' + str(returnCode))
+                print('DEBUG: POST failed for c2s to ' +
+                      inboxUrl + ' return code ' + str(returnCode))
         return 5
 
     if debug:
@@ -2557,7 +2559,7 @@ def sendPostViaServer(signing_priv_key_pem: str, project_version: str,
     return 0
 
 
-def groupFollowersByDomain(base_dir: str, nickname: str, domain: str) -> {}:
+def group_followers_by_domain(base_dir: str, nickname: str, domain: str) -> {}:
     """Returns a dictionary with followers grouped by domain
     """
     handle = nickname + '@' + domain
@@ -2579,7 +2581,7 @@ def groupFollowersByDomain(base_dir: str, nickname: str, domain: str) -> {}:
     return grouped
 
 
-def _addFollowersToPublicPost(post_json_object: {}) -> None:
+def _add_followers_to_public_post(post_json_object: {}) -> None:
     """Adds followers entry to cc if it doesn't exist
     """
     if not post_json_object.get('actor'):
@@ -2612,22 +2614,22 @@ def _addFollowersToPublicPost(post_json_object: {}) -> None:
             post_json_object['actor'] + '/followers'
 
 
-def sendSignedJson(post_json_object: {}, session, base_dir: str,
-                   nickname: str, domain: str, port: int,
-                   toNickname: str, toDomain: str, toPort: int, cc: str,
-                   http_prefix: str, saveToFile: bool, client_to_server: bool,
-                   federation_list: [],
-                   send_threads: [], postLog: [], cached_webfingers: {},
-                   person_cache: {}, debug: bool, project_version: str,
-                   sharedItemsToken: str, group_account: bool,
-                   signing_priv_key_pem: str,
-                   sourceId: int) -> int:
+def send_signed_json(post_json_object: {}, session, base_dir: str,
+                     nickname: str, domain: str, port: int,
+                     toNickname: str, toDomain: str, toPort: int, cc: str,
+                     http_prefix: str, saveToFile: bool,
+                     client_to_server: bool, federation_list: [],
+                     send_threads: [], postLog: [], cached_webfingers: {},
+                     person_cache: {}, debug: bool, project_version: str,
+                     sharedItemsToken: str, group_account: bool,
+                     signing_priv_key_pem: str,
+                     sourceId: int) -> int:
     """Sends a signed json object to an inbox/outbox
     """
     if debug:
-        print('DEBUG: sendSignedJson start')
+        print('DEBUG: send_signed_json start')
     if not session:
-        print('WARN: No session specified for sendSignedJson')
+        print('WARN: No session specified for send_signed_json')
         return 8
     withDigest = True
 
@@ -2641,7 +2643,7 @@ def sendSignedJson(post_json_object: {}, session, base_dir: str,
     toDomain = get_full_domain(toDomain, toPort)
 
     toDomainUrl = http_prefix + '://' + toDomain
-    if not siteIsActive(toDomainUrl, 10):
+    if not site_is_active(toDomainUrl, 10):
         print('Domain is inactive: ' + toDomainUrl)
         return 9
     print('Domain is active: ' + toDomainUrl)
@@ -2656,10 +2658,10 @@ def sendSignedJson(post_json_object: {}, session, base_dir: str,
         print('DEBUG: handle - ' + handle + ' toPort ' + str(toPort))
 
     # lookup the inbox for the To handle
-    wfRequest = webfingerHandle(session, handle, http_prefix,
-                                cached_webfingers,
-                                domain, project_version, debug, group_account,
-                                signing_priv_key_pem)
+    wfRequest = webfinger_handle(session, handle, http_prefix,
+                                 cached_webfingers,
+                                 domain, project_version, debug, group_account,
+                                 signing_priv_key_pem)
     if not wfRequest:
         if debug:
             print('DEBUG: webfinger for ' + handle + ' failed')
@@ -2682,13 +2684,13 @@ def sendSignedJson(post_json_object: {}, session, base_dir: str,
     # get the actor inbox/outbox for the To handle
     originDomain = domain
     (inboxUrl, pubKeyId, pubKey, toPersonId, sharedInboxUrl, avatarUrl,
-     displayName, _) = getPersonBox(signing_priv_key_pem,
-                                    originDomain,
-                                    base_dir, session, wfRequest,
-                                    person_cache,
-                                    project_version, http_prefix,
-                                    nickname, domain, postToBox,
-                                    sourceId)
+     displayName, _) = get_person_box(signing_priv_key_pem,
+                                      originDomain,
+                                      base_dir, session, wfRequest,
+                                      person_cache,
+                                      project_version, http_prefix,
+                                      nickname, domain, postToBox,
+                                      sourceId)
 
     print("inboxUrl: " + str(inboxUrl))
     print("toPersonId: " + str(toPersonId))
@@ -2716,7 +2718,8 @@ def sendSignedJson(post_json_object: {}, session, base_dir: str,
     # sharedInbox is optional
 
     # get the senders private key
-    privateKeyPem = _getPersonKey(nickname, domain, base_dir, 'private', debug)
+    privateKeyPem = \
+        _get_person_key(nickname, domain, base_dir, 'private', debug)
     if len(privateKeyPem) == 0:
         if debug:
             print('DEBUG: Private key not found for ' +
@@ -2730,12 +2733,12 @@ def sendSignedJson(post_json_object: {}, session, base_dir: str,
         return 7
     postPath = inboxUrl.split(toDomain, 1)[1]
 
-    _addFollowersToPublicPost(post_json_object)
+    _add_followers_to_public_post(post_json_object)
 
     if not post_json_object.get('signature'):
         try:
             signedPostJsonObject = post_json_object.copy()
-            generateJsonSignature(signedPostJsonObject, privateKeyPem)
+            generate_json_signature(signedPostJsonObject, privateKeyPem)
             post_json_object = signedPostJsonObject
         except Exception as ex:
             print('WARN: failed to JSON-LD sign post, ' + str(ex))
@@ -2743,14 +2746,14 @@ def sendSignedJson(post_json_object: {}, session, base_dir: str,
 
     # convert json to string so that there are no
     # subsequent conversions after creating message body digest
-    postJsonStr = json.dumps(post_json_object)
+    post_jsonStr = json.dumps(post_json_object)
 
     # construct the http header, including the message body digest
     signatureHeaderJson = \
-        createSignedHeader(None, privateKeyPem, nickname, domain, port,
-                           toDomain, toPort,
-                           postPath, http_prefix, withDigest, postJsonStr,
-                           None)
+        create_signed_header(None, privateKeyPem, nickname, domain, port,
+                             toDomain, toPort,
+                             postPath, http_prefix, withDigest, post_jsonStr,
+                             None)
     # optionally add a token so that the receiving instance may access
     # your shared items catalog
     if sharedItemsToken:
@@ -2770,9 +2773,9 @@ def sendSignedJson(post_json_object: {}, session, base_dir: str,
         print('DEBUG: starting thread to send post')
         pprint(post_json_object)
     thr = \
-        thread_with_trace(target=threadSendPost,
+        thread_with_trace(target=thread_send_post,
                           args=(session,
-                                postJsonStr,
+                                post_jsonStr,
                                 federation_list,
                                 inboxUrl, base_dir,
                                 signatureHeaderJson.copy(),
@@ -2847,7 +2850,7 @@ def add_to_field(activityType: str, post_json_object: {},
     return post_json_object, False
 
 
-def _isProfileUpdate(post_json_object: {}) -> bool:
+def _is_profile_update(post_json_object: {}) -> bool:
     """Is the given post a profile update?
     for actor updates there is no 'to' within the object
     """
@@ -2862,17 +2865,17 @@ def _isProfileUpdate(post_json_object: {}) -> bool:
     return False
 
 
-def _sendToNamedAddresses(session, base_dir: str,
-                          nickname: str, domain: str,
-                          onion_domain: str, i2p_domain: str, port: int,
-                          http_prefix: str, federation_list: [],
-                          send_threads: [], postLog: [],
-                          cached_webfingers: {}, person_cache: {},
-                          post_json_object: {}, debug: bool,
-                          project_version: str,
-                          shared_items_federated_domains: [],
-                          sharedItemFederationTokens: {},
-                          signing_priv_key_pem: str) -> None:
+def _send_to_named_addresses(session, base_dir: str,
+                             nickname: str, domain: str,
+                             onion_domain: str, i2p_domain: str, port: int,
+                             http_prefix: str, federation_list: [],
+                             send_threads: [], postLog: [],
+                             cached_webfingers: {}, person_cache: {},
+                             post_json_object: {}, debug: bool,
+                             project_version: str,
+                             shared_items_federated_domains: [],
+                             sharedItemFederationTokens: {},
+                             signing_priv_key_pem: str) -> None:
     """sends a post to the specific named addresses in to/cc
     """
     if not session:
@@ -2882,7 +2885,7 @@ def _sendToNamedAddresses(session, base_dir: str,
         return
     isProfileUpdate = False
     if has_object_dict(post_json_object):
-        if _isProfileUpdate(post_json_object):
+        if _is_profile_update(post_json_object):
             # use the original object, which has a 'to'
             recipientsObject = post_json_object
             isProfileUpdate = True
@@ -3004,32 +3007,33 @@ def _sendToNamedAddresses(session, base_dir: str,
 
         group_account = has_group_type(base_dir, address, person_cache)
 
-        sendSignedJson(post_json_object, session, base_dir,
-                       nickname, fromDomain, port,
-                       toNickname, toDomain, toPort,
-                       cc, fromHttpPrefix, True, client_to_server,
-                       federation_list,
-                       send_threads, postLog, cached_webfingers,
-                       person_cache, debug, project_version,
-                       sharedItemsToken, group_account,
-                       signing_priv_key_pem, 34436782)
+        send_signed_json(post_json_object, session, base_dir,
+                         nickname, fromDomain, port,
+                         toNickname, toDomain, toPort,
+                         cc, fromHttpPrefix, True, client_to_server,
+                         federation_list,
+                         send_threads, postLog, cached_webfingers,
+                         person_cache, debug, project_version,
+                         sharedItemsToken, group_account,
+                         signing_priv_key_pem, 34436782)
 
 
-def sendToNamedAddressesThread(session, base_dir: str,
-                               nickname: str, domain: str,
-                               onion_domain: str, i2p_domain: str, port: int,
-                               http_prefix: str, federation_list: [],
-                               send_threads: [], postLog: [],
-                               cached_webfingers: {}, person_cache: {},
-                               post_json_object: {}, debug: bool,
-                               project_version: str,
-                               shared_items_federated_domains: [],
-                               sharedItemFederationTokens: {},
-                               signing_priv_key_pem: str):
+def send_to_named_addresses_thread(session, base_dir: str,
+                                   nickname: str, domain: str,
+                                   onion_domain: str,
+                                   i2p_domain: str, port: int,
+                                   http_prefix: str, federation_list: [],
+                                   send_threads: [], postLog: [],
+                                   cached_webfingers: {}, person_cache: {},
+                                   post_json_object: {}, debug: bool,
+                                   project_version: str,
+                                   shared_items_federated_domains: [],
+                                   sharedItemFederationTokens: {},
+                                   signing_priv_key_pem: str):
     """Returns a thread used to send a post to named addresses
     """
     sendThread = \
-        thread_with_trace(target=_sendToNamedAddresses,
+        thread_with_trace(target=_send_to_named_addresses,
                           args=(session, base_dir,
                                 nickname, domain,
                                 onion_domain, i2p_domain, port,
@@ -3054,8 +3058,8 @@ def sendToNamedAddressesThread(session, base_dir: str,
     return sendThread
 
 
-def _hasSharedInbox(session, http_prefix: str, domain: str,
-                    debug: bool, signing_priv_key_pem: str) -> bool:
+def _has_shared_inbox(session, http_prefix: str, domain: str,
+                      debug: bool, signing_priv_key_pem: str) -> bool:
     """Returns true if the given domain has a shared inbox
     This tries the new and the old way of webfingering the shared inbox
     """
@@ -3064,9 +3068,9 @@ def _hasSharedInbox(session, http_prefix: str, domain: str,
         tryHandles.append(domain + '@' + domain)
     tryHandles.append('inbox@' + domain)
     for handle in tryHandles:
-        wfRequest = webfingerHandle(session, handle, http_prefix, {},
-                                    domain, __version__, debug, False,
-                                    signing_priv_key_pem)
+        wfRequest = webfinger_handle(session, handle, http_prefix, {},
+                                     domain, __version__, debug, False,
+                                     signing_priv_key_pem)
         if wfRequest:
             if isinstance(wfRequest, dict):
                 if not wfRequest.get('errors'):
@@ -3074,7 +3078,7 @@ def _hasSharedInbox(session, http_prefix: str, domain: str,
     return False
 
 
-def _sendingProfileUpdate(post_json_object: {}) -> bool:
+def _sending_profile_update(post_json_object: {}) -> bool:
     """Returns true if the given json is a profile update
     """
     if post_json_object['type'] != 'Update':
@@ -3090,33 +3094,33 @@ def _sendingProfileUpdate(post_json_object: {}) -> bool:
     return False
 
 
-def sendToFollowers(session, base_dir: str,
-                    nickname: str,
-                    domain: str,
-                    onion_domain: str, i2p_domain: str, port: int,
-                    http_prefix: str, federation_list: [],
-                    send_threads: [], postLog: [],
-                    cached_webfingers: {}, person_cache: {},
-                    post_json_object: {}, debug: bool,
-                    project_version: str,
-                    shared_items_federated_domains: [],
-                    sharedItemFederationTokens: {},
-                    signing_priv_key_pem: str) -> None:
+def send_to_followers(session, base_dir: str,
+                      nickname: str,
+                      domain: str,
+                      onion_domain: str, i2p_domain: str, port: int,
+                      http_prefix: str, federation_list: [],
+                      send_threads: [], postLog: [],
+                      cached_webfingers: {}, person_cache: {},
+                      post_json_object: {}, debug: bool,
+                      project_version: str,
+                      shared_items_federated_domains: [],
+                      sharedItemFederationTokens: {},
+                      signing_priv_key_pem: str) -> None:
     """sends a post to the followers of the given nickname
     """
-    print('sendToFollowers')
+    print('send_to_followers')
     if not session:
-        print('WARN: No session for sendToFollowers')
+        print('WARN: No session for send_to_followers')
         return
-    if not _postIsAddressedToFollowers(base_dir, nickname, domain,
-                                       port, http_prefix,
-                                       post_json_object):
+    if not _post_is_addressed_to_followers(base_dir, nickname, domain,
+                                           port, http_prefix,
+                                           post_json_object):
         if debug:
             print('Post is not addressed to followers')
         return
     print('Post is addressed to followers')
 
-    grouped = groupFollowersByDomain(base_dir, nickname, domain)
+    grouped = group_followers_by_domain(base_dir, nickname, domain)
     if not grouped:
         if debug:
             print('Post to followers did not resolve any domains')
@@ -3152,7 +3156,7 @@ def sendToFollowers(session, base_dir: str,
 
         # check that the follower's domain is active
         followerDomainUrl = http_prefix + '://' + followerDomain
-        if not siteIsActive(followerDomainUrl, 10):
+        if not site_is_active(followerDomainUrl, 10):
             print('Sending post to followers domain is inactive: ' +
                   followerDomainUrl)
             continue
@@ -3160,8 +3164,8 @@ def sendToFollowers(session, base_dir: str,
               followerDomainUrl)
 
         withSharedInbox = \
-            _hasSharedInbox(session, http_prefix, followerDomain, debug,
-                            signing_priv_key_pem)
+            _has_shared_inbox(session, http_prefix, followerDomain, debug,
+                              signing_priv_key_pem)
         if debug:
             if withSharedInbox:
                 print(followerDomain + ' has shared inbox')
@@ -3205,7 +3209,7 @@ def sendToFollowers(session, base_dir: str,
                 toNickname = 'inbox'
 
             if toNickname != 'inbox' and post_json_object.get('type'):
-                if _sendingProfileUpdate(post_json_object):
+                if _sending_profile_update(post_json_object):
                     print('Sending post to followers ' +
                           'shared inbox of ' + toDomain)
                     toNickname = 'inbox'
@@ -3214,15 +3218,15 @@ def sendToFollowers(session, base_dir: str,
                   nickname + '@' + domain +
                   ' to ' + toNickname + '@' + toDomain)
 
-            sendSignedJson(post_json_object, session, base_dir,
-                           nickname, fromDomain, port,
-                           toNickname, toDomain, toPort,
-                           cc, fromHttpPrefix, True, client_to_server,
-                           federation_list,
-                           send_threads, postLog, cached_webfingers,
-                           person_cache, debug, project_version,
-                           sharedItemsToken, group_account,
-                           signing_priv_key_pem, 639342)
+            send_signed_json(post_json_object, session, base_dir,
+                             nickname, fromDomain, port,
+                             toNickname, toDomain, toPort,
+                             cc, fromHttpPrefix, True, client_to_server,
+                             federation_list,
+                             send_threads, postLog, cached_webfingers,
+                             person_cache, debug, project_version,
+                             sharedItemsToken, group_account,
+                             signing_priv_key_pem, 639342)
         else:
             # send to individual followers without using a shared inbox
             for handle in followerHandles:
@@ -3243,42 +3247,42 @@ def sendToFollowers(session, base_dir: str,
                           nickname + '@' + domain + ' to ' +
                           toNickname + '@' + toDomain)
 
-                sendSignedJson(post_json_object, session, base_dir,
-                               nickname, fromDomain, port,
-                               toNickname, toDomain, toPort,
-                               cc, fromHttpPrefix, True, client_to_server,
-                               federation_list,
-                               send_threads, postLog, cached_webfingers,
-                               person_cache, debug, project_version,
-                               sharedItemsToken, group_account,
-                               signing_priv_key_pem, 634219)
+                send_signed_json(post_json_object, session, base_dir,
+                                 nickname, fromDomain, port,
+                                 toNickname, toDomain, toPort,
+                                 cc, fromHttpPrefix, True, client_to_server,
+                                 federation_list,
+                                 send_threads, postLog, cached_webfingers,
+                                 person_cache, debug, project_version,
+                                 sharedItemsToken, group_account,
+                                 signing_priv_key_pem, 634219)
 
         time.sleep(4)
 
     if debug:
-        print('DEBUG: End of sendToFollowers')
+        print('DEBUG: End of send_to_followers')
 
     sendingEndTime = datetime.datetime.utcnow()
     sendingMins = int((sendingEndTime - sendingStartTime).total_seconds() / 60)
     print('Sending post to followers ends ' + str(sendingMins) + ' mins')
 
 
-def sendToFollowersThread(session, base_dir: str,
-                          nickname: str,
-                          domain: str,
-                          onion_domain: str, i2p_domain: str, port: int,
-                          http_prefix: str, federation_list: [],
-                          send_threads: [], postLog: [],
-                          cached_webfingers: {}, person_cache: {},
-                          post_json_object: {}, debug: bool,
-                          project_version: str,
-                          shared_items_federated_domains: [],
-                          sharedItemFederationTokens: {},
-                          signing_priv_key_pem: str):
+def send_to_followers_thread(session, base_dir: str,
+                             nickname: str,
+                             domain: str,
+                             onion_domain: str, i2p_domain: str, port: int,
+                             http_prefix: str, federation_list: [],
+                             send_threads: [], postLog: [],
+                             cached_webfingers: {}, person_cache: {},
+                             post_json_object: {}, debug: bool,
+                             project_version: str,
+                             shared_items_federated_domains: [],
+                             sharedItemFederationTokens: {},
+                             signing_priv_key_pem: str):
     """Returns a thread used to send a post to followers
     """
     sendThread = \
-        thread_with_trace(target=sendToFollowers,
+        thread_with_trace(target=send_to_followers,
                           args=(session, base_dir,
                                 nickname, domain,
                                 onion_domain, i2p_domain, port,
@@ -3303,99 +3307,101 @@ def sendToFollowersThread(session, base_dir: str,
     return sendThread
 
 
-def createInbox(recent_posts_cache: {},
-                session, base_dir: str, nickname: str, domain: str, port: int,
-                http_prefix: str, itemsPerPage: int, headerOnly: bool,
-                pageNumber: int) -> {}:
-    return _createBoxIndexed(recent_posts_cache,
-                             session, base_dir, 'inbox',
-                             nickname, domain, port, http_prefix,
-                             itemsPerPage, headerOnly, True,
-                             0, False, 0, pageNumber)
+def create_inbox(recent_posts_cache: {},
+                 session, base_dir: str, nickname: str, domain: str, port: int,
+                 http_prefix: str, itemsPerPage: int, headerOnly: bool,
+                 pageNumber: int) -> {}:
+    return _create_box_indexed(recent_posts_cache,
+                               session, base_dir, 'inbox',
+                               nickname, domain, port, http_prefix,
+                               itemsPerPage, headerOnly, True,
+                               0, False, 0, pageNumber)
 
 
-def createBookmarksTimeline(session, base_dir: str, nickname: str, domain: str,
+def create_bookmarks_timeline(session, base_dir: str,
+                              nickname: str, domain: str,
+                              port: int, http_prefix: str, itemsPerPage: int,
+                              headerOnly: bool, pageNumber: int) -> {}:
+    return _create_box_indexed({}, session, base_dir, 'tlbookmarks',
+                               nickname, domain,
+                               port, http_prefix, itemsPerPage, headerOnly,
+                               True, 0, False, 0, pageNumber)
+
+
+def create_dm_timeline(recent_posts_cache: {},
+                       session, base_dir: str, nickname: str, domain: str,
+                       port: int, http_prefix: str, itemsPerPage: int,
+                       headerOnly: bool, pageNumber: int) -> {}:
+    return _create_box_indexed(recent_posts_cache,
+                               session, base_dir, 'dm', nickname,
+                               domain, port, http_prefix, itemsPerPage,
+                               headerOnly, True, 0, False, 0, pageNumber)
+
+
+def create_replies_timeline(recent_posts_cache: {},
+                            session, base_dir: str, nickname: str, domain: str,
                             port: int, http_prefix: str, itemsPerPage: int,
                             headerOnly: bool, pageNumber: int) -> {}:
-    return _createBoxIndexed({}, session, base_dir, 'tlbookmarks',
-                             nickname, domain,
-                             port, http_prefix, itemsPerPage, headerOnly,
-                             True, 0, False, 0, pageNumber)
+    return _create_box_indexed(recent_posts_cache, session,
+                               base_dir, 'tlreplies',
+                               nickname, domain, port, http_prefix,
+                               itemsPerPage, headerOnly, True,
+                               0, False, 0, pageNumber)
 
 
-def createDMTimeline(recent_posts_cache: {},
-                     session, base_dir: str, nickname: str, domain: str,
-                     port: int, http_prefix: str, itemsPerPage: int,
-                     headerOnly: bool, pageNumber: int) -> {}:
-    return _createBoxIndexed(recent_posts_cache,
-                             session, base_dir, 'dm', nickname,
-                             domain, port, http_prefix, itemsPerPage,
-                             headerOnly, True, 0, False, 0, pageNumber)
-
-
-def createRepliesTimeline(recent_posts_cache: {},
-                          session, base_dir: str, nickname: str, domain: str,
+def create_blogs_timeline(session, base_dir: str, nickname: str, domain: str,
                           port: int, http_prefix: str, itemsPerPage: int,
                           headerOnly: bool, pageNumber: int) -> {}:
-    return _createBoxIndexed(recent_posts_cache, session,
-                             base_dir, 'tlreplies',
-                             nickname, domain, port, http_prefix,
-                             itemsPerPage, headerOnly, True,
-                             0, False, 0, pageNumber)
+    return _create_box_indexed({}, session, base_dir, 'tlblogs', nickname,
+                               domain, port, http_prefix,
+                               itemsPerPage, headerOnly, True,
+                               0, False, 0, pageNumber)
 
 
-def createBlogsTimeline(session, base_dir: str, nickname: str, domain: str,
-                        port: int, http_prefix: str, itemsPerPage: int,
-                        headerOnly: bool, pageNumber: int) -> {}:
-    return _createBoxIndexed({}, session, base_dir, 'tlblogs', nickname,
-                             domain, port, http_prefix,
-                             itemsPerPage, headerOnly, True,
-                             0, False, 0, pageNumber)
+def create_features_timeline(session, base_dir: str,
+                             nickname: str, domain: str,
+                             port: int, http_prefix: str, itemsPerPage: int,
+                             headerOnly: bool, pageNumber: int) -> {}:
+    return _create_box_indexed({}, session, base_dir, 'tlfeatures', nickname,
+                               domain, port, http_prefix,
+                               itemsPerPage, headerOnly, True,
+                               0, False, 0, pageNumber)
 
 
-def createFeaturesTimeline(session, base_dir: str, nickname: str, domain: str,
-                           port: int, http_prefix: str, itemsPerPage: int,
-                           headerOnly: bool, pageNumber: int) -> {}:
-    return _createBoxIndexed({}, session, base_dir, 'tlfeatures', nickname,
-                             domain, port, http_prefix,
-                             itemsPerPage, headerOnly, True,
-                             0, False, 0, pageNumber)
+def create_media_timeline(session, base_dir: str, nickname: str, domain: str,
+                          port: int, http_prefix: str, itemsPerPage: int,
+                          headerOnly: bool, pageNumber: int) -> {}:
+    return _create_box_indexed({}, session, base_dir, 'tlmedia', nickname,
+                               domain, port, http_prefix,
+                               itemsPerPage, headerOnly, True,
+                               0, False, 0, pageNumber)
 
 
-def createMediaTimeline(session, base_dir: str, nickname: str, domain: str,
-                        port: int, http_prefix: str, itemsPerPage: int,
-                        headerOnly: bool, pageNumber: int) -> {}:
-    return _createBoxIndexed({}, session, base_dir, 'tlmedia', nickname,
-                             domain, port, http_prefix,
-                             itemsPerPage, headerOnly, True,
-                             0, False, 0, pageNumber)
+def create_news_timeline(session, base_dir: str, nickname: str, domain: str,
+                         port: int, http_prefix: str, itemsPerPage: int,
+                         headerOnly: bool, newswire_votes_threshold: int,
+                         positive_voting: bool, voting_time_mins: int,
+                         pageNumber: int) -> {}:
+    return _create_box_indexed({}, session, base_dir, 'outbox', 'news',
+                               domain, port, http_prefix,
+                               itemsPerPage, headerOnly, True,
+                               newswire_votes_threshold, positive_voting,
+                               voting_time_mins, pageNumber)
 
 
-def createNewsTimeline(session, base_dir: str, nickname: str, domain: str,
-                       port: int, http_prefix: str, itemsPerPage: int,
-                       headerOnly: bool, newswire_votes_threshold: int,
-                       positive_voting: bool, voting_time_mins: int,
-                       pageNumber: int) -> {}:
-    return _createBoxIndexed({}, session, base_dir, 'outbox', 'news',
-                             domain, port, http_prefix,
-                             itemsPerPage, headerOnly, True,
-                             newswire_votes_threshold, positive_voting,
-                             voting_time_mins, pageNumber)
+def create_outbox(session, base_dir: str, nickname: str, domain: str,
+                  port: int, http_prefix: str,
+                  itemsPerPage: int, headerOnly: bool, authorized: bool,
+                  pageNumber: int) -> {}:
+    return _create_box_indexed({}, session, base_dir, 'outbox',
+                               nickname, domain, port, http_prefix,
+                               itemsPerPage, headerOnly, authorized,
+                               0, False, 0, pageNumber)
 
 
-def createOutbox(session, base_dir: str, nickname: str, domain: str,
-                 port: int, http_prefix: str,
-                 itemsPerPage: int, headerOnly: bool, authorized: bool,
-                 pageNumber: int) -> {}:
-    return _createBoxIndexed({}, session, base_dir, 'outbox',
-                             nickname, domain, port, http_prefix,
-                             itemsPerPage, headerOnly, authorized,
-                             0, False, 0, pageNumber)
-
-
-def createModeration(base_dir: str, nickname: str, domain: str, port: int,
-                     http_prefix: str, itemsPerPage: int, headerOnly: bool,
-                     pageNumber: int) -> {}:
+def create_moderation(base_dir: str, nickname: str, domain: str, port: int,
+                      http_prefix: str, itemsPerPage: int, headerOnly: bool,
+                      pageNumber: int) -> {}:
     boxDir = create_person_dir(nickname, domain, base_dir, 'inbox')
     boxname = 'moderation'
 
@@ -3459,34 +3465,34 @@ def createModeration(base_dir: str, nickname: str, domain: str, port: int,
     return boxItems
 
 
-def isImageMedia(session, base_dir: str, http_prefix: str,
-                 nickname: str, domain: str,
-                 post_json_object: {}, translate: {},
-                 yt_replace_domain: str,
-                 twitter_replacement_domain: str,
-                 allow_local_network_access: bool,
-                 recent_posts_cache: {}, debug: bool,
-                 system_language: str,
-                 domain_full: str, person_cache: {},
-                 signing_priv_key_pem: str) -> bool:
+def is_image_media(session, base_dir: str, http_prefix: str,
+                   nickname: str, domain: str,
+                   post_json_object: {}, translate: {},
+                   yt_replace_domain: str,
+                   twitter_replacement_domain: str,
+                   allow_local_network_access: bool,
+                   recent_posts_cache: {}, debug: bool,
+                   system_language: str,
+                   domain_full: str, person_cache: {},
+                   signing_priv_key_pem: str) -> bool:
     """Returns true if the given post has attached image media
     """
     if post_json_object['type'] == 'Announce':
         blockedCache = {}
-        postJsonAnnounce = \
-            downloadAnnounce(session, base_dir, http_prefix,
-                             nickname, domain, post_json_object,
-                             __version__, translate,
-                             yt_replace_domain,
-                             twitter_replacement_domain,
-                             allow_local_network_access,
-                             recent_posts_cache, debug,
-                             system_language,
-                             domain_full, person_cache,
-                             signing_priv_key_pem,
-                             blockedCache)
-        if postJsonAnnounce:
-            post_json_object = postJsonAnnounce
+        post_jsonAnnounce = \
+            download_announce(session, base_dir, http_prefix,
+                              nickname, domain, post_json_object,
+                              __version__, translate,
+                              yt_replace_domain,
+                              twitter_replacement_domain,
+                              allow_local_network_access,
+                              recent_posts_cache, debug,
+                              system_language,
+                              domain_full, person_cache,
+                              signing_priv_key_pem,
+                              blockedCache)
+        if post_jsonAnnounce:
+            post_json_object = post_jsonAnnounce
     if post_json_object['type'] != 'Create':
         return False
     if not has_object_dict(post_json_object):
@@ -3511,8 +3517,8 @@ def isImageMedia(session, base_dir: str, http_prefix: str,
     return False
 
 
-def _addPostStringToTimeline(postStr: str, boxname: str,
-                             postsInBox: [], boxActor: str) -> bool:
+def _add_post_string_to_timeline(postStr: str, boxname: str,
+                                 postsInBox: [], boxActor: str) -> bool:
     """ is this a valid timeline post?
     """
     # must be a recognized ActivityPub type
@@ -3551,8 +3557,8 @@ def _addPostStringToTimeline(postStr: str, boxname: str,
     return False
 
 
-def _addPostToTimeline(filePath: str, boxname: str,
-                       postsInBox: [], boxActor: str) -> bool:
+def _add_post_to_timeline(filePath: str, boxname: str,
+                          postsInBox: [], boxActor: str) -> bool:
     """ Reads a post from file and decides whether it is valid
     """
     with open(filePath, 'r') as postFile:
@@ -3564,7 +3570,8 @@ def _addPostToTimeline(filePath: str, boxname: str,
                 # append a replies identifier, which will later be removed
                 postStr += '<hasReplies>'
 
-        return _addPostStringToTimeline(postStr, boxname, postsInBox, boxActor)
+        return _add_post_string_to_timeline(postStr, boxname, postsInBox,
+                                            boxActor)
     return False
 
 
@@ -3607,11 +3614,11 @@ def remove_post_interactions(post_json_object: {}, force: bool) -> bool:
     return True
 
 
-def _passedNewswireVoting(newswire_votes_threshold: int,
-                          base_dir: str, domain: str,
-                          post_filename: str,
-                          positive_voting: bool,
-                          voting_time_mins: int) -> bool:
+def _passed_newswire_voting(newswire_votes_threshold: int,
+                            base_dir: str, domain: str,
+                            post_filename: str,
+                            positive_voting: bool,
+                            voting_time_mins: int) -> bool:
     """Returns true if the post has passed through newswire voting
     """
     # apply votes within this timeline
@@ -3658,12 +3665,13 @@ def _passedNewswireVoting(newswire_votes_threshold: int,
     return True
 
 
-def _createBoxIndexed(recent_posts_cache: {},
-                      session, base_dir: str, boxname: str,
-                      nickname: str, domain: str, port: int, http_prefix: str,
-                      itemsPerPage: int, headerOnly: bool, authorized: bool,
-                      newswire_votes_threshold: int, positive_voting: bool,
-                      voting_time_mins: int, pageNumber: int) -> {}:
+def _create_box_indexed(recent_posts_cache: {},
+                        session, base_dir: str, boxname: str,
+                        nickname: str, domain: str, port: int,
+                        http_prefix: str,
+                        itemsPerPage: int, headerOnly: bool, authorized: bool,
+                        newswire_votes_threshold: int, positive_voting: bool,
+                        voting_time_mins: int, pageNumber: int) -> {}:
     """Constructs the box feed for a person with the given nickname
     """
     if not authorized or not pageNumber:
@@ -3702,7 +3710,7 @@ def _createBoxIndexed(recent_posts_cache: {},
         try:
             pageStr = '?page=' + str(pageNumber)
         except BaseException:
-            print('EX: _createBoxIndexed ' +
+            print('EX: _create_box_indexed ' +
                   'unable to convert page number to string')
             pass
     boxUrl = local_actor_url(http_prefix, nickname, domain) + '/' + boxname
@@ -3741,11 +3749,11 @@ def _createBoxIndexed(recent_posts_cache: {},
                     break
 
                 # Has this post passed through the newswire voting stage?
-                if not _passedNewswireVoting(newswire_votes_threshold,
-                                             base_dir, domain,
-                                             post_filename,
-                                             positive_voting,
-                                             voting_time_mins):
+                if not _passed_newswire_voting(newswire_votes_threshold,
+                                               base_dir, domain,
+                                               post_filename,
+                                               positive_voting,
+                                               voting_time_mins):
                     continue
 
                 # Skip through any posts previous to the current page
@@ -3772,9 +3780,10 @@ def _createBoxIndexed(recent_posts_cache: {},
                     if postUrl in recent_posts_cache['index']:
                         if recent_posts_cache['json'].get(postUrl):
                             url = recent_posts_cache['json'][postUrl]
-                            if _addPostStringToTimeline(url,
-                                                        boxname, postsInBox,
-                                                        boxActor):
+                            if _add_post_string_to_timeline(url,
+                                                            boxname,
+                                                            postsInBox,
+                                                            boxActor):
                                 totalPostsCount += 1
                                 postsAddedToTimeline += 1
                                 postUrlsInBox.append(postUrl)
@@ -3791,8 +3800,8 @@ def _createBoxIndexed(recent_posts_cache: {},
                     if os.path.isfile(fullPostFilename + '.reject'):
                         continue
 
-                    if _addPostToTimeline(fullPostFilename, boxname,
-                                          postsInBox, boxActor):
+                    if _add_post_to_timeline(fullPostFilename, boxname,
+                                             postsInBox, boxActor):
                         postsAddedToTimeline += 1
                         totalPostsCount += 1
                         postUrlsInBox.append(postUrl)
@@ -3807,8 +3816,8 @@ def _createBoxIndexed(recent_posts_cache: {},
                             locate_post(base_dir, timelineNickname,
                                         originalDomain, postUrl, False)
                         if fullPostFilename:
-                            if _addPostToTimeline(fullPostFilename, boxname,
-                                                  postsInBox, boxActor):
+                            if _add_post_to_timeline(fullPostFilename, boxname,
+                                                     postsInBox, boxActor):
                                 postsAddedToTimeline += 1
                                 totalPostsCount += 1
                                 postUrlsInBox.append(postUrl)
@@ -3863,12 +3872,12 @@ def _createBoxIndexed(recent_posts_cache: {},
         try:
             p = json.loads(postStr)
         except BaseException:
-            print('EX: _createBoxIndexed unable to load json ' + postStr)
+            print('EX: _create_box_indexed unable to load json ' + postStr)
             continue
 
         # Does this post have replies?
         # This will be used to indicate that replies exist within the html
-        # created by individualPostAsHtml
+        # created by individual_post_as_html
         p['hasReplies'] = hasReplies
 
         if not authorized:
@@ -3889,14 +3898,14 @@ def expire_cache(base_dir: str, person_cache: {},
     while True:
         # once per day
         time.sleep(60 * 60 * 24)
-        expirePersonCache(person_cache)
-        archivePosts(base_dir, http_prefix, archive_dir, recent_posts_cache,
-                     maxPostsInBox)
+        expire_person_cache(person_cache)
+        archive_posts(base_dir, http_prefix, archive_dir, recent_posts_cache,
+                      maxPostsInBox)
 
 
-def archivePosts(base_dir: str, http_prefix: str, archive_dir: str,
-                 recent_posts_cache: {},
-                 maxPostsInBox=32000) -> None:
+def archive_posts(base_dir: str, http_prefix: str, archive_dir: str,
+                  recent_posts_cache: {},
+                  maxPostsInBox=32000) -> None:
     """Archives posts for all accounts
     """
     if maxPostsInBox == 0:
@@ -3929,23 +3938,25 @@ def archivePosts(base_dir: str, http_prefix: str, archive_dir: str,
                                  handle + '/outbox')
                     archiveSubdir = archive_dir + '/accounts/' + \
                         handle + '/inbox'
-                archivePostsForPerson(http_prefix, nickname, domain, base_dir,
-                                      'inbox', archiveSubdir,
-                                      recent_posts_cache, maxPostsInBox)
+                archive_posts_for_person(http_prefix,
+                                         nickname, domain, base_dir,
+                                         'inbox', archiveSubdir,
+                                         recent_posts_cache, maxPostsInBox)
                 if archive_dir:
                     archiveSubdir = archive_dir + '/accounts/' + \
                         handle + '/outbox'
-                archivePostsForPerson(http_prefix, nickname, domain, base_dir,
-                                      'outbox', archiveSubdir,
-                                      recent_posts_cache, maxPostsInBox)
+                archive_posts_for_person(http_prefix,
+                                         nickname, domain, base_dir,
+                                         'outbox', archiveSubdir,
+                                         recent_posts_cache, maxPostsInBox)
         break
 
 
-def archivePostsForPerson(http_prefix: str, nickname: str, domain: str,
-                          base_dir: str,
-                          boxname: str, archive_dir: str,
-                          recent_posts_cache: {},
-                          maxPostsInBox=32000) -> None:
+def archive_posts_for_person(http_prefix: str, nickname: str, domain: str,
+                             base_dir: str,
+                             boxname: str, archive_dir: str,
+                             recent_posts_cache: {},
+                             maxPostsInBox=32000) -> None:
     """Retain a maximum number of posts within the given box
     Move any others to an archive directory
     """
@@ -4046,7 +4057,7 @@ def archivePostsForPerson(http_prefix: str, nickname: str, domain: str,
             try:
                 os.remove(postCacheFilename)
             except OSError:
-                print('EX: archivePostsForPerson unable to delete ' +
+                print('EX: archive_posts_for_person unable to delete ' +
                       postCacheFilename)
 
         noOfPosts -= 1
@@ -4063,13 +4074,13 @@ def archivePostsForPerson(http_prefix: str, nickname: str, domain: str,
           ' in ' + boxname)
 
 
-def getPublicPostsOfPerson(base_dir: str, nickname: str, domain: str,
-                           raw: bool, simple: bool, proxy_type: str,
-                           port: int, http_prefix: str,
-                           debug: bool, project_version: str,
-                           system_language: str,
-                           signing_priv_key_pem: str,
-                           originDomain: str) -> None:
+def get_public_posts_of_person(base_dir: str, nickname: str, domain: str,
+                               raw: bool, simple: bool, proxy_type: str,
+                               port: int, http_prefix: str,
+                               debug: bool, project_version: str,
+                               system_language: str,
+                               signing_priv_key_pem: str,
+                               originDomain: str) -> None:
     """ This is really just for test purposes
     """
     if debug:
@@ -4095,9 +4106,9 @@ def getPublicPostsOfPerson(base_dir: str, nickname: str, domain: str,
     handle = http_prefix + "://" + domain_full + "/@" + nickname
 
     wfRequest = \
-        webfingerHandle(session, handle, http_prefix, cached_webfingers,
-                        originDomain, project_version, debug, group_account,
-                        signing_priv_key_pem)
+        webfinger_handle(session, handle, http_prefix, cached_webfingers,
+                         originDomain, project_version, debug, group_account,
+                         signing_priv_key_pem)
     if not wfRequest:
         if debug:
             print('No webfinger result was returned for ' + handle)
@@ -4110,13 +4121,13 @@ def getPublicPostsOfPerson(base_dir: str, nickname: str, domain: str,
     if debug:
         print('Getting the outbox for ' + handle)
     (personUrl, pubKeyId, pubKey, personId, shaedInbox, avatarUrl,
-     displayName, _) = getPersonBox(signing_priv_key_pem,
-                                    originDomain,
-                                    base_dir, session, wfRequest,
-                                    person_cache,
-                                    project_version, http_prefix,
-                                    nickname, domain, 'outbox',
-                                    62524)
+     displayName, _) = get_person_box(signing_priv_key_pem,
+                                      originDomain,
+                                      base_dir, session, wfRequest,
+                                      person_cache,
+                                      project_version, http_prefix,
+                                      nickname, domain, 'outbox',
+                                      62524)
     if debug:
         print('Actor url: ' + str(personId))
     if not personId:
@@ -4125,20 +4136,20 @@ def getPublicPostsOfPerson(base_dir: str, nickname: str, domain: str,
     max_mentions = 10
     max_emoji = 10
     maxAttachments = 5
-    _getPosts(session, personUrl, 30, max_mentions, max_emoji,
-              maxAttachments, federation_list,
-              person_cache, raw, simple, debug,
-              project_version, http_prefix, originDomain, system_language,
-              signing_priv_key_pem)
+    _get_posts(session, personUrl, 30, max_mentions, max_emoji,
+               maxAttachments, federation_list,
+               person_cache, raw, simple, debug,
+               project_version, http_prefix, originDomain, system_language,
+               signing_priv_key_pem)
 
 
-def getPublicPostDomains(session, base_dir: str, nickname: str, domain: str,
-                         originDomain: str,
-                         proxy_type: str, port: int, http_prefix: str,
-                         debug: bool, project_version: str,
-                         wordFrequency: {}, domainList: [],
-                         system_language: str,
-                         signing_priv_key_pem: str) -> []:
+def get_public_post_domains(session, base_dir: str, nickname: str, domain: str,
+                            originDomain: str,
+                            proxy_type: str, port: int, http_prefix: str,
+                            debug: bool, project_version: str,
+                            wordFrequency: {}, domainList: [],
+                            system_language: str,
+                            signing_priv_key_pem: str) -> []:
     """ Returns a list of domains referenced within public posts
     """
     if not session:
@@ -4152,9 +4163,9 @@ def getPublicPostDomains(session, base_dir: str, nickname: str, domain: str,
     domain_full = get_full_domain(domain, port)
     handle = http_prefix + "://" + domain_full + "/@" + nickname
     wfRequest = \
-        webfingerHandle(session, handle, http_prefix, cached_webfingers,
-                        domain, project_version, debug, False,
-                        signing_priv_key_pem)
+        webfinger_handle(session, handle, http_prefix, cached_webfingers,
+                         domain, project_version, debug, False,
+                         signing_priv_key_pem)
     if not wfRequest:
         return domainList
     if not isinstance(wfRequest, dict):
@@ -4163,32 +4174,32 @@ def getPublicPostDomains(session, base_dir: str, nickname: str, domain: str,
         return domainList
 
     (personUrl, pubKeyId, pubKey, personId, sharedInbox, avatarUrl,
-     displayName, _) = getPersonBox(signing_priv_key_pem,
-                                    originDomain,
-                                    base_dir, session, wfRequest,
-                                    person_cache,
-                                    project_version, http_prefix,
-                                    nickname, domain, 'outbox',
-                                    92522)
+     displayName, _) = get_person_box(signing_priv_key_pem,
+                                      originDomain,
+                                      base_dir, session, wfRequest,
+                                      person_cache,
+                                      project_version, http_prefix,
+                                      nickname, domain, 'outbox',
+                                      92522)
     max_mentions = 99
     max_emoji = 99
     maxAttachments = 5
     postDomains = \
-        getPostDomains(session, personUrl, 64, max_mentions, max_emoji,
-                       maxAttachments, federation_list,
-                       person_cache, debug,
-                       project_version, http_prefix, domain,
-                       wordFrequency, domainList, system_language,
-                       signing_priv_key_pem)
+        get_post_domains(session, personUrl, 64, max_mentions, max_emoji,
+                         maxAttachments, federation_list,
+                         person_cache, debug,
+                         project_version, http_prefix, domain,
+                         wordFrequency, domainList, system_language,
+                         signing_priv_key_pem)
     postDomains.sort()
     return postDomains
 
 
-def downloadFollowCollection(signing_priv_key_pem: str,
-                             followType: str,
-                             session, http_prefix: str,
-                             actor: str, pageNumber: int,
-                             noOfPages: int, debug: bool) -> []:
+def download_follow_collection(signing_priv_key_pem: str,
+                               followType: str,
+                               session, http_prefix: str,
+                               actor: str, pageNumber: int,
+                               noOfPages: int, debug: bool) -> []:
     """Returns a list of following/followers for the given actor
     by downloading the json for their following/followers collection
     """
@@ -4211,8 +4222,8 @@ def downloadFollowCollection(signing_priv_key_pem: str,
     for pageCtr in range(noOfPages):
         url = actor + '/' + followType + '?page=' + str(pageNumber + pageCtr)
         followersJson = \
-            getJson(signing_priv_key_pem, session, url, sessionHeaders, None,
-                    debug, __version__, http_prefix, None)
+            get_json(signing_priv_key_pem, session, url, sessionHeaders, None,
+                     debug, __version__, http_prefix, None)
         if followersJson:
             if followersJson.get('orderedItems'):
                 for followerActor in followersJson['orderedItems']:
@@ -4229,12 +4240,12 @@ def downloadFollowCollection(signing_priv_key_pem: str,
     return result
 
 
-def getPublicPostInfo(session, base_dir: str, nickname: str, domain: str,
-                      originDomain: str,
-                      proxy_type: str, port: int, http_prefix: str,
-                      debug: bool, project_version: str,
-                      wordFrequency: {}, system_language: str,
-                      signing_priv_key_pem: str) -> []:
+def get_public_post_info(session, base_dir: str, nickname: str, domain: str,
+                         originDomain: str,
+                         proxy_type: str, port: int, http_prefix: str,
+                         debug: bool, project_version: str,
+                         wordFrequency: {}, system_language: str,
+                         signing_priv_key_pem: str) -> []:
     """ Returns a dict of domains referenced within public posts
     """
     if not session:
@@ -4248,9 +4259,9 @@ def getPublicPostInfo(session, base_dir: str, nickname: str, domain: str,
     domain_full = get_full_domain(domain, port)
     handle = http_prefix + "://" + domain_full + "/@" + nickname
     wfRequest = \
-        webfingerHandle(session, handle, http_prefix, cached_webfingers,
-                        domain, project_version, debug, False,
-                        signing_priv_key_pem)
+        webfinger_handle(session, handle, http_prefix, cached_webfingers,
+                         domain, project_version, debug, False,
+                         signing_priv_key_pem)
     if not wfRequest:
         return {}
     if not isinstance(wfRequest, dict):
@@ -4259,25 +4270,25 @@ def getPublicPostInfo(session, base_dir: str, nickname: str, domain: str,
         return {}
 
     (personUrl, pubKeyId, pubKey, personId, sharedInbox, avatarUrl,
-     displayName, _) = getPersonBox(signing_priv_key_pem,
-                                    originDomain,
-                                    base_dir, session, wfRequest,
-                                    person_cache,
-                                    project_version, http_prefix,
-                                    nickname, domain, 'outbox',
-                                    13863)
+     displayName, _) = get_person_box(signing_priv_key_pem,
+                                      originDomain,
+                                      base_dir, session, wfRequest,
+                                      person_cache,
+                                      project_version, http_prefix,
+                                      nickname, domain, 'outbox',
+                                      13863)
     max_mentions = 99
     max_emoji = 99
     maxAttachments = 5
     maxPosts = 64
     postDomains = \
-        getPostDomains(session, personUrl, maxPosts,
-                       max_mentions, max_emoji,
-                       maxAttachments, federation_list,
-                       person_cache, debug,
-                       project_version, http_prefix, domain,
-                       wordFrequency, [], system_language,
-                       signing_priv_key_pem)
+        get_post_domains(session, personUrl, maxPosts,
+                         max_mentions, max_emoji,
+                         maxAttachments, federation_list,
+                         person_cache, debug,
+                         project_version, http_prefix, domain,
+                         wordFrequency, [], system_language,
+                         signing_priv_key_pem)
     postDomains.sort()
     domainsInfo = {}
     for d in postDomains:
@@ -4285,38 +4296,40 @@ def getPublicPostInfo(session, base_dir: str, nickname: str, domain: str,
             domainsInfo[d] = []
 
     blockedPosts = \
-        _getPostsForBlockedDomains(base_dir, session, personUrl, maxPosts,
-                                   max_mentions,
-                                   max_emoji, maxAttachments,
-                                   federation_list,
-                                   person_cache,
-                                   debug,
-                                   project_version, http_prefix,
-                                   domain, signing_priv_key_pem)
+        _get_posts_for_blocked_domains(base_dir, session,
+                                       personUrl, maxPosts,
+                                       max_mentions,
+                                       max_emoji, maxAttachments,
+                                       federation_list,
+                                       person_cache,
+                                       debug,
+                                       project_version, http_prefix,
+                                       domain, signing_priv_key_pem)
     for blockedDomain, postUrlList in blockedPosts.items():
         domainsInfo[blockedDomain] += postUrlList
 
     return domainsInfo
 
 
-def getPublicPostDomainsBlocked(session, base_dir: str,
-                                nickname: str, domain: str,
-                                proxy_type: str, port: int, http_prefix: str,
-                                debug: bool, project_version: str,
-                                wordFrequency: {}, domainList: [],
-                                system_language: str,
-                                signing_priv_key_pem: str) -> []:
+def get_public_post_domains_blocked(session, base_dir: str,
+                                    nickname: str, domain: str,
+                                    proxy_type: str, port: int,
+                                    http_prefix: str,
+                                    debug: bool, project_version: str,
+                                    wordFrequency: {}, domainList: [],
+                                    system_language: str,
+                                    signing_priv_key_pem: str) -> []:
     """ Returns a list of domains referenced within public posts which
     are globally blocked on this instance
     """
     originDomain = domain
     postDomains = \
-        getPublicPostDomains(session, base_dir, nickname, domain,
-                             originDomain,
-                             proxy_type, port, http_prefix,
-                             debug, project_version,
-                             wordFrequency, domainList, system_language,
-                             signing_priv_key_pem)
+        get_public_post_domains(session, base_dir, nickname, domain,
+                                originDomain,
+                                proxy_type, port, http_prefix,
+                                debug, project_version,
+                                wordFrequency, domainList, system_language,
+                                signing_priv_key_pem)
     if not postDomains:
         return []
 
@@ -4344,8 +4357,8 @@ def getPublicPostDomainsBlocked(session, base_dir: str,
     return blockedDomains
 
 
-def _getNonMutualsOfPerson(base_dir: str,
-                           nickname: str, domain: str) -> []:
+def _get_non_mutuals_of_person(base_dir: str,
+                               nickname: str, domain: str) -> []:
     """Returns the followers who are not mutuals of a person
     i.e. accounts which follow you but you don't follow them
     """
@@ -4360,17 +4373,17 @@ def _getNonMutualsOfPerson(base_dir: str,
     return nonMutuals
 
 
-def checkDomains(session, base_dir: str,
-                 nickname: str, domain: str,
-                 proxy_type: str, port: int, http_prefix: str,
-                 debug: bool, project_version: str,
-                 maxBlockedDomains: int, singleCheck: bool,
-                 system_language: str,
-                 signing_priv_key_pem: str) -> None:
+def check_domains(session, base_dir: str,
+                  nickname: str, domain: str,
+                  proxy_type: str, port: int, http_prefix: str,
+                  debug: bool, project_version: str,
+                  maxBlockedDomains: int, singleCheck: bool,
+                  system_language: str,
+                  signing_priv_key_pem: str) -> None:
     """Checks follower accounts for references to globally blocked domains
     """
     wordFrequency = {}
-    nonMutuals = _getNonMutualsOfPerson(base_dir, nickname, domain)
+    nonMutuals = _get_non_mutuals_of_person(base_dir, nickname, domain)
     if not nonMutuals:
         print('No non-mutual followers were found')
         return
@@ -4389,14 +4402,14 @@ def checkDomains(session, base_dir: str,
             nonMutualNickname = handle.split('@')[0]
             nonMutualDomain = handle.split('@')[1].strip()
             blockedDomains = \
-                getPublicPostDomainsBlocked(session, base_dir,
-                                            nonMutualNickname,
-                                            nonMutualDomain,
-                                            proxy_type, port, http_prefix,
-                                            debug, project_version,
-                                            wordFrequency, [],
-                                            system_language,
-                                            signing_priv_key_pem)
+                get_public_post_domains_blocked(session, base_dir,
+                                                nonMutualNickname,
+                                                nonMutualDomain,
+                                                proxy_type, port, http_prefix,
+                                                debug, project_version,
+                                                wordFrequency, [],
+                                                system_language,
+                                                signing_priv_key_pem)
             if blockedDomains:
                 if len(blockedDomains) > maxBlockedDomains:
                     followerWarningStr += handle + '\n'
@@ -4411,14 +4424,14 @@ def checkDomains(session, base_dir: str,
             nonMutualNickname = handle.split('@')[0]
             nonMutualDomain = handle.split('@')[1].strip()
             blockedDomains = \
-                getPublicPostDomainsBlocked(session, base_dir,
-                                            nonMutualNickname,
-                                            nonMutualDomain,
-                                            proxy_type, port, http_prefix,
-                                            debug, project_version,
-                                            wordFrequency, [],
-                                            system_language,
-                                            signing_priv_key_pem)
+                get_public_post_domains_blocked(session, base_dir,
+                                                nonMutualNickname,
+                                                nonMutualDomain,
+                                                proxy_type, port, http_prefix,
+                                                debug, project_version,
+                                                wordFrequency, [],
+                                                system_language,
+                                                signing_priv_key_pem)
             if blockedDomains:
                 print(handle)
                 for d in blockedDomains:
@@ -4498,9 +4511,9 @@ def populate_replies_json(base_dir: str, nickname: str, domain: str,
                                     repliesJson['orderedItems'].append(pjo)
 
 
-def _rejectAnnounce(announceFilename: str,
-                    base_dir: str, nickname: str, domain: str,
-                    announcePostId: str, recent_posts_cache: {}):
+def _reject_announce(announceFilename: str,
+                     base_dir: str, nickname: str, domain: str,
+                     announcePostId: str, recent_posts_cache: {}):
     """Marks an announce as rejected
     """
     reject_post_id(base_dir, nickname, domain, announcePostId,
@@ -4512,18 +4525,18 @@ def _rejectAnnounce(announceFilename: str,
             rejectAnnounceFile.write('\n')
 
 
-def downloadAnnounce(session, base_dir: str, http_prefix: str,
-                     nickname: str, domain: str,
-                     post_json_object: {}, project_version: str,
-                     translate: {},
-                     yt_replace_domain: str,
-                     twitter_replacement_domain: str,
-                     allow_local_network_access: bool,
-                     recent_posts_cache: {}, debug: bool,
-                     system_language: str,
-                     domain_full: str, person_cache: {},
-                     signing_priv_key_pem: str,
-                     blockedCache: {}) -> {}:
+def download_announce(session, base_dir: str, http_prefix: str,
+                      nickname: str, domain: str,
+                      post_json_object: {}, project_version: str,
+                      translate: {},
+                      yt_replace_domain: str,
+                      twitter_replacement_domain: str,
+                      allow_local_network_access: bool,
+                      recent_posts_cache: {}, debug: bool,
+                      system_language: str,
+                      domain_full: str, person_cache: {},
+                      signing_priv_key_pem: str,
+                      blockedCache: {}) -> {}:
     """Download the post referenced by an announce
     """
     if not post_json_object.get('object'):
@@ -4580,7 +4593,7 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
                   'valid domain or port number: ' +
                   str(post_json_object['actor']))
             return None
-        if isBlocked(base_dir, nickname, domain, actorNickname, actorDomain):
+        if is_blocked(base_dir, nickname, domain, actorNickname, actorDomain):
             print('Announce download blocked actor: ' +
                   actorNickname + '@' + actorDomain)
             return None
@@ -4592,7 +4605,8 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
                   'valid domain or port number: ' +
                   str(post_json_object['object']))
             return None
-        if isBlocked(base_dir, nickname, domain, objectNickname, objectDomain):
+        if is_blocked(base_dir, nickname, domain, objectNickname,
+                      objectDomain):
             if objectNickname and objectDomain:
                 print('Announce download blocked object: ' +
                       objectNickname + '@' + objectDomain)
@@ -4604,10 +4618,10 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
             print('Downloading Announce content for ' +
                   post_json_object['object'])
         announcedJson = \
-            getJson(signing_priv_key_pem, session,
-                    post_json_object['object'],
-                    asHeader, None, debug, project_version,
-                    http_prefix, domain)
+            get_json(signing_priv_key_pem, session,
+                     post_json_object['object'],
+                     asHeader, None, debug, project_version,
+                     http_prefix, domain)
 
         if not announcedJson:
             return None
@@ -4615,95 +4629,95 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
         if not isinstance(announcedJson, dict):
             print('WARN: announce json is not a dict - ' +
                   post_json_object['object'])
-            _rejectAnnounce(announceFilename,
-                            base_dir, nickname, domain, post_id,
-                            recent_posts_cache)
+            _reject_announce(announceFilename,
+                             base_dir, nickname, domain, post_id,
+                             recent_posts_cache)
             return None
         if not announcedJson.get('id'):
-            _rejectAnnounce(announceFilename,
-                            base_dir, nickname, domain, post_id,
-                            recent_posts_cache)
+            _reject_announce(announceFilename,
+                             base_dir, nickname, domain, post_id,
+                             recent_posts_cache)
             return None
         if not announcedJson.get('type'):
-            _rejectAnnounce(announceFilename,
-                            base_dir, nickname, domain, post_id,
-                            recent_posts_cache)
+            _reject_announce(announceFilename,
+                             base_dir, nickname, domain, post_id,
+                             recent_posts_cache)
             return None
         if announcedJson['type'] == 'Video':
             convertedJson = \
-                convertVideoToNote(base_dir, nickname, domain,
-                                   system_language,
-                                   announcedJson, blockedCache)
+                convert_video_to_note(base_dir, nickname, domain,
+                                      system_language,
+                                      announcedJson, blockedCache)
             if convertedJson:
                 announcedJson = convertedJson
         if '/statuses/' not in announcedJson['id']:
-            _rejectAnnounce(announceFilename,
-                            base_dir, nickname, domain, post_id,
-                            recent_posts_cache)
+            _reject_announce(announceFilename,
+                             base_dir, nickname, domain, post_id,
+                             recent_posts_cache)
             return None
         if not has_users_path(announcedJson['id']):
-            _rejectAnnounce(announceFilename,
-                            base_dir, nickname, domain, post_id,
-                            recent_posts_cache)
+            _reject_announce(announceFilename,
+                             base_dir, nickname, domain, post_id,
+                             recent_posts_cache)
             return None
         if announcedJson['type'] != 'Note' and \
            announcedJson['type'] != 'Page' and \
            announcedJson['type'] != 'Article':
             # You can only announce Note or Article types
-            _rejectAnnounce(announceFilename,
-                            base_dir, nickname, domain, post_id,
-                            recent_posts_cache)
+            _reject_announce(announceFilename,
+                             base_dir, nickname, domain, post_id,
+                             recent_posts_cache)
             return None
         if not announcedJson.get('content'):
-            _rejectAnnounce(announceFilename,
-                            base_dir, nickname, domain, post_id,
-                            recent_posts_cache)
+            _reject_announce(announceFilename,
+                             base_dir, nickname, domain, post_id,
+                             recent_posts_cache)
             return None
         if not announcedJson.get('published'):
-            _rejectAnnounce(announceFilename,
-                            base_dir, nickname, domain, post_id,
-                            recent_posts_cache)
+            _reject_announce(announceFilename,
+                             base_dir, nickname, domain, post_id,
+                             recent_posts_cache)
             return None
         if not valid_post_date(announcedJson['published'], 90, debug):
-            _rejectAnnounce(announceFilename,
-                            base_dir, nickname, domain, post_id,
-                            recent_posts_cache)
+            _reject_announce(announceFilename,
+                             base_dir, nickname, domain, post_id,
+                             recent_posts_cache)
             return None
-        if not understoodPostLanguage(base_dir, nickname, domain,
-                                      announcedJson, system_language,
-                                      http_prefix, domain_full,
-                                      person_cache):
+        if not understood_post_language(base_dir, nickname, domain,
+                                        announcedJson, system_language,
+                                        http_prefix, domain_full,
+                                        person_cache):
             return None
         # Check the content of the announce
         contentStr = announcedJson['content']
         if dangerous_markup(contentStr, allow_local_network_access):
-            _rejectAnnounce(announceFilename,
-                            base_dir, nickname, domain, post_id,
-                            recent_posts_cache)
+            _reject_announce(announceFilename,
+                             base_dir, nickname, domain, post_id,
+                             recent_posts_cache)
             return None
 
-        if isFiltered(base_dir, nickname, domain, contentStr):
-            _rejectAnnounce(announceFilename,
-                            base_dir, nickname, domain, post_id,
-                            recent_posts_cache)
+        if is_filtered(base_dir, nickname, domain, contentStr):
+            _reject_announce(announceFilename,
+                             base_dir, nickname, domain, post_id,
+                             recent_posts_cache)
             return None
 
         if invalid_ciphertext(contentStr):
-            _rejectAnnounce(announceFilename,
-                            base_dir, nickname, domain, post_id,
-                            recent_posts_cache)
+            _reject_announce(announceFilename,
+                             base_dir, nickname, domain, post_id,
+                             recent_posts_cache)
             print('WARN: Invalid ciphertext within announce ' +
                   str(announcedJson))
             return None
 
         # remove any long words
-        contentStr = removeLongWords(contentStr, 40, [])
+        contentStr = remove_long_words(contentStr, 40, [])
 
         # Prevent the same word from being repeated many times
-        contentStr = limitRepeatedWords(contentStr, 6)
+        contentStr = limit_repeated_words(contentStr, 6)
 
         # remove text formatting, such as bold/italics
-        contentStr = removeTextFormatting(contentStr)
+        contentStr = remove_text_formatting(contentStr)
 
         # set the content after santitization
         announcedJson['content'] = contentStr
@@ -4715,9 +4729,9 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
                                        announcedJson)
         if announcedJson['type'] != 'Create':
             # Create wrap failed
-            _rejectAnnounce(announceFilename,
-                            base_dir, nickname, domain, post_id,
-                            recent_posts_cache)
+            _reject_announce(announceFilename,
+                             base_dir, nickname, domain, post_id,
+                             recent_posts_cache)
             return None
 
         # labelAccusatoryPost(post_json_object, translate)
@@ -4732,11 +4746,11 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
         if attributedNickname and attributedDomain:
             attributedDomain = \
                 get_full_domain(attributedDomain, attributedPort)
-            if isBlocked(base_dir, nickname, domain,
-                         attributedNickname, attributedDomain):
-                _rejectAnnounce(announceFilename,
-                                base_dir, nickname, domain, post_id,
-                                recent_posts_cache)
+            if is_blocked(base_dir, nickname, domain,
+                          attributedNickname, attributedDomain):
+                _reject_announce(announceFilename,
+                                 base_dir, nickname, domain, post_id,
+                                 recent_posts_cache)
                 return None
         post_json_object = announcedJson
         replace_you_tube(post_json_object, yt_replace_domain, system_language)
@@ -4747,8 +4761,8 @@ def downloadAnnounce(session, base_dir: str, http_prefix: str,
     return None
 
 
-def isMuted(base_dir: str, nickname: str, domain: str, post_id: str,
-            conversationId: str) -> bool:
+def is_muted_conv(base_dir: str, nickname: str, domain: str, post_id: str,
+                  conversationId: str) -> bool:
     """Returns true if the given post is muted
     """
     if conversationId:
@@ -4765,17 +4779,17 @@ def isMuted(base_dir: str, nickname: str, domain: str, post_id: str,
     return False
 
 
-def sendBlockViaServer(base_dir: str, session,
-                       fromNickname: str, password: str,
-                       fromDomain: str, fromPort: int,
-                       http_prefix: str, blockedUrl: str,
-                       cached_webfingers: {}, person_cache: {},
-                       debug: bool, project_version: str,
-                       signing_priv_key_pem: str) -> {}:
+def send_block_via_server(base_dir: str, session,
+                          fromNickname: str, password: str,
+                          fromDomain: str, fromPort: int,
+                          http_prefix: str, blockedUrl: str,
+                          cached_webfingers: {}, person_cache: {},
+                          debug: bool, project_version: str,
+                          signing_priv_key_pem: str) -> {}:
     """Creates a block via c2s
     """
     if not session:
-        print('WARN: No session for sendBlockViaServer')
+        print('WARN: No session for send_block_via_server')
         return 6
 
     fromDomainFull = get_full_domain(fromDomain, fromPort)
@@ -4796,10 +4810,10 @@ def sendBlockViaServer(base_dir: str, session,
     handle = http_prefix + '://' + fromDomainFull + '/@' + fromNickname
 
     # lookup the inbox for the To handle
-    wfRequest = webfingerHandle(session, handle, http_prefix,
-                                cached_webfingers,
-                                fromDomain, project_version, debug, False,
-                                signing_priv_key_pem)
+    wfRequest = webfinger_handle(session, handle, http_prefix,
+                                 cached_webfingers,
+                                 fromDomain, project_version, debug, False,
+                                 signing_priv_key_pem)
     if not wfRequest:
         if debug:
             print('DEBUG: block webfinger failed for ' + handle)
@@ -4814,12 +4828,13 @@ def sendBlockViaServer(base_dir: str, session,
     # get the actor inbox for the To handle
     originDomain = fromDomain
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
-     displayName, _) = getPersonBox(signing_priv_key_pem,
-                                    originDomain,
-                                    base_dir, session, wfRequest,
-                                    person_cache,
-                                    project_version, http_prefix, fromNickname,
-                                    fromDomain, postToBox, 72652)
+     displayName, _) = get_person_box(signing_priv_key_pem,
+                                      originDomain,
+                                      base_dir, session, wfRequest,
+                                      person_cache,
+                                      project_version, http_prefix,
+                                      fromNickname,
+                                      fromDomain, postToBox, 72652)
 
     if not inboxUrl:
         if debug:
@@ -4837,9 +4852,9 @@ def sendBlockViaServer(base_dir: str, session,
         'Content-type': 'application/json',
         'Authorization': authHeader
     }
-    postResult = postJson(http_prefix, fromDomainFull,
-                          session, newBlockJson, [], inboxUrl,
-                          headers, 30, True)
+    postResult = post_json(http_prefix, fromDomainFull,
+                           session, newBlockJson, [], inboxUrl,
+                           headers, 30, True)
     if not postResult:
         print('WARN: block unable to post')
 
@@ -4849,17 +4864,17 @@ def sendBlockViaServer(base_dir: str, session,
     return newBlockJson
 
 
-def sendMuteViaServer(base_dir: str, session,
-                      fromNickname: str, password: str,
-                      fromDomain: str, fromPort: int,
-                      http_prefix: str, mutedUrl: str,
-                      cached_webfingers: {}, person_cache: {},
-                      debug: bool, project_version: str,
-                      signing_priv_key_pem: str) -> {}:
+def send_mute_via_server(base_dir: str, session,
+                         fromNickname: str, password: str,
+                         fromDomain: str, fromPort: int,
+                         http_prefix: str, mutedUrl: str,
+                         cached_webfingers: {}, person_cache: {},
+                         debug: bool, project_version: str,
+                         signing_priv_key_pem: str) -> {}:
     """Creates a mute via c2s
     """
     if not session:
-        print('WARN: No session for sendMuteViaServer')
+        print('WARN: No session for send_mute_via_server')
         return 6
 
     fromDomainFull = get_full_domain(fromDomain, fromPort)
@@ -4876,10 +4891,10 @@ def sendMuteViaServer(base_dir: str, session,
     }
 
     # lookup the inbox for the To handle
-    wfRequest = webfingerHandle(session, handle, http_prefix,
-                                cached_webfingers,
-                                fromDomain, project_version, debug, False,
-                                signing_priv_key_pem)
+    wfRequest = webfinger_handle(session, handle, http_prefix,
+                                 cached_webfingers,
+                                 fromDomain, project_version, debug, False,
+                                 signing_priv_key_pem)
     if not wfRequest:
         if debug:
             print('DEBUG: mute webfinger failed for ' + handle)
@@ -4894,12 +4909,13 @@ def sendMuteViaServer(base_dir: str, session,
     # get the actor inbox for the To handle
     originDomain = fromDomain
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
-     displayName, _) = getPersonBox(signing_priv_key_pem,
-                                    originDomain,
-                                    base_dir, session, wfRequest,
-                                    person_cache,
-                                    project_version, http_prefix, fromNickname,
-                                    fromDomain, postToBox, 72652)
+     displayName, _) = get_person_box(signing_priv_key_pem,
+                                      originDomain,
+                                      base_dir, session, wfRequest,
+                                      person_cache,
+                                      project_version, http_prefix,
+                                      fromNickname,
+                                      fromDomain, postToBox, 72652)
 
     if not inboxUrl:
         if debug:
@@ -4917,9 +4933,9 @@ def sendMuteViaServer(base_dir: str, session,
         'Content-type': 'application/json',
         'Authorization': authHeader
     }
-    postResult = postJson(http_prefix, fromDomainFull,
-                          session, newMuteJson, [], inboxUrl,
-                          headers, 3, True)
+    postResult = post_json(http_prefix, fromDomainFull,
+                           session, newMuteJson, [], inboxUrl,
+                           headers, 3, True)
     if postResult is None:
         print('WARN: mute unable to post')
 
@@ -4929,17 +4945,17 @@ def sendMuteViaServer(base_dir: str, session,
     return newMuteJson
 
 
-def sendUndoMuteViaServer(base_dir: str, session,
-                          fromNickname: str, password: str,
-                          fromDomain: str, fromPort: int,
-                          http_prefix: str, mutedUrl: str,
-                          cached_webfingers: {}, person_cache: {},
-                          debug: bool, project_version: str,
-                          signing_priv_key_pem: str) -> {}:
+def send_undo_mute_via_server(base_dir: str, session,
+                              fromNickname: str, password: str,
+                              fromDomain: str, fromPort: int,
+                              http_prefix: str, mutedUrl: str,
+                              cached_webfingers: {}, person_cache: {},
+                              debug: bool, project_version: str,
+                              signing_priv_key_pem: str) -> {}:
     """Undoes a mute via c2s
     """
     if not session:
-        print('WARN: No session for sendUndoMuteViaServer')
+        print('WARN: No session for send_undo_mute_via_server')
         return 6
 
     fromDomainFull = get_full_domain(fromDomain, fromPort)
@@ -4961,10 +4977,10 @@ def sendUndoMuteViaServer(base_dir: str, session,
     }
 
     # lookup the inbox for the To handle
-    wfRequest = webfingerHandle(session, handle, http_prefix,
-                                cached_webfingers,
-                                fromDomain, project_version, debug, False,
-                                signing_priv_key_pem)
+    wfRequest = webfinger_handle(session, handle, http_prefix,
+                                 cached_webfingers,
+                                 fromDomain, project_version, debug, False,
+                                 signing_priv_key_pem)
     if not wfRequest:
         if debug:
             print('DEBUG: undo mute webfinger failed for ' + handle)
@@ -4979,12 +4995,13 @@ def sendUndoMuteViaServer(base_dir: str, session,
     # get the actor inbox for the To handle
     originDomain = fromDomain
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
-     displayName, _) = getPersonBox(signing_priv_key_pem,
-                                    originDomain,
-                                    base_dir, session, wfRequest,
-                                    person_cache,
-                                    project_version, http_prefix, fromNickname,
-                                    fromDomain, postToBox, 72652)
+     displayName, _) = get_person_box(signing_priv_key_pem,
+                                      originDomain,
+                                      base_dir, session, wfRequest,
+                                      person_cache,
+                                      project_version, http_prefix,
+                                      fromNickname,
+                                      fromDomain, postToBox, 72652)
 
     if not inboxUrl:
         if debug:
@@ -5003,9 +5020,9 @@ def sendUndoMuteViaServer(base_dir: str, session,
         'Content-type': 'application/json',
         'Authorization': authHeader
     }
-    postResult = postJson(http_prefix, fromDomainFull,
-                          session, undoMuteJson, [], inboxUrl,
-                          headers, 3, True)
+    postResult = post_json(http_prefix, fromDomainFull,
+                           session, undoMuteJson, [], inboxUrl,
+                           headers, 3, True)
     if postResult is None:
         print('WARN: undo mute unable to post')
 
@@ -5015,17 +5032,17 @@ def sendUndoMuteViaServer(base_dir: str, session,
     return undoMuteJson
 
 
-def sendUndoBlockViaServer(base_dir: str, session,
-                           fromNickname: str, password: str,
-                           fromDomain: str, fromPort: int,
-                           http_prefix: str, blockedUrl: str,
-                           cached_webfingers: {}, person_cache: {},
-                           debug: bool, project_version: str,
-                           signing_priv_key_pem: str) -> {}:
+def send_undo_block_via_server(base_dir: str, session,
+                               fromNickname: str, password: str,
+                               fromDomain: str, fromPort: int,
+                               http_prefix: str, blockedUrl: str,
+                               cached_webfingers: {}, person_cache: {},
+                               debug: bool, project_version: str,
+                               signing_priv_key_pem: str) -> {}:
     """Creates a block via c2s
     """
     if not session:
-        print('WARN: No session for sendBlockViaServer')
+        print('WARN: No session for send_block_via_server')
         return 6
 
     fromDomainFull = get_full_domain(fromDomain, fromPort)
@@ -5050,10 +5067,10 @@ def sendUndoBlockViaServer(base_dir: str, session,
     handle = http_prefix + '://' + fromDomainFull + '/@' + fromNickname
 
     # lookup the inbox for the To handle
-    wfRequest = webfingerHandle(session, handle, http_prefix,
-                                cached_webfingers,
-                                fromDomain, project_version, debug, False,
-                                signing_priv_key_pem)
+    wfRequest = webfinger_handle(session, handle, http_prefix,
+                                 cached_webfingers,
+                                 fromDomain, project_version, debug, False,
+                                 signing_priv_key_pem)
     if not wfRequest:
         if debug:
             print('DEBUG: unblock webfinger failed for ' + handle)
@@ -5068,11 +5085,13 @@ def sendUndoBlockViaServer(base_dir: str, session,
     # get the actor inbox for the To handle
     originDomain = fromDomain
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
-     displayName, _) = getPersonBox(signing_priv_key_pem,
-                                    originDomain,
-                                    base_dir, session, wfRequest, person_cache,
-                                    project_version, http_prefix, fromNickname,
-                                    fromDomain, postToBox, 53892)
+     displayName, _) = get_person_box(signing_priv_key_pem,
+                                      originDomain,
+                                      base_dir, session, wfRequest,
+                                      person_cache,
+                                      project_version, http_prefix,
+                                      fromNickname,
+                                      fromDomain, postToBox, 53892)
 
     if not inboxUrl:
         if debug:
@@ -5091,9 +5110,9 @@ def sendUndoBlockViaServer(base_dir: str, session,
         'Content-type': 'application/json',
         'Authorization': authHeader
     }
-    postResult = postJson(http_prefix, fromDomainFull,
-                          session, newBlockJson, [], inboxUrl,
-                          headers, 30, True)
+    postResult = post_json(http_prefix, fromDomainFull,
+                           session, newBlockJson, [], inboxUrl,
+                           headers, 30, True)
     if not postResult:
         print('WARN: unblock unable to post')
 
@@ -5103,46 +5122,46 @@ def sendUndoBlockViaServer(base_dir: str, session,
     return newBlockJson
 
 
-def postIsMuted(base_dir: str, nickname: str, domain: str,
-                post_json_object: {}, messageId: str) -> bool:
+def post_is_muted(base_dir: str, nickname: str, domain: str,
+                  post_json_object: {}, messageId: str) -> bool:
     """ Returns true if the given post is muted
     """
-    isMuted = None
+    is_muted = None
     if 'muted' in post_json_object:
-        isMuted = post_json_object['muted']
-    if isMuted is True or isMuted is False:
-        return isMuted
+        is_muted = post_json_object['muted']
+    if is_muted is True or is_muted is False:
+        return is_muted
 
-    isMuted = False
+    is_muted = False
     postDir = acct_dir(base_dir, nickname, domain)
     muteFilename = \
         postDir + '/inbox/' + messageId.replace('/', '#') + '.json.muted'
     if os.path.isfile(muteFilename):
-        isMuted = True
+        is_muted = True
     else:
         muteFilename = \
             postDir + '/outbox/' + messageId.replace('/', '#') + '.json.muted'
         if os.path.isfile(muteFilename):
-            isMuted = True
+            is_muted = True
         else:
             muteFilename = \
                 base_dir + '/accounts/cache/announce/' + nickname + \
                 '/' + messageId.replace('/', '#') + '.json.muted'
             if os.path.isfile(muteFilename):
-                isMuted = True
-    return isMuted
+                is_muted = True
+    return is_muted
 
 
-def c2sBoxJson(base_dir: str, session,
-               nickname: str, password: str,
-               domain: str, port: int,
-               http_prefix: str,
-               boxName: str, pageNumber: int,
-               debug: bool, signing_priv_key_pem: str) -> {}:
+def c2s_box_json(base_dir: str, session,
+                 nickname: str, password: str,
+                 domain: str, port: int,
+                 http_prefix: str,
+                 boxName: str, pageNumber: int,
+                 debug: bool, signing_priv_key_pem: str) -> {}:
     """C2S Authenticated GET of posts for a timeline
     """
     if not session:
-        print('WARN: No session for c2sBoxJson')
+        print('WARN: No session for c2s_box_json')
         return None
 
     domain_full = get_full_domain(domain, port)
@@ -5160,38 +5179,38 @@ def c2sBoxJson(base_dir: str, session,
 
     # GET json
     url = actor + '/' + boxName + '?page=' + str(pageNumber)
-    boxJson = getJson(signing_priv_key_pem, session, url, headers, None,
-                      debug, __version__, http_prefix, None)
+    boxJson = get_json(signing_priv_key_pem, session, url, headers, None,
+                       debug, __version__, http_prefix, None)
 
     if boxJson is not None and debug:
-        print('DEBUG: GET c2sBoxJson success')
+        print('DEBUG: GET c2s_box_json success')
 
     return boxJson
 
 
-def secondsBetweenPublished(published1: str, published2: str) -> int:
+def seconds_between_published(published1: str, published2: str) -> int:
     """Returns the number of seconds between two published dates
     """
     try:
         published1Time = \
             datetime.datetime.strptime(published1, '%Y-%m-%dT%H:%M:%SZ')
     except BaseException:
-        print('EX: secondsBetweenPublished unable to parse date 1 ' +
+        print('EX: seconds_between_published unable to parse date 1 ' +
               str(published1))
         return -1
     try:
         published2Time = \
             datetime.datetime.strptime(published2, '%Y-%m-%dT%H:%M:%SZ')
     except BaseException:
-        print('EX: secondsBetweenPublished unable to parse date 2 ' +
+        print('EX: seconds_between_published unable to parse date 2 ' +
               str(published2))
         return -1
     return (published2Time - published1Time).seconds
 
 
-def editedPostFilename(base_dir: str, nickname: str, domain: str,
-                       post_json_object: {}, debug: bool,
-                       maxTimeDiffSeconds: int) -> str:
+def edited_post_filename(base_dir: str, nickname: str, domain: str,
+                         post_json_object: {}, debug: bool,
+                         maxTimeDiffSeconds: int) -> str:
     """Returns the filename of the edited post
     """
     if not has_object_dict(post_json_object):
@@ -5222,7 +5241,7 @@ def editedPostFilename(base_dir: str, nickname: str, domain: str,
         with open(actorFilename, 'r') as fp:
             lastpost_id = fp.read()
     except OSError:
-        print('EX: editedPostFilename unable to read ' + actorFilename)
+        print('EX: edited_post_filename unable to read ' + actorFilename)
         return ''
     if not lastpost_id:
         return ''
@@ -5232,36 +5251,36 @@ def editedPostFilename(base_dir: str, nickname: str, domain: str,
         locate_post(base_dir, nickname, domain, lastpost_id, False)
     if not lastpost_filename:
         return ''
-    lastpostJson = load_json(lastpost_filename, 0)
-    if not lastpostJson:
+    lastpost_json = load_json(lastpost_filename, 0)
+    if not lastpost_json:
         return ''
-    if not lastpostJson.get('type'):
+    if not lastpost_json.get('type'):
         return ''
-    if lastpostJson['type'] != post_json_object['type']:
+    if lastpost_json['type'] != post_json_object['type']:
         return ''
-    if not lastpostJson['object'].get('type'):
+    if not lastpost_json['object'].get('type'):
         return ''
-    if lastpostJson['object']['type'] != post_json_object['object']['type']:
+    if lastpost_json['object']['type'] != post_json_object['object']['type']:
         return
-    if not lastpostJson['object'].get('published'):
+    if not lastpost_json['object'].get('published'):
         return ''
-    if not lastpostJson['object'].get('id'):
+    if not lastpost_json['object'].get('id'):
         return ''
-    if not lastpostJson['object'].get('content'):
+    if not lastpost_json['object'].get('content'):
         return ''
-    if not lastpostJson['object'].get('attributedTo'):
+    if not lastpost_json['object'].get('attributedTo'):
         return ''
-    if not isinstance(lastpostJson['object']['attributedTo'], str):
+    if not isinstance(lastpost_json['object']['attributedTo'], str):
         return ''
     timeDiffSeconds = \
-        secondsBetweenPublished(lastpostJson['object']['published'],
-                                post_json_object['object']['published'])
+        seconds_between_published(lastpost_json['object']['published'],
+                                  post_json_object['object']['published'])
     if timeDiffSeconds > maxTimeDiffSeconds:
         return ''
     if debug:
         print(post_id + ' might be an edit of ' + lastpost_id)
-    if wordsSimilarity(lastpostJson['object']['content'],
-                       post_json_object['object']['content'], 10) < 70:
+    if words_similarity(lastpost_json['object']['content'],
+                        post_json_object['object']['content'], 10) < 70:
         return ''
     print(post_id + ' is an edit of ' + lastpost_id)
     return lastpost_filename

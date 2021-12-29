@@ -9,8 +9,8 @@ __module_group__ = "Web Interface"
 
 import os
 from shutil import copyfile
-from petnames import getPetName
-from person import isPersonSnoozed
+from petnames import get_pet_name
+from person import is_person_snoozed
 from posts import is_moderator
 from utils import get_full_domain
 from utils import get_config_param
@@ -20,49 +20,49 @@ from utils import get_domain_from_actor
 from utils import get_nickname_from_actor
 from utils import is_featured_writer
 from utils import acct_dir
-from blocking import isBlocked
-from follow import isFollowerOfPerson
+from blocking import is_blocked
+from follow import is_follower_of_person
 from follow import is_following_actor
-from followingCalendar import receivingCalendarEvents
-from notifyOnPost import notifyWhenPersonPosts
-from webapp_utils import htmlHeaderWithExternalStyle
-from webapp_utils import htmlFooter
-from webapp_utils import getBrokenLinkSubstitute
-from webapp_utils import htmlKeyboardNavigation
+from followingCalendar import receiving_calendar_events
+from notifyOnPost import notify_when_person_posts
+from webapp_utils import html_header_with_external_style
+from webapp_utils import html_footer
+from webapp_utils import get_broken_link_substitute
+from webapp_utils import html_keyboard_navigation
 
 
-def htmlPersonOptions(defaultTimeline: str,
-                      css_cache: {}, translate: {}, base_dir: str,
-                      domain: str, domain_full: str,
-                      originPathStr: str,
-                      optionsActor: str,
-                      optionsProfileUrl: str,
-                      optionsLink: str,
-                      pageNumber: int,
-                      donateUrl: str,
-                      webAddress: str,
-                      xmppAddress: str,
-                      matrixAddress: str,
-                      ssbAddress: str,
-                      blogAddress: str,
-                      toxAddress: str,
-                      briarAddress: str,
-                      jamiAddress: str,
-                      cwtchAddress: str,
-                      EnigmaPubKey: str,
-                      PGPpubKey: str,
-                      PGPfingerprint: str,
-                      emailAddress: str,
-                      dormant_months: int,
-                      backToPath: str,
-                      lockedAccount: bool,
-                      movedTo: str,
-                      alsoKnownAs: [],
-                      text_mode_banner: str,
-                      news_instance: bool,
-                      authorized: bool,
-                      accessKeys: {},
-                      isGroup: bool) -> str:
+def html_person_options(defaultTimeline: str,
+                        css_cache: {}, translate: {}, base_dir: str,
+                        domain: str, domain_full: str,
+                        originPathStr: str,
+                        optionsActor: str,
+                        optionsProfileUrl: str,
+                        optionsLink: str,
+                        pageNumber: int,
+                        donateUrl: str,
+                        webAddress: str,
+                        xmppAddress: str,
+                        matrixAddress: str,
+                        ssbAddress: str,
+                        blogAddress: str,
+                        toxAddress: str,
+                        briarAddress: str,
+                        jamiAddress: str,
+                        cwtchAddress: str,
+                        EnigmaPubKey: str,
+                        PGPpubKey: str,
+                        PGPfingerprint: str,
+                        emailAddress: str,
+                        dormant_months: int,
+                        backToPath: str,
+                        lockedAccount: bool,
+                        movedTo: str,
+                        alsoKnownAs: [],
+                        text_mode_banner: str,
+                        news_instance: bool,
+                        authorized: bool,
+                        accessKeys: {},
+                        isGroup: bool) -> str:
     """Show options for a person: view/follow/block/report
     """
     optionsDomain, optionsPort = get_domain_from_actor(optionsActor)
@@ -99,11 +99,11 @@ def htmlPersonOptions(defaultTimeline: str,
         optionsNickname = get_nickname_from_actor(optionsActor)
         optionsDomainFull = get_full_domain(optionsDomain, optionsPort)
         followsYou = \
-            isFollowerOfPerson(base_dir,
-                               nickname, domain,
-                               optionsNickname, optionsDomainFull)
-        if isBlocked(base_dir, nickname, domain,
-                     optionsNickname, optionsDomainFull):
+            is_follower_of_person(base_dir,
+                                  nickname, domain,
+                                  optionsNickname, optionsDomainFull)
+        if is_blocked(base_dir, nickname, domain,
+                      optionsNickname, optionsDomainFull):
             blockStr = 'Block'
 
     optionsLinkStr = ''
@@ -118,7 +118,7 @@ def htmlPersonOptions(defaultTimeline: str,
     # To snooze, or not to snooze? That is the question
     snoozeButtonStr = 'Snooze'
     if nickname:
-        if isPersonSnoozed(base_dir, nickname, domain, optionsActor):
+        if is_person_snoozed(base_dir, nickname, domain, optionsActor):
             snoozeButtonStr = 'Unsnooze'
 
     donateStr = ''
@@ -130,15 +130,16 @@ def htmlPersonOptions(defaultTimeline: str,
 
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
-    optionsStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
-    optionsStr += htmlKeyboardNavigation(text_mode_banner, {}, {})
+    optionsStr = \
+        html_header_with_external_style(cssFilename, instanceTitle, None)
+    optionsStr += html_keyboard_navigation(text_mode_banner, {}, {})
     optionsStr += '<br><br>\n'
     optionsStr += '<div class="options">\n'
     optionsStr += '  <div class="optionsAvatar">\n'
     optionsStr += '  <center>\n'
     optionsStr += '  <a href="' + optionsActor + '">\n'
     optionsStr += '  <img loading="lazy" src="' + optionsProfileUrl + \
-        '" alt="" ' + getBrokenLinkSubstitute() + '/></a>\n'
+        '" alt="" ' + get_broken_link_substitute() + '/></a>\n'
     handle = get_nickname_from_actor(optionsActor) + '@' + optionsDomain
     handleShown = handle
     if lockedAccount:
@@ -248,7 +249,7 @@ def htmlPersonOptions(defaultTimeline: str,
         if originPathStr == '/users/' + nickname:
             if optionsNickname:
                 # handle = optionsNickname + '@' + optionsDomainFull
-                petname = getPetName(base_dir, nickname, domain, handle)
+                petname = get_pet_name(base_dir, nickname, domain, handle)
                 optionsStr += \
                     '    ' + translate['Petname'] + ': \n' + \
                     '    <input type="text" name="optionpetname" value="' + \
@@ -267,9 +268,9 @@ def htmlPersonOptions(defaultTimeline: str,
                     '\n    <button type="submit" class="buttonsmall" ' + \
                     'name="submitNotifyOnPost">' + \
                     translate['Submit'] + '</button><br>\n'
-                if not notifyWhenPersonPosts(base_dir, nickname, domain,
-                                             optionsNickname,
-                                             optionsDomainFull):
+                if not notify_when_person_posts(base_dir, nickname, domain,
+                                                optionsNickname,
+                                                optionsDomainFull):
                     checkboxStr = checkboxStr.replace(' checked>', '>')
                 optionsStr += checkboxStr
 
@@ -280,9 +281,9 @@ def htmlPersonOptions(defaultTimeline: str,
                     '\n    <button type="submit" class="buttonsmall" ' + \
                     'name="submitOnCalendar">' + \
                     translate['Submit'] + '</button><br>\n'
-                if not receivingCalendarEvents(base_dir, nickname, domain,
-                                               optionsNickname,
-                                               optionsDomainFull):
+                if not receiving_calendar_events(base_dir, nickname, domain,
+                                                 optionsNickname,
+                                                 optionsDomainFull):
                     checkboxStr = checkboxStr.replace(' checked>', '>')
                 optionsStr += checkboxStr
 
@@ -428,5 +429,5 @@ def htmlPersonOptions(defaultTimeline: str,
         '</center>\n' + \
         '</div>\n' + \
         '</div>\n'
-    optionsStr += htmlFooter()
+    optionsStr += html_footer()
     return optionsStr

@@ -1675,8 +1675,8 @@ def _delete_hashtags_on_post(base_dir: str, post_json_object: {}) -> None:
                 index_file.write(newlines)
 
 
-def _deleteConversationPost(base_dir: str, nickname: str, domain: str,
-                            post_json_object: {}) -> None:
+def _delete_conversation_post(base_dir: str, nickname: str, domain: str,
+                              post_json_object: {}) -> None:
     """Deletes a post from a conversation
     """
     if not has_object_dict(post_json_object):
@@ -1707,13 +1707,13 @@ def _deleteConversationPost(base_dir: str, nickname: str, domain: str,
             try:
                 os.remove(conversation_filename + '.muted')
             except OSError:
-                print('EX: _deleteConversationPost ' +
+                print('EX: _delete_conversation_post ' +
                       'unable to remove conversation ' +
                       str(conversation_filename) + '.muted')
         try:
             os.remove(conversation_filename)
         except OSError:
-            print('EX: _deleteConversationPost ' +
+            print('EX: _delete_conversation_post ' +
                   'unable to remove conversation ' +
                   str(conversation_filename))
 
@@ -1751,7 +1751,7 @@ def delete_post(base_dir: str, http_prefix: str,
     remove_post_from_cache(post_json_object, recent_posts_cache)
 
     # remove from conversation index
-    _deleteConversationPost(base_dir, nickname, domain, post_json_object)
+    _delete_conversation_post(base_dir, nickname, domain, post_json_object)
 
     # remove any attachment
     _remove_attachment(base_dir, http_prefix, domain, post_json_object)
@@ -2206,7 +2206,7 @@ def search_box_posts(base_dir: str, nickname: str, domain: str,
     return res
 
 
-def getFileCaseInsensitive(path: str) -> str:
+def get_file_case_insensitive(path: str) -> str:
     """Returns a case specific filename given a case insensitive version of it
     """
     if os.path.isfile(path):

@@ -28,14 +28,14 @@ from utils import load_json
 from utils import save_json
 from utils import remove_post_from_cache
 from utils import get_cached_post_filename
-from posts import sendSignedJson
-from session import postJson
-from webfinger import webfingerHandle
+from posts import send_signed_json
+from session import post_json
+from webfinger import webfinger_handle
 from auth import create_basic_auth_header
-from posts import getPersonBox
+from posts import get_person_box
 
 
-def noOfLikes(post_json_object: {}) -> int:
+def no_of_likes(post_json_object: {}) -> int:
     """Returns the number of likes ona  given post
     """
     obj = post_json_object
@@ -51,10 +51,10 @@ def noOfLikes(post_json_object: {}) -> int:
     return len(obj['likes']['items'])
 
 
-def likedByPerson(post_json_object: {}, nickname: str, domain: str) -> bool:
+def liked_by_person(post_json_object: {}, nickname: str, domain: str) -> bool:
     """Returns True if the given post is liked by the given person
     """
-    if noOfLikes(post_json_object) == 0:
+    if no_of_likes(post_json_object) == 0:
         return False
     actorMatch = domain + '/users/' + nickname
 
@@ -68,16 +68,16 @@ def likedByPerson(post_json_object: {}, nickname: str, domain: str) -> bool:
     return False
 
 
-def _like(recent_posts_cache: {},
-          session, base_dir: str, federation_list: [],
-          nickname: str, domain: str, port: int,
-          ccList: [], http_prefix: str,
-          objectUrl: str, actorLiked: str,
-          client_to_server: bool,
-          send_threads: [], postLog: [],
-          person_cache: {}, cached_webfingers: {},
-          debug: bool, project_version: str,
-          signing_priv_key_pem: str) -> {}:
+def _create_like(recent_posts_cache: {},
+                 session, base_dir: str, federation_list: [],
+                 nickname: str, domain: str, port: int,
+                 ccList: [], http_prefix: str,
+                 objectUrl: str, actorLiked: str,
+                 client_to_server: bool,
+                 send_threads: [], postLog: [],
+                 person_cache: {}, cached_webfingers: {},
+                 debug: bool, project_version: str,
+                 signing_priv_key_pem: str) -> {}:
     """Creates a like
     actor is the person doing the liking
     'to' might be a specific person (actor) whose post was liked
@@ -127,33 +127,34 @@ def _like(recent_posts_cache: {},
             print('DEBUG: like objectUrl: ' + objectUrl)
             return None
 
-        updateLikesCollection(recent_posts_cache,
-                              base_dir, post_filename, objectUrl,
-                              newLikeJson['actor'],
-                              nickname, domain, debug, None)
+        update_likes_collection(recent_posts_cache,
+                                base_dir, post_filename, objectUrl,
+                                newLikeJson['actor'],
+                                nickname, domain, debug, None)
 
-        sendSignedJson(newLikeJson, session, base_dir,
-                       nickname, domain, port,
-                       likedPostNickname, likedPostDomain, likedPostPort,
-                       'https://www.w3.org/ns/activitystreams#Public',
-                       http_prefix, True, client_to_server, federation_list,
-                       send_threads, postLog, cached_webfingers, person_cache,
-                       debug, project_version, None, group_account,
-                       signing_priv_key_pem, 7367374)
+        send_signed_json(newLikeJson, session, base_dir,
+                         nickname, domain, port,
+                         likedPostNickname, likedPostDomain, likedPostPort,
+                         'https://www.w3.org/ns/activitystreams#Public',
+                         http_prefix, True, client_to_server, federation_list,
+                         send_threads, postLog, cached_webfingers,
+                         person_cache,
+                         debug, project_version, None, group_account,
+                         signing_priv_key_pem, 7367374)
 
     return newLikeJson
 
 
-def likePost(recent_posts_cache: {},
-             session, base_dir: str, federation_list: [],
-             nickname: str, domain: str, port: int, http_prefix: str,
-             likeNickname: str, likeDomain: str, likePort: int,
-             ccList: [],
-             likeStatusNumber: int, client_to_server: bool,
-             send_threads: [], postLog: [],
-             person_cache: {}, cached_webfingers: {},
-             debug: bool, project_version: str,
-             signing_priv_key_pem: str) -> {}:
+def like_post(recent_posts_cache: {},
+              session, base_dir: str, federation_list: [],
+              nickname: str, domain: str, port: int, http_prefix: str,
+              likeNickname: str, likeDomain: str, likePort: int,
+              ccList: [],
+              likeStatusNumber: int, client_to_server: bool,
+              send_threads: [], postLog: [],
+              person_cache: {}, cached_webfingers: {},
+              debug: bool, project_version: str,
+              signing_priv_key_pem: str) -> {}:
     """Likes a given status post. This is only used by unit tests
     """
     likeDomain = get_full_domain(likeDomain, likePort)
@@ -161,24 +162,26 @@ def likePost(recent_posts_cache: {},
     actorLiked = local_actor_url(http_prefix, likeNickname, likeDomain)
     objectUrl = actorLiked + '/statuses/' + str(likeStatusNumber)
 
-    return _like(recent_posts_cache,
-                 session, base_dir, federation_list, nickname, domain, port,
-                 ccList, http_prefix, objectUrl, actorLiked, client_to_server,
-                 send_threads, postLog, person_cache, cached_webfingers,
-                 debug, project_version, signing_priv_key_pem)
+    return _create_like(recent_posts_cache,
+                        session, base_dir, federation_list,
+                        nickname, domain, port,
+                        ccList, http_prefix, objectUrl, actorLiked,
+                        client_to_server,
+                        send_threads, postLog, person_cache, cached_webfingers,
+                        debug, project_version, signing_priv_key_pem)
 
 
-def sendLikeViaServer(base_dir: str, session,
-                      fromNickname: str, password: str,
-                      fromDomain: str, fromPort: int,
-                      http_prefix: str, likeUrl: str,
-                      cached_webfingers: {}, person_cache: {},
-                      debug: bool, project_version: str,
-                      signing_priv_key_pem: str) -> {}:
+def send_like_via_server(base_dir: str, session,
+                         fromNickname: str, password: str,
+                         fromDomain: str, fromPort: int,
+                         http_prefix: str, likeUrl: str,
+                         cached_webfingers: {}, person_cache: {},
+                         debug: bool, project_version: str,
+                         signing_priv_key_pem: str) -> {}:
     """Creates a like via c2s
     """
     if not session:
-        print('WARN: No session for sendLikeViaServer')
+        print('WARN: No session for send_like_via_server')
         return 6
 
     fromDomainFull = get_full_domain(fromDomain, fromPort)
@@ -195,10 +198,10 @@ def sendLikeViaServer(base_dir: str, session,
     handle = http_prefix + '://' + fromDomainFull + '/@' + fromNickname
 
     # lookup the inbox for the To handle
-    wfRequest = webfingerHandle(session, handle, http_prefix,
-                                cached_webfingers,
-                                fromDomain, project_version, debug, False,
-                                signing_priv_key_pem)
+    wfRequest = webfinger_handle(session, handle, http_prefix,
+                                 cached_webfingers,
+                                 fromDomain, project_version, debug, False,
+                                 signing_priv_key_pem)
     if not wfRequest:
         if debug:
             print('DEBUG: like webfinger failed for ' + handle)
@@ -213,13 +216,13 @@ def sendLikeViaServer(base_dir: str, session,
     # get the actor inbox for the To handle
     originDomain = fromDomain
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
-     displayName, _) = getPersonBox(signing_priv_key_pem,
-                                    originDomain,
-                                    base_dir, session, wfRequest,
-                                    person_cache,
-                                    project_version, http_prefix,
-                                    fromNickname, fromDomain,
-                                    postToBox, 72873)
+     displayName, _) = get_person_box(signing_priv_key_pem,
+                                      originDomain,
+                                      base_dir, session, wfRequest,
+                                      person_cache,
+                                      project_version, http_prefix,
+                                      fromNickname, fromDomain,
+                                      postToBox, 72873)
 
     if not inboxUrl:
         if debug:
@@ -237,9 +240,9 @@ def sendLikeViaServer(base_dir: str, session,
         'Content-type': 'application/json',
         'Authorization': authHeader
     }
-    postResult = postJson(http_prefix, fromDomainFull,
-                          session, newLikeJson, [], inboxUrl,
-                          headers, 3, True)
+    postResult = post_json(http_prefix, fromDomainFull,
+                           session, newLikeJson, [], inboxUrl,
+                           headers, 3, True)
     if not postResult:
         if debug:
             print('WARN: POST like failed for c2s to ' + inboxUrl)
@@ -251,17 +254,17 @@ def sendLikeViaServer(base_dir: str, session,
     return newLikeJson
 
 
-def sendUndoLikeViaServer(base_dir: str, session,
-                          fromNickname: str, password: str,
-                          fromDomain: str, fromPort: int,
-                          http_prefix: str, likeUrl: str,
-                          cached_webfingers: {}, person_cache: {},
-                          debug: bool, project_version: str,
-                          signing_priv_key_pem: str) -> {}:
+def send_undo_like_via_server(base_dir: str, session,
+                              fromNickname: str, password: str,
+                              fromDomain: str, fromPort: int,
+                              http_prefix: str, likeUrl: str,
+                              cached_webfingers: {}, person_cache: {},
+                              debug: bool, project_version: str,
+                              signing_priv_key_pem: str) -> {}:
     """Undo a like via c2s
     """
     if not session:
-        print('WARN: No session for sendUndoLikeViaServer')
+        print('WARN: No session for send_undo_like_via_server')
         return 6
 
     fromDomainFull = get_full_domain(fromDomain, fromPort)
@@ -282,10 +285,10 @@ def sendUndoLikeViaServer(base_dir: str, session,
     handle = http_prefix + '://' + fromDomainFull + '/@' + fromNickname
 
     # lookup the inbox for the To handle
-    wfRequest = webfingerHandle(session, handle, http_prefix,
-                                cached_webfingers,
-                                fromDomain, project_version, debug, False,
-                                signing_priv_key_pem)
+    wfRequest = webfinger_handle(session, handle, http_prefix,
+                                 cached_webfingers,
+                                 fromDomain, project_version, debug, False,
+                                 signing_priv_key_pem)
     if not wfRequest:
         if debug:
             print('DEBUG: unlike webfinger failed for ' + handle)
@@ -301,13 +304,13 @@ def sendUndoLikeViaServer(base_dir: str, session,
     # get the actor inbox for the To handle
     originDomain = fromDomain
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
-     displayName, _) = getPersonBox(signing_priv_key_pem,
-                                    originDomain,
-                                    base_dir, session, wfRequest,
-                                    person_cache, project_version,
-                                    http_prefix, fromNickname,
-                                    fromDomain, postToBox,
-                                    72625)
+     displayName, _) = get_person_box(signing_priv_key_pem,
+                                      originDomain,
+                                      base_dir, session, wfRequest,
+                                      person_cache, project_version,
+                                      http_prefix, fromNickname,
+                                      fromDomain, postToBox,
+                                      72625)
 
     if not inboxUrl:
         if debug:
@@ -325,9 +328,9 @@ def sendUndoLikeViaServer(base_dir: str, session,
         'Content-type': 'application/json',
         'Authorization': authHeader
     }
-    postResult = postJson(http_prefix, fromDomainFull,
-                          session, newUndoLikeJson, [], inboxUrl,
-                          headers, 3, True)
+    postResult = post_json(http_prefix, fromDomainFull,
+                           session, newUndoLikeJson, [], inboxUrl,
+                           headers, 3, True)
     if not postResult:
         if debug:
             print('WARN: POST unlike failed for c2s to ' + inboxUrl)
@@ -339,10 +342,10 @@ def sendUndoLikeViaServer(base_dir: str, session,
     return newUndoLikeJson
 
 
-def outboxLike(recent_posts_cache: {},
-               base_dir: str, http_prefix: str,
-               nickname: str, domain: str, port: int,
-               message_json: {}, debug: bool) -> None:
+def outbox_like(recent_posts_cache: {},
+                base_dir: str, http_prefix: str,
+                nickname: str, domain: str, port: int,
+                message_json: {}, debug: bool) -> None:
     """ When a like request is received by the outbox from c2s
     """
     if not message_json.get('type'):
@@ -366,18 +369,18 @@ def outboxLike(recent_posts_cache: {},
             print('DEBUG: c2s like post not found in inbox or outbox')
             print(messageId)
         return True
-    updateLikesCollection(recent_posts_cache,
-                          base_dir, post_filename, messageId,
-                          message_json['actor'],
-                          nickname, domain, debug, None)
+    update_likes_collection(recent_posts_cache,
+                            base_dir, post_filename, messageId,
+                            message_json['actor'],
+                            nickname, domain, debug, None)
     if debug:
         print('DEBUG: post liked via c2s - ' + post_filename)
 
 
-def outboxUndoLike(recent_posts_cache: {},
-                   base_dir: str, http_prefix: str,
-                   nickname: str, domain: str, port: int,
-                   message_json: {}, debug: bool) -> None:
+def outbox_undo_like(recent_posts_cache: {},
+                     base_dir: str, http_prefix: str,
+                     nickname: str, domain: str, port: int,
+                     message_json: {}, debug: bool) -> None:
     """ When an undo like request is received by the outbox from c2s
     """
     if not message_json.get('type'):
@@ -410,11 +413,11 @@ def outboxUndoLike(recent_posts_cache: {},
         print('DEBUG: post undo liked via c2s - ' + post_filename)
 
 
-def updateLikesCollection(recent_posts_cache: {},
-                          base_dir: str, post_filename: str,
-                          objectUrl: str, actor: str,
-                          nickname: str, domain: str, debug: bool,
-                          post_json_object: {}) -> None:
+def update_likes_collection(recent_posts_cache: {},
+                            base_dir: str, post_filename: str,
+                            objectUrl: str, actor: str,
+                            nickname: str, domain: str, debug: bool,
+                            post_json_object: {}) -> None:
     """Updates the likes collection within a post
     """
     if not post_json_object:
@@ -433,7 +436,7 @@ def updateLikesCollection(recent_posts_cache: {},
             try:
                 os.remove(cachedPostFilename)
             except OSError:
-                print('EX: updateLikesCollection unable to delete ' +
+                print('EX: update_likes_collection unable to delete ' +
                       cachedPostFilename)
 
     obj = post_json_object

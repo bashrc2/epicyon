@@ -11,7 +11,7 @@ import os
 import datetime
 
 
-def getHashtagCategory(base_dir: str, hashtag: str) -> str:
+def get_hashtag_category(base_dir: str, hashtag: str) -> str:
     """Returns the category for the hashtag
     """
     categoryFilename = base_dir + '/tags/' + hashtag + '.category'
@@ -34,8 +34,9 @@ def getHashtagCategory(base_dir: str, hashtag: str) -> str:
     return ''
 
 
-def getHashtagCategories(base_dir: str,
-                         recent: bool = False, category: str = None) -> None:
+def get_hashtag_categories(base_dir: str,
+                           recent: bool = False,
+                           category: str = None) -> None:
     """Returns a dictionary containing hashtag categories
     """
     maxTagLength = 42
@@ -90,17 +91,17 @@ def getHashtagCategories(base_dir: str,
     return hashtagCategories
 
 
-def updateHashtagCategories(base_dir: str) -> None:
+def update_hashtag_categories(base_dir: str) -> None:
     """Regenerates the list of hashtag categories
     """
     categoryListFilename = base_dir + '/accounts/categoryList.txt'
-    hashtagCategories = getHashtagCategories(base_dir)
+    hashtagCategories = get_hashtag_categories(base_dir)
     if not hashtagCategories:
         if os.path.isfile(categoryListFilename):
             try:
                 os.remove(categoryListFilename)
             except OSError:
-                print('EX: updateHashtagCategories ' +
+                print('EX: update_hashtag_categories ' +
                       'unable to delete cached category list ' +
                       categoryListFilename)
         return
@@ -122,7 +123,7 @@ def updateHashtagCategories(base_dir: str) -> None:
         print('EX: unable to write category ' + categoryListFilename)
 
 
-def _validHashtagCategory(category: str) -> bool:
+def _valid_hashtag_category(category: str) -> bool:
     """Returns true if the category name is valid
     """
     if not category:
@@ -140,11 +141,11 @@ def _validHashtagCategory(category: str) -> bool:
     return True
 
 
-def setHashtagCategory(base_dir: str, hashtag: str, category: str,
-                       update: bool, force: bool = False) -> bool:
+def set_hashtag_category(base_dir: str, hashtag: str, category: str,
+                         update: bool, force: bool = False) -> bool:
     """Sets the category for the hashtag
     """
-    if not _validHashtagCategory(category):
+    if not _valid_hashtag_category(category):
         return False
 
     if not force:
@@ -177,13 +178,13 @@ def setHashtagCategory(base_dir: str, hashtag: str, category: str,
 
     if categoryWritten:
         if update:
-            updateHashtagCategories(base_dir)
+            update_hashtag_categories(base_dir)
         return True
 
     return False
 
 
-def guessHashtagCategory(tagName: str, hashtagCategories: {}) -> str:
+def guess_hashtag_category(tagName: str, hashtagCategories: {}) -> str:
     """Tries to guess a category for the given hashtag.
     This works by trying to find the longest similar hashtag
     """

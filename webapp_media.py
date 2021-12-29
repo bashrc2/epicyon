@@ -11,7 +11,7 @@ import os
 from utils import valid_url_prefix
 
 
-def loadPeertubeInstances(base_dir: str, peertube_instances: []) -> None:
+def load_peertube_instances(base_dir: str, peertube_instances: []) -> None:
     """Loads peertube instances from file into the given list
     """
     peertubeList = None
@@ -30,9 +30,9 @@ def loadPeertubeInstances(base_dir: str, peertube_instances: []) -> None:
         peertube_instances.append(url)
 
 
-def _addEmbeddedVideoFromSites(translate: {}, content: str,
-                               peertube_instances: [],
-                               width: int, height: int) -> str:
+def _add_embedded_video_from_sites(translate: {}, content: str,
+                                   peertube_instances: [],
+                                   width: int, height: int) -> str:
     """Adds embedded videos
     """
     if '>vimeo.com/' in content:
@@ -119,12 +119,14 @@ def _addEmbeddedVideoFromSites(translate: {}, content: str,
             # Also see https://peertube_isolation.frama.io/list/ for
             # adversarial instances. Nothing in that list should be
             # in the defaults below.
-            peerTubeSites = ('share.tube',
-                             'visionon.tv',
-                             'peertube.fr',
-                             'kolektiva.media',
-                             'peertube.social',
-                             'videos.lescommuns.org')
+            peerTubeSites = (
+                'share.tube',
+                'visionon.tv',
+                'peertube.fr',
+                'kolektiva.media',
+                'peertube.social',
+                'videos.lescommuns.org'
+            )
         for site in peerTubeSites:
             site = site.strip()
             if not site:
@@ -161,7 +163,7 @@ def _addEmbeddedVideoFromSites(translate: {}, content: str,
     return content
 
 
-def _addEmbeddedAudio(translate: {}, content: str) -> str:
+def _add_embedded_audio(translate: {}, content: str) -> str:
     """Adds embedded audio for mp3/ogg
     """
     if not ('.mp3' in content or '.ogg' in content):
@@ -201,7 +203,7 @@ def _addEmbeddedAudio(translate: {}, content: str) -> str:
     return content
 
 
-def _addEmbeddedVideo(translate: {}, content: str) -> str:
+def _add_embedded_video(translate: {}, content: str) -> str:
     """Adds embedded video for mp4/webm/ogv
     """
     if not ('.mp4' in content or '.webm' in content or '.ogv' in content):
@@ -245,11 +247,11 @@ def _addEmbeddedVideo(translate: {}, content: str) -> str:
     return content
 
 
-def addEmbeddedElements(translate: {}, content: str,
-                        peertube_instances: []) -> str:
+def add_embedded_elements(translate: {}, content: str,
+                          peertube_instances: []) -> str:
     """Adds embedded elements for various media types
     """
-    content = _addEmbeddedVideoFromSites(translate, content,
-                                         peertube_instances, 400, 300)
-    content = _addEmbeddedAudio(translate, content)
-    return _addEmbeddedVideo(translate, content)
+    content = _add_embedded_video_from_sites(translate, content,
+                                             peertube_instances, 400, 300)
+    content = _add_embedded_audio(translate, content)
+    return _add_embedded_video(translate, content)

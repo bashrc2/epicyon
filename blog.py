@@ -10,13 +10,13 @@ __module_group__ = "ActivityPub"
 import os
 from datetime import datetime
 
-from content import replaceEmojiFromTags
-from webapp_utils import htmlHeaderWithExternalStyle
-from webapp_utils import htmlHeaderWithBlogMarkup
-from webapp_utils import htmlFooter
-from webapp_utils import getPostAttachmentsAsHtml
-from webapp_utils import editTextArea
-from webapp_media import addEmbeddedElements
+from content import replace_emoji_from_tags
+from webapp_utils import html_header_with_external_style
+from webapp_utils import html_header_with_blog_markup
+from webapp_utils import html_footer
+from webapp_utils import get_post_attachments_as_html
+from webapp_utils import edit_text_area
+from webapp_media import add_embedded_elements
 from utils import local_actor_url
 from utils import get_actor_languages_list
 from utils import get_base_content_from_post
@@ -33,15 +33,15 @@ from utils import load_json
 from utils import first_paragraph_from_string
 from utils import get_actor_property_url
 from utils import acct_dir
-from posts import createBlogsTimeline
-from newswire import rss2Header
-from newswire import rss2Footer
-from cache import getPersonFromCache
+from posts import create_blogs_timeline
+from newswire import rss2header
+from newswire import rss2footer
+from cache import get_person_from_cache
 
 
-def _noOfBlogReplies(base_dir: str, http_prefix: str, translate: {},
-                     nickname: str, domain: str, domain_full: str,
-                     post_id: str, depth=0) -> int:
+def _no_of_blog_replies(base_dir: str, http_prefix: str, translate: {},
+                        nickname: str, domain: str, domain_full: str,
+                        post_id: str, depth=0) -> int:
     """Returns the number of replies on the post
     This is recursive, so can handle replies to replies
     """
@@ -84,9 +84,9 @@ def _noOfBlogReplies(base_dir: str, http_prefix: str, translate: {},
         if locate_post(base_dir, nickname, domain, replyPostId):
             replyPostId = replyPostId.replace('.replies', '')
             replies += \
-                1 + _noOfBlogReplies(base_dir, http_prefix, translate,
-                                     nickname, domain, domain_full,
-                                     replyPostId, depth+1)
+                1 + _no_of_blog_replies(base_dir, http_prefix, translate,
+                                        nickname, domain, domain_full,
+                                        replyPostId, depth+1)
         else:
             # remove post which no longer exists
             removals.append(replyPostId)
@@ -109,9 +109,9 @@ def _noOfBlogReplies(base_dir: str, http_prefix: str, translate: {},
     return replies
 
 
-def _getBlogReplies(base_dir: str, http_prefix: str, translate: {},
-                    nickname: str, domain: str, domain_full: str,
-                    post_id: str, depth=0) -> str:
+def _get_blog_replies(base_dir: str, http_prefix: str, translate: {},
+                      nickname: str, domain: str, domain_full: str,
+                      post_id: str, depth=0) -> str:
     """Returns a string containing html blog posts
     """
     if depth > 4:
@@ -169,9 +169,9 @@ def _getBlogReplies(base_dir: str, http_prefix: str, translate: {},
                     repliesStr += postFile.read() + '\n'
             except OSError:
                 print('EX: unable to read blog replies ' + post_filename)
-            rply = _getBlogReplies(base_dir, http_prefix, translate,
-                                   nickname, domain, domain_full,
-                                   replyPostId, depth+1)
+            rply = _get_blog_replies(base_dir, http_prefix, translate,
+                                     nickname, domain, domain_full,
+                                     replyPostId, depth+1)
             if rply not in repliesStr:
                 repliesStr += rply
 
@@ -255,32 +255,34 @@ def _html_blog_post_content(debug: bool, session, authorized: bool,
     bookmarkStr = ''
     deleteStr = ''
     muteStr = ''
-    isMuted = False
-    attachmentStr, galleryStr = getPostAttachmentsAsHtml(post_json_object,
-                                                         'tlblogs', translate,
-                                                         isMuted, avatarLink,
-                                                         replyStr, announceStr,
-                                                         likeStr, bookmarkStr,
-                                                         deleteStr, muteStr)
+    is_muted = False
+    attachmentStr, galleryStr = \
+        get_post_attachments_as_html(post_json_object,
+                                     'tlblogs', translate,
+                                     is_muted, avatarLink,
+                                     replyStr, announceStr,
+                                     likeStr, bookmarkStr,
+                                     deleteStr, muteStr)
     if attachmentStr:
         blogStr += '<br><center>' + attachmentStr + '</center>'
 
     personUrl = local_actor_url(http_prefix, nickname, domain_full)
     actor_json = \
-        getPersonFromCache(base_dir, personUrl, person_cache, False)
+        get_person_from_cache(base_dir, personUrl, person_cache, False)
     languages_understood = []
     if actor_json:
         languages_understood = get_actor_languages_list(actor_json)
     jsonContent = get_content_from_post(post_json_object, system_language,
                                         languages_understood)
     if jsonContent:
-        contentStr = addEmbeddedElements(translate, jsonContent,
-                                         peertube_instances)
+        contentStr = add_embedded_elements(translate, jsonContent,
+                                           peertube_instances)
         if post_json_object['object'].get('tag'):
             post_json_object_tags = post_json_object['object']['tag']
-            contentStr = replaceEmojiFromTags(session, base_dir, contentStr,
-                                              post_json_object_tags,
-                                              'content', debug)
+            contentStr = replace_emoji_from_tags(session, base_dir,
+                                                 contentStr,
+                                                 post_json_object_tags,
+                                                 'content', debug)
         if articleAdded:
             blogStr += '<br>' + contentStr + '</article>\n'
         else:
@@ -315,9 +317,9 @@ def _html_blog_post_content(debug: bool, session, authorized: bool,
             '">' + translate['About the author'] + \
             '</a></p>\n'
 
-    replies = _noOfBlogReplies(base_dir, http_prefix, translate,
-                               nickname, domain, domain_full,
-                               post_json_object['object']['id'])
+    replies = _no_of_blog_replies(base_dir, http_prefix, translate,
+                                  nickname, domain, domain_full,
+                                  post_json_object['object']['id'])
 
     # separator between blogs should be centered
     if '<center>' not in blogSeparator:
@@ -334,13 +336,14 @@ def _html_blog_post_content(debug: bool, session, authorized: bool,
     else:
         blogStr += blogSeparator + '<h1>' + translate['Replies'] + '</h1>\n'
         if not titleStr:
-            blogStr += _getBlogReplies(base_dir, http_prefix, translate,
-                                       nickname, domain, domain_full,
-                                       post_json_object['object']['id'])
+            blogStr += _get_blog_replies(base_dir, http_prefix, translate,
+                                         nickname, domain, domain_full,
+                                         post_json_object['object']['id'])
         else:
-            blogRepliesStr = _getBlogReplies(base_dir, http_prefix, translate,
-                                             nickname, domain, domain_full,
-                                             post_json_object['object']['id'])
+            obj_id = post_json_object['object']['id']
+            blogRepliesStr = _get_blog_replies(base_dir, http_prefix,
+                                               translate, nickname,
+                                               domain, domain_full, obj_id)
             blogStr += blogRepliesStr.replace('>' + titleStr + '<', '')
 
     return blogStr
@@ -413,7 +416,7 @@ def _html_blog_post_rss3(authorized: bool,
     return rssStr
 
 
-def _htmlBlogRemoveCwButton(blogStr: str, translate: {}) -> str:
+def _html_blog_remove_cw_button(blogStr: str, translate: {}) -> str:
     """Removes the CW button from blog posts, where the
     summary field is instead used as the blog title
     """
@@ -425,8 +428,8 @@ def _htmlBlogRemoveCwButton(blogStr: str, translate: {}) -> str:
     return blogStr
 
 
-def _getSnippetFromBlogContent(post_json_object: {},
-                               system_language: str) -> str:
+def _get_snippet_from_blog_content(post_json_object: {},
+                                   system_language: str) -> str:
     """Returns a snippet of text from the blog post as a preview
     """
     content = get_base_content_from_post(post_json_object, system_language)
@@ -466,13 +469,15 @@ def html_blog_post(session, authorized: bool,
     url = ''
     if post_json_object['object'].get('url'):
         url = post_json_object['object']['url']
-    snippet = _getSnippetFromBlogContent(post_json_object, system_language)
-    blogStr = htmlHeaderWithBlogMarkup(cssFilename, instanceTitle,
-                                       http_prefix, domain_full, nickname,
-                                       system_language, published, modified,
-                                       title, snippet, translate, url,
-                                       content_license_url)
-    _htmlBlogRemoveCwButton(blogStr, translate)
+    snippet = _get_snippet_from_blog_content(post_json_object,
+                                             system_language)
+    blogStr = html_header_with_blog_markup(cssFilename, instanceTitle,
+                                           http_prefix, domain_full, nickname,
+                                           system_language, published,
+                                           modified,
+                                           title, snippet, translate, url,
+                                           content_license_url)
+    _html_blog_remove_cw_button(blogStr, translate)
 
     blogStr += _html_blog_post_content(debug, session, authorized, base_dir,
                                        http_prefix, translate,
@@ -501,7 +506,7 @@ def html_blog_post(session, authorized: bool,
 
     blogStr += '</p>'
 
-    return blogStr + htmlFooter()
+    return blogStr + html_footer()
 
 
 def html_blog_page(authorized: bool, session,
@@ -522,21 +527,21 @@ def html_blog_page(authorized: bool, session,
         cssFilename = base_dir + '/epicyon.css'
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
-    blogStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
-    _htmlBlogRemoveCwButton(blogStr, translate)
+    blogStr = html_header_with_external_style(cssFilename, instanceTitle, None)
+    _html_blog_remove_cw_button(blogStr, translate)
 
     blogsIndex = acct_dir(base_dir, nickname, domain) + '/tlblogs.index'
     if not os.path.isfile(blogsIndex):
-        return blogStr + htmlFooter()
+        return blogStr + html_footer()
 
-    timelineJson = createBlogsTimeline(session, base_dir,
-                                       nickname, domain, port,
-                                       http_prefix,
-                                       noOfItems, False,
-                                       pageNumber)
+    timelineJson = create_blogs_timeline(session, base_dir,
+                                         nickname, domain, port,
+                                         http_prefix,
+                                         noOfItems, False,
+                                         pageNumber)
 
     if not timelineJson:
-        return blogStr + htmlFooter()
+        return blogStr + html_footer()
 
     domain_full = get_full_domain(domain, port)
 
@@ -595,7 +600,7 @@ def html_blog_page(authorized: bool, session,
     #     'icons/rss3.png" /></a>'
 
     blogStr += '</p>'
-    return blogStr + htmlFooter()
+    return blogStr + html_footer()
 
 
 def html_blog_page_rss2(authorized: bool, session,
@@ -613,25 +618,25 @@ def html_blog_page_rss2(authorized: bool, session,
 
     blogRSS2 = ''
     if includeHeader:
-        blogRSS2 = rss2Header(http_prefix, nickname, domain_full,
+        blogRSS2 = rss2header(http_prefix, nickname, domain_full,
                               'Blog', translate)
 
     blogsIndex = acct_dir(base_dir, nickname, domain) + '/tlblogs.index'
     if not os.path.isfile(blogsIndex):
         if includeHeader:
-            return blogRSS2 + rss2Footer()
+            return blogRSS2 + rss2footer()
         else:
             return blogRSS2
 
-    timelineJson = createBlogsTimeline(session, base_dir,
-                                       nickname, domain, port,
-                                       http_prefix,
-                                       noOfItems, False,
-                                       pageNumber)
+    timelineJson = create_blogs_timeline(session, base_dir,
+                                         nickname, domain, port,
+                                         http_prefix,
+                                         noOfItems, False,
+                                         pageNumber)
 
     if not timelineJson:
         if includeHeader:
-            return blogRSS2 + rss2Footer()
+            return blogRSS2 + rss2footer()
         else:
             return blogRSS2
 
@@ -648,7 +653,7 @@ def html_blog_page_rss2(authorized: bool, session,
                                      None, True, system_language)
 
     if includeHeader:
-        return blogRSS2 + rss2Footer()
+        return blogRSS2 + rss2footer()
     else:
         return blogRSS2
 
@@ -672,11 +677,11 @@ def html_blog_page_rss3(authorized: bool, session,
     if not os.path.isfile(blogsIndex):
         return blogRSS3
 
-    timelineJson = createBlogsTimeline(session, base_dir,
-                                       nickname, domain, port,
-                                       http_prefix,
-                                       noOfItems, False,
-                                       pageNumber)
+    timelineJson = create_blogs_timeline(session, base_dir,
+                                         nickname, domain, port,
+                                         http_prefix,
+                                         noOfItems, False,
+                                         pageNumber)
 
     if not timelineJson:
         return blogRSS3
@@ -697,7 +702,7 @@ def html_blog_page_rss3(authorized: bool, session,
     return blogRSS3
 
 
-def _noOfBlogAccounts(base_dir: str) -> int:
+def _no_of_blog_accounts(base_dir: str) -> int:
     """Returns the number of blog accounts
     """
     ctr = 0
@@ -713,7 +718,7 @@ def _noOfBlogAccounts(base_dir: str) -> int:
     return ctr
 
 
-def _singleBlogAccountNickname(base_dir: str) -> str:
+def _single_blog_account_nickname(base_dir: str) -> str:
     """Returns the nickname of a single blog account
     """
     for subdir, dirs, files in os.walk(base_dir + '/accounts'):
@@ -743,10 +748,10 @@ def html_blog_view(authorized: bool,
         cssFilename = base_dir + '/epicyon.css'
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
-    blogStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
+    blogStr = html_header_with_external_style(cssFilename, instanceTitle, None)
 
-    if _noOfBlogAccounts(base_dir) <= 1:
-        nickname = _singleBlogAccountNickname(base_dir)
+    if _no_of_blog_accounts(base_dir) <= 1:
+        nickname = _single_blog_account_nickname(base_dir)
         if nickname:
             return html_blog_page(authorized, session,
                                   base_dir, http_prefix, translate,
@@ -770,7 +775,7 @@ def html_blog_view(authorized: bool,
                 blogStr += '</p>'
         break
 
-    return blogStr + htmlFooter()
+    return blogStr + html_footer()
 
 
 def html_edit_blog(media_instance: bool, translate: {},
@@ -850,7 +855,7 @@ def html_edit_blog(media_instance: bool, translate: {},
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
     editBlogForm = \
-        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
+        html_header_with_external_style(cssFilename, instanceTitle, None)
 
     editBlogForm += \
         '<form enctype="multipart/form-data" method="POST" ' + \
@@ -903,8 +908,8 @@ def html_edit_blog(media_instance: bool, translate: {},
     contentStr = contentStr.replace('<p>', '').replace('</p>', '\n')
 
     editBlogForm += \
-        editTextArea(placeholderMessage, 'message', contentStr,
-                     messageBoxHeight, '', True)
+        edit_text_area(placeholderMessage, 'message', contentStr,
+                       messageBoxHeight, '', True)
     editBlogForm += dateAndLocation
     if not media_instance:
         editBlogForm += editBlogImageSection
@@ -914,7 +919,7 @@ def html_edit_blog(media_instance: bool, translate: {},
     editBlogForm = editBlogForm.replace('<body>',
                                         '<body onload="focusOnMessage()">')
 
-    editBlogForm += htmlFooter()
+    editBlogForm += html_footer()
     return editBlogForm
 
 

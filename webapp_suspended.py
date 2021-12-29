@@ -9,11 +9,11 @@ __module_group__ = "Web Interface"
 
 import os
 from utils import get_config_param
-from webapp_utils import htmlHeaderWithExternalStyle
-from webapp_utils import htmlFooter
+from webapp_utils import html_header_with_external_style
+from webapp_utils import html_footer
 
 
-def htmlSuspended(css_cache: {}, base_dir: str) -> str:
+def html_suspended(css_cache: {}, base_dir: str) -> str:
     """Show the screen for suspended accounts
     """
     suspendedForm = ''
@@ -24,11 +24,11 @@ def htmlSuspended(css_cache: {}, base_dir: str) -> str:
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
     suspendedForm = \
-        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
+        html_header_with_external_style(cssFilename, instanceTitle, None)
     suspendedForm += \
         '<div><center>\n' + \
         '  <p class="screentitle">Account Suspended</p>\n' + \
         '  <p>See <a href="/terms">Terms of Service</a></p>\n' + \
         '</center></div>\n'
-    suspendedForm += htmlFooter()
+    suspendedForm += html_footer()
     return suspendedForm

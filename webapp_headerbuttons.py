@@ -13,41 +13,41 @@ import time
 from utils import acct_dir
 from datetime import datetime
 from datetime import timedelta
-from happening import dayEventsCheck
-from webapp_utils import htmlHighlightLabel
+from happening import day_events_check
+from webapp_utils import html_highlight_label
 
 
-def headerButtonsTimeline(defaultTimeline: str,
-                          boxName: str,
-                          pageNumber: int,
-                          translate: {},
-                          usersPath: str,
-                          mediaButton: str,
-                          blogsButton: str,
-                          featuresButton: str,
-                          newsButton: str,
-                          inboxButton: str,
-                          dmButton: str,
-                          newDM: str,
-                          repliesButton: str,
-                          newReply: str,
-                          minimal: bool,
-                          sentButton: str,
-                          sharesButtonStr: str,
-                          wantedButtonStr: str,
-                          bookmarksButtonStr: str,
-                          eventsButtonStr: str,
-                          moderationButtonStr: str,
-                          newPostButtonStr: str,
-                          base_dir: str,
-                          nickname: str, domain: str,
-                          timelineStartTime,
-                          newCalendarEvent: bool,
-                          calendarPath: str,
-                          calendarImage: str,
-                          followApprovals: str,
-                          icons_as_buttons: bool,
-                          accessKeys: {}) -> str:
+def header_buttons_timeline(defaultTimeline: str,
+                            boxName: str,
+                            pageNumber: int,
+                            translate: {},
+                            usersPath: str,
+                            mediaButton: str,
+                            blogsButton: str,
+                            featuresButton: str,
+                            newsButton: str,
+                            inboxButton: str,
+                            dmButton: str,
+                            newDM: str,
+                            repliesButton: str,
+                            newReply: str,
+                            minimal: bool,
+                            sentButton: str,
+                            sharesButtonStr: str,
+                            wantedButtonStr: str,
+                            bookmarksButtonStr: str,
+                            eventsButtonStr: str,
+                            moderationButtonStr: str,
+                            newPostButtonStr: str,
+                            base_dir: str,
+                            nickname: str, domain: str,
+                            timelineStartTime,
+                            newCalendarEvent: bool,
+                            calendarPath: str,
+                            calendarImage: str,
+                            followApprovals: str,
+                            icons_as_buttons: bool,
+                            accessKeys: {}) -> str:
     """Returns the header at the top of the timeline, containing
     buttons for inbox, outbox, search, calendar, etc
     """
@@ -89,7 +89,7 @@ def headerButtonsTimeline(defaultTimeline: str,
         tlStr += \
             '<a href="' + usersPath + \
             '/dm" tabindex="-1"><button class="' + dmButton + \
-            '"><span>' + htmlHighlightLabel(translate['DM'], newDM) + \
+            '"><span>' + html_highlight_label(translate['DM'], newDM) + \
             '</span></button></a>'
 
         repliesIndexFilename = \
@@ -98,7 +98,7 @@ def headerButtonsTimeline(defaultTimeline: str,
             tlStr += \
                 '<a href="' + usersPath + '/tlreplies" tabindex="-1">' + \
                 '<button class="' + repliesButton + '"><span>' + \
-                htmlHighlightLabel(translate['Replies'], newReply) + \
+                html_highlight_label(translate['Replies'], newReply) + \
                 '</span></button></a>'
 
     # typically the media button
@@ -155,7 +155,7 @@ def headerButtonsTimeline(defaultTimeline: str,
         now = datetime.now()
         tomorrow = datetime.now() + timedelta(1)
         twodays = datetime.now() + timedelta(2)
-        if dayEventsCheck(base_dir, nickname, domain, now):
+        if day_events_check(base_dir, nickname, domain, now):
             # happening today button
             if not icons_as_buttons:
                 happeningStr += \
@@ -172,7 +172,7 @@ def headerButtonsTimeline(defaultTimeline: str,
                     '<button class="button">' + \
                     translate['Happening Today'] + '</button></a>'
 
-        elif dayEventsCheck(base_dir, nickname, domain, tomorrow):
+        elif day_events_check(base_dir, nickname, domain, tomorrow):
             # happening tomorrow button
             if not icons_as_buttons:
                 happeningStr += \
@@ -188,7 +188,7 @@ def headerButtonsTimeline(defaultTimeline: str,
                     '?day=' + str(tomorrow.day) + '" tabindex="-1">' + \
                     '<button class="button">' + \
                     translate['Happening Tomorrow'] + '</button></a>'
-        elif dayEventsCheck(base_dir, nickname, domain, twodays):
+        elif day_events_check(base_dir, nickname, domain, twodays):
             if not icons_as_buttons:
                 happeningStr += \
                     '<a href="' + usersPath + \

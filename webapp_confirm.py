@@ -17,27 +17,27 @@ from utils import load_json
 from utils import get_config_param
 from utils import get_alt_path
 from utils import acct_dir
-from webapp_utils import setCustomBackground
-from webapp_utils import htmlHeaderWithExternalStyle
-from webapp_utils import htmlFooter
-from webapp_post import individualPostAsHtml
+from webapp_utils import set_custom_background
+from webapp_utils import html_header_with_external_style
+from webapp_utils import html_footer
+from webapp_post import individual_post_as_html
 
 
-def htmlConfirmDelete(css_cache: {},
-                      recent_posts_cache: {}, max_recent_posts: int,
-                      translate, pageNumber: int,
-                      session, base_dir: str, messageId: str,
-                      http_prefix: str, project_version: str,
-                      cached_webfingers: {}, person_cache: {},
-                      calling_domain: str,
-                      yt_replace_domain: str,
-                      twitter_replacement_domain: str,
-                      show_published_date_only: bool,
-                      peertube_instances: [],
-                      allow_local_network_access: bool,
-                      theme_name: str, system_language: str,
-                      max_like_count: int, signing_priv_key_pem: str,
-                      cw_lists: {}, lists_enabled: str) -> str:
+def html_confirm_delete(css_cache: {},
+                        recent_posts_cache: {}, max_recent_posts: int,
+                        translate, pageNumber: int,
+                        session, base_dir: str, messageId: str,
+                        http_prefix: str, project_version: str,
+                        cached_webfingers: {}, person_cache: {},
+                        calling_domain: str,
+                        yt_replace_domain: str,
+                        twitter_replacement_domain: str,
+                        show_published_date_only: bool,
+                        peertube_instances: [],
+                        allow_local_network_access: bool,
+                        theme_name: str, system_language: str,
+                        max_like_count: int, signing_priv_key_pem: str,
+                        cw_lists: {}, lists_enabled: str) -> str:
     """Shows a screen asking to confirm the deletion of a post
     """
     if '/statuses/' not in messageId:
@@ -63,23 +63,23 @@ def htmlConfirmDelete(css_cache: {},
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
     delete_postStr = \
-        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
+        html_header_with_external_style(cssFilename, instanceTitle, None)
     delete_postStr += \
-        individualPostAsHtml(signing_priv_key_pem,
-                             True, recent_posts_cache, max_recent_posts,
-                             translate, pageNumber,
-                             base_dir, session,
-                             cached_webfingers, person_cache,
-                             nickname, domain, port, post_json_object,
-                             None, True, False,
-                             http_prefix, project_version, 'outbox',
-                             yt_replace_domain,
-                             twitter_replacement_domain,
-                             show_published_date_only,
-                             peertube_instances, allow_local_network_access,
-                             theme_name, system_language, max_like_count,
-                             False, False, False, False, False, False,
-                             cw_lists, lists_enabled)
+        individual_post_as_html(signing_priv_key_pem,
+                                True, recent_posts_cache, max_recent_posts,
+                                translate, pageNumber,
+                                base_dir, session,
+                                cached_webfingers, person_cache,
+                                nickname, domain, port, post_json_object,
+                                None, True, False,
+                                http_prefix, project_version, 'outbox',
+                                yt_replace_domain,
+                                twitter_replacement_domain,
+                                show_published_date_only,
+                                peertube_instances, allow_local_network_access,
+                                theme_name, system_language, max_like_count,
+                                False, False, False, False, False, False,
+                                cw_lists, lists_enabled)
     delete_postStr += '<center>'
     delete_postStr += \
         '  <p class="followText">' + \
@@ -102,14 +102,15 @@ def htmlConfirmDelete(css_cache: {},
         translate['No'] + '</button></a>\n'
     delete_postStr += '  </form>\n'
     delete_postStr += '</center>\n'
-    delete_postStr += htmlFooter()
+    delete_postStr += html_footer()
     return delete_postStr
 
 
-def htmlConfirmRemoveSharedItem(css_cache: {}, translate: {}, base_dir: str,
-                                actor: str, itemID: str,
-                                calling_domain: str,
-                                sharesFileType: str) -> str:
+def html_confirm_remove_shared_item(css_cache: {}, translate: {},
+                                    base_dir: str,
+                                    actor: str, itemID: str,
+                                    calling_domain: str,
+                                    sharesFileType: str) -> str:
     """Shows a screen asking to confirm the removal of a shared item
     """
     nickname = get_nickname_from_actor(actor)
@@ -132,14 +133,15 @@ def htmlConfirmRemoveSharedItem(css_cache: {}, translate: {}, base_dir: str,
     if sharesJson[itemID].get('imageUrl'):
         sharedItemImageUrl = sharesJson[itemID]['imageUrl']
 
-    setCustomBackground(base_dir, 'shares-background', 'follow-background')
+    set_custom_background(base_dir, 'shares-background', 'follow-background')
 
     cssFilename = base_dir + '/epicyon-follow.css'
     if os.path.isfile(base_dir + '/follow.css'):
         cssFilename = base_dir + '/follow.css'
 
     instanceTitle = get_config_param(base_dir, 'instanceTitle')
-    sharesStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
+    sharesStr = html_header_with_external_style(cssFilename,
+                                                instanceTitle, None)
     sharesStr += '<div class="follow">\n'
     sharesStr += '  <div class="followAvatar">\n'
     sharesStr += '  <center>\n'
@@ -170,14 +172,14 @@ def htmlConfirmRemoveSharedItem(css_cache: {}, translate: {}, base_dir: str,
     sharesStr += '  </center>\n'
     sharesStr += '  </div>\n'
     sharesStr += '</div>\n'
-    sharesStr += htmlFooter()
+    sharesStr += html_footer()
     return sharesStr
 
 
-def htmlConfirmFollow(css_cache: {}, translate: {}, base_dir: str,
-                      originPathStr: str,
-                      followActor: str,
-                      followProfileUrl: str) -> str:
+def html_confirm_follow(css_cache: {}, translate: {}, base_dir: str,
+                        originPathStr: str,
+                        followActor: str,
+                        followProfileUrl: str) -> str:
     """Asks to confirm a follow
     """
     followDomain, port = get_domain_from_actor(followActor)
@@ -192,7 +194,8 @@ def htmlConfirmFollow(css_cache: {}, translate: {}, base_dir: str,
         cssFilename = base_dir + '/follow.css'
 
     instanceTitle = get_config_param(base_dir, 'instanceTitle')
-    followStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
+    followStr = html_header_with_external_style(cssFilename,
+                                                instanceTitle, None)
     followStr += '<div class="follow">\n'
     followStr += '  <div class="followAvatar">\n'
     followStr += '  <center>\n'
@@ -215,14 +218,14 @@ def htmlConfirmFollow(css_cache: {}, translate: {}, base_dir: str,
     followStr += '</center>\n'
     followStr += '</div>\n'
     followStr += '</div>\n'
-    followStr += htmlFooter()
+    followStr += html_footer()
     return followStr
 
 
-def htmlConfirmUnfollow(css_cache: {}, translate: {}, base_dir: str,
-                        originPathStr: str,
-                        followActor: str,
-                        followProfileUrl: str) -> str:
+def html_confirm_unfollow(css_cache: {}, translate: {}, base_dir: str,
+                          originPathStr: str,
+                          followActor: str,
+                          followProfileUrl: str) -> str:
     """Asks to confirm unfollowing an actor
     """
     followDomain, port = get_domain_from_actor(followActor)
@@ -237,7 +240,8 @@ def htmlConfirmUnfollow(css_cache: {}, translate: {}, base_dir: str,
         cssFilename = base_dir + '/follow.css'
 
     instanceTitle = get_config_param(base_dir, 'instanceTitle')
-    followStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
+    followStr = html_header_with_external_style(cssFilename,
+                                                instanceTitle, None)
     followStr += '<div class="follow">\n'
     followStr += '  <div class="followAvatar">\n'
     followStr += '  <center>\n'
@@ -261,26 +265,27 @@ def htmlConfirmUnfollow(css_cache: {}, translate: {}, base_dir: str,
     followStr += '</center>\n'
     followStr += '</div>\n'
     followStr += '</div>\n'
-    followStr += htmlFooter()
+    followStr += html_footer()
     return followStr
 
 
-def htmlConfirmUnblock(css_cache: {}, translate: {}, base_dir: str,
-                       originPathStr: str,
-                       blockActor: str,
-                       blockProfileUrl: str) -> str:
+def html_confirm_unblock(css_cache: {}, translate: {}, base_dir: str,
+                         originPathStr: str,
+                         blockActor: str,
+                         blockProfileUrl: str) -> str:
     """Asks to confirm unblocking an actor
     """
     blockDomain, port = get_domain_from_actor(blockActor)
 
-    setCustomBackground(base_dir, 'block-background', 'follow-background')
+    set_custom_background(base_dir, 'block-background', 'follow-background')
 
     cssFilename = base_dir + '/epicyon-follow.css'
     if os.path.isfile(base_dir + '/follow.css'):
         cssFilename = base_dir + '/follow.css'
 
     instanceTitle = get_config_param(base_dir, 'instanceTitle')
-    blockStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
+    blockStr = html_header_with_external_style(cssFilename,
+                                               instanceTitle, None)
     blockStr += '<div class="block">\n'
     blockStr += '  <div class="blockAvatar">\n'
     blockStr += '  <center>\n'
@@ -303,5 +308,5 @@ def htmlConfirmUnblock(css_cache: {}, translate: {}, base_dir: str,
     blockStr += '</center>\n'
     blockStr += '</div>\n'
     blockStr += '</div>\n'
-    blockStr += htmlFooter()
+    blockStr += html_footer()
     return blockStr

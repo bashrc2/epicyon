@@ -8,17 +8,17 @@ __status__ = "Production"
 __module_group__ = "Moderation"
 
 from session import create_session
-from webfinger import webfingerHandle
-from posts import getPersonBox
-from posts import getPostDomains
+from webfinger import webfinger_handle
+from posts import get_person_box
+from posts import get_post_domains
 from utils import get_full_domain
 
 
-def instancesGraph(base_dir: str, handles: str,
-                   proxy_type: str,
-                   port: int, http_prefix: str,
-                   debug: bool, project_version: str,
-                   system_language: str, signing_priv_key_pem: str) -> str:
+def instances_graph(base_dir: str, handles: str,
+                    proxy_type: str,
+                    port: int, http_prefix: str,
+                    debug: bool, project_version: str,
+                    system_language: str, signing_priv_key_pem: str) -> str:
     """ Returns a dot graph of federating instances
     based upon a few sample handles.
     The handles argument should contain a comma separated list
@@ -52,10 +52,10 @@ def instancesGraph(base_dir: str, handles: str,
         domain_full = get_full_domain(domain, port)
         handle = http_prefix + "://" + domain_full + "/@" + nickname
         wfRequest = \
-            webfingerHandle(session, handle, http_prefix,
-                            cached_webfingers,
-                            domain, project_version, debug, False,
-                            signing_priv_key_pem)
+            webfinger_handle(session, handle, http_prefix,
+                             cached_webfingers,
+                             domain, project_version, debug, False,
+                             signing_priv_key_pem)
         if not wfRequest:
             return dotGraphStr + '}\n'
         if not isinstance(wfRequest, dict):
@@ -65,21 +65,21 @@ def instancesGraph(base_dir: str, handles: str,
 
         originDomain = None
         (personUrl, pubKeyId, pubKey, personId, shaedInbox, avatarUrl,
-         displayName, _) = getPersonBox(signing_priv_key_pem,
-                                        originDomain,
-                                        base_dir, session, wfRequest,
-                                        person_cache,
-                                        project_version, http_prefix,
-                                        nickname, domain, 'outbox',
-                                        27261)
+         displayName, _) = get_person_box(signing_priv_key_pem,
+                                          originDomain,
+                                          base_dir, session, wfRequest,
+                                          person_cache,
+                                          project_version, http_prefix,
+                                          nickname, domain, 'outbox',
+                                          27261)
         wordFrequency = {}
         postDomains = \
-            getPostDomains(session, personUrl, 64, max_mentions, max_emoji,
-                           maxAttachments, federation_list,
-                           person_cache, debug,
-                           project_version, http_prefix, domain,
-                           wordFrequency, [], system_language,
-                           signing_priv_key_pem)
+            get_post_domains(session, personUrl, 64, max_mentions, max_emoji,
+                             maxAttachments, federation_list,
+                             person_cache, debug,
+                             project_version, http_prefix, domain,
+                             wordFrequency, [], system_language,
+                             signing_priv_key_pem)
         postDomains.sort()
         for fedDomain in postDomains:
             dotLineStr = '    "' + domain + '" -> "' + fedDomain + '";\n'

@@ -8,18 +8,18 @@ __status__ = "Production"
 __module_group__ = "Web Interface"
 
 import os
-from question import isQuestion
+from question import is_question
 from utils import remove_id_ending
 from utils import acct_dir
 
 
-def insertQuestion(base_dir: str, translate: {},
-                   nickname: str, domain: str, port: int,
-                   content: str,
-                   post_json_object: {}, pageNumber: int) -> str:
+def insert_question(base_dir: str, translate: {},
+                    nickname: str, domain: str, port: int,
+                    content: str,
+                    post_json_object: {}, pageNumber: int) -> str:
     """ Inserts question selection into a post
     """
-    if not isQuestion(post_json_object):
+    if not is_question(post_json_object):
         return content
     if len(post_json_object['object']['oneOf']) == 0:
         return content
@@ -74,7 +74,7 @@ def insertQuestion(base_dir: str, translate: {},
             try:
                 votes = int(questionOption['replies']['totalItems'])
             except BaseException:
-                print('EX: insertQuestion unable to convert to int')
+                print('EX: insert_question unable to convert to int')
             if votes > maxVotes:
                 maxVotes = int(votes+1)
 
@@ -89,7 +89,7 @@ def insertQuestion(base_dir: str, translate: {},
             try:
                 votes = int(questionOption['replies']['totalItems'])
             except BaseException:
-                print('EX: insertQuestion unable to convert to int 2')
+                print('EX: insert_question unable to convert to int 2')
             votesPercent = str(int(votes * 100 / maxVotes))
 
             content += \

@@ -9,16 +9,16 @@ __module_group__ = "Core"
 
 import os
 import datetime
-from session import urlExists
-from session import getJson
+from session import url_exists
+from session import get_json
 from utils import load_json
 from utils import save_json
-from utils import getFileCaseInsensitive
+from utils import get_file_case_insensitive
 from utils import get_user_paths
 
 
-def _removePersonFromCache(base_dir: str, personUrl: str,
-                           person_cache: {}) -> bool:
+def _remove_person_from_cache(base_dir: str, personUrl: str,
+                              person_cache: {}) -> bool:
     """Removes an actor from the cache
     """
     cacheFilename = base_dir + '/cache/actors/' + \
@@ -32,10 +32,10 @@ def _removePersonFromCache(base_dir: str, personUrl: str,
         del person_cache[personUrl]
 
 
-def checkForChangedActor(session, base_dir: str,
-                         http_prefix: str, domain_full: str,
-                         personUrl: str, avatarUrl: str, person_cache: {},
-                         timeoutSec: int):
+def check_for_changed_actor(session, base_dir: str,
+                            http_prefix: str, domain_full: str,
+                            personUrl: str, avatarUrl: str, person_cache: {},
+                            timeoutSec: int):
     """Checks if the avatar url exists and if not then
     the actor has probably changed without receiving an actor/Person Update.
     So clear the actor from the cache and it will be refreshed when the next
@@ -45,14 +45,14 @@ def checkForChangedActor(session, base_dir: str,
         return
     if domain_full in avatarUrl:
         return
-    if urlExists(session, avatarUrl, timeoutSec, http_prefix, domain_full):
+    if url_exists(session, avatarUrl, timeoutSec, http_prefix, domain_full):
         return
-    _removePersonFromCache(base_dir, personUrl, person_cache)
+    _remove_person_from_cache(base_dir, personUrl, person_cache)
 
 
-def storePersonInCache(base_dir: str, personUrl: str,
-                       personJson: {}, person_cache: {},
-                       allowWriteToFile: bool) -> None:
+def store_person_in_cache(base_dir: str, personUrl: str,
+                          personJson: {}, person_cache: {},
+                          allowWriteToFile: bool) -> None:
     """Store an actor in the cache
     """
     if 'statuses' in personUrl or personUrl.endswith('/actor'):
@@ -77,8 +77,8 @@ def storePersonInCache(base_dir: str, personUrl: str,
             save_json(personJson, cacheFilename)
 
 
-def getPersonFromCache(base_dir: str, personUrl: str, person_cache: {},
-                       allowWriteToFile: bool) -> {}:
+def get_person_from_cache(base_dir: str, personUrl: str, person_cache: {},
+                          allowWriteToFile: bool) -> {}:
     """Get an actor from the cache
     """
     # if the actor is not in memory then try to load it from file
@@ -87,12 +87,12 @@ def getPersonFromCache(base_dir: str, personUrl: str, person_cache: {},
         # does the person exist as a cached file?
         cacheFilename = base_dir + '/cache/actors/' + \
             personUrl.replace('/', '#') + '.json'
-        actorFilename = getFileCaseInsensitive(cacheFilename)
+        actorFilename = get_file_case_insensitive(cacheFilename)
         if actorFilename:
             personJson = load_json(actorFilename)
             if personJson:
-                storePersonInCache(base_dir, personUrl, personJson,
-                                   person_cache, False)
+                store_person_in_cache(base_dir, personUrl, personJson,
+                                      person_cache, False)
                 loadedFromFile = True
 
     if person_cache.get(personUrl):
@@ -105,7 +105,7 @@ def getPersonFromCache(base_dir: str, personUrl: str, person_cache: {},
     return None
 
 
-def expirePersonCache(person_cache: {}):
+def expire_person_cache(person_cache: {}):
     """Expires old entries from the cache in memory
     """
     curr_time = datetime.datetime.utcnow()
@@ -122,13 +122,13 @@ def expirePersonCache(person_cache: {}):
         print(str(len(removals)) + ' actors were expired from the cache')
 
 
-def storeWebfingerInCache(handle: str, wf, cached_webfingers: {}) -> None:
+def store_webfinger_in_cache(handle: str, wf, cached_webfingers: {}) -> None:
     """Store a webfinger endpoint in the cache
     """
     cached_webfingers[handle] = wf
 
 
-def getWebfingerFromCache(handle: str, cached_webfingers: {}) -> {}:
+def get_webfinger_from_cache(handle: str, cached_webfingers: {}) -> {}:
     """Get webfinger endpoint from the cache
     """
     if cached_webfingers.get(handle):
@@ -136,11 +136,11 @@ def getWebfingerFromCache(handle: str, cached_webfingers: {}) -> {}:
     return None
 
 
-def getPersonPubKey(base_dir: str, session, personUrl: str,
-                    person_cache: {}, debug: bool,
-                    project_version: str, http_prefix: str,
-                    domain: str, onion_domain: str,
-                    signing_priv_key_pem: str) -> str:
+def get_person_pub_key(base_dir: str, session, personUrl: str,
+                       person_cache: {}, debug: bool,
+                       project_version: str, http_prefix: str,
+                       domain: str, onion_domain: str,
+                       signing_priv_key_pem: str) -> str:
     if not personUrl:
         return None
     personUrl = personUrl.replace('#main-key', '')
@@ -153,7 +153,7 @@ def getPersonPubKey(base_dir: str, session, personUrl: str,
                 personUrl.replace(possibleUsersPath + 'inbox', '/inbox')
             break
     personJson = \
-        getPersonFromCache(base_dir, personUrl, person_cache, True)
+        get_person_from_cache(base_dir, personUrl, person_cache, True)
     if not personJson:
         if debug:
             print('DEBUG: Obtaining public key for ' + personUrl)
@@ -166,9 +166,9 @@ def getPersonPubKey(base_dir: str, session, personUrl: str,
             'Accept': 'application/activity+json; profile="' + profileStr + '"'
         }
         personJson = \
-            getJson(signing_priv_key_pem,
-                    session, personUrl, asHeader, None, debug,
-                    project_version, http_prefix, personDomain)
+            get_json(signing_priv_key_pem,
+                     session, personUrl, asHeader, None, debug,
+                     project_version, http_prefix, personDomain)
         if not personJson:
             return None
     pubKey = None
@@ -183,5 +183,5 @@ def getPersonPubKey(base_dir: str, session, personUrl: str,
         if debug:
             print('DEBUG: Public key not found for ' + personUrl)
 
-    storePersonInCache(base_dir, personUrl, personJson, person_cache, True)
+    store_person_in_cache(base_dir, personUrl, personJson, person_cache, True)
     return pubKey

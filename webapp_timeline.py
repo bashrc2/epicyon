@@ -20,27 +20,27 @@ from utils import acct_dir
 from utils import is_float
 from utils import local_actor_url
 from follow import follower_approval_active
-from person import isPersonSnoozed
-from markdown import markdownToHtml
-from webapp_utils import htmlKeyboardNavigation
-from webapp_utils import htmlHideFromScreenReader
-from webapp_utils import htmlPostSeparator
-from webapp_utils import getBannerFile
-from webapp_utils import htmlHeaderWithExternalStyle
-from webapp_utils import htmlFooter
-from webapp_utils import sharesTimelineJson
-from webapp_utils import htmlHighlightLabel
-from webapp_post import preparePostFromHtmlCache
-from webapp_post import individualPostAsHtml
-from webapp_column_left import getLeftColumnContent
-from webapp_column_right import getRightColumnContent
-from webapp_headerbuttons import headerButtonsTimeline
+from person import is_person_snoozed
+from markdown import markdown_to_html
+from webapp_utils import html_keyboard_navigation
+from webapp_utils import html_hide_from_screen_reader
+from webapp_utils import html_post_separator
+from webapp_utils import get_banner_file
+from webapp_utils import html_header_with_external_style
+from webapp_utils import html_footer
+from webapp_utils import shares_timeline_json
+from webapp_utils import html_highlight_label
+from webapp_post import prepare_post_from_html_cache
+from webapp_post import individual_post_as_html
+from webapp_column_left import get_left_column_content
+from webapp_column_right import get_right_column_content
+from webapp_headerbuttons import header_buttons_timeline
 from posts import is_moderator
-from announce import isSelfAnnounce
+from announce import is_self_announce
 
 
-def _logTimelineTiming(enableTimingLog: bool, timelineStartTime,
-                       boxName: str, debugId: str) -> None:
+def _log_timeline_timing(enableTimingLog: bool, timelineStartTime,
+                         boxName: str, debugId: str) -> None:
     """Create a log of timings for performance tuning
     """
     if not enableTimingLog:
@@ -51,7 +51,7 @@ def _logTimelineTiming(enableTimingLog: bool, timelineStartTime,
               boxName + ' ' + debugId + ' = ' + str(timeDiff))
 
 
-def _getHelpForTimeline(base_dir: str, boxName: str) -> str:
+def _get_help_for_timeline(base_dir: str, boxName: str) -> str:
     """Shows help text for the given timeline
     """
     # get the filename for help for this timeline
@@ -92,14 +92,14 @@ def _getHelpForTimeline(base_dir: str, boxName: str) -> str:
                 return ''
             helpText = helpText.replace('INSTANCE', instanceTitle)
             return '<div class="container">\n' + \
-                markdownToHtml(helpText) + '\n' + \
+                markdown_to_html(helpText) + '\n' + \
                 '</div>\n'
     return ''
 
 
-def _htmlTimelineNewPost(manuallyApproveFollowers: bool,
-                         boxName: str, icons_as_buttons: bool,
-                         usersPath: str, translate: {}) -> str:
+def _html_timeline_new_post(manuallyApproveFollowers: bool,
+                            boxName: str, icons_as_buttons: bool,
+                            usersPath: str, translate: {}) -> str:
     """Returns html for the new post button
     """
     newPostButtonStr = ''
@@ -193,9 +193,9 @@ def _htmlTimelineNewPost(manuallyApproveFollowers: bool,
     return newPostButtonStr
 
 
-def _htmlTimelineModerationButtons(moderator: bool, boxName: str,
-                                   nickname: str, moderationActionStr: str,
-                                   translate: {}) -> str:
+def _html_timeline_moderation_buttons(moderator: bool, boxName: str,
+                                      nickname: str, moderationActionStr: str,
+                                      translate: {}) -> str:
     """Returns html for the moderation screen buttons
     """
     tlStr = ''
@@ -274,13 +274,13 @@ def _htmlTimelineModerationButtons(moderator: bool, boxName: str,
     return tlStr
 
 
-def _htmlTimelineKeyboard(moderator: bool, text_mode_banner: str,
-                          usersPath: str,
-                          nickname: str, newCalendarEvent: bool,
-                          newDM: bool, newReply: bool,
-                          newShare: bool, newWanted: bool,
-                          followApprovals: bool,
-                          accessKeys: {}, translate: {}) -> str:
+def _html_timeline_keyboard(moderator: bool, text_mode_banner: str,
+                            usersPath: str,
+                            nickname: str, newCalendarEvent: bool,
+                            newDM: bool, newReply: bool,
+                            newShare: bool, newWanted: bool,
+                            followApprovals: bool,
+                            accessKeys: {}, translate: {}) -> str:
     """Returns html for timeline keyboard navigation
     """
     calendarStr = translate['Calendar']
@@ -299,37 +299,38 @@ def _htmlTimelineKeyboard(moderator: bool, text_mode_banner: str,
     if newWanted:
         wantedStr = '<strong>' + wantedStr + '</strong>'
     menuProfile = \
-        htmlHideFromScreenReader('👤') + ' ' + \
+        html_hide_from_screen_reader('👤') + ' ' + \
         translate['Switch to profile view']
     menuInbox = \
-        htmlHideFromScreenReader('📥') + ' ' + translate['Inbox']
+        html_hide_from_screen_reader('📥') + ' ' + translate['Inbox']
     menuOutbox = \
-        htmlHideFromScreenReader('📤') + ' ' + translate['Sent']
+        html_hide_from_screen_reader('📤') + ' ' + translate['Sent']
     menuSearch = \
-        htmlHideFromScreenReader('🔍') + ' ' + \
+        html_hide_from_screen_reader('🔍') + ' ' + \
         translate['Search and follow']
     menuCalendar = \
-        htmlHideFromScreenReader('📅') + ' ' + calendarStr
+        html_hide_from_screen_reader('📅') + ' ' + calendarStr
     menuDM = \
-        htmlHideFromScreenReader('📩') + ' ' + dmStr
+        html_hide_from_screen_reader('📩') + ' ' + dmStr
     menuReplies = \
-        htmlHideFromScreenReader('📨') + ' ' + repliesStr
+        html_hide_from_screen_reader('📨') + ' ' + repliesStr
     menuBookmarks = \
-        htmlHideFromScreenReader('🔖') + ' ' + translate['Bookmarks']
+        html_hide_from_screen_reader('🔖') + ' ' + translate['Bookmarks']
     menuShares = \
-        htmlHideFromScreenReader('🤝') + ' ' + sharesStr
+        html_hide_from_screen_reader('🤝') + ' ' + sharesStr
     menuWanted = \
-        htmlHideFromScreenReader('⛱') + ' ' + wantedStr
+        html_hide_from_screen_reader('⛱') + ' ' + wantedStr
     menuBlogs = \
-        htmlHideFromScreenReader('📝') + ' ' + translate['Blogs']
+        html_hide_from_screen_reader('📝') + ' ' + translate['Blogs']
     menuNewswire = \
-        htmlHideFromScreenReader('📰') + ' ' + translate['Newswire']
+        html_hide_from_screen_reader('📰') + ' ' + translate['Newswire']
     menuLinks = \
-        htmlHideFromScreenReader('🔗') + ' ' + translate['Links']
+        html_hide_from_screen_reader('🔗') + ' ' + translate['Links']
     menuNewPost = \
-        htmlHideFromScreenReader('➕') + ' ' + translate['Create a new post']
+        html_hide_from_screen_reader('➕') + ' ' + \
+        translate['Create a new post']
     menuModeration = \
-        htmlHideFromScreenReader('⚡️') + ' ' + translate['Mod']
+        html_hide_from_screen_reader('⚡️') + ' ' + translate['Mod']
     navLinks = {
         menuProfile: '/users/' + nickname,
         menuInbox: usersPath + '/inbox#timelineposts',
@@ -353,20 +354,21 @@ def _htmlTimelineKeyboard(moderator: bool, text_mode_banner: str,
         navAccessKeys[locals()[variableName]] = key
     if moderator:
         navLinks[menuModeration] = usersPath + '/moderation#modtimeline'
-    return htmlKeyboardNavigation(text_mode_banner, navLinks, navAccessKeys,
-                                  None, usersPath, translate, followApprovals)
+    return html_keyboard_navigation(text_mode_banner, navLinks, navAccessKeys,
+                                    None, usersPath, translate,
+                                    followApprovals)
 
 
-def _htmlTimelineEnd(base_dir: str, nickname: str, domain_full: str,
-                     http_prefix: str, translate: {},
-                     moderator: bool, editor: bool,
-                     newswire: {}, positive_voting: bool,
-                     show_publish_as_icon: bool,
-                     rss_icon_at_top: bool, publish_button_at_top: bool,
-                     authorized: bool, theme: str,
-                     defaultTimeline: str, accessKeys: {},
-                     boxName: str,
-                     enableTimingLog: bool, timelineStartTime) -> str:
+def _html_timeline_end(base_dir: str, nickname: str, domain_full: str,
+                       http_prefix: str, translate: {},
+                       moderator: bool, editor: bool,
+                       newswire: {}, positive_voting: bool,
+                       show_publish_as_icon: bool,
+                       rss_icon_at_top: bool, publish_button_at_top: bool,
+                       authorized: bool, theme: str,
+                       defaultTimeline: str, accessKeys: {},
+                       boxName: str,
+                       enableTimingLog: bool, timelineStartTime) -> str:
     """Ending of the timeline, containing the right column
     """
     # end of timeline-posts
@@ -376,29 +378,29 @@ def _htmlTimelineEnd(base_dir: str, nickname: str, domain_full: str,
     tlStr += '  </td>\n'
 
     # right column
-    rightColumnStr = getRightColumnContent(base_dir, nickname, domain_full,
-                                           http_prefix, translate,
-                                           moderator, editor,
-                                           newswire, positive_voting,
-                                           False, None, True,
-                                           show_publish_as_icon,
-                                           rss_icon_at_top,
-                                           publish_button_at_top,
-                                           authorized, True, theme,
-                                           defaultTimeline, accessKeys)
+    rightColumnStr = get_right_column_content(base_dir, nickname, domain_full,
+                                              http_prefix, translate,
+                                              moderator, editor,
+                                              newswire, positive_voting,
+                                              False, None, True,
+                                              show_publish_as_icon,
+                                              rss_icon_at_top,
+                                              publish_button_at_top,
+                                              authorized, True, theme,
+                                              defaultTimeline, accessKeys)
     tlStr += '  <td valign="top" class="col-right" ' + \
         'id="newswire" tabindex="-1">' + \
         rightColumnStr + '  </td>\n'
     tlStr += '  </tr>\n'
 
-    _logTimelineTiming(enableTimingLog, timelineStartTime, boxName, '9')
+    _log_timeline_timing(enableTimingLog, timelineStartTime, boxName, '9')
 
     tlStr += '  </tbody>\n'
     tlStr += '</table>\n'
     return tlStr
 
 
-def _pageNumberButtons(usersPath: str, boxName: str, pageNumber: int) -> str:
+def _page_number_buttons(usersPath: str, boxName: str, pageNumber: int) -> str:
     """Shows selactable page numbers at the bottom of the screen
     """
     pagesWidth = 3
@@ -419,38 +421,38 @@ def _pageNumberButtons(usersPath: str, boxName: str, pageNumber: int) -> str:
     return '<center>' + numStr + '</center>'
 
 
-def htmlTimeline(css_cache: {}, defaultTimeline: str,
-                 recent_posts_cache: {}, max_recent_posts: int,
-                 translate: {}, pageNumber: int,
-                 itemsPerPage: int, session, base_dir: str,
-                 cached_webfingers: {}, person_cache: {},
-                 nickname: str, domain: str, port: int, timelineJson: {},
-                 boxName: str, allow_deletion: bool,
-                 http_prefix: str, project_version: str,
-                 manuallyApproveFollowers: bool,
-                 minimal: bool,
-                 yt_replace_domain: str,
-                 twitter_replacement_domain: str,
-                 show_published_date_only: bool,
-                 newswire: {}, moderator: bool,
-                 editor: bool, artist: bool,
-                 positive_voting: bool,
-                 show_publish_as_icon: bool,
-                 full_width_tl_button_header: bool,
-                 icons_as_buttons: bool,
-                 rss_icon_at_top: bool,
-                 publish_button_at_top: bool,
-                 authorized: bool,
-                 moderationActionStr: str,
-                 theme: str,
-                 peertube_instances: [],
-                 allow_local_network_access: bool,
-                 text_mode_banner: str,
-                 accessKeys: {}, system_language: str,
-                 max_like_count: int,
-                 shared_items_federated_domains: [],
-                 signing_priv_key_pem: str,
-                 cw_lists: {}, lists_enabled: str) -> str:
+def html_timeline(css_cache: {}, defaultTimeline: str,
+                  recent_posts_cache: {}, max_recent_posts: int,
+                  translate: {}, pageNumber: int,
+                  itemsPerPage: int, session, base_dir: str,
+                  cached_webfingers: {}, person_cache: {},
+                  nickname: str, domain: str, port: int, timelineJson: {},
+                  boxName: str, allow_deletion: bool,
+                  http_prefix: str, project_version: str,
+                  manuallyApproveFollowers: bool,
+                  minimal: bool,
+                  yt_replace_domain: str,
+                  twitter_replacement_domain: str,
+                  show_published_date_only: bool,
+                  newswire: {}, moderator: bool,
+                  editor: bool, artist: bool,
+                  positive_voting: bool,
+                  show_publish_as_icon: bool,
+                  full_width_tl_button_header: bool,
+                  icons_as_buttons: bool,
+                  rss_icon_at_top: bool,
+                  publish_button_at_top: bool,
+                  authorized: bool,
+                  moderationActionStr: str,
+                  theme: str,
+                  peertube_instances: [],
+                  allow_local_network_access: bool,
+                  text_mode_banner: str,
+                  accessKeys: {}, system_language: str,
+                  max_like_count: int,
+                  shared_items_federated_domains: [],
+                  signing_priv_key_pem: str,
+                  cw_lists: {}, lists_enabled: str) -> str:
     """Show the timeline as html
     """
     enableTimingLog = False
@@ -480,7 +482,7 @@ def htmlTimeline(css_cache: {}, defaultTimeline: str,
             try:
                 os.remove(dmFile)
             except OSError:
-                print('EX: htmlTimeline unable to delete ' + dmFile)
+                print('EX: html_timeline unable to delete ' + dmFile)
 
     # should the Replies button be highlighted?
     newReply = False
@@ -491,7 +493,7 @@ def htmlTimeline(css_cache: {}, defaultTimeline: str,
             try:
                 os.remove(replyFile)
             except OSError:
-                print('EX: htmlTimeline unable to delete ' + replyFile)
+                print('EX: html_timeline unable to delete ' + replyFile)
 
     # should the Shares button be highlighted?
     newShare = False
@@ -502,7 +504,7 @@ def htmlTimeline(css_cache: {}, defaultTimeline: str,
             try:
                 os.remove(newShareFile)
             except OSError:
-                print('EX: htmlTimeline unable to delete ' + newShareFile)
+                print('EX: html_timeline unable to delete ' + newShareFile)
 
     # should the Wanted button be highlighted?
     newWanted = False
@@ -513,7 +515,7 @@ def htmlTimeline(css_cache: {}, defaultTimeline: str,
             try:
                 os.remove(newWantedFile)
             except OSError:
-                print('EX: htmlTimeline unable to delete ' + newWantedFile)
+                print('EX: html_timeline unable to delete ' + newWantedFile)
 
     # should the Moderation/reports button be highlighted?
     newReport = False
@@ -524,11 +526,11 @@ def htmlTimeline(css_cache: {}, defaultTimeline: str,
             try:
                 os.remove(newReportFile)
             except OSError:
-                print('EX: htmlTimeline unable to delete ' + newReportFile)
+                print('EX: html_timeline unable to delete ' + newReportFile)
 
     separatorStr = ''
     if boxName != 'tlmedia':
-        separatorStr = htmlPostSeparator(base_dir, None)
+        separatorStr = html_post_separator(base_dir, None)
 
     # the css filename
     cssFilename = base_dir + '/epicyon-profile.css'
@@ -537,9 +539,9 @@ def htmlTimeline(css_cache: {}, defaultTimeline: str,
 
     # filename of the banner shown at the top
     bannerFile, bannerFilename = \
-        getBannerFile(base_dir, nickname, domain, theme)
+        get_banner_file(base_dir, nickname, domain, theme)
 
-    _logTimelineTiming(enableTimingLog, timelineStartTime, boxName, '1')
+    _log_timeline_timing(enableTimingLog, timelineStartTime, boxName, '1')
 
     # is the user a moderator?
     if not moderator:
@@ -549,7 +551,7 @@ def htmlTimeline(css_cache: {}, defaultTimeline: str,
     if not editor:
         editor = is_editor(base_dir, nickname)
 
-    _logTimelineTiming(enableTimingLog, timelineStartTime, boxName, '2')
+    _log_timeline_timing(enableTimingLog, timelineStartTime, boxName, '2')
 
     # the appearance of buttons - highlighted or not
     inboxButton = 'button'
@@ -638,7 +640,7 @@ def htmlTimeline(css_cache: {}, defaultTimeline: str,
                         '" src="/icons/person.png"/></a>\n'
                     break
 
-    _logTimelineTiming(enableTimingLog, timelineStartTime, boxName, '3')
+    _log_timeline_timing(enableTimingLog, timelineStartTime, boxName, '3')
 
     # moderation / reports button
     moderationButtonStr = ''
@@ -647,7 +649,7 @@ def htmlTimeline(css_cache: {}, defaultTimeline: str,
             '<a href="' + usersPath + \
             '/moderation"><button class="' + \
             moderationButton + '"><span>' + \
-            htmlHighlightLabel(translate['Mod'], newReport) + \
+            html_highlight_label(translate['Mod'], newReport) + \
             ' </span></button></a>'
 
     # shares, bookmarks and events buttons
@@ -659,13 +661,13 @@ def htmlTimeline(css_cache: {}, defaultTimeline: str,
         sharesButtonStr = \
             '<a href="' + usersPath + '/tlshares"><button class="' + \
             sharesButton + '"><span>' + \
-            htmlHighlightLabel(translate['Shares'], newShare) + \
+            html_highlight_label(translate['Shares'], newShare) + \
             '</span></button></a>'
 
         wantedButtonStr = \
             '<a href="' + usersPath + '/tlwanted"><button class="' + \
             wantedButton + '"><span>' + \
-            htmlHighlightLabel(translate['Wanted'], newWanted) + \
+            html_highlight_label(translate['Wanted'], newWanted) + \
             '</span></button></a>'
 
         bookmarksButtonStr = \
@@ -675,9 +677,9 @@ def htmlTimeline(css_cache: {}, defaultTimeline: str,
 
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
-    tlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
+    tlStr = html_header_with_external_style(cssFilename, instanceTitle, None)
 
-    _logTimelineTiming(enableTimingLog, timelineStartTime, boxName, '4')
+    _log_timeline_timing(enableTimingLog, timelineStartTime, boxName, '4')
 
     # if this is a news instance and we are viewing the news timeline
     newsHeader = False
@@ -692,15 +694,16 @@ def htmlTimeline(css_cache: {}, defaultTimeline: str,
 
     # what screen to go to when a new post is created
     newPostButtonStr += \
-        _htmlTimelineNewPost(manuallyApproveFollowers, boxName,
-                             icons_as_buttons, usersPath, translate)
+        _html_timeline_new_post(manuallyApproveFollowers, boxName,
+                                icons_as_buttons, usersPath, translate)
 
     # keyboard navigation
     tlStr += \
-        _htmlTimelineKeyboard(moderator, text_mode_banner, usersPath, nickname,
-                              newCalendarEvent, newDM, newReply,
-                              newShare, newWanted,
-                              followApprovals, accessKeys, translate)
+        _html_timeline_keyboard(moderator, text_mode_banner,
+                                usersPath, nickname,
+                                newCalendarEvent, newDM, newReply,
+                                newShare, newWanted,
+                                followApprovals, accessKeys, translate)
 
     # banner and row of buttons
     tlStr += \
@@ -715,20 +718,20 @@ def htmlTimeline(css_cache: {}, defaultTimeline: str,
 
     if full_width_tl_button_header:
         tlStr += \
-            headerButtonsTimeline(defaultTimeline, boxName, pageNumber,
-                                  translate, usersPath, mediaButton,
-                                  blogsButton, featuresButton,
-                                  newsButton, inboxButton,
-                                  dmButton, newDM, repliesButton,
-                                  newReply, minimal, sentButton,
-                                  sharesButtonStr, wantedButtonStr,
-                                  bookmarksButtonStr,
-                                  eventsButtonStr, moderationButtonStr,
-                                  newPostButtonStr, base_dir, nickname,
-                                  domain, timelineStartTime,
-                                  newCalendarEvent, calendarPath,
-                                  calendarImage, followApprovals,
-                                  icons_as_buttons, accessKeys)
+            header_buttons_timeline(defaultTimeline, boxName, pageNumber,
+                                    translate, usersPath, mediaButton,
+                                    blogsButton, featuresButton,
+                                    newsButton, inboxButton,
+                                    dmButton, newDM, repliesButton,
+                                    newReply, minimal, sentButton,
+                                    sharesButtonStr, wantedButtonStr,
+                                    bookmarksButtonStr,
+                                    eventsButtonStr, moderationButtonStr,
+                                    newPostButtonStr, base_dir, nickname,
+                                    domain, timelineStartTime,
+                                    newCalendarEvent, calendarPath,
+                                    calendarImage, followApprovals,
+                                    icons_as_buttons, accessKeys)
 
     # start the timeline
     tlStr += \
@@ -745,11 +748,11 @@ def htmlTimeline(css_cache: {}, defaultTimeline: str,
 
     # left column
     leftColumnStr = \
-        getLeftColumnContent(base_dir, nickname, domain_full,
-                             http_prefix, translate,
-                             editor, artist, False, None, rss_icon_at_top,
-                             True, False, theme, accessKeys,
-                             shared_items_federated_domains)
+        get_left_column_content(base_dir, nickname, domain_full,
+                                http_prefix, translate,
+                                editor, artist, False, None, rss_icon_at_top,
+                                True, False, theme, accessKeys,
+                                shared_items_federated_domains)
     tlStr += '  <td valign="top" class="col-left" ' + \
         'id="links" tabindex="-1">' + \
         leftColumnStr + '  </td>\n'
@@ -758,68 +761,70 @@ def htmlTimeline(css_cache: {}, defaultTimeline: str,
 
     if not full_width_tl_button_header:
         tlStr += \
-            headerButtonsTimeline(defaultTimeline, boxName, pageNumber,
-                                  translate, usersPath, mediaButton,
-                                  blogsButton, featuresButton,
-                                  newsButton, inboxButton,
-                                  dmButton, newDM, repliesButton,
-                                  newReply, minimal, sentButton,
-                                  sharesButtonStr, wantedButtonStr,
-                                  bookmarksButtonStr,
-                                  eventsButtonStr, moderationButtonStr,
-                                  newPostButtonStr, base_dir, nickname,
-                                  domain, timelineStartTime,
-                                  newCalendarEvent, calendarPath,
-                                  calendarImage, followApprovals,
-                                  icons_as_buttons, accessKeys)
+            header_buttons_timeline(defaultTimeline, boxName, pageNumber,
+                                    translate, usersPath, mediaButton,
+                                    blogsButton, featuresButton,
+                                    newsButton, inboxButton,
+                                    dmButton, newDM, repliesButton,
+                                    newReply, minimal, sentButton,
+                                    sharesButtonStr, wantedButtonStr,
+                                    bookmarksButtonStr,
+                                    eventsButtonStr, moderationButtonStr,
+                                    newPostButtonStr, base_dir, nickname,
+                                    domain, timelineStartTime,
+                                    newCalendarEvent, calendarPath,
+                                    calendarImage, followApprovals,
+                                    icons_as_buttons, accessKeys)
 
     tlStr += '  <div id="timelineposts" class="timeline-posts">\n'
 
     # second row of buttons for moderator actions
     tlStr += \
-        _htmlTimelineModerationButtons(moderator, boxName, nickname,
-                                       moderationActionStr, translate)
+        _html_timeline_moderation_buttons(moderator, boxName, nickname,
+                                          moderationActionStr, translate)
 
-    _logTimelineTiming(enableTimingLog, timelineStartTime, boxName, '6')
+    _log_timeline_timing(enableTimingLog, timelineStartTime, boxName, '6')
 
     if boxName == 'tlshares':
         maxSharesPerAccount = itemsPerPage
         return (tlStr +
-                _htmlSharesTimeline(translate, pageNumber, itemsPerPage,
-                                    base_dir, actor, nickname, domain, port,
-                                    maxSharesPerAccount, http_prefix,
-                                    shared_items_federated_domains, 'shares') +
-                _htmlTimelineEnd(base_dir, nickname, domain_full,
-                                 http_prefix, translate,
-                                 moderator, editor,
-                                 newswire, positive_voting,
-                                 show_publish_as_icon,
-                                 rss_icon_at_top, publish_button_at_top,
-                                 authorized, theme,
-                                 defaultTimeline, accessKeys,
-                                 boxName,
-                                 enableTimingLog, timelineStartTime) +
-                htmlFooter())
+                _html_shares_timeline(translate, pageNumber, itemsPerPage,
+                                      base_dir, actor, nickname, domain, port,
+                                      maxSharesPerAccount, http_prefix,
+                                      shared_items_federated_domains,
+                                      'shares') +
+                _html_timeline_end(base_dir, nickname, domain_full,
+                                   http_prefix, translate,
+                                   moderator, editor,
+                                   newswire, positive_voting,
+                                   show_publish_as_icon,
+                                   rss_icon_at_top, publish_button_at_top,
+                                   authorized, theme,
+                                   defaultTimeline, accessKeys,
+                                   boxName,
+                                   enableTimingLog, timelineStartTime) +
+                html_footer())
     elif boxName == 'tlwanted':
         maxSharesPerAccount = itemsPerPage
         return (tlStr +
-                _htmlSharesTimeline(translate, pageNumber, itemsPerPage,
-                                    base_dir, actor, nickname, domain, port,
-                                    maxSharesPerAccount, http_prefix,
-                                    shared_items_federated_domains, 'wanted') +
-                _htmlTimelineEnd(base_dir, nickname, domain_full,
-                                 http_prefix, translate,
-                                 moderator, editor,
-                                 newswire, positive_voting,
-                                 show_publish_as_icon,
-                                 rss_icon_at_top, publish_button_at_top,
-                                 authorized, theme,
-                                 defaultTimeline, accessKeys,
-                                 boxName,
-                                 enableTimingLog, timelineStartTime) +
-                htmlFooter())
+                _html_shares_timeline(translate, pageNumber, itemsPerPage,
+                                      base_dir, actor, nickname, domain, port,
+                                      maxSharesPerAccount, http_prefix,
+                                      shared_items_federated_domains,
+                                      'wanted') +
+                _html_timeline_end(base_dir, nickname, domain_full,
+                                   http_prefix, translate,
+                                   moderator, editor,
+                                   newswire, positive_voting,
+                                   show_publish_as_icon,
+                                   rss_icon_at_top, publish_button_at_top,
+                                   authorized, theme,
+                                   defaultTimeline, accessKeys,
+                                   boxName,
+                                   enableTimingLog, timelineStartTime) +
+                html_footer())
 
-    _logTimelineTiming(enableTimingLog, timelineStartTime, boxName, '7')
+    _log_timeline_timing(enableTimingLog, timelineStartTime, boxName, '7')
 
     # separator between posts which only appears in shell browsers
     # such as Lynx and is not read by screen readers
@@ -832,7 +837,7 @@ def htmlTimeline(css_cache: {}, defaultTimeline: str,
     # page up arrow
     if pageNumber > 1:
         tlStr += textModeSeparator
-        tlStr += '<br>' + _pageNumberButtons(usersPath, boxName, pageNumber)
+        tlStr += '<br>' + _page_number_buttons(usersPath, boxName, pageNumber)
         tlStr += \
             '  <center>\n' + \
             '    <a href="' + usersPath + '/' + boxName + \
@@ -868,9 +873,10 @@ def htmlTimeline(css_cache: {}, defaultTimeline: str,
             if item['type'] == 'Create' or \
                item['type'] == 'Announce':
                 # is the actor who sent this post snoozed?
-                if isPersonSnoozed(base_dir, nickname, domain, item['actor']):
+                if is_person_snoozed(base_dir, nickname, domain,
+                                     item['actor']):
                     continue
-                if isSelfAnnounce(item):
+                if is_self_announce(item):
                     continue
 
                 # is the post in the memory cache of recent ones?
@@ -880,47 +886,47 @@ def htmlTimeline(css_cache: {}, defaultTimeline: str,
                     if recent_posts_cache['html'].get(post_id):
                         currTlStr = recent_posts_cache['html'][post_id]
                         currTlStr = \
-                            preparePostFromHtmlCache(nickname,
-                                                     currTlStr,
-                                                     boxName,
-                                                     pageNumber)
-                        _logTimelineTiming(enableTimingLog,
-                                           timelineStartTime,
-                                           boxName, '10')
+                            prepare_post_from_html_cache(nickname,
+                                                         currTlStr,
+                                                         boxName,
+                                                         pageNumber)
+                        _log_timeline_timing(enableTimingLog,
+                                             timelineStartTime,
+                                             boxName, '10')
 
                 if not currTlStr:
-                    _logTimelineTiming(enableTimingLog,
-                                       timelineStartTime,
-                                       boxName, '11')
+                    _log_timeline_timing(enableTimingLog,
+                                         timelineStartTime,
+                                         boxName, '11')
 
                     # read the post from disk
                     currTlStr = \
-                        individualPostAsHtml(signing_priv_key_pem,
-                                             False, recent_posts_cache,
-                                             max_recent_posts,
-                                             translate, pageNumber,
-                                             base_dir, session,
-                                             cached_webfingers,
-                                             person_cache,
-                                             nickname, domain, port,
-                                             item, None, True,
-                                             allow_deletion,
-                                             http_prefix, project_version,
-                                             boxName,
-                                             yt_replace_domain,
-                                             twitter_replacement_domain,
-                                             show_published_date_only,
-                                             peertube_instances,
-                                             allow_local_network_access,
-                                             theme, system_language,
-                                             max_like_count,
-                                             boxName != 'dm',
-                                             showIndividualPostIcons,
-                                             manuallyApproveFollowers,
-                                             False, True, useCacheOnly,
-                                             cw_lists, lists_enabled)
-                    _logTimelineTiming(enableTimingLog,
-                                       timelineStartTime, boxName, '12')
+                        individual_post_as_html(signing_priv_key_pem,
+                                                False, recent_posts_cache,
+                                                max_recent_posts,
+                                                translate, pageNumber,
+                                                base_dir, session,
+                                                cached_webfingers,
+                                                person_cache,
+                                                nickname, domain, port,
+                                                item, None, True,
+                                                allow_deletion,
+                                                http_prefix, project_version,
+                                                boxName,
+                                                yt_replace_domain,
+                                                twitter_replacement_domain,
+                                                show_published_date_only,
+                                                peertube_instances,
+                                                allow_local_network_access,
+                                                theme, system_language,
+                                                max_like_count,
+                                                boxName != 'dm',
+                                                showIndividualPostIcons,
+                                                manuallyApproveFollowers,
+                                                False, True, useCacheOnly,
+                                                cw_lists, lists_enabled)
+                    _log_timeline_timing(enableTimingLog,
+                                         timelineStartTime, boxName, '12')
 
                 if currTlStr:
                     if currTlStr not in tlStr:
@@ -949,30 +955,30 @@ def htmlTimeline(css_cache: {}, defaultTimeline: str,
             translate['Page down'] + '" alt="' + \
             translate['Page down'] + '"></a>\n' + \
             '      </center>\n'
-        tlStr += _pageNumberButtons(usersPath, boxName, pageNumber)
+        tlStr += _page_number_buttons(usersPath, boxName, pageNumber)
         tlStr += textModeSeparator
     elif itemCtr == 0:
-        tlStr += _getHelpForTimeline(base_dir, boxName)
+        tlStr += _get_help_for_timeline(base_dir, boxName)
 
     tlStr += \
-        _htmlTimelineEnd(base_dir, nickname, domain_full,
-                         http_prefix, translate,
-                         moderator, editor,
-                         newswire, positive_voting,
-                         show_publish_as_icon,
-                         rss_icon_at_top, publish_button_at_top,
-                         authorized, theme,
-                         defaultTimeline, accessKeys,
-                         boxName,
-                         enableTimingLog, timelineStartTime)
-    tlStr += htmlFooter()
+        _html_timeline_end(base_dir, nickname, domain_full,
+                           http_prefix, translate,
+                           moderator, editor,
+                           newswire, positive_voting,
+                           show_publish_as_icon,
+                           rss_icon_at_top, publish_button_at_top,
+                           authorized, theme,
+                           defaultTimeline, accessKeys,
+                           boxName,
+                           enableTimingLog, timelineStartTime)
+    tlStr += html_footer()
     return tlStr
 
 
-def htmlIndividualShare(domain: str, shareId: str,
-                        actor: str, sharedItem: {}, translate: {},
-                        showContact: bool, removeButton: bool,
-                        sharesFileType: str) -> str:
+def html_individual_share(domain: str, shareId: str,
+                          actor: str, sharedItem: {}, translate: {},
+                          showContact: bool, removeButton: bool,
+                          sharesFileType: str) -> str:
     """Returns an individual shared item as html
     """
     profileStr = '<div class="container">\n'
@@ -1041,18 +1047,18 @@ def htmlIndividualShare(domain: str, shareId: str,
     return profileStr
 
 
-def _htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
-                        base_dir: str, actor: str,
-                        nickname: str, domain: str, port: int,
-                        maxSharesPerAccount: int, http_prefix: str,
-                        shared_items_federated_domains: [],
-                        sharesFileType: str) -> str:
+def _html_shares_timeline(translate: {}, pageNumber: int, itemsPerPage: int,
+                          base_dir: str, actor: str,
+                          nickname: str, domain: str, port: int,
+                          maxSharesPerAccount: int, http_prefix: str,
+                          shared_items_federated_domains: [],
+                          sharesFileType: str) -> str:
     """Show shared items timeline as html
     """
     sharesJson, lastPage = \
-        sharesTimelineJson(actor, pageNumber, itemsPerPage,
-                           base_dir, domain, nickname, maxSharesPerAccount,
-                           shared_items_federated_domains, sharesFileType)
+        shares_timeline_json(actor, pageNumber, itemsPerPage,
+                             base_dir, domain, nickname, maxSharesPerAccount,
+                             shared_items_federated_domains, sharesFileType)
     domain_full = get_full_domain(domain, port)
     actor = local_actor_url(http_prefix, nickname, domain_full)
     adminNickname = get_config_param(base_dir, 'admin')
@@ -1064,7 +1070,7 @@ def _htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
 
     if pageNumber > 1:
         timelineStr += '<br>' + \
-            _pageNumberButtons(actor, 'tl' + sharesFileType, pageNumber)
+            _page_number_buttons(actor, 'tl' + sharesFileType, pageNumber)
         timelineStr += \
             '  <center>\n' + \
             '    <a href="' + actor + '/tl' + sharesFileType + '?page=' + \
@@ -1074,7 +1080,7 @@ def _htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
             '" alt="' + translate['Page up'] + '"></a>\n' + \
             '  </center>\n'
 
-    separatorStr = htmlPostSeparator(base_dir, None)
+    separatorStr = html_post_separator(base_dir, None)
     ctr = 0
 
     isAdminAccount = False
@@ -1094,15 +1100,15 @@ def _htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
                isAdminAccount or is_moderatorAccount:
                 showRemoveButton = True
         timelineStr += \
-            htmlIndividualShare(domain, sharedItem['shareId'],
-                                actor, sharedItem, translate,
-                                showContactButton, showRemoveButton,
-                                sharesFileType)
+            html_individual_share(domain, sharedItem['shareId'],
+                                  actor, sharedItem, translate,
+                                  showContactButton, showRemoveButton,
+                                  sharesFileType)
         timelineStr += separatorStr
         ctr += 1
 
     if ctr == 0:
-        timelineStr += _getHelpForTimeline(base_dir, 'tl' + sharesFileType)
+        timelineStr += _get_help_for_timeline(base_dir, 'tl' + sharesFileType)
 
     if not lastPage:
         timelineStr += \
@@ -1114,77 +1120,136 @@ def _htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
             '" alt="' + translate['Page down'] + '"></a>\n' + \
             '  </center>\n'
         timelineStr += \
-            _pageNumberButtons(actor, 'tl' + sharesFileType, pageNumber)
+            _page_number_buttons(actor, 'tl' + sharesFileType, pageNumber)
 
     return timelineStr
 
 
-def htmlShares(css_cache: {}, defaultTimeline: str,
-               recent_posts_cache: {}, max_recent_posts: int,
-               translate: {}, pageNumber: int, itemsPerPage: int,
-               session, base_dir: str,
-               cached_webfingers: {}, person_cache: {},
-               nickname: str, domain: str, port: int,
-               allow_deletion: bool,
-               http_prefix: str, project_version: str,
-               yt_replace_domain: str,
-               twitter_replacement_domain: str,
-               show_published_date_only: bool,
-               newswire: {}, positive_voting: bool,
-               show_publish_as_icon: bool,
-               full_width_tl_button_header: bool,
-               icons_as_buttons: bool,
-               rss_icon_at_top: bool,
-               publish_button_at_top: bool,
-               authorized: bool, theme: str,
-               peertube_instances: [],
-               allow_local_network_access: bool,
-               text_mode_banner: str,
-               accessKeys: {}, system_language: str,
-               max_like_count: int,
-               shared_items_federated_domains: [],
-               signing_priv_key_pem: str,
-               cw_lists: {}, lists_enabled: str) -> str:
+def html_shares(css_cache: {}, defaultTimeline: str,
+                recent_posts_cache: {}, max_recent_posts: int,
+                translate: {}, pageNumber: int, itemsPerPage: int,
+                session, base_dir: str,
+                cached_webfingers: {}, person_cache: {},
+                nickname: str, domain: str, port: int,
+                allow_deletion: bool,
+                http_prefix: str, project_version: str,
+                yt_replace_domain: str,
+                twitter_replacement_domain: str,
+                show_published_date_only: bool,
+                newswire: {}, positive_voting: bool,
+                show_publish_as_icon: bool,
+                full_width_tl_button_header: bool,
+                icons_as_buttons: bool,
+                rss_icon_at_top: bool,
+                publish_button_at_top: bool,
+                authorized: bool, theme: str,
+                peertube_instances: [],
+                allow_local_network_access: bool,
+                text_mode_banner: str,
+                accessKeys: {}, system_language: str,
+                max_like_count: int,
+                shared_items_federated_domains: [],
+                signing_priv_key_pem: str,
+                cw_lists: {}, lists_enabled: str) -> str:
     """Show the shares timeline as html
     """
     manuallyApproveFollowers = \
         follower_approval_active(base_dir, nickname, domain)
     artist = is_artist(base_dir, nickname)
 
-    return htmlTimeline(css_cache, defaultTimeline,
-                        recent_posts_cache, max_recent_posts,
-                        translate, pageNumber,
-                        itemsPerPage, session, base_dir,
-                        cached_webfingers, person_cache,
-                        nickname, domain, port, None,
-                        'tlshares', allow_deletion,
-                        http_prefix, project_version,
-                        manuallyApproveFollowers,
-                        False,
-                        yt_replace_domain,
-                        twitter_replacement_domain,
-                        show_published_date_only,
-                        newswire, False, False, artist,
-                        positive_voting, show_publish_as_icon,
-                        full_width_tl_button_header,
-                        icons_as_buttons, rss_icon_at_top,
-                        publish_button_at_top,
-                        authorized, None, theme, peertube_instances,
-                        allow_local_network_access, text_mode_banner,
-                        accessKeys, system_language, max_like_count,
-                        shared_items_federated_domains,
-                        signing_priv_key_pem,
-                        cw_lists, lists_enabled)
+    return html_timeline(css_cache, defaultTimeline,
+                         recent_posts_cache, max_recent_posts,
+                         translate, pageNumber,
+                         itemsPerPage, session, base_dir,
+                         cached_webfingers, person_cache,
+                         nickname, domain, port, None,
+                         'tlshares', allow_deletion,
+                         http_prefix, project_version,
+                         manuallyApproveFollowers,
+                         False,
+                         yt_replace_domain,
+                         twitter_replacement_domain,
+                         show_published_date_only,
+                         newswire, False, False, artist,
+                         positive_voting, show_publish_as_icon,
+                         full_width_tl_button_header,
+                         icons_as_buttons, rss_icon_at_top,
+                         publish_button_at_top,
+                         authorized, None, theme, peertube_instances,
+                         allow_local_network_access, text_mode_banner,
+                         accessKeys, system_language, max_like_count,
+                         shared_items_federated_domains,
+                         signing_priv_key_pem,
+                         cw_lists, lists_enabled)
 
 
-def htmlWanted(css_cache: {}, defaultTimeline: str,
+def html_wanted(css_cache: {}, defaultTimeline: str,
+                recent_posts_cache: {}, max_recent_posts: int,
+                translate: {}, pageNumber: int, itemsPerPage: int,
+                session, base_dir: str,
+                cached_webfingers: {}, person_cache: {},
+                nickname: str, domain: str, port: int,
+                allow_deletion: bool,
+                http_prefix: str, project_version: str,
+                yt_replace_domain: str,
+                twitter_replacement_domain: str,
+                show_published_date_only: bool,
+                newswire: {}, positive_voting: bool,
+                show_publish_as_icon: bool,
+                full_width_tl_button_header: bool,
+                icons_as_buttons: bool,
+                rss_icon_at_top: bool,
+                publish_button_at_top: bool,
+                authorized: bool, theme: str,
+                peertube_instances: [],
+                allow_local_network_access: bool,
+                text_mode_banner: str,
+                accessKeys: {}, system_language: str,
+                max_like_count: int,
+                shared_items_federated_domains: [],
+                signing_priv_key_pem: str,
+                cw_lists: {}, lists_enabled: str) -> str:
+    """Show the wanted timeline as html
+    """
+    manuallyApproveFollowers = \
+        follower_approval_active(base_dir, nickname, domain)
+    artist = is_artist(base_dir, nickname)
+
+    return html_timeline(css_cache, defaultTimeline,
+                         recent_posts_cache, max_recent_posts,
+                         translate, pageNumber,
+                         itemsPerPage, session, base_dir,
+                         cached_webfingers, person_cache,
+                         nickname, domain, port, None,
+                         'tlwanted', allow_deletion,
+                         http_prefix, project_version,
+                         manuallyApproveFollowers,
+                         False,
+                         yt_replace_domain,
+                         twitter_replacement_domain,
+                         show_published_date_only,
+                         newswire, False, False, artist,
+                         positive_voting, show_publish_as_icon,
+                         full_width_tl_button_header,
+                         icons_as_buttons, rss_icon_at_top,
+                         publish_button_at_top,
+                         authorized, None, theme, peertube_instances,
+                         allow_local_network_access, text_mode_banner,
+                         accessKeys, system_language, max_like_count,
+                         shared_items_federated_domains,
+                         signing_priv_key_pem,
+                         cw_lists, lists_enabled)
+
+
+def html_inbox(css_cache: {}, defaultTimeline: str,
                recent_posts_cache: {}, max_recent_posts: int,
                translate: {}, pageNumber: int, itemsPerPage: int,
                session, base_dir: str,
                cached_webfingers: {}, person_cache: {},
-               nickname: str, domain: str, port: int,
+               nickname: str, domain: str, port: int, inboxJson: {},
                allow_deletion: bool,
                http_prefix: str, project_version: str,
+               minimal: bool,
                yt_replace_domain: str,
                twitter_replacement_domain: str,
                show_published_date_only: bool,
@@ -1203,210 +1268,204 @@ def htmlWanted(css_cache: {}, defaultTimeline: str,
                shared_items_federated_domains: [],
                signing_priv_key_pem: str,
                cw_lists: {}, lists_enabled: str) -> str:
-    """Show the wanted timeline as html
-    """
-    manuallyApproveFollowers = \
-        follower_approval_active(base_dir, nickname, domain)
-    artist = is_artist(base_dir, nickname)
-
-    return htmlTimeline(css_cache, defaultTimeline,
-                        recent_posts_cache, max_recent_posts,
-                        translate, pageNumber,
-                        itemsPerPage, session, base_dir,
-                        cached_webfingers, person_cache,
-                        nickname, domain, port, None,
-                        'tlwanted', allow_deletion,
-                        http_prefix, project_version,
-                        manuallyApproveFollowers,
-                        False,
-                        yt_replace_domain,
-                        twitter_replacement_domain,
-                        show_published_date_only,
-                        newswire, False, False, artist,
-                        positive_voting, show_publish_as_icon,
-                        full_width_tl_button_header,
-                        icons_as_buttons, rss_icon_at_top,
-                        publish_button_at_top,
-                        authorized, None, theme, peertube_instances,
-                        allow_local_network_access, text_mode_banner,
-                        accessKeys, system_language, max_like_count,
-                        shared_items_federated_domains,
-                        signing_priv_key_pem,
-                        cw_lists, lists_enabled)
-
-
-def htmlInbox(css_cache: {}, defaultTimeline: str,
-              recent_posts_cache: {}, max_recent_posts: int,
-              translate: {}, pageNumber: int, itemsPerPage: int,
-              session, base_dir: str,
-              cached_webfingers: {}, person_cache: {},
-              nickname: str, domain: str, port: int, inboxJson: {},
-              allow_deletion: bool,
-              http_prefix: str, project_version: str,
-              minimal: bool,
-              yt_replace_domain: str,
-              twitter_replacement_domain: str,
-              show_published_date_only: bool,
-              newswire: {}, positive_voting: bool,
-              show_publish_as_icon: bool,
-              full_width_tl_button_header: bool,
-              icons_as_buttons: bool,
-              rss_icon_at_top: bool,
-              publish_button_at_top: bool,
-              authorized: bool, theme: str,
-              peertube_instances: [],
-              allow_local_network_access: bool,
-              text_mode_banner: str,
-              accessKeys: {}, system_language: str,
-              max_like_count: int,
-              shared_items_federated_domains: [],
-              signing_priv_key_pem: str,
-              cw_lists: {}, lists_enabled: str) -> str:
     """Show the inbox as html
     """
     manuallyApproveFollowers = \
         follower_approval_active(base_dir, nickname, domain)
     artist = is_artist(base_dir, nickname)
 
-    return htmlTimeline(css_cache, defaultTimeline,
-                        recent_posts_cache, max_recent_posts,
-                        translate, pageNumber,
-                        itemsPerPage, session, base_dir,
-                        cached_webfingers, person_cache,
-                        nickname, domain, port, inboxJson,
-                        'inbox', allow_deletion,
-                        http_prefix, project_version,
-                        manuallyApproveFollowers,
-                        minimal,
-                        yt_replace_domain,
-                        twitter_replacement_domain,
-                        show_published_date_only,
-                        newswire, False, False, artist,
-                        positive_voting, show_publish_as_icon,
-                        full_width_tl_button_header,
-                        icons_as_buttons, rss_icon_at_top,
-                        publish_button_at_top,
-                        authorized, None, theme, peertube_instances,
-                        allow_local_network_access, text_mode_banner,
-                        accessKeys, system_language, max_like_count,
-                        shared_items_federated_domains,
-                        signing_priv_key_pem,
-                        cw_lists, lists_enabled)
+    return html_timeline(css_cache, defaultTimeline,
+                         recent_posts_cache, max_recent_posts,
+                         translate, pageNumber,
+                         itemsPerPage, session, base_dir,
+                         cached_webfingers, person_cache,
+                         nickname, domain, port, inboxJson,
+                         'inbox', allow_deletion,
+                         http_prefix, project_version,
+                         manuallyApproveFollowers,
+                         minimal,
+                         yt_replace_domain,
+                         twitter_replacement_domain,
+                         show_published_date_only,
+                         newswire, False, False, artist,
+                         positive_voting, show_publish_as_icon,
+                         full_width_tl_button_header,
+                         icons_as_buttons, rss_icon_at_top,
+                         publish_button_at_top,
+                         authorized, None, theme, peertube_instances,
+                         allow_local_network_access, text_mode_banner,
+                         accessKeys, system_language, max_like_count,
+                         shared_items_federated_domains,
+                         signing_priv_key_pem,
+                         cw_lists, lists_enabled)
 
 
-def htmlBookmarks(css_cache: {}, defaultTimeline: str,
-                  recent_posts_cache: {}, max_recent_posts: int,
-                  translate: {}, pageNumber: int, itemsPerPage: int,
-                  session, base_dir: str,
-                  cached_webfingers: {}, person_cache: {},
-                  nickname: str, domain: str, port: int, bookmarksJson: {},
-                  allow_deletion: bool,
-                  http_prefix: str, project_version: str,
-                  minimal: bool,
-                  yt_replace_domain: str,
-                  twitter_replacement_domain: str,
-                  show_published_date_only: bool,
-                  newswire: {}, positive_voting: bool,
-                  show_publish_as_icon: bool,
-                  full_width_tl_button_header: bool,
-                  icons_as_buttons: bool,
-                  rss_icon_at_top: bool,
-                  publish_button_at_top: bool,
-                  authorized: bool, theme: str,
-                  peertube_instances: [],
-                  allow_local_network_access: bool,
-                  text_mode_banner: str,
-                  accessKeys: {}, system_language: str,
-                  max_like_count: int,
-                  shared_items_federated_domains: [],
-                  signing_priv_key_pem: str,
-                  cw_lists: {}, lists_enabled: str) -> str:
+def html_bookmarks(css_cache: {}, defaultTimeline: str,
+                   recent_posts_cache: {}, max_recent_posts: int,
+                   translate: {}, pageNumber: int, itemsPerPage: int,
+                   session, base_dir: str,
+                   cached_webfingers: {}, person_cache: {},
+                   nickname: str, domain: str, port: int, bookmarksJson: {},
+                   allow_deletion: bool,
+                   http_prefix: str, project_version: str,
+                   minimal: bool,
+                   yt_replace_domain: str,
+                   twitter_replacement_domain: str,
+                   show_published_date_only: bool,
+                   newswire: {}, positive_voting: bool,
+                   show_publish_as_icon: bool,
+                   full_width_tl_button_header: bool,
+                   icons_as_buttons: bool,
+                   rss_icon_at_top: bool,
+                   publish_button_at_top: bool,
+                   authorized: bool, theme: str,
+                   peertube_instances: [],
+                   allow_local_network_access: bool,
+                   text_mode_banner: str,
+                   accessKeys: {}, system_language: str,
+                   max_like_count: int,
+                   shared_items_federated_domains: [],
+                   signing_priv_key_pem: str,
+                   cw_lists: {}, lists_enabled: str) -> str:
     """Show the bookmarks as html
     """
     manuallyApproveFollowers = \
         follower_approval_active(base_dir, nickname, domain)
     artist = is_artist(base_dir, nickname)
 
-    return htmlTimeline(css_cache, defaultTimeline,
-                        recent_posts_cache, max_recent_posts,
-                        translate, pageNumber,
-                        itemsPerPage, session, base_dir,
-                        cached_webfingers, person_cache,
-                        nickname, domain, port, bookmarksJson,
-                        'tlbookmarks', allow_deletion,
-                        http_prefix, project_version,
-                        manuallyApproveFollowers,
-                        minimal,
-                        yt_replace_domain,
-                        twitter_replacement_domain,
-                        show_published_date_only,
-                        newswire, False, False, artist,
-                        positive_voting, show_publish_as_icon,
-                        full_width_tl_button_header,
-                        icons_as_buttons, rss_icon_at_top,
-                        publish_button_at_top,
-                        authorized, None, theme, peertube_instances,
-                        allow_local_network_access, text_mode_banner,
-                        accessKeys, system_language, max_like_count,
-                        shared_items_federated_domains, signing_priv_key_pem,
-                        cw_lists, lists_enabled)
+    return html_timeline(css_cache, defaultTimeline,
+                         recent_posts_cache, max_recent_posts,
+                         translate, pageNumber,
+                         itemsPerPage, session, base_dir,
+                         cached_webfingers, person_cache,
+                         nickname, domain, port, bookmarksJson,
+                         'tlbookmarks', allow_deletion,
+                         http_prefix, project_version,
+                         manuallyApproveFollowers,
+                         minimal,
+                         yt_replace_domain,
+                         twitter_replacement_domain,
+                         show_published_date_only,
+                         newswire, False, False, artist,
+                         positive_voting, show_publish_as_icon,
+                         full_width_tl_button_header,
+                         icons_as_buttons, rss_icon_at_top,
+                         publish_button_at_top,
+                         authorized, None, theme, peertube_instances,
+                         allow_local_network_access, text_mode_banner,
+                         accessKeys, system_language, max_like_count,
+                         shared_items_federated_domains, signing_priv_key_pem,
+                         cw_lists, lists_enabled)
 
 
-def htmlInboxDMs(css_cache: {}, defaultTimeline: str,
-                 recent_posts_cache: {}, max_recent_posts: int,
-                 translate: {}, pageNumber: int, itemsPerPage: int,
-                 session, base_dir: str,
-                 cached_webfingers: {}, person_cache: {},
-                 nickname: str, domain: str, port: int, inboxJson: {},
-                 allow_deletion: bool,
-                 http_prefix: str, project_version: str,
-                 minimal: bool,
-                 yt_replace_domain: str,
-                 twitter_replacement_domain: str,
-                 show_published_date_only: bool,
-                 newswire: {}, positive_voting: bool,
-                 show_publish_as_icon: bool,
-                 full_width_tl_button_header: bool,
-                 icons_as_buttons: bool,
-                 rss_icon_at_top: bool,
-                 publish_button_at_top: bool,
-                 authorized: bool, theme: str,
-                 peertube_instances: [],
-                 allow_local_network_access: bool,
-                 text_mode_banner: str,
-                 accessKeys: {}, system_language: str,
-                 max_like_count: int,
-                 shared_items_federated_domains: [],
-                 signing_priv_key_pem: str,
-                 cw_lists: {}, lists_enabled: str) -> str:
+def html_inbox_d_ms(css_cache: {}, defaultTimeline: str,
+                    recent_posts_cache: {}, max_recent_posts: int,
+                    translate: {}, pageNumber: int, itemsPerPage: int,
+                    session, base_dir: str,
+                    cached_webfingers: {}, person_cache: {},
+                    nickname: str, domain: str, port: int, inboxJson: {},
+                    allow_deletion: bool,
+                    http_prefix: str, project_version: str,
+                    minimal: bool,
+                    yt_replace_domain: str,
+                    twitter_replacement_domain: str,
+                    show_published_date_only: bool,
+                    newswire: {}, positive_voting: bool,
+                    show_publish_as_icon: bool,
+                    full_width_tl_button_header: bool,
+                    icons_as_buttons: bool,
+                    rss_icon_at_top: bool,
+                    publish_button_at_top: bool,
+                    authorized: bool, theme: str,
+                    peertube_instances: [],
+                    allow_local_network_access: bool,
+                    text_mode_banner: str,
+                    accessKeys: {}, system_language: str,
+                    max_like_count: int,
+                    shared_items_federated_domains: [],
+                    signing_priv_key_pem: str,
+                    cw_lists: {}, lists_enabled: str) -> str:
     """Show the DM timeline as html
     """
     artist = is_artist(base_dir, nickname)
-    return htmlTimeline(css_cache, defaultTimeline,
-                        recent_posts_cache, max_recent_posts,
-                        translate, pageNumber,
-                        itemsPerPage, session, base_dir,
-                        cached_webfingers, person_cache,
-                        nickname, domain, port, inboxJson,
-                        'dm', allow_deletion,
-                        http_prefix, project_version, False, minimal,
-                        yt_replace_domain,
-                        twitter_replacement_domain,
-                        show_published_date_only,
-                        newswire, False, False, artist, positive_voting,
-                        show_publish_as_icon,
-                        full_width_tl_button_header,
-                        icons_as_buttons, rss_icon_at_top,
-                        publish_button_at_top,
-                        authorized, None, theme, peertube_instances,
-                        allow_local_network_access, text_mode_banner,
-                        accessKeys, system_language, max_like_count,
-                        shared_items_federated_domains,
-                        signing_priv_key_pem,
-                        cw_lists, lists_enabled)
+    return html_timeline(css_cache, defaultTimeline,
+                         recent_posts_cache, max_recent_posts,
+                         translate, pageNumber,
+                         itemsPerPage, session, base_dir,
+                         cached_webfingers, person_cache,
+                         nickname, domain, port, inboxJson,
+                         'dm', allow_deletion,
+                         http_prefix, project_version, False, minimal,
+                         yt_replace_domain,
+                         twitter_replacement_domain,
+                         show_published_date_only,
+                         newswire, False, False, artist, positive_voting,
+                         show_publish_as_icon,
+                         full_width_tl_button_header,
+                         icons_as_buttons, rss_icon_at_top,
+                         publish_button_at_top,
+                         authorized, None, theme, peertube_instances,
+                         allow_local_network_access, text_mode_banner,
+                         accessKeys, system_language, max_like_count,
+                         shared_items_federated_domains,
+                         signing_priv_key_pem,
+                         cw_lists, lists_enabled)
 
 
-def htmlInboxReplies(css_cache: {}, defaultTimeline: str,
+def html_inbox_replies(css_cache: {}, defaultTimeline: str,
+                       recent_posts_cache: {}, max_recent_posts: int,
+                       translate: {}, pageNumber: int, itemsPerPage: int,
+                       session, base_dir: str,
+                       cached_webfingers: {}, person_cache: {},
+                       nickname: str, domain: str, port: int, inboxJson: {},
+                       allow_deletion: bool,
+                       http_prefix: str, project_version: str,
+                       minimal: bool,
+                       yt_replace_domain: str,
+                       twitter_replacement_domain: str,
+                       show_published_date_only: bool,
+                       newswire: {}, positive_voting: bool,
+                       show_publish_as_icon: bool,
+                       full_width_tl_button_header: bool,
+                       icons_as_buttons: bool,
+                       rss_icon_at_top: bool,
+                       publish_button_at_top: bool,
+                       authorized: bool, theme: str,
+                       peertube_instances: [],
+                       allow_local_network_access: bool,
+                       text_mode_banner: str,
+                       accessKeys: {}, system_language: str,
+                       max_like_count: int,
+                       shared_items_federated_domains: [],
+                       signing_priv_key_pem: str,
+                       cw_lists: {}, lists_enabled: str) -> str:
+    """Show the replies timeline as html
+    """
+    artist = is_artist(base_dir, nickname)
+    return html_timeline(css_cache, defaultTimeline,
+                         recent_posts_cache, max_recent_posts,
+                         translate, pageNumber,
+                         itemsPerPage, session, base_dir,
+                         cached_webfingers, person_cache,
+                         nickname, domain, port, inboxJson, 'tlreplies',
+                         allow_deletion, http_prefix, project_version, False,
+                         minimal,
+                         yt_replace_domain,
+                         twitter_replacement_domain,
+                         show_published_date_only,
+                         newswire, False, False, artist,
+                         positive_voting, show_publish_as_icon,
+                         full_width_tl_button_header,
+                         icons_as_buttons, rss_icon_at_top,
+                         publish_button_at_top,
+                         authorized, None, theme, peertube_instances,
+                         allow_local_network_access, text_mode_banner,
+                         accessKeys, system_language, max_like_count,
+                         shared_items_federated_domains, signing_priv_key_pem,
+                         cw_lists, lists_enabled)
+
+
+def html_inbox_media(css_cache: {}, defaultTimeline: str,
                      recent_posts_cache: {}, max_recent_posts: int,
                      translate: {}, pageNumber: int, itemsPerPage: int,
                      session, base_dir: str,
@@ -1433,293 +1492,240 @@ def htmlInboxReplies(css_cache: {}, defaultTimeline: str,
                      shared_items_federated_domains: [],
                      signing_priv_key_pem: str,
                      cw_lists: {}, lists_enabled: str) -> str:
-    """Show the replies timeline as html
-    """
-    artist = is_artist(base_dir, nickname)
-    return htmlTimeline(css_cache, defaultTimeline,
-                        recent_posts_cache, max_recent_posts,
-                        translate, pageNumber,
-                        itemsPerPage, session, base_dir,
-                        cached_webfingers, person_cache,
-                        nickname, domain, port, inboxJson, 'tlreplies',
-                        allow_deletion, http_prefix, project_version, False,
-                        minimal,
-                        yt_replace_domain,
-                        twitter_replacement_domain,
-                        show_published_date_only,
-                        newswire, False, False, artist,
-                        positive_voting, show_publish_as_icon,
-                        full_width_tl_button_header,
-                        icons_as_buttons, rss_icon_at_top,
-                        publish_button_at_top,
-                        authorized, None, theme, peertube_instances,
-                        allow_local_network_access, text_mode_banner,
-                        accessKeys, system_language, max_like_count,
-                        shared_items_federated_domains, signing_priv_key_pem,
-                        cw_lists, lists_enabled)
-
-
-def htmlInboxMedia(css_cache: {}, defaultTimeline: str,
-                   recent_posts_cache: {}, max_recent_posts: int,
-                   translate: {}, pageNumber: int, itemsPerPage: int,
-                   session, base_dir: str,
-                   cached_webfingers: {}, person_cache: {},
-                   nickname: str, domain: str, port: int, inboxJson: {},
-                   allow_deletion: bool,
-                   http_prefix: str, project_version: str,
-                   minimal: bool,
-                   yt_replace_domain: str,
-                   twitter_replacement_domain: str,
-                   show_published_date_only: bool,
-                   newswire: {}, positive_voting: bool,
-                   show_publish_as_icon: bool,
-                   full_width_tl_button_header: bool,
-                   icons_as_buttons: bool,
-                   rss_icon_at_top: bool,
-                   publish_button_at_top: bool,
-                   authorized: bool, theme: str,
-                   peertube_instances: [],
-                   allow_local_network_access: bool,
-                   text_mode_banner: str,
-                   accessKeys: {}, system_language: str,
-                   max_like_count: int,
-                   shared_items_federated_domains: [],
-                   signing_priv_key_pem: str,
-                   cw_lists: {}, lists_enabled: str) -> str:
     """Show the media timeline as html
     """
     artist = is_artist(base_dir, nickname)
-    return htmlTimeline(css_cache, defaultTimeline,
-                        recent_posts_cache, max_recent_posts,
-                        translate, pageNumber,
-                        itemsPerPage, session, base_dir,
-                        cached_webfingers, person_cache,
-                        nickname, domain, port, inboxJson, 'tlmedia',
-                        allow_deletion, http_prefix, project_version, False,
-                        minimal,
-                        yt_replace_domain,
-                        twitter_replacement_domain,
-                        show_published_date_only,
-                        newswire, False, False, artist,
-                        positive_voting, show_publish_as_icon,
-                        full_width_tl_button_header,
-                        icons_as_buttons, rss_icon_at_top,
-                        publish_button_at_top,
-                        authorized, None, theme, peertube_instances,
-                        allow_local_network_access, text_mode_banner,
-                        accessKeys, system_language, max_like_count,
-                        shared_items_federated_domains, signing_priv_key_pem,
-                        cw_lists, lists_enabled)
+    return html_timeline(css_cache, defaultTimeline,
+                         recent_posts_cache, max_recent_posts,
+                         translate, pageNumber,
+                         itemsPerPage, session, base_dir,
+                         cached_webfingers, person_cache,
+                         nickname, domain, port, inboxJson, 'tlmedia',
+                         allow_deletion, http_prefix, project_version, False,
+                         minimal,
+                         yt_replace_domain,
+                         twitter_replacement_domain,
+                         show_published_date_only,
+                         newswire, False, False, artist,
+                         positive_voting, show_publish_as_icon,
+                         full_width_tl_button_header,
+                         icons_as_buttons, rss_icon_at_top,
+                         publish_button_at_top,
+                         authorized, None, theme, peertube_instances,
+                         allow_local_network_access, text_mode_banner,
+                         accessKeys, system_language, max_like_count,
+                         shared_items_federated_domains, signing_priv_key_pem,
+                         cw_lists, lists_enabled)
 
 
-def htmlInboxBlogs(css_cache: {}, defaultTimeline: str,
-                   recent_posts_cache: {}, max_recent_posts: int,
-                   translate: {}, pageNumber: int, itemsPerPage: int,
-                   session, base_dir: str,
-                   cached_webfingers: {}, person_cache: {},
-                   nickname: str, domain: str, port: int, inboxJson: {},
-                   allow_deletion: bool,
-                   http_prefix: str, project_version: str,
-                   minimal: bool,
-                   yt_replace_domain: str,
-                   twitter_replacement_domain: str,
-                   show_published_date_only: bool,
-                   newswire: {}, positive_voting: bool,
-                   show_publish_as_icon: bool,
-                   full_width_tl_button_header: bool,
-                   icons_as_buttons: bool,
-                   rss_icon_at_top: bool,
-                   publish_button_at_top: bool,
-                   authorized: bool, theme: str,
-                   peertube_instances: [],
-                   allow_local_network_access: bool,
-                   text_mode_banner: str,
-                   accessKeys: {}, system_language: str,
-                   max_like_count: int,
-                   shared_items_federated_domains: [],
-                   signing_priv_key_pem: str,
-                   cw_lists: {}, lists_enabled: str) -> str:
+def html_inbox_blogs(css_cache: {}, defaultTimeline: str,
+                     recent_posts_cache: {}, max_recent_posts: int,
+                     translate: {}, pageNumber: int, itemsPerPage: int,
+                     session, base_dir: str,
+                     cached_webfingers: {}, person_cache: {},
+                     nickname: str, domain: str, port: int, inboxJson: {},
+                     allow_deletion: bool,
+                     http_prefix: str, project_version: str,
+                     minimal: bool,
+                     yt_replace_domain: str,
+                     twitter_replacement_domain: str,
+                     show_published_date_only: bool,
+                     newswire: {}, positive_voting: bool,
+                     show_publish_as_icon: bool,
+                     full_width_tl_button_header: bool,
+                     icons_as_buttons: bool,
+                     rss_icon_at_top: bool,
+                     publish_button_at_top: bool,
+                     authorized: bool, theme: str,
+                     peertube_instances: [],
+                     allow_local_network_access: bool,
+                     text_mode_banner: str,
+                     accessKeys: {}, system_language: str,
+                     max_like_count: int,
+                     shared_items_federated_domains: [],
+                     signing_priv_key_pem: str,
+                     cw_lists: {}, lists_enabled: str) -> str:
     """Show the blogs timeline as html
     """
     artist = is_artist(base_dir, nickname)
-    return htmlTimeline(css_cache, defaultTimeline,
-                        recent_posts_cache, max_recent_posts,
-                        translate, pageNumber,
-                        itemsPerPage, session, base_dir,
-                        cached_webfingers, person_cache,
-                        nickname, domain, port, inboxJson, 'tlblogs',
-                        allow_deletion, http_prefix, project_version, False,
-                        minimal,
-                        yt_replace_domain,
-                        twitter_replacement_domain,
-                        show_published_date_only,
-                        newswire, False, False, artist,
-                        positive_voting, show_publish_as_icon,
-                        full_width_tl_button_header,
-                        icons_as_buttons, rss_icon_at_top,
-                        publish_button_at_top,
-                        authorized, None, theme, peertube_instances,
-                        allow_local_network_access, text_mode_banner,
-                        accessKeys, system_language, max_like_count,
-                        shared_items_federated_domains, signing_priv_key_pem,
-                        cw_lists, lists_enabled)
+    return html_timeline(css_cache, defaultTimeline,
+                         recent_posts_cache, max_recent_posts,
+                         translate, pageNumber,
+                         itemsPerPage, session, base_dir,
+                         cached_webfingers, person_cache,
+                         nickname, domain, port, inboxJson, 'tlblogs',
+                         allow_deletion, http_prefix, project_version, False,
+                         minimal,
+                         yt_replace_domain,
+                         twitter_replacement_domain,
+                         show_published_date_only,
+                         newswire, False, False, artist,
+                         positive_voting, show_publish_as_icon,
+                         full_width_tl_button_header,
+                         icons_as_buttons, rss_icon_at_top,
+                         publish_button_at_top,
+                         authorized, None, theme, peertube_instances,
+                         allow_local_network_access, text_mode_banner,
+                         accessKeys, system_language, max_like_count,
+                         shared_items_federated_domains, signing_priv_key_pem,
+                         cw_lists, lists_enabled)
 
 
-def htmlInboxFeatures(css_cache: {}, defaultTimeline: str,
-                      recent_posts_cache: {}, max_recent_posts: int,
-                      translate: {}, pageNumber: int, itemsPerPage: int,
-                      session, base_dir: str,
-                      cached_webfingers: {}, person_cache: {},
-                      nickname: str, domain: str, port: int, inboxJson: {},
-                      allow_deletion: bool,
-                      http_prefix: str, project_version: str,
-                      minimal: bool,
-                      yt_replace_domain: str,
-                      twitter_replacement_domain: str,
-                      show_published_date_only: bool,
-                      newswire: {}, positive_voting: bool,
-                      show_publish_as_icon: bool,
-                      full_width_tl_button_header: bool,
-                      icons_as_buttons: bool,
-                      rss_icon_at_top: bool,
-                      publish_button_at_top: bool,
-                      authorized: bool,
-                      theme: str,
-                      peertube_instances: [],
-                      allow_local_network_access: bool,
-                      text_mode_banner: str,
-                      accessKeys: {}, system_language: str,
-                      max_like_count: int,
-                      shared_items_federated_domains: [],
-                      signing_priv_key_pem: str,
-                      cw_lists: {}, lists_enabled: str) -> str:
+def html_inbox_features(css_cache: {}, defaultTimeline: str,
+                        recent_posts_cache: {}, max_recent_posts: int,
+                        translate: {}, pageNumber: int, itemsPerPage: int,
+                        session, base_dir: str,
+                        cached_webfingers: {}, person_cache: {},
+                        nickname: str, domain: str, port: int, inboxJson: {},
+                        allow_deletion: bool,
+                        http_prefix: str, project_version: str,
+                        minimal: bool,
+                        yt_replace_domain: str,
+                        twitter_replacement_domain: str,
+                        show_published_date_only: bool,
+                        newswire: {}, positive_voting: bool,
+                        show_publish_as_icon: bool,
+                        full_width_tl_button_header: bool,
+                        icons_as_buttons: bool,
+                        rss_icon_at_top: bool,
+                        publish_button_at_top: bool,
+                        authorized: bool,
+                        theme: str,
+                        peertube_instances: [],
+                        allow_local_network_access: bool,
+                        text_mode_banner: str,
+                        accessKeys: {}, system_language: str,
+                        max_like_count: int,
+                        shared_items_federated_domains: [],
+                        signing_priv_key_pem: str,
+                        cw_lists: {}, lists_enabled: str) -> str:
     """Show the features timeline as html
     """
-    return htmlTimeline(css_cache, defaultTimeline,
-                        recent_posts_cache, max_recent_posts,
-                        translate, pageNumber,
-                        itemsPerPage, session, base_dir,
-                        cached_webfingers, person_cache,
-                        nickname, domain, port, inboxJson, 'tlfeatures',
-                        allow_deletion, http_prefix, project_version, False,
-                        minimal,
-                        yt_replace_domain,
-                        twitter_replacement_domain,
-                        show_published_date_only,
-                        newswire, False, False, False,
-                        positive_voting, show_publish_as_icon,
-                        full_width_tl_button_header,
-                        icons_as_buttons, rss_icon_at_top,
-                        publish_button_at_top,
-                        authorized, None, theme, peertube_instances,
-                        allow_local_network_access, text_mode_banner,
-                        accessKeys, system_language, max_like_count,
-                        shared_items_federated_domains, signing_priv_key_pem,
-                        cw_lists, lists_enabled)
+    return html_timeline(css_cache, defaultTimeline,
+                         recent_posts_cache, max_recent_posts,
+                         translate, pageNumber,
+                         itemsPerPage, session, base_dir,
+                         cached_webfingers, person_cache,
+                         nickname, domain, port, inboxJson, 'tlfeatures',
+                         allow_deletion, http_prefix, project_version, False,
+                         minimal,
+                         yt_replace_domain,
+                         twitter_replacement_domain,
+                         show_published_date_only,
+                         newswire, False, False, False,
+                         positive_voting, show_publish_as_icon,
+                         full_width_tl_button_header,
+                         icons_as_buttons, rss_icon_at_top,
+                         publish_button_at_top,
+                         authorized, None, theme, peertube_instances,
+                         allow_local_network_access, text_mode_banner,
+                         accessKeys, system_language, max_like_count,
+                         shared_items_federated_domains, signing_priv_key_pem,
+                         cw_lists, lists_enabled)
 
 
-def htmlInboxNews(css_cache: {}, defaultTimeline: str,
-                  recent_posts_cache: {}, max_recent_posts: int,
-                  translate: {}, pageNumber: int, itemsPerPage: int,
-                  session, base_dir: str,
-                  cached_webfingers: {}, person_cache: {},
-                  nickname: str, domain: str, port: int, inboxJson: {},
-                  allow_deletion: bool,
-                  http_prefix: str, project_version: str,
-                  minimal: bool,
-                  yt_replace_domain: str,
-                  twitter_replacement_domain: str,
-                  show_published_date_only: bool,
-                  newswire: {}, moderator: bool, editor: bool, artist: bool,
-                  positive_voting: bool, show_publish_as_icon: bool,
-                  full_width_tl_button_header: bool,
-                  icons_as_buttons: bool,
-                  rss_icon_at_top: bool,
-                  publish_button_at_top: bool,
-                  authorized: bool, theme: str,
-                  peertube_instances: [],
-                  allow_local_network_access: bool,
-                  text_mode_banner: str,
-                  accessKeys: {}, system_language: str,
-                  max_like_count: int,
-                  shared_items_federated_domains: [],
-                  signing_priv_key_pem: str,
-                  cw_lists: {}, lists_enabled: str) -> str:
+def html_inbox_news(css_cache: {}, defaultTimeline: str,
+                    recent_posts_cache: {}, max_recent_posts: int,
+                    translate: {}, pageNumber: int, itemsPerPage: int,
+                    session, base_dir: str,
+                    cached_webfingers: {}, person_cache: {},
+                    nickname: str, domain: str, port: int, inboxJson: {},
+                    allow_deletion: bool,
+                    http_prefix: str, project_version: str,
+                    minimal: bool,
+                    yt_replace_domain: str,
+                    twitter_replacement_domain: str,
+                    show_published_date_only: bool,
+                    newswire: {}, moderator: bool, editor: bool, artist: bool,
+                    positive_voting: bool, show_publish_as_icon: bool,
+                    full_width_tl_button_header: bool,
+                    icons_as_buttons: bool,
+                    rss_icon_at_top: bool,
+                    publish_button_at_top: bool,
+                    authorized: bool, theme: str,
+                    peertube_instances: [],
+                    allow_local_network_access: bool,
+                    text_mode_banner: str,
+                    accessKeys: {}, system_language: str,
+                    max_like_count: int,
+                    shared_items_federated_domains: [],
+                    signing_priv_key_pem: str,
+                    cw_lists: {}, lists_enabled: str) -> str:
     """Show the news timeline as html
     """
-    return htmlTimeline(css_cache, defaultTimeline,
-                        recent_posts_cache, max_recent_posts,
-                        translate, pageNumber,
-                        itemsPerPage, session, base_dir,
-                        cached_webfingers, person_cache,
-                        nickname, domain, port, inboxJson, 'tlnews',
-                        allow_deletion, http_prefix, project_version, False,
-                        minimal,
-                        yt_replace_domain,
-                        twitter_replacement_domain,
-                        show_published_date_only,
-                        newswire, moderator, editor, artist,
-                        positive_voting, show_publish_as_icon,
-                        full_width_tl_button_header,
-                        icons_as_buttons, rss_icon_at_top,
-                        publish_button_at_top,
-                        authorized, None, theme, peertube_instances,
-                        allow_local_network_access, text_mode_banner,
-                        accessKeys, system_language, max_like_count,
-                        shared_items_federated_domains, signing_priv_key_pem,
-                        cw_lists, lists_enabled)
+    return html_timeline(css_cache, defaultTimeline,
+                         recent_posts_cache, max_recent_posts,
+                         translate, pageNumber,
+                         itemsPerPage, session, base_dir,
+                         cached_webfingers, person_cache,
+                         nickname, domain, port, inboxJson, 'tlnews',
+                         allow_deletion, http_prefix, project_version, False,
+                         minimal,
+                         yt_replace_domain,
+                         twitter_replacement_domain,
+                         show_published_date_only,
+                         newswire, moderator, editor, artist,
+                         positive_voting, show_publish_as_icon,
+                         full_width_tl_button_header,
+                         icons_as_buttons, rss_icon_at_top,
+                         publish_button_at_top,
+                         authorized, None, theme, peertube_instances,
+                         allow_local_network_access, text_mode_banner,
+                         accessKeys, system_language, max_like_count,
+                         shared_items_federated_domains, signing_priv_key_pem,
+                         cw_lists, lists_enabled)
 
 
-def htmlOutbox(css_cache: {}, defaultTimeline: str,
-               recent_posts_cache: {}, max_recent_posts: int,
-               translate: {}, pageNumber: int, itemsPerPage: int,
-               session, base_dir: str,
-               cached_webfingers: {}, person_cache: {},
-               nickname: str, domain: str, port: int, outboxJson: {},
-               allow_deletion: bool,
-               http_prefix: str, project_version: str,
-               minimal: bool,
-               yt_replace_domain: str,
-               twitter_replacement_domain: str,
-               show_published_date_only: bool,
-               newswire: {}, positive_voting: bool,
-               show_publish_as_icon: bool,
-               full_width_tl_button_header: bool,
-               icons_as_buttons: bool,
-               rss_icon_at_top: bool,
-               publish_button_at_top: bool,
-               authorized: bool, theme: str,
-               peertube_instances: [],
-               allow_local_network_access: bool,
-               text_mode_banner: str,
-               accessKeys: {}, system_language: str,
-               max_like_count: int,
-               shared_items_federated_domains: [],
-               signing_priv_key_pem: str,
-               cw_lists: {}, lists_enabled: str) -> str:
+def html_outbox(css_cache: {}, defaultTimeline: str,
+                recent_posts_cache: {}, max_recent_posts: int,
+                translate: {}, pageNumber: int, itemsPerPage: int,
+                session, base_dir: str,
+                cached_webfingers: {}, person_cache: {},
+                nickname: str, domain: str, port: int, outboxJson: {},
+                allow_deletion: bool,
+                http_prefix: str, project_version: str,
+                minimal: bool,
+                yt_replace_domain: str,
+                twitter_replacement_domain: str,
+                show_published_date_only: bool,
+                newswire: {}, positive_voting: bool,
+                show_publish_as_icon: bool,
+                full_width_tl_button_header: bool,
+                icons_as_buttons: bool,
+                rss_icon_at_top: bool,
+                publish_button_at_top: bool,
+                authorized: bool, theme: str,
+                peertube_instances: [],
+                allow_local_network_access: bool,
+                text_mode_banner: str,
+                accessKeys: {}, system_language: str,
+                max_like_count: int,
+                shared_items_federated_domains: [],
+                signing_priv_key_pem: str,
+                cw_lists: {}, lists_enabled: str) -> str:
     """Show the Outbox as html
     """
     manuallyApproveFollowers = \
         follower_approval_active(base_dir, nickname, domain)
     artist = is_artist(base_dir, nickname)
-    return htmlTimeline(css_cache, defaultTimeline,
-                        recent_posts_cache, max_recent_posts,
-                        translate, pageNumber,
-                        itemsPerPage, session, base_dir,
-                        cached_webfingers, person_cache,
-                        nickname, domain, port, outboxJson, 'outbox',
-                        allow_deletion, http_prefix, project_version,
-                        manuallyApproveFollowers, minimal,
-                        yt_replace_domain,
-                        twitter_replacement_domain,
-                        show_published_date_only,
-                        newswire, False, False, artist, positive_voting,
-                        show_publish_as_icon,
-                        full_width_tl_button_header,
-                        icons_as_buttons, rss_icon_at_top,
-                        publish_button_at_top,
-                        authorized, None, theme, peertube_instances,
-                        allow_local_network_access, text_mode_banner,
-                        accessKeys, system_language, max_like_count,
-                        shared_items_federated_domains, signing_priv_key_pem,
-                        cw_lists, lists_enabled)
+    return html_timeline(css_cache, defaultTimeline,
+                         recent_posts_cache, max_recent_posts,
+                         translate, pageNumber,
+                         itemsPerPage, session, base_dir,
+                         cached_webfingers, person_cache,
+                         nickname, domain, port, outboxJson, 'outbox',
+                         allow_deletion, http_prefix, project_version,
+                         manuallyApproveFollowers, minimal,
+                         yt_replace_domain,
+                         twitter_replacement_domain,
+                         show_published_date_only,
+                         newswire, False, False, artist, positive_voting,
+                         show_publish_as_icon,
+                         full_width_tl_button_header,
+                         icons_as_buttons, rss_icon_at_top,
+                         publish_button_at_top,
+                         authorized, None, theme, peertube_instances,
+                         allow_local_network_access, text_mode_banner,
+                         accessKeys, system_language, max_like_count,
+                         shared_items_federated_domains, signing_priv_key_pem,
+                         cw_lists, lists_enabled)

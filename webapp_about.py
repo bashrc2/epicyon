@@ -10,14 +10,14 @@ __module_group__ = "Web Interface"
 import os
 from shutil import copyfile
 from utils import get_config_param
-from webapp_utils import htmlHeaderWithWebsiteMarkup
-from webapp_utils import htmlFooter
-from markdown import markdownToHtml
+from webapp_utils import html_header_with_website_markup
+from webapp_utils import html_footer
+from markdown import markdown_to_html
 
 
-def htmlAbout(css_cache: {}, base_dir: str, http_prefix: str,
-              domain_full: str, onion_domain: str, translate: {},
-              system_language: str) -> str:
+def html_about(css_cache: {}, base_dir: str, http_prefix: str,
+               domain_full: str, onion_domain: str, translate: {},
+               system_language: str) -> str:
     """Show the about screen
     """
     adminNickname = get_config_param(base_dir, 'admin')
@@ -33,7 +33,7 @@ def htmlAbout(css_cache: {}, base_dir: str, http_prefix: str,
     aboutText = 'Information about this instance goes here.'
     if os.path.isfile(base_dir + '/accounts/about.md'):
         with open(base_dir + '/accounts/about.md', 'r') as aboutFile:
-            aboutText = markdownToHtml(aboutFile.read())
+            aboutText = markdown_to_html(aboutFile.read())
 
     aboutForm = ''
     cssFilename = base_dir + '/epicyon-profile.css'
@@ -43,9 +43,9 @@ def htmlAbout(css_cache: {}, base_dir: str, http_prefix: str,
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
     aboutForm = \
-        htmlHeaderWithWebsiteMarkup(cssFilename, instanceTitle,
-                                    http_prefix, domain_full,
-                                    system_language)
+        html_header_with_website_markup(cssFilename, instanceTitle,
+                                        http_prefix, domain_full,
+                                        system_language)
     aboutForm += '<div class="container">' + aboutText + '</div>'
     if onion_domain:
         aboutForm += \
@@ -61,5 +61,5 @@ def htmlAbout(css_cache: {}, base_dir: str, http_prefix: str,
             adminActor + '">' + adminNickname + '</a>. ' + \
             translate['Version'] + ' ' + __version__ + \
             '</p>\n</center></div>\n'
-    aboutForm += htmlFooter()
+    aboutForm += html_footer()
     return aboutForm

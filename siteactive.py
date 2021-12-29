@@ -43,7 +43,7 @@ class Result:
         self.headers = {h[0]: h[1] for h in headers}
 
 
-def _siteActiveParseUrl(url):
+def _site_active_parse_url(url):
     """Returns an object with properties representing
 
     scheme:   URL scheme specifier
@@ -66,7 +66,7 @@ def _siteActiveParseUrl(url):
     return loc
 
 
-def _siteACtiveHttpConnect(loc, timeout: int):
+def _site_a_ctive_http_connect(loc, timeout: int):
     """Connects to the host and returns an HTTP or HTTPS connections."""
     if loc.scheme == "https":
         ssl_context = ssl.SSLContext()
@@ -75,10 +75,10 @@ def _siteACtiveHttpConnect(loc, timeout: int):
     return http.client.HTTPConnection(loc.netloc, timeout=timeout)
 
 
-def _siteActiveHttpRequest(loc, timeout: int):
+def _site_active_http_request(loc, timeout: int):
     """Performs a HTTP request and return response in a Result object.
     """
-    conn = _siteACtiveHttpConnect(loc, timeout)
+    conn = _site_a_ctive_http_connect(loc, timeout)
     method = 'HEAD'
 
     conn.request(method, loc.path)
@@ -93,7 +93,7 @@ def _siteActiveHttpRequest(loc, timeout: int):
     return result
 
 
-def siteIsActive(url: str, timeout: int) -> bool:
+def site_is_active(url: str, timeout: int) -> bool:
     """Returns true if the current url is resolvable.
     This can be used to check that an instance is online before
     trying to send posts to it.
@@ -106,11 +106,11 @@ def siteIsActive(url: str, timeout: int) -> bool:
         # skip this check for onion and i2p
         return True
 
-    loc = _siteActiveParseUrl(url)
+    loc = _site_active_parse_url(url)
     result = Result(url=url)
 
     try:
-        result = _siteActiveHttpRequest(loc, timeout)
+        result = _site_active_http_request(loc, timeout)
 
         if 400 <= result.status < 500:
             return result
@@ -118,6 +118,6 @@ def siteIsActive(url: str, timeout: int) -> bool:
         return True
 
     except BaseException:
-        print('EX: siteIsActive ' + str(loc))
+        print('EX: site_is_active ' + str(loc))
         pass
     return False

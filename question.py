@@ -14,8 +14,8 @@ from utils import save_json
 from utils import has_object_dict
 
 
-def questionUpdateVotes(base_dir: str, nickname: str, domain: str,
-                        replyJson: {}) -> ({}, str):
+def question_update_votes(base_dir: str, nickname: str, domain: str,
+                          replyJson: {}) -> ({}, str):
     """ For a given reply update the votes on a question
     Returns the question json object if the vote totals were changed
     """
@@ -120,7 +120,7 @@ def questionUpdateVotes(base_dir: str, nickname: str, domain: str,
     return questionJson, questionPostFilename
 
 
-def isQuestion(postObjectJson: {}) -> bool:
+def is_question(postObjectJson: {}) -> bool:
     """ is the given post a question?
     """
     if postObjectJson['type'] != 'Create' and \

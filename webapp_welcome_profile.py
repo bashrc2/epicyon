@@ -16,16 +16,16 @@ from utils import get_image_extensions
 from utils import get_image_formats
 from utils import acct_dir
 from utils import local_actor_url
-from webapp_utils import htmlHeaderWithExternalStyle
-from webapp_utils import htmlFooter
-from webapp_utils import editTextField
-from markdown import markdownToHtml
+from webapp_utils import html_header_with_external_style
+from webapp_utils import html_footer
+from webapp_utils import edit_text_field
+from markdown import markdown_to_html
 
 
-def htmlWelcomeProfile(base_dir: str, nickname: str, domain: str,
-                       http_prefix: str, domain_full: str,
-                       language: str, translate: {},
-                       theme_name: str) -> str:
+def html_welcome_profile(base_dir: str, nickname: str, domain: str,
+                         http_prefix: str, domain_full: str,
+                         language: str, translate: {},
+                         theme_name: str) -> str:
     """Returns the welcome profile screen to set avatar and bio
     """
     # set a custom background for the welcome screen
@@ -60,14 +60,15 @@ def htmlWelcomeProfile(base_dir: str, nickname: str, domain: str,
         with open(profileFilename, 'r') as profileFile:
             profileText = profileFile.read()
             profileText = profileText.replace('INSTANCE', instanceTitle)
-            profileText = markdownToHtml(remove_html(profileText))
+            profileText = markdown_to_html(remove_html(profileText))
 
     profileForm = ''
     cssFilename = base_dir + '/epicyon-welcome.css'
     if os.path.isfile(base_dir + '/welcome.css'):
         cssFilename = base_dir + '/welcome.css'
 
-    profileForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
+    profileForm = \
+        html_header_with_external_style(cssFilename, instanceTitle, None)
 
     # get the url of the avatar
     for ext in get_image_extensions():
@@ -104,8 +105,8 @@ def htmlWelcomeProfile(base_dir: str, nickname: str, domain: str,
     displayNickname = actor_json['name']
     profileForm += '<div class="container">\n'
     profileForm += \
-        editTextField(translate['Nickname'], 'displayNickname',
-                      displayNickname)
+        edit_text_field(translate['Nickname'], 'displayNickname',
+                        displayNickname)
 
     bioStr = \
         actor_json['summary'].replace('<p>', '').replace('</p>', '')
@@ -128,5 +129,5 @@ def htmlWelcomeProfile(base_dir: str, nickname: str, domain: str,
     profileForm += '</div>\n'
 
     profileForm += '</form>\n'
-    profileForm += htmlFooter()
+    profileForm += html_footer()
     return profileForm

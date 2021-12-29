@@ -8,7 +8,7 @@ __status__ = "Production"
 __module_group__ = "Web Interface"
 
 
-def _markdownEmphasisHtml(markdown: str) -> str:
+def _markdown_emphasis_html(markdown: str) -> str:
     """Add italics and bold html markup to the given markdown
     """
     replacements = {
@@ -53,7 +53,7 @@ def _markdownEmphasisHtml(markdown: str) -> str:
     return markdown
 
 
-def _markdownReplaceQuotes(markdown: str) -> str:
+def _markdown_replace_quotes(markdown: str) -> str:
     """Replaces > quotes with html blockquote
     """
     if '> ' not in markdown:
@@ -90,7 +90,7 @@ def _markdownReplaceQuotes(markdown: str) -> str:
     return result
 
 
-def _markdownReplaceLinks(markdown: str, images: bool = False) -> str:
+def _markdown_replace_links(markdown: str, images: bool = False) -> str:
     """Replaces markdown links with html
     Optionally replace image links
     """
@@ -128,13 +128,13 @@ def _markdownReplaceLinks(markdown: str, images: bool = False) -> str:
     return markdown
 
 
-def markdownToHtml(markdown: str) -> str:
+def markdown_to_html(markdown: str) -> str:
     """Converts markdown formatted text to html
     """
-    markdown = _markdownReplaceQuotes(markdown)
-    markdown = _markdownEmphasisHtml(markdown)
-    markdown = _markdownReplaceLinks(markdown, True)
-    markdown = _markdownReplaceLinks(markdown)
+    markdown = _markdown_replace_quotes(markdown)
+    markdown = _markdown_emphasis_html(markdown)
+    markdown = _markdown_replace_links(markdown, True)
+    markdown = _markdown_replace_links(markdown)
 
     # replace headers
     linesList = markdown.split('\n')

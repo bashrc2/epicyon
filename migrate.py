@@ -13,18 +13,20 @@ from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
 from utils import acct_dir
 from utils import has_group_type
-from webfinger import webfingerHandle
-from blocking import isBlocked
-from posts import getUserUrl
+from webfinger import webfinger_handle
+from blocking import is_blocked
+from posts import get_user_url
 from follow import unfollow_account
-from person import getActorJson
+from person import get_actor_json
 
 
-def _moveFollowingHandlesForAccount(base_dir: str, nickname: str, domain: str,
-                                    session,
-                                    http_prefix: str, cached_webfingers: {},
-                                    debug: bool,
-                                    signing_priv_key_pem: str) -> int:
+def _move_following_handles_for_account(base_dir: str,
+                                        nickname: str, domain: str,
+                                        session,
+                                        http_prefix: str,
+                                        cached_webfingers: {},
+                                        debug: bool,
+                                        signing_priv_key_pem: str) -> int:
     """Goes through all follows for an account and updates any that have moved
     """
     ctr = 0
@@ -36,17 +38,17 @@ def _moveFollowingHandlesForAccount(base_dir: str, nickname: str, domain: str,
         for followHandle in followingHandles:
             followHandle = followHandle.strip("\n").strip("\r")
             ctr += \
-                _updateMovedHandle(base_dir, nickname, domain,
-                                   followHandle, session,
-                                   http_prefix, cached_webfingers,
-                                   debug, signing_priv_key_pem)
+                _update_moved_handle(base_dir, nickname, domain,
+                                     followHandle, session,
+                                     http_prefix, cached_webfingers,
+                                     debug, signing_priv_key_pem)
     return ctr
 
 
-def _updateMovedHandle(base_dir: str, nickname: str, domain: str,
-                       handle: str, session,
-                       http_prefix: str, cached_webfingers: {},
-                       debug: bool, signing_priv_key_pem: str) -> int:
+def _update_moved_handle(base_dir: str, nickname: str, domain: str,
+                         handle: str, session,
+                         http_prefix: str, cached_webfingers: {},
+                         debug: bool, signing_priv_key_pem: str) -> int:
     """Check if an account has moved, and if so then alter following.txt
     for each account.
     Returns 1 if moved, 0 otherwise
@@ -58,10 +60,10 @@ def _updateMovedHandle(base_dir: str, nickname: str, domain: str,
         return ctr
     if handle.startswith('@'):
         handle = handle[1:]
-    wfRequest = webfingerHandle(session, handle,
-                                http_prefix, cached_webfingers,
-                                domain, __version__, debug, False,
-                                signing_priv_key_pem)
+    wfRequest = webfinger_handle(session, handle,
+                                 http_prefix, cached_webfingers,
+                                 domain, __version__, debug, False,
+                                 signing_priv_key_pem)
     if not wfRequest:
         print('updateMovedHandle unable to webfinger ' + handle)
         return ctr
@@ -77,7 +79,7 @@ def _updateMovedHandle(base_dir: str, nickname: str, domain: str,
         return ctr
 
     if not personUrl:
-        personUrl = getUserUrl(wfRequest, 0, debug)
+        personUrl = get_user_url(wfRequest, 0, debug)
         if not personUrl:
             return ctr
 
@@ -85,8 +87,8 @@ def _updateMovedHandle(base_dir: str, nickname: str, domain: str,
     if http_prefix == 'gnunet':
         gnunet = True
     personJson = \
-        getActorJson(domain, personUrl, http_prefix, gnunet, debug, False,
-                     signing_priv_key_pem, None)
+        get_actor_json(domain, personUrl, http_prefix, gnunet, debug, False,
+                       signing_priv_key_pem, None)
     if not personJson:
         return ctr
     if not personJson.get('movedTo'):
@@ -107,8 +109,8 @@ def _updateMovedHandle(base_dir: str, nickname: str, domain: str,
         if movedToPort != 80 and movedToPort != 443:
             movedToDomainFull = movedToDomain + ':' + str(movedToPort)
     group_account = has_group_type(base_dir, movedToUrl, None)
-    if isBlocked(base_dir, nickname, domain,
-                 movedToNickname, movedToDomain):
+    if is_blocked(base_dir, nickname, domain,
+                  movedToNickname, movedToDomain):
         # someone that you follow has moved to a blocked domain
         # so just unfollow them
         unfollow_account(base_dir, nickname, domain,
@@ -173,9 +175,9 @@ def _updateMovedHandle(base_dir: str, nickname: str, domain: str,
     return ctr
 
 
-def migrateAccounts(base_dir: str, session,
-                    http_prefix: str, cached_webfingers: {},
-                    debug: bool, signing_priv_key_pem: str) -> int:
+def migrate_accounts(base_dir: str, session,
+                     http_prefix: str, cached_webfingers: {},
+                     debug: bool, signing_priv_key_pem: str) -> int:
     """If followed accounts change then this modifies the
     following lists for each account accordingly.
     Returns the number of accounts migrated
@@ -189,9 +191,9 @@ def migrateAccounts(base_dir: str, session,
             nickname = handle.split('@')[0]
             domain = handle.split('@')[1]
             ctr += \
-                _moveFollowingHandlesForAccount(base_dir, nickname, domain,
-                                                session, http_prefix,
-                                                cached_webfingers, debug,
-                                                signing_priv_key_pem)
+                _move_following_handles_for_account(base_dir, nickname, domain,
+                                                    session, http_prefix,
+                                                    cached_webfingers, debug,
+                                                    signing_priv_key_pem)
         break
     return ctr

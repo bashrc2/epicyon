@@ -37,8 +37,8 @@ from utils import acct_dir
 from utils import local_actor_url
 
 
-def E2EEremoveDevice(base_dir: str, nickname: str, domain: str,
-                     deviceId: str) -> bool:
+def e2e_eremove_device(base_dir: str, nickname: str, domain: str,
+                       deviceId: str) -> bool:
     """Unregisters a device for e2ee
     """
     personDir = acct_dir(base_dir, nickname, domain)
@@ -47,12 +47,12 @@ def E2EEremoveDevice(base_dir: str, nickname: str, domain: str,
         try:
             os.remove(deviceFilename)
         except OSError:
-            print('EX: E2EEremoveDevice unable to delete ' + deviceFilename)
+            print('EX: e2e_eremove_device unable to delete ' + deviceFilename)
         return True
     return False
 
 
-def E2EEvalidDevice(deviceJson: {}) -> bool:
+def e2e_evalid_device(deviceJson: {}) -> bool:
     """Returns true if the given json contains valid device keys
     """
     if not isinstance(deviceJson, dict):
@@ -102,12 +102,12 @@ def E2EEvalidDevice(deviceJson: {}) -> bool:
     return True
 
 
-def E2EEaddDevice(base_dir: str, nickname: str, domain: str,
-                  deviceId: str, name: str, claimUrl: str,
-                  fingerprintPublicKey: str,
-                  identityPublicKey: str,
-                  fingerprintKeyType="Ed25519Key",
-                  identityKeyType="Curve25519Key") -> bool:
+def e2e_eadd_device(base_dir: str, nickname: str, domain: str,
+                    deviceId: str, name: str, claimUrl: str,
+                    fingerprintPublicKey: str,
+                    identityPublicKey: str,
+                    fingerprintKeyType="Ed25519Key",
+                    identityKeyType="Curve25519Key") -> bool:
     """Registers a device for e2ee
     claimUrl could be something like:
         http://localhost:3000/users/admin/claim?id=11119
@@ -139,8 +139,8 @@ def E2EEaddDevice(base_dir: str, nickname: str, domain: str,
     return save_json(deviceDict, deviceFilename)
 
 
-def E2EEdevicesCollection(base_dir: str, nickname: str, domain: str,
-                          domain_full: str, http_prefix: str) -> {}:
+def e2e_edevices_collection(base_dir: str, nickname: str, domain: str,
+                            domain_full: str, http_prefix: str) -> {}:
     """Returns a list of registered devices
     """
     personDir = acct_dir(base_dir, nickname, domain)
@@ -169,7 +169,7 @@ def E2EEdevicesCollection(base_dir: str, nickname: str, domain: str,
     return devicesDict
 
 
-def E2EEdecryptMessageFromDevice(message_json: {}) -> str:
+def e2e_edecrypt_message_from_device(message_json: {}) -> str:
     """Locally decrypts a message on the device.
     This should probably be a link to a local script
     or native app, such that what the user sees isn't

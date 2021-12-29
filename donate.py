@@ -8,7 +8,7 @@ __status__ = "Production"
 __module_group__ = "Profile Metadata"
 
 
-def _getDonationTypes() -> []:
+def _get_donation_types() -> []:
     return ('patreon', 'paypal', 'gofundme', 'liberapay',
             'kickstarter', 'indiegogo', 'crowdsupply',
             'subscribestar')
@@ -23,7 +23,7 @@ def get_donation_url(actor_json: {}) -> str:
     """
     if not actor_json.get('attachment'):
         return ''
-    donationType = _getDonationTypes()
+    donationType = _get_donation_types()
     for property_value in actor_json['attachment']:
         if not property_value.get('name'):
             continue
@@ -81,7 +81,7 @@ def set_donation_url(actor_json: {}, donateUrl: str) -> None:
     if not actor_json.get('attachment'):
         actor_json['attachment'] = []
 
-    donationType = _getDonationTypes()
+    donationType = _get_donation_types()
     donateName = None
     for paymentService in donationType:
         if paymentService in donateUrl:

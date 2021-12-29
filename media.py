@@ -26,10 +26,10 @@ from utils import acct_dir
 from shutil import copyfile
 from shutil import rmtree
 from shutil import move
-from city import spoofGeolocation
+from city import spoof_geolocation
 
 
-def _getBlurHash() -> str:
+def _get_blur_hash() -> str:
     """You may laugh, but this is a lot less computationally intensive,
     especially on large images, while still providing some visual variety
     in the timeline
@@ -52,9 +52,9 @@ def _getBlurHash() -> str:
     return random.choice(hashes)
 
 
-def _replaceSiloDomain(post_json_object: {},
-                       siloDomain: str, replacementDomain: str,
-                       system_language: str) -> None:
+def _replace_silo_domain(post_json_object: {},
+                         siloDomain: str, replacementDomain: str,
+                         system_language: str) -> None:
     """Replace a silo domain with a replacement domain
     """
     if not replacementDomain:
@@ -77,8 +77,8 @@ def replace_you_tube(post_json_object: {}, replacementDomain: str,
     """Replace YouTube with a replacement domain
     This denies Google some, but not all, tracking data
     """
-    _replaceSiloDomain(post_json_object, 'www.youtube.com',
-                       replacementDomain, system_language)
+    _replace_silo_domain(post_json_object, 'www.youtube.com',
+                         replacementDomain, system_language)
 
 
 def replace_twitter(post_json_object: {}, replacementDomain: str,
@@ -86,11 +86,11 @@ def replace_twitter(post_json_object: {}, replacementDomain: str,
     """Replace Twitter with a replacement domain
     This allows you to view twitter posts without having a twitter account
     """
-    _replaceSiloDomain(post_json_object, 'twitter.com',
-                       replacementDomain, system_language)
+    _replace_silo_domain(post_json_object, 'twitter.com',
+                         replacementDomain, system_language)
 
 
-def _removeMetaData(image_filename: str, outputFilename: str) -> None:
+def _remove_meta_data(image_filename: str, outputFilename: str) -> None:
     """Attempts to do this with pure python didn't work well,
     so better to use a dedicated tool if one is installed
     """
@@ -106,9 +106,9 @@ def _removeMetaData(image_filename: str, outputFilename: str) -> None:
         os.system('/usr/bin/mogrify -strip ' + outputFilename)  # nosec
 
 
-def _spoofMetaData(base_dir: str, nickname: str, domain: str,
-                   outputFilename: str, spoofCity: str,
-                   content_license_url: str) -> None:
+def _spoof_meta_data(base_dir: str, nickname: str, domain: str,
+                     outputFilename: str, spoofCity: str,
+                     content_license_url: str) -> None:
     """Spoof image metadata using a decoy model for a given city
     """
     if not os.path.isfile(outputFilename):
@@ -137,8 +137,8 @@ def _spoofMetaData(base_dir: str, nickname: str, domain: str,
         published = curr_timeAdjusted.strftime("%Y:%m:%d %H:%M:%S+00:00")
         (latitude, longitude, latitudeRef, longitudeRef,
          camMake, camModel, camSerialNumber) = \
-            spoofGeolocation(base_dir, spoofCity, curr_timeAdjusted,
-                             decoySeed, None, None)
+            spoof_geolocation(base_dir, spoofCity, curr_timeAdjusted,
+                              decoySeed, None, None)
         if os.system('exiftool -artist=@"' + nickname + '@' + domain + '" ' +
                      '-Make="' + camMake + '" ' +
                      '-Model="' + camModel + '" ' +
@@ -207,14 +207,14 @@ def process_meta_data(base_dir: str, nickname: str, domain: str,
     if possible, but otherwise just removes it
     """
     # first remove the metadata
-    _removeMetaData(image_filename, outputFilename)
+    _remove_meta_data(image_filename, outputFilename)
 
     # now add some spoofed data to misdirect surveillance capitalists
-    _spoofMetaData(base_dir, nickname, domain, outputFilename, city,
-                   content_license_url)
+    _spoof_meta_data(base_dir, nickname, domain, outputFilename, city,
+                     content_license_url)
 
 
-def _isMedia(image_filename: str) -> bool:
+def _is_media(image_filename: str) -> bool:
     """Is the given file a media file?
     """
     if not os.path.isfile(image_filename):
@@ -228,20 +228,20 @@ def _isMedia(image_filename: str) -> bool:
     return False
 
 
-def createMediaDirs(base_dir: str, mediaPath: str) -> None:
+def create_media_dirs(base_dir: str, mediaPath: str) -> None:
     if not os.path.isdir(base_dir + '/media'):
         os.mkdir(base_dir + '/media')
     if not os.path.isdir(base_dir + '/' + mediaPath):
         os.mkdir(base_dir + '/' + mediaPath)
 
 
-def getMediaPath() -> str:
+def get_media_path() -> str:
     curr_time = datetime.datetime.utcnow()
     weeksSinceEpoch = int((curr_time - datetime.datetime(1970, 1, 1)).days / 7)
     return 'media/' + str(weeksSinceEpoch)
 
 
-def getAttachmentMediaType(filename: str) -> str:
+def get_attachment_media_type(filename: str) -> str:
     """Returns the type of media for the given file
     image, video or audio
     """
@@ -261,7 +261,7 @@ def getAttachmentMediaType(filename: str) -> str:
     return mediaType
 
 
-def _updateEtag(mediaFilename: str) -> None:
+def _update_etag(mediaFilename: str) -> None:
     """ calculate the etag, which is a sha1 of the data
     """
     # only create etags for media
@@ -278,7 +278,7 @@ def _updateEtag(mediaFilename: str) -> None:
         with open(mediaFilename, 'rb') as mediaFile:
             data = mediaFile.read()
     except OSError:
-        print('EX: _updateEtag unable to read ' + str(mediaFilename))
+        print('EX: _update_etag unable to read ' + str(mediaFilename))
 
     if not data:
         return
@@ -289,21 +289,21 @@ def _updateEtag(mediaFilename: str) -> None:
         with open(mediaFilename + '.etag', 'w+') as etagFile:
             etagFile.write(etag)
     except OSError:
-        print('EX: _updateEtag unable to write ' +
+        print('EX: _update_etag unable to write ' +
               str(mediaFilename) + '.etag')
 
 
 def attach_media(base_dir: str, http_prefix: str,
                  nickname: str, domain: str, port: int,
-                 postJson: {}, image_filename: str,
+                 post_json: {}, image_filename: str,
                  mediaType: str, description: str,
                  city: str, low_bandwidth: bool,
                  content_license_url: str) -> {}:
     """Attaches media to a json object post
     The description can be None
     """
-    if not _isMedia(image_filename):
-        return postJson
+    if not _is_media(image_filename):
+        return post_json
 
     fileExtension = None
     acceptedTypes = get_media_extensions()
@@ -315,7 +315,7 @@ def attach_media(base_dir: str, http_prefix: str,
                 mType = 'mpeg'
             fileExtension = mType
     if not fileExtension:
-        return postJson
+        return post_json
     mediaType = mediaType + '/' + fileExtension
     print('Attached media type: ' + mediaType)
 
@@ -326,10 +326,10 @@ def attach_media(base_dir: str, http_prefix: str,
 
     domain = get_full_domain(domain, port)
 
-    mPath = getMediaPath()
+    mPath = get_media_path()
     mediaPath = mPath + '/' + create_password(32) + '.' + fileExtension
     if base_dir:
-        createMediaDirs(base_dir, mPath)
+        create_media_dirs(base_dir, mPath)
         mediaFilename = base_dir + '/' + mediaPath
 
     mediaPath = \
@@ -341,15 +341,15 @@ def attach_media(base_dir: str, http_prefix: str,
         'url': http_prefix + '://' + domain + '/' + mediaPath
     }
     if mediaType.startswith('image/'):
-        attachmentJson['blurhash'] = _getBlurHash()
+        attachmentJson['blurhash'] = _get_blur_hash()
         # find the dimensions of the image and add them as metadata
         attachImageWidth, attachImageHeight = \
-            getImageDimensions(image_filename)
+            get_image_dimensions(image_filename)
         if attachImageWidth and attachImageHeight:
             attachmentJson['width'] = attachImageWidth
             attachmentJson['height'] = attachImageHeight
 
-    postJson['attachment'] = [attachmentJson]
+    post_json['attachment'] = [attachmentJson]
 
     if base_dir:
         if mediaType.startswith('image/'):
@@ -360,12 +360,13 @@ def attach_media(base_dir: str, http_prefix: str,
                               content_license_url)
         else:
             copyfile(image_filename, mediaFilename)
-        _updateEtag(mediaFilename)
+        _update_etag(mediaFilename)
 
-    return postJson
+    return post_json
 
 
-def archiveMedia(base_dir: str, archive_directory: str, maxWeeks: int) -> None:
+def archive_media(base_dir: str, archive_directory: str,
+                  maxWeeks: int) -> None:
     """Any media older than the given number of weeks gets archived
     """
     if maxWeeks == 0:
@@ -408,14 +409,14 @@ def path_is_audio(path: str) -> bool:
     return False
 
 
-def getImageDimensions(image_filename: str) -> (int, int):
+def get_image_dimensions(image_filename: str) -> (int, int):
     """Returns the dimensions of an image file
     """
     try:
         result = subprocess.run(['identify', '-format', '"%wx%h"',
                                  image_filename], stdout=subprocess.PIPE)
     except BaseException:
-        print('EX: getImageDimensions unable to run identify command')
+        print('EX: get_image_dimensions unable to run identify command')
         return None, None
     if not result:
         return None, None

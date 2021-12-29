@@ -31,11 +31,11 @@ from utils import save_json
 from utils import remove_post_from_cache
 from utils import get_cached_post_filename
 from utils import contains_invalid_chars
-from posts import sendSignedJson
-from session import postJson
-from webfinger import webfingerHandle
+from posts import send_signed_json
+from session import post_json
+from webfinger import webfinger_handle
 from auth import create_basic_auth_header
-from posts import getPersonBox
+from posts import get_person_box
 
 # the maximum number of reactions from individual actors which can be
 # added to a post. Hence an adversary can't bombard you with sockpuppet
@@ -46,7 +46,7 @@ maxActorReactionsPerPost = 64
 emojiRegex = re.compile(r'[\u263a-\U0001f645]')
 
 
-def validEmojiContent(emojiContent: str) -> bool:
+def valid_emoji_content(emojiContent: str) -> bool:
     """Is the given emoji content valid?
     """
     if not emojiContent:
@@ -60,17 +60,17 @@ def validEmojiContent(emojiContent: str) -> bool:
     return True
 
 
-def _reaction(recent_posts_cache: {},
-              session, base_dir: str, federation_list: [],
-              nickname: str, domain: str, port: int,
-              ccList: [], http_prefix: str,
-              objectUrl: str, emojiContent: str,
-              actorReaction: str,
-              client_to_server: bool,
-              send_threads: [], postLog: [],
-              person_cache: {}, cached_webfingers: {},
-              debug: bool, project_version: str,
-              signing_priv_key_pem: str) -> {}:
+def _reactionpost(recent_posts_cache: {},
+                  session, base_dir: str, federation_list: [],
+                  nickname: str, domain: str, port: int,
+                  ccList: [], http_prefix: str,
+                  objectUrl: str, emojiContent: str,
+                  actorReaction: str,
+                  client_to_server: bool,
+                  send_threads: [], postLog: [],
+                  person_cache: {}, cached_webfingers: {},
+                  debug: bool, project_version: str,
+                  signing_priv_key_pem: str) -> {}:
     """Creates an emoji reaction
     actor is the person doing the reacting
     'to' might be a specific person (actor) whose post was reaction
@@ -78,7 +78,7 @@ def _reaction(recent_posts_cache: {},
     """
     if not url_permitted(objectUrl, federation_list):
         return None
-    if not validEmojiContent(emojiContent):
+    if not valid_emoji_content(emojiContent):
         print('_reaction: Invalid emoji reaction: "' + emojiContent + '"')
         return
 
@@ -96,28 +96,28 @@ def _reaction(recent_posts_cache: {},
             newReactionJson['cc'] = ccList
 
     # Extract the domain and nickname from a statuses link
-    reactionPostNickname = None
-    reactionPostDomain = None
-    reactionPostPort = None
+    reaction_postNickname = None
+    reaction_postDomain = None
+    reaction_postPort = None
     group_account = False
     if actorReaction:
-        reactionPostNickname = get_nickname_from_actor(actorReaction)
-        reactionPostDomain, reactionPostPort = \
+        reaction_postNickname = get_nickname_from_actor(actorReaction)
+        reaction_postDomain, reaction_postPort = \
             get_domain_from_actor(actorReaction)
         group_account = has_group_type(base_dir, actorReaction, person_cache)
     else:
         if has_users_path(objectUrl):
-            reactionPostNickname = get_nickname_from_actor(objectUrl)
-            reactionPostDomain, reactionPostPort = \
+            reaction_postNickname = get_nickname_from_actor(objectUrl)
+            reaction_postDomain, reaction_postPort = \
                 get_domain_from_actor(objectUrl)
-            if '/' + str(reactionPostNickname) + '/' in objectUrl:
+            if '/' + str(reaction_postNickname) + '/' in objectUrl:
                 actorReaction = \
-                    objectUrl.split('/' + reactionPostNickname + '/')[0] + \
-                    '/' + reactionPostNickname
+                    objectUrl.split('/' + reaction_postNickname + '/')[0] + \
+                    '/' + reaction_postNickname
                 group_account = \
                     has_group_type(base_dir, actorReaction, person_cache)
 
-    if reactionPostNickname:
+    if reaction_postNickname:
         post_filename = locate_post(base_dir, nickname, domain, objectUrl)
         if not post_filename:
             print('DEBUG: reaction base_dir: ' + base_dir)
@@ -126,36 +126,37 @@ def _reaction(recent_posts_cache: {},
             print('DEBUG: reaction objectUrl: ' + objectUrl)
             return None
 
-        updateReactionCollection(recent_posts_cache,
-                                 base_dir, post_filename, objectUrl,
-                                 newReactionJson['actor'],
-                                 nickname, domain, debug, None,
-                                 emojiContent)
+        update_reaction_collection(recent_posts_cache,
+                                   base_dir, post_filename, objectUrl,
+                                   newReactionJson['actor'],
+                                   nickname, domain, debug, None,
+                                   emojiContent)
 
-        sendSignedJson(newReactionJson, session, base_dir,
-                       nickname, domain, port,
-                       reactionPostNickname,
-                       reactionPostDomain, reactionPostPort,
-                       'https://www.w3.org/ns/activitystreams#Public',
-                       http_prefix, True, client_to_server, federation_list,
-                       send_threads, postLog, cached_webfingers, person_cache,
-                       debug, project_version, None, group_account,
-                       signing_priv_key_pem, 7165392)
+        send_signed_json(newReactionJson, session, base_dir,
+                         nickname, domain, port,
+                         reaction_postNickname,
+                         reaction_postDomain, reaction_postPort,
+                         'https://www.w3.org/ns/activitystreams#Public',
+                         http_prefix, True, client_to_server, federation_list,
+                         send_threads, postLog, cached_webfingers,
+                         person_cache,
+                         debug, project_version, None, group_account,
+                         signing_priv_key_pem, 7165392)
 
     return newReactionJson
 
 
-def reactionPost(recent_posts_cache: {},
-                 session, base_dir: str, federation_list: [],
-                 nickname: str, domain: str, port: int, http_prefix: str,
-                 reactionNickname: str, reactionDomain: str, reactionPort: int,
-                 ccList: [],
-                 reactionStatusNumber: int, emojiContent: str,
-                 client_to_server: bool,
-                 send_threads: [], postLog: [],
-                 person_cache: {}, cached_webfingers: {},
-                 debug: bool, project_version: str,
-                 signing_priv_key_pem: str) -> {}:
+def reaction_post(recent_posts_cache: {},
+                  session, base_dir: str, federation_list: [],
+                  nickname: str, domain: str, port: int, http_prefix: str,
+                  reactionNickname: str, reactionDomain: str,
+                  reactionPort: int, ccList: [],
+                  reactionStatusNumber: int, emojiContent: str,
+                  client_to_server: bool,
+                  send_threads: [], postLog: [],
+                  person_cache: {}, cached_webfingers: {},
+                  debug: bool, project_version: str,
+                  signing_priv_key_pem: str) -> {}:
     """Adds a reaction to a given status post. This is only used by unit tests
     """
     reactionDomain = get_full_domain(reactionDomain, reactionPort)
@@ -164,30 +165,31 @@ def reactionPost(recent_posts_cache: {},
         local_actor_url(http_prefix, reactionNickname, reactionDomain)
     objectUrl = actorReaction + '/statuses/' + str(reactionStatusNumber)
 
-    return _reaction(recent_posts_cache,
-                     session, base_dir, federation_list,
-                     nickname, domain, port,
-                     ccList, http_prefix, objectUrl, emojiContent,
-                     actorReaction, client_to_server,
-                     send_threads, postLog, person_cache, cached_webfingers,
-                     debug, project_version, signing_priv_key_pem)
+    return _reactionpost(recent_posts_cache,
+                         session, base_dir, federation_list,
+                         nickname, domain, port,
+                         ccList, http_prefix, objectUrl, emojiContent,
+                         actorReaction, client_to_server,
+                         send_threads, postLog, person_cache,
+                         cached_webfingers,
+                         debug, project_version, signing_priv_key_pem)
 
 
-def sendReactionViaServer(base_dir: str, session,
-                          fromNickname: str, password: str,
-                          fromDomain: str, fromPort: int,
-                          http_prefix: str, reactionUrl: str,
-                          emojiContent: str,
-                          cached_webfingers: {}, person_cache: {},
-                          debug: bool, project_version: str,
-                          signing_priv_key_pem: str) -> {}:
+def send_reaction_via_server(base_dir: str, session,
+                             fromNickname: str, password: str,
+                             fromDomain: str, fromPort: int,
+                             http_prefix: str, reactionUrl: str,
+                             emojiContent: str,
+                             cached_webfingers: {}, person_cache: {},
+                             debug: bool, project_version: str,
+                             signing_priv_key_pem: str) -> {}:
     """Creates a reaction via c2s
     """
     if not session:
-        print('WARN: No session for sendReactionViaServer')
+        print('WARN: No session for send_reaction_via_server')
         return 6
-    if not validEmojiContent(emojiContent):
-        print('sendReactionViaServer: Invalid emoji reaction: "' +
+    if not valid_emoji_content(emojiContent):
+        print('send_reaction_via_server: Invalid emoji reaction: "' +
               emojiContent + '"')
         return 7
 
@@ -206,10 +208,10 @@ def sendReactionViaServer(base_dir: str, session,
     handle = http_prefix + '://' + fromDomainFull + '/@' + fromNickname
 
     # lookup the inbox for the To handle
-    wfRequest = webfingerHandle(session, handle, http_prefix,
-                                cached_webfingers,
-                                fromDomain, project_version, debug, False,
-                                signing_priv_key_pem)
+    wfRequest = webfinger_handle(session, handle, http_prefix,
+                                 cached_webfingers,
+                                 fromDomain, project_version, debug, False,
+                                 signing_priv_key_pem)
     if not wfRequest:
         if debug:
             print('DEBUG: reaction webfinger failed for ' + handle)
@@ -224,13 +226,13 @@ def sendReactionViaServer(base_dir: str, session,
     # get the actor inbox for the To handle
     originDomain = fromDomain
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
-     displayName, _) = getPersonBox(signing_priv_key_pem,
-                                    originDomain,
-                                    base_dir, session, wfRequest,
-                                    person_cache,
-                                    project_version, http_prefix,
-                                    fromNickname, fromDomain,
-                                    postToBox, 72873)
+     displayName, _) = get_person_box(signing_priv_key_pem,
+                                      originDomain,
+                                      base_dir, session, wfRequest,
+                                      person_cache,
+                                      project_version, http_prefix,
+                                      fromNickname, fromDomain,
+                                      postToBox, 72873)
 
     if not inboxUrl:
         if debug:
@@ -249,9 +251,9 @@ def sendReactionViaServer(base_dir: str, session,
         'Content-type': 'application/json',
         'Authorization': authHeader
     }
-    postResult = postJson(http_prefix, fromDomainFull,
-                          session, newReactionJson, [], inboxUrl,
-                          headers, 3, True)
+    postResult = post_json(http_prefix, fromDomainFull,
+                           session, newReactionJson, [], inboxUrl,
+                           headers, 3, True)
     if not postResult:
         if debug:
             print('WARN: POST reaction failed for c2s to ' + inboxUrl)
@@ -263,18 +265,18 @@ def sendReactionViaServer(base_dir: str, session,
     return newReactionJson
 
 
-def sendUndoReactionViaServer(base_dir: str, session,
-                              fromNickname: str, password: str,
-                              fromDomain: str, fromPort: int,
-                              http_prefix: str, reactionUrl: str,
-                              emojiContent: str,
-                              cached_webfingers: {}, person_cache: {},
-                              debug: bool, project_version: str,
-                              signing_priv_key_pem: str) -> {}:
+def send_undo_reaction_via_server(base_dir: str, session,
+                                  fromNickname: str, password: str,
+                                  fromDomain: str, fromPort: int,
+                                  http_prefix: str, reactionUrl: str,
+                                  emojiContent: str,
+                                  cached_webfingers: {}, person_cache: {},
+                                  debug: bool, project_version: str,
+                                  signing_priv_key_pem: str) -> {}:
     """Undo a reaction via c2s
     """
     if not session:
-        print('WARN: No session for sendUndoReactionViaServer')
+        print('WARN: No session for send_undo_reaction_via_server')
         return 6
 
     fromDomainFull = get_full_domain(fromDomain, fromPort)
@@ -296,10 +298,10 @@ def sendUndoReactionViaServer(base_dir: str, session,
     handle = http_prefix + '://' + fromDomainFull + '/@' + fromNickname
 
     # lookup the inbox for the To handle
-    wfRequest = webfingerHandle(session, handle, http_prefix,
-                                cached_webfingers,
-                                fromDomain, project_version, debug, False,
-                                signing_priv_key_pem)
+    wfRequest = webfinger_handle(session, handle, http_prefix,
+                                 cached_webfingers,
+                                 fromDomain, project_version, debug, False,
+                                 signing_priv_key_pem)
     if not wfRequest:
         if debug:
             print('DEBUG: unreaction webfinger failed for ' + handle)
@@ -315,13 +317,13 @@ def sendUndoReactionViaServer(base_dir: str, session,
     # get the actor inbox for the To handle
     originDomain = fromDomain
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
-     displayName, _) = getPersonBox(signing_priv_key_pem,
-                                    originDomain,
-                                    base_dir, session, wfRequest,
-                                    person_cache, project_version,
-                                    http_prefix, fromNickname,
-                                    fromDomain, postToBox,
-                                    72625)
+     displayName, _) = get_person_box(signing_priv_key_pem,
+                                      originDomain,
+                                      base_dir, session, wfRequest,
+                                      person_cache, project_version,
+                                      http_prefix, fromNickname,
+                                      fromDomain, postToBox,
+                                      72625)
 
     if not inboxUrl:
         if debug:
@@ -340,9 +342,9 @@ def sendUndoReactionViaServer(base_dir: str, session,
         'Content-type': 'application/json',
         'Authorization': authHeader
     }
-    postResult = postJson(http_prefix, fromDomainFull,
-                          session, newUndoReactionJson, [], inboxUrl,
-                          headers, 3, True)
+    postResult = post_json(http_prefix, fromDomainFull,
+                           session, newUndoReactionJson, [], inboxUrl,
+                           headers, 3, True)
     if not postResult:
         if debug:
             print('WARN: POST unreaction failed for c2s to ' + inboxUrl)
@@ -354,10 +356,10 @@ def sendUndoReactionViaServer(base_dir: str, session,
     return newUndoReactionJson
 
 
-def outboxReaction(recent_posts_cache: {},
-                   base_dir: str, http_prefix: str,
-                   nickname: str, domain: str, port: int,
-                   message_json: {}, debug: bool) -> None:
+def outbox_reaction(recent_posts_cache: {},
+                    base_dir: str, http_prefix: str,
+                    nickname: str, domain: str, port: int,
+                    message_json: {}, debug: bool) -> None:
     """ When a reaction request is received by the outbox from c2s
     """
     if not message_json.get('type'):
@@ -374,8 +376,8 @@ def outboxReaction(recent_posts_cache: {},
         return
     if not isinstance(message_json['content'], str):
         return
-    if not validEmojiContent(message_json['content']):
-        print('outboxReaction: Invalid emoji reaction: "' +
+    if not valid_emoji_content(message_json['content']):
+        print('outbox_reaction: Invalid emoji reaction: "' +
               message_json['content'] + '"')
         return
     if debug:
@@ -390,18 +392,18 @@ def outboxReaction(recent_posts_cache: {},
             print('DEBUG: c2s reaction post not found in inbox or outbox')
             print(messageId)
         return True
-    updateReactionCollection(recent_posts_cache,
-                             base_dir, post_filename, messageId,
-                             message_json['actor'],
-                             nickname, domain, debug, None, emojiContent)
+    update_reaction_collection(recent_posts_cache,
+                               base_dir, post_filename, messageId,
+                               message_json['actor'],
+                               nickname, domain, debug, None, emojiContent)
     if debug:
         print('DEBUG: post reaction via c2s - ' + post_filename)
 
 
-def outboxUndoReaction(recent_posts_cache: {},
-                       base_dir: str, http_prefix: str,
-                       nickname: str, domain: str, port: int,
-                       message_json: {}, debug: bool) -> None:
+def outbox_undo_reaction(recent_posts_cache: {},
+                         base_dir: str, http_prefix: str,
+                         nickname: str, domain: str, port: int,
+                         message_json: {}, debug: bool) -> None:
     """ When an undo reaction request is received by the outbox from c2s
     """
     if not message_json.get('type'):
@@ -439,12 +441,12 @@ def outboxUndoReaction(recent_posts_cache: {},
         print('DEBUG: post undo reaction via c2s - ' + post_filename)
 
 
-def updateReactionCollection(recent_posts_cache: {},
-                             base_dir: str, post_filename: str,
-                             objectUrl: str, actor: str,
-                             nickname: str, domain: str, debug: bool,
-                             post_json_object: {},
-                             emojiContent: str) -> None:
+def update_reaction_collection(recent_posts_cache: {},
+                               base_dir: str, post_filename: str,
+                               objectUrl: str, actor: str,
+                               nickname: str, domain: str, debug: bool,
+                               post_json_object: {},
+                               emojiContent: str) -> None:
     """Updates the reactions collection within a post
     """
     if not post_json_object:
@@ -463,7 +465,7 @@ def updateReactionCollection(recent_posts_cache: {},
             try:
                 os.remove(cachedPostFilename)
             except OSError:
-                print('EX: updateReactionCollection unable to delete ' +
+                print('EX: update_reaction_collection unable to delete ' +
                       cachedPostFilename)
 
     obj = post_json_object
@@ -514,9 +516,9 @@ def updateReactionCollection(recent_posts_cache: {},
     save_json(post_json_object, post_filename)
 
 
-def htmlEmojiReactions(post_json_object: {}, interactive: bool,
-                       actor: str, maxReactionTypes: int,
-                       boxName: str, pageNumber: int) -> str:
+def html_emoji_reactions(post_json_object: {}, interactive: bool,
+                         actor: str, maxReactionTypes: int,
+                         boxName: str, pageNumber: int) -> str:
     """html containing row of emoji reactions
     displayed at the bottom of posts, above the icons
     """

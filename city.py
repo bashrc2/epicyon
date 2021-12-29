@@ -23,7 +23,7 @@ PERSON_EVENING = 4
 PERSON_PARTY = 5
 
 
-def _getDecoyCamera(decoySeed: int) -> (str, str, int):
+def _get_decoy_camera(decoySeed: int) -> (str, str, int):
     """Returns a decoy camera make and model which took the photo
     """
     cameras = [
@@ -88,7 +88,7 @@ def _getDecoyCamera(decoySeed: int) -> (str, str, int):
     return cameras[index][0], cameras[index][1], serialNumber
 
 
-def _getCityPulse(curr_timeOfDay, decoySeed: int) -> (float, float):
+def _get_city_pulse(curr_timeOfDay, decoySeed: int) -> (float, float):
     """This simulates expected average patterns of movement in a city.
     Jane or Joe average lives and works in the city, commuting in
     and out of the central district for work. They have a unique
@@ -141,7 +141,7 @@ def _getCityPulse(curr_timeOfDay, decoySeed: int) -> (float, float):
     return distanceFromCityCenter, angleRadians
 
 
-def parseNogoString(nogoLine: str) -> []:
+def parse_nogo_string(nogoLine: str) -> []:
     """Parses a line from locations_nogo.txt and returns the polygon
     """
     nogoLine = nogoLine.replace('\n', '').replace('\r', '')
@@ -176,11 +176,11 @@ def parseNogoString(nogoLine: str) -> []:
     return polygon
 
 
-def spoofGeolocation(base_dir: str,
-                     city: str, curr_time, decoySeed: int,
-                     citiesList: [],
-                     nogoList: []) -> (float, float, str, str,
-                                       str, str, int):
+def spoof_geolocation(base_dir: str,
+                      city: str, curr_time, decoySeed: int,
+                      citiesList: [],
+                      nogoList: []) -> (float, float, str, str,
+                                        str, str, int):
     """Given a city and the current time spoofs the location
     for an image
     returns latitude, longitude, N/S, E/W,
@@ -228,7 +228,7 @@ def spoofGeolocation(base_dir: str,
                 print('EX: unable to read ' + nogoFilename)
             for line in nogoList:
                 if line.startswith(city + ':'):
-                    polygon = parseNogoString(line)
+                    polygon = parse_nogo_string(line)
                     if polygon:
                         nogo.append(polygon)
 
@@ -258,13 +258,13 @@ def spoofGeolocation(base_dir: str,
             curr_timeAdjusted = curr_time - \
                 datetime.timedelta(hours=approxTimeZone)
             camMake, camModel, camSerialNumber = \
-                _getDecoyCamera(decoySeed)
+                _get_decoy_camera(decoySeed)
             validCoord = False
             seedOffset = 0
             while not validCoord:
                 # patterns of activity change in the city over time
                 (distanceFromCityCenter, angleRadians) = \
-                    _getCityPulse(curr_timeAdjusted, decoySeed + seedOffset)
+                    _get_city_pulse(curr_timeAdjusted, decoySeed + seedOffset)
                 # The city radius value is in longitude and the reference
                 # is Manchester. Adjust for the radius of the chosen city.
                 if areaKm2 > 1:
@@ -283,7 +283,7 @@ def spoofGeolocation(base_dir: str,
                 longval = longitude
                 if longdirection == 'W':
                     longval = -longitude
-                validCoord = not pointInNogo(nogo, latitude, longval)
+                validCoord = not point_in_nogo(nogo, latitude, longval)
                 if not validCoord:
                     seedOffset += 1
                     if seedOffset > 100:
@@ -308,8 +308,8 @@ def spoofGeolocation(base_dir: str,
             "", "", 0)
 
 
-def getSpoofedCity(city: str, base_dir: str,
-                   nickname: str, domain: str) -> str:
+def get_spoofed_city(city: str, base_dir: str,
+                     nickname: str, domain: str) -> str:
     """Returns the name of the city to use as a GPS spoofing location for
     image metadata
     """
@@ -324,7 +324,7 @@ def getSpoofedCity(city: str, base_dir: str,
     return city
 
 
-def _pointInPolygon(poly: [], x: float, y: float) -> bool:
+def _point_in_polygon(poly: [], x: float, y: float) -> bool:
     """Returns true if the given point is inside the given polygon
     """
     n = len(poly)
@@ -347,10 +347,10 @@ def _pointInPolygon(poly: [], x: float, y: float) -> bool:
     return inside
 
 
-def pointInNogo(nogo: [], latitude: float, longitude: float) -> bool:
+def point_in_nogo(nogo: [], latitude: float, longitude: float) -> bool:
     """Returns true of the given geolocation is within a nogo area
     """
     for polygon in nogo:
-        if _pointInPolygon(polygon, latitude, longitude):
+        if _point_in_polygon(polygon, latitude, longitude):
             return True
     return False

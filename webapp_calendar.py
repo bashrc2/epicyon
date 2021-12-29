@@ -22,20 +22,20 @@ from utils import remove_domain_port
 from utils import acct_dir
 from utils import local_actor_url
 from utils import replace_users_with_at
-from happening import getTodaysEvents
-from happening import getCalendarEvents
-from webapp_utils import setCustomBackground
-from webapp_utils import htmlHeaderWithExternalStyle
-from webapp_utils import htmlFooter
-from webapp_utils import htmlHideFromScreenReader
-from webapp_utils import htmlKeyboardNavigation
+from happening import get_todays_events
+from happening import get_calendar_events
+from webapp_utils import set_custom_background
+from webapp_utils import html_header_with_external_style
+from webapp_utils import html_footer
+from webapp_utils import html_hide_from_screen_reader
+from webapp_utils import html_keyboard_navigation
 
 
-def htmlCalendarDeleteConfirm(css_cache: {}, translate: {}, base_dir: str,
-                              path: str, http_prefix: str,
-                              domain_full: str, post_id: str, postTime: str,
-                              year: int, monthNumber: int,
-                              dayNumber: int, calling_domain: str) -> str:
+def html_calendar_delete_confirm(css_cache: {}, translate: {}, base_dir: str,
+                                 path: str, http_prefix: str,
+                                 domain_full: str, post_id: str, postTime: str,
+                                 year: int, monthNumber: int,
+                                 dayNumber: int, calling_domain: str) -> str:
     """Shows a screen asking to confirm the deletion of a calendar event
     """
     nickname = get_nickname_from_actor(path)
@@ -59,7 +59,7 @@ def htmlCalendarDeleteConfirm(css_cache: {}, translate: {}, base_dir: str,
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
     delete_postStr = \
-        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
+        html_header_with_external_style(cssFilename, instanceTitle, None)
     delete_postStr += \
         '<center><h1>' + postTime + ' ' + str(year) + '/' + \
         str(monthNumber) + \
@@ -92,15 +92,15 @@ def htmlCalendarDeleteConfirm(css_cache: {}, translate: {}, base_dir: str,
         translate['No'] + '</button></a>\n'
     delete_postStr += '  </form>\n'
     delete_postStr += '</center>\n'
-    delete_postStr += htmlFooter()
+    delete_postStr += html_footer()
     return delete_postStr
 
 
-def _htmlCalendarDay(person_cache: {}, css_cache: {}, translate: {},
-                     base_dir: str, path: str,
-                     year: int, monthNumber: int, dayNumber: int,
-                     nickname: str, domain: str, dayEvents: [],
-                     monthName: str, actor: str) -> str:
+def _html_calendar_day(person_cache: {}, css_cache: {}, translate: {},
+                       base_dir: str, path: str,
+                       year: int, monthNumber: int, dayNumber: int,
+                       nickname: str, domain: str, dayEvents: [],
+                       monthName: str, actor: str) -> str:
     """Show a day within the calendar
     """
     accountDir = acct_dir(base_dir, nickname, domain)
@@ -109,7 +109,7 @@ def _htmlCalendarDay(person_cache: {}, css_cache: {}, translate: {},
         try:
             os.remove(calendarFile)
         except OSError:
-            print('EX: _htmlCalendarDay unable to delete ' + calendarFile)
+            print('EX: _html_calendar_day unable to delete ' + calendarFile)
 
     cssFilename = base_dir + '/epicyon-calendar.css'
     if os.path.isfile(base_dir + '/calendar.css'):
@@ -120,7 +120,8 @@ def _htmlCalendarDay(person_cache: {}, css_cache: {}, translate: {},
         calActor = '/users/' + actor.split('/users/')[1]
 
     instanceTitle = get_config_param(base_dir, 'instanceTitle')
-    calendarStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
+    calendarStr = \
+        html_header_with_external_style(cssFilename, instanceTitle, None)
     calendarStr += '<main><table class="calendar">\n'
     calendarStr += '<caption class="calendar__banner--month">\n'
     calendarStr += \
@@ -240,15 +241,15 @@ def _htmlCalendarDay(person_cache: {}, css_cache: {}, translate: {},
 
     calendarStr += '</tbody>\n'
     calendarStr += '</table></main>\n'
-    calendarStr += htmlFooter()
+    calendarStr += html_footer()
 
     return calendarStr
 
 
-def htmlCalendar(person_cache: {}, css_cache: {}, translate: {},
-                 base_dir: str, path: str,
-                 http_prefix: str, domain_full: str,
-                 text_mode_banner: str, accessKeys: {}) -> str:
+def html_calendar(person_cache: {}, css_cache: {}, translate: {},
+                  base_dir: str, path: str,
+                  http_prefix: str, domain_full: str,
+                  text_mode_banner: str, accessKeys: {}) -> str:
     """Show the calendar for a person
     """
     domain = remove_domain_port(domain_full)
@@ -284,7 +285,8 @@ def htmlCalendar(person_cache: {}, css_cache: {}, translate: {},
 
     nickname = get_nickname_from_actor(actor)
 
-    setCustomBackground(base_dir, 'calendar-background', 'calendar-background')
+    set_custom_background(base_dir, 'calendar-background',
+                          'calendar-background')
 
     months = (
         'January', 'February', 'March', 'April', 'May', 'June',
@@ -295,19 +297,19 @@ def htmlCalendar(person_cache: {}, css_cache: {}, translate: {},
     if dayNumber:
         dayEvents = None
         events = \
-            getTodaysEvents(base_dir, nickname, domain,
-                            year, monthNumber, dayNumber)
+            get_todays_events(base_dir, nickname, domain,
+                              year, monthNumber, dayNumber)
         if events:
             if events.get(str(dayNumber)):
                 dayEvents = events[str(dayNumber)]
-        return _htmlCalendarDay(person_cache, css_cache,
-                                translate, base_dir, path,
-                                year, monthNumber, dayNumber,
-                                nickname, domain, dayEvents,
-                                monthName, actor)
+        return _html_calendar_day(person_cache, css_cache,
+                                  translate, base_dir, path,
+                                  year, monthNumber, dayNumber,
+                                  nickname, domain, dayEvents,
+                                  monthName, actor)
 
     events = \
-        getCalendarEvents(base_dir, nickname, domain, year, monthNumber)
+        get_calendar_events(base_dir, nickname, domain, year, monthNumber)
 
     prevYear = year
     prevMonthNumber = monthNumber - 1
@@ -342,7 +344,8 @@ def htmlCalendar(person_cache: {}, css_cache: {}, translate: {},
 
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
-    headerStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
+    headerStr = \
+        html_header_with_external_style(cssFilename, instanceTitle, None)
 
     # the main graphical calendar as a table
     calendarStr = '<main><table class="calendar">\n'
@@ -380,7 +383,7 @@ def htmlCalendar(person_cache: {}, css_cache: {}, translate: {},
 
     # beginning of the links used for accessibility
     navLinks = {}
-    timelineLinkStr = htmlHideFromScreenReader('🏠') + ' ' + \
+    timelineLinkStr = html_hide_from_screen_reader('🏠') + ' ' + \
         translate['Switch to timeline view']
     navLinks[timelineLinkStr] = calActor + '/inbox'
 
@@ -410,7 +413,7 @@ def htmlCalendar(person_cache: {}, css_cache: {}, translate: {},
                         str(dayOfMonth) + '</a>'
                     # accessibility menu links
                     menuOptionStr = \
-                        htmlHideFromScreenReader('📅') + ' ' + \
+                        html_hide_from_screen_reader('📅') + ' ' + \
                         dayDescription
                     navLinks[menuOptionStr] = url
                     # there are events for this day
@@ -443,18 +446,18 @@ def htmlCalendar(person_cache: {}, css_cache: {}, translate: {},
 
     # end of the links used for accessibility
     nextMonthStr = \
-        htmlHideFromScreenReader('→') + ' ' + translate['Next month']
+        html_hide_from_screen_reader('→') + ' ' + translate['Next month']
     navLinks[nextMonthStr] = calActor + '/calendar?year=' + str(nextYear) + \
         '?month=' + str(nextMonthNumber)
     prevMonthStr = \
-        htmlHideFromScreenReader('←') + ' ' + translate['Previous month']
+        html_hide_from_screen_reader('←') + ' ' + translate['Previous month']
     navLinks[prevMonthStr] = calActor + '/calendar?year=' + str(prevYear) + \
         '?month=' + str(prevMonthNumber)
     navAccessKeys = {
     }
     screenReaderCal = \
-        htmlKeyboardNavigation(text_mode_banner, navLinks, navAccessKeys,
-                               monthName)
+        html_keyboard_navigation(text_mode_banner, navLinks, navAccessKeys,
+                                 monthName)
 
     newEventStr = \
         '<br><center>\n<p>\n' + \
@@ -462,6 +465,6 @@ def htmlCalendar(person_cache: {}, css_cache: {}, translate: {},
         translate['Add to the calendar'] + '</a>\n</p>\n</center>\n'
 
     calStr = \
-        headerStr + screenReaderCal + calendarStr + newEventStr + htmlFooter()
+        headerStr + screenReaderCal + calendarStr + newEventStr + html_footer()
 
     return calStr

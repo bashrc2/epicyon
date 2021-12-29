@@ -15,7 +15,7 @@ from utils import remove_domain_port
 from utils import acct_dir
 
 
-def _clearRoleStatus(base_dir: str, role: str) -> None:
+def _clear_role_status(base_dir: str, role: str) -> None:
     """Removes role status from all accounts
     This could be slow if there are many users, but only happens
     rarely when roles are appointed or removed
@@ -46,7 +46,7 @@ def clear_editor_status(base_dir: str) -> None:
     This could be slow if there are many users, but only happens
     rarely when editors are appointed or removed
     """
-    _clearRoleStatus(base_dir, 'editor')
+    _clear_role_status(base_dir, 'editor')
 
 
 def clear_counselor_status(base_dir: str) -> None:
@@ -54,7 +54,7 @@ def clear_counselor_status(base_dir: str) -> None:
     This could be slow if there are many users, but only happens
     rarely when counselors are appointed or removed
     """
-    _clearRoleStatus(base_dir, 'editor')
+    _clear_role_status(base_dir, 'editor')
 
 
 def clear_artist_status(base_dir: str) -> None:
@@ -62,7 +62,7 @@ def clear_artist_status(base_dir: str) -> None:
     This could be slow if there are many users, but only happens
     rarely when artists are appointed or removed
     """
-    _clearRoleStatus(base_dir, 'artist')
+    _clear_role_status(base_dir, 'artist')
 
 
 def clear_moderator_status(base_dir: str) -> None:
@@ -70,11 +70,11 @@ def clear_moderator_status(base_dir: str) -> None:
     This could be slow if there are many users, but only happens
     rarely when moderators are appointed or removed
     """
-    _clearRoleStatus(base_dir, 'moderator')
+    _clear_role_status(base_dir, 'moderator')
 
 
-def _addRole(base_dir: str, nickname: str, domain: str,
-             roleFilename: str) -> None:
+def _add_role(base_dir: str, nickname: str, domain: str,
+              roleFilename: str) -> None:
     """Adds a role nickname to the file.
     This is a file containing the nicknames of accounts having this role
     """
@@ -104,7 +104,7 @@ def _addRole(base_dir: str, nickname: str, domain: str,
                 f.write(nickname + '\n')
 
 
-def _removeRole(base_dir: str, nickname: str, roleFilename: str) -> None:
+def _remove_role(base_dir: str, nickname: str, roleFilename: str) -> None:
     """Removes a role nickname from the file.
     This is a file containing the nicknames of accounts having this role
     """
@@ -120,7 +120,7 @@ def _removeRole(base_dir: str, nickname: str, roleFilename: str) -> None:
                 f.write(roleNickname + '\n')
 
 
-def _setActorRole(actor_json: {}, roleName: str) -> bool:
+def _set_actor_role(actor_json: {}, roleName: str) -> bool:
     """Sets a role for an actor
     """
     if not actor_json.get('hasOccupation'):
@@ -199,7 +199,7 @@ def set_rolesFromList(actor_json: {}, rolesList: []) -> None:
 
     # create the new list
     for roleName in rolesList:
-        _setActorRole(actor_json, roleName)
+        _set_actor_role(actor_json, roleName)
 
 
 def get_actor_roles_list(actor_json: {}) -> []:
@@ -251,7 +251,7 @@ def set_role(base_dir: str, nickname: str, domain: str,
         if role:
             # add the role
             if roleFiles.get(role):
-                _addRole(base_dir, nickname, domain, roleFiles[role])
+                _add_role(base_dir, nickname, domain, roleFiles[role])
             if role not in rolesList:
                 rolesList.append(role)
                 rolesList.sort()
@@ -260,7 +260,7 @@ def set_role(base_dir: str, nickname: str, domain: str,
         else:
             # remove the role
             if roleFiles.get(role):
-                _removeRole(base_dir, nickname, roleFiles[role])
+                _remove_role(base_dir, nickname, roleFiles[role])
             if role in rolesList:
                 rolesList.remove(role)
                 set_rolesFromList(actor_json, rolesList)
@@ -270,7 +270,7 @@ def set_role(base_dir: str, nickname: str, domain: str,
     return True
 
 
-def actorHasRole(actor_json: {}, roleName: str) -> bool:
+def actor_has_role(actor_json: {}, roleName: str) -> bool:
     """Returns true if the given actor has the given role
     """
     rolesList = get_actor_roles_list(actor_json)

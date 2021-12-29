@@ -26,8 +26,8 @@ from utils import acct_dir
 from utils import is_float
 from utils import get_currencies
 from utils import remove_html
-from petnames import getPetName
-from session import downloadImage
+from petnames import get_pet_name
+from session import download_image
 
 
 def remove_htmlTag(htmlStr: str, tag: str) -> str:
@@ -47,7 +47,7 @@ def remove_htmlTag(htmlStr: str, tag: str) -> str:
     return htmlStr
 
 
-def _removeQuotesWithinQuotes(content: str) -> str:
+def _remove_quotes_within_quotes(content: str) -> str:
     """Removes any blockquote inside blockquote
     """
     if '<blockquote>' not in content:
@@ -73,7 +73,7 @@ def _removeQuotesWithinQuotes(content: str) -> str:
     return content
 
 
-def htmlReplaceEmailQuote(content: str) -> str:
+def html_replace_email_quote(content: str) -> str:
     """Replaces an email style quote "> Some quote" with html blockquote
     """
     if is_pgp_encrypted(content) or contains_pgp_public_key(content):
@@ -112,10 +112,10 @@ def htmlReplaceEmailQuote(content: str) -> str:
             else:
                 lineStr = lineStr.replace('&gt;', '<br>')
             newContent += '<p>' + lineStr + '</blockquote></p>'
-    return _removeQuotesWithinQuotes(newContent)
+    return _remove_quotes_within_quotes(newContent)
 
 
-def htmlReplaceQuoteMarks(content: str) -> str:
+def html_replace_quote_marks(content: str) -> str:
     """Replaces quotes with html formatting
     "hello" becomes <q>hello</q>
     """
@@ -171,7 +171,7 @@ def htmlReplaceQuoteMarks(content: str) -> str:
     return newContent
 
 
-def dangerousCSS(filename: str, allow_local_network_access: bool) -> bool:
+def dangerous_css(filename: str, allow_local_network_access: bool) -> bool:
     """Returns true is the css file contains code which
     can create security problems
     """
@@ -214,23 +214,23 @@ def dangerousCSS(filename: str, allow_local_network_access: bool) -> bool:
     return False
 
 
-def switchWords(base_dir: str, nickname: str, domain: str, content: str,
-                rules: [] = []) -> str:
+def switch_words(base_dir: str, nickname: str, domain: str, content: str,
+                 rules: [] = []) -> str:
     """Performs word replacements. eg. Trump -> The Orange Menace
     """
     if is_pgp_encrypted(content) or contains_pgp_public_key(content):
         return content
 
     if not rules:
-        switchWordsFilename = \
+        switch_wordsFilename = \
             acct_dir(base_dir, nickname, domain) + '/replacewords.txt'
-        if not os.path.isfile(switchWordsFilename):
+        if not os.path.isfile(switch_wordsFilename):
             return content
         try:
-            with open(switchWordsFilename, 'r') as fp:
+            with open(switch_wordsFilename, 'r') as fp:
                 rules = fp.readlines()
         except OSError:
-            print('EX: unable to read switches ' + switchWordsFilename)
+            print('EX: unable to read switches ' + switch_wordsFilename)
 
     for line in rules:
         replaceStr = line.replace('\n', '').replace('\r', '')
@@ -249,13 +249,13 @@ def switchWords(base_dir: str, nickname: str, domain: str, content: str,
     return content
 
 
-def _saveCustomEmoji(session, base_dir: str, emojiName: str, url: str,
-                     debug: bool) -> None:
+def _save_custom_emoji(session, base_dir: str, emojiName: str, url: str,
+                       debug: bool) -> None:
     """Saves custom emoji to file
     """
     if not session:
         if debug:
-            print('EX: _saveCustomEmoji no session')
+            print('EX: _save_custom_emoji no session')
         return
     if '.' not in url:
         return
@@ -269,8 +269,8 @@ def _saveCustomEmoji(session, base_dir: str, emojiName: str, url: str,
     if not os.path.isdir(customEmojiDir):
         os.mkdir(customEmojiDir)
     emojiImageFilename = customEmojiDir + '/' + emojiName + '.' + ext
-    if not downloadImage(session, base_dir, url,
-                         emojiImageFilename, debug, False):
+    if not download_image(session, base_dir, url,
+                          emojiImageFilename, debug, False):
         if debug:
             print('EX: custom emoji not downloaded ' + url)
         return
@@ -289,9 +289,9 @@ def _saveCustomEmoji(session, base_dir: str, emojiName: str, url: str,
         print('EX: cusom emoji already saved')
 
 
-def replaceEmojiFromTags(session, base_dir: str,
-                         content: str, tag: [], messageType: str,
-                         debug: bool) -> str:
+def replace_emoji_from_tags(session, base_dir: str,
+                            content: str, tag: [], messageType: str,
+                            debug: bool) -> str:
     """Uses the tags to replace :emoji: with html image markup
     """
     for tagItem in tag:
@@ -326,16 +326,16 @@ def replaceEmojiFromTags(session, base_dir: str,
                                                           replaceChar)
                                 replaced = True
                             except BaseException:
-                                print('EX: replaceEmojiFromTags 1 ' +
+                                print('EX: replace_emoji_from_tags 1 ' +
                                       'no conversion of ' +
                                       str(iconName) + ' to chr ' +
                                       tagItem['name'] + ' ' +
                                       tagItem['icon']['url'])
                             if not replaced:
-                                _saveCustomEmoji(session, base_dir,
-                                                 tagItem['name'],
-                                                 tagItem['icon']['url'],
-                                                 debug)
+                                _save_custom_emoji(session, base_dir,
+                                                   tagItem['name'],
+                                                   tagItem['icon']['url'],
+                                                   debug)
                         else:
                             # sequence of codes
                             iconCodes = iconName.split('-')
@@ -348,16 +348,16 @@ def replaceEmojiFromTags(session, base_dir: str,
                                     replaced = True
                                 except BaseException:
                                     iconCodeSequence = ''
-                                    print('EX: replaceEmojiFromTags 2 ' +
+                                    print('EX: replace_emoji_from_tags 2 ' +
                                           'no conversion of ' +
                                           str(icode) + ' to chr ' +
                                           tagItem['name'] + ' ' +
                                           tagItem['icon']['url'])
                                 if not replaced:
-                                    _saveCustomEmoji(session, base_dir,
-                                                     tagItem['name'],
-                                                     tagItem['icon']['url'],
-                                                     debug)
+                                    _save_custom_emoji(session, base_dir,
+                                                       tagItem['name'],
+                                                       tagItem['icon']['url'],
+                                                       debug)
                             if iconCodeSequence:
                                 content = content.replace(tagItem['name'],
                                                           iconCodeSequence)
@@ -374,7 +374,7 @@ def replaceEmojiFromTags(session, base_dir: str,
     return content
 
 
-def _addMusicTag(content: str, tag: str) -> str:
+def _add_music_tag(content: str, tag: str) -> str:
     """If a music link is found then ensure that the post is
     tagged appropriately
     """
@@ -395,7 +395,7 @@ def _addMusicTag(content: str, tag: str) -> str:
     return ':music: ' + content + ' ' + tag + ' '
 
 
-def addWebLinks(content: str) -> str:
+def add_web_links(content: str) -> str:
     """Adds markup for web links
     """
     if ':' not in content:
@@ -461,7 +461,7 @@ def addWebLinks(content: str) -> str:
     return content
 
 
-def validHashTag(hashtag: str) -> bool:
+def valid_hash_tag(hashtag: str) -> bool:
     """Returns true if the give hashtag contains valid characters
     """
     # long hashtags are not valid
@@ -483,15 +483,15 @@ def validHashTag(hashtag: str) -> bool:
     return False
 
 
-def _addHashTags(wordStr: str, http_prefix: str, domain: str,
-                 replaceHashTags: {}, postHashtags: {}) -> bool:
+def _add_hash_tags(wordStr: str, http_prefix: str, domain: str,
+                   replaceHashTags: {}, postHashtags: {}) -> bool:
     """Detects hashtags and adds them to the replacements dict
     Also updates the hashtags list to be added to the post
     """
     if replaceHashTags.get(wordStr):
         return True
     hashtag = wordStr[1:]
-    if not validHashTag(hashtag):
+    if not valid_hash_tag(hashtag):
         return False
     hashtagUrl = http_prefix + "://" + domain + "/tags/" + hashtag
     postHashtags[hashtag] = {
@@ -505,10 +505,10 @@ def _addHashTags(wordStr: str, http_prefix: str, domain: str,
     return True
 
 
-def _addEmoji(base_dir: str, wordStr: str,
-              http_prefix: str, domain: str,
-              replaceEmoji: {}, postTags: {},
-              emojiDict: {}) -> bool:
+def _add_emoji(base_dir: str, wordStr: str,
+               http_prefix: str, domain: str,
+               replaceEmoji: {}, postTags: {},
+               emojiDict: {}) -> bool:
     """Detects Emoji and adds them to the replacements dict
     Also updates the tags list to be added to the post
     """
@@ -524,7 +524,7 @@ def _addEmoji(base_dir: str, wordStr: str,
     emoji = wordStr[1:]
     emoji = emoji[:-1]
     # is the text of the emoji valid?
-    if not validHashTag(emoji):
+    if not valid_hash_tag(emoji):
         return False
     if not emojiDict.get(emoji):
         return False
@@ -547,7 +547,7 @@ def _addEmoji(base_dir: str, wordStr: str,
     return True
 
 
-def tagExists(tagType: str, tagName: str, tags: {}) -> bool:
+def post_tag_exists(tagType: str, tagName: str, tags: {}) -> bool:
     """Returns true if a tag exists in the given dict
     """
     for tag in tags:
@@ -556,8 +556,8 @@ def tagExists(tagType: str, tagName: str, tags: {}) -> bool:
     return False
 
 
-def _addMention(wordStr: str, http_prefix: str, following: str, petnames: str,
-                replaceMentions: {}, recipients: [], tags: {}) -> bool:
+def _add_mention(wordStr: str, http_prefix: str, following: str, petnames: str,
+                 replaceMentions: {}, recipients: [], tags: {}) -> bool:
     """Detects mentions and adds them to the replacements dict and
     recipients list
     """
@@ -668,7 +668,7 @@ def _addMention(wordStr: str, http_prefix: str, following: str, petnames: str,
     return True
 
 
-def replaceContentDuplicates(content: str) -> str:
+def replace_content_duplicates(content: str) -> str:
     """Replaces invalid duplicates within content
     """
     if is_pgp_encrypted(content) or contains_pgp_public_key(content):
@@ -681,7 +681,7 @@ def replaceContentDuplicates(content: str) -> str:
     return content
 
 
-def removeTextFormatting(content: str) -> str:
+def remove_text_formatting(content: str) -> str:
     """Removes markup for bold, italics, etc
     """
     if is_pgp_encrypted(content) or contains_pgp_public_key(content):
@@ -698,14 +698,14 @@ def removeTextFormatting(content: str) -> str:
     return content
 
 
-def removeLongWords(content: str, maxWordLength: int,
-                    longWordsList: []) -> str:
+def remove_long_words(content: str, maxWordLength: int,
+                      longWordsList: []) -> str:
     """Breaks up long words so that on mobile screens this doesn't
     disrupt the layout
     """
     if is_pgp_encrypted(content) or contains_pgp_public_key(content):
         return content
-    content = replaceContentDuplicates(content)
+    content = replace_content_duplicates(content)
     if ' ' not in content:
         # handle a single very long string with no spaces
         contentStr = content.replace('<p>', '').replace(r'<\p>', '')
@@ -780,7 +780,7 @@ def removeLongWords(content: str, maxWordLength: int,
     return content
 
 
-def _loadAutoTags(base_dir: str, nickname: str, domain: str) -> []:
+def _load_auto_tags(base_dir: str, nickname: str, domain: str) -> []:
     """Loads automatic tags file and returns a list containing
     the lines of the file
     """
@@ -795,9 +795,9 @@ def _loadAutoTags(base_dir: str, nickname: str, domain: str) -> []:
     return []
 
 
-def _autoTag(base_dir: str, nickname: str, domain: str,
-             wordStr: str, autoTagList: [],
-             appendTags: []):
+def _auto_tag(base_dir: str, nickname: str, domain: str,
+              wordStr: str, autoTagList: [],
+              appendTags: []):
     """Generates a list of tags to be automatically appended to the content
     """
     for tagRule in autoTagList:
@@ -817,20 +817,20 @@ def _autoTag(base_dir: str, nickname: str, domain: str,
                 appendTags.append('#' + tagName)
 
 
-def addHtmlTags(base_dir: str, http_prefix: str,
-                nickname: str, domain: str, content: str,
-                recipients: [], hashtags: {},
-                isJsonContent: bool = False) -> str:
+def add_html_tags(base_dir: str, http_prefix: str,
+                  nickname: str, domain: str, content: str,
+                  recipients: [], hashtags: {},
+                  isJsonContent: bool = False) -> str:
     """ Replaces plaintext mentions such as @nick@domain into html
     by matching against known following accounts
     """
     if content.startswith('<p>'):
-        content = htmlReplaceEmailQuote(content)
-        return htmlReplaceQuoteMarks(content)
+        content = html_replace_email_quote(content)
+        return html_replace_quote_marks(content)
     maxWordLength = 40
     content = content.replace('\r', '')
     content = content.replace('\n', ' --linebreak-- ')
-    content = _addMusicTag(content, 'nowplaying')
+    content = _add_music_tag(content, 'nowplaying')
     contentSimplified = \
         content.replace(',', ' ').replace(';', ' ').replace('- ', ' ')
     contentSimplified = contentSimplified.replace('. ', ' ').strip()
@@ -871,14 +871,14 @@ def addHtmlTags(base_dir: str, http_prefix: str,
             except OSError:
                 print('EX: unable to read ' + followingFilename)
             for handle in following:
-                pet = getPetName(base_dir, nickname, domain, handle)
+                pet = get_pet_name(base_dir, nickname, domain, handle)
                 if pet:
                     petnames.append(pet + '\n')
 
     # extract mentions and tags from words
     longWordsList = []
     prevWordStr = ''
-    autoTagsList = _loadAutoTags(base_dir, nickname, domain)
+    autoTagsList = _load_auto_tags(base_dir, nickname, domain)
     appendTags = []
     for wordStr in words:
         wordLen = len(wordStr)
@@ -887,8 +887,8 @@ def addHtmlTags(base_dir: str, http_prefix: str,
                 longWordsList.append(wordStr)
             firstChar = wordStr[0]
             if firstChar == '@':
-                if _addMention(wordStr, http_prefix, following, petnames,
-                               replaceMentions, recipients, hashtags):
+                if _add_mention(wordStr, http_prefix, following, petnames,
+                                replaceMentions, recipients, hashtags):
                     prevWordStr = ''
                     continue
             elif firstChar == '#':
@@ -899,8 +899,8 @@ def addHtmlTags(base_dir: str, http_prefix: str,
                         wordStr = wordStr[:len(wordStr) - 1]
                         break
 
-                if _addHashTags(wordStr, http_prefix, originalDomain,
-                                replaceHashTags, hashtags):
+                if _add_hash_tags(wordStr, http_prefix, originalDomain,
+                                  replaceHashTags, hashtags):
                     prevWordStr = ''
                     continue
             elif ':' in wordStr:
@@ -923,18 +923,18 @@ def addHtmlTags(base_dir: str, http_prefix: str,
                         emojiDict = dict(emojiDict, **customEmojiDict)
 
 #                print('TAG: looking up emoji for :' + wordStr2 + ':')
-                _addEmoji(base_dir, ':' + wordStr2 + ':', http_prefix,
-                          originalDomain, replaceEmoji, hashtags,
-                          emojiDict)
+                _add_emoji(base_dir, ':' + wordStr2 + ':', http_prefix,
+                           originalDomain, replaceEmoji, hashtags,
+                           emojiDict)
             else:
-                if _autoTag(base_dir, nickname, domain, wordStr,
-                            autoTagsList, appendTags):
+                if _auto_tag(base_dir, nickname, domain, wordStr,
+                             autoTagsList, appendTags):
                     prevWordStr = ''
                     continue
                 if prevWordStr:
-                    if _autoTag(base_dir, nickname, domain,
-                                prevWordStr + ' ' + wordStr,
-                                autoTagsList, appendTags):
+                    if _auto_tag(base_dir, nickname, domain,
+                                 prevWordStr + ' ' + wordStr,
+                                 autoTagsList, appendTags):
                         prevWordStr = ''
                         continue
             prevWordStr = wordStr
@@ -942,8 +942,8 @@ def addHtmlTags(base_dir: str, http_prefix: str,
     # add any auto generated tags
     for appended in appendTags:
         content = content + ' ' + appended
-        _addHashTags(appended, http_prefix, originalDomain,
-                     replaceHashTags, hashtags)
+        _add_hash_tags(appended, http_prefix, originalDomain,
+                       replaceHashTags, hashtags)
 
     # replace words with their html versions
     for wordStr, replaceStr in replaceMentions.items():
@@ -954,17 +954,17 @@ def addHtmlTags(base_dir: str, http_prefix: str,
         for wordStr, replaceStr in replaceEmoji.items():
             content = content.replace(wordStr, replaceStr)
 
-    content = addWebLinks(content)
+    content = add_web_links(content)
     if longWordsList:
-        content = removeLongWords(content, maxWordLength, longWordsList)
-    content = limitRepeatedWords(content, 6)
+        content = remove_long_words(content, maxWordLength, longWordsList)
+    content = limit_repeated_words(content, 6)
     content = content.replace(' --linebreak-- ', '</p><p>')
-    content = htmlReplaceEmailQuote(content)
-    return '<p>' + htmlReplaceQuoteMarks(content) + '</p>'
+    content = html_replace_email_quote(content)
+    return '<p>' + html_replace_quote_marks(content) + '</p>'
 
 
-def getMentionsFromHtml(htmlText: str,
-                        matchStr="<span class=\"h-card\"><a href=\"") -> []:
+def get_mentions_from_html(htmlText: str,
+                           matchStr="<span class=\"h-card\"><a href=\"") -> []:
     """Extracts mentioned actors from the given html content string
     """
     mentions = []
@@ -985,7 +985,7 @@ def getMentionsFromHtml(htmlText: str,
     return mentions
 
 
-def extractMediaInFormPOST(postBytes, boundary, name: str):
+def extract_media_in_form_post(postBytes, boundary, name: str):
     """Extracts the binary encoding for image/video/audio within a http
     form POST
     Returns the media bytes and the remaining bytes
@@ -1016,8 +1016,8 @@ def extractMediaInFormPOST(postBytes, boundary, name: str):
     return mediaBytes, postBytes[:imageStartLocation] + remainder
 
 
-def saveMediaInFormPOST(mediaBytes, debug: bool,
-                        filenameBase: str = None) -> (str, str):
+def save_media_in_form_post(mediaBytes, debug: bool,
+                            filenameBase: str = None) -> (str, str):
     """Saves the given media bytes extracted from http form POST
     Returns the filename and attachment type
     """
@@ -1032,7 +1032,7 @@ def saveMediaInFormPOST(mediaBytes, debug: bool,
                         os.remove(possibleOtherFormat)
                     except OSError:
                         if debug:
-                            print('EX: saveMediaInFormPOST ' +
+                            print('EX: save_media_in_form_post ' +
                                   'unable to delete other ' +
                                   str(possibleOtherFormat))
             if os.path.isfile(filenameBase):
@@ -1040,7 +1040,7 @@ def saveMediaInFormPOST(mediaBytes, debug: bool,
                     os.remove(filenameBase)
                 except OSError:
                     if debug:
-                        print('EX: saveMediaInFormPOST ' +
+                        print('EX: save_media_in_form_post ' +
                               'unable to delete ' +
                               str(filenameBase))
 
@@ -1112,7 +1112,7 @@ def saveMediaInFormPOST(mediaBytes, debug: bool,
                     os.remove(possibleOtherFormat)
                 except OSError:
                     if debug:
-                        print('EX: saveMediaInFormPOST ' +
+                        print('EX: save_media_in_form_post ' +
                               'unable to delete other 2 ' +
                               str(possibleOtherFormat))
 
@@ -1137,8 +1137,8 @@ def saveMediaInFormPOST(mediaBytes, debug: bool,
     return filename, attachmentMediaType
 
 
-def extractTextFieldsInPOST(postBytes, boundary: str, debug: bool,
-                            unit_testData: str = None) -> {}:
+def extract_text_fields_in_post(postBytes, boundary: str, debug: bool,
+                                unit_testData: str = None) -> {}:
     """Returns a dictionary containing the text fields of a http form POST
     The boundary argument comes from the http header
     """
@@ -1186,7 +1186,7 @@ def extractTextFieldsInPOST(postBytes, boundary: str, debug: bool,
     return fields
 
 
-def limitRepeatedWords(text: str, maxRepeats: int) -> str:
+def limit_repeated_words(text: str, maxRepeats: int) -> str:
     """Removes words which are repeated many times
     """
     words = text.replace('\n', ' ').split(' ')
@@ -1218,7 +1218,7 @@ def limitRepeatedWords(text: str, maxRepeats: int) -> str:
     return text
 
 
-def getPriceFromString(priceStr: str) -> (str, str):
+def get_price_from_string(priceStr: str) -> (str, str):
     """Returns the item price and currency
     """
     currencies = get_currencies()
@@ -1236,7 +1236,7 @@ def getPriceFromString(priceStr: str) -> (str, str):
     return "0.00", "EUR"
 
 
-def _wordsSimilarityHistogram(words: []) -> {}:
+def _words_similarity_histogram(words: []) -> {}:
     """Returns a histogram for word combinations
     """
     histogram = {}
@@ -1249,7 +1249,7 @@ def _wordsSimilarityHistogram(words: []) -> {}:
     return histogram
 
 
-def _wordsSimilarityWordsList(content: str) -> []:
+def _words_similarity_words_list(content: str) -> []:
     """Returns a list of words for the given content
     """
     removePunctuation = ('.', ',', ';', '-', ':', '"')
@@ -1260,22 +1260,22 @@ def _wordsSimilarityWordsList(content: str) -> []:
     return content.split(' ')
 
 
-def wordsSimilarity(content1: str, content2: str, minWords: int) -> int:
+def words_similarity(content1: str, content2: str, minWords: int) -> int:
     """Returns percentage similarity
     """
     if content1 == content2:
         return 100
 
-    words1 = _wordsSimilarityWordsList(content1)
+    words1 = _words_similarity_words_list(content1)
     if len(words1) < minWords:
         return 0
 
-    words2 = _wordsSimilarityWordsList(content2)
+    words2 = _words_similarity_words_list(content2)
     if len(words2) < minWords:
         return 0
 
-    histogram1 = _wordsSimilarityHistogram(words1)
-    histogram2 = _wordsSimilarityHistogram(words2)
+    histogram1 = _words_similarity_histogram(words1)
+    histogram2 = _words_similarity_histogram(words2)
 
     diff = 0
     for combinedWords, hits in histogram1.items():
@@ -1286,7 +1286,7 @@ def wordsSimilarity(content1: str, content2: str, minWords: int) -> int:
     return 100 - int(diff * 100 / len(histogram1.items()))
 
 
-def containsInvalidLocalLinks(content: str) -> bool:
+def contains_invalid_local_links(content: str) -> bool:
     """Returns true if the given content has invalid links
     """
     invalidStrings = (

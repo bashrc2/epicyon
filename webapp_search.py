@@ -28,23 +28,23 @@ from utils import acct_dir
 from utils import local_actor_url
 from skills import no_of_actor_skills
 from skills import get_skills_from_list
-from categories import getHashtagCategory
-from feeds import rss2TagHeader
-from feeds import rss2TagFooter
-from webapp_utils import setCustomBackground
-from webapp_utils import htmlKeyboardNavigation
-from webapp_utils import htmlHeaderWithExternalStyle
-from webapp_utils import htmlFooter
-from webapp_utils import getSearchBannerFile
-from webapp_utils import htmlPostSeparator
-from webapp_utils import htmlSearchResultShare
-from webapp_post import individualPostAsHtml
-from webapp_hashtagswarm import htmlHashTagSwarm
+from categories import get_hashtag_category
+from feeds import rss2tag_header
+from feeds import rss2tag_footer
+from webapp_utils import set_custom_background
+from webapp_utils import html_keyboard_navigation
+from webapp_utils import html_header_with_external_style
+from webapp_utils import html_footer
+from webapp_utils import get_search_banner_file
+from webapp_utils import html_post_separator
+from webapp_utils import html_search_result_share
+from webapp_post import individual_post_as_html
+from webapp_hashtagswarm import html_hash_tag_swarm
 
 
-def htmlSearchEmoji(css_cache: {}, translate: {},
-                    base_dir: str, http_prefix: str,
-                    searchStr: str) -> str:
+def html_search_emoji(css_cache: {}, translate: {},
+                      base_dir: str, http_prefix: str,
+                      searchStr: str) -> str:
     """Search results for emoji
     """
     # emoji.json is generated so that it can be customized and the changes
@@ -64,7 +64,8 @@ def htmlSearchEmoji(css_cache: {}, translate: {},
     # create header
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
-    emojiForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
+    emojiForm = \
+        html_header_with_external_style(cssFilename, instanceTitle, None)
     emojiForm += '<center><h1>' + \
         translate['Emoji Search'] + \
         '</h1></center>'
@@ -73,7 +74,7 @@ def htmlSearchEmoji(css_cache: {}, translate: {},
     if not os.path.isfile(emojiLookupFilename):
         emojiForm += '<center><h5>' + \
             translate['No results'] + '</h5></center>'
-        emojiForm += htmlFooter()
+        emojiForm += html_footer()
         return emojiForm
 
     emojiJson = load_json(emojiLookupFilename)
@@ -111,12 +112,12 @@ def htmlSearchEmoji(css_cache: {}, translate: {},
                 '<h3>:' + emojiName + msgStr2 + filename + '"/></h3>'
         emojiForm += '</center>'
 
-    emojiForm += htmlFooter()
+    emojiForm += html_footer()
     return emojiForm
 
 
-def _matchSharedItem(searchStrLowerList: [],
-                     sharedItem: {}) -> bool:
+def _match_shared_item(searchStrLowerList: [],
+                       sharedItem: {}) -> bool:
     """Returns true if the shared item matches search criteria
     """
     for searchSubstr in searchStrLowerList:
@@ -133,10 +134,10 @@ def _matchSharedItem(searchStrLowerList: [],
     return False
 
 
-def _htmlSearchResultSharePage(actor: str, domain_full: str,
-                               calling_domain: str, pageNumber: int,
-                               searchStrLower: str, translate: {},
-                               previous: bool) -> str:
+def _html_search_result_share_page(actor: str, domain_full: str,
+                                   calling_domain: str, pageNumber: int,
+                                   searchStrLower: str, translate: {},
+                                   previous: bool) -> str:
     """Returns the html for the previous button on shared items search results
     """
     postActor = get_alt_path(actor, domain_full, calling_domain)
@@ -169,13 +170,13 @@ def _htmlSearchResultSharePage(actor: str, domain_full: str,
     return sharedItemsForm
 
 
-def _htmlSharesResult(base_dir: str,
-                      sharesJson: {}, pageNumber: int, resultsPerPage: int,
-                      searchStrLowerList: [], currPage: int, ctr: int,
-                      calling_domain: str, http_prefix: str, domain_full: str,
-                      contactNickname: str, actor: str,
-                      resultsExist: bool, searchStrLower: str, translate: {},
-                      sharesFileType: str) -> (bool, int, int, str):
+def _html_shares_result(base_dir: str,
+                        sharesJson: {}, pageNumber: int, resultsPerPage: int,
+                        searchStrLowerList: [], currPage: int, ctr: int,
+                        calling_domain: str, http_prefix: str,
+                        domain_full: str, contactNickname: str, actor: str,
+                        resultsExist: bool, searchStrLower: str, translate: {},
+                        sharesFileType: str) -> (bool, int, int, str):
     """Result for shared items search
     """
     sharedItemsForm = ''
@@ -183,23 +184,23 @@ def _htmlSharesResult(base_dir: str,
         return resultsExist, currPage, ctr, sharedItemsForm
 
     for name, sharedItem in sharesJson.items():
-        if _matchSharedItem(searchStrLowerList, sharedItem):
+        if _match_shared_item(searchStrLowerList, sharedItem):
             if currPage == pageNumber:
                 # show individual search result
                 sharedItemsForm += \
-                    htmlSearchResultShare(base_dir, sharedItem, translate,
-                                          http_prefix, domain_full,
-                                          contactNickname,
-                                          name, actor, sharesFileType,
-                                          sharedItem['category'])
+                    html_search_result_share(base_dir, sharedItem, translate,
+                                             http_prefix, domain_full,
+                                             contactNickname,
+                                             name, actor, sharesFileType,
+                                             sharedItem['category'])
                 if not resultsExist and currPage > 1:
                     # show the previous page button
                     sharedItemsForm += \
-                        _htmlSearchResultSharePage(actor, domain_full,
-                                                   calling_domain,
-                                                   pageNumber,
-                                                   searchStrLower,
-                                                   translate, True)
+                        _html_search_result_share_page(actor, domain_full,
+                                                       calling_domain,
+                                                       pageNumber,
+                                                       searchStrLower,
+                                                       translate, True)
                 resultsExist = True
             ctr += 1
             if ctr >= resultsPerPage:
@@ -207,25 +208,25 @@ def _htmlSharesResult(base_dir: str,
                 if currPage > pageNumber:
                     # show the next page button
                     sharedItemsForm += \
-                        _htmlSearchResultSharePage(actor, domain_full,
-                                                   calling_domain,
-                                                   pageNumber,
-                                                   searchStrLower,
-                                                   translate, False)
+                        _html_search_result_share_page(actor, domain_full,
+                                                       calling_domain,
+                                                       pageNumber,
+                                                       searchStrLower,
+                                                       translate, False)
                     return resultsExist, currPage, ctr, sharedItemsForm
                 ctr = 0
     return resultsExist, currPage, ctr, sharedItemsForm
 
 
-def htmlSearchSharedItems(css_cache: {}, translate: {},
-                          base_dir: str, searchStr: str,
-                          pageNumber: int,
-                          resultsPerPage: int,
-                          http_prefix: str,
-                          domain_full: str, actor: str,
-                          calling_domain: str,
-                          shared_items_federated_domains: [],
-                          sharesFileType: str) -> str:
+def html_search_shared_items(css_cache: {}, translate: {},
+                             base_dir: str, searchStr: str,
+                             pageNumber: int,
+                             resultsPerPage: int,
+                             http_prefix: str,
+                             domain_full: str, actor: str,
+                             calling_domain: str,
+                             shared_items_federated_domains: [],
+                             sharesFileType: str) -> str:
     """Search results for shared items
     """
     currPage = 1
@@ -241,7 +242,7 @@ def htmlSearchSharedItems(css_cache: {}, translate: {},
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
     sharedItemsForm = \
-        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
+        html_header_with_external_style(cssFilename, instanceTitle, None)
     if sharesFileType == 'shares':
         titleStr = translate['Shared Items Search']
     else:
@@ -265,16 +266,16 @@ def htmlSearchSharedItems(css_cache: {}, translate: {},
                 continue
 
             (resultsExist, currPage, ctr,
-             resultStr) = _htmlSharesResult(base_dir, sharesJson, pageNumber,
-                                            resultsPerPage,
-                                            searchStrLowerList,
-                                            currPage, ctr,
-                                            calling_domain, http_prefix,
-                                            domain_full,
-                                            contactNickname,
-                                            actor, resultsExist,
-                                            searchStrLower, translate,
-                                            sharesFileType)
+             resultStr) = _html_shares_result(base_dir, sharesJson, pageNumber,
+                                              resultsPerPage,
+                                              searchStrLowerList,
+                                              currPage, ctr,
+                                              calling_domain, http_prefix,
+                                              domain_full,
+                                              contactNickname,
+                                              actor, resultsExist,
+                                              searchStrLower, translate,
+                                              sharesFileType)
             sharedItemsForm += resultStr
 
             if currPage > pageNumber:
@@ -302,17 +303,17 @@ def htmlSearchSharedItems(css_cache: {}, translate: {},
                     continue
 
                 (resultsExist, currPage, ctr,
-                 resultStr) = _htmlSharesResult(base_dir, sharesJson,
-                                                pageNumber,
-                                                resultsPerPage,
-                                                searchStrLowerList,
-                                                currPage, ctr,
-                                                calling_domain, http_prefix,
-                                                domain_full,
-                                                contactNickname,
-                                                actor, resultsExist,
-                                                searchStrLower, translate,
-                                                sharesFileType)
+                 resultStr) = _html_shares_result(base_dir, sharesJson,
+                                                  pageNumber,
+                                                  resultsPerPage,
+                                                  searchStrLowerList,
+                                                  currPage, ctr,
+                                                  calling_domain, http_prefix,
+                                                  domain_full,
+                                                  contactNickname,
+                                                  actor, resultsExist,
+                                                  searchStrLower, translate,
+                                                  sharesFileType)
                 sharedItemsForm += resultStr
 
                 if currPage > pageNumber:
@@ -322,12 +323,12 @@ def htmlSearchSharedItems(css_cache: {}, translate: {},
     if not resultsExist:
         sharedItemsForm += \
             '<center><h5>' + translate['No results'] + '</h5></center>\n'
-    sharedItemsForm += htmlFooter()
+    sharedItemsForm += html_footer()
     return sharedItemsForm
 
 
-def htmlSearchEmojiTextEntry(css_cache: {}, translate: {},
-                             base_dir: str, path: str) -> str:
+def html_search_emoji_text_entry(css_cache: {}, translate: {},
+                                 base_dir: str, path: str) -> str:
     """Search for an emoji by name
     """
     # emoji.json is generated so that it can be customized and the changes
@@ -339,7 +340,7 @@ def htmlSearchEmojiTextEntry(css_cache: {}, translate: {},
     actor = path.replace('/search', '')
     domain, port = get_domain_from_actor(actor)
 
-    setCustomBackground(base_dir, 'search-background', 'follow-background')
+    set_custom_background(base_dir, 'search-background', 'follow-background')
 
     cssFilename = base_dir + '/epicyon-follow.css'
     if os.path.isfile(base_dir + '/follow.css'):
@@ -347,7 +348,8 @@ def htmlSearchEmojiTextEntry(css_cache: {}, translate: {},
 
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
-    emojiStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
+    emojiStr = \
+        html_header_with_external_style(cssFilename, instanceTitle, None)
     emojiStr += '<div class="follow">\n'
     emojiStr += '  <div class="followAvatar">\n'
     emojiStr += '  <center>\n'
@@ -366,33 +368,34 @@ def htmlSearchEmojiTextEntry(css_cache: {}, translate: {},
     emojiStr += '  </center>\n'
     emojiStr += '  </div>\n'
     emojiStr += '</div>\n'
-    emojiStr += htmlFooter()
+    emojiStr += html_footer()
     return emojiStr
 
 
-def htmlSearch(css_cache: {}, translate: {},
-               base_dir: str, path: str, domain: str,
-               defaultTimeline: str, theme: str,
-               text_mode_banner: str, accessKeys: {}) -> str:
+def html_search(css_cache: {}, translate: {},
+                base_dir: str, path: str, domain: str,
+                defaultTimeline: str, theme: str,
+                text_mode_banner: str, accessKeys: {}) -> str:
     """Search called from the timeline icon
     """
     actor = path.replace('/search', '')
     searchNickname = get_nickname_from_actor(actor)
 
-    setCustomBackground(base_dir, 'search-background', 'follow-background')
+    set_custom_background(base_dir, 'search-background', 'follow-background')
 
     cssFilename = base_dir + '/epicyon-search.css'
     if os.path.isfile(base_dir + '/search.css'):
         cssFilename = base_dir + '/search.css'
 
     instanceTitle = get_config_param(base_dir, 'instanceTitle')
-    followStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
+    followStr = \
+        html_header_with_external_style(cssFilename, instanceTitle, None)
 
     # show a banner above the search box
     searchBannerFile, searchBannerFilename = \
-        getSearchBannerFile(base_dir, searchNickname, domain, theme)
+        get_search_banner_file(base_dir, searchNickname, domain, theme)
 
-    text_mode_bannerStr = htmlKeyboardNavigation(text_mode_banner, {}, {})
+    text_mode_bannerStr = html_keyboard_navigation(text_mode_banner, {}, {})
     if text_mode_bannerStr is None:
         text_mode_bannerStr = ''
 
@@ -434,31 +437,31 @@ def htmlSearch(css_cache: {}, translate: {},
             with open(cachedHashtagSwarmFilename, 'r') as fp:
                 swarmStr = fp.read()
         except OSError:
-            print('EX: htmlSearch unable to read cached hashtag swarm ' +
+            print('EX: html_search unable to read cached hashtag swarm ' +
                   cachedHashtagSwarmFilename)
     if not swarmStr:
-        swarmStr = htmlHashTagSwarm(base_dir, actor, translate)
+        swarmStr = html_hash_tag_swarm(base_dir, actor, translate)
         if swarmStr:
             try:
                 with open(cachedHashtagSwarmFilename, 'w+') as fp:
                     fp.write(swarmStr)
             except OSError:
-                print('EX: htmlSearch unable to save cached hashtag swarm ' +
+                print('EX: html_search unable to save cached hashtag swarm ' +
                       cachedHashtagSwarmFilename)
 
     followStr += '  <p class="hashtagswarm">' + swarmStr + '</p>\n'
     followStr += '  </center>\n'
     followStr += '  </div>\n'
     followStr += '</div>\n'
-    followStr += htmlFooter()
+    followStr += html_footer()
     return followStr
 
 
-def htmlSkillsSearch(actor: str,
-                     css_cache: {}, translate: {}, base_dir: str,
-                     http_prefix: str,
-                     skillsearch: str, instanceOnly: bool,
-                     postsPerPage: int) -> str:
+def html_skills_search(actor: str,
+                       css_cache: {}, translate: {}, base_dir: str,
+                       http_prefix: str,
+                       skillsearch: str, instanceOnly: bool,
+                       postsPerPage: int) -> str:
     """Show a page containing search results for a skill
     """
     if skillsearch.startswith('*'):
@@ -549,7 +552,7 @@ def htmlSkillsSearch(actor: str,
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
     skillSearchForm = \
-        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
+        html_header_with_external_style(cssFilename, instanceTitle, None)
     skillSearchForm += \
         '<center><h1><a href = "' + actor + '/search">' + \
         translate['Skills search'] + ': ' + \
@@ -581,33 +584,33 @@ def htmlSkillsSearch(actor: str,
             if ctr >= postsPerPage:
                 break
         skillSearchForm += '</center>'
-    skillSearchForm += htmlFooter()
+    skillSearchForm += html_footer()
     return skillSearchForm
 
 
-def htmlHistorySearch(css_cache: {}, translate: {}, base_dir: str,
-                      http_prefix: str,
-                      nickname: str, domain: str,
-                      historysearch: str,
-                      postsPerPage: int, pageNumber: int,
-                      project_version: str,
-                      recent_posts_cache: {},
-                      max_recent_posts: int,
-                      session,
-                      cached_webfingers,
-                      person_cache: {},
-                      port: int,
-                      yt_replace_domain: str,
-                      twitter_replacement_domain: str,
-                      show_published_date_only: bool,
-                      peertube_instances: [],
-                      allow_local_network_access: bool,
-                      theme_name: str, boxName: str,
-                      system_language: str,
-                      max_like_count: int,
-                      signing_priv_key_pem: str,
-                      cw_lists: {},
-                      lists_enabled: str) -> str:
+def html_history_search(css_cache: {}, translate: {}, base_dir: str,
+                        http_prefix: str,
+                        nickname: str, domain: str,
+                        historysearch: str,
+                        postsPerPage: int, pageNumber: int,
+                        project_version: str,
+                        recent_posts_cache: {},
+                        max_recent_posts: int,
+                        session,
+                        cached_webfingers,
+                        person_cache: {},
+                        port: int,
+                        yt_replace_domain: str,
+                        twitter_replacement_domain: str,
+                        show_published_date_only: bool,
+                        peertube_instances: [],
+                        allow_local_network_access: bool,
+                        theme_name: str, boxName: str,
+                        system_language: str,
+                        max_like_count: int,
+                        signing_priv_key_pem: str,
+                        cw_lists: {},
+                        lists_enabled: str) -> str:
     """Show a page containing search results for your post history
     """
     if historysearch.startswith("'"):
@@ -626,7 +629,7 @@ def htmlHistorySearch(css_cache: {}, translate: {}, base_dir: str,
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
     historySearchForm = \
-        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
+        html_header_with_external_style(cssFilename, instanceTitle, None)
 
     # add the page title
     domain_full = get_full_domain(domain, port)
@@ -645,7 +648,7 @@ def htmlHistorySearch(css_cache: {}, translate: {}, base_dir: str,
             '</h5></center>'
         return historySearchForm
 
-    separatorStr = htmlPostSeparator(base_dir, None)
+    separatorStr = html_post_separator(base_dir, None)
 
     # ensure that the page number is in bounds
     if not pageNumber:
@@ -673,52 +676,53 @@ def htmlHistorySearch(css_cache: {}, translate: {}, base_dir: str,
         showIndividualPostIcons = True
         allow_deletion = False
         postStr = \
-            individualPostAsHtml(signing_priv_key_pem,
-                                 True, recent_posts_cache,
-                                 max_recent_posts,
-                                 translate, None,
-                                 base_dir, session, cached_webfingers,
-                                 person_cache,
-                                 nickname, domain, port,
-                                 post_json_object,
-                                 None, True, allow_deletion,
-                                 http_prefix, project_version,
-                                 'search',
-                                 yt_replace_domain,
-                                 twitter_replacement_domain,
-                                 show_published_date_only,
-                                 peertube_instances,
-                                 allow_local_network_access,
-                                 theme_name, system_language, max_like_count,
-                                 showIndividualPostIcons,
-                                 showIndividualPostIcons,
-                                 False, False, False, False,
-                                 cw_lists, lists_enabled)
+            individual_post_as_html(signing_priv_key_pem,
+                                    True, recent_posts_cache,
+                                    max_recent_posts,
+                                    translate, None,
+                                    base_dir, session, cached_webfingers,
+                                    person_cache,
+                                    nickname, domain, port,
+                                    post_json_object,
+                                    None, True, allow_deletion,
+                                    http_prefix, project_version,
+                                    'search',
+                                    yt_replace_domain,
+                                    twitter_replacement_domain,
+                                    show_published_date_only,
+                                    peertube_instances,
+                                    allow_local_network_access,
+                                    theme_name, system_language,
+                                    max_like_count,
+                                    showIndividualPostIcons,
+                                    showIndividualPostIcons,
+                                    False, False, False, False,
+                                    cw_lists, lists_enabled)
         if postStr:
             historySearchForm += separatorStr + postStr
         index += 1
 
-    historySearchForm += htmlFooter()
+    historySearchForm += html_footer()
     return historySearchForm
 
 
-def htmlHashtagSearch(css_cache: {},
-                      nickname: str, domain: str, port: int,
-                      recent_posts_cache: {}, max_recent_posts: int,
-                      translate: {},
-                      base_dir: str, hashtag: str, pageNumber: int,
-                      postsPerPage: int,
-                      session, cached_webfingers: {}, person_cache: {},
-                      http_prefix: str, project_version: str,
-                      yt_replace_domain: str,
-                      twitter_replacement_domain: str,
-                      show_published_date_only: bool,
-                      peertube_instances: [],
-                      allow_local_network_access: bool,
-                      theme_name: str, system_language: str,
-                      max_like_count: int,
-                      signing_priv_key_pem: str,
-                      cw_lists: {}, lists_enabled: str) -> str:
+def html_hashtag_search(css_cache: {},
+                        nickname: str, domain: str, port: int,
+                        recent_posts_cache: {}, max_recent_posts: int,
+                        translate: {},
+                        base_dir: str, hashtag: str, pageNumber: int,
+                        postsPerPage: int,
+                        session, cached_webfingers: {}, person_cache: {},
+                        http_prefix: str, project_version: str,
+                        yt_replace_domain: str,
+                        twitter_replacement_domain: str,
+                        show_published_date_only: bool,
+                        peertube_instances: [],
+                        allow_local_network_access: bool,
+                        theme_name: str, system_language: str,
+                        max_like_count: int,
+                        signing_priv_key_pem: str,
+                        cw_lists: {}, lists_enabled: str) -> str:
     """Show a page containing search results for a hashtag
     or after selecting a hashtag from the swarm
     """
@@ -734,7 +738,7 @@ def htmlHashtagSearch(css_cache: {},
         print('WARN: hashtag file not found ' + hashtagIndexFile)
         return None
 
-    separatorStr = htmlPostSeparator(base_dir, None)
+    separatorStr = html_post_separator(base_dir, None)
 
     # check that the directory for the nickname exists
     if nickname:
@@ -768,7 +772,7 @@ def htmlHashtagSearch(css_cache: {},
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
     hashtagSearchForm = \
-        htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
+        html_header_with_external_style(cssFilename, instanceTitle, None)
     if nickname:
         hashtagSearchForm += '<center>\n' + \
             '<h1><a href="/users/' + nickname + '/search">#' + \
@@ -786,7 +790,7 @@ def htmlHashtagSearch(css_cache: {},
 
     # edit the category for this hashtag
     if is_editor(base_dir, nickname):
-        category = getHashtagCategory(base_dir, hashtag)
+        category = get_hashtag_category(base_dir, hashtag)
         hashtagSearchForm += '<div class="hashtagCategoryContainer">\n'
         hashtagSearchForm += '  <form enctype="multipart/form-data" ' + \
             'method="POST" accept-charset="UTF-8" action="' + \
@@ -855,29 +859,30 @@ def htmlHashtagSearch(css_cache: {},
         avatarUrl = None
         showAvatarOptions = True
         postStr = \
-            individualPostAsHtml(signing_priv_key_pem,
-                                 allowDownloads, recent_posts_cache,
-                                 max_recent_posts,
-                                 translate, None,
-                                 base_dir, session, cached_webfingers,
-                                 person_cache,
-                                 nickname, domain, port,
-                                 post_json_object,
-                                 avatarUrl, showAvatarOptions,
-                                 allow_deletion,
-                                 http_prefix, project_version,
-                                 'search',
-                                 yt_replace_domain,
-                                 twitter_replacement_domain,
-                                 show_published_date_only,
-                                 peertube_instances,
-                                 allow_local_network_access,
-                                 theme_name, system_language, max_like_count,
-                                 showRepeats, showIcons,
-                                 manuallyApprovesFollowers,
-                                 showPublicOnly,
-                                 storeToCache, False, cw_lists,
-                                 lists_enabled)
+            individual_post_as_html(signing_priv_key_pem,
+                                    allowDownloads, recent_posts_cache,
+                                    max_recent_posts,
+                                    translate, None,
+                                    base_dir, session, cached_webfingers,
+                                    person_cache,
+                                    nickname, domain, port,
+                                    post_json_object,
+                                    avatarUrl, showAvatarOptions,
+                                    allow_deletion,
+                                    http_prefix, project_version,
+                                    'search',
+                                    yt_replace_domain,
+                                    twitter_replacement_domain,
+                                    show_published_date_only,
+                                    peertube_instances,
+                                    allow_local_network_access,
+                                    theme_name, system_language,
+                                    max_like_count,
+                                    showRepeats, showIcons,
+                                    manuallyApprovesFollowers,
+                                    showPublicOnly,
+                                    storeToCache, False, cw_lists,
+                                    lists_enabled)
         if postStr:
             hashtagSearchForm += separatorStr + postStr
         index += 1
@@ -892,20 +897,20 @@ def htmlHashtagSearch(css_cache: {},
             '/pagedown.png" title="' + translate['Page down'] + \
             '" alt="' + translate['Page down'] + '"></a>' + \
             '  </center>'
-    hashtagSearchForm += htmlFooter()
+    hashtagSearchForm += html_footer()
     return hashtagSearchForm
 
 
-def rssHashtagSearch(nickname: str, domain: str, port: int,
-                     recent_posts_cache: {}, max_recent_posts: int,
-                     translate: {},
-                     base_dir: str, hashtag: str,
-                     postsPerPage: int,
-                     session, cached_webfingers: {}, person_cache: {},
-                     http_prefix: str, project_version: str,
-                     yt_replace_domain: str,
-                     twitter_replacement_domain: str,
-                     system_language: str) -> str:
+def rss_hashtag_search(nickname: str, domain: str, port: int,
+                       recent_posts_cache: {}, max_recent_posts: int,
+                       translate: {},
+                       base_dir: str, hashtag: str,
+                       postsPerPage: int,
+                       session, cached_webfingers: {}, person_cache: {},
+                       http_prefix: str, project_version: str,
+                       yt_replace_domain: str,
+                       twitter_replacement_domain: str,
+                       system_language: str) -> str:
     """Show an rss feed for a hashtag
     """
     if hashtag.startswith('#'):
@@ -937,7 +942,7 @@ def rssHashtagSearch(nickname: str, domain: str, port: int,
 
     maxFeedLength = 10
     hashtagFeed = \
-        rss2TagHeader(hashtag, http_prefix, domain_full)
+        rss2tag_header(hashtag, http_prefix, domain_full)
     for index in range(len(lines)):
         post_id = lines[index].strip('\n').strip('\r')
         if '  ' not in post_id:
@@ -1005,4 +1010,4 @@ def rssHashtagSearch(nickname: str, domain: str, port: int,
         if index >= maxFeedLength:
             break
 
-    return hashtagFeed + rss2TagFooter()
+    return hashtagFeed + rss2tag_footer()

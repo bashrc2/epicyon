@@ -11,21 +11,21 @@ import os
 from datetime import datetime
 from utils import get_nickname_from_actor
 from utils import get_config_param
-from categories import getHashtagCategories
-from categories import getHashtagCategory
-from webapp_utils import setCustomBackground
-from webapp_utils import getSearchBannerFile
-from webapp_utils import getContentWarningButton
-from webapp_utils import htmlHeaderWithExternalStyle
-from webapp_utils import htmlFooter
+from categories import get_hashtag_categories
+from categories import get_hashtag_category
+from webapp_utils import set_custom_background
+from webapp_utils import get_search_banner_file
+from webapp_utils import get_content_warning_button
+from webapp_utils import html_header_with_external_style
+from webapp_utils import html_footer
 
 
-def getHashtagCategoriesFeed(base_dir: str,
-                             hashtagCategories: {} = None) -> str:
+def get_hashtag_categories_feed(base_dir: str,
+                                hashtagCategories: {} = None) -> str:
     """Returns an rss feed for hashtag categories
     """
     if not hashtagCategories:
-        hashtagCategories = getHashtagCategories(base_dir)
+        hashtagCategories = get_hashtag_categories(base_dir)
     if not hashtagCategories:
         return None
 
@@ -61,7 +61,7 @@ def getHashtagCategoriesFeed(base_dir: str,
     return rssStr
 
 
-def htmlHashTagSwarm(base_dir: str, actor: str, translate: {}) -> str:
+def html_hash_tag_swarm(base_dir: str, actor: str, translate: {}) -> str:
     """Returns a tag swarm of today's hashtags
     """
     maxTagLength = 42
@@ -151,7 +151,7 @@ def htmlHashTagSwarm(base_dir: str, actor: str, translate: {}) -> str:
                             tagsFilename.replace('.txt', '.category')
                         if os.path.isfile(categoryFilename):
                             categoryStr = \
-                                getHashtagCategory(base_dir, hashTagName)
+                                get_hashtag_category(base_dir, hashTagName)
                             if len(categoryStr) < maxTagLength:
                                 if '#' not in categoryStr and \
                                    '&' not in categoryStr and \
@@ -186,22 +186,22 @@ def htmlHashTagSwarm(base_dir: str, actor: str, translate: {}) -> str:
 
     if categorySwarmStr:
         tagSwarmStr = \
-            getContentWarningButton('alltags', translate, tagSwarmStr)
+            get_content_warning_button('alltags', translate, tagSwarmStr)
 
     tagSwarmHtml = categorySwarmStr + tagSwarmStr.strip() + '\n'
     return tagSwarmHtml
 
 
-def htmlSearchHashtagCategory(css_cache: {}, translate: {},
-                              base_dir: str, path: str, domain: str,
-                              theme: str) -> str:
+def html_search_hashtag_category(css_cache: {}, translate: {},
+                                 base_dir: str, path: str, domain: str,
+                                 theme: str) -> str:
     """Show hashtags after selecting a category on the main search screen
     """
     actor = path.split('/category/')[0]
     categoryStr = path.split('/category/')[1].strip()
     searchNickname = get_nickname_from_actor(actor)
 
-    setCustomBackground(base_dir, 'search-background', 'follow-background')
+    set_custom_background(base_dir, 'search-background', 'follow-background')
 
     cssFilename = base_dir + '/epicyon-search.css'
     if os.path.isfile(base_dir + '/search.css'):
@@ -209,11 +209,11 @@ def htmlSearchHashtagCategory(css_cache: {}, translate: {},
 
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
-    htmlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle, None)
+    htmlStr = html_header_with_external_style(cssFilename, instanceTitle, None)
 
     # show a banner above the search box
     searchBannerFile, searchBannerFilename = \
-        getSearchBannerFile(base_dir, searchNickname, domain, theme)
+        get_search_banner_file(base_dir, searchNickname, domain, theme)
 
     if os.path.isfile(searchBannerFilename):
         htmlStr += '<a href="' + actor + '/search">\n'
@@ -226,7 +226,7 @@ def htmlSearchHashtagCategory(css_cache: {}, translate: {},
         '<h1><a href="' + actor + '/search"><b>' + \
         translate['Category'] + ': ' + categoryStr + '</b></a></h1>'
 
-    hashtagsDict = getHashtagCategories(base_dir, True, categoryStr)
+    hashtagsDict = get_hashtag_categories(base_dir, True, categoryStr)
     if hashtagsDict:
         for categoryStr2, hashtagList in hashtagsDict.items():
             hashtagList.sort()
@@ -238,5 +238,5 @@ def htmlSearchHashtagCategory(css_cache: {}, translate: {},
     htmlStr += \
         '</center>' + \
         '</div>'
-    htmlStr += htmlFooter()
+    htmlStr += html_footer()
     return htmlStr

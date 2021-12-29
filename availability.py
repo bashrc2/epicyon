@@ -8,10 +8,10 @@ __status__ = "Production"
 __module_group__ = "Profile Metadata"
 
 import os
-from webfinger import webfingerHandle
+from webfinger import webfinger_handle
 from auth import create_basic_auth_header
-from posts import getPersonBox
-from session import postJson
+from posts import get_person_box
+from session import post_json
 from utils import has_object_string
 from utils import get_full_domain
 from utils import get_nickname_from_actor
@@ -23,8 +23,8 @@ from utils import local_actor_url
 from utils import has_actor
 
 
-def setAvailability(base_dir: str, nickname: str, domain: str,
-                    status: str) -> bool:
+def set_availability(base_dir: str, nickname: str, domain: str,
+                     status: str) -> bool:
     """Set an availability status
     """
     # avoid giant strings
@@ -40,7 +40,7 @@ def setAvailability(base_dir: str, nickname: str, domain: str,
     return True
 
 
-def getAvailability(base_dir: str, nickname: str, domain: str) -> str:
+def get_availability(base_dir: str, nickname: str, domain: str) -> str:
     """Returns the availability for a given person
     """
     actorFilename = acct_dir(base_dir, nickname, domain) + '.json'
@@ -54,8 +54,8 @@ def getAvailability(base_dir: str, nickname: str, domain: str) -> str:
     return None
 
 
-def outboxAvailability(base_dir: str, nickname: str, message_json: {},
-                       debug: bool) -> bool:
+def outbox_availability(base_dir: str, nickname: str, message_json: {},
+                        debug: bool) -> bool:
     """Handles receiving an availability update
     """
     if not message_json.get('type'):
@@ -73,21 +73,21 @@ def outboxAvailability(base_dir: str, nickname: str, message_json: {},
     domain, port = get_domain_from_actor(message_json['actor'])
     status = message_json['object'].replace('"', '')
 
-    return setAvailability(base_dir, nickname, domain, status)
+    return set_availability(base_dir, nickname, domain, status)
 
 
-def sendAvailabilityViaServer(base_dir: str, session,
-                              nickname: str, password: str,
-                              domain: str, port: int,
-                              http_prefix: str,
-                              status: str,
-                              cached_webfingers: {}, person_cache: {},
-                              debug: bool, project_version: str,
-                              signing_priv_key_pem: str) -> {}:
+def send_availability_via_server(base_dir: str, session,
+                                 nickname: str, password: str,
+                                 domain: str, port: int,
+                                 http_prefix: str,
+                                 status: str,
+                                 cached_webfingers: {}, person_cache: {},
+                                 debug: bool, project_version: str,
+                                 signing_priv_key_pem: str) -> {}:
     """Sets the availability for a person via c2s
     """
     if not session:
-        print('WARN: No session for sendAvailabilityViaServer')
+        print('WARN: No session for send_availability_via_server')
         return 6
 
     domain_full = get_full_domain(domain, port)
@@ -106,10 +106,10 @@ def sendAvailabilityViaServer(base_dir: str, session,
     handle = http_prefix + '://' + domain_full + '/@' + nickname
 
     # lookup the inbox for the To handle
-    wfRequest = webfingerHandle(session, handle, http_prefix,
-                                cached_webfingers,
-                                domain, project_version, debug, False,
-                                signing_priv_key_pem)
+    wfRequest = webfinger_handle(session, handle, http_prefix,
+                                 cached_webfingers,
+                                 domain, project_version, debug, False,
+                                 signing_priv_key_pem)
     if not wfRequest:
         if debug:
             print('DEBUG: availability webfinger failed for ' + handle)
@@ -124,12 +124,12 @@ def sendAvailabilityViaServer(base_dir: str, session,
     # get the actor inbox for the To handle
     originDomain = domain
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
-     displayName, _) = getPersonBox(signing_priv_key_pem,
-                                    originDomain,
-                                    base_dir, session, wfRequest,
-                                    person_cache, project_version,
-                                    http_prefix, nickname,
-                                    domain, postToBox, 57262)
+     displayName, _) = get_person_box(signing_priv_key_pem,
+                                      originDomain,
+                                      base_dir, session, wfRequest,
+                                      person_cache, project_version,
+                                      http_prefix, nickname,
+                                      domain, postToBox, 57262)
 
     if not inboxUrl:
         if debug:
@@ -148,9 +148,9 @@ def sendAvailabilityViaServer(base_dir: str, session,
         'Content-type': 'application/json',
         'Authorization': authHeader
     }
-    postResult = postJson(http_prefix, domain_full,
-                          session, newAvailabilityJson, [],
-                          inboxUrl, headers, 30, True)
+    postResult = post_json(http_prefix, domain_full,
+                           session, newAvailabilityJson, [],
+                           inboxUrl, headers, 30, True)
     if not postResult:
         print('WARN: availability failed to post')
 

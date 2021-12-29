@@ -19,7 +19,7 @@ from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import utils as hazutils
 from pyjsonld import normalize
-from context import hasValidContext
+from context import has_valid_context
 from utils import get_sha_256
 
 
@@ -65,11 +65,11 @@ def _doc_hash(doc: {}) -> str:
     return h.hexdigest()
 
 
-def verifyJsonSignature(doc: {}, publicKeyPem: str) -> bool:
+def verify_json_signature(doc: {}, publicKeyPem: str) -> bool:
     """Returns True if the given ActivityPub post was sent
     by an actor having the given public key
     """
-    if not hasValidContext(doc):
+    if not has_valid_context(doc):
         return False
     pubkey = load_pem_public_key(publicKeyPem.encode('utf-8'),
                                  backend=default_backend())
@@ -87,16 +87,16 @@ def verifyJsonSignature(doc: {}, publicKeyPem: str) -> bool:
             hazutils.Prehashed(hashes.SHA256()))
         return True
     except BaseException:
-        print('EX: verifyJsonSignature unable to verify')
+        print('EX: verify_json_signature unable to verify')
         return False
 
 
-def generateJsonSignature(doc: {}, privateKeyPem: str) -> None:
+def generate_json_signature(doc: {}, privateKeyPem: str) -> None:
     """Adds a json signature to the given ActivityPub post
     """
     if not doc.get('actor'):
         return
-    if not hasValidContext(doc):
+    if not has_valid_context(doc):
         return
     options = {
         "type": "RsaSignature2017",

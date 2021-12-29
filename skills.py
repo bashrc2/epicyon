@@ -8,10 +8,10 @@ __status__ = "Production"
 __module_group__ = "Profile Metadata"
 
 import os
-from webfinger import webfingerHandle
+from webfinger import webfinger_handle
 from auth import create_basic_auth_header
-from posts import getPersonBox
-from session import postJson
+from posts import get_person_box
+from session import post_json
 from utils import has_object_string
 from utils import get_full_domain
 from utils import get_nickname_from_actor
@@ -24,7 +24,7 @@ from utils import local_actor_url
 from utils import has_actor
 
 
-def setSkillsFromDict(actor_json: {}, skillsDict: {}) -> []:
+def set_skills_from_dict(actor_json: {}, skillsDict: {}) -> []:
     """Converts a dict containing skills to a list
     Returns the string version of the dictionary
     """
@@ -108,12 +108,12 @@ def set_actor_skill_level(actor_json: {},
     else:
         if skillsDict.get(skill):
             del skillsDict[skill]
-    setSkillsFromDict(actor_json, skillsDict)
+    set_skills_from_dict(actor_json, skillsDict)
     return True
 
 
-def setSkillLevel(base_dir: str, nickname: str, domain: str,
-                  skill: str, skillLevelPercent: int) -> bool:
+def set_skill_level(base_dir: str, nickname: str, domain: str,
+                    skill: str, skillLevelPercent: int) -> bool:
     """Set a skill level for a person
     Setting skill level to zero removes it
     """
@@ -128,7 +128,7 @@ def setSkillLevel(base_dir: str, nickname: str, domain: str,
                                  skill, skillLevelPercent)
 
 
-def getSkills(base_dir: str, nickname: str, domain: str) -> []:
+def get_skills(base_dir: str, nickname: str, domain: str) -> []:
     """Returns the skills for a given person
     """
     actorFilename = acct_dir(base_dir, nickname, domain) + '.json'
@@ -144,8 +144,8 @@ def getSkills(base_dir: str, nickname: str, domain: str) -> []:
     return None
 
 
-def outboxSkills(base_dir: str, nickname: str, message_json: {},
-                 debug: bool) -> bool:
+def outbox_skills(base_dir: str, nickname: str, message_json: {},
+                  debug: bool) -> bool:
     """Handles receiving a skills update
     """
     if not message_json.get('type'):
@@ -168,21 +168,21 @@ def outboxSkills(base_dir: str, nickname: str, message_json: {},
     if skillLevelPercentStr.isdigit():
         skillLevelPercent = int(skillLevelPercentStr)
 
-    return setSkillLevel(base_dir, nickname, domain,
-                         skill, skillLevelPercent)
+    return set_skill_level(base_dir, nickname, domain,
+                           skill, skillLevelPercent)
 
 
-def sendSkillViaServer(base_dir: str, session, nickname: str, password: str,
-                       domain: str, port: int,
-                       http_prefix: str,
-                       skill: str, skillLevelPercent: int,
-                       cached_webfingers: {}, person_cache: {},
-                       debug: bool, project_version: str,
-                       signing_priv_key_pem: str) -> {}:
+def send_skill_via_server(base_dir: str, session, nickname: str, password: str,
+                          domain: str, port: int,
+                          http_prefix: str,
+                          skill: str, skillLevelPercent: int,
+                          cached_webfingers: {}, person_cache: {},
+                          debug: bool, project_version: str,
+                          signing_priv_key_pem: str) -> {}:
     """Sets a skill for a person via c2s
     """
     if not session:
-        print('WARN: No session for sendSkillViaServer')
+        print('WARN: No session for send_skill_via_server')
         return 6
 
     domain_full = get_full_domain(domain, port)
@@ -208,10 +208,10 @@ def sendSkillViaServer(base_dir: str, session, nickname: str, password: str,
 
     # lookup the inbox for the To handle
     wfRequest = \
-        webfingerHandle(session, handle, http_prefix,
-                        cached_webfingers,
-                        domain, project_version, debug, False,
-                        signing_priv_key_pem)
+        webfinger_handle(session, handle, http_prefix,
+                         cached_webfingers,
+                         domain, project_version, debug, False,
+                         signing_priv_key_pem)
     if not wfRequest:
         if debug:
             print('DEBUG: skill webfinger failed for ' + handle)
@@ -226,12 +226,12 @@ def sendSkillViaServer(base_dir: str, session, nickname: str, password: str,
     # get the actor inbox for the To handle
     originDomain = domain
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
-     displayName, _) = getPersonBox(signing_priv_key_pem,
-                                    originDomain,
-                                    base_dir, session, wfRequest,
-                                    person_cache, project_version,
-                                    http_prefix, nickname, domain,
-                                    postToBox, 76121)
+     displayName, _) = get_person_box(signing_priv_key_pem,
+                                      originDomain,
+                                      base_dir, session, wfRequest,
+                                      person_cache, project_version,
+                                      http_prefix, nickname, domain,
+                                      postToBox, 76121)
 
     if not inboxUrl:
         if debug:
@@ -251,9 +251,9 @@ def sendSkillViaServer(base_dir: str, session, nickname: str, password: str,
         'Authorization': authHeader
     }
     postResult = \
-        postJson(http_prefix, domain_full,
-                 session, newSkillJson, [], inboxUrl,
-                 headers, 30, True)
+        post_json(http_prefix, domain_full,
+                  session, newSkillJson, [], inboxUrl,
+                  headers, 30, True)
     if not postResult:
         if debug:
             print('DEBUG: POST skill failed for c2s to ' + inboxUrl)
