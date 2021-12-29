@@ -2570,6 +2570,12 @@ def camel_case_split(text: str) -> str:
     return result_str.strip()
 
 
+def convert_to_snake_case(text: str) -> str:
+    """Convert camel case to snake case
+    """
+    return camel_case_split(text).lower().replace(' ', '_')
+
+
 def _convert_to_camel_case(text: str) -> str:
     """Convers a snake case string to camel case
     """

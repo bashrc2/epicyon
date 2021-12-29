@@ -54,6 +54,7 @@ from follow import clearFollowers
 from follow import send_follow_requestViaServer
 from follow import sendUnfollowRequestViaServer
 from siteactive import siteIsActive
+from utils import convert_to_snake_case
 from utils import get_sha_256
 from utils import dangerous_svg
 from utils import can_reply_to
@@ -4550,6 +4551,38 @@ def _testFunctions():
         'set',
         'get'
     ]
+
+    bad_function_names = []
+    for name, properties in functionProperties.items():
+        if '_' not in name:
+            if name.lower() != name:
+                bad_function_names.append(name)
+        else:
+            if name.startswith('_'):
+                name2 = name[1:]
+                if '_' not in name2:
+                    if name2.lower() != name2:
+                        bad_function_names.append(name)
+    if bad_function_names:
+        bad_function_names2 = \
+            sorted(bad_function_names, key=len, reverse=True)
+        function_names_str = ''
+        function_names_sh = ''
+        ctr = 0
+        for name in bad_function_names2:
+            if ctr > 0:
+                function_names_str += '\n' + name
+            else:
+                function_names_str = name
+            snake_case_name = convert_to_snake_case(name)
+            function_names_sh += \
+                'sed -i "s|' + name + '|' + snake_case_name + '|g" *.py\n'
+            ctr += 1
+        print(function_names_str + '\n')
+        with open('scripts/bad_function_names.sh', 'w+') as fn_file:
+            fn_file.write(function_names_sh)
+        assert False
+
     # which modules is each function used within?
     for modName, modProperties in modules.items():
         print('Module: ' + modName + ' ✓')
