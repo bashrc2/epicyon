@@ -371,8 +371,8 @@ def undo_bookmark_post(recent_posts_cache: {},
 
 def send_bookmark_via_server(base_dir: str, session,
                              nickname: str, password: str,
-                             domain: str, fromPort: int,
-                             http_prefix: str, bookmarkUrl: str,
+                             domain: str, from_port: int,
+                             http_prefix: str, bookmark_url: str,
                              cached_webfingers: {}, person_cache: {},
                              debug: bool, project_version: str,
                              signing_priv_key_pem: str) -> {}:
@@ -382,7 +382,7 @@ def send_bookmark_via_server(base_dir: str, session,
         print('WARN: No session for send_bookmark_via_server')
         return 6
 
-    domain_full = get_full_domain(domain, fromPort)
+    domain_full = get_full_domain(domain, from_port)
 
     actor = local_actor_url(http_prefix, nickname, domain_full)
 
@@ -393,7 +393,7 @@ def send_bookmark_via_server(base_dir: str, session,
         "to": [actor],
         "object": {
             "type": "Document",
-            "url": bookmarkUrl,
+            "url": bookmark_url,
             "to": [actor]
         },
         "target": actor + "/tlbookmarks"
@@ -462,8 +462,8 @@ def send_bookmark_via_server(base_dir: str, session,
 
 def send_undo_bookmark_via_server(base_dir: str, session,
                                   nickname: str, password: str,
-                                  domain: str, fromPort: int,
-                                  http_prefix: str, bookmarkUrl: str,
+                                  domain: str, from_port: int,
+                                  http_prefix: str, bookmark_url: str,
                                   cached_webfingers: {}, person_cache: {},
                                   debug: bool, project_version: str,
                                   signing_priv_key_pem: str) -> {}:
@@ -473,7 +473,7 @@ def send_undo_bookmark_via_server(base_dir: str, session,
         print('WARN: No session for send_undo_bookmark_via_server')
         return 6
 
-    domain_full = get_full_domain(domain, fromPort)
+    domain_full = get_full_domain(domain, from_port)
 
     actor = local_actor_url(http_prefix, nickname, domain_full)
 
@@ -484,7 +484,7 @@ def send_undo_bookmark_via_server(base_dir: str, session,
         "to": [actor],
         "object": {
             "type": "Document",
-            "url": bookmarkUrl,
+            "url": bookmark_url,
             "to": [actor]
         },
         "target": actor + "/tlbookmarks"
