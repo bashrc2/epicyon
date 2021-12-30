@@ -4543,6 +4543,27 @@ def _test_config_param_names():
         break
 
 
+def _test_source_contains_no_tabs():
+    print('testSourceContainsNoTabs')
+
+    for subdir, dirs, files in os.walk('.'):
+        for source_file in files:
+            if not source_file.endswith('.py'):
+                continue
+            if source_file.startswith('.#'):
+                continue
+            if source_file.startswith('flycheck_'):
+                continue
+            source_str = ''
+            with open(source_file, 'r') as file_source:
+                source_str = file_source.read()
+            if not source_str:
+                continue
+            if '\t' in source_str:
+                print(source_file + ' contains tabs')
+                assert False
+
+
 def _test_checkbox_names():
     print('testCheckboxNames')
 
@@ -6276,6 +6297,7 @@ def run_all_tests():
     base_dir = os.getcwd()
     print('Running tests...')
     update_default_themes_list(os.getcwd())
+    _test_source_contains_no_tabs()
     _translate_ontology(base_dir)
     _test_get_price_from_string()
     _test_post_variable_names()
