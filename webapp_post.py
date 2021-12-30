@@ -81,7 +81,7 @@ from webfinger import webfinger_handle
 from speaker import update_speaker
 from languages import auto_translate_post
 from blocking import is_blocked
-from blocking import add_c_wfrom_lists
+from blocking import add_cw_from_lists
 from reaction import html_emoji_reactions
 
 
@@ -1825,7 +1825,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
         footerStr = newFooterStr
 
     # add any content warning from the cwlists directory
-    add_c_wfrom_lists(post_json_object, cw_lists, translate, lists_enabled)
+    add_cw_from_lists(post_json_object, cw_lists, translate, lists_enabled)
 
     postIsSensitive = False
     if post_json_object['object'].get('sensitive'):

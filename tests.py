@@ -172,7 +172,7 @@ from shares import merge_shared_item_tokens
 from shares import send_share_via_server
 from shares import get_shared_items_catalog_via_server
 from blocking import load_cw_lists
-from blocking import add_c_wfrom_lists
+from blocking import add_cw_from_lists
 
 testServerGroupRunning = False
 testServerAliceRunning = False
@@ -5922,7 +5922,7 @@ def _test_add_cw_lists(base_dir: str) -> None:
             "content": ""
         }
     }
-    add_c_wfrom_lists(post_json_object, cw_lists, translate, 'Murdoch press')
+    add_cw_from_lists(post_json_object, cw_lists, translate, 'Murdoch press')
     assert post_json_object['object']['sensitive'] is False
     assert post_json_object['object']['summary'] is None
 
@@ -5933,7 +5933,7 @@ def _test_add_cw_lists(base_dir: str) -> None:
             "content": "Blah blah news.co.uk blah blah"
         }
     }
-    add_c_wfrom_lists(post_json_object, cw_lists, translate, 'Murdoch press')
+    add_cw_from_lists(post_json_object, cw_lists, translate, 'Murdoch press')
     assert post_json_object['object']['sensitive'] is True
     assert post_json_object['object']['summary'] == "Murdoch Press"
 
@@ -5944,7 +5944,7 @@ def _test_add_cw_lists(base_dir: str) -> None:
             "content": "Blah blah news.co.uk blah blah"
         }
     }
-    add_c_wfrom_lists(post_json_object, cw_lists, translate, 'Murdoch press')
+    add_cw_from_lists(post_json_object, cw_lists, translate, 'Murdoch press')
     assert post_json_object['object']['sensitive'] is True
     assert post_json_object['object']['summary'] == \
         "Murdoch Press / Existing CW"
