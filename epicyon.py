@@ -1001,7 +1001,7 @@ if not theme_name:
     theme_name = 'default'
 
 if not args.mediainstance:
-    media_instance = get_config_param(base_dir, 'media_instance')
+    media_instance = get_config_param(base_dir, 'mediaInstance')
     if media_instance is not None:
         args.mediainstance = media_instance
         if args.mediainstance:
@@ -1009,7 +1009,7 @@ if not args.mediainstance:
             args.newsinstance = False
 
 if not args.newsinstance:
-    news_instance = get_config_param(base_dir, 'news_instance')
+    news_instance = get_config_param(base_dir, 'newsInstance')
     if news_instance is not None:
         args.newsinstance = news_instance
         if args.newsinstance:
@@ -1017,7 +1017,7 @@ if not args.newsinstance:
             args.mediainstance = False
 
 if not args.blogsinstance:
-    blogs_instance = get_config_param(base_dir, 'blogs_instance')
+    blogs_instance = get_config_param(base_dir, 'blogsInstance')
     if blogs_instance is not None:
         args.blogsinstance = blogs_instance
         if args.blogsinstance:
@@ -1069,7 +1069,7 @@ if args.i2p_domain:
     if '://' in args.i2p_domain:
         args.onion = args.onion.split('://')[1]
     i2p_domain = args.i2p_domain
-    set_config_param(base_dir, 'i2p_domain', i2p_domain)
+    set_config_param(base_dir, 'i2pDomain', i2p_domain)
 
 if not args.language:
     languageCode = get_config_param(base_dir, 'language')
@@ -1103,10 +1103,10 @@ if args.resetregistrations:
     print('Number of new registrations reset to ' + str(maxRegistrations))
 
 # unique ID for the instance
-instance_id = get_config_param(base_dir, 'instance_id')
+instance_id = get_config_param(base_dir, 'instanceId')
 if not instance_id:
     instance_id = create_password(32)
-    set_config_param(base_dir, 'instance_id', instance_id)
+    set_config_param(base_dir, 'instanceId', instance_id)
     print('Instance ID: ' + instance_id)
 
 # get domain name from configuration
@@ -1124,7 +1124,7 @@ else:
     onion_domain = None
 
 # get i2p domain name from configuration
-configi2p_domain = get_config_param(base_dir, 'i2p_domain')
+configi2p_domain = get_config_param(base_dir, 'i2pDomain')
 if configi2p_domain:
     i2p_domain = configi2p_domain
 else:
@@ -1141,7 +1141,7 @@ else:
     else:
         port = 443
 
-configProxyPort = get_config_param(base_dir, 'proxy_port')
+configProxyPort = get_config_param(base_dir, 'proxyPort')
 if configProxyPort:
     proxy_port = configProxyPort
 else:
@@ -1163,9 +1163,9 @@ if args.federation_list:
                           ': Federate with domains, not individual accounts')
                     sys.exit()
             federation_list = args.federation_list.copy()
-        set_config_param(base_dir, 'federation_list', federation_list)
+        set_config_param(base_dir, 'federationList', federation_list)
 else:
-    configFederationList = get_config_param(base_dir, 'federation_list')
+    configFederationList = get_config_param(base_dir, 'federationList')
     if configFederationList:
         federation_list = configFederationList
 
@@ -2068,7 +2068,7 @@ if args.port:
     set_config_param(base_dir, 'port', port)
 if args.proxy_port:
     proxy_port = args.proxy_port
-    set_config_param(base_dir, 'proxy_port', proxy_port)
+    set_config_param(base_dir, 'proxyPort', proxy_port)
 if args.gnunet:
     http_prefix = 'gnunet'
 if args.dat or args.hyper:
@@ -2615,11 +2615,11 @@ if args.shared_items_federated_domains:
 shared_items_federated_domains = []
 if args.shared_items_federated_domains:
     fed_domains_str = args.shared_items_federated_domains
-    set_config_param(base_dir, 'shared_items_federated_domains',
+    set_config_param(base_dir, 'sharedItemsFederatedDomains',
                      fed_domains_str)
 else:
     fed_domains_str = \
-        get_config_param(base_dir, 'shared_items_federated_domains')
+        get_config_param(base_dir, 'sharedItemsFederatedDomains')
 if fed_domains_str:
     fed_domains_list = fed_domains_str.split(',')
     for sharedFederatedDomain in fed_domains_list:
@@ -3017,9 +3017,9 @@ if minimumvotes:
 content_license_url = ''
 if args.content_license_url:
     content_license_url = args.content_license_url
-    set_config_param(base_dir, 'content_license_url', content_license_url)
+    set_config_param(base_dir, 'contentLicenseUrl', content_license_url)
 else:
-    content_license_url = get_config_param(base_dir, 'content_license_url')
+    content_license_url = get_config_param(base_dir, 'contentLicenseUrl')
 
 votingtime = get_config_param(base_dir, 'votingtime')
 if votingtime:
@@ -3032,124 +3032,124 @@ if dateonly:
 
 # set the maximum number of newswire posts per account or rss feed
 max_newswire_postsPerSource = \
-    get_config_param(base_dir, 'max_newswire_postsPerSource')
+    get_config_param(base_dir, 'maxNewswirePostsPerSource')
 if max_newswire_postsPerSource:
     args.max_newswire_postsPerSource = int(max_newswire_postsPerSource)
 
 # set the maximum number of newswire posts appearing in the right column
 max_newswire_posts = \
-    get_config_param(base_dir, 'max_newswire_posts')
+    get_config_param(base_dir, 'maxNewswirePosts')
 if max_newswire_posts:
     args.max_newswire_posts = int(max_newswire_posts)
 
 # set the maximum size of a newswire rss/atom feed in Kilobytes
 max_newswire_feed_size_kb = \
-    get_config_param(base_dir, 'max_newswire_feed_size_kb')
+    get_config_param(base_dir, 'maxNewswireFeedSizeKb')
 if max_newswire_feed_size_kb:
     args.max_newswire_feed_size_kb = int(max_newswire_feed_size_kb)
 
 max_mirrored_articles = \
-    get_config_param(base_dir, 'max_mirrored_articles')
+    get_config_param(base_dir, 'maxMirroredArticles')
 if max_mirrored_articles is not None:
     args.max_mirrored_articles = int(max_mirrored_articles)
 
 max_news_posts = \
-    get_config_param(base_dir, 'max_news_posts')
+    get_config_param(base_dir, 'maxNewsPosts')
 if max_news_posts is not None:
     args.max_news_posts = int(max_news_posts)
 
 max_followers = \
-    get_config_param(base_dir, 'max_followers')
+    get_config_param(base_dir, 'maxFollowers')
 if max_followers is not None:
     args.max_followers = int(max_followers)
 
 max_feed_item_size_kb = \
-    get_config_param(base_dir, 'max_feed_item_size_kb')
+    get_config_param(base_dir, 'maxFeedItemSizeKb')
 if max_feed_item_size_kb is not None:
     args.max_feed_item_size_kb = int(max_feed_item_size_kb)
 
 dormant_months = \
-    get_config_param(base_dir, 'dormant_months')
+    get_config_param(base_dir, 'dormantMonths')
 if dormant_months is not None:
     args.dormant_months = int(dormant_months)
 
 send_threads_timeout_mins = \
-    get_config_param(base_dir, 'send_threads_timeout_mins')
+    get_config_param(base_dir, 'sendThreadsTimeoutMins')
 if send_threads_timeout_mins is not None:
     args.send_threads_timeout_mins = int(send_threads_timeout_mins)
 
 max_like_count = \
-    get_config_param(base_dir, 'max_like_count')
+    get_config_param(base_dir, 'maxLikeCount')
 if max_like_count is not None:
     args.max_like_count = int(max_like_count)
 
 show_publish_as_icon = \
-    get_config_param(base_dir, 'show_publish_as_icon')
+    get_config_param(base_dir, 'showPublishAsIcon')
 if show_publish_as_icon is not None:
     args.show_publish_as_icon = bool(show_publish_as_icon)
 
 icons_as_buttons = \
-    get_config_param(base_dir, 'icons_as_buttons')
+    get_config_param(base_dir, 'iconsAsButtons')
 if icons_as_buttons is not None:
     args.icons_as_buttons = bool(icons_as_buttons)
 
 rss_icon_at_top = \
-    get_config_param(base_dir, 'rss_icon_at_top')
+    get_config_param(base_dir, 'rssIconAtTop')
 if rss_icon_at_top is not None:
     args.rss_icon_at_top = bool(rss_icon_at_top)
 
 publish_button_at_top = \
-    get_config_param(base_dir, 'publish_button_at_top')
+    get_config_param(base_dir, 'publishButtonAtTop')
 if publish_button_at_top is not None:
     args.publish_button_at_top = bool(publish_button_at_top)
 
 full_width_tl_button_header = \
-    get_config_param(base_dir, 'full_width_tl_button_header')
+    get_config_param(base_dir, 'fullWidthTlButtonHeader')
 if full_width_tl_button_header is not None:
     args.full_width_tl_button_header = bool(full_width_tl_button_header)
 
 allow_local_network_access = \
-    get_config_param(base_dir, 'allow_local_network_access')
+    get_config_param(base_dir, 'allowLocalNetworkAccess')
 if allow_local_network_access is not None:
     args.allow_local_network_access = bool(allow_local_network_access)
 
 verify_all_signatures = \
-    get_config_param(base_dir, 'verify_all_signatures')
+    get_config_param(base_dir, 'verifyAllSignatures')
 if verify_all_signatures is not None:
     args.verify_all_signatures = bool(verify_all_signatures)
 
 broch_mode = \
-    get_config_param(base_dir, 'broch_mode')
+    get_config_param(base_dir, 'brochMode')
 if broch_mode is not None:
     args.broch_mode = bool(broch_mode)
 
 log_login_failures = \
-    get_config_param(base_dir, 'log_login_failures')
+    get_config_param(base_dir, 'logLoginFailures')
 if log_login_failures is not None:
     args.log_login_failures = bool(log_login_failures)
 
 show_node_info_accounts = \
-    get_config_param(base_dir, 'show_node_info_accounts')
+    get_config_param(base_dir, 'showNodeInfoAccounts')
 if show_node_info_accounts is not None:
     args.show_node_info_accounts = bool(show_node_info_accounts)
 
 show_node_info_version = \
-    get_config_param(base_dir, 'show_node_info_version')
+    get_config_param(base_dir, 'showNodeInfoVersion')
 if show_node_info_version is not None:
     args.show_node_info_version = bool(show_node_info_version)
 
 low_bandwidth = \
-    get_config_param(base_dir, 'low_bandwidth')
+    get_config_param(base_dir, 'lowBandwidth')
 if low_bandwidth is not None:
     args.low_bandwidth = bool(low_bandwidth)
 
 user_agents_blocked = []
 if args.userAgentBlocks:
     user_agents_blockedStr = args.userAgentBlocks
-    set_config_param(base_dir, 'user_agents_blocked', user_agents_blockedStr)
+    set_config_param(base_dir, 'userAgentsBlocked', user_agents_blockedStr)
 else:
     user_agents_blockedStr = \
-        get_config_param(base_dir, 'user_agents_blocked')
+        get_config_param(base_dir, 'userAgentsBlocked')
 if user_agents_blockedStr:
     agentBlocksList = user_agents_blockedStr.split(',')
     for agentBlockStr in agentBlocksList:
@@ -3158,9 +3158,9 @@ if user_agents_blockedStr:
 lists_enabled = ''
 if args.lists_enabled:
     lists_enabled = args.lists_enabled
-    set_config_param(base_dir, 'lists_enabled', lists_enabled)
+    set_config_param(base_dir, 'listsEnabled', lists_enabled)
 else:
-    lists_enabled = get_config_param(base_dir, 'lists_enabled')
+    lists_enabled = get_config_param(base_dir, 'listsEnabled')
 
 city = \
     get_config_param(base_dir, 'city')

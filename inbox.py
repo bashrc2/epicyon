@@ -4233,7 +4233,7 @@ def run_inbox_queue(recent_posts_cache: {}, max_recent_posts: int,
                 'accounts': {}
             }
             # also check if the json signature enforcement has changed
-            verifyAllSigs = get_config_param(base_dir, "verify_all_signatures")
+            verifyAllSigs = get_config_param(base_dir, "verifyAllSignatures")
             if verifyAllSigs is not None:
                 verify_all_signatures = verifyAllSigs
             # change the last time that this was done
@@ -4515,8 +4515,8 @@ def run_inbox_queue(recent_posts_cache: {}, max_recent_posts: int,
             if not os.path.isfile(sharedInboxPostFilename):
                 save_json(queueJson['post'], sharedInboxPostFilename)
 
-        lists_enabled = get_config_param(base_dir, "lists_enabled")
-        content_license_url = get_config_param(base_dir, "content_license_url")
+        lists_enabled = get_config_param(base_dir, "listsEnabled")
+        content_license_url = get_config_param(base_dir, "contentLicenseUrl")
 
         # for posts addressed to specific accounts
         for handle, capsId in recipientsDict.items():

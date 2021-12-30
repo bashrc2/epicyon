@@ -5042,19 +5042,19 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.fontsCache = {}
                             self.server.show_publish_as_icon = \
                                 get_config_param(self.server.base_dir,
-                                                 'show_publish_as_icon')
+                                                 'showPublishAsIcon')
                             self.server.full_width_tl_button_header = \
                                 get_config_param(self.server.base_dir,
-                                                 'full_width_tl_button_header')
+                                                 'fullWidthTlButtonHeader')
                             self.server.icons_as_buttons = \
                                 get_config_param(self.server.base_dir,
-                                                 'icons_as_buttons')
+                                                 'iconsAsButtons')
                             self.server.rss_icon_at_top = \
                                 get_config_param(self.server.base_dir,
-                                                 'rss_icon_at_top')
+                                                 'rssIconAtTop')
                             self.server.publish_button_at_top = \
                                 get_config_param(self.server.base_dir,
-                                                 'publish_button_at_top')
+                                                 'publishButtonAtTop')
                             set_news_avatar(base_dir,
                                             fields['themeDropdown'],
                                             http_prefix,
@@ -5063,74 +5063,74 @@ class PubServer(BaseHTTPRequestHandler):
 
                     if nickname == adminNickname:
                         # change media instance status
-                        if fields.get('media_instance'):
+                        if fields.get('mediaInstance'):
                             self.server.media_instance = False
                             self.server.defaultTimeline = 'inbox'
-                            if fields['media_instance'] == 'on':
+                            if fields['mediaInstance'] == 'on':
                                 self.server.media_instance = True
                                 self.server.blogs_instance = False
                                 self.server.news_instance = False
                                 self.server.defaultTimeline = 'tlmedia'
-                            set_config_param(base_dir, "media_instance",
+                            set_config_param(base_dir, "mediaInstance",
                                              self.server.media_instance)
-                            set_config_param(base_dir, "blogs_instance",
+                            set_config_param(base_dir, "blogsInstance",
                                              self.server.blogs_instance)
-                            set_config_param(base_dir, "news_instance",
+                            set_config_param(base_dir, "newsInstance",
                                              self.server.news_instance)
                         else:
                             if self.server.media_instance:
                                 self.server.media_instance = False
                                 self.server.defaultTimeline = 'inbox'
-                                set_config_param(base_dir, "media_instance",
+                                set_config_param(base_dir, "mediaInstance",
                                                  self.server.media_instance)
 
                         # is this a news theme?
                         if is_news_theme_name(self.server.base_dir,
                                               self.server.theme_name):
-                            fields['news_instance'] = 'on'
+                            fields['newsInstance'] = 'on'
 
                         # change news instance status
-                        if fields.get('news_instance'):
+                        if fields.get('newsInstance'):
                             self.server.news_instance = False
                             self.server.defaultTimeline = 'inbox'
-                            if fields['news_instance'] == 'on':
+                            if fields['newsInstance'] == 'on':
                                 self.server.news_instance = True
                                 self.server.blogs_instance = False
                                 self.server.media_instance = False
                                 self.server.defaultTimeline = 'tlfeatures'
-                            set_config_param(base_dir, "media_instance",
+                            set_config_param(base_dir, "mediaInstance",
                                              self.server.media_instance)
-                            set_config_param(base_dir, "blogs_instance",
+                            set_config_param(base_dir, "blogsInstance",
                                              self.server.blogs_instance)
-                            set_config_param(base_dir, "news_instance",
+                            set_config_param(base_dir, "newsInstance",
                                              self.server.news_instance)
                         else:
                             if self.server.news_instance:
                                 self.server.news_instance = False
                                 self.server.defaultTimeline = 'inbox'
-                                set_config_param(base_dir, "news_instance",
+                                set_config_param(base_dir, "newsInstance",
                                                  self.server.media_instance)
 
                         # change blog instance status
-                        if fields.get('blogs_instance'):
+                        if fields.get('blogsInstance'):
                             self.server.blogs_instance = False
                             self.server.defaultTimeline = 'inbox'
-                            if fields['blogs_instance'] == 'on':
+                            if fields['blogsInstance'] == 'on':
                                 self.server.blogs_instance = True
                                 self.server.media_instance = False
                                 self.server.news_instance = False
                                 self.server.defaultTimeline = 'tlblogs'
-                            set_config_param(base_dir, "blogs_instance",
+                            set_config_param(base_dir, "blogsInstance",
                                              self.server.blogs_instance)
-                            set_config_param(base_dir, "media_instance",
+                            set_config_param(base_dir, "mediaInstance",
                                              self.server.media_instance)
-                            set_config_param(base_dir, "news_instance",
+                            set_config_param(base_dir, "newsInstance",
                                              self.server.news_instance)
                         else:
                             if self.server.blogs_instance:
                                 self.server.blogs_instance = False
                                 self.server.defaultTimeline = 'inbox'
-                                set_config_param(base_dir, "blogs_instance",
+                                set_config_param(base_dir, "blogsInstance",
                                                  self.server.blogs_instance)
 
                         # change instance title
@@ -5229,12 +5229,12 @@ class PubServer(BaseHTTPRequestHandler):
                                                  'libretranslateApiKey', '')
 
                         # change instance short description
-                        if fields.get('content_license_url'):
-                            if fields['content_license_url'] != \
+                        if fields.get('contentLicenseUrl'):
+                            if fields['contentLicenseUrl'] != \
                                self.server.content_license_url:
-                                licenseStr = fields['content_license_url']
+                                licenseStr = fields['contentLicenseUrl']
                                 set_config_param(base_dir,
-                                                 'content_license_url',
+                                                 'contentLicenseUrl',
                                                  licenseStr)
                                 self.server.content_license_url = \
                                     licenseStr
@@ -5242,7 +5242,7 @@ class PubServer(BaseHTTPRequestHandler):
                             licenseStr = \
                                 'https://creativecommons.org/licenses/by/4.0'
                             set_config_param(base_dir,
-                                             'content_license_url',
+                                             'contentLicenseUrl',
                                              licenseStr)
                             self.server.content_license_url = licenseStr
 
@@ -5555,23 +5555,23 @@ class PubServer(BaseHTTPRequestHandler):
                         if path.startswith('/users/' +
                                            adminNickname + '/'):
                             show_node_info_accounts = False
-                            if fields.get('show_node_info_accounts'):
-                                if fields['show_node_info_accounts'] == 'on':
+                            if fields.get('showNodeInfoAccounts'):
+                                if fields['showNodeInfoAccounts'] == 'on':
                                     show_node_info_accounts = True
                             self.server.show_node_info_accounts = \
                                 show_node_info_accounts
                             set_config_param(base_dir,
-                                             "show_node_info_accounts",
+                                             "showNodeInfoAccounts",
                                              show_node_info_accounts)
 
                             show_node_info_version = False
-                            if fields.get('show_node_info_version'):
-                                if fields['show_node_info_version'] == 'on':
+                            if fields.get('showNodeInfoVersion'):
+                                if fields['showNodeInfoVersion'] == 'on':
                                     show_node_info_version = True
                             self.server.show_node_info_version = \
                                 show_node_info_version
                             set_config_param(base_dir,
-                                             "show_node_info_version",
+                                             "showNodeInfoVersion",
                                              show_node_info_version)
 
                             verify_all_signatures = False
@@ -5580,26 +5580,26 @@ class PubServer(BaseHTTPRequestHandler):
                                     verify_all_signatures = True
                             self.server.verify_all_signatures = \
                                 verify_all_signatures
-                            set_config_param(base_dir, "verify_all_signatures",
+                            set_config_param(base_dir, "verifyAllSignatures",
                                              verify_all_signatures)
 
                             broch_mode = False
-                            if fields.get('broch_mode'):
-                                if fields['broch_mode'] == 'on':
+                            if fields.get('brochMode'):
+                                if fields['brochMode'] == 'on':
                                     broch_mode = True
                             currBrochMode = \
-                                get_config_param(base_dir, "broch_mode")
+                                get_config_param(base_dir, "brochMode")
                             if broch_mode != currBrochMode:
                                 set_broch_mode(self.server.base_dir,
                                                self.server.domain_full,
                                                broch_mode)
-                                set_config_param(base_dir, "broch_mode",
+                                set_config_param(base_dir, 'brochMode',
                                                  broch_mode)
 
                             # shared item federation domains
                             siDomainUpdated = False
                             fed_domains_variable = \
-                                "shared_items_federated_domains"
+                                "sharedItemsFederatedDomains"
                             fed_domains_str = \
                                 get_config_param(base_dir,
                                                  fed_domains_variable)
@@ -5619,7 +5619,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     sharedItemsFormStr2 = \
                                         shareDomainList.replace('\n', ',')
                                     sharedItemsField = \
-                                        "shared_items_federated_domains"
+                                        "sharedItemsFederatedDomains"
                                     set_config_param(base_dir,
                                                      sharedItemsField,
                                                      sharedItemsFormStr2)
@@ -5627,7 +5627,7 @@ class PubServer(BaseHTTPRequestHandler):
                             else:
                                 if fed_domains_str:
                                     sharedItemsField = \
-                                        "shared_items_federated_domains"
+                                        "sharedItemsFederatedDomains"
                                     set_config_param(base_dir,
                                                      sharedItemsField,
                                                      '')
@@ -5907,8 +5907,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                      'artist')
 
                     # remove scheduled posts
-                    if fields.get('remove_scheduled_posts'):
-                        if fields['remove_scheduled_posts'] == 'on':
+                    if fields.get('removeScheduledPosts'):
+                        if fields['removeScheduledPosts'] == 'on':
                             remove_scheduled_posts(base_dir,
                                                    nickname, domain)
 
@@ -5972,20 +5972,20 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.fontsCache = {}
                                 self.server.show_publish_as_icon = \
                                     get_config_param(base_dir,
-                                                     'show_publish_as_icon')
+                                                     'showPublishAsIcon')
                                 self.server.full_width_tl_button_header = \
                                     get_config_param(base_dir,
                                                      'fullWidthTimeline' +
                                                      'ButtonHeader')
                                 self.server.icons_as_buttons = \
                                     get_config_param(base_dir,
-                                                     'icons_as_buttons')
+                                                     'iconsAsButtons')
                                 self.server.rss_icon_at_top = \
                                     get_config_param(base_dir,
-                                                     'rss_icon_at_top')
+                                                     'rssIconAtTop')
                                 self.server.publish_button_at_top = \
                                     get_config_param(base_dir,
-                                                     'publish_button_at_top')
+                                                     'publishButtonAtTop')
 
                     # only receive DMs from accounts you follow
                     followDMsFilename = \
@@ -6219,13 +6219,13 @@ class PubServer(BaseHTTPRequestHandler):
                     if path.startswith('/users/' + adminNickname + '/') or \
                        is_artist(base_dir, nickname):
                         currLowBandwidth = \
-                            get_config_param(base_dir, 'low_bandwidth')
+                            get_config_param(base_dir, 'lowBandwidth')
                         low_bandwidth = False
-                        if fields.get('low_bandwidth'):
-                            if fields['low_bandwidth'] == 'on':
+                        if fields.get('lowBandwidth'):
+                            if fields['lowBandwidth'] == 'on':
                                 low_bandwidth = True
                         if currLowBandwidth != low_bandwidth:
-                            set_config_param(base_dir, 'low_bandwidth',
+                            set_config_param(base_dir, 'lowBandwidth',
                                              low_bandwidth)
                             self.server.low_bandwidth = low_bandwidth
 
@@ -6407,14 +6407,14 @@ class PubServer(BaseHTTPRequestHandler):
                         if newListsEnabled != self.server.lists_enabled:
                             self.server.lists_enabled = newListsEnabled
                             set_config_param(self.server.base_dir,
-                                             "lists_enabled",
+                                             "listsEnabled",
                                              newListsEnabled)
 
                         # save blocked user agents
                         user_agents_blocked = []
-                        if fields.get('user_agents_blockedStr'):
+                        if fields.get('userAgentsBlockedStr'):
                             user_agents_blockedStr = \
-                                fields['user_agents_blockedStr']
+                                fields['userAgentsBlockedStr']
                             user_agents_blockedList = \
                                 user_agents_blockedStr.split('\n')
                             for ua in user_agents_blockedList:
@@ -18059,7 +18059,7 @@ class PubServer(BaseHTTPRequestHandler):
             if not self.server.shared_items_federated_domains:
                 siDomainsStr = \
                     get_config_param(self.server.base_dir,
-                                     'shared_items_federated_domains')
+                                     'sharedItemsFederatedDomains')
                 if siDomainsStr:
                     if self.server.debug:
                         print('Loading shared items federated domains list')
@@ -18899,7 +18899,7 @@ def run_daemon(content_license_url: str,
     if not os.path.isdir(base_dir + '/accounts/news@' + domain):
         print('Creating news inbox: news@' + domain)
         create_news_inbox(base_dir, domain, port, http_prefix)
-        set_config_param(base_dir, "lists_enabled", "Murdoch press")
+        set_config_param(base_dir, "listsEnabled", "Murdoch press")
 
     # dict of known web crawlers accessing nodeinfo or the masto API
     # and how many times they have been seen
@@ -18913,7 +18913,7 @@ def run_daemon(content_license_url: str,
     if lists_enabled:
         httpd.lists_enabled = lists_enabled
     else:
-        httpd.lists_enabled = get_config_param(base_dir, "lists_enabled")
+        httpd.lists_enabled = get_config_param(base_dir, "listsEnabled")
     httpd.cw_lists = load_cw_lists(base_dir, True)
 
     # set the avatar for the news account

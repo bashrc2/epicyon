@@ -1266,7 +1266,7 @@ def _html_edit_profile_graphic_design(base_dir: str, translate: {}) -> str:
 
     graphicsStr = begin_edit_section(translate['Graphic Design'])
 
-    low_bandwidth = get_config_param(base_dir, 'low_bandwidth')
+    low_bandwidth = get_config_param(base_dir, 'lowBandwidth')
     if not low_bandwidth:
         low_bandwidth = False
     graphicsStr += _html_themes_dropdown(base_dir, translate)
@@ -1283,7 +1283,7 @@ def _html_edit_profile_graphic_design(base_dir: str, translate: {}) -> str:
         '      <button type="submit" class="button" ' + \
         'name="submitExportTheme">➤</button><br>\n'
     graphicsStr += \
-        edit_check_box(translate['Low Bandwidth'], 'low_bandwidth',
+        edit_check_box(translate['Low Bandwidth'], 'lowBandwidth',
                        bool(low_bandwidth))
 
     graphicsStr += end_edit_section()
@@ -1328,7 +1328,7 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
     content_license_url = \
-        get_config_param(base_dir, 'content_license_url')
+        get_config_param(base_dir, 'contentLicenseUrl')
     if not content_license_url:
         content_license_url = 'https://creativecommons.org/licenses/by/4.0'
 
@@ -1348,7 +1348,7 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
                        '', True)
     instanceStr += \
         edit_text_field(translate['Content License'],
-                        'content_license_url', content_license_url)
+                        'contentLicenseUrl', content_license_url)
     instanceStr += '<br>\n'
     instanceStr += \
         edit_text_field(translate['Custom post submit button text'],
@@ -1364,23 +1364,23 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
 
     nodeInfoStr = \
         translate['Show numbers of accounts within instance metadata']
-    if get_config_param(base_dir, "show_node_info_accounts"):
+    if get_config_param(base_dir, "showNodeInfoAccounts"):
         instanceStr += \
-            edit_check_box(nodeInfoStr, 'show_node_info_accounts', True)
+            edit_check_box(nodeInfoStr, 'showNodeInfoAccounts', True)
     else:
         instanceStr += \
-            edit_check_box(nodeInfoStr, 'show_node_info_accounts', False)
+            edit_check_box(nodeInfoStr, 'showNodeInfoAccounts', False)
 
     nodeInfoStr = \
         translate['Show version number within instance metadata']
-    if get_config_param(base_dir, "show_node_info_version"):
+    if get_config_param(base_dir, "showNodeInfoVersion"):
         instanceStr += \
-            edit_check_box(nodeInfoStr, 'show_node_info_version', True)
+            edit_check_box(nodeInfoStr, 'showNodeInfoVersion', True)
     else:
         instanceStr += \
-            edit_check_box(nodeInfoStr, 'show_node_info_version', False)
+            edit_check_box(nodeInfoStr, 'showNodeInfoVersion', False)
 
-    if get_config_param(base_dir, "verify_all_signatures"):
+    if get_config_param(base_dir, "verifyAllSignatures"):
         instanceStr += \
             edit_check_box(translate['Verify all signatures'],
                            'verifyallsignatures', True)
@@ -1390,25 +1390,25 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
                            'verifyallsignatures', False)
 
     instanceStr += translate['Enabling broch mode'] + '<br>\n'
-    if get_config_param(base_dir, "broch_mode"):
+    if get_config_param(base_dir, "brochMode"):
         instanceStr += \
-            edit_check_box(translate['Broch mode'], 'broch_mode', True)
+            edit_check_box(translate['Broch mode'], 'brochMode', True)
     else:
         instanceStr += \
-            edit_check_box(translate['Broch mode'], 'broch_mode', False)
+            edit_check_box(translate['Broch mode'], 'brochMode', False)
     # Instance type
     instanceStr += \
         '  <br><label class="labels">' + \
         translate['Type of instance'] + '</label><br>\n'
     instanceStr += \
         edit_check_box(translate['This is a media instance'],
-                       'media_instance', media_instanceStr)
+                       'mediaInstance', media_instanceStr)
     instanceStr += \
         edit_check_box(translate['This is a blogging instance'],
-                       'blogs_instance', blogs_instanceStr)
+                       'blogsInstance', blogs_instanceStr)
     instanceStr += \
         edit_check_box(translate['This is a news instance'],
-                       'news_instance', news_instanceStr)
+                       'newsInstance', news_instanceStr)
 
     instanceStr += end_edit_section()
 
@@ -1590,7 +1590,7 @@ def _html_edit_profile_shared_items(base_dir: str, nickname: str, domain: str,
     """
     sharedItemsStr = ''
     shared_items_federated_domainsStr = \
-        get_config_param(base_dir, 'shared_items_federated_domains')
+        get_config_param(base_dir, 'sharedItemsFederatedDomains')
     if shared_items_federated_domainsStr:
         shared_items_federated_domainsList = \
             shared_items_federated_domainsStr.split(',')
@@ -1774,14 +1774,14 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
             '<a href="/users/' + nickname + '/crawlers">' + \
             translate['Known Web Crawlers'] + '</a><br>\n'
 
-        user_agents_blockedStr = ''
+        user_agents_blocked_str = ''
         for ua in user_agents_blocked:
-            if user_agents_blockedStr:
-                user_agents_blockedStr += '\n'
-            user_agents_blockedStr += ua
+            if user_agents_blocked_str:
+                user_agents_blocked_str += '\n'
+            user_agents_blocked_str += ua
         editProfileForm += \
             edit_text_area(translate['Blocked User Agents'],
-                           'user_agents_blockedStr', user_agents_blockedStr,
+                           'userAgentsBlockedStr', user_agents_blocked_str,
                            200, '', False)
 
         cw_listsStr = ''
@@ -2095,7 +2095,7 @@ def _html_edit_profile_top_banner(base_dir: str,
         editProfileForm += '    <div class="container">\n'
         editProfileForm += \
             edit_check_box(translate['Remove scheduled posts'],
-                           'remove_scheduled_posts', False)
+                           'removeScheduledPosts', False)
         editProfileForm += '    </div>\n'
     return editProfileForm
 
@@ -2189,19 +2189,19 @@ def html_edit_profile(css_cache: {}, translate: {}, base_dir: str, path: str,
     if os.path.isfile(accountDir + '/.hideReactionButton'):
         hideReactionButton = 'checked'
 
-    media_instance = get_config_param(base_dir, "media_instance")
+    media_instance = get_config_param(base_dir, "mediaInstance")
     if media_instance:
         if media_instance is True:
             media_instanceStr = 'checked'
             blogs_instanceStr = news_instanceStr = ''
 
-    news_instance = get_config_param(base_dir, "news_instance")
+    news_instance = get_config_param(base_dir, "newsInstance")
     if news_instance:
         if news_instance is True:
             news_instanceStr = 'checked'
             blogs_instanceStr = media_instanceStr = ''
 
-    blogs_instance = get_config_param(base_dir, "blogs_instance")
+    blogs_instance = get_config_param(base_dir, "blogsInstance")
     if blogs_instance:
         if blogs_instance is True:
             blogs_instanceStr = 'checked'

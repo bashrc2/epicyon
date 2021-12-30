@@ -1727,8 +1727,8 @@ def test_shared_items_federation(base_dir: str) -> None:
     print("Alice and Bob agree to share items catalogs")
     assert os.path.isdir(aliceDir)
     assert os.path.isdir(bobDir)
-    set_config_param(aliceDir, 'shared_items_federated_domains', bobAddress)
-    set_config_param(bobDir, 'shared_items_federated_domains', aliceAddress)
+    set_config_param(aliceDir, 'sharedItemsFederatedDomains', bobAddress)
+    set_config_param(bobDir, 'sharedItemsFederatedDomains', aliceAddress)
 
     print('*********************************************************')
     print('Alice sends a follow request to Bob')
@@ -4490,7 +4490,147 @@ def _test_post_variable_names():
                 if '_' in name_var:
                     print(name_var + ' is not camel case POST variable in ' +
                           source_file)
-                    return False
+                    assert False
+        break
+
+
+def _test_config_param_names():
+    print('testConfigParamNames')
+
+    fnames = ('get_config_param', 'set_config_param')
+    for subdir, dirs, files in os.walk('.'):
+        for source_file in files:
+            if not source_file.endswith('.py'):
+                continue
+            if source_file.startswith('.#'):
+                continue
+            if source_file.startswith('flycheck_'):
+                continue
+            source_str = ''
+            with open(source_file, 'r') as file_source:
+                source_str = file_source.read()
+            if not source_str:
+                continue
+            for fname in fnames:
+                if fname + '(' not in source_str:
+                    continue
+                names_list = source_str.split(fname + '(')
+                for index in range(1, len(names_list)):
+                    param_var_name = None
+                    if '"' in names_list[index]:
+                        param_var_name = names_list[index].split('"')[1]
+                    elif "'" in names_list[index]:
+                        param_var_name = names_list[index].split("'")[1]
+                    if not param_var_name:
+                        continue
+                    if ' ' in param_var_name:
+                        continue
+                    if '.' in param_var_name:
+                        continue
+                    if '/' in param_var_name:
+                        continue
+                    if '__' in param_var_name:
+                        continue
+                    if 'POST' in param_var_name:
+                        continue
+                    if param_var_name.isdigit():
+                        continue
+                    if '_' in param_var_name:
+                        print(fname + ' in ' + source_file +
+                              ' should have camel case variable ' +
+                              param_var_name)
+                        assert False
+        break
+
+
+def _test_checkbox_names():
+    print('testCheckboxNames')
+
+    fnames = ['edit_text_field', 'edit_check_box', 'edit_text_area']
+    for subdir, dirs, files in os.walk('.'):
+        for source_file in files:
+            if not source_file.endswith('.py'):
+                continue
+            if source_file.startswith('.#'):
+                continue
+            if source_file.startswith('flycheck_'):
+                continue
+            source_str = ''
+            with open(source_file, 'r') as file_source:
+                source_str = file_source.read()
+            if not source_str:
+                continue
+            for fname in fnames:
+                if fname + '(' not in source_str:
+                    continue
+                names_list = source_str.split(fname + '(')
+                for index in range(1, len(names_list)):
+                    if ')' not in names_list[index]:
+                        continue
+                    allparams = names_list[index].split(')')[0]
+                    if ',' not in allparams:
+                        continue
+                    allparams_list = allparams.split(',')
+                    if len(allparams_list) < 2:
+                        continue
+                    param_var_name = allparams_list[1].strip()
+                    param_var_name = param_var_name.replace('"', '')
+                    param_var_name = param_var_name.replace("'", '')
+                    if ' ' in param_var_name:
+                        continue
+                    if '/' in param_var_name:
+                        continue
+                    if '_' in param_var_name:
+                        print(fname + ' in ' + source_file +
+                              ' should have camel case variable ' +
+                              param_var_name)
+                        assert False
+        break
+
+
+def _test_post_field_names():
+    print('testPOSTfieldNames')
+
+    fnames = ['fields.get']
+    source_file = 'daemon.py'
+    source_str = ''
+    with open(source_file, 'r') as file_source:
+        source_str = file_source.read()
+    if not source_str:
+        return
+    for fname in fnames:
+        if fname + '(' not in source_str:
+            continue
+        names_list = source_str.split(fname + '(')
+        for index in range(1, len(names_list)):
+            if ')' not in names_list[index]:
+                continue
+            param_var_name = names_list[index].split(')')[0].strip()
+            orig_param_var_name = fname + '(' + param_var_name + ')'
+            param_var_name = param_var_name.replace('"', '')
+            param_var_name = param_var_name.replace("'", '')
+            if ' ' in param_var_name:
+                continue
+            if '/' in param_var_name:
+                continue
+            if '_' in param_var_name:
+                print(orig_param_var_name + ' in ' + source_file +
+                      ' should be camel case')
+                assert False
+
+    if ' fields[' in source_str:
+        names_list = source_str.split(' fields[')
+        for index in range(1, len(names_list)):
+            if ']' not in names_list[index]:
+                continue
+            param_var_name = names_list[index].split(']')[0].strip()
+            orig_param_var_name = 'fields[' + param_var_name + ']'
+            param_var_name = param_var_name.replace('"', '')
+            param_var_name = param_var_name.replace("'", '')
+            if '_' in param_var_name:
+                print(orig_param_var_name + ' in ' + source_file +
+                      ' should be camel case')
+                assert False
 
 
 def _test_functions():
@@ -6139,6 +6279,9 @@ def run_all_tests():
     _translate_ontology(base_dir)
     _test_get_price_from_string()
     _test_post_variable_names()
+    _test_config_param_names()
+    _test_post_field_names()
+    _test_checkbox_names()
     _test_functions()
     _test_get_actor_from_in_reply_to()
     _test_valid_emoji_content()

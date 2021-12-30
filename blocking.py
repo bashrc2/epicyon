@@ -951,7 +951,7 @@ def set_broch_mode(base_dir: str, domain_full: str, enabled: bool) -> None:
             print('EX: Broch mode not enabled due to file write ' + str(ex))
             return
 
-    set_config_param(base_dir, "broch_mode", enabled)
+    set_config_param(base_dir, "brochMode", enabled)
 
 
 def broch_modeLapses(base_dir: str, lapseDays: int) -> bool:
@@ -982,7 +982,7 @@ def broch_modeLapses(base_dir: str, lapseDays: int) -> bool:
             print('EX: broch_modeLapses allow file not deleted ' +
                   str(allow_filename))
         if removed:
-            set_config_param(base_dir, "broch_mode", False)
+            set_config_param(base_dir, "brochMode", False)
             print('Broch mode has elapsed')
             return True
     return False
