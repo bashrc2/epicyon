@@ -43,33 +43,33 @@ def get_briar_address(actor_json: {}) -> str:
     return ''
 
 
-def set_briar_address(actor_json: {}, briarAddress: str) -> None:
+def set_briar_address(actor_json: {}, briar_address: str) -> None:
     """Sets an briar address for the given actor
     """
-    notBriarAddress = False
+    not_briar_address = False
 
-    if len(briarAddress) < 50:
-        notBriarAddress = True
-    if not briarAddress.startswith('briar://'):
-        notBriarAddress = True
-    if briarAddress.lower() != briarAddress:
-        notBriarAddress = True
-    if '"' in briarAddress:
-        notBriarAddress = True
-    if ' ' in briarAddress:
-        notBriarAddress = True
-    if '.' in briarAddress:
-        notBriarAddress = True
-    if ',' in briarAddress:
-        notBriarAddress = True
-    if '<' in briarAddress:
-        notBriarAddress = True
+    if len(briar_address) < 50:
+        not_briar_address = True
+    if not briar_address.startswith('briar://'):
+        not_briar_address = True
+    if briar_address.lower() != briar_address:
+        not_briar_address = True
+    if '"' in briar_address:
+        not_briar_address = True
+    if ' ' in briar_address:
+        not_briar_address = True
+    if '.' in briar_address:
+        not_briar_address = True
+    if ',' in briar_address:
+        not_briar_address = True
+    if '<' in briar_address:
+        not_briar_address = True
 
     if not actor_json.get('attachment'):
         actor_json['attachment'] = []
 
     # remove any existing value
-    propertyFound = None
+    property_found = None
     for property_value in actor_json['attachment']:
         if not property_value.get('name'):
             continue
@@ -77,11 +77,11 @@ def set_briar_address(actor_json: {}, briarAddress: str) -> None:
             continue
         if not property_value['name'].lower().startswith('briar'):
             continue
-        propertyFound = property_value
+        property_found = property_value
         break
-    if propertyFound:
-        actor_json['attachment'].remove(propertyFound)
-    if notBriarAddress:
+    if property_found:
+        actor_json['attachment'].remove(property_found)
+    if not_briar_address:
         return
 
     for property_value in actor_json['attachment']:
@@ -93,12 +93,12 @@ def set_briar_address(actor_json: {}, briarAddress: str) -> None:
             continue
         if property_value['type'] != 'PropertyValue':
             continue
-        property_value['value'] = briarAddress
+        property_value['value'] = briar_address
         return
 
-    newBriarAddress = {
+    new_briar_address = {
         "name": "Briar",
         "type": "PropertyValue",
-        "value": briarAddress
+        "value": briar_address
     }
-    actor_json['attachment'].append(newBriarAddress)
+    actor_json['attachment'].append(new_briar_address)

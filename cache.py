@@ -17,25 +17,25 @@ from utils import get_file_case_insensitive
 from utils import get_user_paths
 
 
-def _remove_person_from_cache(base_dir: str, personUrl: str,
+def _remove_person_from_cache(base_dir: str, person_url: str,
                               person_cache: {}) -> bool:
     """Removes an actor from the cache
     """
-    cacheFilename = base_dir + '/cache/actors/' + \
-        personUrl.replace('/', '#') + '.json'
-    if os.path.isfile(cacheFilename):
+    cache_filename = base_dir + '/cache/actors/' + \
+        person_url.replace('/', '#') + '.json'
+    if os.path.isfile(cache_filename):
         try:
-            os.remove(cacheFilename)
+            os.remove(cache_filename)
         except OSError:
-            print('EX: unable to delete cached actor ' + str(cacheFilename))
-    if person_cache.get(personUrl):
-        del person_cache[personUrl]
+            print('EX: unable to delete cached actor ' + str(cache_filename))
+    if person_cache.get(person_url):
+        del person_cache[person_url]
 
 
 def check_for_changed_actor(session, base_dir: str,
                             http_prefix: str, domain_full: str,
-                            personUrl: str, avatarUrl: str, person_cache: {},
-                            timeoutSec: int):
+                            person_url: str, avatarUrl: str, person_cache: {},
+                            timeout_sec: int):
     """Checks if the avatar url exists and if not then
     the actor has probably changed without receiving an actor/Person Update.
     So clear the actor from the cache and it will be refreshed when the next
@@ -45,63 +45,63 @@ def check_for_changed_actor(session, base_dir: str,
         return
     if domain_full in avatarUrl:
         return
-    if url_exists(session, avatarUrl, timeoutSec, http_prefix, domain_full):
+    if url_exists(session, avatarUrl, timeout_sec, http_prefix, domain_full):
         return
-    _remove_person_from_cache(base_dir, personUrl, person_cache)
+    _remove_person_from_cache(base_dir, person_url, person_cache)
 
 
-def store_person_in_cache(base_dir: str, personUrl: str,
-                          personJson: {}, person_cache: {},
-                          allowWriteToFile: bool) -> None:
+def store_person_in_cache(base_dir: str, person_url: str,
+                          person_json: {}, person_cache: {},
+                          allow_write_to_file: bool) -> None:
     """Store an actor in the cache
     """
-    if 'statuses' in personUrl or personUrl.endswith('/actor'):
+    if 'statuses' in person_url or person_url.endswith('/actor'):
         # This is not an actor or person account
         return
 
     curr_time = datetime.datetime.utcnow()
-    person_cache[personUrl] = {
-        "actor": personJson,
+    person_cache[person_url] = {
+        "actor": person_json,
         "timestamp": curr_time.strftime("%Y-%m-%dT%H:%M:%SZ")
     }
     if not base_dir:
         return
 
     # store to file
-    if not allowWriteToFile:
+    if not allow_write_to_file:
         return
     if os.path.isdir(base_dir + '/cache/actors'):
-        cacheFilename = base_dir + '/cache/actors/' + \
-            personUrl.replace('/', '#') + '.json'
-        if not os.path.isfile(cacheFilename):
-            save_json(personJson, cacheFilename)
+        cache_filename = base_dir + '/cache/actors/' + \
+            person_url.replace('/', '#') + '.json'
+        if not os.path.isfile(cache_filename):
+            save_json(person_json, cache_filename)
 
 
-def get_person_from_cache(base_dir: str, personUrl: str, person_cache: {},
-                          allowWriteToFile: bool) -> {}:
+def get_person_from_cache(base_dir: str, person_url: str, person_cache: {},
+                          allow_write_to_file: bool) -> {}:
     """Get an actor from the cache
     """
     # if the actor is not in memory then try to load it from file
-    loadedFromFile = False
-    if not person_cache.get(personUrl):
+    loaded_from_file = False
+    if not person_cache.get(person_url):
         # does the person exist as a cached file?
-        cacheFilename = base_dir + '/cache/actors/' + \
-            personUrl.replace('/', '#') + '.json'
-        actorFilename = get_file_case_insensitive(cacheFilename)
-        if actorFilename:
-            personJson = load_json(actorFilename)
-            if personJson:
-                store_person_in_cache(base_dir, personUrl, personJson,
+        cache_filename = base_dir + '/cache/actors/' + \
+            person_url.replace('/', '#') + '.json'
+        actor_filename = get_file_case_insensitive(cache_filename)
+        if actor_filename:
+            person_json = load_json(actor_filename)
+            if person_json:
+                store_person_in_cache(base_dir, person_url, person_json,
                                       person_cache, False)
-                loadedFromFile = True
+                loaded_from_file = True
 
-    if person_cache.get(personUrl):
-        if not loadedFromFile:
+    if person_cache.get(person_url):
+        if not loaded_from_file:
             # update the timestamp for the last time the actor was retrieved
             curr_time = datetime.datetime.utcnow()
-            curr_timeStr = curr_time.strftime("%Y-%m-%dT%H:%M:%SZ")
-            person_cache[personUrl]['timestamp'] = curr_timeStr
-        return person_cache[personUrl]['actor']
+            curr_time_str = curr_time.strftime("%Y-%m-%dT%H:%M:%SZ")
+            person_cache[person_url]['timestamp'] = curr_time_str
+        return person_cache[person_url]['actor']
     return None
 
 
@@ -110,15 +110,15 @@ def expire_person_cache(person_cache: {}):
     """
     curr_time = datetime.datetime.utcnow()
     removals = []
-    for personUrl, cacheJson in person_cache.items():
-        cacheTime = datetime.datetime.strptime(cacheJson['timestamp'],
-                                               "%Y-%m-%dT%H:%M:%SZ")
-        daysSinceCached = (curr_time - cacheTime).days
-        if daysSinceCached > 2:
-            removals.append(personUrl)
+    for person_url, cache_json in person_cache.items():
+        cache_time = datetime.datetime.strptime(cache_json['timestamp'],
+                                                "%Y-%m-%dT%H:%M:%SZ")
+        days_since_cached = (curr_time - cache_time).days
+        if days_since_cached > 2:
+            removals.append(person_url)
     if len(removals) > 0:
-        for personUrl in removals:
-            del person_cache[personUrl]
+        for person_url in removals:
+            del person_cache[person_url]
         print(str(len(removals)) + ' actors were expired from the cache')
 
 
@@ -136,52 +136,55 @@ def get_webfinger_from_cache(handle: str, cached_webfingers: {}) -> {}:
     return None
 
 
-def get_person_pub_key(base_dir: str, session, personUrl: str,
+def get_person_pub_key(base_dir: str, session, person_url: str,
                        person_cache: {}, debug: bool,
                        project_version: str, http_prefix: str,
                        domain: str, onion_domain: str,
                        signing_priv_key_pem: str) -> str:
-    if not personUrl:
+    if not person_url:
         return None
-    personUrl = personUrl.replace('#main-key', '')
-    usersPaths = get_user_paths()
-    for possibleUsersPath in usersPaths:
-        if personUrl.endswith(possibleUsersPath + 'inbox'):
+    person_url = person_url.replace('#main-key', '')
+    users_paths = get_user_paths()
+    for possible_users_path in users_paths:
+        if person_url.endswith(possible_users_path + 'inbox'):
             if debug:
                 print('DEBUG: Obtaining public key for shared inbox')
-            personUrl = \
-                personUrl.replace(possibleUsersPath + 'inbox', '/inbox')
+            person_url = \
+                person_url.replace(possible_users_path + 'inbox', '/inbox')
             break
-    personJson = \
-        get_person_from_cache(base_dir, personUrl, person_cache, True)
-    if not personJson:
+    person_json = \
+        get_person_from_cache(base_dir, person_url, person_cache, True)
+    if not person_json:
         if debug:
-            print('DEBUG: Obtaining public key for ' + personUrl)
-        personDomain = domain
+            print('DEBUG: Obtaining public key for ' + person_url)
+        person_domain = domain
         if onion_domain:
-            if '.onion/' in personUrl:
-                personDomain = onion_domain
-        profileStr = 'https://www.w3.org/ns/activitystreams'
-        asHeader = {
-            'Accept': 'application/activity+json; profile="' + profileStr + '"'
+            if '.onion/' in person_url:
+                person_domain = onion_domain
+        profile_str = 'https://www.w3.org/ns/activitystreams'
+        accept_str = \
+            'application/activity+json; profile="' + profile_str + '"'
+        as_header = {
+            'Accept': accept_str
         }
-        personJson = \
+        person_json = \
             get_json(signing_priv_key_pem,
-                     session, personUrl, asHeader, None, debug,
-                     project_version, http_prefix, personDomain)
-        if not personJson:
+                     session, person_url, as_header, None, debug,
+                     project_version, http_prefix, person_domain)
+        if not person_json:
             return None
-    pubKey = None
-    if personJson.get('publicKey'):
-        if personJson['publicKey'].get('publicKeyPem'):
-            pubKey = personJson['publicKey']['publicKeyPem']
+    pub_key = None
+    if person_json.get('publicKey'):
+        if person_json['publicKey'].get('publicKeyPem'):
+            pub_key = person_json['publicKey']['publicKeyPem']
     else:
-        if personJson.get('publicKeyPem'):
-            pubKey = personJson['publicKeyPem']
+        if person_json.get('publicKeyPem'):
+            pub_key = person_json['publicKeyPem']
 
-    if not pubKey:
+    if not pub_key:
         if debug:
-            print('DEBUG: Public key not found for ' + personUrl)
+            print('DEBUG: Public key not found for ' + person_url)
 
-    store_person_in_cache(base_dir, personUrl, personJson, person_cache, True)
-    return pubKey
+    store_person_in_cache(base_dir, person_url, person_json,
+                          person_cache, True)
+    return pub_key
