@@ -412,7 +412,9 @@ def _get_reply_icon_html(base_dir: str, nickname: str, domain: str,
                 '?mention=' + post_json_object['object']['attributedTo']
     content = get_base_content_from_post(post_json_object, system_language)
     if content:
-        mentionedActors = get_mentions_from_html(content)
+        mentionedActors = \
+            get_mentions_from_html(content,
+                                   "<span class=\"h-card\"><a href=\"")
         if mentionedActors:
             for actorUrl in mentionedActors:
                 if '?mention=' + actorUrl not in replyToLink:

@@ -142,7 +142,7 @@ from content import add_html_tags
 from content import remove_long_words
 from content import replace_content_duplicates
 from content import remove_text_formatting
-from content import remove_htmlTag
+from content import remove_html_tag
 from theme import update_default_themes_list
 from theme import set_cs_sparam
 from theme import scan_themes_for_scripts
@@ -4015,7 +4015,7 @@ def _test_strip_html_tag():
     print('testRemoveHtmlTag')
     testStr = "<p><img width=\"864\" height=\"486\" " + \
         "src=\"https://somesiteorother.com/image.jpg\"></p>"
-    resultStr = remove_htmlTag(testStr, 'width')
+    resultStr = remove_html_tag(testStr, 'width')
     assert resultStr == "<p><img height=\"486\" " + \
         "src=\"https://somesiteorother.com/image.jpg\"></p>"
 
