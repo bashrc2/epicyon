@@ -48,7 +48,7 @@ def html_person_options(defaultTimeline: str,
                         toxAddress: str,
                         briarAddress: str,
                         jamiAddress: str,
-                        cwtchAddress: str,
+                        cwtch_address: str,
                         EnigmaPubKey: str,
                         PGPpubKey: str,
                         PGPfingerprint: str,
@@ -225,9 +225,9 @@ def html_person_options(defaultTimeline: str,
     if jamiAddress:
         optionsStr += \
             '<p class="imText">Jami: ' + remove_html(jamiAddress) + '</p>\n'
-    if cwtchAddress:
+    if cwtch_address:
         optionsStr += \
-            '<p class="imText">Cwtch: ' + remove_html(cwtchAddress) + '</p>\n'
+            '<p class="imText">Cwtch: ' + remove_html(cwtch_address) + '</p>\n'
     if EnigmaPubKey:
         optionsStr += \
             '<p class="imText">Enigma: ' + remove_html(EnigmaPubKey) + '</p>\n'

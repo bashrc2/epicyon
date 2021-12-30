@@ -41,23 +41,23 @@ def get_cwtch_address(actor_json: {}) -> str:
     return ''
 
 
-def set_cwtch_address(actor_json: {}, cwtchAddress: str) -> None:
+def set_cwtch_address(actor_json: {}, cwtch_address: str) -> None:
     """Sets an cwtch address for the given actor
     """
-    notCwtchAddress = False
+    not_cwtch_address = False
 
-    if len(cwtchAddress) < 56:
-        notCwtchAddress = True
-    if cwtchAddress != cwtchAddress.lower():
-        notCwtchAddress = True
-    if not re.match("^[a-z0-9]*$", cwtchAddress):
-        notCwtchAddress = True
+    if len(cwtch_address) < 56:
+        not_cwtch_address = True
+    if cwtch_address != cwtch_address.lower():
+        not_cwtch_address = True
+    if not re.match("^[a-z0-9]*$", cwtch_address):
+        not_cwtch_address = True
 
     if not actor_json.get('attachment'):
         actor_json['attachment'] = []
 
     # remove any existing value
-    propertyFound = None
+    property_found = None
     for property_value in actor_json['attachment']:
         if not property_value.get('name'):
             continue
@@ -65,11 +65,11 @@ def set_cwtch_address(actor_json: {}, cwtchAddress: str) -> None:
             continue
         if not property_value['name'].lower().startswith('cwtch'):
             continue
-        propertyFound = property_value
+        property_found = property_value
         break
-    if propertyFound:
-        actor_json['attachment'].remove(propertyFound)
-    if notCwtchAddress:
+    if property_found:
+        actor_json['attachment'].remove(property_found)
+    if not_cwtch_address:
         return
 
     for property_value in actor_json['attachment']:
@@ -81,12 +81,12 @@ def set_cwtch_address(actor_json: {}, cwtchAddress: str) -> None:
             continue
         if property_value['type'] != 'PropertyValue':
             continue
-        property_value['value'] = cwtchAddress
+        property_value['value'] = cwtch_address
         return
 
-    newCwtchAddress = {
+    new_cwtch_address = {
         "name": "Cwtch",
         "type": "PropertyValue",
-        "value": cwtchAddress
+        "value": cwtch_address
     }
-    actor_json['attachment'].append(newCwtchAddress)
+    actor_json['attachment'].append(new_cwtch_address)

@@ -648,10 +648,10 @@ def html_profile(signing_priv_key_pem: str,
     toxAddress = get_tox_address(profile_json)
     briarAddress = get_briar_address(profile_json)
     jamiAddress = get_jami_address(profile_json)
-    cwtchAddress = get_cwtch_address(profile_json)
+    cwtch_address = get_cwtch_address(profile_json)
     if donateUrl or websiteUrl or xmppAddress or matrixAddress or \
        ssbAddress or toxAddress or briarAddress or \
-       jamiAddress or cwtchAddress or PGPpubKey or EnigmaPubKey or \
+       jamiAddress or cwtch_address or PGPpubKey or EnigmaPubKey or \
        PGPfingerprint or emailAddress:
         donateSection = '<div class="container">\n'
         donateSection += '  <center>\n'
@@ -700,10 +700,10 @@ def html_profile(signing_priv_key_pem: str,
             donateSection += \
                 '<p>Jami: <label class="toxaddr">' + \
                 jamiAddress + '</label></p>\n'
-        if cwtchAddress:
+        if cwtch_address:
             donateSection += \
                 '<p>Cwtch: <label class="toxaddr">' + \
-                cwtchAddress + '</label></p>\n'
+                cwtch_address + '</label></p>\n'
         if EnigmaPubKey:
             donateSection += \
                 '<p>Enigma: <label class="toxaddr">' + \
@@ -1886,7 +1886,7 @@ def _html_edit_profile_contact_info(nickname: str,
                                     toxAddress: str,
                                     briarAddress: str,
                                     jamiAddress: str,
-                                    cwtchAddress: str,
+                                    cwtch_address: str,
                                     translate: {}) -> str:
     """Contact Information section of edit profile screen
     """
@@ -1902,7 +1902,7 @@ def _html_edit_profile_contact_info(nickname: str,
     editProfileForm += edit_text_field('Tox', 'toxAddress', toxAddress)
     editProfileForm += edit_text_field('Briar', 'briarAddress', briarAddress)
     editProfileForm += edit_text_field('Jami', 'jamiAddress', jamiAddress)
-    editProfileForm += edit_text_field('Cwtch', 'cwtchAddress', cwtchAddress)
+    editProfileForm += edit_text_field('Cwtch', 'cwtchAddress', cwtch_address)
     editProfileForm += \
         '<a href="/users/' + nickname + \
         '/followingaccounts"><label class="labels">' + \
@@ -2135,7 +2135,7 @@ def html_edit_profile(css_cache: {}, translate: {}, base_dir: str, path: str,
     PGPpubKey = EnigmaPubKey = ''
     PGPfingerprint = xmppAddress = matrixAddress = ''
     ssbAddress = blogAddress = toxAddress = jamiAddress = ''
-    cwtchAddress = briarAddress = manuallyApprovesFollowers = ''
+    cwtch_address = briarAddress = manuallyApprovesFollowers = ''
 
     actor_json = load_json(actorFilename)
     if actor_json:
@@ -2150,7 +2150,7 @@ def html_edit_profile(css_cache: {}, translate: {}, base_dir: str, path: str,
         toxAddress = get_tox_address(actor_json)
         briarAddress = get_briar_address(actor_json)
         jamiAddress = get_jami_address(actor_json)
-        cwtchAddress = get_cwtch_address(actor_json)
+        cwtch_address = get_cwtch_address(actor_json)
         emailAddress = get_email_address(actor_json)
         EnigmaPubKey = get_enigma_pub_key(actor_json)
         PGPpubKey = get_pgp_pub_key(actor_json)
@@ -2293,7 +2293,7 @@ def html_edit_profile(css_cache: {}, translate: {}, base_dir: str, path: str,
                                         xmppAddress, matrixAddress,
                                         ssbAddress, toxAddress,
                                         briarAddress, jamiAddress,
-                                        cwtchAddress, translate)
+                                        cwtch_address, translate)
 
     # Encryption Keys
     editProfileForm += \

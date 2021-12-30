@@ -7108,7 +7108,7 @@ class PubServer(BaseHTTPRequestHandler):
             toxAddress = None
             briarAddress = None
             jamiAddress = None
-            cwtchAddress = None
+            cwtch_address = None
             ssbAddress = None
             emailAddress = None
             lockedAccount = False
@@ -7136,7 +7136,7 @@ class PubServer(BaseHTTPRequestHandler):
                 toxAddress = get_tox_address(actor_json)
                 briarAddress = get_briar_address(actor_json)
                 jamiAddress = get_jami_address(actor_json)
-                cwtchAddress = get_cwtch_address(actor_json)
+                cwtch_address = get_cwtch_address(actor_json)
                 emailAddress = get_email_address(actor_json)
                 EnigmaPubKey = get_enigma_pub_key(actor_json)
                 PGPpubKey = get_pgp_pub_key(actor_json)
@@ -7173,7 +7173,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     xmppAddress, matrixAddress,
                                     ssbAddress, blogAddress,
                                     toxAddress, briarAddress,
-                                    jamiAddress, cwtchAddress,
+                                    jamiAddress, cwtch_address,
                                     EnigmaPubKey,
                                     PGPpubKey, PGPfingerprint,
                                     emailAddress,
