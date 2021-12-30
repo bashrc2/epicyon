@@ -50,20 +50,20 @@ def _no_of_blog_replies(base_dir: str, http_prefix: str, translate: {},
     if not post_id:
         return 0
 
-    tryPostBox = ('tlblogs', 'inbox', 'outbox')
-    boxFound = False
-    for postBox in tryPostBox:
+    try_post_box = ('tlblogs', 'inbox', 'outbox')
+    box_found = False
+    for post_box in try_post_box:
         post_filename = \
-            acct_dir(base_dir, nickname, domain) + '/' + postBox + '/' + \
+            acct_dir(base_dir, nickname, domain) + '/' + post_box + '/' + \
             post_id.replace('/', '#') + '.replies'
         if os.path.isfile(post_filename):
-            boxFound = True
+            box_found = True
             break
-    if not boxFound:
+    if not box_found:
         # post may exist but has no replies
-        for postBox in tryPostBox:
+        for post_box in try_post_box:
             post_filename = \
-                acct_dir(base_dir, nickname, domain) + '/' + postBox + '/' + \
+                acct_dir(base_dir, nickname, domain) + '/' + post_box + '/' + \
                 post_id.replace('/', '#')
             if os.path.isfile(post_filename):
                 return 1
@@ -73,35 +73,35 @@ def _no_of_blog_replies(base_dir: str, http_prefix: str, translate: {},
     replies = 0
     lines = []
     try:
-        with open(post_filename, 'r') as f:
-            lines = f.readlines()
+        with open(post_filename, 'r') as post_file:
+            lines = post_file.readlines()
     except OSError:
         print('EX: failed to read blog ' + post_filename)
 
-    for replyPostId in lines:
-        replyPostId = replyPostId.replace('\n', '').replace('\r', '')
-        replyPostId = replyPostId.replace('.json', '')
-        if locate_post(base_dir, nickname, domain, replyPostId):
-            replyPostId = replyPostId.replace('.replies', '')
+    for reply_post_id in lines:
+        reply_post_id = reply_post_id.replace('\n', '').replace('\r', '')
+        reply_post_id = reply_post_id.replace('.json', '')
+        if locate_post(base_dir, nickname, domain, reply_post_id):
+            reply_post_id = reply_post_id.replace('.replies', '')
             replies += \
                 1 + _no_of_blog_replies(base_dir, http_prefix, translate,
                                         nickname, domain, domain_full,
-                                        replyPostId, depth+1)
+                                        reply_post_id, depth+1)
         else:
             # remove post which no longer exists
-            removals.append(replyPostId)
+            removals.append(reply_post_id)
 
     # remove posts from .replies file if they don't exist
     if lines and removals:
         print('Rewriting ' + post_filename + ' to remove ' +
               str(len(removals)) + ' entries')
         try:
-            with open(post_filename, 'w+') as f:
-                for replyPostId in lines:
-                    replyPostId = \
-                        replyPostId.replace('\n', '').replace('\r', '')
-                    if replyPostId not in removals:
-                        f.write(replyPostId + '\n')
+            with open(post_filename, 'w+') as post_file:
+                for reply_post_id in lines:
+                    reply_post_id = \
+                        reply_post_id.replace('\n', '').replace('\r', '')
+                    if reply_post_id not in removals:
+                        post_file.write(reply_post_id + '\n')
         except OSError as ex:
             print('EX: unable to remove replies from post ' +
                   post_filename + ' ' + str(ex))
@@ -119,20 +119,20 @@ def _get_blog_replies(base_dir: str, http_prefix: str, translate: {},
     if not post_id:
         return ''
 
-    tryPostBox = ('tlblogs', 'inbox', 'outbox')
-    boxFound = False
-    for postBox in tryPostBox:
+    try_post_box = ('tlblogs', 'inbox', 'outbox')
+    box_found = False
+    for post_box in try_post_box:
         post_filename = \
-            acct_dir(base_dir, nickname, domain) + '/' + postBox + '/' + \
+            acct_dir(base_dir, nickname, domain) + '/' + post_box + '/' + \
             post_id.replace('/', '#') + '.replies'
         if os.path.isfile(post_filename):
-            boxFound = True
+            box_found = True
             break
-    if not boxFound:
+    if not box_found:
         # post may exist but has no replies
-        for postBox in tryPostBox:
+        for post_box in try_post_box:
             post_filename = \
-                acct_dir(base_dir, nickname, domain) + '/' + postBox + '/' + \
+                acct_dir(base_dir, nickname, domain) + '/' + post_box + '/' + \
                 post_id.replace('/', '#') + '.json'
             if os.path.isfile(post_filename):
                 post_filename = acct_dir(base_dir, nickname, domain) + \
@@ -140,48 +140,50 @@ def _get_blog_replies(base_dir: str, http_prefix: str, translate: {},
                     post_id.replace('/', '#') + '.html'
                 if os.path.isfile(post_filename):
                     try:
-                        with open(post_filename, 'r') as postFile:
-                            return postFile.read() + '\n'
+                        with open(post_filename, 'r') as post_file:
+                            return post_file.read() + '\n'
                     except OSError:
                         print('EX: unable to read blog 3 ' + post_filename)
         return ''
 
     lines = []
     try:
-        with open(post_filename, 'r') as f:
-            lines = f.readlines()
+        with open(post_filename, 'r') as post_file:
+            lines = post_file.readlines()
     except OSError:
         print('EX: unable to read blog 4 ' + post_filename)
 
     if lines:
-        repliesStr = ''
-        for replyPostId in lines:
-            replyPostId = replyPostId.replace('\n', '').replace('\r', '')
-            replyPostId = replyPostId.replace('.json', '')
-            replyPostId = replyPostId.replace('.replies', '')
+        replies_str = ''
+        for reply_post_id in lines:
+            reply_post_id = reply_post_id.replace('\n', '').replace('\r', '')
+            reply_post_id = reply_post_id.replace('.json', '')
+            reply_post_id = reply_post_id.replace('.replies', '')
             post_filename = acct_dir(base_dir, nickname, domain) + \
                 '/postcache/' + \
-                replyPostId.replace('/', '#') + '.html'
+                reply_post_id.replace('/', '#') + '.html'
             if not os.path.isfile(post_filename):
                 continue
             try:
-                with open(post_filename, 'r') as postFile:
-                    repliesStr += postFile.read() + '\n'
+                with open(post_filename, 'r') as post_file:
+                    replies_str += post_file.read() + '\n'
             except OSError:
                 print('EX: unable to read blog replies ' + post_filename)
             rply = _get_blog_replies(base_dir, http_prefix, translate,
                                      nickname, domain, domain_full,
-                                     replyPostId, depth+1)
-            if rply not in repliesStr:
-                repliesStr += rply
+                                     reply_post_id, depth+1)
+            if rply not in replies_str:
+                replies_str += rply
 
         # indicate the reply indentation level
-        indentStr = '>'
-        for indentLevel in range(depth):
-            indentStr += ' >'
+        indent_str = '>'
+        indent_level = 0
+        while indent_level < depth:
+            indent_str += ' >'
+            indent_level += 1
 
-        repliesStr = repliesStr.replace(translate['SHOW MORE'], indentStr)
-        return repliesStr.replace('?tl=outbox', '?tl=tlblogs')
+        replies_str = replies_str.replace(translate['SHOW MORE'], indent_str)
+        return replies_str.replace('?tl=outbox', '?tl=tlblogs')
     return ''
 
 
@@ -189,130 +191,130 @@ def _html_blog_post_content(debug: bool, session, authorized: bool,
                             base_dir: str, http_prefix: str, translate: {},
                             nickname: str, domain: str, domain_full: str,
                             post_json_object: {},
-                            handle: str, restrictToDomain: bool,
+                            handle: str, restrict_to_domain: bool,
                             peertube_instances: [],
                             system_language: str,
                             person_cache: {},
-                            blogSeparator: str = '<hr>') -> str:
+                            blog_separator: str = '<hr>') -> str:
     """Returns the content for a single blog post
     """
-    linkedAuthor = False
+    linked_author = False
     actor = ''
-    blogStr = ''
-    messageLink = ''
+    blog_str = ''
+    message_link = ''
     if post_json_object['object'].get('id'):
-        messageLink = \
+        message_link = \
             post_json_object['object']['id'].replace('/statuses/', '/')
-    titleStr = ''
-    articleAdded = False
+    title_str = ''
+    article_added = False
     if post_json_object['object'].get('summary'):
-        titleStr = post_json_object['object']['summary']
-        blogStr += '<article><h1><a href="' + messageLink + '">' + \
-            titleStr + '</a></h1>\n'
-        articleAdded = True
+        title_str = post_json_object['object']['summary']
+        blog_str += '<article><h1><a href="' + message_link + '">' + \
+            title_str + '</a></h1>\n'
+        article_added = True
 
     # get the handle of the author
     if post_json_object['object'].get('attributedTo'):
-        authorNickname = None
+        author_nickname = None
         if isinstance(post_json_object['object']['attributedTo'], str):
             actor = post_json_object['object']['attributedTo']
-            authorNickname = get_nickname_from_actor(actor)
-        if authorNickname:
-            authorDomain, authorPort = get_domain_from_actor(actor)
-            if authorDomain:
+            author_nickname = get_nickname_from_actor(actor)
+        if author_nickname:
+            author_domain, _ = get_domain_from_actor(actor)
+            if author_domain:
                 # author must be from the given domain
-                if restrictToDomain and authorDomain != domain:
+                if restrict_to_domain and author_domain != domain:
                     return ''
-                handle = authorNickname + '@' + authorDomain
+                handle = author_nickname + '@' + author_domain
     else:
         # posts from the domain are expected to have an attributedTo field
-        if restrictToDomain:
+        if restrict_to_domain:
             return ''
 
     if post_json_object['object'].get('published'):
         if 'T' in post_json_object['object']['published']:
-            blogStr += '<h3>' + \
+            blog_str += '<h3>' + \
                 post_json_object['object']['published'].split('T')[0]
             if handle:
                 if handle.startswith(nickname + '@' + domain):
-                    blogStr += ' <a href="' + http_prefix + '://' + \
+                    blog_str += ' <a href="' + http_prefix + '://' + \
                         domain_full + \
                         '/users/' + nickname + '">' + handle + '</a>'
-                    linkedAuthor = True
+                    linked_author = True
                 else:
                     if actor:
-                        blogStr += ' <a href="' + actor + '">' + \
+                        blog_str += ' <a href="' + actor + '">' + \
                             handle + '</a>'
-                        linkedAuthor = True
+                        linked_author = True
                     else:
-                        blogStr += ' ' + handle
-            blogStr += '</h3>\n'
+                        blog_str += ' ' + handle
+            blog_str += '</h3>\n'
 
-    avatarLink = ''
-    replyStr = ''
-    announceStr = ''
-    likeStr = ''
-    bookmarkStr = ''
-    deleteStr = ''
-    muteStr = ''
+    avatar_link = ''
+    reply_str = ''
+    announce_str = ''
+    like_str = ''
+    bookmark_str = ''
+    delete_str = ''
+    mute_str = ''
     is_muted = False
-    attachmentStr, galleryStr = \
+    attachment_str, _ = \
         get_post_attachments_as_html(post_json_object,
                                      'tlblogs', translate,
-                                     is_muted, avatarLink,
-                                     replyStr, announceStr,
-                                     likeStr, bookmarkStr,
-                                     deleteStr, muteStr)
-    if attachmentStr:
-        blogStr += '<br><center>' + attachmentStr + '</center>'
+                                     is_muted, avatar_link,
+                                     reply_str, announce_str,
+                                     like_str, bookmark_str,
+                                     delete_str, mute_str)
+    if attachment_str:
+        blog_str += '<br><center>' + attachment_str + '</center>'
 
-    personUrl = local_actor_url(http_prefix, nickname, domain_full)
+    person_url = local_actor_url(http_prefix, nickname, domain_full)
     actor_json = \
-        get_person_from_cache(base_dir, personUrl, person_cache, False)
+        get_person_from_cache(base_dir, person_url, person_cache, False)
     languages_understood = []
     if actor_json:
         languages_understood = get_actor_languages_list(actor_json)
-    jsonContent = get_content_from_post(post_json_object, system_language,
-                                        languages_understood)
-    if jsonContent:
-        contentStr = add_embedded_elements(translate, jsonContent,
-                                           peertube_instances)
+    json_content = get_content_from_post(post_json_object, system_language,
+                                         languages_understood)
+    if json_content:
+        content_str = add_embedded_elements(translate, json_content,
+                                            peertube_instances)
         if post_json_object['object'].get('tag'):
             post_json_object_tags = post_json_object['object']['tag']
-            contentStr = replace_emoji_from_tags(session, base_dir,
-                                                 contentStr,
-                                                 post_json_object_tags,
-                                                 'content', debug)
-        if articleAdded:
-            blogStr += '<br>' + contentStr + '</article>\n'
+            content_str = replace_emoji_from_tags(session, base_dir,
+                                                  content_str,
+                                                  post_json_object_tags,
+                                                  'content', debug)
+        if article_added:
+            blog_str += '<br>' + content_str + '</article>\n'
         else:
-            blogStr += '<br><article>' + contentStr + '</article>\n'
+            blog_str += '<br><article>' + content_str + '</article>\n'
 
-    citationsStr = ''
+    citations_str = ''
     if post_json_object['object'].get('tag'):
-        for tagJson in post_json_object['object']['tag']:
-            if not isinstance(tagJson, dict):
+        for tag_json in post_json_object['object']['tag']:
+            if not isinstance(tag_json, dict):
                 continue
-            if not tagJson.get('type'):
+            if not tag_json.get('type'):
                 continue
-            if tagJson['type'] != 'Article':
+            if tag_json['type'] != 'Article':
                 continue
-            if not tagJson.get('name'):
+            if not tag_json.get('name'):
                 continue
-            if not tagJson.get('url'):
+            if not tag_json.get('url'):
                 continue
-            citationsStr += \
-                '<li><a href="' + tagJson['url'] + '">' + \
-                '<cite>' + tagJson['name'] + '</cite></a></li>\n'
-        if citationsStr:
-            citationsStr = '<p><b>' + translate['Citations'] + \
+            citations_str += \
+                '<li><a href="' + tag_json['url'] + '">' + \
+                '<cite>' + tag_json['name'] + '</cite></a></li>\n'
+        if citations_str:
+            citations_str = '<p><b>' + translate['Citations'] + \
                 ':</b></p>' + \
-                '<ul>\n' + citationsStr + '</ul>\n'
+                '<ul>\n' + citations_str + '</ul>\n'
 
-    blogStr += '<br>\n' + citationsStr
+    blog_str += '<br>\n' + citations_str
 
-    if not linkedAuthor:
-        blogStr += '<p class="about"><a class="about" href="' + \
+    if not linked_author:
+        blog_str += '<p class="about"><a class="about" href="' + \
             local_actor_url(http_prefix, nickname, domain_full) + \
             '">' + translate['About the author'] + \
             '</a></p>\n'
@@ -322,110 +324,112 @@ def _html_blog_post_content(debug: bool, session, authorized: bool,
                                   post_json_object['object']['id'])
 
     # separator between blogs should be centered
-    if '<center>' not in blogSeparator:
-        blogSeparator = '<center>' + blogSeparator + '</center>'
+    if '<center>' not in blog_separator:
+        blog_separator = '<center>' + blog_separator + '</center>'
 
     if replies == 0:
-        blogStr += blogSeparator + '\n'
-        return blogStr
+        blog_str += blog_separator + '\n'
+        return blog_str
 
     if not authorized:
-        blogStr += '<p class="blogreplies">' + \
+        blog_str += '<p class="blogreplies">' + \
             translate['Replies'].lower() + ': ' + str(replies) + '</p>'
-        blogStr += '<br><br><br>' + blogSeparator + '\n'
+        blog_str += '<br><br><br>' + blog_separator + '\n'
     else:
-        blogStr += blogSeparator + '<h1>' + translate['Replies'] + '</h1>\n'
-        if not titleStr:
-            blogStr += _get_blog_replies(base_dir, http_prefix, translate,
-                                         nickname, domain, domain_full,
-                                         post_json_object['object']['id'])
+        blog_str += blog_separator + '<h1>' + translate['Replies'] + '</h1>\n'
+        if not title_str:
+            blog_str += \
+                _get_blog_replies(base_dir, http_prefix, translate,
+                                  nickname, domain, domain_full,
+                                  post_json_object['object']['id'])
         else:
             obj_id = post_json_object['object']['id']
-            blogRepliesStr = _get_blog_replies(base_dir, http_prefix,
-                                               translate, nickname,
-                                               domain, domain_full, obj_id)
-            blogStr += blogRepliesStr.replace('>' + titleStr + '<', '')
+            blog_replies_str = \
+                _get_blog_replies(base_dir, http_prefix,
+                                  translate, nickname,
+                                  domain, domain_full, obj_id)
+            blog_str += blog_replies_str.replace('>' + title_str + '<', '')
 
-    return blogStr
+    return blog_str
 
 
 def _html_blog_post_rss2(authorized: bool,
                          base_dir: str, http_prefix: str, translate: {},
                          nickname: str, domain: str, domain_full: str,
                          post_json_object: {},
-                         handle: str, restrictToDomain: bool,
+                         handle: str, restrict_to_domain: bool,
                          system_language: str) -> str:
     """Returns the RSS version 2 feed for a single blog post
     """
-    rssStr = ''
-    messageLink = ''
+    rss_str = ''
+    message_link = ''
     if post_json_object['object'].get('id'):
-        messageLink = \
+        message_link = \
             post_json_object['object']['id'].replace('/statuses/', '/')
-        if not restrictToDomain or \
-           (restrictToDomain and '/' + domain in messageLink):
+        if not restrict_to_domain or \
+           (restrict_to_domain and '/' + domain in message_link):
             if post_json_object['object'].get('summary') and \
                post_json_object['object'].get('published'):
                 published = post_json_object['object']['published']
-                pubDate = datetime.strptime(published, "%Y-%m-%dT%H:%M:%SZ")
-                titleStr = post_json_object['object']['summary']
-                rssDateStr = pubDate.strftime("%a, %d %b %Y %H:%M:%S UT")
+                pub_date = datetime.strptime(published, "%Y-%m-%dT%H:%M:%SZ")
+                title_str = post_json_object['object']['summary']
+                rss_date_str = pub_date.strftime("%a, %d %b %Y %H:%M:%S UT")
                 content = \
                     get_base_content_from_post(post_json_object,
                                                system_language)
                 description = first_paragraph_from_string(content)
-                rssStr = '     <item>'
-                rssStr += '         <title>' + titleStr + '</title>'
-                rssStr += '         <link>' + messageLink + '</link>'
-                rssStr += \
+                rss_str = '     <item>'
+                rss_str += '         <title>' + title_str + '</title>'
+                rss_str += '         <link>' + message_link + '</link>'
+                rss_str += \
                     '         <description>' + description + '</description>'
-                rssStr += '         <pubDate>' + rssDateStr + '</pubDate>'
-                rssStr += '     </item>'
-    return rssStr
+                rss_str += '         <pubDate>' + rss_date_str + '</pubDate>'
+                rss_str += '     </item>'
+    return rss_str
 
 
 def _html_blog_post_rss3(authorized: bool,
                          base_dir: str, http_prefix: str, translate: {},
                          nickname: str, domain: str, domain_full: str,
                          post_json_object: {},
-                         handle: str, restrictToDomain: bool,
+                         handle: str, restrict_to_domain: bool,
                          system_language: str) -> str:
     """Returns the RSS version 3 feed for a single blog post
     """
-    rssStr = ''
-    messageLink = ''
+    rss_str = ''
+    message_link = ''
     if post_json_object['object'].get('id'):
-        messageLink = \
+        message_link = \
             post_json_object['object']['id'].replace('/statuses/', '/')
-        if not restrictToDomain or \
-           (restrictToDomain and '/' + domain in messageLink):
+        if not restrict_to_domain or \
+           (restrict_to_domain and '/' + domain in message_link):
             if post_json_object['object'].get('summary') and \
                post_json_object['object'].get('published'):
                 published = post_json_object['object']['published']
-                pubDate = datetime.strptime(published, "%Y-%m-%dT%H:%M:%SZ")
-                titleStr = post_json_object['object']['summary']
-                rssDateStr = pubDate.strftime("%a, %d %b %Y %H:%M:%S UT")
+                pub_date = datetime.strptime(published, "%Y-%m-%dT%H:%M:%SZ")
+                title_str = post_json_object['object']['summary']
+                rss_date_str = pub_date.strftime("%a, %d %b %Y %H:%M:%S UT")
                 content = \
                     get_base_content_from_post(post_json_object,
                                                system_language)
                 description = first_paragraph_from_string(content)
-                rssStr = 'title: ' + titleStr + '\n'
-                rssStr += 'link: ' + messageLink + '\n'
-                rssStr += 'description: ' + description + '\n'
-                rssStr += 'created: ' + rssDateStr + '\n\n'
-    return rssStr
+                rss_str = 'title: ' + title_str + '\n'
+                rss_str += 'link: ' + message_link + '\n'
+                rss_str += 'description: ' + description + '\n'
+                rss_str += 'created: ' + rss_date_str + '\n\n'
+    return rss_str
 
 
-def _html_blog_remove_cw_button(blogStr: str, translate: {}) -> str:
+def _html_blog_remove_cw_button(blog_str: str, translate: {}) -> str:
     """Removes the CW button from blog posts, where the
     summary field is instead used as the blog title
     """
-    blogStr = blogStr.replace('<details>', '<b>')
-    blogStr = blogStr.replace('</details>', '</b>')
-    blogStr = blogStr.replace('<summary>', '')
-    blogStr = blogStr.replace('</summary>', '')
-    blogStr = blogStr.replace(translate['SHOW MORE'], '')
-    return blogStr
+    blog_str = blog_str.replace('<details>', '<b>')
+    blog_str = blog_str.replace('</details>', '</b>')
+    blog_str = blog_str.replace('<summary>', '')
+    blog_str = blog_str.replace('</summary>', '')
+    blog_str = blog_str.replace(translate['SHOW MORE'], '')
+    return blog_str
 
 
 def _get_snippet_from_blog_content(post_json_object: {},
@@ -454,12 +458,12 @@ def html_blog_post(session, authorized: bool,
                    debug: bool, content_license_url: str) -> str:
     """Returns a html blog post
     """
-    blogStr = ''
+    blog_str = ''
 
-    cssFilename = base_dir + '/epicyon-blog.css'
+    css_filename = base_dir + '/epicyon-blog.css'
     if os.path.isfile(base_dir + '/blog.css'):
-        cssFilename = base_dir + '/blog.css'
-    instanceTitle = \
+        css_filename = base_dir + '/blog.css'
+    instance_title = \
         get_config_param(base_dir, 'instanceTitle')
     published = post_json_object['object']['published']
     modified = published
@@ -471,48 +475,48 @@ def html_blog_post(session, authorized: bool,
         url = post_json_object['object']['url']
     snippet = _get_snippet_from_blog_content(post_json_object,
                                              system_language)
-    blogStr = html_header_with_blog_markup(cssFilename, instanceTitle,
-                                           http_prefix, domain_full, nickname,
-                                           system_language, published,
-                                           modified,
-                                           title, snippet, translate, url,
-                                           content_license_url)
-    _html_blog_remove_cw_button(blogStr, translate)
+    blog_str = html_header_with_blog_markup(css_filename, instance_title,
+                                            http_prefix, domain_full, nickname,
+                                            system_language, published,
+                                            modified,
+                                            title, snippet, translate, url,
+                                            content_license_url)
+    _html_blog_remove_cw_button(blog_str, translate)
 
-    blogStr += _html_blog_post_content(debug, session, authorized, base_dir,
-                                       http_prefix, translate,
-                                       nickname, domain,
-                                       domain_full, post_json_object,
-                                       None, False,
-                                       peertube_instances, system_language,
-                                       person_cache)
+    blog_str += _html_blog_post_content(debug, session, authorized, base_dir,
+                                        http_prefix, translate,
+                                        nickname, domain,
+                                        domain_full, post_json_object,
+                                        None, False,
+                                        peertube_instances, system_language,
+                                        person_cache)
 
     # show rss links
-    blogStr += '<p class="rssfeed">'
+    blog_str += '<p class="rssfeed">'
 
-    blogStr += '<a href="' + http_prefix + '://' + \
+    blog_str += '<a href="' + http_prefix + '://' + \
         domain_full + '/blog/' + nickname + '/rss.xml">'
-    blogStr += '<img style="width:3%;min-width:50px" ' + \
+    blog_str += '<img style="width:3%;min-width:50px" ' + \
         'loading="lazy" alt="RSS 2.0" ' + \
         'title="RSS 2.0" src="/' + \
         'icons/logorss.png" /></a>'
 
-    # blogStr += '<a href="' + http_prefix + '://' + \
+    # blog_str += '<a href="' + http_prefix + '://' + \
     #     domain_full + '/blog/' + nickname + '/rss.txt">'
-    # blogStr += '<img style="width:3%;min-width:50px" ' + \
+    # blog_str += '<img style="width:3%;min-width:50px" ' + \
     #     'loading="lazy" alt="RSS 3.0" ' + \
     #     'title="RSS 3.0" src="/' + \
     #     'icons/rss3.png" /></a>'
 
-    blogStr += '</p>'
+    blog_str += '</p>'
 
-    return blogStr + html_footer()
+    return blog_str + html_footer()
 
 
 def html_blog_page(authorized: bool, session,
                    base_dir: str, http_prefix: str, translate: {},
                    nickname: str, domain: str, port: int,
-                   noOfItems: int, pageNumber: int,
+                   no_of_items: int, page_number: int,
                    peertube_instances: [], system_language: str,
                    person_cache: {}, debug: bool) -> str:
     """Returns a html blog page containing posts
@@ -520,94 +524,91 @@ def html_blog_page(authorized: bool, session,
     if ' ' in nickname or '@' in nickname or \
        '\n' in nickname or '\r' in nickname:
         return None
-    blogStr = ''
+    blog_str = ''
 
-    cssFilename = base_dir + '/epicyon-profile.css'
+    css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
-        cssFilename = base_dir + '/epicyon.css'
-    instanceTitle = \
+        css_filename = base_dir + '/epicyon.css'
+    instance_title = \
         get_config_param(base_dir, 'instanceTitle')
-    blogStr = html_header_with_external_style(cssFilename, instanceTitle, None)
-    _html_blog_remove_cw_button(blogStr, translate)
+    blog_str = \
+        html_header_with_external_style(css_filename, instance_title, None)
+    _html_blog_remove_cw_button(blog_str, translate)
 
-    blogsIndex = acct_dir(base_dir, nickname, domain) + '/tlblogs.index'
-    if not os.path.isfile(blogsIndex):
-        return blogStr + html_footer()
+    blogs_index = acct_dir(base_dir, nickname, domain) + '/tlblogs.index'
+    if not os.path.isfile(blogs_index):
+        return blog_str + html_footer()
 
-    timelineJson = create_blogs_timeline(session, base_dir,
-                                         nickname, domain, port,
-                                         http_prefix,
-                                         noOfItems, False,
-                                         pageNumber)
+    timeline_json = \
+        create_blogs_timeline(session, base_dir,
+                              nickname, domain, port, http_prefix,
+                              no_of_items, False, page_number)
 
-    if not timelineJson:
-        return blogStr + html_footer()
+    if not timeline_json:
+        return blog_str + html_footer()
 
     domain_full = get_full_domain(domain, port)
 
     # show previous and next buttons
-    if pageNumber is not None:
-        navigateStr = '<p>'
-        if pageNumber > 1:
+    if page_number is not None:
+        navigate_str = '<p>'
+        if page_number > 1:
             # show previous button
-            navigateStr += '<a href="' + http_prefix + '://' + \
+            navigate_str += '<a href="' + http_prefix + '://' + \
                 domain_full + '/blog/' + \
-                nickname + '?page=' + str(pageNumber-1) + '">' + \
+                nickname + '?page=' + str(page_number-1) + '">' + \
                 '<img loading="lazy" alt="<" title="<" ' + \
                 'src="/icons' + \
                 '/prev.png" class="buttonprev"/></a>\n'
-        if len(timelineJson['orderedItems']) >= noOfItems:
+        if len(timeline_json['orderedItems']) >= no_of_items:
             # show next button
-            navigateStr += '<a href="' + http_prefix + '://' + \
+            navigate_str += '<a href="' + http_prefix + '://' + \
                 domain_full + '/blog/' + nickname + \
-                '?page=' + str(pageNumber + 1) + '">' + \
+                '?page=' + str(page_number + 1) + '">' + \
                 '<img loading="lazy" alt=">" title=">" ' + \
                 'src="/icons' + \
                 '/prev.png" class="buttonnext"/></a>\n'
-        navigateStr += '</p>'
-        blogStr += navigateStr
+        navigate_str += '</p>'
+        blog_str += navigate_str
 
-    for item in timelineJson['orderedItems']:
+    for item in timeline_json['orderedItems']:
         if item['type'] != 'Create':
             continue
 
-        blogStr += _html_blog_post_content(debug, session, authorized,
-                                           base_dir,
-                                           http_prefix, translate,
-                                           nickname, domain,
-                                           domain_full, item,
-                                           None, True,
-                                           peertube_instances,
-                                           system_language,
-                                           person_cache)
+        blog_str += \
+            _html_blog_post_content(debug, session, authorized,
+                                    base_dir, http_prefix, translate,
+                                    nickname, domain, domain_full, item,
+                                    None, True, peertube_instances,
+                                    system_language, person_cache)
 
-    if len(timelineJson['orderedItems']) >= noOfItems:
-        blogStr += navigateStr
+    if len(timeline_json['orderedItems']) >= no_of_items:
+        blog_str += navigate_str
 
     # show rss link
-    blogStr += '<p class="rssfeed">'
+    blog_str += '<p class="rssfeed">'
 
-    blogStr += '<a href="' + http_prefix + '://' + \
+    blog_str += '<a href="' + http_prefix + '://' + \
         domain_full + '/blog/' + nickname + '/rss.xml">'
-    blogStr += '<img loading="lazy" alt="RSS 2.0" ' + \
+    blog_str += '<img loading="lazy" alt="RSS 2.0" ' + \
         'title="RSS 2.0" src="/' + \
         'icons/logorss.png" /></a>'
 
-    # blogStr += '<a href="' + http_prefix + '://' + \
+    # blog_str += '<a href="' + http_prefix + '://' + \
     #     domain_full + '/blog/' + nickname + '/rss.txt">'
-    # blogStr += '<img loading="lazy" alt="RSS 3.0" ' + \
+    # blog_str += '<img loading="lazy" alt="RSS 3.0" ' + \
     #     'title="RSS 3.0" src="/' + \
     #     'icons/rss3.png" /></a>'
 
-    blogStr += '</p>'
-    return blogStr + html_footer()
+    blog_str += '</p>'
+    return blog_str + html_footer()
 
 
 def html_blog_page_rss2(authorized: bool, session,
                         base_dir: str, http_prefix: str, translate: {},
                         nickname: str, domain: str, port: int,
-                        noOfItems: int, pageNumber: int,
-                        includeHeader: bool, system_language: str) -> str:
+                        no_of_items: int, page_number: int,
+                        include_header: bool, system_language: str) -> str:
     """Returns an RSS version 2 feed containing posts
     """
     if ' ' in nickname or '@' in nickname or \
@@ -616,52 +617,49 @@ def html_blog_page_rss2(authorized: bool, session,
 
     domain_full = get_full_domain(domain, port)
 
-    blogRSS2 = ''
-    if includeHeader:
-        blogRSS2 = rss2header(http_prefix, nickname, domain_full,
-                              'Blog', translate)
+    blog_rss2 = ''
+    if include_header:
+        blog_rss2 = rss2header(http_prefix, nickname, domain_full,
+                               'Blog', translate)
 
-    blogsIndex = acct_dir(base_dir, nickname, domain) + '/tlblogs.index'
-    if not os.path.isfile(blogsIndex):
-        if includeHeader:
-            return blogRSS2 + rss2footer()
-        else:
-            return blogRSS2
+    blogs_index = acct_dir(base_dir, nickname, domain) + '/tlblogs.index'
+    if not os.path.isfile(blogs_index):
+        if include_header:
+            return blog_rss2 + rss2footer()
+        return blog_rss2
 
-    timelineJson = create_blogs_timeline(session, base_dir,
-                                         nickname, domain, port,
-                                         http_prefix,
-                                         noOfItems, False,
-                                         pageNumber)
+    timeline_json = create_blogs_timeline(session, base_dir,
+                                          nickname, domain, port,
+                                          http_prefix,
+                                          no_of_items, False,
+                                          page_number)
 
-    if not timelineJson:
-        if includeHeader:
-            return blogRSS2 + rss2footer()
-        else:
-            return blogRSS2
+    if not timeline_json:
+        if include_header:
+            return blog_rss2 + rss2footer()
+        return blog_rss2
 
-    if pageNumber is not None:
-        for item in timelineJson['orderedItems']:
+    if page_number is not None:
+        for item in timeline_json['orderedItems']:
             if item['type'] != 'Create':
                 continue
 
-            blogRSS2 += \
+            blog_rss2 += \
                 _html_blog_post_rss2(authorized, base_dir,
                                      http_prefix, translate,
                                      nickname, domain,
                                      domain_full, item,
                                      None, True, system_language)
 
-    if includeHeader:
-        return blogRSS2 + rss2footer()
-    else:
-        return blogRSS2
+    if include_header:
+        return blog_rss2 + rss2footer()
+    return blog_rss2
 
 
 def html_blog_page_rss3(authorized: bool, session,
                         base_dir: str, http_prefix: str, translate: {},
                         nickname: str, domain: str, port: int,
-                        noOfItems: int, pageNumber: int,
+                        no_of_items: int, page_number: int,
                         system_language: str) -> str:
     """Returns an RSS version 3 feed containing posts
     """
@@ -671,27 +669,26 @@ def html_blog_page_rss3(authorized: bool, session,
 
     domain_full = get_full_domain(domain, port)
 
-    blogRSS3 = ''
+    blog_rss3 = ''
 
-    blogsIndex = acct_dir(base_dir, nickname, domain) + '/tlblogs.index'
-    if not os.path.isfile(blogsIndex):
-        return blogRSS3
+    blogs_index = acct_dir(base_dir, nickname, domain) + '/tlblogs.index'
+    if not os.path.isfile(blogs_index):
+        return blog_rss3
 
-    timelineJson = create_blogs_timeline(session, base_dir,
-                                         nickname, domain, port,
-                                         http_prefix,
-                                         noOfItems, False,
-                                         pageNumber)
+    timeline_json = \
+        create_blogs_timeline(session, base_dir,
+                              nickname, domain, port, http_prefix,
+                              no_of_items, False, page_number)
 
-    if not timelineJson:
-        return blogRSS3
+    if not timeline_json:
+        return blog_rss3
 
-    if pageNumber is not None:
-        for item in timelineJson['orderedItems']:
+    if page_number is not None:
+        for item in timeline_json['orderedItems']:
             if item['type'] != 'Create':
                 continue
 
-            blogRSS3 += \
+            blog_rss3 += \
                 _html_blog_post_rss3(authorized, base_dir,
                                      http_prefix, translate,
                                      nickname, domain,
@@ -699,7 +696,7 @@ def html_blog_page_rss3(authorized: bool, session,
                                      None, True,
                                      system_language)
 
-    return blogRSS3
+    return blog_rss3
 
 
 def _no_of_blog_accounts(base_dir: str) -> int:
@@ -710,9 +707,9 @@ def _no_of_blog_accounts(base_dir: str) -> int:
         for acct in dirs:
             if not is_account_dir(acct):
                 continue
-            accountDir = os.path.join(base_dir + '/accounts', acct)
-            blogsIndex = accountDir + '/tlblogs.index'
-            if os.path.isfile(blogsIndex):
+            account_dir = os.path.join(base_dir + '/accounts', acct)
+            blogs_index = account_dir + '/tlblogs.index'
+            if os.path.isfile(blogs_index):
                 ctr += 1
         break
     return ctr
@@ -725,9 +722,9 @@ def _single_blog_account_nickname(base_dir: str) -> str:
         for acct in dirs:
             if not is_account_dir(acct):
                 continue
-            accountDir = os.path.join(base_dir + '/accounts', acct)
-            blogsIndex = accountDir + '/tlblogs.index'
-            if os.path.isfile(blogsIndex):
+            account_dir = os.path.join(base_dir + '/accounts', acct)
+            blogs_index = account_dir + '/tlblogs.index'
+            if os.path.isfile(blogs_index):
                 return acct.split('@')[0]
         break
     return None
@@ -736,19 +733,20 @@ def _single_blog_account_nickname(base_dir: str) -> str:
 def html_blog_view(authorized: bool,
                    session, base_dir: str, http_prefix: str,
                    translate: {}, domain: str, port: int,
-                   noOfItems: int,
+                   no_of_items: int,
                    peertube_instances: [], system_language: str,
                    person_cache: {}, debug: bool) -> str:
     """Show the blog main page
     """
-    blogStr = ''
+    blog_str = ''
 
-    cssFilename = base_dir + '/epicyon-profile.css'
+    css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
-        cssFilename = base_dir + '/epicyon.css'
-    instanceTitle = \
+        css_filename = base_dir + '/epicyon.css'
+    instance_title = \
         get_config_param(base_dir, 'instanceTitle')
-    blogStr = html_header_with_external_style(cssFilename, instanceTitle, None)
+    blog_str = \
+        html_header_with_external_style(css_filename, instance_title, None)
 
     if _no_of_blog_accounts(base_dir) <= 1:
         nickname = _single_blog_account_nickname(base_dir)
@@ -756,7 +754,7 @@ def html_blog_view(authorized: bool,
             return html_blog_page(authorized, session,
                                   base_dir, http_prefix, translate,
                                   nickname, domain, port,
-                                  noOfItems, 1, peertube_instances,
+                                  no_of_items, 1, peertube_instances,
                                   system_language, person_cache, debug)
 
     domain_full = get_full_domain(domain, port)
@@ -765,30 +763,30 @@ def html_blog_view(authorized: bool,
         for acct in dirs:
             if not is_account_dir(acct):
                 continue
-            accountDir = os.path.join(base_dir + '/accounts', acct)
-            blogsIndex = accountDir + '/tlblogs.index'
-            if os.path.isfile(blogsIndex):
-                blogStr += '<p class="blogaccount">'
-                blogStr += '<a href="' + \
+            account_dir = os.path.join(base_dir + '/accounts', acct)
+            blogs_index = account_dir + '/tlblogs.index'
+            if os.path.isfile(blogs_index):
+                blog_str += '<p class="blogaccount">'
+                blog_str += '<a href="' + \
                     http_prefix + '://' + domain_full + '/blog/' + \
                     acct.split('@')[0] + '">' + acct + '</a>'
-                blogStr += '</p>'
+                blog_str += '</p>'
         break
 
-    return blogStr + html_footer()
+    return blog_str + html_footer()
 
 
 def html_edit_blog(media_instance: bool, translate: {},
                    base_dir: str, http_prefix: str,
                    path: str,
-                   pageNumber: int,
+                   page_number: int,
                    nickname: str, domain: str,
-                   postUrl: str, system_language: str) -> str:
+                   post_url: str, system_language: str) -> str:
     """Edit a blog post after it was created
     """
-    post_filename = locate_post(base_dir, nickname, domain, postUrl)
+    post_filename = locate_post(base_dir, nickname, domain, post_url)
     if not post_filename:
-        print('Edit blog: Filename not found for ' + postUrl)
+        print('Edit blog: Filename not found for ' + post_url)
         return None
 
     post_json_object = load_json(post_filename)
@@ -796,131 +794,136 @@ def html_edit_blog(media_instance: bool, translate: {},
         print('Edit blog: json not loaded for ' + post_filename)
         return None
 
-    editBlogText = '<h1">' + translate['Write your post text below.'] + '</h1>'
+    edit_blog_text = \
+        '<h1">' + translate['Write your post text below.'] + '</h1>'
 
     if os.path.isfile(base_dir + '/accounts/newpost.txt'):
         try:
             with open(base_dir + '/accounts/newpost.txt', 'r') as file:
-                editBlogText = '<p>' + file.read() + '</p>'
+                edit_blog_text = '<p>' + file.read() + '</p>'
         except OSError:
             print('EX: unable to read ' + base_dir + '/accounts/newpost.txt')
 
-    cssFilename = base_dir + '/epicyon-profile.css'
+    css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
-        cssFilename = base_dir + '/epicyon.css'
+        css_filename = base_dir + '/epicyon.css'
 
     if '?' in path:
         path = path.split('?')[0]
-    pathBase = path
+    path_base = path
 
-    editBlogImageSection = '    <div class="container">'
-    editBlogImageSection += '      <label class="labels">' + \
+    edit_blog_image_section = '    <div class="container">'
+    edit_blog_image_section += '      <label class="labels">' + \
         translate['Image description'] + '</label>'
-    editBlogImageSection += '      <input type="text" name="imageDescription">'
-    editBlogImageSection += \
+    edit_blog_image_section += \
+        '      <input type="text" name="imageDescription">'
+    edit_blog_image_section += \
         '      <input type="file" id="attachpic" name="attachpic"'
-    editBlogImageSection += \
+    edit_blog_image_section += \
         '            accept="' + get_media_formats() + '">'
-    editBlogImageSection += '    </div>'
+    edit_blog_image_section += '    </div>'
 
-    placeholderMessage = translate['Write something'] + '...'
+    placeholder_message = translate['Write something'] + '...'
     endpoint = 'editblogpost'
-    placeholderSubject = translate['Title']
-    scopeIcon = 'scope_blog.png'
-    scopeDescription = translate['Blog']
+    placeholder_subject = translate['Title']
+    scope_icon = 'scope_blog.png'
+    scope_description = translate['Blog']
 
-    dateAndLocation = ''
-    dateAndLocation = '<div class="container">'
+    date_and_location = ''
+    date_and_location = '<div class="container">'
 
-    dateAndLocation += \
+    date_and_location += \
         '<p><input type="checkbox" class="profilecheckbox" ' + \
         'name="schedulePost"><label class="labels">' + \
         translate['This is a scheduled post.'] + '</label></p>'
 
-    dateAndLocation += \
+    date_and_location += \
         '<p><img loading="lazy" alt="" title="" ' + \
         'class="emojicalendar" src="/icons/calendar.png"/>'
-    dateAndLocation += \
+    date_and_location += \
         '<label class="labels">' + translate['Date'] + ': </label>'
-    dateAndLocation += '<input type="date" name="eventDate">'
-    dateAndLocation += '<label class="labelsright">' + translate['Time'] + ':'
-    dateAndLocation += '<input type="time" name="eventTime"></label></p>'
-    dateAndLocation += '</div>'
-    dateAndLocation += '<div class="container">'
-    dateAndLocation += \
+    date_and_location += '<input type="date" name="eventDate">'
+    date_and_location += \
+        '<label class="labelsright">' + translate['Time'] + ':'
+    date_and_location += '<input type="time" name="eventTime"></label></p>'
+    date_and_location += '</div>'
+    date_and_location += '<div class="container">'
+    date_and_location += \
         '<br><label class="labels">' + translate['Location'] + ': </label>'
-    dateAndLocation += '<input type="text" name="location">'
-    dateAndLocation += '</div>'
+    date_and_location += '<input type="text" name="location">'
+    date_and_location += '</div>'
 
-    instanceTitle = \
+    instance_title = \
         get_config_param(base_dir, 'instanceTitle')
-    editBlogForm = \
-        html_header_with_external_style(cssFilename, instanceTitle, None)
+    edit_blog_form = \
+        html_header_with_external_style(css_filename, instance_title, None)
 
-    editBlogForm += \
+    edit_blog_form += \
         '<form enctype="multipart/form-data" method="POST" ' + \
         'accept-charset="UTF-8" action="' + \
-        pathBase + '?' + endpoint + '?page=' + str(pageNumber) + '">'
-    editBlogForm += \
-        '  <input type="hidden" name="postUrl" value="' + postUrl + '">'
-    editBlogForm += \
+        path_base + '?' + endpoint + '?page=' + str(page_number) + '">'
+    edit_blog_form += \
+        '  <input type="hidden" name="postUrl" value="' + post_url + '">'
+    edit_blog_form += \
         '  <input type="hidden" name="pageNumber" value="' + \
-        str(pageNumber) + '">'
-    editBlogForm += '  <div class="vertical-center">'
-    editBlogForm += \
-        '    <label for="nickname"><b>' + editBlogText + '</b></label>'
-    editBlogForm += '    <div class="container">'
+        str(page_number) + '">'
+    edit_blog_form += '  <div class="vertical-center">'
+    edit_blog_form += \
+        '    <label for="nickname"><b>' + edit_blog_text + '</b></label>'
+    edit_blog_form += '    <div class="container">'
 
-    editBlogForm += '      <div class="dropbtn">'
-    editBlogForm += \
+    edit_blog_form += '      <div class="dropbtn">'
+    edit_blog_form += \
         '        <img loading="lazy" alt="" title="" src="/icons' + \
-        '/' + scopeIcon + '"/><b class="scope-desc">' + \
-        scopeDescription + '</b>'
-    editBlogForm += '      </div>'
+        '/' + scope_icon + '"/><b class="scope-desc">' + \
+        scope_description + '</b>'
+    edit_blog_form += '      </div>'
 
-    editBlogForm += '      <a href="' + pathBase + \
+    edit_blog_form += '      <a href="' + path_base + \
         '/searchemoji"><img loading="lazy" ' + \
         'class="emojisearch" src="/emoji/1F601.png" title="' + \
         translate['Search for emoji'] + '" alt="' + \
         translate['Search for emoji'] + '"/></a>'
-    editBlogForm += '    </div>'
-    editBlogForm += '    <div class="container"><center>'
-    editBlogForm += '      <a href="' + pathBase + \
+    edit_blog_form += '    </div>'
+    edit_blog_form += '    <div class="container"><center>'
+    edit_blog_form += '      <a href="' + path_base + \
         '/inbox"><button class="cancelbtn">' + \
         translate['Cancel'] + '</button></a>'
-    editBlogForm += '      <input type="submit" name="submitPost" value="' + \
+    edit_blog_form += \
+        '      <input type="submit" name="submitPost" value="' + \
         translate['Submit'] + '">'
-    editBlogForm += '    </center></div>'
+    edit_blog_form += '    </center></div>'
     if media_instance:
-        editBlogForm += editBlogImageSection
-    editBlogForm += \
-        '    <label class="labels">' + placeholderSubject + '</label><br>'
-    titleStr = ''
+        edit_blog_form += edit_blog_image_section
+    edit_blog_form += \
+        '    <label class="labels">' + placeholder_subject + '</label><br>'
+    title_str = ''
     if post_json_object['object'].get('summary'):
-        titleStr = post_json_object['object']['summary']
-    editBlogForm += \
-        '    <input type="text" name="subject" value="' + titleStr + '">'
-    editBlogForm += ''
-    editBlogForm += '    <br>'
-    messageBoxHeight = 800
+        title_str = post_json_object['object']['summary']
+    edit_blog_form += \
+        '    <input type="text" name="subject" value="' + title_str + '">'
+    edit_blog_form += ''
+    edit_blog_form += '    <br>'
+    message_box_height = 800
 
-    contentStr = get_base_content_from_post(post_json_object, system_language)
-    contentStr = contentStr.replace('<p>', '').replace('</p>', '\n')
+    content_str = get_base_content_from_post(post_json_object, system_language)
+    content_str = content_str.replace('<p>', '').replace('</p>', '\n')
 
-    editBlogForm += \
-        edit_text_area(placeholderMessage, 'message', contentStr,
-                       messageBoxHeight, '', True)
-    editBlogForm += dateAndLocation
+    edit_blog_form += \
+        edit_text_area(placeholder_message, 'message', content_str,
+                       message_box_height, '', True)
+    edit_blog_form += date_and_location
     if not media_instance:
-        editBlogForm += editBlogImageSection
-    editBlogForm += '  </div>'
-    editBlogForm += '</form>'
+        edit_blog_form += edit_blog_image_section
+    edit_blog_form += '  </div>'
+    edit_blog_form += '</form>'
 
-    editBlogForm = editBlogForm.replace('<body>',
-                                        '<body onload="focusOnMessage()">')
+    edit_blog_form = \
+        edit_blog_form.replace('<body>',
+                               '<body onload="focusOnMessage()">')
 
-    editBlogForm += html_footer()
-    return editBlogForm
+    edit_blog_form += html_footer()
+    return edit_blog_form
 
 
 def path_contains_blog_link(base_dir: str,
@@ -930,27 +933,28 @@ def path_contains_blog_link(base_dir: str,
     """
     if '/users/' not in path:
         return None, None
-    userEnding = path.split('/users/', 1)[1]
-    if '/' not in userEnding:
+    user_ending = path.split('/users/', 1)[1]
+    if '/' not in user_ending:
         return None, None
-    userEnding2 = userEnding.split('/')
-    nickname = userEnding2[0]
-    if len(userEnding2) != 2:
+    user_ending2 = user_ending.split('/')
+    nickname = user_ending2[0]
+    if len(user_ending2) != 2:
         return None, None
-    if len(userEnding2[1]) < 14:
+    if len(user_ending2[1]) < 14:
         return None, None
-    userEnding2[1] = userEnding2[1].strip()
-    if not userEnding2[1].isdigit():
+    user_ending2[1] = user_ending2[1].strip()
+    if not user_ending2[1].isdigit():
         return None, None
     # check for blog posts
-    blogIndexFilename = acct_dir(base_dir, nickname, domain) + '/tlblogs.index'
-    if not os.path.isfile(blogIndexFilename):
+    blog_index_filename = \
+        acct_dir(base_dir, nickname, domain) + '/tlblogs.index'
+    if not os.path.isfile(blog_index_filename):
         return None, None
-    if '#' + userEnding2[1] + '.' not in open(blogIndexFilename).read():
+    if '#' + user_ending2[1] + '.' not in open(blog_index_filename).read():
         return None, None
-    messageId = local_actor_url(http_prefix, nickname, domain_full) + \
-        '/statuses/' + userEnding2[1]
-    return locate_post(base_dir, nickname, domain, messageId), nickname
+    message_id = local_actor_url(http_prefix, nickname, domain_full) + \
+        '/statuses/' + user_ending2[1]
+    return locate_post(base_dir, nickname, domain, message_id), nickname
 
 
 def get_blog_address(actor_json: {}) -> str:
