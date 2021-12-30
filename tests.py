@@ -4460,6 +4460,39 @@ def _diagram_groups(includeGroups: [],
               '-Gsep=+100 -Tx11 epicyon_modules.dot')
 
 
+def _test_post_variable_names():
+    print('testPostVariableNames')
+
+    for subdir, dirs, files in os.walk('.'):
+        for source_file in files:
+            if not source_file.endswith('.py'):
+                continue
+            if source_file.startswith('.#'):
+                continue
+            if source_file.startswith('flycheck_'):
+                continue
+            source_str = ''
+            with open(source_file, 'r') as file_source:
+                source_str = file_source.read()
+            if not source_str:
+                continue
+            if ' name="' not in source_str:
+                continue
+            names_list = source_str.split(' name="')
+            for index in range(1, len(names_list)):
+                if '"' not in names_list[index]:
+                    continue
+                name_var = names_list[index].split('"')[0]
+                if not name_var:
+                    continue
+                if ' ' in name_var:
+                    continue
+                if '_' in name_var:
+                    print(name_var + ' is not camel case POST variable in ' +
+                          source_file)
+                    return False
+
+
 def _test_functions():
     print('testFunctions')
     function = {}
@@ -4473,6 +4506,8 @@ def _test_functions():
             if not sourceFile.endswith('.py'):
                 continue
             if sourceFile.startswith('.#'):
+                continue
+            if sourceFile.startswith('flycheck_'):
                 continue
             modName = sourceFile.replace('.py', '')
             modules[modName] = {
@@ -6103,6 +6138,7 @@ def run_all_tests():
     update_default_themes_list(os.getcwd())
     _translate_ontology(base_dir)
     _test_get_price_from_string()
+    _test_post_variable_names()
     _test_functions()
     _test_get_actor_from_in_reply_to()
     _test_valid_emoji_content()

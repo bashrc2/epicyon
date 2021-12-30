@@ -222,15 +222,15 @@ def switch_words(base_dir: str, nickname: str, domain: str, content: str,
         return content
 
     if not rules:
-        switch_wordsFilename = \
+        switch_words_filename = \
             acct_dir(base_dir, nickname, domain) + '/replacewords.txt'
-        if not os.path.isfile(switch_wordsFilename):
+        if not os.path.isfile(switch_words_filename):
             return content
         try:
-            with open(switch_wordsFilename, 'r') as fp:
+            with open(switch_words_filename, 'r') as fp:
                 rules = fp.readlines()
         except OSError:
-            print('EX: unable to read switches ' + switch_wordsFilename)
+            print('EX: unable to read switches ' + switch_words_filename)
 
     for line in rules:
         replaceStr = line.replace('\n', '').replace('\r', '')

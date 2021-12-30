@@ -1731,7 +1731,7 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
         '      <br><b><label class="labels">' + \
         translate['Word Replacements'] + '</label></b>\n' + \
         '      <br><label class="labels">A -> B</label>\n' + \
-        '      <textarea id="message" name="switch_words" ' + \
+        '      <textarea id="message" name="switchwords" ' + \
         'style="height:200px" spellcheck="false">' + \
         switchStr + '</textarea>\n' + \
         '      <br><b><label class="labels">' + \

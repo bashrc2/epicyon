@@ -6273,10 +6273,10 @@ class PubServer(BaseHTTPRequestHandler):
                     switchFilename = \
                         acct_dir(base_dir, nickname, domain) + \
                         '/replacewords.txt'
-                    if fields.get('switch_words'):
+                    if fields.get('switchwords'):
                         try:
                             with open(switchFilename, 'w+') as switchfile:
-                                switchfile.write(fields['switch_words'])
+                                switchfile.write(fields['switchwords'])
                         except OSError:
                             print('EX: unable to write switches ' +
                                   switchFilename)
