@@ -23,74 +23,74 @@ def _get_conversation_filename(base_dir: str, nickname: str, domain: str,
         return None
     if not post_json_object['object'].get('id'):
         return None
-    conversationDir = acct_dir(base_dir, nickname, domain) + '/conversation'
-    if not os.path.isdir(conversationDir):
-        os.mkdir(conversationDir)
-    conversationId = post_json_object['object']['conversation']
-    conversationId = conversationId.replace('/', '#')
-    return conversationDir + '/' + conversationId
+    conversation_dir = acct_dir(base_dir, nickname, domain) + '/conversation'
+    if not os.path.isdir(conversation_dir):
+        os.mkdir(conversation_dir)
+    conversation_id = post_json_object['object']['conversation']
+    conversation_id = conversation_id.replace('/', '#')
+    return conversation_dir + '/' + conversation_id
 
 
 def update_conversation(base_dir: str, nickname: str, domain: str,
                         post_json_object: {}) -> bool:
     """Ads a post to a conversation index in the /conversation subdirectory
     """
-    conversationFilename = \
+    conversation_filename = \
         _get_conversation_filename(base_dir, nickname, domain,
                                    post_json_object)
-    if not conversationFilename:
+    if not conversation_filename:
         return False
     post_id = remove_id_ending(post_json_object['object']['id'])
-    if not os.path.isfile(conversationFilename):
+    if not os.path.isfile(conversation_filename):
         try:
-            with open(conversationFilename, 'w+') as fp:
-                fp.write(post_id + '\n')
+            with open(conversation_filename, 'w+') as conv_file:
+                conv_file.write(post_id + '\n')
                 return True
         except OSError:
             print('EX: update_conversation ' +
-                  'unable to write to ' + conversationFilename)
-    elif post_id + '\n' not in open(conversationFilename).read():
+                  'unable to write to ' + conversation_filename)
+    elif post_id + '\n' not in open(conversation_filename).read():
         try:
-            with open(conversationFilename, 'a+') as fp:
-                fp.write(post_id + '\n')
+            with open(conversation_filename, 'a+') as conv_file:
+                conv_file.write(post_id + '\n')
                 return True
         except OSError:
             print('EX: update_conversation 2 ' +
-                  'unable to write to ' + conversationFilename)
+                  'unable to write to ' + conversation_filename)
     return False
 
 
 def mute_conversation(base_dir: str, nickname: str, domain: str,
-                      conversationId: str) -> None:
+                      conversation_id: str) -> None:
     """Mutes the given conversation
     """
-    conversationDir = acct_dir(base_dir, nickname, domain) + '/conversation'
-    conversationFilename = \
-        conversationDir + '/' + conversationId.replace('/', '#')
-    if not os.path.isfile(conversationFilename):
+    conversation_dir = acct_dir(base_dir, nickname, domain) + '/conversation'
+    conversation_filename = \
+        conversation_dir + '/' + conversation_id.replace('/', '#')
+    if not os.path.isfile(conversation_filename):
         return
-    if os.path.isfile(conversationFilename + '.muted'):
+    if os.path.isfile(conversation_filename + '.muted'):
         return
     try:
-        with open(conversationFilename + '.muted', 'w+') as fp:
-            fp.write('\n')
+        with open(conversation_filename + '.muted', 'w+') as conv_file:
+            conv_file.write('\n')
     except OSError:
-        print('EX: unable to write mute ' + conversationFilename)
+        print('EX: unable to write mute ' + conversation_filename)
 
 
 def unmute_conversation(base_dir: str, nickname: str, domain: str,
-                        conversationId: str) -> None:
+                        conversation_id: str) -> None:
     """Unmutes the given conversation
     """
-    conversationDir = acct_dir(base_dir, nickname, domain) + '/conversation'
-    conversationFilename = \
-        conversationDir + '/' + conversationId.replace('/', '#')
-    if not os.path.isfile(conversationFilename):
+    conversation_dir = acct_dir(base_dir, nickname, domain) + '/conversation'
+    conversation_filename = \
+        conversation_dir + '/' + conversation_id.replace('/', '#')
+    if not os.path.isfile(conversation_filename):
         return
-    if not os.path.isfile(conversationFilename + '.muted'):
+    if not os.path.isfile(conversation_filename + '.muted'):
         return
     try:
-        os.remove(conversationFilename + '.muted')
+        os.remove(conversation_filename + '.muted')
     except OSError:
         print('EX: unmute_conversation unable to delete ' +
-              conversationFilename + '.muted')
+              conversation_filename + '.muted')
