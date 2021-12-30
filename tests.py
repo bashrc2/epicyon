@@ -4562,6 +4562,7 @@ def _test_source_contains_no_tabs():
             if '\t' in source_str:
                 print(source_file + ' contains tabs')
                 assert False
+        break
 
 
 def _test_checkbox_names():
