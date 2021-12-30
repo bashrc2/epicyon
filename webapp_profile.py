@@ -75,15 +75,17 @@ from webapp_post import individual_post_as_html
 from webapp_timeline import html_individual_share
 from blocking import get_cw_list_variable
 
+THEME_FORMATS = '.zip, .gz'
+
 
 def _valid_profile_preview_post(post_json_object: {},
-                                personUrl: str) -> (bool, {}):
+                                person_url: str) -> (bool, {}):
     """Returns true if the given post should appear on a person/group profile
     after searching for a handle
     """
-    isAnnouncedFeedItem = False
+    is_announced_feed_item = False
     if is_create_inside_announce(post_json_object):
-        isAnnouncedFeedItem = True
+        is_announced_feed_item = True
         post_json_object = post_json_object['object']
     if not post_json_object.get('type'):
         return False, None
@@ -100,22 +102,22 @@ def _valid_profile_preview_post(post_json_object: {},
         if not post_json_object.get('id'):
             return False, None
         # wrap in create
-        cc = []
+        cc_list = []
         if post_json_object.get('cc'):
-            cc = post_json_object['cc']
-        newPostJsonObject = {
+            cc_list = post_json_object['cc']
+        new_post_json_object = {
             'object': post_json_object,
             'to': post_json_object['to'],
-            'cc': cc,
+            'cc': cc_list,
             'id': post_json_object['id'],
-            'actor': personUrl,
+            'actor': person_url,
             'type': 'Create'
         }
-        post_json_object = newPostJsonObject
+        post_json_object = new_post_json_object
     if not post_json_object.get('actor'):
         return False, None
-    if not isAnnouncedFeedItem:
-        if post_json_object['actor'] != personUrl and \
+    if not is_announced_feed_item:
+        if post_json_object['actor'] != person_url and \
            post_json_object['object']['type'] != 'Page':
             return False, None
     return True, post_json_object
@@ -126,17 +128,17 @@ def html_profile_after_search(css_cache: {},
                               translate: {},
                               base_dir: str, path: str, http_prefix: str,
                               nickname: str, domain: str, port: int,
-                              profileHandle: str,
+                              profile_handle: str,
                               session, cached_webfingers: {}, person_cache: {},
                               debug: bool, project_version: str,
                               yt_replace_domain: str,
                               twitter_replacement_domain: str,
                               show_published_date_only: bool,
-                              defaultTimeline: str,
+                              default_timeline: str,
                               peertube_instances: [],
                               allow_local_network_access: bool,
                               theme_name: str,
-                              accessKeys: {},
+                              access_keys: {},
                               system_language: str,
                               max_like_count: int,
                               signing_priv_key_pem: str,
@@ -149,68 +151,68 @@ def html_profile_after_search(css_cache: {},
         http = True
     elif http_prefix == 'gnunet':
         gnunet = True
-    profile_json, asHeader = \
-        get_actor_json(domain, profileHandle, http, gnunet, debug, False,
+    profile_json, as_header = \
+        get_actor_json(domain, profile_handle, http, gnunet, debug, False,
                        signing_priv_key_pem, session)
     if not profile_json:
         return None
 
-    personUrl = profile_json['id']
-    searchDomain, searchPort = get_domain_from_actor(personUrl)
-    if not searchDomain:
+    person_url = profile_json['id']
+    search_domain, search_port = get_domain_from_actor(person_url)
+    if not search_domain:
         return None
-    searchNickname = get_nickname_from_actor(personUrl)
-    if not searchNickname:
+    search_nickname = get_nickname_from_actor(person_url)
+    if not search_nickname:
         return None
-    searchDomainFull = get_full_domain(searchDomain, searchPort)
+    search_domain_full = get_full_domain(search_domain, search_port)
 
-    profileStr = ''
-    cssFilename = base_dir + '/epicyon-profile.css'
+    profile_str = ''
+    css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
-        cssFilename = base_dir + '/epicyon.css'
+        css_filename = base_dir + '/epicyon.css'
 
-    isGroup = False
+    is_group = False
     if profile_json.get('type'):
         if profile_json['type'] == 'Group':
-            isGroup = True
+            is_group = True
 
-    avatarUrl = ''
+    avatar_url = ''
     if profile_json.get('icon'):
         if profile_json['icon'].get('url'):
-            avatarUrl = profile_json['icon']['url']
-    if not avatarUrl:
-        avatarUrl = get_person_avatar_url(base_dir, personUrl,
-                                          person_cache, True)
-    displayName = searchNickname
+            avatar_url = profile_json['icon']['url']
+    if not avatar_url:
+        avatar_url = get_person_avatar_url(base_dir, person_url,
+                                           person_cache, True)
+    display_name = search_nickname
     if profile_json.get('name'):
-        displayName = profile_json['name']
+        display_name = profile_json['name']
 
-    lockedAccount = get_locked_account(profile_json)
-    if lockedAccount:
-        displayName += '🔒'
-    movedTo = ''
+    locked_account = get_locked_account(profile_json)
+    if locked_account:
+        display_name += '🔒'
+    moved_to = ''
     if profile_json.get('movedTo'):
-        movedTo = profile_json['movedTo']
-        if '"' in movedTo:
-            movedTo = movedTo.split('"')[1]
-        displayName += ' ⌂'
+        moved_to = profile_json['movedTo']
+        if '"' in moved_to:
+            moved_to = moved_to.split('"')[1]
+        display_name += ' ⌂'
 
-    followsYou = \
+    follows_you = \
         is_follower_of_person(base_dir,
                               nickname, domain,
-                              searchNickname,
-                              searchDomainFull)
+                              search_nickname,
+                              search_domain_full)
 
-    profileDescription = ''
+    profile_description = ''
     if profile_json.get('summary'):
-        profileDescription = profile_json['summary']
-    outboxUrl = None
+        profile_description = profile_json['summary']
+    outbox_url = None
     if not profile_json.get('outbox'):
         if debug:
             pprint(profile_json)
             print('DEBUG: No outbox found')
         return None
-    outboxUrl = profile_json['outbox']
+    outbox_url = profile_json['outbox']
 
     # profileBackgroundImage = ''
     # if profile_json.get('image'):
@@ -218,121 +220,121 @@ def html_profile_after_search(css_cache: {},
     #         profileBackgroundImage = profile_json['image']['url']
 
     # url to return to
-    backUrl = path
-    if not backUrl.endswith('/inbox'):
-        backUrl += '/inbox'
+    back_url = path
+    if not back_url.endswith('/inbox'):
+        back_url += '/inbox'
 
-    profileDescriptionShort = profileDescription
-    if '\n' in profileDescription:
-        if len(profileDescription.split('\n')) > 2:
-            profileDescriptionShort = ''
+    profile_description_short = profile_description
+    if '\n' in profile_description:
+        if len(profile_description.split('\n')) > 2:
+            profile_description_short = ''
     else:
-        if '<br>' in profileDescription:
-            if len(profileDescription.split('<br>')) > 2:
-                profileDescriptionShort = ''
+        if '<br>' in profile_description:
+            if len(profile_description.split('<br>')) > 2:
+                profile_description_short = ''
     # keep the profile description short
-    if len(profileDescriptionShort) > 256:
-        profileDescriptionShort = ''
+    if len(profile_description_short) > 256:
+        profile_description_short = ''
     # remove formatting from profile description used on title
-    avatarDescription = ''
+    avatar_description = ''
     if profile_json.get('summary'):
         if isinstance(profile_json['summary'], str):
-            avatarDescription = \
+            avatar_description = \
                 profile_json['summary'].replace('<br>', '\n')
-            avatarDescription = avatarDescription.replace('<p>', '')
-            avatarDescription = avatarDescription.replace('</p>', '')
-            if '<' in avatarDescription:
-                avatarDescription = remove_html(avatarDescription)
+            avatar_description = avatar_description.replace('<p>', '')
+            avatar_description = avatar_description.replace('</p>', '')
+            if '<' in avatar_description:
+                avatar_description = remove_html(avatar_description)
 
-    imageUrl = ''
+    image_url = ''
     if profile_json.get('image'):
         if profile_json['image'].get('url'):
-            imageUrl = profile_json['image']['url']
+            image_url = profile_json['image']['url']
 
-    alsoKnownAs = None
+    also_known_as = None
     if profile_json.get('alsoKnownAs'):
-        alsoKnownAs = profile_json['alsoKnownAs']
+        also_known_as = profile_json['alsoKnownAs']
 
-    joinedDate = None
+    joined_date = None
     if profile_json.get('published'):
         if 'T' in profile_json['published']:
-            joinedDate = profile_json['published']
+            joined_date = profile_json['published']
 
-    profileStr = \
+    profile_str = \
         _get_profile_header_after_search(base_dir,
-                                         nickname, defaultTimeline,
-                                         searchNickname,
-                                         searchDomainFull,
+                                         nickname, default_timeline,
+                                         search_nickname,
+                                         search_domain_full,
                                          translate,
-                                         displayName, followsYou,
-                                         profileDescriptionShort,
-                                         avatarUrl, imageUrl,
-                                         movedTo, profile_json['id'],
-                                         alsoKnownAs, accessKeys,
-                                         joinedDate)
+                                         display_name, follows_you,
+                                         profile_description_short,
+                                         avatar_url, image_url,
+                                         moved_to, profile_json['id'],
+                                         also_known_as, access_keys,
+                                         joined_date)
 
     domain_full = get_full_domain(domain, port)
 
-    followIsPermitted = True
+    follow_is_permitted = True
     if not profile_json.get('followers'):
         # no followers collection specified within actor
-        followIsPermitted = False
-    elif searchNickname == 'news' and searchDomainFull == domain_full:
+        follow_is_permitted = False
+    elif search_nickname == 'news' and search_domain_full == domain_full:
         # currently the news actor is not something you can follow
-        followIsPermitted = False
-    elif searchNickname == nickname and searchDomainFull == domain_full:
+        follow_is_permitted = False
+    elif search_nickname == nickname and search_domain_full == domain_full:
         # don't follow yourself!
-        followIsPermitted = False
+        follow_is_permitted = False
 
-    if followIsPermitted:
-        followStr = 'Follow'
-        if isGroup:
-            followStr = 'Join'
+    if follow_is_permitted:
+        follow_str = 'Follow'
+        if is_group:
+            follow_str = 'Join'
 
-        profileStr += \
+        profile_str += \
             '<div class="container">\n' + \
             '  <form method="POST" action="' + \
-            backUrl + '/followconfirm">\n' + \
+            back_url + '/followconfirm">\n' + \
             '    <center>\n' + \
             '      <input type="hidden" name="actor" value="' + \
-            personUrl + '">\n' + \
+            person_url + '">\n' + \
             '      <button type="submit" class="button" name="submitYes" ' + \
-            'accesskey="' + accessKeys['followButton'] + '">' + \
-            translate[followStr] + '</button>\n' + \
+            'accesskey="' + access_keys['followButton'] + '">' + \
+            translate[follow_str] + '</button>\n' + \
             '      <button type="submit" class="button" name="submitView" ' + \
-            'accesskey="' + accessKeys['viewButton'] + '">' + \
+            'accesskey="' + access_keys['viewButton'] + '">' + \
             translate['View'] + '</button>\n' + \
             '    </center>\n' + \
             '  </form>\n' + \
             '</div>\n'
     else:
-        profileStr += \
+        profile_str += \
             '<div class="container">\n' + \
             '  <form method="POST" action="' + \
-            backUrl + '/followconfirm">\n' + \
+            back_url + '/followconfirm">\n' + \
             '    <center>\n' + \
             '      <input type="hidden" name="actor" value="' + \
-            personUrl + '">\n' + \
+            person_url + '">\n' + \
             '      <button type="submit" class="button" name="submitView" ' + \
-            'accesskey="' + accessKeys['viewButton'] + '">' + \
+            'accesskey="' + access_keys['viewButton'] + '">' + \
             translate['View'] + '</button>\n' + \
             '    </center>\n' + \
             '  </form>\n' + \
             '</div>\n'
 
-    userFeed = \
+    user_feed = \
         parse_user_feed(signing_priv_key_pem,
-                        session, outboxUrl, asHeader, project_version,
+                        session, outbox_url, as_header, project_version,
                         http_prefix, domain, debug)
-    if userFeed:
+    if user_feed:
         i = 0
-        for item in userFeed:
-            showItem, post_json_object = \
-                _valid_profile_preview_post(item, personUrl)
-            if not showItem:
+        for item in user_feed:
+            show_item, post_json_object = \
+                _valid_profile_preview_post(item, person_url)
+            if not show_item:
                 continue
 
-            profileStr += \
+            profile_str += \
                 individual_post_as_html(signing_priv_key_pem,
                                         True, recent_posts_cache,
                                         max_recent_posts,
@@ -340,7 +342,7 @@ def html_profile_after_search(css_cache: {},
                                         session, cached_webfingers,
                                         person_cache,
                                         nickname, domain, port,
-                                        post_json_object, avatarUrl,
+                                        post_json_object, avatar_url,
                                         False, False,
                                         http_prefix, project_version, 'inbox',
                                         yt_replace_domain,
@@ -357,197 +359,197 @@ def html_profile_after_search(css_cache: {},
             if i >= 8:
                 break
 
-    instanceTitle = \
-        get_config_param(base_dir, 'instanceTitle')
-    return html_header_with_external_style(cssFilename,
-                                           instanceTitle, None) + \
-        profileStr + html_footer()
+    instance_title = get_config_param(base_dir, 'instanceTitle')
+    return html_header_with_external_style(css_filename,
+                                           instance_title, None) + \
+        profile_str + html_footer()
 
 
 def _get_profile_header(base_dir: str, http_prefix: str,
                         nickname: str, domain: str,
                         domain_full: str, translate: {},
-                        defaultTimeline: str,
-                        displayName: str,
-                        avatarDescription: str,
-                        profileDescriptionShort: str,
-                        loginButton: str, avatarUrl: str,
-                        theme: str, movedTo: str,
-                        alsoKnownAs: [],
-                        pinnedContent: str,
-                        accessKeys: {},
-                        joinedDate: str,
-                        occupationName: str) -> str:
+                        default_timeline: str,
+                        display_name: str,
+                        avatar_description: str,
+                        profile_description_short: str,
+                        login_button: str, avatar_url: str,
+                        theme: str, moved_to: str,
+                        also_known_as: [],
+                        pinned_content: str,
+                        access_keys: {},
+                        joined_date: str,
+                        occupation_name: str) -> str:
     """The header of the profile screen, containing background
     image and avatar
     """
-    htmlStr = \
+    html_str = \
         '\n\n    <figure class="profileHeader">\n' + \
         '      <a href="/users/' + \
-        nickname + '/' + defaultTimeline + '" title="' + \
+        nickname + '/' + default_timeline + '" title="' + \
         translate['Switch to timeline view'] + '">\n' + \
         '        <img class="profileBackground" ' + \
         'alt="" ' + \
         'src="/users/' + nickname + '/image_' + theme + '.png" /></a>\n' + \
         '      <figcaption>\n' + \
         '        <a href="/users/' + \
-        nickname + '/' + defaultTimeline + '" title="' + \
+        nickname + '/' + default_timeline + '" title="' + \
         translate['Switch to timeline view'] + '">\n' + \
-        '          <img loading="lazy" src="' + avatarUrl + '" ' + \
+        '          <img loading="lazy" src="' + avatar_url + '" ' + \
         'alt=""  class="title"></a>\n'
 
-    occupationStr = ''
-    if occupationName:
-        occupationStr += \
-            '        <b>' + occupationName + '</b><br>\n'
+    occupation_str = ''
+    if occupation_name:
+        occupation_str += \
+            '        <b>' + occupation_name + '</b><br>\n'
 
-    htmlStr += '        <h1>' + displayName + '</h1>\n' + occupationStr
+    html_str += '        <h1>' + display_name + '</h1>\n' + occupation_str
 
-    htmlStr += \
+    html_str += \
         '    <p><b>@' + nickname + '@' + domain_full + '</b><br>\n'
-    if joinedDate:
-        htmlStr += \
+    if joined_date:
+        html_str += \
             '    <p>' + translate['Joined'] + ' ' + \
-            joinedDate.split('T')[0] + '<br>\n'
-    if movedTo:
-        newNickname = get_nickname_from_actor(movedTo)
-        newDomain, newPort = get_domain_from_actor(movedTo)
-        newDomainFull = get_full_domain(newDomain, newPort)
-        if newNickname and newDomain:
-            htmlStr += \
+            joined_date.split('T')[0] + '<br>\n'
+    if moved_to:
+        new_nickname = get_nickname_from_actor(moved_to)
+        new_domain, new_port = get_domain_from_actor(moved_to)
+        new_domain_full = get_full_domain(new_domain, new_port)
+        if new_nickname and new_domain:
+            html_str += \
                 '    <p>' + translate['New account'] + ': ' + \
-                '<a href="' + movedTo + '">@' + \
-                newNickname + '@' + newDomainFull + '</a><br>\n'
-    elif alsoKnownAs:
-        otherAccountsHtml = \
+                '<a href="' + moved_to + '">@' + \
+                new_nickname + '@' + new_domain_full + '</a><br>\n'
+    elif also_known_as:
+        other_accounts_html = \
             '    <p>' + translate['Other accounts'] + ': '
 
         actor = local_actor_url(http_prefix, nickname, domain_full)
         ctr = 0
-        if isinstance(alsoKnownAs, list):
-            for altActor in alsoKnownAs:
-                if altActor == actor:
+        if isinstance(also_known_as, list):
+            for alt_actor in also_known_as:
+                if alt_actor == actor:
                     continue
                 if ctr > 0:
-                    otherAccountsHtml += ' '
+                    other_accounts_html += ' '
                 ctr += 1
-                altDomain, altPort = get_domain_from_actor(altActor)
-                otherAccountsHtml += \
-                    '<a href="' + altActor + '">' + altDomain + '</a>'
-        elif isinstance(alsoKnownAs, str):
-            if alsoKnownAs != actor:
+                alt_domain, _ = get_domain_from_actor(alt_actor)
+                other_accounts_html += \
+                    '<a href="' + alt_actor + '">' + alt_domain + '</a>'
+        elif isinstance(also_known_as, str):
+            if also_known_as != actor:
                 ctr += 1
-                altDomain, altPort = get_domain_from_actor(alsoKnownAs)
-                otherAccountsHtml += \
-                    '<a href="' + alsoKnownAs + '">' + altDomain + '</a>'
-        otherAccountsHtml += '</p>\n'
+                alt_domain, _ = get_domain_from_actor(also_known_as)
+                other_accounts_html += \
+                    '<a href="' + also_known_as + '">' + alt_domain + '</a>'
+        other_accounts_html += '</p>\n'
         if ctr > 0:
-            htmlStr += otherAccountsHtml
-    htmlStr += \
+            html_str += other_accounts_html
+    html_str += \
         '    <a href="/users/' + nickname + \
         '/qrcode.png" alt="' + translate['QR Code'] + '" title="' + \
         translate['QR Code'] + '">' + \
         '<img class="qrcode" alt="' + translate['QR Code'] + \
         '" src="/icons/qrcode.png" /></a></p>\n' + \
-        '        <p>' + profileDescriptionShort + '</p>\n' + loginButton
-    if pinnedContent:
-        htmlStr += pinnedContent.replace('<p>', '<p>📎', 1)
-    htmlStr += \
+        '        <p>' + profile_description_short + '</p>\n' + login_button
+    if pinned_content:
+        html_str += pinned_content.replace('<p>', '<p>📎', 1)
+    html_str += \
         '      </figcaption>\n' + \
         '    </figure>\n\n'
-    return htmlStr
+    return html_str
 
 
 def _get_profile_header_after_search(base_dir: str,
-                                     nickname: str, defaultTimeline: str,
-                                     searchNickname: str,
-                                     searchDomainFull: str,
+                                     nickname: str, default_timeline: str,
+                                     search_nickname: str,
+                                     search_domain_full: str,
                                      translate: {},
-                                     displayName: str,
-                                     followsYou: bool,
-                                     profileDescriptionShort: str,
-                                     avatarUrl: str, imageUrl: str,
-                                     movedTo: str, actor: str,
-                                     alsoKnownAs: [],
-                                     accessKeys: {},
-                                     joinedDate: str) -> str:
+                                     display_name: str,
+                                     follows_you: bool,
+                                     profile_description_short: str,
+                                     avatar_url: str, image_url: str,
+                                     moved_to: str, actor: str,
+                                     also_known_as: [],
+                                     access_keys: {},
+                                     joined_date: str) -> str:
     """The header of a searched for handle, containing background
     image and avatar
     """
-    if not imageUrl:
-        imageUrl = '/defaultprofilebackground'
-    htmlStr = \
+    if not image_url:
+        image_url = '/defaultprofilebackground'
+    html_str = \
         '\n\n    <figure class="profileHeader">\n' + \
         '      <a href="/users/' + \
-        nickname + '/' + defaultTimeline + '" title="' + \
+        nickname + '/' + default_timeline + '" title="' + \
         translate['Switch to timeline view'] + '" ' + \
-        'accesskey="' + accessKeys['menuTimeline'] + '">\n' + \
+        'accesskey="' + access_keys['menuTimeline'] + '">\n' + \
         '        <img class="profileBackground" ' + \
         'alt="" ' + \
-        'src="' + imageUrl + '" /></a>\n' + \
+        'src="' + image_url + '" /></a>\n' + \
         '      <figcaption>\n'
-    if avatarUrl:
-        htmlStr += \
+    if avatar_url:
+        html_str += \
             '      <a href="/users/' + \
-            nickname + '/' + defaultTimeline + '" title="' + \
+            nickname + '/' + default_timeline + '" title="' + \
             translate['Switch to timeline view'] + '">\n' + \
-            '          <img loading="lazy" src="' + avatarUrl + '" ' + \
+            '          <img loading="lazy" src="' + avatar_url + '" ' + \
             'alt="" class="title"></a>\n'
-    if not displayName:
-        displayName = searchNickname
-    htmlStr += \
-        '        <h1>' + displayName + '</h1>\n' + \
-        '    <p><b>@' + searchNickname + '@' + searchDomainFull + '</b><br>\n'
-    if joinedDate:
-        htmlStr += '        <p>' + translate['Joined'] + ' ' + \
-            joinedDate.split('T')[0] + '</p>\n'
-    if followsYou:
-        htmlStr += '        <p><b>' + translate['Follows you'] + '</b></p>\n'
-    if movedTo:
-        newNickname = get_nickname_from_actor(movedTo)
-        newDomain, newPort = get_domain_from_actor(movedTo)
-        newDomainFull = get_full_domain(newDomain, newPort)
-        if newNickname and newDomain:
-            newHandle = newNickname + '@' + newDomainFull
-            htmlStr += '        <p>' + translate['New account'] + \
-                ': <a href="' + movedTo + '">@' + newHandle + '</a></p>\n'
-    elif alsoKnownAs:
-        otherAccountshtml = \
+    if not display_name:
+        display_name = search_nickname
+    html_str += \
+        '        <h1>' + display_name + '</h1>\n' + \
+        '    <p><b>@' + search_nickname + '@' + search_domain_full + \
+        '</b><br>\n'
+    if joined_date:
+        html_str += '        <p>' + translate['Joined'] + ' ' + \
+            joined_date.split('T')[0] + '</p>\n'
+    if follows_you:
+        html_str += '        <p><b>' + translate['Follows you'] + '</b></p>\n'
+    if moved_to:
+        new_nickname = get_nickname_from_actor(moved_to)
+        new_domain, new_port = get_domain_from_actor(moved_to)
+        new_domain_full = get_full_domain(new_domain, new_port)
+        if new_nickname and new_domain:
+            new_handle = new_nickname + '@' + new_domain_full
+            html_str += '        <p>' + translate['New account'] + \
+                ': <a href="' + moved_to + '">@' + new_handle + '</a></p>\n'
+    elif also_known_as:
+        other_accounts_html = \
             '        <p>' + translate['Other accounts'] + ': '
 
         ctr = 0
-        if isinstance(alsoKnownAs, list):
-            for altActor in alsoKnownAs:
-                if altActor == actor:
+        if isinstance(also_known_as, list):
+            for alt_actor in also_known_as:
+                if alt_actor == actor:
                     continue
                 if ctr > 0:
-                    otherAccountshtml += ' '
+                    other_accounts_html += ' '
                 ctr += 1
-                altDomain, altPort = get_domain_from_actor(altActor)
-                otherAccountshtml += \
-                    '<a href="' + altActor + '">' + altDomain + '</a>'
-        elif isinstance(alsoKnownAs, str):
-            if alsoKnownAs != actor:
+                alt_domain, _ = get_domain_from_actor(alt_actor)
+                other_accounts_html += \
+                    '<a href="' + alt_actor + '">' + alt_domain + '</a>'
+        elif isinstance(also_known_as, str):
+            if also_known_as != actor:
                 ctr += 1
-                altDomain, altPort = get_domain_from_actor(alsoKnownAs)
-                otherAccountshtml += \
-                    '<a href="' + alsoKnownAs + '">' + altDomain + '</a>'
+                alt_domain, _ = get_domain_from_actor(also_known_as)
+                other_accounts_html += \
+                    '<a href="' + also_known_as + '">' + alt_domain + '</a>'
 
-        otherAccountshtml += '</p>\n'
+        other_accounts_html += '</p>\n'
         if ctr > 0:
-            htmlStr += otherAccountshtml
+            html_str += other_accounts_html
 
-    htmlStr += \
-        '        <p>' + profileDescriptionShort + '</p>\n' + \
+    html_str += \
+        '        <p>' + profile_description_short + '</p>\n' + \
         '      </figcaption>\n' + \
         '    </figure>\n\n'
-    return htmlStr
+    return html_str
 
 
 def html_profile(signing_priv_key_pem: str,
                  rss_icon_at_top: bool,
                  css_cache: {}, icons_as_buttons: bool,
-                 defaultTimeline: str,
+                 default_timeline: str,
                  recent_posts_cache: {}, max_recent_posts: int,
                  translate: {}, project_version: str,
                  base_dir: str, http_prefix: str, authorized: bool,
@@ -560,11 +562,11 @@ def html_profile(signing_priv_key_pem: str,
                  peertube_instances: [],
                  allow_local_network_access: bool,
                  text_mode_banner: str,
-                 debug: bool, accessKeys: {}, city: str,
+                 debug: bool, access_keys: {}, city: str,
                  system_language: str, max_like_count: int,
                  shared_items_federated_domains: [],
-                 extraJson: {}, pageNumber: int,
-                 maxItemsPerPage: int,
+                 extraJson: {}, page_number: int,
+                 max_items_per_page: int,
                  cw_lists: {}, lists_enabled: str,
                  content_license_url: str) -> str:
     """Show the profile page as html
@@ -576,7 +578,7 @@ def html_profile(signing_priv_key_pem: str,
         return html_front_screen(signing_priv_key_pem,
                                  rss_icon_at_top,
                                  css_cache, icons_as_buttons,
-                                 defaultTimeline,
+                                 default_timeline,
                                  recent_posts_cache, max_recent_posts,
                                  translate, project_version,
                                  base_dir, http_prefix, authorized,
@@ -586,146 +588,147 @@ def html_profile(signing_priv_key_pem: str,
                                  twitter_replacement_domain,
                                  show_published_date_only,
                                  newswire, theme, extraJson,
-                                 allow_local_network_access, accessKeys,
+                                 allow_local_network_access, access_keys,
                                  system_language, max_like_count,
                                  shared_items_federated_domains, None,
-                                 pageNumber, maxItemsPerPage, cw_lists,
+                                 page_number, max_items_per_page, cw_lists,
                                  lists_enabled)
 
     domain, port = get_domain_from_actor(profile_json['id'])
     if not domain:
         return ""
-    displayName = \
+    display_name = \
         add_emoji_to_display_name(session, base_dir, http_prefix,
                                   nickname, domain,
                                   profile_json['name'], True)
     domain_full = get_full_domain(domain, port)
-    profileDescription = \
+    profile_description = \
         add_emoji_to_display_name(session, base_dir, http_prefix,
                                   nickname, domain,
                                   profile_json['summary'], False)
-    postsButton = 'button'
-    followingButton = 'button'
-    followersButton = 'button'
-    rolesButton = 'button'
-    skillsButton = 'button'
-    sharesButton = 'button'
-    wantedButton = 'button'
+    posts_button = 'button'
+    following_button = 'button'
+    followers_button = 'button'
+    roles_button = 'button'
+    skills_button = 'button'
+#    shares_button = 'button'
+#    wanted_button = 'button'
     if selected == 'posts':
-        postsButton = 'buttonselected'
+        posts_button = 'buttonselected'
     elif selected == 'following':
-        followingButton = 'buttonselected'
+        following_button = 'buttonselected'
     elif selected == 'followers':
-        followersButton = 'buttonselected'
+        followers_button = 'buttonselected'
     elif selected == 'roles':
-        rolesButton = 'buttonselected'
+        roles_button = 'buttonselected'
     elif selected == 'skills':
-        skillsButton = 'buttonselected'
-    elif selected == 'shares':
-        sharesButton = 'buttonselected'
-    elif selected == 'wanted':
-        wantedButton = 'buttonselected'
-    loginButton = ''
+        skills_button = 'buttonselected'
+#    elif selected == 'shares':
+#        shares_button = 'buttonselected'
+#    elif selected == 'wanted':
+#        wanted_button = 'buttonselected'
+    login_button = ''
 
-    followApprovalsSection = ''
-    followApprovals = False
-    editProfileStr = ''
-    logoutStr = ''
+    follow_approvals_section = ''
+    follow_approvals = False
+    edit_profile_str = ''
+    logout_str = ''
     actor = profile_json['id']
-    usersPath = '/users/' + actor.split('/users/')[1]
+    users_path = '/users/' + actor.split('/users/')[1]
 
-    donateSection = ''
-    donateUrl = get_donation_url(profile_json)
-    websiteUrl = get_website(profile_json, translate)
-    blogAddress = get_blog_address(profile_json)
-    EnigmaPubKey = get_enigma_pub_key(profile_json)
-    PGPpubKey = get_pgp_pub_key(profile_json)
-    PGPfingerprint = get_pgp_fingerprint(profile_json)
-    emailAddress = get_email_address(profile_json)
-    xmppAddress = get_xmpp_address(profile_json)
-    matrixAddress = get_matrix_address(profile_json)
-    ssbAddress = get_ssb_address(profile_json)
-    toxAddress = get_tox_address(profile_json)
-    briarAddress = get_briar_address(profile_json)
-    jamiAddress = get_jami_address(profile_json)
+    donate_section = ''
+    donate_url = get_donation_url(profile_json)
+    website_url = get_website(profile_json, translate)
+    blog_address = get_blog_address(profile_json)
+    enigma_pub_key = get_enigma_pub_key(profile_json)
+    pgp_pub_key = get_pgp_pub_key(profile_json)
+    pgp_fingerprint = get_pgp_fingerprint(profile_json)
+    email_address = get_email_address(profile_json)
+    xmpp_address = get_xmpp_address(profile_json)
+    matrix_address = get_matrix_address(profile_json)
+    ssb_address = get_ssb_address(profile_json)
+    tox_address = get_tox_address(profile_json)
+    briar_address = get_briar_address(profile_json)
+    jami_address = get_jami_address(profile_json)
     cwtch_address = get_cwtch_address(profile_json)
-    if donateUrl or websiteUrl or xmppAddress or matrixAddress or \
-       ssbAddress or toxAddress or briarAddress or \
-       jamiAddress or cwtch_address or PGPpubKey or EnigmaPubKey or \
-       PGPfingerprint or emailAddress:
-        donateSection = '<div class="container">\n'
-        donateSection += '  <center>\n'
-        if donateUrl and not is_system_account(nickname):
-            donateSection += \
-                '    <p><a href="' + donateUrl + \
+    if donate_url or website_url or xmpp_address or matrix_address or \
+       ssb_address or tox_address or briar_address or \
+       jami_address or cwtch_address or pgp_pub_key or enigma_pub_key or \
+       pgp_fingerprint or email_address:
+        donate_section = '<div class="container">\n'
+        donate_section += '  <center>\n'
+        if donate_url and not is_system_account(nickname):
+            donate_section += \
+                '    <p><a href="' + donate_url + \
                 '"><button class="donateButton">' + translate['Donate'] + \
                 '</button></a></p>\n'
-        if websiteUrl:
-            donateSection += \
+        if website_url:
+            donate_section += \
                 '<p>' + translate['Website'] + ': <a href="' + \
-                websiteUrl + '">' + websiteUrl + '</a></p>\n'
-        if emailAddress:
-            donateSection += \
+                website_url + '">' + website_url + '</a></p>\n'
+        if email_address:
+            donate_section += \
                 '<p>' + translate['Email'] + ': <a href="mailto:' + \
-                emailAddress + '">' + emailAddress + '</a></p>\n'
-        if blogAddress:
-            donateSection += \
+                email_address + '">' + email_address + '</a></p>\n'
+        if blog_address:
+            donate_section += \
                 '<p>Blog: <a href="' + \
-                blogAddress + '">' + blogAddress + '</a></p>\n'
-        if xmppAddress:
-            donateSection += \
+                blog_address + '">' + blog_address + '</a></p>\n'
+        if xmpp_address:
+            donate_section += \
                 '<p>' + translate['XMPP'] + ': <a href="xmpp:' + \
-                xmppAddress + '">' + xmppAddress + '</a></p>\n'
-        if matrixAddress:
-            donateSection += \
-                '<p>' + translate['Matrix'] + ': ' + matrixAddress + '</p>\n'
-        if ssbAddress:
-            donateSection += \
+                xmpp_address + '">' + xmpp_address + '</a></p>\n'
+        if matrix_address:
+            donate_section += \
+                '<p>' + translate['Matrix'] + ': ' + matrix_address + '</p>\n'
+        if ssb_address:
+            donate_section += \
                 '<p>SSB: <label class="ssbaddr">' + \
-                ssbAddress + '</label></p>\n'
-        if toxAddress:
-            donateSection += \
+                ssb_address + '</label></p>\n'
+        if tox_address:
+            donate_section += \
                 '<p>Tox: <label class="toxaddr">' + \
-                toxAddress + '</label></p>\n'
-        if briarAddress:
-            if briarAddress.startswith('briar://'):
-                donateSection += \
+                tox_address + '</label></p>\n'
+        if briar_address:
+            if briar_address.startswith('briar://'):
+                donate_section += \
                     '<p><label class="toxaddr">' + \
-                    briarAddress + '</label></p>\n'
+                    briar_address + '</label></p>\n'
             else:
-                donateSection += \
+                donate_section += \
                     '<p>briar://<label class="toxaddr">' + \
-                    briarAddress + '</label></p>\n'
-        if jamiAddress:
-            donateSection += \
+                    briar_address + '</label></p>\n'
+        if jami_address:
+            donate_section += \
                 '<p>Jami: <label class="toxaddr">' + \
-                jamiAddress + '</label></p>\n'
+                jami_address + '</label></p>\n'
         if cwtch_address:
-            donateSection += \
+            donate_section += \
                 '<p>Cwtch: <label class="toxaddr">' + \
                 cwtch_address + '</label></p>\n'
-        if EnigmaPubKey:
-            donateSection += \
+        if enigma_pub_key:
+            donate_section += \
                 '<p>Enigma: <label class="toxaddr">' + \
-                EnigmaPubKey + '</label></p>\n'
-        if PGPfingerprint:
-            donateSection += \
+                enigma_pub_key + '</label></p>\n'
+        if pgp_fingerprint:
+            donate_section += \
                 '<p class="pgp">PGP: ' + \
-                PGPfingerprint.replace('\n', '<br>') + '</p>\n'
-        if PGPpubKey:
-            donateSection += \
-                '<p class="pgp">' + PGPpubKey.replace('\n', '<br>') + '</p>\n'
-        donateSection += '  </center>\n'
-        donateSection += '</div>\n'
+                pgp_fingerprint.replace('\n', '<br>') + '</p>\n'
+        if pgp_pub_key:
+            donate_section += \
+                '<p class="pgp">' + \
+                pgp_pub_key.replace('\n', '<br>') + '</p>\n'
+        donate_section += '  </center>\n'
+        donate_section += '</div>\n'
 
     if authorized:
-        editProfileStr = \
-            '<a class="imageAnchor" href="' + usersPath + '/editprofile">' + \
+        edit_profile_str = \
+            '<a class="imageAnchor" href="' + users_path + '/editprofile">' + \
             '<img loading="lazy" src="/icons' + \
             '/edit.png" title="' + translate['Edit'] + \
             '" alt="| ' + translate['Edit'] + '" class="timelineicon"/></a>\n'
 
-        logoutStr = \
+        logout_str = \
             '<a class="imageAnchor" href="/logout">' + \
             '<img loading="lazy" src="/icons' + \
             '/logout.png" title="' + translate['Logout'] + \
@@ -733,233 +736,234 @@ def html_profile(signing_priv_key_pem: str,
             '" class="timelineicon"/></a>\n'
 
         # are there any follow requests?
-        followRequestsFilename = \
+        follow_requests_filename = \
             acct_dir(base_dir, nickname, domain) + '/followrequests.txt'
-        if os.path.isfile(followRequestsFilename):
-            with open(followRequestsFilename, 'r') as f:
-                for line in f:
+        if os.path.isfile(follow_requests_filename):
+            with open(follow_requests_filename, 'r') as foll_file:
+                for line in foll_file:
                     if len(line) > 0:
-                        followApprovals = True
-                        followersButton = 'buttonhighlighted'
+                        follow_approvals = True
+                        followers_button = 'buttonhighlighted'
                         if selected == 'followers':
-                            followersButton = 'buttonselectedhighlighted'
+                            followers_button = 'buttonselectedhighlighted'
                         break
         if selected == 'followers':
-            if followApprovals:
-                currFollowerDomains = \
+            if follow_approvals:
+                curr_follower_domains = \
                     get_follower_domains(base_dir, nickname, domain)
-                with open(followRequestsFilename, 'r') as f:
-                    for followerHandle in f:
-                        if len(line) > 0:
-                            followerHandle = followerHandle.replace('\n', '')
-                            if '://' in followerHandle:
-                                followerActor = followerHandle
+                with open(follow_requests_filename, 'r') as req_file:
+                    for follower_handle in req_file:
+                        if len(follower_handle) > 0:
+                            follower_handle = follower_handle.replace('\n', '')
+                            if '://' in follower_handle:
+                                follower_actor = follower_handle
                             else:
-                                nick = followerHandle.split('@')[0]
-                                dom = followerHandle.split('@')[1]
-                                followerActor = \
+                                nick = follower_handle.split('@')[0]
+                                dom = follower_handle.split('@')[1]
+                                follower_actor = \
                                     local_actor_url(http_prefix, nick, dom)
 
                             # is this a new domain?
                             # if so then append a new instance indicator
-                            followerDomain, _ = \
-                                get_domain_from_actor(followerActor)
-                            newFollowerDomain = ''
-                            if followerDomain not in currFollowerDomains:
-                                newFollowerDomain = ' ✨'
+                            follower_domain, _ = \
+                                get_domain_from_actor(follower_actor)
+                            new_follower_domain = ''
+                            if follower_domain not in curr_follower_domains:
+                                new_follower_domain = ' ✨'
 
-                            basePath = '/users/' + nickname
-                            followApprovalsSection += '<div class="container">'
-                            followApprovalsSection += \
-                                '<a href="' + followerActor + '">'
-                            followApprovalsSection += \
+                            base_path = '/users/' + nickname
+                            follow_approvals_section += \
+                                '<div class="container">'
+                            follow_approvals_section += \
+                                '<a href="' + follower_actor + '">'
+                            follow_approvals_section += \
                                 '<span class="followRequestHandle">' + \
-                                followerHandle + \
-                                newFollowerDomain + '</span></a>'
+                                follower_handle + \
+                                new_follower_domain + '</span></a>'
 
                             # show Approve and Deny buttons
-                            followApprovalsSection += \
-                                '<a href="' + basePath + \
-                                '/followapprove=' + followerHandle + '">'
-                            followApprovalsSection += \
+                            follow_approvals_section += \
+                                '<a href="' + base_path + \
+                                '/followapprove=' + follower_handle + '">'
+                            follow_approvals_section += \
                                 '<button class="followApprove">' + \
                                 translate['Approve'] + '</button></a><br><br>'
-                            followApprovalsSection += \
-                                '<a href="' + basePath + \
-                                '/followdeny=' + followerHandle + '">'
-                            followApprovalsSection += \
+                            follow_approvals_section += \
+                                '<a href="' + base_path + \
+                                '/followdeny=' + follower_handle + '">'
+                            follow_approvals_section += \
                                 '<button class="followDeny">' + \
                                 translate['Deny'] + '</button></a>'
-                            followApprovalsSection += '</div>'
+                            follow_approvals_section += '</div>'
 
-    profileDescriptionShort = profileDescription
-    if '\n' in profileDescription:
-        if len(profileDescription.split('\n')) > 2:
-            profileDescriptionShort = ''
+    profile_description_short = profile_description
+    if '\n' in profile_description:
+        if len(profile_description.split('\n')) > 2:
+            profile_description_short = ''
     else:
-        if '<br>' in profileDescription:
-            if len(profileDescription.split('<br>')) > 2:
-                profileDescriptionShort = ''
-                profileDescription = profileDescription.replace('<br>', '\n')
+        if '<br>' in profile_description:
+            if len(profile_description.split('<br>')) > 2:
+                profile_description_short = ''
+                profile_description = profile_description.replace('<br>', '\n')
     # keep the profile description short
-    if len(profileDescriptionShort) > 256:
-        profileDescriptionShort = ''
+    if len(profile_description_short) > 256:
+        profile_description_short = ''
     # remove formatting from profile description used on title
-    avatarDescription = ''
+    avatar_description = ''
     if profile_json.get('summary'):
-        avatarDescription = profile_json['summary'].replace('<br>', '\n')
-        avatarDescription = avatarDescription.replace('<p>', '')
-        avatarDescription = avatarDescription.replace('</p>', '')
+        avatar_description = profile_json['summary'].replace('<br>', '\n')
+        avatar_description = avatar_description.replace('<p>', '')
+        avatar_description = avatar_description.replace('</p>', '')
 
-    movedTo = ''
+    moved_to = ''
     if profile_json.get('movedTo'):
-        movedTo = profile_json['movedTo']
-        if '"' in movedTo:
-            movedTo = movedTo.split('"')[1]
+        moved_to = profile_json['movedTo']
+        if '"' in moved_to:
+            moved_to = moved_to.split('"')[1]
 
-    alsoKnownAs = None
+    also_known_as = None
     if profile_json.get('alsoKnownAs'):
-        alsoKnownAs = profile_json['alsoKnownAs']
+        also_known_as = profile_json['alsoKnownAs']
 
-    joinedDate = None
+    joined_date = None
     if profile_json.get('published'):
         if 'T' in profile_json['published']:
-            joinedDate = profile_json['published']
-    occupationName = None
+            joined_date = profile_json['published']
+    occupation_name = None
     if profile_json.get('hasOccupation'):
-        occupationName = get_occupation_name(profile_json)
+        occupation_name = get_occupation_name(profile_json)
 
-    avatarUrl = profile_json['icon']['url']
+    avatar_url = profile_json['icon']['url']
     # use alternate path for local avatars to avoid any caching issues
-    if '://' + domain_full + '/system/accounts/avatars/' in avatarUrl:
-        avatarUrl = \
-            avatarUrl.replace('://' + domain_full +
-                              '/system/accounts/avatars/',
-                              '://' + domain_full + '/users/')
+    if '://' + domain_full + '/system/accounts/avatars/' in avatar_url:
+        avatar_url = \
+            avatar_url.replace('://' + domain_full +
+                               '/system/accounts/avatars/',
+                               '://' + domain_full + '/users/')
 
     # get pinned post content
-    accountDir = acct_dir(base_dir, nickname, domain)
-    pinnedFilename = accountDir + '/pinToProfile.txt'
-    pinnedContent = None
-    if os.path.isfile(pinnedFilename):
-        with open(pinnedFilename, 'r') as pinFile:
-            pinnedContent = pinFile.read()
+    account_dir = acct_dir(base_dir, nickname, domain)
+    pinned_filename = account_dir + '/pinToProfile.txt'
+    pinned_content = None
+    if os.path.isfile(pinned_filename):
+        with open(pinned_filename, 'r') as pin_file:
+            pinned_content = pin_file.read()
 
-    profileHeaderStr = \
+    profile_header_str = \
         _get_profile_header(base_dir, http_prefix,
                             nickname, domain,
                             domain_full, translate,
-                            defaultTimeline, displayName,
-                            avatarDescription,
-                            profileDescriptionShort,
-                            loginButton, avatarUrl, theme,
-                            movedTo, alsoKnownAs,
-                            pinnedContent, accessKeys,
-                            joinedDate, occupationName)
+                            default_timeline, display_name,
+                            avatar_description,
+                            profile_description_short,
+                            login_button, avatar_url, theme,
+                            moved_to, also_known_as,
+                            pinned_content, access_keys,
+                            joined_date, occupation_name)
 
     # keyboard navigation
-    userPathStr = '/users/' + nickname
-    deft = defaultTimeline
-    isGroup = False
-    followersStr = translate['Followers']
+    user_path_str = '/users/' + nickname
+    deft = default_timeline
+    is_group = False
+    followers_str = translate['Followers']
     if is_group_account(base_dir, nickname, domain):
-        isGroup = True
-        followersStr = translate['Members']
-    menuTimeline = \
+        is_group = True
+        followers_str = translate['Members']
+    menu_timeline = \
         html_hide_from_screen_reader('🏠') + ' ' + \
         translate['Switch to timeline view']
-    menuEdit = \
+    menu_edit = \
         html_hide_from_screen_reader('✍') + ' ' + translate['Edit']
-    if not isGroup:
-        menuFollowing = \
+    if not is_group:
+        menu_following = \
             html_hide_from_screen_reader('👥') + ' ' + translate['Following']
-    menuFollowers = \
-        html_hide_from_screen_reader('👪') + ' ' + followersStr
-    if not isGroup:
-        menuRoles = \
+    menu_followers = \
+        html_hide_from_screen_reader('👪') + ' ' + followers_str
+    if not is_group:
+        menu_roles = \
             html_hide_from_screen_reader('🤚') + ' ' + translate['Roles']
-        menuSkills = \
+        menu_skills = \
             html_hide_from_screen_reader('🛠') + ' ' + translate['Skills']
-    menuLogout = \
+    menu_logout = \
         html_hide_from_screen_reader('❎') + ' ' + translate['Logout']
-    navLinks = {
-        menuTimeline: userPathStr + '/' + deft,
-        menuEdit: userPathStr + '/editprofile',
-        menuFollowing: userPathStr + '/following#timeline',
-        menuFollowers: userPathStr + '/followers#timeline',
-        menuRoles: userPathStr + '/roles#timeline',
-        menuSkills: userPathStr + '/skills#timeline',
-        menuLogout: '/logout'
+    nav_links = {
+        menu_timeline: user_path_str + '/' + deft,
+        menu_edit: user_path_str + '/editprofile',
+        menu_following: user_path_str + '/following#timeline',
+        menu_followers: user_path_str + '/followers#timeline',
+        menu_roles: user_path_str + '/roles#timeline',
+        menu_skills: user_path_str + '/skills#timeline',
+        menu_logout: '/logout'
     }
     if is_artist(base_dir, nickname):
-        menuThemeDesigner = \
+        menu_theme_designer = \
             html_hide_from_screen_reader('🎨') + ' ' + \
             translate['Theme Designer']
-        navLinks[menuThemeDesigner] = userPathStr + '/themedesigner'
-    navAccessKeys = {}
-    for variableName, key in accessKeys.items():
-        if not locals().get(variableName):
+        nav_links[menu_theme_designer] = user_path_str + '/themedesigner'
+    nav_access_keys = {}
+    for variable_name, key in access_keys.items():
+        if not locals().get(variable_name):
             continue
-        navAccessKeys[locals()[variableName]] = key
+        nav_access_keys[locals()[variable_name]] = key
 
-    profileStr = html_keyboard_navigation(text_mode_banner,
-                                          navLinks, navAccessKeys)
+    profile_str = html_keyboard_navigation(text_mode_banner,
+                                           nav_links, nav_access_keys)
 
-    profileStr += profileHeaderStr + donateSection
-    profileStr += '<div class="container" id="buttonheader">\n'
-    profileStr += '  <center>'
-    profileStr += \
-        '    <a href="' + usersPath + '#buttonheader"><button class="' + \
-        postsButton + '"><span>' + translate['Posts'] + \
+    profile_str += profile_header_str + donate_section
+    profile_str += '<div class="container" id="buttonheader">\n'
+    profile_str += '  <center>'
+    profile_str += \
+        '    <a href="' + users_path + '#buttonheader"><button class="' + \
+        posts_button + '"><span>' + translate['Posts'] + \
         ' </span></button></a>'
-    if not isGroup:
-        profileStr += \
-            '    <a href="' + usersPath + '/following#buttonheader">' + \
-            '<button class="' + followingButton + '"><span>' + \
+    if not is_group:
+        profile_str += \
+            '    <a href="' + users_path + '/following#buttonheader">' + \
+            '<button class="' + following_button + '"><span>' + \
             translate['Following'] + ' </span></button></a>'
-    profileStr += \
-        '    <a href="' + usersPath + '/followers#buttonheader">' + \
-        '<button class="' + followersButton + \
-        '"><span>' + followersStr + ' </span></button></a>'
-    if not isGroup:
-        profileStr += \
-            '    <a href="' + usersPath + '/roles#buttonheader">' + \
-            '<button class="' + rolesButton + '"><span>' + \
+    profile_str += \
+        '    <a href="' + users_path + '/followers#buttonheader">' + \
+        '<button class="' + followers_button + \
+        '"><span>' + followers_str + ' </span></button></a>'
+    if not is_group:
+        profile_str += \
+            '    <a href="' + users_path + '/roles#buttonheader">' + \
+            '<button class="' + roles_button + '"><span>' + \
             translate['Roles'] + \
             ' </span></button></a>'
-        profileStr += \
-            '    <a href="' + usersPath + '/skills#buttonheader">' + \
-            '<button class="' + skillsButton + '"><span>' + \
+        profile_str += \
+            '    <a href="' + users_path + '/skills#buttonheader">' + \
+            '<button class="' + skills_button + '"><span>' + \
             translate['Skills'] + ' </span></button></a>'
-#    profileStr += \
-#        '    <a href="' + usersPath + '/shares#buttonheader">' + \
-#        '<button class="' + sharesButton + '"><span>' + \
+#    profile_str += \
+#        '    <a href="' + users_path + '/shares#buttonheader">' + \
+#        '<button class="' + shares_button + '"><span>' + \
 #        translate['Shares'] + ' </span></button></a>'
-#    profileStr += \
-#        '    <a href="' + usersPath + '/wanted#buttonheader">' + \
-#        '<button class="' + wantedButton + '"><span>' + \
+#    profile_str += \
+#        '    <a href="' + users_path + '/wanted#buttonheader">' + \
+#        '<button class="' + wanted_button + '"><span>' + \
 #        translate['Wanted'] + ' </span></button></a>'
-    profileStr += logoutStr + editProfileStr
-    profileStr += '  </center>'
-    profileStr += '</div>'
+    profile_str += logout_str + edit_profile_str
+    profile_str += '  </center>'
+    profile_str += '</div>'
 
     # start of #timeline
-    profileStr += '<div id="timeline">\n'
+    profile_str += '<div id="timeline">\n'
 
-    profileStr += followApprovalsSection
+    profile_str += follow_approvals_section
 
-    cssFilename = base_dir + '/epicyon-profile.css'
+    css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
-        cssFilename = base_dir + '/epicyon.css'
+        css_filename = base_dir + '/epicyon.css'
 
-    licenseStr = \
+    license_str = \
         '<a href="https://gitlab.com/bashrc2/epicyon">' + \
         '<img loading="lazy" class="license" alt="' + \
         translate['Get the source code'] + '" title="' + \
         translate['Get the source code'] + '" src="/icons/agpl.png" /></a>'
 
     if selected == 'posts':
-        profileStr += \
+        profile_str += \
             _html_profile_posts(recent_posts_cache, max_recent_posts,
                                 translate,
                                 base_dir, http_prefix, authorized,
@@ -974,10 +978,10 @@ def html_profile(signing_priv_key_pem: str,
                                 theme, system_language,
                                 max_like_count,
                                 signing_priv_key_pem,
-                                cw_lists, lists_enabled) + licenseStr
-    if not isGroup:
+                                cw_lists, lists_enabled) + license_str
+    if not is_group:
         if selected == 'following':
-            profileStr += \
+            profile_str += \
                 _html_profile_following(translate, base_dir, http_prefix,
                                         authorized, nickname,
                                         domain, port, session,
@@ -985,50 +989,51 @@ def html_profile(signing_priv_key_pem: str,
                                         person_cache, extraJson,
                                         project_version, ["unfollow"],
                                         selected,
-                                        usersPath, pageNumber, maxItemsPerPage,
+                                        users_path, page_number,
+                                        max_items_per_page,
                                         dormant_months, debug,
                                         signing_priv_key_pem)
     if selected == 'followers':
-        profileStr += \
+        profile_str += \
             _html_profile_following(translate, base_dir, http_prefix,
                                     authorized, nickname,
                                     domain, port, session,
                                     cached_webfingers,
                                     person_cache, extraJson,
                                     project_version, ["block"],
-                                    selected, usersPath, pageNumber,
-                                    maxItemsPerPage, dormant_months, debug,
+                                    selected, users_path, page_number,
+                                    max_items_per_page, dormant_months, debug,
                                     signing_priv_key_pem)
-    if not isGroup:
+    if not is_group:
         if selected == 'roles':
-            profileStr += \
+            profile_str += \
                 _html_profile_roles(translate, nickname, domain_full,
                                     extraJson)
         elif selected == 'skills':
-            profileStr += \
+            profile_str += \
                 _html_profile_skills(translate, nickname, domain_full,
                                      extraJson)
 #       elif selected == 'shares':
-#           profileStr += \
+#           profile_str += \
 #                _html_profile_shares(actor, translate,
 #                                   nickname, domain_full,
-#                                   extraJson, 'shares') + licenseStr
+#                                   extraJson, 'shares') + license_str
 #        elif selected == 'wanted':
-#            profileStr += \
+#            profile_str += \
 #                _html_profile_shares(actor, translate,
 #                                   nickname, domain_full,
-#                                   extraJson, 'wanted') + licenseStr
+#                                   extraJson, 'wanted') + license_str
     # end of #timeline
-    profileStr += '</div>'
+    profile_str += '</div>'
 
-    instanceTitle = \
+    instance_title = \
         get_config_param(base_dir, 'instanceTitle')
-    profileStr = \
-        html_header_with_person_markup(cssFilename, instanceTitle,
+    profile_str = \
+        html_header_with_person_markup(css_filename, instance_title,
                                        profile_json, city,
                                        content_license_url) + \
-        profileStr + html_footer()
-    return profileStr
+        profile_str + html_footer()
+    return profile_str
 
 
 def _html_profile_posts(recent_posts_cache: {}, max_recent_posts: int,
@@ -1050,30 +1055,30 @@ def _html_profile_posts(recent_posts_cache: {}, max_recent_posts: int,
     """Shows posts on the profile screen
     These should only be public posts
     """
-    separatorStr = html_post_separator(base_dir, None)
-    profileStr = ''
-    maxItems = 4
+    separator_str = html_post_separator(base_dir, None)
+    profile_str = ''
+    max_items = 4
     ctr = 0
-    currPage = 1
-    boxName = 'outbox'
-    while ctr < maxItems and currPage < 4:
-        outboxFeedPathStr = \
-            '/users/' + nickname + '/' + boxName + '?page=' + \
-            str(currPage)
-        outboxFeed = \
+    curr_page = 1
+    box_name = 'outbox'
+    while ctr < max_items and curr_page < 4:
+        outbox_feed_path_str = \
+            '/users/' + nickname + '/' + box_name + '?page=' + \
+            str(curr_page)
+        outbox_feed = \
             person_box_json({}, session, base_dir, domain,
                             port,
-                            outboxFeedPathStr,
+                            outbox_feed_path_str,
                             http_prefix,
-                            10, boxName,
+                            10, box_name,
                             authorized, 0, False, 0)
-        if not outboxFeed:
+        if not outbox_feed:
             break
-        if len(outboxFeed['orderedItems']) == 0:
+        if len(outbox_feed['orderedItems']) == 0:
             break
-        for item in outboxFeed['orderedItems']:
+        for item in outbox_feed['orderedItems']:
             if item['type'] == 'Create':
-                postStr = \
+                post_str = \
                     individual_post_as_html(signing_priv_key_pem,
                                             True, recent_posts_cache,
                                             max_recent_posts,
@@ -1095,127 +1100,127 @@ def _html_profile_posts(recent_posts_cache: {}, max_recent_posts: int,
                                             False, False, False,
                                             True, False, False,
                                             cw_lists, lists_enabled)
-                if postStr:
-                    profileStr += postStr + separatorStr
+                if post_str:
+                    profile_str += post_str + separator_str
                     ctr += 1
-                    if ctr >= maxItems:
+                    if ctr >= max_items:
                         break
-        currPage += 1
-    return profileStr
+        curr_page += 1
+    return profile_str
 
 
 def _html_profile_following(translate: {}, base_dir: str, http_prefix: str,
                             authorized: bool,
                             nickname: str, domain: str, port: int,
                             session, cached_webfingers: {}, person_cache: {},
-                            followingJson: {}, project_version: str,
+                            following_json: {}, project_version: str,
                             buttons: [],
                             feedName: str, actor: str,
-                            pageNumber: int,
-                            maxItemsPerPage: int,
+                            page_number: int,
+                            max_items_per_page: int,
                             dormant_months: int, debug: bool,
                             signing_priv_key_pem: str) -> str:
     """Shows following on the profile screen
     """
-    profileStr = ''
+    profile_str = ''
 
-    if authorized and pageNumber:
-        if authorized and pageNumber > 1:
+    if authorized and page_number:
+        if authorized and page_number > 1:
             # page up arrow
-            profileStr += \
+            profile_str += \
                 '  <center>\n' + \
                 '    <a href="' + actor + '/' + feedName + \
-                '?page=' + str(pageNumber - 1) + '#buttonheader' + \
+                '?page=' + str(page_number - 1) + '#buttonheader' + \
                 '"><img loading="lazy" class="pageicon" src="/' + \
                 'icons/pageup.png" title="' + \
                 translate['Page up'] + '" alt="' + \
                 translate['Page up'] + '"></a>\n' + \
                 '  </center>\n'
 
-    for followingActor in followingJson['orderedItems']:
+    for following_actor in following_json['orderedItems']:
         # is this a dormant followed account?
         dormant = False
         if authorized and feedName == 'following':
             dormant = \
-                is_dormant(base_dir, nickname, domain, followingActor,
+                is_dormant(base_dir, nickname, domain, following_actor,
                            dormant_months)
 
-        profileStr += \
+        profile_str += \
             _individual_follow_as_html(signing_priv_key_pem,
                                        translate, base_dir, session,
                                        cached_webfingers, person_cache,
-                                       domain, followingActor,
+                                       domain, following_actor,
                                        authorized, nickname,
                                        http_prefix, project_version, dormant,
                                        debug, buttons)
 
-    if authorized and maxItemsPerPage and pageNumber:
-        if len(followingJson['orderedItems']) >= maxItemsPerPage:
+    if authorized and max_items_per_page and page_number:
+        if len(following_json['orderedItems']) >= max_items_per_page:
             # page down arrow
-            profileStr += \
+            profile_str += \
                 '  <center>\n' + \
                 '    <a href="' + actor + '/' + feedName + \
-                '?page=' + str(pageNumber + 1) + '#buttonheader' + \
+                '?page=' + str(page_number + 1) + '#buttonheader' + \
                 '"><img loading="lazy" class="pageicon" src="/' + \
                 'icons/pagedown.png" title="' + \
                 translate['Page down'] + '" alt="' + \
                 translate['Page down'] + '"></a>\n' + \
                 '  </center>\n'
 
-    return profileStr
+    return profile_str
 
 
 def _html_profile_roles(translate: {}, nickname: str, domain: str,
                         rolesList: []) -> str:
     """Shows roles on the profile screen
     """
-    profileStr = ''
-    profileStr += \
+    profile_str = ''
+    profile_str += \
         '<div class="roles">\n<div class="roles-inner">\n'
     for role in rolesList:
         if translate.get(role):
-            profileStr += '<h3>' + translate[role] + '</h3>\n'
+            profile_str += '<h3>' + translate[role] + '</h3>\n'
         else:
-            profileStr += '<h3>' + role + '</h3>\n'
-    profileStr += '</div></div>\n'
-    if len(profileStr) == 0:
-        profileStr += \
+            profile_str += '<h3>' + role + '</h3>\n'
+    profile_str += '</div></div>\n'
+    if len(profile_str) == 0:
+        profile_str += \
             '<p>@' + nickname + '@' + domain + ' has no roles assigned</p>\n'
     else:
-        profileStr = '<div>' + profileStr + '</div>\n'
-    return profileStr
+        profile_str = '<div>' + profile_str + '</div>\n'
+    return profile_str
 
 
 def _html_profile_skills(translate: {}, nickname: str, domain: str,
                          skillsJson: {}) -> str:
     """Shows skills on the profile screen
     """
-    profileStr = ''
+    profile_str = ''
     for skill, level in skillsJson.items():
-        profileStr += \
+        profile_str += \
             '<div>' + skill + \
             '<br><div id="myProgress"><div id="myBar" style="width:' + \
             str(level) + '%"></div></div></div>\n<br>\n'
-    if len(profileStr) > 0:
-        profileStr = '<center><div class="skill-title">' + \
-            profileStr + '</div></center>\n'
-    return profileStr
+    if len(profile_str) > 0:
+        profile_str = '<center><div class="skill-title">' + \
+            profile_str + '</div></center>\n'
+    return profile_str
 
 
 def _html_profile_shares(actor: str, translate: {},
-                         nickname: str, domain: str, sharesJson: {},
-                         sharesFileType: str) -> str:
+                         nickname: str, domain: str, shares_json: {},
+                         shares_file_type: str) -> str:
     """Shows shares on the profile screen
     """
-    profileStr = ''
-    for item in sharesJson['orderedItems']:
-        profileStr += html_individual_share(domain, item['shareId'],
-                                            actor, item, translate,
-                                            False, False,
-                                            sharesFileType)
-    if len(profileStr) > 0:
-        profileStr = '<div class="share-title">' + profileStr + '</div>\n'
-    return profileStr
+    profile_str = ''
+    for item in shares_json['orderedItems']:
+        profile_str += html_individual_share(domain, item['shareId'],
+                                             actor, item, translate,
+                                             False, False,
+                                             shares_file_type)
+    if len(profile_str) > 0:
+        profile_str = '<div class="share-title">' + profile_str + '</div>\n'
+    return profile_str
 
 
 def _grayscale_enabled(base_dir: str) -> bool:
@@ -1229,197 +1234,196 @@ def _html_themes_dropdown(base_dir: str, translate: {}) -> str:
     """
     # Themes section
     themes = get_themes_list(base_dir)
-    themesDropdown = '  <label class="labels">' + \
+    themes_dropdown = '  <label class="labels">' + \
         translate['Theme'] + '</label><br>\n'
     grayscale = _grayscale_enabled(base_dir)
-    themesDropdown += \
+    themes_dropdown += \
         edit_check_box(translate['Grayscale'], 'grayscale', grayscale)
-    themesDropdown += '  <select id="themeDropdown" ' + \
+    themes_dropdown += '  <select id="themeDropdown" ' + \
         'name="themeDropdown" class="theme">'
     for theme_name in themes:
-        translatedThemeName = theme_name
+        translated_theme_name = theme_name
         if translate.get(theme_name):
-            translatedThemeName = translate[theme_name]
-        themesDropdown += '    <option value="' + \
+            translated_theme_name = translate[theme_name]
+        themes_dropdown += '    <option value="' + \
             theme_name.lower() + '">' + \
-            translatedThemeName + '</option>'
-    themesDropdown += '  </select><br>'
+            translated_theme_name + '</option>'
+    themes_dropdown += '  </select><br>'
     if os.path.isfile(base_dir + '/fonts/custom.woff') or \
        os.path.isfile(base_dir + '/fonts/custom.woff2') or \
        os.path.isfile(base_dir + '/fonts/custom.otf') or \
        os.path.isfile(base_dir + '/fonts/custom.ttf'):
-        themesDropdown += \
+        themes_dropdown += \
             edit_check_box(translate['Remove the custom font'],
                            'removeCustomFont', False)
     theme_name = get_config_param(base_dir, 'theme')
-    themesDropdown = \
-        themesDropdown.replace('<option value="' + theme_name + '">',
-                               '<option value="' + theme_name +
-                               '" selected>')
-    return themesDropdown
+    themes_dropdown = \
+        themes_dropdown.replace('<option value="' + theme_name + '">',
+                                '<option value="' + theme_name +
+                                '" selected>')
+    return themes_dropdown
 
 
 def _html_edit_profile_graphic_design(base_dir: str, translate: {}) -> str:
     """Graphic design section on Edit Profile screen
     """
-    themeFormats = '.zip, .gz'
-
-    graphicsStr = begin_edit_section(translate['Graphic Design'])
+    graphics_str = begin_edit_section(translate['Graphic Design'])
 
     low_bandwidth = get_config_param(base_dir, 'lowBandwidth')
     if not low_bandwidth:
         low_bandwidth = False
-    graphicsStr += _html_themes_dropdown(base_dir, translate)
-    graphicsStr += \
+    graphics_str += _html_themes_dropdown(base_dir, translate)
+    graphics_str += \
         '      <label class="labels">' + \
         translate['Import Theme'] + '</label>\n'
-    graphicsStr += '      <input type="file" id="import_theme" '
-    graphicsStr += 'name="submitImportTheme" '
-    graphicsStr += 'accept="' + themeFormats + '">\n'
-    graphicsStr += \
+    graphics_str += '      <input type="file" id="import_theme" '
+    graphics_str += 'name="submitImportTheme" '
+    graphics_str += 'accept="' + THEME_FORMATS + '">\n'
+    graphics_str += \
         '      <label class="labels">' + \
         translate['Export Theme'] + '</label><br>\n'
-    graphicsStr += \
+    graphics_str += \
         '      <button type="submit" class="button" ' + \
         'name="submitExportTheme">➤</button><br>\n'
-    graphicsStr += \
+    graphics_str += \
         edit_check_box(translate['Low Bandwidth'], 'lowBandwidth',
                        bool(low_bandwidth))
 
-    graphicsStr += end_edit_section()
-    return graphicsStr
+    graphics_str += end_edit_section()
+    return graphics_str
 
 
 def _html_edit_profile_twitter(base_dir: str, translate: {},
-                               removeTwitter: str) -> str:
+                               remove_twitter: str) -> str:
     """Edit twitter settings within profile
     """
     # Twitter section
-    twitterStr = begin_edit_section(translate['Twitter'])
-    twitterStr += \
+    twitter_str = begin_edit_section(translate['Twitter'])
+    twitter_str += \
         edit_check_box(translate['Remove Twitter posts'],
-                       'removeTwitter', removeTwitter)
+                       'removeTwitter', remove_twitter)
     twitter_replacement_domain = get_config_param(base_dir, "twitterdomain")
     if not twitter_replacement_domain:
         twitter_replacement_domain = ''
-    twitterStr += \
+    twitter_str += \
         edit_text_field(translate['Twitter Replacement Domain'],
                         'twitterdomain', twitter_replacement_domain)
-    twitterStr += end_edit_section()
-    return twitterStr
+    twitter_str += end_edit_section()
+    return twitter_str
 
 
 def _html_edit_profile_instance(base_dir: str, translate: {},
                                 peertube_instances: [],
-                                media_instanceStr: str,
-                                blogs_instanceStr: str,
-                                news_instanceStr: str) -> (str, str, str, str):
+                                media_instance_str: str,
+                                blogs_instance_str: str,
+                                news_instance_str: str) -> (str, str,
+                                                            str, str):
     """Edit profile instance settings
     """
-    imageFormats = get_image_formats()
+    image_formats = get_image_formats()
 
     # Instance details section
-    instanceDescription = \
+    instance_description = \
         get_config_param(base_dir, 'instanceDescription')
-    customSubmitText = \
+    custom_submit_text = \
         get_config_param(base_dir, 'customSubmitText')
-    instanceDescriptionShort = \
+    instance_description_short = \
         get_config_param(base_dir, 'instanceDescriptionShort')
-    instanceTitle = \
+    instance_title = \
         get_config_param(base_dir, 'instanceTitle')
     content_license_url = \
         get_config_param(base_dir, 'contentLicenseUrl')
     if not content_license_url:
         content_license_url = 'https://creativecommons.org/licenses/by/4.0'
 
-    instanceStr = begin_edit_section(translate['Instance Settings'])
+    instance_str = begin_edit_section(translate['Instance Settings'])
 
-    instanceStr += \
+    instance_str += \
         edit_text_field(translate['Instance Title'],
-                        'instanceTitle', instanceTitle)
-    instanceStr += '<br>\n'
-    instanceStr += \
+                        'instanceTitle', instance_title)
+    instance_str += '<br>\n'
+    instance_str += \
         edit_text_field(translate['Instance Short Description'],
-                        'instanceDescriptionShort', instanceDescriptionShort)
-    instanceStr += '<br>\n'
-    instanceStr += \
+                        'instanceDescriptionShort', instance_description_short)
+    instance_str += '<br>\n'
+    instance_str += \
         edit_text_area(translate['Instance Description'],
-                       'instanceDescription', instanceDescription, 200,
+                       'instanceDescription', instance_description, 200,
                        '', True)
-    instanceStr += \
+    instance_str += \
         edit_text_field(translate['Content License'],
                         'contentLicenseUrl', content_license_url)
-    instanceStr += '<br>\n'
-    instanceStr += \
+    instance_str += '<br>\n'
+    instance_str += \
         edit_text_field(translate['Custom post submit button text'],
-                        'customSubmitText', customSubmitText)
-    instanceStr += '<br>\n'
-    instanceStr += \
+                        'customSubmitText', custom_submit_text)
+    instance_str += '<br>\n'
+    instance_str += \
         '  <label class="labels">' + \
         translate['Instance Logo'] + '</label>' + \
         '  <input type="file" id="instanceLogo" name="instanceLogo"' + \
-        '      accept="' + imageFormats + '"><br>\n' + \
+        '      accept="' + image_formats + '"><br>\n' + \
         '  <br><label class="labels">' + \
         translate['Security'] + '</label><br>\n'
 
-    nodeInfoStr = \
+    node_info_str = \
         translate['Show numbers of accounts within instance metadata']
     if get_config_param(base_dir, "showNodeInfoAccounts"):
-        instanceStr += \
-            edit_check_box(nodeInfoStr, 'showNodeInfoAccounts', True)
+        instance_str += \
+            edit_check_box(node_info_str, 'showNodeInfoAccounts', True)
     else:
-        instanceStr += \
-            edit_check_box(nodeInfoStr, 'showNodeInfoAccounts', False)
+        instance_str += \
+            edit_check_box(node_info_str, 'showNodeInfoAccounts', False)
 
-    nodeInfoStr = \
+    node_info_str = \
         translate['Show version number within instance metadata']
     if get_config_param(base_dir, "showNodeInfoVersion"):
-        instanceStr += \
-            edit_check_box(nodeInfoStr, 'showNodeInfoVersion', True)
+        instance_str += \
+            edit_check_box(node_info_str, 'showNodeInfoVersion', True)
     else:
-        instanceStr += \
-            edit_check_box(nodeInfoStr, 'showNodeInfoVersion', False)
+        instance_str += \
+            edit_check_box(node_info_str, 'showNodeInfoVersion', False)
 
     if get_config_param(base_dir, "verifyAllSignatures"):
-        instanceStr += \
+        instance_str += \
             edit_check_box(translate['Verify all signatures'],
                            'verifyallsignatures', True)
     else:
-        instanceStr += \
+        instance_str += \
             edit_check_box(translate['Verify all signatures'],
                            'verifyallsignatures', False)
 
-    instanceStr += translate['Enabling broch mode'] + '<br>\n'
+    instance_str += translate['Enabling broch mode'] + '<br>\n'
     if get_config_param(base_dir, "brochMode"):
-        instanceStr += \
+        instance_str += \
             edit_check_box(translate['Broch mode'], 'brochMode', True)
     else:
-        instanceStr += \
+        instance_str += \
             edit_check_box(translate['Broch mode'], 'brochMode', False)
     # Instance type
-    instanceStr += \
+    instance_str += \
         '  <br><label class="labels">' + \
         translate['Type of instance'] + '</label><br>\n'
-    instanceStr += \
+    instance_str += \
         edit_check_box(translate['This is a media instance'],
-                       'mediaInstance', media_instanceStr)
-    instanceStr += \
+                       'mediaInstance', media_instance_str)
+    instance_str += \
         edit_check_box(translate['This is a blogging instance'],
-                       'blogsInstance', blogs_instanceStr)
-    instanceStr += \
+                       'blogsInstance', blogs_instance_str)
+    instance_str += \
         edit_check_box(translate['This is a news instance'],
-                       'newsInstance', news_instanceStr)
+                       'newsInstance', news_instance_str)
 
-    instanceStr += end_edit_section()
+    instance_str += end_edit_section()
 
     # Role assignments section
     moderators = ''
-    moderatorsFile = base_dir + '/accounts/moderators.txt'
-    if os.path.isfile(moderatorsFile):
-        with open(moderatorsFile, 'r') as f:
+    moderators_file = base_dir + '/accounts/moderators.txt'
+    if os.path.isfile(moderators_file):
+        with open(moderators_file, 'r') as f:
             moderators = f.read()
     # site moderators
-    roleAssignStr = \
+    role_assign_str = \
         begin_edit_section(translate['Role Assignment']) + \
         '  <b><label class="labels">' + \
         translate['Moderators'] + '</label></b><br>\n' + \
@@ -1432,11 +1436,11 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
 
     # site editors
     editors = ''
-    editorsFile = base_dir + '/accounts/editors.txt'
-    if os.path.isfile(editorsFile):
-        with open(editorsFile, 'r') as f:
-            editors = f.read()
-    roleAssignStr += \
+    editors_file = base_dir + '/accounts/editors.txt'
+    if os.path.isfile(editors_file):
+        with open(editors_file, 'r') as edit_file:
+            editors = edit_file.read()
+    role_assign_str += \
         '  <b><label class="labels">' + \
         translate['Site Editors'] + '</label></b><br>\n' + \
         '  ' + \
@@ -1447,80 +1451,80 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
 
     # counselors
     counselors = ''
-    counselorsFile = base_dir + '/accounts/counselors.txt'
-    if os.path.isfile(counselorsFile):
-        with open(counselorsFile, 'r') as f:
-            counselors = f.read()
-    roleAssignStr += \
+    counselors_file = base_dir + '/accounts/counselors.txt'
+    if os.path.isfile(counselors_file):
+        with open(counselors_file, 'r') as co_file:
+            counselors = co_file.read()
+    role_assign_str += \
         edit_text_area(translate['Counselors'], 'counselors', counselors,
                        200, '', False)
 
     # artists
     artists = ''
-    artistsFile = base_dir + '/accounts/artists.txt'
-    if os.path.isfile(artistsFile):
-        with open(artistsFile, 'r') as f:
-            artists = f.read()
-    roleAssignStr += \
+    artists_file = base_dir + '/accounts/artists.txt'
+    if os.path.isfile(artists_file):
+        with open(artists_file, 'r') as art_file:
+            artists = art_file.read()
+    role_assign_str += \
         edit_text_area(translate['Artists'], 'artists', artists,
                        200, '', False)
-    roleAssignStr += end_edit_section()
+    role_assign_str += end_edit_section()
 
     # Video section
-    peertubeStr = begin_edit_section(translate['Video Settings'])
-    peertube_instancesStr = ''
+    peertube_str = begin_edit_section(translate['Video Settings'])
+    peertube_instances_str = ''
     for url in peertube_instances:
-        peertube_instancesStr += url + '\n'
-    peertubeStr += \
+        peertube_instances_str += url + '\n'
+    peertube_str += \
         edit_text_area(translate['Peertube Instances'], 'ptInstances',
-                       peertube_instancesStr, 200, '', False)
-    peertubeStr += \
+                       peertube_instances_str, 200, '', False)
+    peertube_str += \
         '      <br>\n'
     yt_replace_domain = get_config_param(base_dir, "youtubedomain")
     if not yt_replace_domain:
         yt_replace_domain = ''
-    peertubeStr += \
+    peertube_str += \
         edit_text_field(translate['YouTube Replacement Domain'],
                         'ytdomain', yt_replace_domain)
-    peertubeStr += end_edit_section()
+    peertube_str += end_edit_section()
 
-    libretranslateUrl = get_config_param(base_dir, 'libretranslateUrl')
-    libretranslateApiKey = get_config_param(base_dir, 'libretranslateApiKey')
-    libretranslateStr = \
+    libretranslate_url = get_config_param(base_dir, 'libretranslateUrl')
+    libretranslate_api_key = get_config_param(base_dir, 'libretranslateApiKey')
+    libretranslate_str = \
         _html_edit_profile_libre_translate(translate,
-                                           libretranslateUrl,
-                                           libretranslateApiKey)
+                                           libretranslate_url,
+                                           libretranslate_api_key)
 
-    return instanceStr, roleAssignStr, peertubeStr, libretranslateStr
+    return instance_str, role_assign_str, peertube_str, libretranslate_str
 
 
 def _html_edit_profile_danger_zone(translate: {}) -> str:
     """danger zone section of Edit Profile screen
     """
-    editProfileForm = begin_edit_section(translate['Danger Zone'])
+    edit_profile_form = begin_edit_section(translate['Danger Zone'])
 
-    editProfileForm += \
+    edit_profile_form += \
         '      <b><label class="labels">' + \
         translate['Danger Zone'] + '</label></b><br>\n'
 
-    editProfileForm += \
+    edit_profile_form += \
         edit_check_box(translate['Deactivate this account'],
                        'deactivateThisAccount', False)
 
-    editProfileForm += end_edit_section()
-    return editProfileForm
+    edit_profile_form += end_edit_section()
+    return edit_profile_form
 
 
 def _html_system_monitor(nickname: str, translate: {}) -> str:
     """Links to performance graphs
     """
-    systemMonitorStr = begin_edit_section(translate['System Monitor'])
-    systemMonitorStr += '<p><a href="/users/' + nickname + \
+    system_monitor_str = begin_edit_section(translate['System Monitor'])
+    system_monitor_str += '<p><a href="/users/' + nickname + \
         '/performance?graph=get">📊 GET</a></p>'
-    systemMonitorStr += '<p><a href="/users/' + nickname + \
+    system_monitor_str += '<p><a href="/users/' + nickname + \
         '/performance?graph=post">📊 POST</a></p>'
-    systemMonitorStr += end_edit_section()
-    return systemMonitorStr
+    system_monitor_str += end_edit_section()
+    return system_monitor_str
 
 
 def _html_edit_profile_skills(base_dir: str, nickname: str, domain: str,
@@ -1528,286 +1532,287 @@ def _html_edit_profile_skills(base_dir: str, nickname: str, domain: str,
     """skills section of Edit Profile screen
     """
     skills = get_skills(base_dir, nickname, domain)
-    skillsStr = ''
-    skillCtr = 1
+    skills_str = ''
+    skill_ctr = 1
     if skills:
-        for skillDesc, skillValue in skills.items():
-            if is_filtered(base_dir, nickname, domain, skillDesc):
+        for skill_desc, skill_value in skills.items():
+            if is_filtered(base_dir, nickname, domain, skill_desc):
                 continue
-            skillsStr += \
+            skills_str += \
                 '<p><input type="text" placeholder="' + translate['Skill'] + \
-                ' ' + str(skillCtr) + '" name="skillName' + str(skillCtr) + \
-                '" value="' + skillDesc + '" style="width:40%">' + \
+                ' ' + str(skill_ctr) + '" name="skillName' + str(skill_ctr) + \
+                '" value="' + skill_desc + '" style="width:40%">' + \
                 '<input type="range" min="1" max="100" ' + \
                 'class="slider" name="skillValue' + \
-                str(skillCtr) + '" value="' + str(skillValue) + '"></p>'
-            skillCtr += 1
+                str(skill_ctr) + '" value="' + str(skill_value) + '"></p>'
+            skill_ctr += 1
 
-    skillsStr += \
-        '<p><input type="text" placeholder="Skill ' + str(skillCtr) + \
-        '" name="skillName' + str(skillCtr) + \
+    skills_str += \
+        '<p><input type="text" placeholder="Skill ' + str(skill_ctr) + \
+        '" name="skillName' + str(skill_ctr) + \
         '" value="" style="width:40%">' + \
         '<input type="range" min="1" max="100" ' + \
         'class="slider" name="skillValue' + \
-        str(skillCtr) + '" value="50"></p>' + end_edit_section()
+        str(skill_ctr) + '" value="50"></p>' + end_edit_section()
 
     idx = 'If you want to participate within organizations then you ' + \
         'can indicate some skills that you have and approximate ' + \
         'proficiency levels. This helps organizers to construct ' + \
         'teams with an appropriate combination of skills.'
-    editProfileForm = \
+    edit_profile_form = \
         begin_edit_section(translate['Skills']) + \
         '      <b><label class="labels">' + \
         translate['Skills'] + '</label></b><br>\n' + \
         '      <label class="labels">' + \
-        translate[idx] + '</label>\n' + skillsStr
-    return editProfileForm
+        translate[idx] + '</label>\n' + skills_str
+    return edit_profile_form
 
 
 def _html_edit_profile_git_projects(base_dir: str, nickname: str, domain: str,
                                     translate: {}) -> str:
     """git projects section of edit profile screen
     """
-    gitProjectsStr = ''
-    gitProjectsFilename = \
+    git_projects_str = ''
+    git_projects_filename = \
         acct_dir(base_dir, nickname, domain) + '/gitprojects.txt'
-    if os.path.isfile(gitProjectsFilename):
-        with open(gitProjectsFilename, 'r') as gitProjectsFile:
-            gitProjectsStr = gitProjectsFile.read()
+    if os.path.isfile(git_projects_filename):
+        with open(git_projects_filename, 'r') as git_file:
+            git_projects_str = git_file.read()
 
-    editProfileForm = begin_edit_section(translate['Git Projects'])
+    edit_profile_form = begin_edit_section(translate['Git Projects'])
     idx = 'List of project names that you wish to receive git patches for'
-    editProfileForm += \
-        edit_text_area(translate[idx], 'gitProjects', gitProjectsStr,
+    edit_profile_form += \
+        edit_text_area(translate[idx], 'gitProjects', git_projects_str,
                        100, '', False)
-    editProfileForm += end_edit_section()
-    return editProfileForm
+    edit_profile_form += end_edit_section()
+    return edit_profile_form
 
 
 def _html_edit_profile_shared_items(base_dir: str, nickname: str, domain: str,
                                     translate: {}) -> str:
     """shared items section of edit profile screen
     """
-    sharedItemsStr = ''
-    shared_items_federated_domainsStr = \
+    shared_items_str = ''
+    shared_items_federated_domains_str = \
         get_config_param(base_dir, 'sharedItemsFederatedDomains')
-    if shared_items_federated_domainsStr:
-        shared_items_federated_domainsList = \
-            shared_items_federated_domainsStr.split(',')
-        for sharedFederatedDomain in shared_items_federated_domainsList:
-            sharedItemsStr += sharedFederatedDomain.strip() + '\n'
+    if shared_items_federated_domains_str:
+        shared_items_federated_domains_list = \
+            shared_items_federated_domains_str.split(',')
+        for shared_federated_domain in shared_items_federated_domains_list:
+            shared_items_str += shared_federated_domain.strip() + '\n'
 
-    editProfileForm = begin_edit_section(translate['Shares'])
+    edit_profile_form = begin_edit_section(translate['Shares'])
     idx = 'List of domains which can access the shared items catalog'
-    editProfileForm += \
+    edit_profile_form += \
         edit_text_area(translate[idx], 'shareDomainList',
-                       sharedItemsStr, 200, '', False)
-    editProfileForm += end_edit_section()
-    return editProfileForm
+                       shared_items_str, 200, '', False)
+    edit_profile_form += end_edit_section()
+    return edit_profile_form
 
 
 def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
                                  user_agents_blocked: str,
-                                 translate: {}, replyIntervalHours: int,
+                                 translate: {}, reply_interval_hours: int,
                                  cw_lists: {}, lists_enabled: str) -> str:
     """Filtering and blocking section of edit profile screen
     """
-    filterStr = ''
-    filterFilename = \
+    filter_str = ''
+    filter_filename = \
         acct_dir(base_dir, nickname, domain) + '/filters.txt'
-    if os.path.isfile(filterFilename):
-        with open(filterFilename, 'r') as filterfile:
-            filterStr = filterfile.read()
+    if os.path.isfile(filter_filename):
+        with open(filter_filename, 'r') as filterfile:
+            filter_str = filterfile.read()
 
-    filterBioStr = ''
-    filterBioFilename = \
+    filter_bio_str = ''
+    filter_bio_filename = \
         acct_dir(base_dir, nickname, domain) + '/filters_bio.txt'
-    if os.path.isfile(filterBioFilename):
-        with open(filterBioFilename, 'r') as filterfile:
-            filterBioStr = filterfile.read()
+    if os.path.isfile(filter_bio_filename):
+        with open(filter_bio_filename, 'r') as filterfile:
+            filter_bio_str = filterfile.read()
 
-    switchStr = ''
-    switchFilename = \
+    switch_str = ''
+    switch_filename = \
         acct_dir(base_dir, nickname, domain) + '/replacewords.txt'
-    if os.path.isfile(switchFilename):
-        with open(switchFilename, 'r') as switchfile:
-            switchStr = switchfile.read()
+    if os.path.isfile(switch_filename):
+        with open(switch_filename, 'r') as switchfile:
+            switch_str = switchfile.read()
 
-    autoTags = ''
-    autoTagsFilename = \
+    auto_tags = ''
+    auto_tags_filename = \
         acct_dir(base_dir, nickname, domain) + '/autotags.txt'
-    if os.path.isfile(autoTagsFilename):
-        with open(autoTagsFilename, 'r') as autoTagsFile:
-            autoTags = autoTagsFile.read()
+    if os.path.isfile(auto_tags_filename):
+        with open(auto_tags_filename, 'r') as auto_file:
+            auto_tags = auto_file.read()
 
-    autoCW = ''
-    autoCWFilename = \
+    auto_cw = ''
+    auto_cw_filename = \
         acct_dir(base_dir, nickname, domain) + '/autocw.txt'
-    if os.path.isfile(autoCWFilename):
-        with open(autoCWFilename, 'r') as autoCWFile:
-            autoCW = autoCWFile.read()
+    if os.path.isfile(auto_cw_filename):
+        with open(auto_cw_filename, 'r') as cw_file:
+            auto_cw = cw_file.read()
 
-    blockedStr = ''
-    blockedFilename = \
+    blocked_str = ''
+    blocked_filename = \
         acct_dir(base_dir, nickname, domain) + '/blocking.txt'
-    if os.path.isfile(blockedFilename):
-        with open(blockedFilename, 'r') as blockedfile:
-            blockedStr = blockedfile.read()
+    if os.path.isfile(blocked_filename):
+        with open(blocked_filename, 'r') as blockedfile:
+            blocked_str = blockedfile.read()
 
-    dmAllowedInstancesStr = ''
-    dmAllowedInstancesFilename = \
+    dm_allowed_instances_str = ''
+    dm_allowed_instances_filename = \
         acct_dir(base_dir, nickname, domain) + '/dmAllowedInstances.txt'
-    if os.path.isfile(dmAllowedInstancesFilename):
-        with open(dmAllowedInstancesFilename, 'r') as dmAllowedInstancesFile:
-            dmAllowedInstancesStr = dmAllowedInstancesFile.read()
+    if os.path.isfile(dm_allowed_instances_filename):
+        with open(dm_allowed_instances_filename, 'r') as dm_file:
+            dm_allowed_instances_str = dm_file.read()
 
-    allowedInstancesStr = ''
-    allowedInstancesFilename = \
+    allowed_instances_str = ''
+    allowed_instances_filename = \
         acct_dir(base_dir, nickname, domain) + '/allowedinstances.txt'
-    if os.path.isfile(allowedInstancesFilename):
-        with open(allowedInstancesFilename, 'r') as allowedInstancesFile:
-            allowedInstancesStr = allowedInstancesFile.read()
+    if os.path.isfile(allowed_instances_filename):
+        with open(allowed_instances_filename, 'r') as allow_file:
+            allowed_instances_str = allow_file.read()
 
-    editProfileForm = begin_edit_section(translate['Filtering and Blocking'])
+    edit_profile_form = begin_edit_section(translate['Filtering and Blocking'])
 
     idx = 'Hours after posting during which replies are allowed'
-    editProfileForm += \
+    edit_profile_form += \
         '  <label class="labels">' + \
         translate[idx] + \
         ':</label> <input type="number" name="replyhours" ' + \
         'min="0" max="999999999999" step="1" ' + \
-        'value="' + str(replyIntervalHours) + '"><br>\n'
+        'value="' + str(reply_interval_hours) + '"><br>\n'
 
-    editProfileForm += \
+    edit_profile_form += \
         '<label class="labels">' + \
         translate['City for spoofed GPS image metadata'] + \
         '</label><br>\n'
 
     city = ''
-    cityFilename = acct_dir(base_dir, nickname, domain) + '/city.txt'
-    if os.path.isfile(cityFilename):
-        with open(cityFilename, 'r') as fp:
-            city = fp.read().replace('\n', '')
-    locationsFilename = base_dir + '/custom_locations.txt'
-    if not os.path.isfile(locationsFilename):
-        locationsFilename = base_dir + '/locations.txt'
+    city_filename = acct_dir(base_dir, nickname, domain) + '/city.txt'
+    if os.path.isfile(city_filename):
+        with open(city_filename, 'r') as city_file:
+            city = city_file.read().replace('\n', '')
+    locations_filename = base_dir + '/custom_locations.txt'
+    if not os.path.isfile(locations_filename):
+        locations_filename = base_dir + '/locations.txt'
     cities = []
-    with open(locationsFilename, 'r') as f:
-        cities = f.readlines()
+    with open(locations_filename, 'r') as loc_file:
+        cities = loc_file.readlines()
         cities.sort()
-    editProfileForm += '  <select id="cityDropdown" ' + \
+    edit_profile_form += '  <select id="cityDropdown" ' + \
         'name="cityDropdown" class="theme">\n'
     city = city.lower()
-    for cityName in cities:
-        if ':' not in cityName:
+    for city_name in cities:
+        if ':' not in city_name:
             continue
-        citySelected = ''
-        cityName = cityName.split(':')[0]
-        cityName = cityName.lower()
+        city_selected = ''
+        city_name = city_name.split(':')[0]
+        city_name = city_name.lower()
         if city:
-            if city in cityName:
-                citySelected = ' selected'
-        editProfileForm += \
-            '    <option value="' + cityName + \
-            '"' + citySelected.title() + '>' + \
-            cityName + '</option>\n'
-    editProfileForm += '  </select><br>\n'
+            if city in city_name:
+                city_selected = ' selected'
+        edit_profile_form += \
+            '    <option value="' + city_name + \
+            '"' + city_selected.title() + '>' + \
+            city_name + '</option>\n'
+    edit_profile_form += '  </select><br>\n'
 
-    editProfileForm += \
+    edit_profile_form += \
         '      <b><label class="labels">' + \
         translate['Filtered words'] + '</label></b>\n' + \
         '      <br><label class="labels">' + \
         translate['One per line'] + '</label>\n' + \
         '      <textarea id="message" ' + \
         'name="filteredWords" style="height:200px" spellcheck="false">' + \
-        filterStr + '</textarea>\n' + \
+        filter_str + '</textarea>\n' + \
         '      <br><b><label class="labels">' + \
         translate['Filtered words within bio'] + '</label></b>\n' + \
         '      <br><label class="labels">' + \
         translate['One per line'] + '</label>\n' + \
         '      <textarea id="message" ' + \
         'name="filteredWordsBio" style="height:200px" spellcheck="false">' + \
-        filterBioStr + '</textarea>\n' + \
+        filter_bio_str + '</textarea>\n' + \
         '      <br><b><label class="labels">' + \
         translate['Word Replacements'] + '</label></b>\n' + \
         '      <br><label class="labels">A -> B</label>\n' + \
         '      <textarea id="message" name="switchwords" ' + \
         'style="height:200px" spellcheck="false">' + \
-        switchStr + '</textarea>\n' + \
+        switch_str + '</textarea>\n' + \
         '      <br><b><label class="labels">' + \
         translate['Autogenerated Hashtags'] + '</label></b>\n' + \
         '      <br><label class="labels">A -> #B</label>\n' + \
         '      <textarea id="message" name="autoTags" ' + \
         'style="height:200px" spellcheck="false">' + \
-        autoTags + '</textarea>\n' + \
+        auto_tags + '</textarea>\n' + \
         '      <br><b><label class="labels">' + \
         translate['Autogenerated Content Warnings'] + '</label></b>\n' + \
         '      <br><label class="labels">A -> B</label>\n' + \
         '      <textarea id="message" name="autoCW" ' + \
-        'style="height:200px" spellcheck="true">' + autoCW + '</textarea>\n'
+        'style="height:200px" spellcheck="true">' + auto_cw + '</textarea>\n'
 
     idx = 'Blocked accounts, one per line, in the form ' + \
         'nickname@domain or *@blockeddomain'
-    editProfileForm += \
-        edit_text_area(translate['Blocked accounts'], 'blocked', blockedStr,
+    edit_profile_form += \
+        edit_text_area(translate['Blocked accounts'], 'blocked', blocked_str,
                        200, '', False)
 
     idx = 'Direct messages are always allowed from these instances.'
-    editProfileForm += \
+    edit_profile_form += \
         edit_text_area(translate['Direct Message permitted instances'],
-                       'dmAllowedInstances', dmAllowedInstancesStr,
+                       'dmAllowedInstances', dm_allowed_instances_str,
                        200, '', False)
 
     idx = 'Federate only with a defined set of instances. ' + \
         'One domain name per line.'
-    editProfileForm += \
+    edit_profile_form += \
         '      <br><b><label class="labels">' + \
         translate['Federation list'] + '</label></b>\n' + \
         '      <br><label class="labels">' + \
         translate[idx] + '</label>\n' + \
         '      <textarea id="message" name="allowedInstances" ' + \
         'style="height:200px" spellcheck="false">' + \
-        allowedInstancesStr + '</textarea>\n'
+        allowed_instances_str + '</textarea>\n'
 
     if is_moderator(base_dir, nickname):
-        editProfileForm += \
+        edit_profile_form += \
             '<a href="/users/' + nickname + '/crawlers">' + \
             translate['Known Web Crawlers'] + '</a><br>\n'
 
         user_agents_blocked_str = ''
-        for ua in user_agents_blocked:
+        for uagent in user_agents_blocked:
             if user_agents_blocked_str:
                 user_agents_blocked_str += '\n'
-            user_agents_blocked_str += ua
-        editProfileForm += \
+            user_agents_blocked_str += uagent
+        edit_profile_form += \
             edit_text_area(translate['Blocked User Agents'],
                            'userAgentsBlockedStr', user_agents_blocked_str,
                            200, '', False)
 
-        cw_listsStr = ''
-        for name, item in cw_lists.items():
-            variableName = get_cw_list_variable(name)
-            listIsEnabled = False
+        cw_lists_str = ''
+        for name, _ in cw_lists.items():
+            variablename = get_cw_list_variable(name)
+            list_is_enabled = False
             if lists_enabled:
                 if name in lists_enabled:
-                    listIsEnabled = True
+                    list_is_enabled = True
             if translate.get(name):
                 name = translate[name]
-            cw_listsStr += edit_check_box(name, variableName, listIsEnabled)
-        if cw_listsStr:
+            cw_lists_str += \
+                edit_check_box(name, variablename, list_is_enabled)
+        if cw_lists_str:
             idx = 'Add content warnings for the following sites'
-            editProfileForm += \
+            edit_profile_form += \
                 '<label class="labels">' + translate[idx] + ':</label>\n' + \
-                '<br>' + cw_listsStr
+                '<br>' + cw_lists_str
 
-    editProfileForm += end_edit_section()
-    return editProfileForm
+    edit_profile_form += end_edit_section()
+    return edit_profile_form
 
 
 def _html_edit_profile_change_password(translate: {}) -> str:
     """Change password section of edit profile screen
     """
-    editProfileForm = \
+    edit_profile_form = \
         begin_edit_section(translate['Change Password']) + \
         '<label class="labels">' + translate['Change Password'] + \
         '</label><br>\n' + \
@@ -1817,25 +1822,25 @@ def _html_edit_profile_change_password(translate: {}) -> str:
         '</label><br>\n' + \
         '      <input type="password" name="passwordconfirm" value="">\n' + \
         end_edit_section()
-    return editProfileForm
+    return edit_profile_form
 
 
 def _html_edit_profile_libre_translate(translate: {},
-                                       libretranslateUrl: str,
-                                       libretranslateApiKey: str) -> str:
+                                       libretranslate_url: str,
+                                       libretranslate_api_key: str) -> str:
     """Change automatic translation settings
     """
-    editProfileForm = begin_edit_section('LibreTranslate')
+    edit_profile_form = begin_edit_section('LibreTranslate')
 
-    editProfileForm += \
-        edit_text_field('URL', 'libretranslateUrl', libretranslateUrl,
+    edit_profile_form += \
+        edit_text_field('URL', 'libretranslateUrl', libretranslate_url,
                         'http://0.0.0.0:5000')
-    editProfileForm += \
+    edit_profile_form += \
         edit_text_field('API Key', 'libretranslateApiKey',
-                        libretranslateApiKey)
+                        libretranslate_api_key)
 
-    editProfileForm += end_edit_section()
-    return editProfileForm
+    edit_profile_form += end_edit_section()
+    return edit_profile_form
 
 
 def _html_edit_profile_background(news_instance: bool, translate: {}) -> str:
@@ -1843,138 +1848,140 @@ def _html_edit_profile_background(news_instance: bool, translate: {}) -> str:
     """
     idx = 'The files attached below should be no larger than ' + \
         '10MB in total uploaded at once.'
-    editProfileForm = \
+    edit_profile_form = \
         begin_edit_section(translate['Background Images']) + \
         '      <label class="labels">' + translate[idx] + '</label><br><br>\n'
 
     if not news_instance:
-        imageFormats = get_image_formats()
-        editProfileForm += \
+        image_formats = get_image_formats()
+        edit_profile_form += \
             '      <label class="labels">' + \
             translate['Background image'] + '</label>\n' + \
             '      <input type="file" id="image" name="image"' + \
-            '            accept="' + imageFormats + '">\n' + \
+            '            accept="' + image_formats + '">\n' + \
             '      <br><label class="labels">' + \
             translate['Timeline banner image'] + '</label>\n' + \
             '      <input type="file" id="banner" name="banner"' + \
-            '            accept="' + imageFormats + '">\n' + \
+            '            accept="' + image_formats + '">\n' + \
             '      <br><label class="labels">' + \
             translate['Search banner image'] + '</label>\n' + \
             '      <input type="file" id="search_banner" ' + \
             'name="search_banner"' + \
-            '            accept="' + imageFormats + '">\n' + \
+            '            accept="' + image_formats + '">\n' + \
             '      <br><label class="labels">' + \
             translate['Left column image'] + '</label>\n' + \
             '      <input type="file" id="left_col_image" ' + \
             'name="left_col_image"' + \
-            '            accept="' + imageFormats + '">\n' + \
+            '            accept="' + image_formats + '">\n' + \
             '      <br><label class="labels">' + \
             translate['Right column image'] + '</label>\n' + \
             '      <input type="file" id="right_col_image" ' + \
             'name="right_col_image"' + \
-            '            accept="' + imageFormats + '">\n'
+            '            accept="' + image_formats + '">\n'
 
-    editProfileForm += end_edit_section()
-    return editProfileForm
+    edit_profile_form += end_edit_section()
+    return edit_profile_form
 
 
 def _html_edit_profile_contact_info(nickname: str,
-                                    emailAddress: str,
-                                    xmppAddress: str,
-                                    matrixAddress: str,
-                                    ssbAddress: str,
-                                    toxAddress: str,
-                                    briarAddress: str,
-                                    jamiAddress: str,
+                                    email_address: str,
+                                    xmpp_address: str,
+                                    matrix_address: str,
+                                    ssb_address: str,
+                                    tox_address: str,
+                                    briar_address: str,
+                                    jami_address: str,
                                     cwtch_address: str,
                                     translate: {}) -> str:
     """Contact Information section of edit profile screen
     """
-    editProfileForm = begin_edit_section(translate['Contact Details'])
+    edit_profile_form = begin_edit_section(translate['Contact Details'])
 
-    editProfileForm += edit_text_field(translate['Email'],
-                                       'email', emailAddress)
-    editProfileForm += edit_text_field(translate['XMPP'],
-                                       'xmppAddress', xmppAddress)
-    editProfileForm += edit_text_field(translate['Matrix'],
-                                       'matrixAddress', matrixAddress)
-    editProfileForm += edit_text_field('SSB', 'ssbAddress', ssbAddress)
-    editProfileForm += edit_text_field('Tox', 'toxAddress', toxAddress)
-    editProfileForm += edit_text_field('Briar', 'briarAddress', briarAddress)
-    editProfileForm += edit_text_field('Jami', 'jamiAddress', jamiAddress)
-    editProfileForm += edit_text_field('Cwtch', 'cwtchAddress', cwtch_address)
-    editProfileForm += \
+    edit_profile_form += edit_text_field(translate['Email'],
+                                         'email', email_address)
+    edit_profile_form += edit_text_field(translate['XMPP'],
+                                         'xmppAddress', xmpp_address)
+    edit_profile_form += edit_text_field(translate['Matrix'],
+                                         'matrixAddress', matrix_address)
+    edit_profile_form += edit_text_field('SSB', 'ssbAddress', ssb_address)
+    edit_profile_form += edit_text_field('Tox', 'toxAddress', tox_address)
+    edit_profile_form += edit_text_field('Briar', 'briarAddress',
+                                         briar_address)
+    edit_profile_form += edit_text_field('Jami', 'jamiAddress', jami_address)
+    edit_profile_form += edit_text_field('Cwtch', 'cwtchAddress',
+                                         cwtch_address)
+    edit_profile_form += \
         '<a href="/users/' + nickname + \
         '/followingaccounts"><label class="labels">' + \
         translate['Following'] + '</label></a><br>\n'
 
-    editProfileForm += end_edit_section()
-    return editProfileForm
+    edit_profile_form += end_edit_section()
+    return edit_profile_form
 
 
-def _html_edit_profile_encryption_keys(PGPfingerprint: str,
-                                       PGPpubKey: str,
-                                       EnigmaPubKey: str,
+def _html_edit_profile_encryption_keys(pgp_fingerprint: str,
+                                       pgp_pub_key: str,
+                                       enigma_pub_key: str,
                                        translate: {}) -> str:
     """Contact Information section of edit profile screen
     """
-    editProfileForm = begin_edit_section(translate['Encryption Keys'])
+    edit_profile_form = begin_edit_section(translate['Encryption Keys'])
 
-    enigmaUrl = 'https://github.com/enigma-reloaded/enigma-reloaded'
-    editProfileForm += \
-        edit_text_field('<a href="' + enigmaUrl + '">Enigma</a>',
-                        'enigmapubkey', EnigmaPubKey)
-    editProfileForm += edit_text_field(translate['PGP Fingerprint'],
-                                       'openpgp', PGPfingerprint)
-    editProfileForm += \
-        edit_text_area(translate['PGP'], 'pgp', PGPpubKey, 600,
+    enigma_url = 'https://github.com/enigma-reloaded/enigma-reloaded'
+    edit_profile_form += \
+        edit_text_field('<a href="' + enigma_url + '">Enigma</a>',
+                        'enigmapubkey', enigma_pub_key)
+    edit_profile_form += edit_text_field(translate['PGP Fingerprint'],
+                                         'openpgp', pgp_fingerprint)
+    edit_profile_form += \
+        edit_text_area(translate['PGP'], 'pgp', pgp_pub_key, 600,
                        '-----BEGIN PGP PUBLIC KEY BLOCK-----', False)
 
-    editProfileForm += end_edit_section()
-    return editProfileForm
+    edit_profile_form += end_edit_section()
+    return edit_profile_form
 
 
-def _html_edit_profile_options(isAdmin: bool,
-                               manuallyApprovesFollowers: str,
-                               isBot: str, isGroup: str,
-                               followDMs: str, removeTwitter: str,
-                               notifyLikes: str, notifyReactions: str,
-                               hideLikeButton: str,
-                               hideReactionButton: str,
+def _html_edit_profile_options(is_admin: bool,
+                               manually_approves_followers: str,
+                               is_bot: str, is_group: str,
+                               follow_dms: str, remove_twitter: str,
+                               notify_likes: str, notify_reactions: str,
+                               hide_like_button: str,
+                               hide_reaction_button: str,
                                translate: {}) -> str:
     """option checkboxes section of edit profile screen
     """
-    editProfileForm = '    <div class="container">\n'
-    editProfileForm += \
+    edit_profile_form = '    <div class="container">\n'
+    edit_profile_form += \
         edit_check_box(translate['Approve follower requests'],
-                       'approveFollowers', manuallyApprovesFollowers)
-    editProfileForm += \
+                       'approveFollowers', manually_approves_followers)
+    edit_profile_form += \
         edit_check_box(translate['This is a bot account'],
-                       'isBot', isBot)
-    if isAdmin:
-        editProfileForm += \
+                       'isBot', is_bot)
+    if is_admin:
+        edit_profile_form += \
             edit_check_box(translate['This is a group account'],
-                           'isGroup', isGroup)
-    editProfileForm += \
+                           'isGroup', is_group)
+    edit_profile_form += \
         edit_check_box(translate['Only people I follow can send me DMs'],
-                       'followDMs', followDMs)
-    editProfileForm += \
+                       'followDMs', follow_dms)
+    edit_profile_form += \
         edit_check_box(translate['Remove Twitter posts'],
-                       'removeTwitter', removeTwitter)
-    editProfileForm += \
+                       'removeTwitter', remove_twitter)
+    edit_profile_form += \
         edit_check_box(translate['Notify when posts are liked'],
-                       'notifyLikes', notifyLikes)
-    editProfileForm += \
+                       'notifyLikes', notify_likes)
+    edit_profile_form += \
         edit_check_box(translate['Notify on emoji reactions'],
-                       'notifyReactions', notifyReactions)
-    editProfileForm += \
+                       'notifyReactions', notify_reactions)
+    edit_profile_form += \
         edit_check_box(translate["Don't show the Like button"],
-                       'hideLikeButton', hideLikeButton)
-    editProfileForm += \
+                       'hideLikeButton', hide_like_button)
+    edit_profile_form += \
         edit_check_box(translate["Don't show the Reaction button"],
-                       'hideReactionButton', hideReactionButton)
-    editProfileForm += '    </div>\n'
-    return editProfileForm
+                       'hideReactionButton', hide_reaction_button)
+    edit_profile_form += '    </div>\n'
+    return edit_profile_form
 
 
 def _get_supported_languagesSorted(base_dir: str) -> str:
@@ -1984,129 +1991,129 @@ def _get_supported_languagesSorted(base_dir: str) -> str:
     if not lang_list:
         return ''
     lang_list.sort()
-    languagesStr = ''
+    languages_str = ''
     for lang in lang_list:
-        if languagesStr:
-            languagesStr += ' / ' + lang
+        if languages_str:
+            languages_str += ' / ' + lang
         else:
-            languagesStr = lang
-    return languagesStr
+            languages_str = lang
+    return languages_str
 
 
-def _html_edit_profile_main(base_dir: str, displayNickname: str, bioStr: str,
-                            movedTo: str, donateUrl: str, websiteUrl: str,
-                            blogAddress: str, actor_json: {},
+def _html_edit_profile_main(base_dir: str, display_nickname: str, bio_str: str,
+                            moved_to: str, donate_url: str, website_url: str,
+                            blog_address: str, actor_json: {},
                             translate: {}) -> str:
     """main info on edit profile screen
     """
-    imageFormats = get_image_formats()
+    image_formats = get_image_formats()
 
-    editProfileForm = '    <div class="container">\n'
+    edit_profile_form = '    <div class="container">\n'
 
-    editProfileForm += \
+    edit_profile_form += \
         edit_text_field(translate['Nickname'], 'displayNickname',
-                        displayNickname)
+                        display_nickname)
 
-    editProfileForm += \
-        edit_text_area(translate['Your bio'], 'bio', bioStr, 200, '', True)
+    edit_profile_form += \
+        edit_text_area(translate['Your bio'], 'bio', bio_str, 200, '', True)
 
-    editProfileForm += \
+    edit_profile_form += \
         '      <label class="labels">' + translate['Avatar image'] + \
         '</label>\n' + \
         '      <input type="file" id="avatar" name="avatar"' + \
-        '            accept="' + imageFormats + '">\n'
+        '            accept="' + image_formats + '">\n'
 
-    occupationName = ''
+    occupation_name = ''
     if actor_json.get('hasOccupation'):
-        occupationName = get_occupation_name(actor_json)
+        occupation_name = get_occupation_name(actor_json)
 
-    editProfileForm += \
+    edit_profile_form += \
         edit_text_field(translate['Occupation'], 'occupationName',
-                        occupationName)
+                        occupation_name)
 
-    alsoKnownAsStr = ''
+    also_known_as_str = ''
     if actor_json.get('alsoKnownAs'):
-        alsoKnownAs = actor_json['alsoKnownAs']
+        also_known_as = actor_json['alsoKnownAs']
         ctr = 0
-        for altActor in alsoKnownAs:
+        for alt_actor in also_known_as:
             if ctr > 0:
-                alsoKnownAsStr += ', '
+                also_known_as_str += ', '
             ctr += 1
-            alsoKnownAsStr += altActor
+            also_known_as_str += alt_actor
 
-    editProfileForm += \
+    edit_profile_form += \
         edit_text_field(translate['Other accounts'], 'alsoKnownAs',
-                        alsoKnownAsStr, 'https://...')
+                        also_known_as_str, 'https://...')
 
-    editProfileForm += \
+    edit_profile_form += \
         edit_text_field(translate['Moved to new account address'], 'movedTo',
-                        movedTo, 'https://...')
+                        moved_to, 'https://...')
 
-    editProfileForm += \
+    edit_profile_form += \
         edit_text_field(translate['Donations link'], 'donateUrl',
-                        donateUrl, 'https://...')
+                        donate_url, 'https://...')
 
-    editProfileForm += \
+    edit_profile_form += \
         edit_text_field(translate['Website'], 'websiteUrl',
-                        websiteUrl, 'https://...')
+                        website_url, 'https://...')
 
-    editProfileForm += \
-        edit_text_field('Blog', 'blogAddress', blogAddress, 'https://...')
+    edit_profile_form += \
+        edit_text_field('Blog', 'blogAddress', blog_address, 'https://...')
 
-    languagesListStr = _get_supported_languagesSorted(base_dir)
-    showLanguages = get_actor_languages(actor_json)
-    editProfileForm += \
+    languages_list_str = _get_supported_languagesSorted(base_dir)
+    show_languages = get_actor_languages(actor_json)
+    edit_profile_form += \
         edit_text_field(translate['Languages'], 'showLanguages',
-                        showLanguages, languagesListStr)
+                        show_languages, languages_list_str)
 
-    editProfileForm += '    </div>\n'
-    return editProfileForm
+    edit_profile_form += '    </div>\n'
+    return edit_profile_form
 
 
 def _html_edit_profile_top_banner(base_dir: str,
                                   nickname: str, domain: str, domain_full: str,
-                                  defaultTimeline: str, bannerFile: str,
-                                  path: str, accessKeys: {},
+                                  default_timeline: str, banner_file: str,
+                                  path: str, access_keys: {},
                                   translate: {}) -> str:
     """top banner on edit profile screen
     """
-    editProfileForm = \
-        '<a href="/users/' + nickname + '/' + defaultTimeline + '">' + \
+    edit_profile_form = \
+        '<a href="/users/' + nickname + '/' + default_timeline + '">' + \
         '<img loading="lazy" class="timeline-banner" src="' + \
-        '/users/' + nickname + '/' + bannerFile + '" alt="" /></a>\n'
+        '/users/' + nickname + '/' + banner_file + '" alt="" /></a>\n'
 
-    editProfileForm += \
+    edit_profile_form += \
         '<form enctype="multipart/form-data" method="POST" ' + \
         'accept-charset="UTF-8" action="' + path + '/profiledata">\n'
-    editProfileForm += '  <div class="vertical-center">\n'
-    editProfileForm += \
+    edit_profile_form += '  <div class="vertical-center">\n'
+    edit_profile_form += \
         '    <h1>' + translate['Profile for'] + \
         ' ' + nickname + '@' + domain_full + '</h1>'
-    editProfileForm += '    <div class="container">\n'
-    editProfileForm += \
+    edit_profile_form += '    <div class="container">\n'
+    edit_profile_form += \
         '      <center>\n' + \
         '        <input type="submit" name="submitProfile" ' + \
-        'accesskey="' + accessKeys['submitButton'] + '" ' + \
+        'accesskey="' + access_keys['submitButton'] + '" ' + \
         'value="' + translate['Submit'] + '">\n' + \
         '      </center>\n'
-    editProfileForm += '    </div>\n'
+    edit_profile_form += '    </div>\n'
 
     if scheduled_posts_exist(base_dir, nickname, domain):
-        editProfileForm += '    <div class="container">\n'
-        editProfileForm += \
+        edit_profile_form += '    <div class="container">\n'
+        edit_profile_form += \
             edit_check_box(translate['Remove scheduled posts'],
                            'removeScheduledPosts', False)
-        editProfileForm += '    </div>\n'
-    return editProfileForm
+        edit_profile_form += '    </div>\n'
+    return edit_profile_form
 
 
 def html_edit_profile(css_cache: {}, translate: {}, base_dir: str, path: str,
                       domain: str, port: int, http_prefix: str,
-                      defaultTimeline: str, theme: str,
+                      default_timeline: str, theme: str,
                       peertube_instances: [],
                       text_mode_banner: str, city: str,
                       user_agents_blocked: str,
-                      accessKeys: {},
+                      access_keys: {},
                       default_reply_interval_hrs: int,
                       cw_lists: {}, lists_enabled: str) -> str:
     """Shows the edit profile screen
@@ -2118,235 +2125,239 @@ def html_edit_profile(css_cache: {}, translate: {}, base_dir: str, path: str,
         return ''
     domain_full = get_full_domain(domain, port)
 
-    actorFilename = acct_dir(base_dir, nickname, domain) + '.json'
-    if not os.path.isfile(actorFilename):
+    actor_filename = acct_dir(base_dir, nickname, domain) + '.json'
+    if not os.path.isfile(actor_filename):
         return ''
 
     # filename of the banner shown at the top
-    bannerFile, bannerFilename = \
+    banner_file, _ = \
         get_banner_file(base_dir, nickname, domain, theme)
 
-    displayNickname = nickname
-    isBot = isGroup = followDMs = removeTwitter = ''
-    notifyLikes = notifyReactions = ''
-    hideLikeButton = hideReactionButton = media_instanceStr = ''
-    blogs_instanceStr = news_instanceStr = movedTo = twitterStr = ''
-    bioStr = donateUrl = websiteUrl = emailAddress = ''
-    PGPpubKey = EnigmaPubKey = ''
-    PGPfingerprint = xmppAddress = matrixAddress = ''
-    ssbAddress = blogAddress = toxAddress = jamiAddress = ''
-    cwtch_address = briarAddress = manuallyApprovesFollowers = ''
+    display_nickname = nickname
+    is_bot = is_group = follow_dms = remove_twitter = ''
+    notify_likes = notify_reactions = ''
+    hide_like_button = hide_reaction_button = media_instance_str = ''
+    blogs_instance_str = news_instance_str = moved_to = twitter_str = ''
+    bio_str = donate_url = website_url = email_address = ''
+    pgp_pub_key = enigma_pub_key = ''
+    pgp_fingerprint = xmpp_address = matrix_address = ''
+    ssb_address = blog_address = tox_address = jami_address = ''
+    cwtch_address = briar_address = manually_approves_followers = ''
 
-    actor_json = load_json(actorFilename)
+    actor_json = load_json(actor_filename)
     if actor_json:
         if actor_json.get('movedTo'):
-            movedTo = actor_json['movedTo']
-        donateUrl = get_donation_url(actor_json)
-        websiteUrl = get_website(actor_json, translate)
-        xmppAddress = get_xmpp_address(actor_json)
-        matrixAddress = get_matrix_address(actor_json)
-        ssbAddress = get_ssb_address(actor_json)
-        blogAddress = get_blog_address(actor_json)
-        toxAddress = get_tox_address(actor_json)
-        briarAddress = get_briar_address(actor_json)
-        jamiAddress = get_jami_address(actor_json)
+            moved_to = actor_json['movedTo']
+        donate_url = get_donation_url(actor_json)
+        website_url = get_website(actor_json, translate)
+        xmpp_address = get_xmpp_address(actor_json)
+        matrix_address = get_matrix_address(actor_json)
+        ssb_address = get_ssb_address(actor_json)
+        blog_address = get_blog_address(actor_json)
+        tox_address = get_tox_address(actor_json)
+        briar_address = get_briar_address(actor_json)
+        jami_address = get_jami_address(actor_json)
         cwtch_address = get_cwtch_address(actor_json)
-        emailAddress = get_email_address(actor_json)
-        EnigmaPubKey = get_enigma_pub_key(actor_json)
-        PGPpubKey = get_pgp_pub_key(actor_json)
-        PGPfingerprint = get_pgp_fingerprint(actor_json)
+        email_address = get_email_address(actor_json)
+        enigma_pub_key = get_enigma_pub_key(actor_json)
+        pgp_pub_key = get_pgp_pub_key(actor_json)
+        pgp_fingerprint = get_pgp_fingerprint(actor_json)
         if actor_json.get('name'):
             if not is_filtered(base_dir, nickname, domain, actor_json['name']):
-                displayNickname = actor_json['name']
+                display_nickname = actor_json['name']
         if actor_json.get('summary'):
-            bioStr = \
+            bio_str = \
                 actor_json['summary'].replace('<p>', '').replace('</p>', '')
-            if is_filtered(base_dir, nickname, domain, bioStr):
-                bioStr = ''
+            if is_filtered(base_dir, nickname, domain, bio_str):
+                bio_str = ''
         if actor_json.get('manuallyApprovesFollowers'):
             if actor_json['manuallyApprovesFollowers']:
-                manuallyApprovesFollowers = 'checked'
+                manually_approves_followers = 'checked'
             else:
-                manuallyApprovesFollowers = ''
+                manually_approves_followers = ''
         if actor_json.get('type'):
             if actor_json['type'] == 'Service':
-                isBot = 'checked'
-                isGroup = ''
+                is_bot = 'checked'
+                is_group = ''
             elif actor_json['type'] == 'Group':
-                isGroup = 'checked'
-                isBot = ''
-    accountDir = acct_dir(base_dir, nickname, domain)
-    if os.path.isfile(accountDir + '/.followDMs'):
-        followDMs = 'checked'
-    if os.path.isfile(accountDir + '/.removeTwitter'):
-        removeTwitter = 'checked'
-    if os.path.isfile(accountDir + '/.notifyLikes'):
-        notifyLikes = 'checked'
-    if os.path.isfile(accountDir + '/.notifyReactions'):
-        notifyReactions = 'checked'
-    if os.path.isfile(accountDir + '/.hideLikeButton'):
-        hideLikeButton = 'checked'
-    if os.path.isfile(accountDir + '/.hideReactionButton'):
-        hideReactionButton = 'checked'
+                is_group = 'checked'
+                is_bot = ''
+    account_dir = acct_dir(base_dir, nickname, domain)
+    if os.path.isfile(account_dir + '/.followDMs'):
+        follow_dms = 'checked'
+    if os.path.isfile(account_dir + '/.removeTwitter'):
+        remove_twitter = 'checked'
+    if os.path.isfile(account_dir + '/.notifyLikes'):
+        notify_likes = 'checked'
+    if os.path.isfile(account_dir + '/.notifyReactions'):
+        notify_reactions = 'checked'
+    if os.path.isfile(account_dir + '/.hideLikeButton'):
+        hide_like_button = 'checked'
+    if os.path.isfile(account_dir + '/.hideReactionButton'):
+        hide_reaction_button = 'checked'
 
     media_instance = get_config_param(base_dir, "mediaInstance")
     if media_instance:
         if media_instance is True:
-            media_instanceStr = 'checked'
-            blogs_instanceStr = news_instanceStr = ''
+            media_instance_str = 'checked'
+            blogs_instance_str = news_instance_str = ''
 
     news_instance = get_config_param(base_dir, "newsInstance")
     if news_instance:
         if news_instance is True:
-            news_instanceStr = 'checked'
-            blogs_instanceStr = media_instanceStr = ''
+            news_instance_str = 'checked'
+            blogs_instance_str = media_instance_str = ''
 
     blogs_instance = get_config_param(base_dir, "blogsInstance")
     if blogs_instance:
         if blogs_instance is True:
-            blogs_instanceStr = 'checked'
-            media_instanceStr = news_instanceStr = ''
+            blogs_instance_str = 'checked'
+            media_instance_str = news_instance_str = ''
 
-    cssFilename = base_dir + '/epicyon-profile.css'
+    css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
-        cssFilename = base_dir + '/epicyon.css'
+        css_filename = base_dir + '/epicyon.css'
 
-    instanceStr = ''
-    roleAssignStr = ''
-    peertubeStr = ''
-    libretranslateStr = ''
-    systemMonitorStr = ''
-    graphicsStr = ''
-    sharesFederationStr = ''
+    instance_str = ''
+    role_assign_str = ''
+    peertube_str = ''
+    libretranslate_str = ''
+    system_monitor_str = ''
+    graphics_str = ''
+    shares_federation_str = ''
 
-    adminNickname = get_config_param(base_dir, 'admin')
+    admin_nickname = get_config_param(base_dir, 'admin')
 
     if is_artist(base_dir, nickname) or \
-       path.startswith('/users/' + str(adminNickname) + '/'):
-        graphicsStr = _html_edit_profile_graphic_design(base_dir, translate)
+       path.startswith('/users/' + str(admin_nickname) + '/'):
+        graphics_str = _html_edit_profile_graphic_design(base_dir, translate)
 
-    isAdmin = False
-    if adminNickname:
-        if path.startswith('/users/' + adminNickname + '/'):
-            isAdmin = True
-            twitterStr = \
-                _html_edit_profile_twitter(base_dir, translate, removeTwitter)
+    is_admin = False
+    if admin_nickname:
+        if path.startswith('/users/' + admin_nickname + '/'):
+            is_admin = True
+            twitter_str = \
+                _html_edit_profile_twitter(base_dir, translate, remove_twitter)
             # shared items section
-            sharesFederationStr = \
+            shares_federation_str = \
                 _html_edit_profile_shared_items(base_dir, nickname,
                                                 domain, translate)
-            instanceStr, roleAssignStr, peertubeStr, libretranslateStr = \
+            instance_str, role_assign_str, peertube_str, libretranslate_str = \
                 _html_edit_profile_instance(base_dir, translate,
                                             peertube_instances,
-                                            media_instanceStr,
-                                            blogs_instanceStr,
-                                            news_instanceStr)
-            systemMonitorStr = _html_system_monitor(nickname, translate)
+                                            media_instance_str,
+                                            blogs_instance_str,
+                                            news_instance_str)
+            system_monitor_str = _html_system_monitor(nickname, translate)
 
-    instanceTitle = get_config_param(base_dir, 'instanceTitle')
-    editProfileForm = \
-        html_header_with_external_style(cssFilename, instanceTitle, None)
+    instance_title = get_config_param(base_dir, 'instanceTitle')
+    edit_profile_form = \
+        html_header_with_external_style(css_filename, instance_title, None)
 
     # keyboard navigation
-    userPathStr = '/users/' + nickname
-    userTimalineStr = '/users/' + nickname + '/' + defaultTimeline
-    menuTimeline = \
+    user_path_str = '/users/' + nickname
+    user_timeline_str = '/users/' + nickname + '/' + default_timeline
+    menu_timeline = \
         html_hide_from_screen_reader('🏠') + ' ' + \
         translate['Switch to timeline view']
-    menuProfile = \
+    menu_profile = \
         html_hide_from_screen_reader('👤') + ' ' + \
         translate['Switch to profile view']
-    navLinks = {
-        menuProfile: userPathStr,
-        menuTimeline: userTimalineStr
+    nav_links = {
+        menu_profile: user_path_str,
+        menu_timeline: user_timeline_str
     }
-    navAccessKeys = {
-        menuProfile: 'p',
-        menuTimeline: 't'
+    nav_access_keys = {
+        menu_profile: 'p',
+        menu_timeline: 't'
     }
-    editProfileForm += html_keyboard_navigation(text_mode_banner,
-                                                navLinks, navAccessKeys)
+    edit_profile_form += \
+        html_keyboard_navigation(text_mode_banner, nav_links, nav_access_keys)
 
     # top banner
-    editProfileForm += \
+    edit_profile_form += \
         _html_edit_profile_top_banner(base_dir, nickname, domain, domain_full,
-                                      defaultTimeline, bannerFile,
-                                      path, accessKeys, translate)
+                                      default_timeline, banner_file,
+                                      path, access_keys, translate)
 
     # main info
-    editProfileForm += \
-        _html_edit_profile_main(base_dir, displayNickname, bioStr,
-                                movedTo, donateUrl, websiteUrl,
-                                blogAddress, actor_json, translate)
+    edit_profile_form += \
+        _html_edit_profile_main(base_dir, display_nickname, bio_str,
+                                moved_to, donate_url, website_url,
+                                blog_address, actor_json, translate)
 
     # Option checkboxes
-    editProfileForm += \
-        _html_edit_profile_options(isAdmin, manuallyApprovesFollowers,
-                                   isBot, isGroup, followDMs, removeTwitter,
-                                   notifyLikes, notifyReactions,
-                                   hideLikeButton, hideReactionButton,
+    edit_profile_form += \
+        _html_edit_profile_options(is_admin, manually_approves_followers,
+                                   is_bot, is_group, follow_dms,
+                                   remove_twitter,
+                                   notify_likes, notify_reactions,
+                                   hide_like_button, hide_reaction_button,
                                    translate)
 
     # Contact information
-    editProfileForm += \
-        _html_edit_profile_contact_info(nickname, emailAddress,
-                                        xmppAddress, matrixAddress,
-                                        ssbAddress, toxAddress,
-                                        briarAddress, jamiAddress,
+    edit_profile_form += \
+        _html_edit_profile_contact_info(nickname, email_address,
+                                        xmpp_address, matrix_address,
+                                        ssb_address, tox_address,
+                                        briar_address, jami_address,
                                         cwtch_address, translate)
 
     # Encryption Keys
-    editProfileForm += \
-        _html_edit_profile_encryption_keys(PGPfingerprint,
-                                           PGPpubKey, EnigmaPubKey, translate)
+    edit_profile_form += \
+        _html_edit_profile_encryption_keys(pgp_fingerprint,
+                                           pgp_pub_key, enigma_pub_key,
+                                           translate)
 
     # Customize images and banners
-    editProfileForm += _html_edit_profile_background(news_instance, translate)
+    edit_profile_form += \
+        _html_edit_profile_background(news_instance, translate)
 
     # Change password
-    editProfileForm += _html_edit_profile_change_password(translate)
+    edit_profile_form += _html_edit_profile_change_password(translate)
 
     # automatic translations
-    editProfileForm += libretranslateStr
+    edit_profile_form += libretranslate_str
 
     # system monitor
-    editProfileForm += systemMonitorStr
+    edit_profile_form += system_monitor_str
 
     # Filtering and blocking section
-    replyIntervalHours = get_reply_interval_hours(base_dir, nickname, domain,
-                                                  default_reply_interval_hrs)
-    editProfileForm += \
+    reply_interval_hours = \
+        get_reply_interval_hours(base_dir, nickname, domain,
+                                 default_reply_interval_hrs)
+    edit_profile_form += \
         _html_edit_profile_filtering(base_dir, nickname, domain,
                                      user_agents_blocked, translate,
-                                     replyIntervalHours,
+                                     reply_interval_hours,
                                      cw_lists, lists_enabled)
 
     # git projects section
-    editProfileForm += \
+    edit_profile_form += \
         _html_edit_profile_git_projects(base_dir, nickname, domain, translate)
 
     # Skills section
-    editProfileForm += \
+    edit_profile_form += \
         _html_edit_profile_skills(base_dir, nickname, domain, translate)
 
-    editProfileForm += roleAssignStr + peertubeStr + graphicsStr
-    editProfileForm += sharesFederationStr + twitterStr + instanceStr
+    edit_profile_form += role_assign_str + peertube_str + graphics_str
+    edit_profile_form += shares_federation_str + twitter_str + instance_str
 
     # danger zone section
-    editProfileForm += _html_edit_profile_danger_zone(translate)
+    edit_profile_form += _html_edit_profile_danger_zone(translate)
 
-    editProfileForm += '    <div class="container">\n'
-    editProfileForm += \
+    edit_profile_form += '    <div class="container">\n'
+    edit_profile_form += \
         '      <center>\n' + \
         '        <input type="submit" name="submitProfile" value="' + \
         translate['Submit'] + '">\n' + \
         '      </center>\n'
-    editProfileForm += '    </div>\n'
+    edit_profile_form += '    </div>\n'
 
-    editProfileForm += '  </div>\n'
-    editProfileForm += '</form>\n'
-    editProfileForm += html_footer()
-    return editProfileForm
+    edit_profile_form += '  </div>\n'
+    edit_profile_form += '</form>\n'
+    edit_profile_form += html_footer()
+    return edit_profile_form
 
 
 def _individual_follow_as_html(signing_priv_key_pem: str,
@@ -2356,7 +2367,7 @@ def _individual_follow_as_html(signing_priv_key_pem: str,
                                person_cache: {}, domain: str,
                                followUrl: str,
                                authorized: bool,
-                               actorNickname: str,
+                               actor_nickname: str,
                                http_prefix: str,
                                project_version: str,
                                dormant: bool,
@@ -2364,73 +2375,78 @@ def _individual_follow_as_html(signing_priv_key_pem: str,
                                buttons=[]) -> str:
     """An individual follow entry on the profile screen
     """
-    followUrlNickname = get_nickname_from_actor(followUrl)
-    followUrlDomain, followUrlPort = get_domain_from_actor(followUrl)
-    followUrlDomainFull = get_full_domain(followUrlDomain, followUrlPort)
-    titleStr = '@' + followUrlNickname + '@' + followUrlDomainFull
-    avatarUrl = get_person_avatar_url(base_dir, followUrl, person_cache, True)
-    if not avatarUrl:
-        avatarUrl = followUrl + '/avatar.png'
+    follow_url_nickname = get_nickname_from_actor(followUrl)
+    follow_url_domain, follow_url_port = get_domain_from_actor(followUrl)
+    follow_url_domain_full = \
+        get_full_domain(follow_url_domain, follow_url_port)
+    title_str = '@' + follow_url_nickname + '@' + follow_url_domain_full
+    avatar_url = get_person_avatar_url(base_dir, followUrl, person_cache, True)
+    if not avatar_url:
+        avatar_url = followUrl + '/avatar.png'
 
-    displayName = get_display_name(base_dir, followUrl, person_cache)
-    isGroup = False
-    if not displayName:
+    display_name = get_display_name(base_dir, followUrl, person_cache)
+    is_group = False
+    if not display_name:
         # lookup the correct webfinger for the followUrl
-        followUrlHandle = followUrlNickname + '@' + followUrlDomainFull
-        followUrlWf = \
-            webfinger_handle(session, followUrlHandle, http_prefix,
+        follow_url_handle = follow_url_nickname + '@' + follow_url_domain_full
+        follow_url_wf = \
+            webfinger_handle(session, follow_url_handle, http_prefix,
                              cached_webfingers,
                              domain, __version__, debug, False,
                              signing_priv_key_pem)
 
-        originDomain = domain
-        (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl2,
-         displayName, isGroup) = get_person_box(signing_priv_key_pem,
-                                                originDomain,
-                                                base_dir, session,
-                                                followUrlWf,
-                                                person_cache, project_version,
-                                                http_prefix, followUrlNickname,
-                                                domain, 'outbox', 43036)
-        if avatarUrl2:
-            avatarUrl = avatarUrl2
+        origin_domain = domain
+        (_, _, _, _, _, avatar_url2,
+         display_name, is_group) = get_person_box(signing_priv_key_pem,
+                                                  origin_domain,
+                                                  base_dir, session,
+                                                  follow_url_wf,
+                                                  person_cache,
+                                                  project_version,
+                                                  http_prefix,
+                                                  follow_url_nickname,
+                                                  domain, 'outbox', 43036)
+        if avatar_url2:
+            avatar_url = avatar_url2
 
-    if displayName:
-        displayName = \
+    if display_name:
+        display_name = \
             add_emoji_to_display_name(None, base_dir, http_prefix,
-                                      actorNickname, domain,
-                                      displayName, False)
-        titleStr = displayName
+                                      actor_nickname, domain,
+                                      display_name, False)
+        title_str = display_name
 
     if dormant:
-        titleStr += ' 💤'
+        title_str += ' 💤'
 
-    buttonsStr = ''
+    buttons_str = ''
     if authorized:
-        for b in buttons:
-            if b == 'block':
-                buttonsStr += \
-                    '<a href="/users/' + actorNickname + \
+        for btn in buttons:
+            if btn == 'block':
+                buttons_str += \
+                    '<a href="/users/' + actor_nickname + \
                     '?options=' + followUrl + \
-                    ';1;' + avatarUrl + '"><button class="buttonunfollow">' + \
+                    ';1;' + avatar_url + \
+                    '"><button class="buttonunfollow">' + \
                     translate['Block'] + '</button></a>\n'
-            elif b == 'unfollow':
-                unfollowStr = 'Unfollow'
-                if isGroup or \
+            elif btn == 'unfollow':
+                unfollow_str = 'Unfollow'
+                if is_group or \
                    is_group_account(base_dir,
-                                    followUrlNickname, followUrlDomain):
-                    unfollowStr = 'Leave'
-                buttonsStr += \
-                    '<a href="/users/' + actorNickname + \
+                                    follow_url_nickname, follow_url_domain):
+                    unfollow_str = 'Leave'
+                buttons_str += \
+                    '<a href="/users/' + actor_nickname + \
                     '?options=' + followUrl + \
-                    ';1;' + avatarUrl + '"><button class="buttonunfollow">' + \
-                    translate[unfollowStr] + '</button></a>\n'
+                    ';1;' + avatar_url + \
+                    '"><button class="buttonunfollow">' + \
+                    translate[unfollow_str] + '</button></a>\n'
 
-    resultStr = '<div class="container">\n'
-    resultStr += \
-        '<a href="/users/' + actorNickname + '?options=' + \
-        followUrl + ';1;' + avatarUrl + '">\n'
-    resultStr += '<p><img loading="lazy" src="' + avatarUrl + '" alt=" ">'
-    resultStr += titleStr + '</a>' + buttonsStr + '</p>\n'
-    resultStr += '</div>\n'
-    return resultStr
+    result_str = '<div class="container">\n'
+    result_str += \
+        '<a href="/users/' + actor_nickname + '?options=' + \
+        followUrl + ';1;' + avatar_url + '">\n'
+    result_str += '<p><img loading="lazy" src="' + avatar_url + '" alt=" ">'
+    result_str += title_str + '</a>' + buttons_str + '</p>\n'
+    result_str += '</div>\n'
+    return result_str
