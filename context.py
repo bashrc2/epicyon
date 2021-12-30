@@ -8,7 +8,7 @@ __status__ = "Production"
 __module_group__ = "Security"
 
 
-validContexts = (
+VALID_CONTEXTS = (
     "https://www.w3.org/ns/activitystreams",
     "https://w3id.org/identity/v1",
     "https://w3id.org/security/v1",
@@ -47,28 +47,28 @@ def has_valid_context(post_json_object: {}) -> bool:
         for url in post_json_object['@context']:
             if not isinstance(url, str):
                 continue
-            if url not in validContexts:
-                wildcardFound = False
-                for c in validContexts:
-                    if c.startswith('*'):
-                        c = c.replace('*', '')
-                        if url.endswith(c):
-                            wildcardFound = True
+            if url not in VALID_CONTEXTS:
+                wildcard_found = False
+                for cont in VALID_CONTEXTS:
+                    if cont.startswith('*'):
+                        cont = cont.replace('*', '')
+                        if url.endswith(cont):
+                            wildcard_found = True
                             break
-                if not wildcardFound:
+                if not wildcard_found:
                     print('Unrecognized @context: ' + url)
                     return False
     elif isinstance(post_json_object['@context'], str):
         url = post_json_object['@context']
-        if url not in validContexts:
-            wildcardFound = False
-            for c in validContexts:
-                if c.startswith('*'):
-                    c = c.replace('*', '')
-                    if url.endswith(c):
-                        wildcardFound = True
+        if url not in VALID_CONTEXTS:
+            wildcard_found = False
+            for cont in VALID_CONTEXTS:
+                if cont.startswith('*'):
+                    cont = cont.replace('*', '')
+                    if url.endswith(cont):
+                        wildcard_found = True
                         break
-            if not wildcardFound:
+            if not wildcard_found:
                 print('Unrecognized @context: ' + url)
                 return False
     else:
