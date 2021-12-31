@@ -17,14 +17,14 @@ def html_suspended(css_cache: {}, base_dir: str) -> str:
     """Show the screen for suspended accounts
     """
     suspendedForm = ''
-    cssFilename = base_dir + '/epicyon-suspended.css'
+    css_filename = base_dir + '/epicyon-suspended.css'
     if os.path.isfile(base_dir + '/suspended.css'):
-        cssFilename = base_dir + '/suspended.css'
+        css_filename = base_dir + '/suspended.css'
 
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
     suspendedForm = \
-        html_header_with_external_style(cssFilename, instanceTitle, None)
+        html_header_with_external_style(css_filename, instanceTitle, None)
     suspendedForm += \
         '<div><center>\n' + \
         '  <p class="screentitle">Account Suspended</p>\n' + \

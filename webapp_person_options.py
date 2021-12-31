@@ -61,7 +61,7 @@ def html_person_options(defaultTimeline: str,
                         text_mode_banner: str,
                         news_instance: bool,
                         authorized: bool,
-                        accessKeys: {},
+                        access_keys: {},
                         isGroup: bool) -> str:
     """Show options for a person: view/follow/block/report
     """
@@ -111,9 +111,9 @@ def html_person_options(defaultTimeline: str,
         optionsLinkStr = \
             '    <input type="hidden" name="postUrl" value="' + \
             optionsLink + '">\n'
-    cssFilename = base_dir + '/epicyon-options.css'
+    css_filename = base_dir + '/epicyon-options.css'
     if os.path.isfile(base_dir + '/options.css'):
-        cssFilename = base_dir + '/options.css'
+        css_filename = base_dir + '/options.css'
 
     # To snooze, or not to snooze? That is the question
     snoozeButtonStr = 'Snooze'
@@ -131,7 +131,7 @@ def html_person_options(defaultTimeline: str,
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
     optionsStr = \
-        html_header_with_external_style(cssFilename, instanceTitle, None)
+        html_header_with_external_style(css_filename, instanceTitle, None)
     optionsStr += html_keyboard_navigation(text_mode_banner, {}, {})
     optionsStr += '<br><br>\n'
     optionsStr += '<div class="options">\n'
@@ -255,7 +255,7 @@ def html_person_options(defaultTimeline: str,
                     '    ' + translate['Petname'] + ': \n' + \
                     '    <input type="text" name="optionpetname" value="' + \
                     petname + '" ' + \
-                    'accesskey="' + accessKeys['enterPetname'] + '">\n' \
+                    'accesskey="' + access_keys['enterPetname'] + '">\n' \
                     '    <button type="submit" class="buttonsmall" ' + \
                     'name="submitPetname">' + \
                     translate['Submit'] + '</button><br>\n'
@@ -291,8 +291,8 @@ def html_person_options(defaultTimeline: str,
             # checkbox for permission to post to newswire
             newswirePostsPermitted = False
             if optionsDomainFull == domain_full:
-                adminNickname = get_config_param(base_dir, 'admin')
-                if (nickname == adminNickname or
+                admin_nickname = get_config_param(base_dir, 'admin')
+                if (nickname == admin_nickname or
                     (is_moderator(base_dir, nickname) and
                      not is_moderator(base_dir, optionsNickname))):
                     newswireBlockedFilename = \
@@ -332,8 +332,8 @@ def html_person_options(defaultTimeline: str,
 
             # checkbox for permission to post to featured articles
             if news_instance and optionsDomainFull == domain_full:
-                adminNickname = get_config_param(base_dir, 'admin')
-                if (nickname == adminNickname or
+                admin_nickname = get_config_param(base_dir, 'admin')
+                if (nickname == admin_nickname or
                     (is_moderator(base_dir, nickname) and
                      not is_moderator(base_dir, optionsNickname))):
                     checkboxStr = \
@@ -359,50 +359,51 @@ def html_person_options(defaultTimeline: str,
         optionsStr += \
             '    <a href="' + backPath + '"><button type="button" ' + \
             'class="buttonIcon" name="submitBack" ' + \
-            'accesskey="' + accessKeys['menuTimeline'] + '">' + \
+            'accesskey="' + access_keys['menuTimeline'] + '">' + \
             translate['Go Back'] + '</button></a>\n'
     else:
         optionsStr += \
             '    <a href="' + originPathStr + '"><button type="button" ' + \
             'class="buttonIcon" name="submitBack" accesskey="' + \
-            accessKeys['menuTimeline'] + '">' + translate['Go Back'] + \
+            access_keys['menuTimeline'] + '">' + translate['Go Back'] + \
             '</button></a>\n'
     if authorized:
         optionsStr += \
             '    <button type="submit" class="button" ' + \
             'name="submitView" accesskey="' + \
-            accessKeys['viewButton'] + '">' + \
+            access_keys['viewButton'] + '">' + \
             translate['View'] + '</button>\n'
     optionsStr += donateStr
     if authorized:
         optionsStr += \
             '    <button type="submit" class="button" name="submit' + \
-            followStr + '" accesskey="' + accessKeys['followButton'] + '">' + \
+            followStr + \
+            '" accesskey="' + access_keys['followButton'] + '">' + \
             translate[followStr] + '</button>\n'
         optionsStr += \
             '    <button type="submit" class="button" name="submit' + \
-            blockStr + '" accesskey="' + accessKeys['blockButton'] + '">' + \
+            blockStr + '" accesskey="' + access_keys['blockButton'] + '">' + \
             translate[blockStr] + '</button>\n'
         optionsStr += \
             '    <button type="submit" class="button" name="submitDM" ' + \
-            'accesskey="' + accessKeys['menuDM'] + '">' + \
+            'accesskey="' + access_keys['menuDM'] + '">' + \
             translate['DM'] + '</button>\n'
         optionsStr += \
             '    <button type="submit" class="button" name="submit' + \
             snoozeButtonStr + '" accesskey="' + \
-            accessKeys['snoozeButton'] + '">' + translate[snoozeButtonStr] + \
+            access_keys['snoozeButton'] + '">' + translate[snoozeButtonStr] + \
             '</button>\n'
         optionsStr += \
             '    <button type="submit" class="button" ' + \
             'name="submitReport" accesskey="' + \
-            accessKeys['reportButton'] + '">' + \
+            access_keys['reportButton'] + '">' + \
             translate['Report'] + '</button>\n'
 
         if is_moderator(base_dir, nickname):
             optionsStr += \
                 '    <button type="submit" class="button" ' + \
                 'name="submitPersonInfo" accesskey="' + \
-                accessKeys['infoButton'] + '">' + \
+                access_keys['infoButton'] + '">' + \
                 translate['Info'] + '</button>\n'
 
         personNotes = ''
@@ -422,7 +423,7 @@ def html_person_options(defaultTimeline: str,
         optionsStr += \
             '    <textarea id="message" ' + \
             'name="optionnotes" style="height:400px" spellcheck="true" ' + \
-            'accesskey="' + accessKeys['enterNotes'] + '">' + \
+            'accesskey="' + access_keys['enterNotes'] + '">' + \
             personNotes + '</textarea>\n'
 
     optionsStr += \

@@ -49,14 +49,14 @@ def html_following_list(css_cache: {}, base_dir: str,
         followingList = msg.split('\n')
         followingList.sort()
         if followingList:
-            cssFilename = base_dir + '/epicyon-profile.css'
+            css_filename = base_dir + '/epicyon-profile.css'
             if os.path.isfile(base_dir + '/epicyon.css'):
-                cssFilename = base_dir + '/epicyon.css'
+                css_filename = base_dir + '/epicyon.css'
 
             instanceTitle = \
                 get_config_param(base_dir, 'instanceTitle')
             followingListHtml = \
-                html_header_with_external_style(cssFilename,
+                html_header_with_external_style(css_filename,
                                                 instanceTitle, None)
             for followingAddress in followingList:
                 if followingAddress:
@@ -72,14 +72,14 @@ def html_hashtag_blocked(css_cache: {}, base_dir: str, translate: {}) -> str:
     """Show the screen for a blocked hashtag
     """
     blockedHashtagForm = ''
-    cssFilename = base_dir + '/epicyon-suspended.css'
+    css_filename = base_dir + '/epicyon-suspended.css'
     if os.path.isfile(base_dir + '/suspended.css'):
-        cssFilename = base_dir + '/suspended.css'
+        css_filename = base_dir + '/suspended.css'
 
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
     blockedHashtagForm = \
-        html_header_with_external_style(cssFilename, instanceTitle, None)
+        html_header_with_external_style(css_filename, instanceTitle, None)
     blockedHashtagForm += '<div><center>\n'
     blockedHashtagForm += \
         '  <p class="screentitle">' + \
@@ -476,26 +476,26 @@ def _get_image_file(base_dir: str, name: str, directory: str,
     returns the filenames for an image with the given name
     """
     bannerExtensions = get_image_extensions()
-    bannerFile = ''
-    bannerFilename = ''
+    banner_file = ''
+    banner_filename = ''
     for ext in bannerExtensions:
-        bannerFileTest = name + '.' + ext
-        bannerFilenameTest = directory + '/' + bannerFileTest
-        if os.path.isfile(bannerFilenameTest):
-            bannerFile = name + '_' + theme + '.' + ext
-            bannerFilename = bannerFilenameTest
-            return bannerFile, bannerFilename
+        banner_fileTest = name + '.' + ext
+        banner_filenameTest = directory + '/' + banner_fileTest
+        if os.path.isfile(banner_filenameTest):
+            banner_file = name + '_' + theme + '.' + ext
+            banner_filename = banner_filenameTest
+            return banner_file, banner_filename
     # if not found then use the default image
     theme = 'default'
     directory = base_dir + '/theme/' + theme
     for ext in bannerExtensions:
-        bannerFileTest = name + '.' + ext
-        bannerFilenameTest = directory + '/' + bannerFileTest
-        if os.path.isfile(bannerFilenameTest):
-            bannerFile = name + '_' + theme + '.' + ext
-            bannerFilename = bannerFilenameTest
+        banner_fileTest = name + '.' + ext
+        banner_filenameTest = directory + '/' + banner_fileTest
+        if os.path.isfile(banner_filenameTest):
+            banner_file = name + '_' + theme + '.' + ext
+            banner_filename = banner_filenameTest
             break
-    return bannerFile, bannerFilename
+    return banner_file, banner_filename
 
 
 def get_banner_file(base_dir: str,
@@ -527,11 +527,11 @@ def get_right_image_file(base_dir: str,
                            accountDir, nickname, domain, theme)
 
 
-def html_header_with_external_style(cssFilename: str, instanceTitle: str,
+def html_header_with_external_style(css_filename: str, instanceTitle: str,
                                     metadata: str, lang='en') -> str:
     if metadata is None:
         metadata = ''
-    cssFile = '/' + cssFilename.split('/')[-1]
+    cssFile = '/' + css_filename.split('/')[-1]
     htmlStr = \
         '<!DOCTYPE html>\n' + \
         '<html lang="' + lang + '">\n' + \
@@ -554,7 +554,7 @@ def html_header_with_external_style(cssFilename: str, instanceTitle: str,
     return htmlStr
 
 
-def html_header_with_person_markup(cssFilename: str, instanceTitle: str,
+def html_header_with_person_markup(css_filename: str, instanceTitle: str,
                                    actor_json: {}, city: str,
                                    content_license_url: str,
                                    lang='en') -> str:
@@ -563,7 +563,7 @@ def html_header_with_person_markup(cssFilename: str, instanceTitle: str,
     """
     if not actor_json:
         htmlStr = \
-            html_header_with_external_style(cssFilename,
+            html_header_with_external_style(css_filename,
                                             instanceTitle, None, lang)
         return htmlStr
 
@@ -735,12 +735,12 @@ def html_header_with_person_markup(cssFilename: str, instanceTitle: str,
                     "\" property=\"og:" + ogTag + "\" />\n"
 
     htmlStr = \
-        html_header_with_external_style(cssFilename, instanceTitle,
+        html_header_with_external_style(css_filename, instanceTitle,
                                         ogMetadata + profileMarkup, lang)
     return htmlStr
 
 
-def html_header_with_website_markup(cssFilename: str, instanceTitle: str,
+def html_header_with_website_markup(css_filename: str, instanceTitle: str,
                                     http_prefix: str, domain: str,
                                     system_language: str) -> str:
     """html header which includes website markup
@@ -792,13 +792,13 @@ def html_header_with_website_markup(cssFilename: str, instanceTitle: str,
         '    <meta content="summary_large_image" property="twitter:card" />\n'
 
     htmlStr = \
-        html_header_with_external_style(cssFilename, instanceTitle,
+        html_header_with_external_style(css_filename, instanceTitle,
                                         ogMetadata + websiteMarkup,
                                         system_language)
     return htmlStr
 
 
-def html_header_with_blog_markup(cssFilename: str, instanceTitle: str,
+def html_header_with_blog_markup(css_filename: str, instanceTitle: str,
                                  http_prefix: str, domain: str, nickname: str,
                                  system_language: str,
                                  published: str, modified: str,
@@ -851,7 +851,7 @@ def html_header_with_blog_markup(cssFilename: str, instanceTitle: str,
         modified + '" />\n'
 
     htmlStr = \
-        html_header_with_external_style(cssFilename, instanceTitle,
+        html_header_with_external_style(css_filename, instanceTitle,
                                         ogMetadata + blogMarkup,
                                         system_language)
     return htmlStr
@@ -1273,7 +1273,7 @@ def html_hide_from_screen_reader(htmlStr: str) -> str:
     return '<span aria-hidden="true">' + htmlStr + '</span>'
 
 
-def html_keyboard_navigation(banner: str, links: {}, accessKeys: {},
+def html_keyboard_navigation(banner: str, links: {}, access_keys: {},
                              subHeading: str = None,
                              usersPath: str = None, translate: {} = None,
                              followApprovals: bool = False) -> str:
@@ -1298,8 +1298,8 @@ def html_keyboard_navigation(banner: str, links: {}, accessKeys: {},
     # show the list of links
     for title, url in links.items():
         accessKeyStr = ''
-        if accessKeys.get(title):
-            accessKeyStr = 'accesskey="' + accessKeys[title] + '"'
+        if access_keys.get(title):
+            accessKeyStr = 'accesskey="' + access_keys[title] + '"'
 
         htmlStr += '<li><label class="transparent">' + \
             '<a href="' + str(url) + '" ' + accessKeyStr + '>' + \
@@ -1480,9 +1480,9 @@ def html_search_result_share(base_dir: str, sharedItem: {}, translate: {},
     elif is_moderator(base_dir, nickname):
         showRemoveButton = True
     else:
-        adminNickname = get_config_param(base_dir, 'admin')
-        if adminNickname:
-            if actor.endswith('/users/' + adminNickname):
+        admin_nickname = get_config_param(base_dir, 'admin')
+        if admin_nickname:
+            if actor.endswith('/users/' + admin_nickname):
                 showRemoveButton = True
 
     if showRemoveButton:
@@ -1556,7 +1556,7 @@ def html_show_share(base_dir: str, domain: str, nickname: str,
     actor = local_actor_url(http_prefix, nickname, domain_full)
 
     # filename of the banner shown at the top
-    bannerFile, bannerFilename = \
+    banner_file, banner_filename = \
         get_banner_file(base_dir, nickname, domain, theme)
 
     shareStr = \
@@ -1565,20 +1565,20 @@ def html_show_share(base_dir: str, domain: str, nickname: str,
         defaultTimeline + '" title="" alt="">\n'
     shareStr += '<img loading="lazy" class="timeline-banner" ' + \
         'alt="" ' + \
-        'src="/users/' + nickname + '/' + bannerFile + '" /></a>\n' + \
+        'src="/users/' + nickname + '/' + banner_file + '" /></a>\n' + \
         '</header><br>\n'
     shareStr += \
         html_search_result_share(base_dir, sharedItem, translate, http_prefix,
                                  domain_full, contactNickname, itemID,
                                  actor, sharesFileType, category)
 
-    cssFilename = base_dir + '/epicyon-profile.css'
+    css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
-        cssFilename = base_dir + '/epicyon.css'
+        css_filename = base_dir + '/epicyon.css'
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
 
-    return html_header_with_external_style(cssFilename,
+    return html_header_with_external_style(css_filename,
                                            instanceTitle, None) + \
         shareStr + html_footer()
 

@@ -56,14 +56,14 @@ def html_confirm_delete(css_cache: {},
         return None
 
     delete_postStr = None
-    cssFilename = base_dir + '/epicyon-profile.css'
+    css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
-        cssFilename = base_dir + '/epicyon.css'
+        css_filename = base_dir + '/epicyon.css'
 
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
     delete_postStr = \
-        html_header_with_external_style(cssFilename, instanceTitle, None)
+        html_header_with_external_style(css_filename, instanceTitle, None)
     delete_postStr += \
         individual_post_as_html(signing_priv_key_pem,
                                 True, recent_posts_cache, max_recent_posts,
@@ -135,12 +135,12 @@ def html_confirm_remove_shared_item(css_cache: {}, translate: {},
 
     set_custom_background(base_dir, 'shares-background', 'follow-background')
 
-    cssFilename = base_dir + '/epicyon-follow.css'
+    css_filename = base_dir + '/epicyon-follow.css'
     if os.path.isfile(base_dir + '/follow.css'):
-        cssFilename = base_dir + '/follow.css'
+        css_filename = base_dir + '/follow.css'
 
     instanceTitle = get_config_param(base_dir, 'instanceTitle')
-    sharesStr = html_header_with_external_style(cssFilename,
+    sharesStr = html_header_with_external_style(css_filename,
                                                 instanceTitle, None)
     sharesStr += '<div class="follow">\n'
     sharesStr += '  <div class="followAvatar">\n'
@@ -189,12 +189,12 @@ def html_confirm_follow(css_cache: {}, translate: {}, base_dir: str,
             copyfile(base_dir + '/accounts/follow-background-custom.jpg',
                      base_dir + '/accounts/follow-background.jpg')
 
-    cssFilename = base_dir + '/epicyon-follow.css'
+    css_filename = base_dir + '/epicyon-follow.css'
     if os.path.isfile(base_dir + '/follow.css'):
-        cssFilename = base_dir + '/follow.css'
+        css_filename = base_dir + '/follow.css'
 
     instanceTitle = get_config_param(base_dir, 'instanceTitle')
-    followStr = html_header_with_external_style(cssFilename,
+    followStr = html_header_with_external_style(css_filename,
                                                 instanceTitle, None)
     followStr += '<div class="follow">\n'
     followStr += '  <div class="followAvatar">\n'
@@ -235,12 +235,12 @@ def html_confirm_unfollow(css_cache: {}, translate: {}, base_dir: str,
             copyfile(base_dir + '/accounts/follow-background-custom.jpg',
                      base_dir + '/accounts/follow-background.jpg')
 
-    cssFilename = base_dir + '/epicyon-follow.css'
+    css_filename = base_dir + '/epicyon-follow.css'
     if os.path.isfile(base_dir + '/follow.css'):
-        cssFilename = base_dir + '/follow.css'
+        css_filename = base_dir + '/follow.css'
 
     instanceTitle = get_config_param(base_dir, 'instanceTitle')
-    followStr = html_header_with_external_style(cssFilename,
+    followStr = html_header_with_external_style(css_filename,
                                                 instanceTitle, None)
     followStr += '<div class="follow">\n'
     followStr += '  <div class="followAvatar">\n'
@@ -279,12 +279,12 @@ def html_confirm_unblock(css_cache: {}, translate: {}, base_dir: str,
 
     set_custom_background(base_dir, 'block-background', 'follow-background')
 
-    cssFilename = base_dir + '/epicyon-follow.css'
+    css_filename = base_dir + '/epicyon-follow.css'
     if os.path.isfile(base_dir + '/follow.css'):
-        cssFilename = base_dir + '/follow.css'
+        css_filename = base_dir + '/follow.css'
 
     instanceTitle = get_config_param(base_dir, 'instanceTitle')
-    blockStr = html_header_with_external_style(cssFilename,
+    blockStr = html_header_with_external_style(css_filename,
                                                instanceTitle, None)
     blockStr += '<div class="block">\n'
     blockStr += '  <div class="blockAvatar">\n'

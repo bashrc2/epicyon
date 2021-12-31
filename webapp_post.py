@@ -179,9 +179,9 @@ def _log_post_timing(enableTimingLog: bool, postStartTime,
     """
     if not enableTimingLog:
         return
-    timeDiff = int((time.time() - postStartTime) * 1000)
-    if timeDiff > 100:
-        print('TIMING INDIV ' + debugId + ' = ' + str(timeDiff))
+    time_diff = int((time.time() - postStartTime) * 1000)
+    if time_diff > 100:
+        print('TIMING INDIV ' + debugId + ' = ' + str(time_diff))
 
 
 def prepare_html_post_nickname(nickname: str, postHtml: str) -> str:
@@ -2153,14 +2153,14 @@ def html_individual_post(css_cache: {},
                                             False, authorized,
                                             False, False, False, False,
                                             cw_lists, lists_enabled)
-    cssFilename = base_dir + '/epicyon-profile.css'
+    css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
-        cssFilename = base_dir + '/epicyon.css'
+        css_filename = base_dir + '/epicyon.css'
 
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
     metadataStr = _html_post_metadata_open_graph(domain, originalPostJson)
-    headerStr = html_header_with_external_style(cssFilename,
+    headerStr = html_header_with_external_style(css_filename,
                                                 instanceTitle, metadataStr)
     return headerStr + postStr + html_footer()
 
@@ -2206,14 +2206,14 @@ def html_post_replies(css_cache: {},
                                         False, False,
                                         cw_lists, lists_enabled)
 
-    cssFilename = base_dir + '/epicyon-profile.css'
+    css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
-        cssFilename = base_dir + '/epicyon.css'
+        css_filename = base_dir + '/epicyon.css'
 
     instanceTitle = get_config_param(base_dir, 'instanceTitle')
     metadata = ''
     headerStr = \
-        html_header_with_external_style(cssFilename, instanceTitle, metadata)
+        html_header_with_external_style(css_filename, instanceTitle, metadata)
     return headerStr + repliesStr + html_footer()
 
 
@@ -2280,18 +2280,18 @@ def html_emoji_reaction_picker(css_cache: {},
                 '  <a href="' + emojiUrl + '">' + emojiLabel + '</a>\n'
         emojiPicksStr += '</div>\n'
 
-    cssFilename = base_dir + '/epicyon-profile.css'
+    css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
-        cssFilename = base_dir + '/epicyon.css'
+        css_filename = base_dir + '/epicyon.css'
 
     # filename of the banner shown at the top
-    bannerFile, _ = \
+    banner_file, _ = \
         get_banner_file(base_dir, nickname, domain, theme_name)
 
     instanceTitle = get_config_param(base_dir, 'instanceTitle')
     metadata = ''
     headerStr = \
-        html_header_with_external_style(cssFilename, instanceTitle, metadata)
+        html_header_with_external_style(css_filename, instanceTitle, metadata)
 
     # banner
     headerStr += \
@@ -2302,7 +2302,7 @@ def html_emoji_reaction_picker(css_cache: {},
         translate['Switch to timeline view'] + '">\n'
     headerStr += '<img loading="lazy" class="timeline-banner" ' + \
         'alt="" ' + \
-        'src="/users/' + nickname + '/' + bannerFile + '" /></a>\n' + \
+        'src="/users/' + nickname + '/' + banner_file + '" /></a>\n' + \
         '</header>\n'
 
     return headerStr + reactedToPostStr + emojiPicksStr + html_footer()

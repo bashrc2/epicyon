@@ -20,7 +20,7 @@ def html_about(css_cache: {}, base_dir: str, http_prefix: str,
                system_language: str) -> str:
     """Show the about screen
     """
-    adminNickname = get_config_param(base_dir, 'admin')
+    admin_nickname = get_config_param(base_dir, 'admin')
     if not os.path.isfile(base_dir + '/accounts/about.md'):
         copyfile(base_dir + '/default_about.md',
                  base_dir + '/accounts/about.md')
@@ -36,14 +36,14 @@ def html_about(css_cache: {}, base_dir: str, http_prefix: str,
             aboutText = markdown_to_html(aboutFile.read())
 
     aboutForm = ''
-    cssFilename = base_dir + '/epicyon-profile.css'
+    css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
-        cssFilename = base_dir + '/epicyon.css'
+        css_filename = base_dir + '/epicyon.css'
 
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
     aboutForm = \
-        html_header_with_website_markup(cssFilename, instanceTitle,
+        html_header_with_website_markup(css_filename, instanceTitle,
                                         http_prefix, domain_full,
                                         system_language)
     aboutForm += '<div class="container">' + aboutText + '</div>'
@@ -52,13 +52,13 @@ def html_about(css_cache: {}, base_dir: str, http_prefix: str,
             '<div class="container"><center>\n' + \
             '<p class="administeredby">' + \
             'http://' + onion_domain + '</p>\n</center></div>\n'
-    if adminNickname:
-        adminActor = '/users/' + adminNickname
+    if admin_nickname:
+        adminActor = '/users/' + admin_nickname
         aboutForm += \
             '<div class="container"><center>\n' + \
             '<p class="administeredby">' + \
             translate['Administered by'] + ' <a href="' + \
-            adminActor + '">' + adminNickname + '</a>. ' + \
+            adminActor + '">' + admin_nickname + '</a>. ' + \
             translate['Version'] + ' ' + __version__ + \
             '</p>\n</center></div>\n'
     aboutForm += html_footer()

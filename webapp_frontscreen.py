@@ -109,7 +109,7 @@ def html_front_screen(signing_priv_key_pem: str,
                       newswire: {}, theme: str,
                       peertube_instances: [],
                       allow_local_network_access: bool,
-                      accessKeys: {},
+                      access_keys: {},
                       system_language: str, max_like_count: int,
                       shared_items_federated_domains: [],
                       extraJson: {},
@@ -135,11 +135,11 @@ def html_front_screen(signing_priv_key_pem: str,
                                               icons_as_buttons)
 
     # If this is the news account then show a different banner
-    bannerFile, bannerFilename = \
+    banner_file, banner_filename = \
         get_banner_file(base_dir, nickname, domain, theme)
     profileHeaderStr = \
         '<img loading="lazy" class="timeline-banner" ' + \
-        'src="/users/' + nickname + '/' + bannerFile + '" />\n'
+        'src="/users/' + nickname + '/' + banner_file + '" />\n'
     if loginButton:
         profileHeaderStr += '<center>' + loginButton + '</center>\n'
 
@@ -158,7 +158,7 @@ def html_front_screen(signing_priv_key_pem: str,
                                 http_prefix, translate,
                                 False, False,
                                 False, None, rss_icon_at_top, True,
-                                True, theme, accessKeys,
+                                True, theme, access_keys,
                                 shared_items_federated_domains)
     profileHeaderStr += \
         '      </td>\n' + \
@@ -166,12 +166,12 @@ def html_front_screen(signing_priv_key_pem: str,
 
     profileStr = profileHeaderStr
 
-    cssFilename = base_dir + '/epicyon-profile.css'
+    css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
-        cssFilename = base_dir + '/epicyon.css'
+        css_filename = base_dir + '/epicyon.css'
 
     licenseStr = ''
-    bannerFile, bannerFilename = \
+    banner_file, banner_filename = \
         get_banner_file(base_dir, nickname, domain, theme)
     profileStr += \
         _html_front_screen_posts(recent_posts_cache, max_recent_posts,
@@ -199,7 +199,7 @@ def html_front_screen(signing_priv_key_pem: str,
                                  False, False, newswire, False,
                                  False, None, False, False,
                                  False, True, authorized, True, theme,
-                                 defaultTimeline, accessKeys)
+                                 defaultTimeline, access_keys)
     profileFooterStr += \
         '      </td>\n' + \
         '  </tr>\n' + \
@@ -209,6 +209,6 @@ def html_front_screen(signing_priv_key_pem: str,
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
     profileStr = \
-        html_header_with_external_style(cssFilename, instanceTitle, None) + \
+        html_header_with_external_style(css_filename, instanceTitle, None) + \
         profileStr + profileFooterStr + html_footer()
     return profileStr

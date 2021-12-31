@@ -113,9 +113,9 @@ def html_login(css_cache: {}, translate: {},
         with open(base_dir + '/accounts/login.txt', 'r') as file:
             loginText = '<p class="login-text">' + file.read() + '</p>'
 
-    cssFilename = base_dir + '/epicyon-login.css'
+    css_filename = base_dir + '/epicyon-login.css'
     if os.path.isfile(base_dir + '/login.css'):
-        cssFilename = base_dir + '/login.css'
+        css_filename = base_dir + '/login.css'
 
     # show the register button
     registerButtonStr = ''
@@ -151,7 +151,7 @@ def html_login(css_cache: {}, translate: {},
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
     loginForm = \
-        html_header_with_website_markup(cssFilename, instanceTitle,
+        html_header_with_website_markup(css_filename, instanceTitle,
                                         http_prefix, domain,
                                         system_language)
 

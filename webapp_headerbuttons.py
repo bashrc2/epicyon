@@ -47,7 +47,7 @@ def header_buttons_timeline(defaultTimeline: str,
                             calendarImage: str,
                             followApprovals: str,
                             icons_as_buttons: bool,
-                            accessKeys: {}) -> str:
+                            access_keys: {}) -> str:
     """Returns the header at the top of the timeline, containing
     buttons for inbox, outbox, search, calendar, etc
     """
@@ -57,7 +57,7 @@ def header_buttons_timeline(defaultTimeline: str,
     if defaultTimeline == 'tlmedia':
         tlStr += \
             '<a href="' + usersPath + '/tlmedia" tabindex="-1" ' + \
-            'accesskey="' + accessKeys['menuMedia'] + '"' + \
+            'accesskey="' + access_keys['menuMedia'] + '"' + \
             '><button class="' + \
             mediaButton + '"><span>' + translate['Media'] + \
             '</span></button></a>'
@@ -106,7 +106,7 @@ def header_buttons_timeline(defaultTimeline: str,
         if not minimal and not featuresHeader:
             tlStr += \
                 '<a href="' + usersPath + '/tlmedia" tabindex="-1" ' + \
-                'accesskey="' + accessKeys['menuMedia'] + '">' + \
+                'accesskey="' + access_keys['menuMedia'] + '">' + \
                 '<button class="' + \
                 mediaButton + '"><span>' + translate['Media'] + \
                 '</span></button></a>'
@@ -234,9 +234,9 @@ def header_buttons_timeline(defaultTimeline: str,
                 '</span></button></a>'
 
     # benchmark 5
-    timeDiff = int((time.time() - timelineStartTime) * 1000)
-    if timeDiff > 100:
-        print('TIMELINE TIMING ' + boxName + ' 5 = ' + str(timeDiff))
+    time_diff = int((time.time() - timelineStartTime) * 1000)
+    if time_diff > 100:
+        print('TIMELINE TIMING ' + boxName + ' 5 = ' + str(time_diff))
 
     # the calendar button
     if not featuresHeader:

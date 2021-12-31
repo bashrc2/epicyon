@@ -39,203 +39,202 @@ from posts import is_moderator
 from announce import is_self_announce
 
 
-def _log_timeline_timing(enableTimingLog: bool, timelineStartTime,
-                         boxName: str, debugId: str) -> None:
+def _log_timeline_timing(enable_timing_log: bool, timeline_start_time,
+                         box_name: str, debug_id: str) -> None:
     """Create a log of timings for performance tuning
     """
-    if not enableTimingLog:
+    if not enable_timing_log:
         return
-    timeDiff = int((time.time() - timelineStartTime) * 1000)
-    if timeDiff > 100:
+    time_diff = int((time.time() - timeline_start_time) * 1000)
+    if time_diff > 100:
         print('TIMELINE TIMING ' +
-              boxName + ' ' + debugId + ' = ' + str(timeDiff))
+              box_name + ' ' + debug_id + ' = ' + str(time_diff))
 
 
-def _get_help_for_timeline(base_dir: str, boxName: str) -> str:
+def _get_help_for_timeline(base_dir: str, box_name: str) -> str:
     """Shows help text for the given timeline
     """
     # get the filename for help for this timeline
-    helpFilename = base_dir + '/accounts/help_' + boxName + '.md'
-    if not os.path.isfile(helpFilename):
+    help_filename = base_dir + '/accounts/help_' + box_name + '.md'
+    if not os.path.isfile(help_filename):
         language = \
             get_config_param(base_dir, 'language')
         if not language:
             language = 'en'
         theme_name = \
             get_config_param(base_dir, 'theme')
-        defaultFilename = None
+        default_filename = None
         if theme_name:
-            defaultFilename = \
+            default_filename = \
                 base_dir + '/theme/' + theme_name + '/welcome/' + \
-                'help_' + boxName + '_' + language + '.md'
-            if not os.path.isfile(defaultFilename):
-                defaultFilename = None
-        if not defaultFilename:
-            defaultFilename = \
+                'help_' + box_name + '_' + language + '.md'
+            if not os.path.isfile(default_filename):
+                default_filename = None
+        if not default_filename:
+            default_filename = \
                 base_dir + '/defaultwelcome/' + \
-                'help_' + boxName + '_' + language + '.md'
-        if not os.path.isfile(defaultFilename):
-            defaultFilename = \
-                base_dir + '/defaultwelcome/help_' + boxName + '_en.md'
-        if os.path.isfile(defaultFilename):
-            copyfile(defaultFilename, helpFilename)
+                'help_' + box_name + '_' + language + '.md'
+        if not os.path.isfile(default_filename):
+            default_filename = \
+                base_dir + '/defaultwelcome/help_' + box_name + '_en.md'
+        if os.path.isfile(default_filename):
+            copyfile(default_filename, help_filename)
 
     # show help text
-    if os.path.isfile(helpFilename):
-        instanceTitle = \
+    if os.path.isfile(help_filename):
+        instance_title = \
             get_config_param(base_dir, 'instanceTitle')
-        if not instanceTitle:
-            instanceTitle = 'Epicyon'
-        with open(helpFilename, 'r') as helpFile:
-            helpText = helpFile.read()
-            if dangerous_markup(helpText, False):
+        if not instance_title:
+            instance_title = 'Epicyon'
+        with open(help_filename, 'r') as help_file:
+            help_text = help_file.read()
+            if dangerous_markup(help_text, False):
                 return ''
-            helpText = helpText.replace('INSTANCE', instanceTitle)
+            help_text = help_text.replace('INSTANCE', instance_title)
             return '<div class="container">\n' + \
-                markdown_to_html(helpText) + '\n' + \
+                markdown_to_html(help_text) + '\n' + \
                 '</div>\n'
     return ''
 
 
-def _html_timeline_new_post(manuallyApproveFollowers: bool,
-                            boxName: str, icons_as_buttons: bool,
-                            usersPath: str, translate: {}) -> str:
+def _html_timeline_new_post(manually_approve_followers: bool,
+                            box_name: str, icons_as_buttons: bool,
+                            users_path: str, translate: {}) -> str:
     """Returns html for the new post button
     """
-    newPostButtonStr = ''
-    if boxName == 'dm':
+    new_post_button_str = ''
+    if box_name == 'dm':
         if not icons_as_buttons:
-            newPostButtonStr += \
-                '<a class="imageAnchor" href="' + usersPath + \
+            new_post_button_str += \
+                '<a class="imageAnchor" href="' + users_path + \
                 '/newdm?nodropdown"><img loading="lazy" src="/' + \
                 'icons/newpost.png" title="' + \
                 translate['Create a new DM'] + \
                 '" alt="| ' + translate['Create a new DM'] + \
                 '" class="timelineicon"/></a>\n'
         else:
-            newPostButtonStr += \
-                '<a href="' + usersPath + '/newdm?nodropdown">' + \
+            new_post_button_str += \
+                '<a href="' + users_path + '/newdm?nodropdown">' + \
                 '<button class="button"><span>' + \
                 translate['Post'] + ' </span></button></a>'
-    elif (boxName == 'tlblogs' or
-          boxName == 'tlnews' or
-          boxName == 'tlfeatures'):
+    elif box_name in ('tlblogs', 'tlnews', 'tlfeatures'):
         if not icons_as_buttons:
-            newPostButtonStr += \
-                '<a class="imageAnchor" href="' + usersPath + \
+            new_post_button_str += \
+                '<a class="imageAnchor" href="' + users_path + \
                 '/newblog"><img loading="lazy" src="/' + \
                 'icons/newpost.png" title="' + \
                 translate['Create a new post'] + '" alt="| ' + \
                 translate['Create a new post'] + \
                 '" class="timelineicon"/></a>\n'
         else:
-            newPostButtonStr += \
-                '<a href="' + usersPath + '/newblog">' + \
+            new_post_button_str += \
+                '<a href="' + users_path + '/newblog">' + \
                 '<button class="button"><span>' + \
                 translate['Post'] + '</span></button></a>'
-    elif boxName == 'tlshares':
+    elif box_name == 'tlshares':
         if not icons_as_buttons:
-            newPostButtonStr += \
-                '<a class="imageAnchor" href="' + usersPath + \
+            new_post_button_str += \
+                '<a class="imageAnchor" href="' + users_path + \
                 '/newshare?nodropdown"><img loading="lazy" src="/' + \
                 'icons/newpost.png" title="' + \
                 translate['Create a new shared item'] + '" alt="| ' + \
                 translate['Create a new shared item'] + \
                 '" class="timelineicon"/></a>\n'
         else:
-            newPostButtonStr += \
-                '<a href="' + usersPath + '/newshare?nodropdown">' + \
+            new_post_button_str += \
+                '<a href="' + users_path + '/newshare?nodropdown">' + \
                 '<button class="button"><span>' + \
                 translate['Post'] + '</span></button></a>'
-    elif boxName == 'tlwanted':
+    elif box_name == 'tlwanted':
         if not icons_as_buttons:
-            newPostButtonStr += \
-                '<a class="imageAnchor" href="' + usersPath + \
+            new_post_button_str += \
+                '<a class="imageAnchor" href="' + users_path + \
                 '/newwanted?nodropdown"><img loading="lazy" src="/' + \
                 'icons/newpost.png" title="' + \
                 translate['Create a new wanted item'] + '" alt="| ' + \
                 translate['Create a new wanted item'] + \
                 '" class="timelineicon"/></a>\n'
         else:
-            newPostButtonStr += \
-                '<a href="' + usersPath + '/newwanted?nodropdown">' + \
+            new_post_button_str += \
+                '<a href="' + users_path + '/newwanted?nodropdown">' + \
                 '<button class="button"><span>' + \
                 translate['Post'] + '</span></button></a>'
     else:
-        if not manuallyApproveFollowers:
+        if not manually_approve_followers:
             if not icons_as_buttons:
-                newPostButtonStr += \
-                    '<a class="imageAnchor" href="' + usersPath + \
+                new_post_button_str += \
+                    '<a class="imageAnchor" href="' + users_path + \
                     '/newpost"><img loading="lazy" src="/' + \
                     'icons/newpost.png" title="' + \
                     translate['Create a new post'] + '" alt="| ' + \
                     translate['Create a new post'] + \
                     '" class="timelineicon"/></a>\n'
             else:
-                newPostButtonStr += \
-                    '<a href="' + usersPath + '/newpost">' + \
+                new_post_button_str += \
+                    '<a href="' + users_path + '/newpost">' + \
                     '<button class="button"><span>' + \
                     translate['Post'] + '</span></button></a>'
         else:
             if not icons_as_buttons:
-                newPostButtonStr += \
-                    '<a class="imageAnchor" href="' + usersPath + \
+                new_post_button_str += \
+                    '<a class="imageAnchor" href="' + users_path + \
                     '/newfollowers"><img loading="lazy" src="/' + \
                     'icons/newpost.png" title="' + \
                     translate['Create a new post'] + \
                     '" alt="| ' + translate['Create a new post'] + \
                     '" class="timelineicon"/></a>\n'
             else:
-                newPostButtonStr += \
-                    '<a href="' + usersPath + '/newfollowers">' + \
+                new_post_button_str += \
+                    '<a href="' + users_path + '/newfollowers">' + \
                     '<button class="button"><span>' + \
                     translate['Post'] + '</span></button></a>'
-    return newPostButtonStr
+    return new_post_button_str
 
 
-def _html_timeline_moderation_buttons(moderator: bool, boxName: str,
-                                      nickname: str, moderationActionStr: str,
+def _html_timeline_moderation_buttons(moderator: bool, box_name: str,
+                                      nickname: str,
+                                      moderation_action_str: str,
                                       translate: {}) -> str:
     """Returns html for the moderation screen buttons
     """
-    tlStr = ''
-    if moderator and boxName == 'moderation':
-        tlStr += \
+    tl_str = ''
+    if moderator and box_name == 'moderation':
+        tl_str += \
             '<form id="modtimeline" method="POST" action="/users/' + \
             nickname + '/moderationaction">'
-        tlStr += '<div class="container">\n'
+        tl_str += '<div class="container">\n'
         idx = 'Nickname or URL. Block using *@domain or nickname@domain'
-        tlStr += \
+        tl_str += \
             '    <b>' + translate[idx] + '</b><br>\n'
-        if moderationActionStr:
-            tlStr += '    <input type="text" ' + \
+        if moderation_action_str:
+            tl_str += '    <input type="text" ' + \
                 'name="moderationAction" value="' + \
-                moderationActionStr + '" autofocus><br>\n'
+                moderation_action_str + '" autofocus><br>\n'
         else:
-            tlStr += '    <input type="text" ' + \
+            tl_str += '    <input type="text" ' + \
                 'name="moderationAction" value="" autofocus><br>\n'
 
-        tlStr += \
+        tl_str += \
             '    <input type="submit" title="' + \
             translate['Information about current blocks/suspensions'] + \
             '" alt="' + \
             translate['Information about current blocks/suspensions'] + \
             ' | " ' + \
             'name="submitInfo" value="' + translate['Info'] + '">\n'
-        tlStr += \
+        tl_str += \
             '    <input type="submit" title="' + \
             translate['Remove the above item'] + '" ' + \
             'alt="' + translate['Remove the above item'] + ' | " ' + \
             'name="submitRemove" value="' + \
             translate['Remove'] + '">\n'
 
-        tlStr += \
+        tl_str += \
             '    <input type="submit" title="' + \
             translate['Suspend the above account nickname'] + '" ' + \
             'alt="' + \
             translate['Suspend the above account nickname'] + ' | " ' + \
             'name="submitSuspend" value="' + translate['Suspend'] + '">\n'
-        tlStr += \
+        tl_str += \
             '    <input type="submit" title="' + \
             translate['Remove a suspension for an account nickname'] + '" ' + \
             'alt="' + \
@@ -244,119 +243,120 @@ def _html_timeline_moderation_buttons(moderator: bool, boxName: str,
             'name="submitUnsuspend" value="' + \
             translate['Unsuspend'] + '">\n'
 
-        tlStr += \
+        tl_str += \
             '    <input type="submit" title="' + \
             translate['Block an account on another instance'] + '" ' + \
             'alt="' + \
             translate['Block an account on another instance'] + ' | " ' + \
             'name="submitBlock" value="' + translate['Block'] + '">\n'
-        tlStr += \
+        tl_str += \
             '    <input type="submit" title="' + \
             translate['Unblock an account on another instance'] + '" ' + \
             'alt="' + \
             translate['Unblock an account on another instance'] + ' | " ' + \
             'name="submitUnblock" value="' + translate['Unblock'] + '">\n'
 
-        tlStr += \
+        tl_str += \
             '    <input type="submit" title="' + \
             translate['Filter out words'] + '" ' + \
             'alt="' + \
             translate['Filter out words'] + ' | " ' + \
             'name="submitFilter" value="' + translate['Filter'] + '">\n'
-        tlStr += \
+        tl_str += \
             '    <input type="submit" title="' + \
             translate['Unfilter words'] + '" ' + \
             'alt="' + \
             translate['Unfilter words'] + ' | " ' + \
             'name="submitUnfilter" value="' + translate['Unfilter'] + '">\n'
 
-        tlStr += '</div>\n</form>\n'
-    return tlStr
+        tl_str += '</div>\n</form>\n'
+    return tl_str
 
 
 def _html_timeline_keyboard(moderator: bool, text_mode_banner: str,
-                            usersPath: str,
-                            nickname: str, newCalendarEvent: bool,
-                            newDM: bool, newReply: bool,
-                            newShare: bool, newWanted: bool,
-                            followApprovals: bool,
-                            accessKeys: {}, translate: {}) -> str:
+                            users_path: str,
+                            nickname: str, new_calendar_event: bool,
+                            new_dm: bool, new_reply: bool,
+                            new_share: bool, new_wanted: bool,
+                            follow_approvals: bool,
+                            access_keys: {}, translate: {}) -> str:
     """Returns html for timeline keyboard navigation
     """
-    calendarStr = translate['Calendar']
-    if newCalendarEvent:
-        calendarStr = '<strong>' + calendarStr + '</strong>'
-    dmStr = translate['DM']
-    if newDM:
-        dmStr = '<strong>' + dmStr + '</strong>'
-    repliesStr = translate['Replies']
-    if newReply:
-        repliesStr = '<strong>' + repliesStr + '</strong>'
-    sharesStr = translate['Shares']
-    if newShare:
-        sharesStr = '<strong>' + sharesStr + '</strong>'
-    wantedStr = translate['Wanted']
-    if newWanted:
-        wantedStr = '<strong>' + wantedStr + '</strong>'
-    menuProfile = \
+    calendar_str = translate['Calendar']
+    if new_calendar_event:
+        calendar_str = '<strong>' + calendar_str + '</strong>'
+    dm_str = translate['DM']
+    if new_dm:
+        dm_str = '<strong>' + dm_str + '</strong>'
+    replies_str = translate['Replies']
+    if new_reply:
+        replies_str = '<strong>' + replies_str + '</strong>'
+    shares_str = translate['Shares']
+    if new_share:
+        shares_str = '<strong>' + shares_str + '</strong>'
+    wanted_str = translate['Wanted']
+    if new_wanted:
+        wanted_str = '<strong>' + wanted_str + '</strong>'
+    menu_profile = \
         html_hide_from_screen_reader('👤') + ' ' + \
         translate['Switch to profile view']
-    menuInbox = \
+    menu_inbox = \
         html_hide_from_screen_reader('📥') + ' ' + translate['Inbox']
-    menuOutbox = \
+    menu_outbox = \
         html_hide_from_screen_reader('📤') + ' ' + translate['Sent']
-    menuSearch = \
+    menu_search = \
         html_hide_from_screen_reader('🔍') + ' ' + \
         translate['Search and follow']
-    menuCalendar = \
-        html_hide_from_screen_reader('📅') + ' ' + calendarStr
-    menuDM = \
-        html_hide_from_screen_reader('📩') + ' ' + dmStr
-    menuReplies = \
-        html_hide_from_screen_reader('📨') + ' ' + repliesStr
-    menuBookmarks = \
+    menu_calendar = \
+        html_hide_from_screen_reader('📅') + ' ' + calendar_str
+    menu_dm = \
+        html_hide_from_screen_reader('📩') + ' ' + dm_str
+    menu_replies = \
+        html_hide_from_screen_reader('📨') + ' ' + replies_str
+    menu_bookmarks = \
         html_hide_from_screen_reader('🔖') + ' ' + translate['Bookmarks']
-    menuShares = \
-        html_hide_from_screen_reader('🤝') + ' ' + sharesStr
-    menuWanted = \
-        html_hide_from_screen_reader('⛱') + ' ' + wantedStr
-    menuBlogs = \
+    menu_shares = \
+        html_hide_from_screen_reader('🤝') + ' ' + shares_str
+    menu_wanted = \
+        html_hide_from_screen_reader('⛱') + ' ' + wanted_str
+    menu_blogs = \
         html_hide_from_screen_reader('📝') + ' ' + translate['Blogs']
-    menuNewswire = \
+    menu_newswire = \
         html_hide_from_screen_reader('📰') + ' ' + translate['Newswire']
-    menuLinks = \
+    menu_links = \
         html_hide_from_screen_reader('🔗') + ' ' + translate['Links']
-    menuNewPost = \
+    menu_new_post = \
         html_hide_from_screen_reader('➕') + ' ' + \
         translate['Create a new post']
-    menuModeration = \
+    menu_moderation = \
         html_hide_from_screen_reader('⚡️') + ' ' + translate['Mod']
-    navLinks = {
-        menuProfile: '/users/' + nickname,
-        menuInbox: usersPath + '/inbox#timelineposts',
-        menuSearch: usersPath + '/search',
-        menuNewPost: usersPath + '/newpost',
-        menuCalendar: usersPath + '/calendar',
-        menuDM: usersPath + '/dm#timelineposts',
-        menuReplies: usersPath + '/tlreplies#timelineposts',
-        menuOutbox: usersPath + '/outbox#timelineposts',
-        menuBookmarks: usersPath + '/tlbookmarks#timelineposts',
-        menuShares: usersPath + '/tlshares#timelineposts',
-        menuWanted: usersPath + '/tlwanted#timelineposts',
-        menuBlogs: usersPath + '/tlblogs#timelineposts',
-        menuNewswire: usersPath + '/newswiremobile',
-        menuLinks: usersPath + '/linksmobile'
+    nav_links = {
+        menu_profile: '/users/' + nickname,
+        menu_inbox: users_path + '/inbox#timelineposts',
+        menu_search: users_path + '/search',
+        menu_new_post: users_path + '/newpost',
+        menu_calendar: users_path + '/calendar',
+        menu_dm: users_path + '/dm#timelineposts',
+        menu_replies: users_path + '/tlreplies#timelineposts',
+        menu_outbox: users_path + '/outbox#timelineposts',
+        menu_bookmarks: users_path + '/tlbookmarks#timelineposts',
+        menu_shares: users_path + '/tlshares#timelineposts',
+        menu_wanted: users_path + '/tlwanted#timelineposts',
+        menu_blogs: users_path + '/tlblogs#timelineposts',
+        menu_newswire: users_path + '/newswiremobile',
+        menu_links: users_path + '/linksmobile'
     }
-    navAccessKeys = {}
-    for variableName, key in accessKeys.items():
-        if not locals().get(variableName):
+    nav_access_keys = {}
+    for variable_name, key in access_keys.items():
+        if not locals().get(variable_name):
             continue
-        navAccessKeys[locals()[variableName]] = key
+        nav_access_keys[locals()[variable_name]] = key
     if moderator:
-        navLinks[menuModeration] = usersPath + '/moderation#modtimeline'
-    return html_keyboard_navigation(text_mode_banner, navLinks, navAccessKeys,
-                                    None, usersPath, translate,
-                                    followApprovals)
+        nav_links[menu_moderation] = users_path + '/moderation#modtimeline'
+    return html_keyboard_navigation(text_mode_banner, nav_links,
+                                    nav_access_keys,
+                                    None, users_path, translate,
+                                    follow_approvals)
 
 
 def _html_timeline_end(base_dir: str, nickname: str, domain_full: str,
@@ -366,70 +366,72 @@ def _html_timeline_end(base_dir: str, nickname: str, domain_full: str,
                        show_publish_as_icon: bool,
                        rss_icon_at_top: bool, publish_button_at_top: bool,
                        authorized: bool, theme: str,
-                       defaultTimeline: str, accessKeys: {},
-                       boxName: str,
-                       enableTimingLog: bool, timelineStartTime) -> str:
+                       default_timeline: str, access_keys: {},
+                       box_name: str,
+                       enable_timing_log: bool, timeline_start_time) -> str:
     """Ending of the timeline, containing the right column
     """
     # end of timeline-posts
-    tlStr = '  </div>\n'
+    tl_str = '  </div>\n'
 
     # end of column-center
-    tlStr += '  </td>\n'
+    tl_str += '  </td>\n'
 
     # right column
-    rightColumnStr = get_right_column_content(base_dir, nickname, domain_full,
-                                              http_prefix, translate,
-                                              moderator, editor,
-                                              newswire, positive_voting,
-                                              False, None, True,
-                                              show_publish_as_icon,
-                                              rss_icon_at_top,
-                                              publish_button_at_top,
-                                              authorized, True, theme,
-                                              defaultTimeline, accessKeys)
-    tlStr += '  <td valign="top" class="col-right" ' + \
+    right_column_str = \
+        get_right_column_content(base_dir, nickname, domain_full,
+                                 http_prefix, translate,
+                                 moderator, editor,
+                                 newswire, positive_voting,
+                                 False, None, True,
+                                 show_publish_as_icon,
+                                 rss_icon_at_top,
+                                 publish_button_at_top,
+                                 authorized, True, theme,
+                                 default_timeline, access_keys)
+    tl_str += '  <td valign="top" class="col-right" ' + \
         'id="newswire" tabindex="-1">' + \
-        rightColumnStr + '  </td>\n'
-    tlStr += '  </tr>\n'
+        right_column_str + '  </td>\n'
+    tl_str += '  </tr>\n'
 
-    _log_timeline_timing(enableTimingLog, timelineStartTime, boxName, '9')
+    _log_timeline_timing(enable_timing_log, timeline_start_time, box_name, '9')
 
-    tlStr += '  </tbody>\n'
-    tlStr += '</table>\n'
-    return tlStr
+    tl_str += '  </tbody>\n'
+    tl_str += '</table>\n'
+    return tl_str
 
 
-def _page_number_buttons(usersPath: str, boxName: str, pageNumber: int) -> str:
+def _page_number_buttons(users_path: str, box_name: str,
+                         page_number: int) -> str:
     """Shows selactable page numbers at the bottom of the screen
     """
-    pagesWidth = 3
-    minPageNumber = pageNumber - pagesWidth
-    if minPageNumber < 1:
-        minPageNumber = 1
-    maxPageNumber = minPageNumber + 1 + (pagesWidth * 2)
-    numStr = ''
-    for page in range(minPageNumber, maxPageNumber):
-        if numStr:
-            numStr += ' ⸻ '
-        pageStr = str(page)
-        if page == pageNumber:
-            pageStr = '<mark>' + str(page) + '</mark>'
-        numStr += \
-            '<a href="' + usersPath + '/' + boxName + '?page=' + \
-            str(page) + '" class="pageslist">' + pageStr + '</a>'
-    return '<center>' + numStr + '</center>'
+    pages_width = 3
+    min_page_number = page_number - pages_width
+    if min_page_number < 1:
+        min_page_number = 1
+    max_page_number = min_page_number + 1 + (pages_width * 2)
+    num_str = ''
+    for page in range(min_page_number, max_page_number):
+        if num_str:
+            num_str += ' ⸻ '
+        page_str = str(page)
+        if page == page_number:
+            page_str = '<mark>' + str(page) + '</mark>'
+        num_str += \
+            '<a href="' + users_path + '/' + box_name + '?page=' + \
+            str(page) + '" class="pageslist">' + page_str + '</a>'
+    return '<center>' + num_str + '</center>'
 
 
-def html_timeline(css_cache: {}, defaultTimeline: str,
+def html_timeline(css_cache: {}, default_timeline: str,
                   recent_posts_cache: {}, max_recent_posts: int,
-                  translate: {}, pageNumber: int,
-                  itemsPerPage: int, session, base_dir: str,
+                  translate: {}, page_number: int,
+                  items_per_page: int, session, base_dir: str,
                   cached_webfingers: {}, person_cache: {},
-                  nickname: str, domain: str, port: int, timelineJson: {},
-                  boxName: str, allow_deletion: bool,
+                  nickname: str, domain: str, port: int, timeline_json: {},
+                  box_name: str, allow_deletion: bool,
                   http_prefix: str, project_version: str,
-                  manuallyApproveFollowers: bool,
+                  manually_approve_followers: bool,
                   minimal: bool,
                   yt_replace_domain: str,
                   twitter_replacement_domain: str,
@@ -443,105 +445,105 @@ def html_timeline(css_cache: {}, defaultTimeline: str,
                   rss_icon_at_top: bool,
                   publish_button_at_top: bool,
                   authorized: bool,
-                  moderationActionStr: str,
+                  moderation_action_str: str,
                   theme: str,
                   peertube_instances: [],
                   allow_local_network_access: bool,
                   text_mode_banner: str,
-                  accessKeys: {}, system_language: str,
+                  access_keys: {}, system_language: str,
                   max_like_count: int,
                   shared_items_federated_domains: [],
                   signing_priv_key_pem: str,
                   cw_lists: {}, lists_enabled: str) -> str:
     """Show the timeline as html
     """
-    enableTimingLog = False
+    enable_timing_log = False
 
-    timelineStartTime = time.time()
+    timeline_start_time = time.time()
 
-    accountDir = acct_dir(base_dir, nickname, domain)
+    account_dir = acct_dir(base_dir, nickname, domain)
 
     # should the calendar icon be highlighted?
-    newCalendarEvent = False
-    calendarImage = 'calendar.png'
-    calendarPath = '/calendar'
-    calendarFile = accountDir + '/.newCalendar'
-    if os.path.isfile(calendarFile):
-        newCalendarEvent = True
-        calendarImage = 'calendar_notify.png'
-        with open(calendarFile, 'r') as calfile:
-            calendarPath = calfile.read().replace('##sent##', '')
-            calendarPath = calendarPath.replace('\n', '').replace('\r', '')
+    new_calendar_event = False
+    calendar_image = 'calendar.png'
+    calendar_path = '/calendar'
+    calendar_file = account_dir + '/.newCalendar'
+    if os.path.isfile(calendar_file):
+        new_calendar_event = True
+        calendar_image = 'calendar_notify.png'
+        with open(calendar_file, 'r') as calfile:
+            calendar_path = calfile.read().replace('##sent##', '')
+            calendar_path = calendar_path.replace('\n', '').replace('\r', '')
 
     # should the DM button be highlighted?
-    newDM = False
-    dmFile = accountDir + '/.newDM'
-    if os.path.isfile(dmFile):
-        newDM = True
-        if boxName == 'dm':
+    new_dm = False
+    dm_file = account_dir + '/.newDM'
+    if os.path.isfile(dm_file):
+        new_dm = True
+        if box_name == 'dm':
             try:
-                os.remove(dmFile)
+                os.remove(dm_file)
             except OSError:
-                print('EX: html_timeline unable to delete ' + dmFile)
+                print('EX: html_timeline unable to delete ' + dm_file)
 
     # should the Replies button be highlighted?
-    newReply = False
-    replyFile = accountDir + '/.newReply'
-    if os.path.isfile(replyFile):
-        newReply = True
-        if boxName == 'tlreplies':
+    new_reply = False
+    reply_file = account_dir + '/.newReply'
+    if os.path.isfile(reply_file):
+        new_reply = True
+        if box_name == 'tlreplies':
             try:
-                os.remove(replyFile)
+                os.remove(reply_file)
             except OSError:
-                print('EX: html_timeline unable to delete ' + replyFile)
+                print('EX: html_timeline unable to delete ' + reply_file)
 
     # should the Shares button be highlighted?
-    newShare = False
-    newShareFile = accountDir + '/.newShare'
-    if os.path.isfile(newShareFile):
-        newShare = True
-        if boxName == 'tlshares':
+    new_share = False
+    new_share_file = account_dir + '/.newShare'
+    if os.path.isfile(new_share_file):
+        new_share = True
+        if box_name == 'tlshares':
             try:
-                os.remove(newShareFile)
+                os.remove(new_share_file)
             except OSError:
-                print('EX: html_timeline unable to delete ' + newShareFile)
+                print('EX: html_timeline unable to delete ' + new_share_file)
 
     # should the Wanted button be highlighted?
-    newWanted = False
-    newWantedFile = accountDir + '/.newWanted'
-    if os.path.isfile(newWantedFile):
-        newWanted = True
-        if boxName == 'tlwanted':
+    new_wanted = False
+    new_wanted_file = account_dir + '/.newWanted'
+    if os.path.isfile(new_wanted_file):
+        new_wanted = True
+        if box_name == 'tlwanted':
             try:
-                os.remove(newWantedFile)
+                os.remove(new_wanted_file)
             except OSError:
-                print('EX: html_timeline unable to delete ' + newWantedFile)
+                print('EX: html_timeline unable to delete ' + new_wanted_file)
 
     # should the Moderation/reports button be highlighted?
-    newReport = False
-    newReportFile = accountDir + '/.newReport'
-    if os.path.isfile(newReportFile):
-        newReport = True
-        if boxName == 'moderation':
+    new_report = False
+    new_report_file = account_dir + '/.newReport'
+    if os.path.isfile(new_report_file):
+        new_report = True
+        if box_name == 'moderation':
             try:
-                os.remove(newReportFile)
+                os.remove(new_report_file)
             except OSError:
-                print('EX: html_timeline unable to delete ' + newReportFile)
+                print('EX: html_timeline unable to delete ' + new_report_file)
 
-    separatorStr = ''
-    if boxName != 'tlmedia':
-        separatorStr = html_post_separator(base_dir, None)
+    separator_str = ''
+    if box_name != 'tlmedia':
+        separator_str = html_post_separator(base_dir, None)
 
     # the css filename
-    cssFilename = base_dir + '/epicyon-profile.css'
+    css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
-        cssFilename = base_dir + '/epicyon.css'
+        css_filename = base_dir + '/epicyon.css'
 
     # filename of the banner shown at the top
-    bannerFile, bannerFilename = \
+    banner_file, _ = \
         get_banner_file(base_dir, nickname, domain, theme)
 
-    _log_timeline_timing(enableTimingLog, timelineStartTime, boxName, '1')
+    _log_timeline_timing(enable_timing_log, timeline_start_time, box_name, '1')
 
     # is the user a moderator?
     if not moderator:
@@ -551,88 +553,88 @@ def html_timeline(css_cache: {}, defaultTimeline: str,
     if not editor:
         editor = is_editor(base_dir, nickname)
 
-    _log_timeline_timing(enableTimingLog, timelineStartTime, boxName, '2')
+    _log_timeline_timing(enable_timing_log, timeline_start_time, box_name, '2')
 
     # the appearance of buttons - highlighted or not
-    inboxButton = 'button'
-    blogsButton = 'button'
-    featuresButton = 'button'
-    newsButton = 'button'
-    dmButton = 'button'
-    if newDM:
-        dmButton = 'buttonhighlighted'
-    repliesButton = 'button'
-    if newReply:
-        repliesButton = 'buttonhighlighted'
-    mediaButton = 'button'
-    bookmarksButton = 'button'
+    inbox_button = 'button'
+    blogs_button = 'button'
+    features_button = 'button'
+    news_button = 'button'
+    dm_button = 'button'
+    if new_dm:
+        dm_button = 'buttonhighlighted'
+    replies_button = 'button'
+    if new_reply:
+        replies_button = 'buttonhighlighted'
+    media_button = 'button'
+    bookmarks_button = 'button'
 #    eventsButton = 'button'
-    sentButton = 'button'
-    sharesButton = 'button'
-    if newShare:
-        sharesButton = 'buttonhighlighted'
-    wantedButton = 'button'
-    if newWanted:
-        wantedButton = 'buttonhighlighted'
-    moderationButton = 'button'
-    if newReport:
-        moderationButton = 'buttonhighlighted'
-    if boxName == 'inbox':
-        inboxButton = 'buttonselected'
-    elif boxName == 'tlblogs':
-        blogsButton = 'buttonselected'
-    elif boxName == 'tlfeatures':
-        featuresButton = 'buttonselected'
-    elif boxName == 'tlnews':
-        newsButton = 'buttonselected'
-    elif boxName == 'dm':
-        dmButton = 'buttonselected'
-        if newDM:
-            dmButton = 'buttonselectedhighlighted'
-    elif boxName == 'tlreplies':
-        repliesButton = 'buttonselected'
-        if newReply:
-            repliesButton = 'buttonselectedhighlighted'
-    elif boxName == 'tlmedia':
-        mediaButton = 'buttonselected'
-    elif boxName == 'outbox':
-        sentButton = 'buttonselected'
-    elif boxName == 'moderation':
-        moderationButton = 'buttonselected'
-        if newReport:
-            moderationButton = 'buttonselectedhighlighted'
-    elif boxName == 'tlshares':
-        sharesButton = 'buttonselected'
-        if newShare:
-            sharesButton = 'buttonselectedhighlighted'
-    elif boxName == 'tlwanted':
-        wantedButton = 'buttonselected'
-        if newWanted:
-            wantedButton = 'buttonselectedhighlighted'
-    elif boxName == 'tlbookmarks' or boxName == 'bookmarks':
-        bookmarksButton = 'buttonselected'
+    sent_button = 'button'
+    shares_button = 'button'
+    if new_share:
+        shares_button = 'buttonhighlighted'
+    wanted_button = 'button'
+    if new_wanted:
+        wanted_button = 'buttonhighlighted'
+    moderation_button = 'button'
+    if new_report:
+        moderation_button = 'buttonhighlighted'
+    if box_name == 'inbox':
+        inbox_button = 'buttonselected'
+    elif box_name == 'tlblogs':
+        blogs_button = 'buttonselected'
+    elif box_name == 'tlfeatures':
+        features_button = 'buttonselected'
+    elif box_name == 'tlnews':
+        news_button = 'buttonselected'
+    elif box_name == 'dm':
+        dm_button = 'buttonselected'
+        if new_dm:
+            dm_button = 'buttonselectedhighlighted'
+    elif box_name == 'tlreplies':
+        replies_button = 'buttonselected'
+        if new_reply:
+            replies_button = 'buttonselectedhighlighted'
+    elif box_name == 'tlmedia':
+        media_button = 'buttonselected'
+    elif box_name == 'outbox':
+        sent_button = 'buttonselected'
+    elif box_name == 'moderation':
+        moderation_button = 'buttonselected'
+        if new_report:
+            moderation_button = 'buttonselectedhighlighted'
+    elif box_name == 'tlshares':
+        shares_button = 'buttonselected'
+        if new_share:
+            shares_button = 'buttonselectedhighlighted'
+    elif box_name == 'tlwanted':
+        wanted_button = 'buttonselected'
+        if new_wanted:
+            wanted_button = 'buttonselectedhighlighted'
+    elif box_name in ('tlbookmarks', 'bookmarks'):
+        bookmarks_button = 'buttonselected'
 
     # get the full domain, including any port number
-    fullDomain = get_full_domain(domain, port)
+    full_domain = get_full_domain(domain, port)
 
-    usersPath = '/users/' + nickname
-    actor = http_prefix + '://' + fullDomain + usersPath
+    users_path = '/users/' + nickname
+    actor = http_prefix + '://' + full_domain + users_path
 
-    showIndividualPostIcons = True
+    show_individual_post_icons = True
 
     # show an icon for new follow approvals
-    followApprovals = ''
-    followRequestsFilename = \
+    follow_approvals = ''
+    follow_requests_filename = \
         acct_dir(base_dir, nickname, domain) + '/followrequests.txt'
-    if os.path.isfile(followRequestsFilename):
-        with open(followRequestsFilename, 'r') as f:
-            for line in f:
+    if os.path.isfile(follow_requests_filename):
+        with open(follow_requests_filename, 'r') as foll_file:
+            for line in foll_file:
                 if len(line) > 0:
                     # show follow approvals icon
-                    followApprovals = \
-                        '<a href="' + usersPath + \
+                    follow_approvals = \
+                        '<a href="' + users_path + \
                         '/followers#buttonheader" ' + \
-                        'accesskey="' + accessKeys['followButton'] + '">' + \
+                        'accesskey="' + access_keys['followButton'] + '">' + \
                         '<img loading="lazy" ' + \
                         'class="timelineicon" alt="' + \
                         translate['Approve follow requests'] + \
@@ -640,101 +642,102 @@ def html_timeline(css_cache: {}, defaultTimeline: str,
                         '" src="/icons/person.png"/></a>\n'
                     break
 
-    _log_timeline_timing(enableTimingLog, timelineStartTime, boxName, '3')
+    _log_timeline_timing(enable_timing_log, timeline_start_time, box_name, '3')
 
     # moderation / reports button
-    moderationButtonStr = ''
+    moderation_button_str = ''
     if moderator and not minimal:
-        moderationButtonStr = \
-            '<a href="' + usersPath + \
+        moderation_button_str = \
+            '<a href="' + users_path + \
             '/moderation"><button class="' + \
-            moderationButton + '"><span>' + \
-            html_highlight_label(translate['Mod'], newReport) + \
+            moderation_button + '"><span>' + \
+            html_highlight_label(translate['Mod'], new_report) + \
             ' </span></button></a>'
 
     # shares, bookmarks and events buttons
-    sharesButtonStr = ''
-    wantedButtonStr = ''
-    bookmarksButtonStr = ''
-    eventsButtonStr = ''
+    shares_button_str = ''
+    wanted_button_str = ''
+    bookmarks_button_str = ''
+    events_button_str = ''
     if not minimal:
-        sharesButtonStr = \
-            '<a href="' + usersPath + '/tlshares"><button class="' + \
-            sharesButton + '"><span>' + \
-            html_highlight_label(translate['Shares'], newShare) + \
+        shares_button_str = \
+            '<a href="' + users_path + '/tlshares"><button class="' + \
+            shares_button + '"><span>' + \
+            html_highlight_label(translate['Shares'], new_share) + \
             '</span></button></a>'
 
-        wantedButtonStr = \
-            '<a href="' + usersPath + '/tlwanted"><button class="' + \
-            wantedButton + '"><span>' + \
-            html_highlight_label(translate['Wanted'], newWanted) + \
+        wanted_button_str = \
+            '<a href="' + users_path + '/tlwanted"><button class="' + \
+            wanted_button + '"><span>' + \
+            html_highlight_label(translate['Wanted'], new_wanted) + \
             '</span></button></a>'
 
-        bookmarksButtonStr = \
-            '<a href="' + usersPath + '/tlbookmarks"><button class="' + \
-            bookmarksButton + '"><span>' + translate['Bookmarks'] + \
+        bookmarks_button_str = \
+            '<a href="' + users_path + '/tlbookmarks"><button class="' + \
+            bookmarks_button + '"><span>' + translate['Bookmarks'] + \
             '</span></button></a>'
 
-    instanceTitle = \
+    instance_title = \
         get_config_param(base_dir, 'instanceTitle')
-    tlStr = html_header_with_external_style(cssFilename, instanceTitle, None)
+    tl_str = \
+        html_header_with_external_style(css_filename, instance_title, None)
 
-    _log_timeline_timing(enableTimingLog, timelineStartTime, boxName, '4')
+    _log_timeline_timing(enable_timing_log, timeline_start_time, box_name, '4')
 
     # if this is a news instance and we are viewing the news timeline
-    newsHeader = False
-    if defaultTimeline == 'tlfeatures' and boxName == 'tlfeatures':
-        newsHeader = True
+    news_header = False
+    if default_timeline == 'tlfeatures' and box_name == 'tlfeatures':
+        news_header = True
 
-    newPostButtonStr = ''
+    new_post_button_str = ''
     # start of headericons div
-    if not newsHeader:
+    if not news_header:
         if not icons_as_buttons:
-            newPostButtonStr += '<div class="headericons">'
+            new_post_button_str += '<div class="headericons">'
 
     # what screen to go to when a new post is created
-    newPostButtonStr += \
-        _html_timeline_new_post(manuallyApproveFollowers, boxName,
-                                icons_as_buttons, usersPath, translate)
+    new_post_button_str += \
+        _html_timeline_new_post(manually_approve_followers, box_name,
+                                icons_as_buttons, users_path, translate)
 
     # keyboard navigation
-    tlStr += \
+    tl_str += \
         _html_timeline_keyboard(moderator, text_mode_banner,
-                                usersPath, nickname,
-                                newCalendarEvent, newDM, newReply,
-                                newShare, newWanted,
-                                followApprovals, accessKeys, translate)
+                                users_path, nickname,
+                                new_calendar_event, new_dm, new_reply,
+                                new_share, new_wanted,
+                                follow_approvals, access_keys, translate)
 
     # banner and row of buttons
-    tlStr += \
+    tl_str += \
         '<header>\n' + \
         '<a href="/users/' + nickname + '" title="' + \
         translate['Switch to profile view'] + '" alt="' + \
         translate['Switch to profile view'] + '">\n'
-    tlStr += '<img loading="lazy" class="timeline-banner" ' + \
+    tl_str += '<img loading="lazy" class="timeline-banner" ' + \
         'alt="" ' + \
-        'src="' + usersPath + '/' + bannerFile + '" /></a>\n' + \
+        'src="' + users_path + '/' + banner_file + '" /></a>\n' + \
         '</header>\n'
 
     if full_width_tl_button_header:
-        tlStr += \
-            header_buttons_timeline(defaultTimeline, boxName, pageNumber,
-                                    translate, usersPath, mediaButton,
-                                    blogsButton, featuresButton,
-                                    newsButton, inboxButton,
-                                    dmButton, newDM, repliesButton,
-                                    newReply, minimal, sentButton,
-                                    sharesButtonStr, wantedButtonStr,
-                                    bookmarksButtonStr,
-                                    eventsButtonStr, moderationButtonStr,
-                                    newPostButtonStr, base_dir, nickname,
-                                    domain, timelineStartTime,
-                                    newCalendarEvent, calendarPath,
-                                    calendarImage, followApprovals,
-                                    icons_as_buttons, accessKeys)
+        tl_str += \
+            header_buttons_timeline(default_timeline, box_name, page_number,
+                                    translate, users_path, media_button,
+                                    blogs_button, features_button,
+                                    news_button, inbox_button,
+                                    dm_button, new_dm, replies_button,
+                                    new_reply, minimal, sent_button,
+                                    shares_button_str, wanted_button_str,
+                                    bookmarks_button_str,
+                                    events_button_str, moderation_button_str,
+                                    new_post_button_str, base_dir, nickname,
+                                    domain, timeline_start_time,
+                                    new_calendar_event, calendar_path,
+                                    calendar_image, follow_approvals,
+                                    icons_as_buttons, access_keys)
 
     # start the timeline
-    tlStr += \
+    tl_str += \
         '<table class="timeline">\n' + \
         '  <colgroup>\n' + \
         '    <col span="1" class="column-left">\n' + \
@@ -747,50 +750,50 @@ def html_timeline(css_cache: {}, defaultTimeline: str,
     domain_full = get_full_domain(domain, port)
 
     # left column
-    leftColumnStr = \
+    left_column_str = \
         get_left_column_content(base_dir, nickname, domain_full,
                                 http_prefix, translate,
                                 editor, artist, False, None, rss_icon_at_top,
-                                True, False, theme, accessKeys,
+                                True, False, theme, access_keys,
                                 shared_items_federated_domains)
-    tlStr += '  <td valign="top" class="col-left" ' + \
+    tl_str += '  <td valign="top" class="col-left" ' + \
         'id="links" tabindex="-1">' + \
-        leftColumnStr + '  </td>\n'
+        left_column_str + '  </td>\n'
     # center column containing posts
-    tlStr += '  <td valign="top" class="col-center">\n'
+    tl_str += '  <td valign="top" class="col-center">\n'
 
     if not full_width_tl_button_header:
-        tlStr += \
-            header_buttons_timeline(defaultTimeline, boxName, pageNumber,
-                                    translate, usersPath, mediaButton,
-                                    blogsButton, featuresButton,
-                                    newsButton, inboxButton,
-                                    dmButton, newDM, repliesButton,
-                                    newReply, minimal, sentButton,
-                                    sharesButtonStr, wantedButtonStr,
-                                    bookmarksButtonStr,
-                                    eventsButtonStr, moderationButtonStr,
-                                    newPostButtonStr, base_dir, nickname,
-                                    domain, timelineStartTime,
-                                    newCalendarEvent, calendarPath,
-                                    calendarImage, followApprovals,
-                                    icons_as_buttons, accessKeys)
+        tl_str += \
+            header_buttons_timeline(default_timeline, box_name, page_number,
+                                    translate, users_path, media_button,
+                                    blogs_button, features_button,
+                                    news_button, inbox_button,
+                                    dm_button, new_dm, replies_button,
+                                    new_reply, minimal, sent_button,
+                                    shares_button_str, wanted_button_str,
+                                    bookmarks_button_str,
+                                    events_button_str, moderation_button_str,
+                                    new_post_button_str, base_dir, nickname,
+                                    domain, timeline_start_time,
+                                    new_calendar_event, calendar_path,
+                                    calendar_image, follow_approvals,
+                                    icons_as_buttons, access_keys)
 
-    tlStr += '  <div id="timelineposts" class="timeline-posts">\n'
+    tl_str += '  <div id="timelineposts" class="timeline-posts">\n'
 
     # second row of buttons for moderator actions
-    tlStr += \
-        _html_timeline_moderation_buttons(moderator, boxName, nickname,
-                                          moderationActionStr, translate)
+    tl_str += \
+        _html_timeline_moderation_buttons(moderator, box_name, nickname,
+                                          moderation_action_str, translate)
 
-    _log_timeline_timing(enableTimingLog, timelineStartTime, boxName, '6')
+    _log_timeline_timing(enable_timing_log, timeline_start_time, box_name, '6')
 
-    if boxName == 'tlshares':
-        maxSharesPerAccount = itemsPerPage
-        return (tlStr +
-                _html_shares_timeline(translate, pageNumber, itemsPerPage,
+    if box_name == 'tlshares':
+        max_shares_per_account = items_per_page
+        return (tl_str +
+                _html_shares_timeline(translate, page_number, items_per_page,
                                       base_dir, actor, nickname, domain, port,
-                                      maxSharesPerAccount, http_prefix,
+                                      max_shares_per_account, http_prefix,
                                       shared_items_federated_domains,
                                       'shares') +
                 _html_timeline_end(base_dir, nickname, domain_full,
@@ -800,16 +803,16 @@ def html_timeline(css_cache: {}, defaultTimeline: str,
                                    show_publish_as_icon,
                                    rss_icon_at_top, publish_button_at_top,
                                    authorized, theme,
-                                   defaultTimeline, accessKeys,
-                                   boxName,
-                                   enableTimingLog, timelineStartTime) +
+                                   default_timeline, access_keys,
+                                   box_name,
+                                   enable_timing_log, timeline_start_time) +
                 html_footer())
-    elif boxName == 'tlwanted':
-        maxSharesPerAccount = itemsPerPage
-        return (tlStr +
-                _html_shares_timeline(translate, pageNumber, itemsPerPage,
+    elif box_name == 'tlwanted':
+        max_shares_per_account = items_per_page
+        return (tl_str +
+                _html_shares_timeline(translate, page_number, items_per_page,
                                       base_dir, actor, nickname, domain, port,
-                                      maxSharesPerAccount, http_prefix,
+                                      max_shares_per_account, http_prefix,
                                       shared_items_federated_domains,
                                       'wanted') +
                 _html_timeline_end(base_dir, nickname, domain_full,
@@ -819,30 +822,31 @@ def html_timeline(css_cache: {}, defaultTimeline: str,
                                    show_publish_as_icon,
                                    rss_icon_at_top, publish_button_at_top,
                                    authorized, theme,
-                                   defaultTimeline, accessKeys,
-                                   boxName,
-                                   enableTimingLog, timelineStartTime) +
+                                   default_timeline, access_keys,
+                                   box_name,
+                                   enable_timing_log, timeline_start_time) +
                 html_footer())
 
-    _log_timeline_timing(enableTimingLog, timelineStartTime, boxName, '7')
+    _log_timeline_timing(enable_timing_log, timeline_start_time, box_name, '7')
 
     # separator between posts which only appears in shell browsers
     # such as Lynx and is not read by screen readers
-    if boxName != 'tlmedia':
-        textModeSeparator = \
+    if box_name != 'tlmedia':
+        text_mode_separator = \
             '<div class="transparent"><hr></div>'
     else:
-        textModeSeparator = ''
+        text_mode_separator = ''
 
     # page up arrow
-    if pageNumber > 1:
-        tlStr += textModeSeparator
-        tlStr += '<br>' + _page_number_buttons(usersPath, boxName, pageNumber)
-        tlStr += \
+    if page_number > 1:
+        tl_str += text_mode_separator
+        tl_str += '<br>' + \
+            _page_number_buttons(users_path, box_name, page_number)
+        tl_str += \
             '  <center>\n' + \
-            '    <a href="' + usersPath + '/' + boxName + \
-            '?page=' + str(pageNumber - 1) + \
-            '" accesskey="' + accessKeys['Page up'] + '">' + \
+            '    <a href="' + users_path + '/' + box_name + \
+            '?page=' + str(page_number - 1) + \
+            '" accesskey="' + access_keys['Page up'] + '">' + \
             '<img loading="lazy" class="pageicon" src="/' + \
             'icons/pageup.png" title="' + \
             translate['Page up'] + '" alt="' + \
@@ -850,26 +854,26 @@ def html_timeline(css_cache: {}, defaultTimeline: str,
             '  </center>\n'
 
     # show the posts
-    itemCtr = 0
-    if timelineJson:
-        if 'orderedItems' not in timelineJson:
+    item_ctr = 0
+    if timeline_json:
+        if 'orderedItems' not in timeline_json:
             print('ERROR: no orderedItems in timeline for '
-                  + boxName + ' ' + str(timelineJson))
+                  + box_name + ' ' + str(timeline_json))
             return ''
 
-    useCacheOnly = False
-    if boxName == 'inbox':
-        useCacheOnly = True
+    use_cache_only = False
+    if box_name == 'inbox':
+        use_cache_only = True
 
-    if timelineJson:
+    if timeline_json:
         # if this is the media timeline then add an extra gallery container
-        if boxName == 'tlmedia':
-            if pageNumber > 1:
-                tlStr += '<br>'
-            tlStr += '<div class="galleryContainer">\n'
+        if box_name == 'tlmedia':
+            if page_number > 1:
+                tl_str += '<br>'
+            tl_str += '<div class="galleryContainer">\n'
 
         # show each post in the timeline
-        for item in timelineJson['orderedItems']:
+        for item in timeline_json['orderedItems']:
             if item['type'] == 'Create' or \
                item['type'] == 'Announce':
                 # is the actor who sent this post snoozed?
@@ -880,31 +884,31 @@ def html_timeline(css_cache: {}, defaultTimeline: str,
                     continue
 
                 # is the post in the memory cache of recent ones?
-                currTlStr = None
-                if boxName != 'tlmedia' and recent_posts_cache.get('html'):
+                curr_tl_str = None
+                if box_name != 'tlmedia' and recent_posts_cache.get('html'):
                     post_id = remove_id_ending(item['id']).replace('/', '#')
                     if recent_posts_cache['html'].get(post_id):
-                        currTlStr = recent_posts_cache['html'][post_id]
-                        currTlStr = \
+                        curr_tl_str = recent_posts_cache['html'][post_id]
+                        curr_tl_str = \
                             prepare_post_from_html_cache(nickname,
-                                                         currTlStr,
-                                                         boxName,
-                                                         pageNumber)
-                        _log_timeline_timing(enableTimingLog,
-                                             timelineStartTime,
-                                             boxName, '10')
+                                                         curr_tl_str,
+                                                         box_name,
+                                                         page_number)
+                        _log_timeline_timing(enable_timing_log,
+                                             timeline_start_time,
+                                             box_name, '10')
 
-                if not currTlStr:
-                    _log_timeline_timing(enableTimingLog,
-                                         timelineStartTime,
-                                         boxName, '11')
+                if not curr_tl_str:
+                    _log_timeline_timing(enable_timing_log,
+                                         timeline_start_time,
+                                         box_name, '11')
 
                     # read the post from disk
-                    currTlStr = \
+                    curr_tl_str = \
                         individual_post_as_html(signing_priv_key_pem,
                                                 False, recent_posts_cache,
                                                 max_recent_posts,
-                                                translate, pageNumber,
+                                                translate, page_number,
                                                 base_dir, session,
                                                 cached_webfingers,
                                                 person_cache,
@@ -912,7 +916,7 @@ def html_timeline(css_cache: {}, defaultTimeline: str,
                                                 item, None, True,
                                                 allow_deletion,
                                                 http_prefix, project_version,
-                                                boxName,
+                                                box_name,
                                                 yt_replace_domain,
                                                 twitter_replacement_domain,
                                                 show_published_date_only,
@@ -920,47 +924,47 @@ def html_timeline(css_cache: {}, defaultTimeline: str,
                                                 allow_local_network_access,
                                                 theme, system_language,
                                                 max_like_count,
-                                                boxName != 'dm',
-                                                showIndividualPostIcons,
-                                                manuallyApproveFollowers,
-                                                False, True, useCacheOnly,
+                                                box_name != 'dm',
+                                                show_individual_post_icons,
+                                                manually_approve_followers,
+                                                False, True, use_cache_only,
                                                 cw_lists, lists_enabled)
-                    _log_timeline_timing(enableTimingLog,
-                                         timelineStartTime, boxName, '12')
+                    _log_timeline_timing(enable_timing_log,
+                                         timeline_start_time, box_name, '12')
 
-                if currTlStr:
-                    if currTlStr not in tlStr:
-                        itemCtr += 1
-                        tlStr += textModeSeparator + currTlStr
-                        if separatorStr:
-                            tlStr += separatorStr
-        if boxName == 'tlmedia':
-            tlStr += '</div>\n'
+                if curr_tl_str:
+                    if curr_tl_str not in tl_str:
+                        item_ctr += 1
+                        tl_str += text_mode_separator + curr_tl_str
+                        if separator_str:
+                            tl_str += separator_str
+        if box_name == 'tlmedia':
+            tl_str += '</div>\n'
 
-    if itemCtr < 3:
-        print('Items added to html timeline ' + boxName + ': ' +
-              str(itemCtr) + ' ' + str(timelineJson['orderedItems']))
+    if item_ctr < 3:
+        print('Items added to html timeline ' + box_name + ': ' +
+              str(item_ctr) + ' ' + str(timeline_json['orderedItems']))
 
     # page down arrow
-    if itemCtr > 0:
-        tlStr += textModeSeparator
-        tlStr += \
+    if item_ctr > 0:
+        tl_str += text_mode_separator
+        tl_str += \
             '      <br>\n' + \
             '      <center>\n' + \
-            '        <a href="' + usersPath + '/' + boxName + '?page=' + \
-            str(pageNumber + 1) + \
-            '" accesskey="' + accessKeys['Page down'] + '">' + \
+            '        <a href="' + users_path + '/' + box_name + '?page=' + \
+            str(page_number + 1) + \
+            '" accesskey="' + access_keys['Page down'] + '">' + \
             '<img loading="lazy" class="pageicon" src="/' + \
             'icons/pagedown.png" title="' + \
             translate['Page down'] + '" alt="' + \
             translate['Page down'] + '"></a>\n' + \
             '      </center>\n'
-        tlStr += _page_number_buttons(usersPath, boxName, pageNumber)
-        tlStr += textModeSeparator
-    elif itemCtr == 0:
-        tlStr += _get_help_for_timeline(base_dir, boxName)
+        tl_str += _page_number_buttons(users_path, box_name, page_number)
+        tl_str += text_mode_separator
+    elif item_ctr == 0:
+        tl_str += _get_help_for_timeline(base_dir, box_name)
 
-    tlStr += \
+    tl_str += \
         _html_timeline_end(base_dir, nickname, domain_full,
                            http_prefix, translate,
                            moderator, editor,
@@ -968,166 +972,168 @@ def html_timeline(css_cache: {}, defaultTimeline: str,
                            show_publish_as_icon,
                            rss_icon_at_top, publish_button_at_top,
                            authorized, theme,
-                           defaultTimeline, accessKeys,
-                           boxName,
-                           enableTimingLog, timelineStartTime)
-    tlStr += html_footer()
-    return tlStr
+                           default_timeline, access_keys,
+                           box_name,
+                           enable_timing_log, timeline_start_time)
+    tl_str += html_footer()
+    return tl_str
 
 
-def html_individual_share(domain: str, shareId: str,
-                          actor: str, sharedItem: {}, translate: {},
-                          showContact: bool, removeButton: bool,
+def html_individual_share(domain: str, share_id: str,
+                          actor: str, shared_item: {}, translate: {},
+                          show_contact: bool, remove_button: bool,
                           sharesFileType: str) -> str:
     """Returns an individual shared item as html
     """
-    profileStr = '<div class="container">\n'
-    profileStr += \
-        '<p class="share-title">' + sharedItem['displayName'] + '</p>\n'
-    if sharedItem.get('imageUrl'):
-        profileStr += '<a href="' + sharedItem['imageUrl'] + '">\n'
-        profileStr += \
-            '<img loading="lazy" src="' + sharedItem['imageUrl'] + \
+    profile_str = '<div class="container">\n'
+    profile_str += \
+        '<p class="share-title">' + shared_item['displayName'] + '</p>\n'
+    if shared_item.get('imageUrl'):
+        profile_str += '<a href="' + shared_item['imageUrl'] + '">\n'
+        profile_str += \
+            '<img loading="lazy" src="' + shared_item['imageUrl'] + \
             '" alt="' + translate['Item image'] + '">\n</a>\n'
-    profileStr += '<p>' + sharedItem['summary'] + '</p>\n<p>'
-    if sharedItem.get('itemQty'):
-        if sharedItem['itemQty'] > 1:
-            profileStr += \
+    profile_str += '<p>' + shared_item['summary'] + '</p>\n<p>'
+    if shared_item.get('itemQty'):
+        if shared_item['itemQty'] > 1:
+            profile_str += \
                 '<b>' + translate['Quantity'] + ':</b> ' + \
-                str(sharedItem['itemQty']) + '<br>'
-    profileStr += \
-        '<b>' + translate['Type'] + ':</b> ' + sharedItem['itemType'] + '<br>'
-    profileStr += \
+                str(shared_item['itemQty']) + '<br>'
+    profile_str += \
+        '<b>' + translate['Type'] + ':</b> ' + shared_item['itemType'] + '<br>'
+    profile_str += \
         '<b>' + translate['Category'] + ':</b> ' + \
-        sharedItem['category'] + '<br>'
-    if sharedItem.get('location'):
-        profileStr += \
+        shared_item['category'] + '<br>'
+    if shared_item.get('location'):
+        profile_str += \
             '<b>' + translate['Location'] + ':</b> ' + \
-            sharedItem['location'] + '<br>'
-    contactTitleStr = translate['Contact']
-    if sharedItem.get('itemPrice') and sharedItem.get('itemCurrency'):
-        if is_float(sharedItem['itemPrice']):
-            if float(sharedItem['itemPrice']) > 0:
-                profileStr += ' ' + \
+            shared_item['location'] + '<br>'
+    contact_title_str = translate['Contact']
+    if shared_item.get('itemPrice') and shared_item.get('itemCurrency'):
+        if is_float(shared_item['itemPrice']):
+            if float(shared_item['itemPrice']) > 0:
+                profile_str += ' ' + \
                     '<b>' + translate['Price'] + ':</b> ' + \
-                    sharedItem['itemPrice'] + ' ' + sharedItem['itemCurrency']
-                contactTitleStr = translate['Buy']
-    profileStr += '</p>\n'
-    sharedesc = sharedItem['displayName']
+                    shared_item['itemPrice'] + ' ' + \
+                    shared_item['itemCurrency']
+                contact_title_str = translate['Buy']
+    profile_str += '</p>\n'
+    sharedesc = shared_item['displayName']
     if '<' not in sharedesc and ';' not in sharedesc:
-        if showContact:
-            buttonStyleStr = 'button'
-            if sharedItem['category'] == 'accommodation':
-                contactTitleStr = translate['Request to stay']
-                buttonStyleStr = 'contactbutton'
+        if show_contact:
+            button_style_str = 'button'
+            if shared_item['category'] == 'accommodation':
+                contact_title_str = translate['Request to stay']
+                button_style_str = 'contactbutton'
 
-            contactActor = sharedItem['actor']
-            profileStr += \
+            contact_actor = shared_item['actor']
+            profile_str += \
                 '<p>' + \
                 '<a href="' + actor + \
                 '?replydm=sharedesc:' + sharedesc + \
-                '?mention=' + contactActor + '">' + \
-                '<button class="' + buttonStyleStr + '">' + \
-                contactTitleStr + '</button></a>\n'
-            profileStr += \
-                '<a href="' + contactActor + '"><button class="button">' + \
+                '?mention=' + contact_actor + '">' + \
+                '<button class="' + button_style_str + '">' + \
+                contact_title_str + '</button></a>\n'
+            profile_str += \
+                '<a href="' + contact_actor + '"><button class="button">' + \
                 translate['Profile'] + '</button></a>\n'
-        if removeButton and domain in shareId:
+        if remove_button and domain in share_id:
             if sharesFileType == 'shares':
-                profileStr += \
-                    ' <a href="' + actor + '?rmshare=' + shareId + \
+                profile_str += \
+                    ' <a href="' + actor + '?rmshare=' + share_id + \
                     '"><button class="button">' + \
                     translate['Remove'] + '</button></a>\n'
             else:
-                profileStr += \
-                    ' <a href="' + actor + '?rmwanted=' + shareId + \
+                profile_str += \
+                    ' <a href="' + actor + '?rmwanted=' + share_id + \
                     '"><button class="button">' + \
                     translate['Remove'] + '</button></a>\n'
-    profileStr += '</div>\n'
-    return profileStr
+    profile_str += '</div>\n'
+    return profile_str
 
 
-def _html_shares_timeline(translate: {}, pageNumber: int, itemsPerPage: int,
+def _html_shares_timeline(translate: {}, page_number: int, items_per_page: int,
                           base_dir: str, actor: str,
                           nickname: str, domain: str, port: int,
-                          maxSharesPerAccount: int, http_prefix: str,
+                          max_shares_per_account: int, http_prefix: str,
                           shared_items_federated_domains: [],
                           sharesFileType: str) -> str:
     """Show shared items timeline as html
     """
-    sharesJson, lastPage = \
-        shares_timeline_json(actor, pageNumber, itemsPerPage,
-                             base_dir, domain, nickname, maxSharesPerAccount,
+    shares_json, lastPage = \
+        shares_timeline_json(actor, page_number, items_per_page,
+                             base_dir, domain, nickname,
+                             max_shares_per_account,
                              shared_items_federated_domains, sharesFileType)
     domain_full = get_full_domain(domain, port)
     actor = local_actor_url(http_prefix, nickname, domain_full)
-    adminNickname = get_config_param(base_dir, 'admin')
-    adminActor = ''
-    if adminNickname:
-        adminActor = \
-            local_actor_url(http_prefix, adminNickname, domain_full)
-    timelineStr = ''
+    admin_nickname = get_config_param(base_dir, 'admin')
+    admin_actor = ''
+    if admin_nickname:
+        admin_actor = \
+            local_actor_url(http_prefix, admin_nickname, domain_full)
+    timeline_str = ''
 
-    if pageNumber > 1:
-        timelineStr += '<br>' + \
-            _page_number_buttons(actor, 'tl' + sharesFileType, pageNumber)
-        timelineStr += \
+    if page_number > 1:
+        timeline_str += '<br>' + \
+            _page_number_buttons(actor, 'tl' + sharesFileType, page_number)
+        timeline_str += \
             '  <center>\n' + \
             '    <a href="' + actor + '/tl' + sharesFileType + '?page=' + \
-            str(pageNumber - 1) + \
+            str(page_number - 1) + \
             '"><img loading="lazy" class="pageicon" src="/' + \
             'icons/pageup.png" title="' + translate['Page up'] + \
             '" alt="' + translate['Page up'] + '"></a>\n' + \
             '  </center>\n'
 
-    separatorStr = html_post_separator(base_dir, None)
+    separator_str = html_post_separator(base_dir, None)
     ctr = 0
 
-    isAdminAccount = False
-    if adminActor and actor == adminActor:
-        isAdminAccount = True
-    is_moderatorAccount = False
+    is_admin_account = False
+    if admin_actor and actor == admin_actor:
+        is_admin_account = True
+    is_moderator_account = False
     if is_moderator(base_dir, nickname):
-        is_moderatorAccount = True
+        is_moderator_account = True
 
-    for published, sharedItem in sharesJson.items():
-        showContactButton = False
-        if sharedItem['actor'] != actor:
-            showContactButton = True
-        showRemoveButton = False
-        if '___' + domain in sharedItem['shareId']:
-            if sharedItem['actor'] == actor or \
-               isAdminAccount or is_moderatorAccount:
-                showRemoveButton = True
-        timelineStr += \
-            html_individual_share(domain, sharedItem['shareId'],
-                                  actor, sharedItem, translate,
-                                  showContactButton, showRemoveButton,
+    for _, shared_item in shares_json.items():
+        show_contact_button = False
+        if shared_item['actor'] != actor:
+            show_contact_button = True
+        show_remove_button = False
+        if '___' + domain in shared_item['shareId']:
+            if shared_item['actor'] == actor or \
+               is_admin_account or is_moderator_account:
+                show_remove_button = True
+        timeline_str += \
+            html_individual_share(domain, shared_item['shareId'],
+                                  actor, shared_item, translate,
+                                  show_contact_button, show_remove_button,
                                   sharesFileType)
-        timelineStr += separatorStr
+        timeline_str += separator_str
         ctr += 1
 
     if ctr == 0:
-        timelineStr += _get_help_for_timeline(base_dir, 'tl' + sharesFileType)
+        timeline_str += _get_help_for_timeline(base_dir, 'tl' + sharesFileType)
 
     if not lastPage:
-        timelineStr += \
+        timeline_str += \
             '  <center>\n' + \
             '    <a href="' + actor + '/tl' + sharesFileType + '?page=' + \
-            str(pageNumber + 1) + \
+            str(page_number + 1) + \
             '"><img loading="lazy" class="pageicon" src="/' + \
             'icons/pagedown.png" title="' + translate['Page down'] + \
             '" alt="' + translate['Page down'] + '"></a>\n' + \
             '  </center>\n'
-        timelineStr += \
-            _page_number_buttons(actor, 'tl' + sharesFileType, pageNumber)
+        timeline_str += \
+            _page_number_buttons(actor, 'tl' + sharesFileType, page_number)
 
-    return timelineStr
+    return timeline_str
 
 
-def html_shares(css_cache: {}, defaultTimeline: str,
+def html_shares(css_cache: {}, default_timeline: str,
                 recent_posts_cache: {}, max_recent_posts: int,
-                translate: {}, pageNumber: int, itemsPerPage: int,
+                translate: {}, page_number: int, items_per_page: int,
                 session, base_dir: str,
                 cached_webfingers: {}, person_cache: {},
                 nickname: str, domain: str, port: int,
@@ -1146,26 +1152,26 @@ def html_shares(css_cache: {}, defaultTimeline: str,
                 peertube_instances: [],
                 allow_local_network_access: bool,
                 text_mode_banner: str,
-                accessKeys: {}, system_language: str,
+                access_keys: {}, system_language: str,
                 max_like_count: int,
                 shared_items_federated_domains: [],
                 signing_priv_key_pem: str,
                 cw_lists: {}, lists_enabled: str) -> str:
     """Show the shares timeline as html
     """
-    manuallyApproveFollowers = \
+    manually_approve_followers = \
         follower_approval_active(base_dir, nickname, domain)
     artist = is_artist(base_dir, nickname)
 
-    return html_timeline(css_cache, defaultTimeline,
+    return html_timeline(css_cache, default_timeline,
                          recent_posts_cache, max_recent_posts,
-                         translate, pageNumber,
-                         itemsPerPage, session, base_dir,
+                         translate, page_number,
+                         items_per_page, session, base_dir,
                          cached_webfingers, person_cache,
                          nickname, domain, port, None,
                          'tlshares', allow_deletion,
                          http_prefix, project_version,
-                         manuallyApproveFollowers,
+                         manually_approve_followers,
                          False,
                          yt_replace_domain,
                          twitter_replacement_domain,
@@ -1177,15 +1183,15 @@ def html_shares(css_cache: {}, defaultTimeline: str,
                          publish_button_at_top,
                          authorized, None, theme, peertube_instances,
                          allow_local_network_access, text_mode_banner,
-                         accessKeys, system_language, max_like_count,
+                         access_keys, system_language, max_like_count,
                          shared_items_federated_domains,
                          signing_priv_key_pem,
                          cw_lists, lists_enabled)
 
 
-def html_wanted(css_cache: {}, defaultTimeline: str,
+def html_wanted(css_cache: {}, default_timeline: str,
                 recent_posts_cache: {}, max_recent_posts: int,
-                translate: {}, pageNumber: int, itemsPerPage: int,
+                translate: {}, page_number: int, items_per_page: int,
                 session, base_dir: str,
                 cached_webfingers: {}, person_cache: {},
                 nickname: str, domain: str, port: int,
@@ -1204,26 +1210,26 @@ def html_wanted(css_cache: {}, defaultTimeline: str,
                 peertube_instances: [],
                 allow_local_network_access: bool,
                 text_mode_banner: str,
-                accessKeys: {}, system_language: str,
+                access_keys: {}, system_language: str,
                 max_like_count: int,
                 shared_items_federated_domains: [],
                 signing_priv_key_pem: str,
                 cw_lists: {}, lists_enabled: str) -> str:
     """Show the wanted timeline as html
     """
-    manuallyApproveFollowers = \
+    manually_approve_followers = \
         follower_approval_active(base_dir, nickname, domain)
     artist = is_artist(base_dir, nickname)
 
-    return html_timeline(css_cache, defaultTimeline,
+    return html_timeline(css_cache, default_timeline,
                          recent_posts_cache, max_recent_posts,
-                         translate, pageNumber,
-                         itemsPerPage, session, base_dir,
+                         translate, page_number,
+                         items_per_page, session, base_dir,
                          cached_webfingers, person_cache,
                          nickname, domain, port, None,
                          'tlwanted', allow_deletion,
                          http_prefix, project_version,
-                         manuallyApproveFollowers,
+                         manually_approve_followers,
                          False,
                          yt_replace_domain,
                          twitter_replacement_domain,
@@ -1235,15 +1241,15 @@ def html_wanted(css_cache: {}, defaultTimeline: str,
                          publish_button_at_top,
                          authorized, None, theme, peertube_instances,
                          allow_local_network_access, text_mode_banner,
-                         accessKeys, system_language, max_like_count,
+                         access_keys, system_language, max_like_count,
                          shared_items_federated_domains,
                          signing_priv_key_pem,
                          cw_lists, lists_enabled)
 
 
-def html_inbox(css_cache: {}, defaultTimeline: str,
+def html_inbox(css_cache: {}, default_timeline: str,
                recent_posts_cache: {}, max_recent_posts: int,
-               translate: {}, pageNumber: int, itemsPerPage: int,
+               translate: {}, page_number: int, items_per_page: int,
                session, base_dir: str,
                cached_webfingers: {}, person_cache: {},
                nickname: str, domain: str, port: int, inboxJson: {},
@@ -1263,26 +1269,26 @@ def html_inbox(css_cache: {}, defaultTimeline: str,
                peertube_instances: [],
                allow_local_network_access: bool,
                text_mode_banner: str,
-               accessKeys: {}, system_language: str,
+               access_keys: {}, system_language: str,
                max_like_count: int,
                shared_items_federated_domains: [],
                signing_priv_key_pem: str,
                cw_lists: {}, lists_enabled: str) -> str:
     """Show the inbox as html
     """
-    manuallyApproveFollowers = \
+    manually_approve_followers = \
         follower_approval_active(base_dir, nickname, domain)
     artist = is_artist(base_dir, nickname)
 
-    return html_timeline(css_cache, defaultTimeline,
+    return html_timeline(css_cache, default_timeline,
                          recent_posts_cache, max_recent_posts,
-                         translate, pageNumber,
-                         itemsPerPage, session, base_dir,
+                         translate, page_number,
+                         items_per_page, session, base_dir,
                          cached_webfingers, person_cache,
                          nickname, domain, port, inboxJson,
                          'inbox', allow_deletion,
                          http_prefix, project_version,
-                         manuallyApproveFollowers,
+                         manually_approve_followers,
                          minimal,
                          yt_replace_domain,
                          twitter_replacement_domain,
@@ -1294,15 +1300,15 @@ def html_inbox(css_cache: {}, defaultTimeline: str,
                          publish_button_at_top,
                          authorized, None, theme, peertube_instances,
                          allow_local_network_access, text_mode_banner,
-                         accessKeys, system_language, max_like_count,
+                         access_keys, system_language, max_like_count,
                          shared_items_federated_domains,
                          signing_priv_key_pem,
                          cw_lists, lists_enabled)
 
 
-def html_bookmarks(css_cache: {}, defaultTimeline: str,
+def html_bookmarks(css_cache: {}, default_timeline: str,
                    recent_posts_cache: {}, max_recent_posts: int,
-                   translate: {}, pageNumber: int, itemsPerPage: int,
+                   translate: {}, page_number: int, items_per_page: int,
                    session, base_dir: str,
                    cached_webfingers: {}, person_cache: {},
                    nickname: str, domain: str, port: int, bookmarksJson: {},
@@ -1322,26 +1328,26 @@ def html_bookmarks(css_cache: {}, defaultTimeline: str,
                    peertube_instances: [],
                    allow_local_network_access: bool,
                    text_mode_banner: str,
-                   accessKeys: {}, system_language: str,
+                   access_keys: {}, system_language: str,
                    max_like_count: int,
                    shared_items_federated_domains: [],
                    signing_priv_key_pem: str,
                    cw_lists: {}, lists_enabled: str) -> str:
     """Show the bookmarks as html
     """
-    manuallyApproveFollowers = \
+    manually_approve_followers = \
         follower_approval_active(base_dir, nickname, domain)
     artist = is_artist(base_dir, nickname)
 
-    return html_timeline(css_cache, defaultTimeline,
+    return html_timeline(css_cache, default_timeline,
                          recent_posts_cache, max_recent_posts,
-                         translate, pageNumber,
-                         itemsPerPage, session, base_dir,
+                         translate, page_number,
+                         items_per_page, session, base_dir,
                          cached_webfingers, person_cache,
                          nickname, domain, port, bookmarksJson,
                          'tlbookmarks', allow_deletion,
                          http_prefix, project_version,
-                         manuallyApproveFollowers,
+                         manually_approve_followers,
                          minimal,
                          yt_replace_domain,
                          twitter_replacement_domain,
@@ -1353,14 +1359,14 @@ def html_bookmarks(css_cache: {}, defaultTimeline: str,
                          publish_button_at_top,
                          authorized, None, theme, peertube_instances,
                          allow_local_network_access, text_mode_banner,
-                         accessKeys, system_language, max_like_count,
+                         access_keys, system_language, max_like_count,
                          shared_items_federated_domains, signing_priv_key_pem,
                          cw_lists, lists_enabled)
 
 
-def html_inbox_d_ms(css_cache: {}, defaultTimeline: str,
+def html_inbox_d_ms(css_cache: {}, default_timeline: str,
                     recent_posts_cache: {}, max_recent_posts: int,
-                    translate: {}, pageNumber: int, itemsPerPage: int,
+                    translate: {}, page_number: int, items_per_page: int,
                     session, base_dir: str,
                     cached_webfingers: {}, person_cache: {},
                     nickname: str, domain: str, port: int, inboxJson: {},
@@ -1380,7 +1386,7 @@ def html_inbox_d_ms(css_cache: {}, defaultTimeline: str,
                     peertube_instances: [],
                     allow_local_network_access: bool,
                     text_mode_banner: str,
-                    accessKeys: {}, system_language: str,
+                    access_keys: {}, system_language: str,
                     max_like_count: int,
                     shared_items_federated_domains: [],
                     signing_priv_key_pem: str,
@@ -1388,10 +1394,10 @@ def html_inbox_d_ms(css_cache: {}, defaultTimeline: str,
     """Show the DM timeline as html
     """
     artist = is_artist(base_dir, nickname)
-    return html_timeline(css_cache, defaultTimeline,
+    return html_timeline(css_cache, default_timeline,
                          recent_posts_cache, max_recent_posts,
-                         translate, pageNumber,
-                         itemsPerPage, session, base_dir,
+                         translate, page_number,
+                         items_per_page, session, base_dir,
                          cached_webfingers, person_cache,
                          nickname, domain, port, inboxJson,
                          'dm', allow_deletion,
@@ -1406,15 +1412,15 @@ def html_inbox_d_ms(css_cache: {}, defaultTimeline: str,
                          publish_button_at_top,
                          authorized, None, theme, peertube_instances,
                          allow_local_network_access, text_mode_banner,
-                         accessKeys, system_language, max_like_count,
+                         access_keys, system_language, max_like_count,
                          shared_items_federated_domains,
                          signing_priv_key_pem,
                          cw_lists, lists_enabled)
 
 
-def html_inbox_replies(css_cache: {}, defaultTimeline: str,
+def html_inbox_replies(css_cache: {}, default_timeline: str,
                        recent_posts_cache: {}, max_recent_posts: int,
-                       translate: {}, pageNumber: int, itemsPerPage: int,
+                       translate: {}, page_number: int, items_per_page: int,
                        session, base_dir: str,
                        cached_webfingers: {}, person_cache: {},
                        nickname: str, domain: str, port: int, inboxJson: {},
@@ -1434,7 +1440,7 @@ def html_inbox_replies(css_cache: {}, defaultTimeline: str,
                        peertube_instances: [],
                        allow_local_network_access: bool,
                        text_mode_banner: str,
-                       accessKeys: {}, system_language: str,
+                       access_keys: {}, system_language: str,
                        max_like_count: int,
                        shared_items_federated_domains: [],
                        signing_priv_key_pem: str,
@@ -1442,10 +1448,10 @@ def html_inbox_replies(css_cache: {}, defaultTimeline: str,
     """Show the replies timeline as html
     """
     artist = is_artist(base_dir, nickname)
-    return html_timeline(css_cache, defaultTimeline,
+    return html_timeline(css_cache, default_timeline,
                          recent_posts_cache, max_recent_posts,
-                         translate, pageNumber,
-                         itemsPerPage, session, base_dir,
+                         translate, page_number,
+                         items_per_page, session, base_dir,
                          cached_webfingers, person_cache,
                          nickname, domain, port, inboxJson, 'tlreplies',
                          allow_deletion, http_prefix, project_version, False,
@@ -1460,14 +1466,14 @@ def html_inbox_replies(css_cache: {}, defaultTimeline: str,
                          publish_button_at_top,
                          authorized, None, theme, peertube_instances,
                          allow_local_network_access, text_mode_banner,
-                         accessKeys, system_language, max_like_count,
+                         access_keys, system_language, max_like_count,
                          shared_items_federated_domains, signing_priv_key_pem,
                          cw_lists, lists_enabled)
 
 
-def html_inbox_media(css_cache: {}, defaultTimeline: str,
+def html_inbox_media(css_cache: {}, default_timeline: str,
                      recent_posts_cache: {}, max_recent_posts: int,
-                     translate: {}, pageNumber: int, itemsPerPage: int,
+                     translate: {}, page_number: int, items_per_page: int,
                      session, base_dir: str,
                      cached_webfingers: {}, person_cache: {},
                      nickname: str, domain: str, port: int, inboxJson: {},
@@ -1487,7 +1493,7 @@ def html_inbox_media(css_cache: {}, defaultTimeline: str,
                      peertube_instances: [],
                      allow_local_network_access: bool,
                      text_mode_banner: str,
-                     accessKeys: {}, system_language: str,
+                     access_keys: {}, system_language: str,
                      max_like_count: int,
                      shared_items_federated_domains: [],
                      signing_priv_key_pem: str,
@@ -1495,10 +1501,10 @@ def html_inbox_media(css_cache: {}, defaultTimeline: str,
     """Show the media timeline as html
     """
     artist = is_artist(base_dir, nickname)
-    return html_timeline(css_cache, defaultTimeline,
+    return html_timeline(css_cache, default_timeline,
                          recent_posts_cache, max_recent_posts,
-                         translate, pageNumber,
-                         itemsPerPage, session, base_dir,
+                         translate, page_number,
+                         items_per_page, session, base_dir,
                          cached_webfingers, person_cache,
                          nickname, domain, port, inboxJson, 'tlmedia',
                          allow_deletion, http_prefix, project_version, False,
@@ -1513,14 +1519,14 @@ def html_inbox_media(css_cache: {}, defaultTimeline: str,
                          publish_button_at_top,
                          authorized, None, theme, peertube_instances,
                          allow_local_network_access, text_mode_banner,
-                         accessKeys, system_language, max_like_count,
+                         access_keys, system_language, max_like_count,
                          shared_items_federated_domains, signing_priv_key_pem,
                          cw_lists, lists_enabled)
 
 
-def html_inbox_blogs(css_cache: {}, defaultTimeline: str,
+def html_inbox_blogs(css_cache: {}, default_timeline: str,
                      recent_posts_cache: {}, max_recent_posts: int,
-                     translate: {}, pageNumber: int, itemsPerPage: int,
+                     translate: {}, page_number: int, items_per_page: int,
                      session, base_dir: str,
                      cached_webfingers: {}, person_cache: {},
                      nickname: str, domain: str, port: int, inboxJson: {},
@@ -1540,7 +1546,7 @@ def html_inbox_blogs(css_cache: {}, defaultTimeline: str,
                      peertube_instances: [],
                      allow_local_network_access: bool,
                      text_mode_banner: str,
-                     accessKeys: {}, system_language: str,
+                     access_keys: {}, system_language: str,
                      max_like_count: int,
                      shared_items_federated_domains: [],
                      signing_priv_key_pem: str,
@@ -1548,10 +1554,10 @@ def html_inbox_blogs(css_cache: {}, defaultTimeline: str,
     """Show the blogs timeline as html
     """
     artist = is_artist(base_dir, nickname)
-    return html_timeline(css_cache, defaultTimeline,
+    return html_timeline(css_cache, default_timeline,
                          recent_posts_cache, max_recent_posts,
-                         translate, pageNumber,
-                         itemsPerPage, session, base_dir,
+                         translate, page_number,
+                         items_per_page, session, base_dir,
                          cached_webfingers, person_cache,
                          nickname, domain, port, inboxJson, 'tlblogs',
                          allow_deletion, http_prefix, project_version, False,
@@ -1566,14 +1572,14 @@ def html_inbox_blogs(css_cache: {}, defaultTimeline: str,
                          publish_button_at_top,
                          authorized, None, theme, peertube_instances,
                          allow_local_network_access, text_mode_banner,
-                         accessKeys, system_language, max_like_count,
+                         access_keys, system_language, max_like_count,
                          shared_items_federated_domains, signing_priv_key_pem,
                          cw_lists, lists_enabled)
 
 
-def html_inbox_features(css_cache: {}, defaultTimeline: str,
+def html_inbox_features(css_cache: {}, default_timeline: str,
                         recent_posts_cache: {}, max_recent_posts: int,
-                        translate: {}, pageNumber: int, itemsPerPage: int,
+                        translate: {}, page_number: int, items_per_page: int,
                         session, base_dir: str,
                         cached_webfingers: {}, person_cache: {},
                         nickname: str, domain: str, port: int, inboxJson: {},
@@ -1594,17 +1600,17 @@ def html_inbox_features(css_cache: {}, defaultTimeline: str,
                         peertube_instances: [],
                         allow_local_network_access: bool,
                         text_mode_banner: str,
-                        accessKeys: {}, system_language: str,
+                        access_keys: {}, system_language: str,
                         max_like_count: int,
                         shared_items_federated_domains: [],
                         signing_priv_key_pem: str,
                         cw_lists: {}, lists_enabled: str) -> str:
     """Show the features timeline as html
     """
-    return html_timeline(css_cache, defaultTimeline,
+    return html_timeline(css_cache, default_timeline,
                          recent_posts_cache, max_recent_posts,
-                         translate, pageNumber,
-                         itemsPerPage, session, base_dir,
+                         translate, page_number,
+                         items_per_page, session, base_dir,
                          cached_webfingers, person_cache,
                          nickname, domain, port, inboxJson, 'tlfeatures',
                          allow_deletion, http_prefix, project_version, False,
@@ -1619,14 +1625,14 @@ def html_inbox_features(css_cache: {}, defaultTimeline: str,
                          publish_button_at_top,
                          authorized, None, theme, peertube_instances,
                          allow_local_network_access, text_mode_banner,
-                         accessKeys, system_language, max_like_count,
+                         access_keys, system_language, max_like_count,
                          shared_items_federated_domains, signing_priv_key_pem,
                          cw_lists, lists_enabled)
 
 
-def html_inbox_news(css_cache: {}, defaultTimeline: str,
+def html_inbox_news(css_cache: {}, default_timeline: str,
                     recent_posts_cache: {}, max_recent_posts: int,
-                    translate: {}, pageNumber: int, itemsPerPage: int,
+                    translate: {}, page_number: int, items_per_page: int,
                     session, base_dir: str,
                     cached_webfingers: {}, person_cache: {},
                     nickname: str, domain: str, port: int, inboxJson: {},
@@ -1646,17 +1652,17 @@ def html_inbox_news(css_cache: {}, defaultTimeline: str,
                     peertube_instances: [],
                     allow_local_network_access: bool,
                     text_mode_banner: str,
-                    accessKeys: {}, system_language: str,
+                    access_keys: {}, system_language: str,
                     max_like_count: int,
                     shared_items_federated_domains: [],
                     signing_priv_key_pem: str,
                     cw_lists: {}, lists_enabled: str) -> str:
     """Show the news timeline as html
     """
-    return html_timeline(css_cache, defaultTimeline,
+    return html_timeline(css_cache, default_timeline,
                          recent_posts_cache, max_recent_posts,
-                         translate, pageNumber,
-                         itemsPerPage, session, base_dir,
+                         translate, page_number,
+                         items_per_page, session, base_dir,
                          cached_webfingers, person_cache,
                          nickname, domain, port, inboxJson, 'tlnews',
                          allow_deletion, http_prefix, project_version, False,
@@ -1671,14 +1677,14 @@ def html_inbox_news(css_cache: {}, defaultTimeline: str,
                          publish_button_at_top,
                          authorized, None, theme, peertube_instances,
                          allow_local_network_access, text_mode_banner,
-                         accessKeys, system_language, max_like_count,
+                         access_keys, system_language, max_like_count,
                          shared_items_federated_domains, signing_priv_key_pem,
                          cw_lists, lists_enabled)
 
 
-def html_outbox(css_cache: {}, defaultTimeline: str,
+def html_outbox(css_cache: {}, default_timeline: str,
                 recent_posts_cache: {}, max_recent_posts: int,
-                translate: {}, pageNumber: int, itemsPerPage: int,
+                translate: {}, page_number: int, items_per_page: int,
                 session, base_dir: str,
                 cached_webfingers: {}, person_cache: {},
                 nickname: str, domain: str, port: int, outboxJson: {},
@@ -1698,24 +1704,24 @@ def html_outbox(css_cache: {}, defaultTimeline: str,
                 peertube_instances: [],
                 allow_local_network_access: bool,
                 text_mode_banner: str,
-                accessKeys: {}, system_language: str,
+                access_keys: {}, system_language: str,
                 max_like_count: int,
                 shared_items_federated_domains: [],
                 signing_priv_key_pem: str,
                 cw_lists: {}, lists_enabled: str) -> str:
     """Show the Outbox as html
     """
-    manuallyApproveFollowers = \
+    manually_approve_followers = \
         follower_approval_active(base_dir, nickname, domain)
     artist = is_artist(base_dir, nickname)
-    return html_timeline(css_cache, defaultTimeline,
+    return html_timeline(css_cache, default_timeline,
                          recent_posts_cache, max_recent_posts,
-                         translate, pageNumber,
-                         itemsPerPage, session, base_dir,
+                         translate, page_number,
+                         items_per_page, session, base_dir,
                          cached_webfingers, person_cache,
                          nickname, domain, port, outboxJson, 'outbox',
                          allow_deletion, http_prefix, project_version,
-                         manuallyApproveFollowers, minimal,
+                         manually_approve_followers, minimal,
                          yt_replace_domain,
                          twitter_replacement_domain,
                          show_published_date_only,
@@ -1726,6 +1732,6 @@ def html_outbox(css_cache: {}, defaultTimeline: str,
                          publish_button_at_top,
                          authorized, None, theme, peertube_instances,
                          allow_local_network_access, text_mode_banner,
-                         accessKeys, system_language, max_like_count,
+                         access_keys, system_language, max_like_count,
                          shared_items_federated_domains, signing_priv_key_pem,
                          cw_lists, lists_enabled)

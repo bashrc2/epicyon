@@ -54,9 +54,9 @@ def html_search_emoji(css_cache: {}, translate: {},
                  base_dir + '/emoji/emoji.json')
 
     searchStr = searchStr.lower().replace(':', '').strip('\n').strip('\r')
-    cssFilename = base_dir + '/epicyon-profile.css'
+    css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
-        cssFilename = base_dir + '/epicyon.css'
+        css_filename = base_dir + '/epicyon.css'
 
     emojiLookupFilename = base_dir + '/emoji/emoji.json'
     customEmojiLookupFilename = base_dir + '/emojicustom/emoji.json'
@@ -65,7 +65,7 @@ def html_search_emoji(css_cache: {}, translate: {},
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
     emojiForm = \
-        html_header_with_external_style(cssFilename, instanceTitle, None)
+        html_header_with_external_style(css_filename, instanceTitle, None)
     emojiForm += '<center><h1>' + \
         translate['Emoji Search'] + \
         '</h1></center>'
@@ -235,14 +235,14 @@ def html_search_shared_items(css_cache: {}, translate: {},
     searchStrLower = urllib.parse.unquote(searchStr)
     searchStrLower = searchStrLower.lower().strip('\n').strip('\r')
     searchStrLowerList = searchStrLower.split('+')
-    cssFilename = base_dir + '/epicyon-profile.css'
+    css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
-        cssFilename = base_dir + '/epicyon.css'
+        css_filename = base_dir + '/epicyon.css'
 
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
     sharedItemsForm = \
-        html_header_with_external_style(cssFilename, instanceTitle, None)
+        html_header_with_external_style(css_filename, instanceTitle, None)
     if sharesFileType == 'shares':
         titleStr = translate['Shared Items Search']
     else:
@@ -342,14 +342,14 @@ def html_search_emoji_text_entry(css_cache: {}, translate: {},
 
     set_custom_background(base_dir, 'search-background', 'follow-background')
 
-    cssFilename = base_dir + '/epicyon-follow.css'
+    css_filename = base_dir + '/epicyon-follow.css'
     if os.path.isfile(base_dir + '/follow.css'):
-        cssFilename = base_dir + '/follow.css'
+        css_filename = base_dir + '/follow.css'
 
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
     emojiStr = \
-        html_header_with_external_style(cssFilename, instanceTitle, None)
+        html_header_with_external_style(css_filename, instanceTitle, None)
     emojiStr += '<div class="follow">\n'
     emojiStr += '  <div class="followAvatar">\n'
     emojiStr += '  <center>\n'
@@ -375,7 +375,7 @@ def html_search_emoji_text_entry(css_cache: {}, translate: {},
 def html_search(css_cache: {}, translate: {},
                 base_dir: str, path: str, domain: str,
                 defaultTimeline: str, theme: str,
-                text_mode_banner: str, accessKeys: {}) -> str:
+                text_mode_banner: str, access_keys: {}) -> str:
     """Search called from the timeline icon
     """
     actor = path.replace('/search', '')
@@ -383,13 +383,13 @@ def html_search(css_cache: {}, translate: {},
 
     set_custom_background(base_dir, 'search-background', 'follow-background')
 
-    cssFilename = base_dir + '/epicyon-search.css'
+    css_filename = base_dir + '/epicyon-search.css'
     if os.path.isfile(base_dir + '/search.css'):
-        cssFilename = base_dir + '/search.css'
+        css_filename = base_dir + '/search.css'
 
     instanceTitle = get_config_param(base_dir, 'instanceTitle')
     followStr = \
-        html_header_with_external_style(cssFilename, instanceTitle, None)
+        html_header_with_external_style(css_filename, instanceTitle, None)
 
     # show a banner above the search box
     searchBannerFile, searchBannerFilename = \
@@ -400,7 +400,7 @@ def html_search(css_cache: {}, translate: {},
         text_mode_bannerStr = ''
 
     if os.path.isfile(searchBannerFilename):
-        timelineKey = accessKeys['menuTimeline']
+        timelineKey = access_keys['menuTimeline']
         usersPath = '/users/' + searchNickname
         followStr += \
             '<header>\n' + text_mode_bannerStr + \
@@ -423,7 +423,7 @@ def html_search(css_cache: {}, translate: {},
     followStr += \
         '    <input type="hidden" name="actor" value="' + actor + '">\n'
     followStr += '    <input type="text" name="searchtext" autofocus><br>\n'
-    submitKey = accessKeys['submitButton']
+    submitKey = access_keys['submitButton']
     followStr += '    <button type="submit" class="button" ' + \
         'name="submitSearch" accesskey="' + submitKey + '">' + \
         translate['Submit'] + '</button>\n'
@@ -545,14 +545,14 @@ def html_skills_search(actor: str,
 
     results.sort(reverse=True)
 
-    cssFilename = base_dir + '/epicyon-profile.css'
+    css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
-        cssFilename = base_dir + '/epicyon.css'
+        css_filename = base_dir + '/epicyon.css'
 
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
     skillSearchForm = \
-        html_header_with_external_style(cssFilename, instanceTitle, None)
+        html_header_with_external_style(css_filename, instanceTitle, None)
     skillSearchForm += \
         '<center><h1><a href = "' + actor + '/search">' + \
         translate['Skills search'] + ': ' + \
@@ -622,14 +622,14 @@ def html_history_search(css_cache: {}, translate: {}, base_dir: str,
         search_box_posts(base_dir, nickname, domain,
                          historysearch, postsPerPage, boxName)
 
-    cssFilename = base_dir + '/epicyon-profile.css'
+    css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
-        cssFilename = base_dir + '/epicyon.css'
+        css_filename = base_dir + '/epicyon.css'
 
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
     historySearchForm = \
-        html_header_with_external_style(cssFilename, instanceTitle, None)
+        html_header_with_external_style(css_filename, instanceTitle, None)
 
     # add the page title
     domain_full = get_full_domain(domain, port)
@@ -751,9 +751,9 @@ def html_hashtag_search(css_cache: {},
         lines = f.readlines()
 
     # read the css
-    cssFilename = base_dir + '/epicyon-profile.css'
+    css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
-        cssFilename = base_dir + '/epicyon.css'
+        css_filename = base_dir + '/epicyon.css'
 
     # ensure that the page number is in bounds
     if not pageNumber:
@@ -772,7 +772,7 @@ def html_hashtag_search(css_cache: {},
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
     hashtagSearchForm = \
-        html_header_with_external_style(cssFilename, instanceTitle, None)
+        html_header_with_external_style(css_filename, instanceTitle, None)
     if nickname:
         hashtagSearchForm += '<center>\n' + \
             '<h1><a href="/users/' + nickname + '/search">#' + \

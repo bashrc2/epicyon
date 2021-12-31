@@ -169,7 +169,7 @@ color_to_hex = {
 def html_theme_designer(css_cache: {}, base_dir: str,
                         nickname: str, domain: str,
                         translate: {}, defaultTimeline: str,
-                        theme_name: str, accessKeys: {}) -> str:
+                        theme_name: str, access_keys: {}) -> str:
     """Edit theme settings
     """
     themeFilename = base_dir + '/theme/' + theme_name + '/theme.json'
@@ -186,23 +186,23 @@ def html_theme_designer(css_cache: {}, base_dir: str,
                 themeJson[variableName] = value
 
     themeForm = ''
-    cssFilename = base_dir + '/epicyon-profile.css'
+    css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
-        cssFilename = base_dir + '/epicyon.css'
+        css_filename = base_dir + '/epicyon.css'
 
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
     themeForm = \
-        html_header_with_external_style(cssFilename, instanceTitle, None)
-    bannerFile, bannerFilename = \
+        html_header_with_external_style(css_filename, instanceTitle, None)
+    banner_file, banner_filename = \
         get_banner_file(base_dir, nickname, domain, theme_name)
     themeForm += \
         '<a href="/users/' + nickname + '/' + defaultTimeline + '" ' + \
-        'accesskey="' + accessKeys['menuTimeline'] + '">' + \
+        'accesskey="' + access_keys['menuTimeline'] + '">' + \
         '<img loading="lazy" class="timeline-banner" ' + \
         'title="' + translate['Switch to timeline view'] + '" ' + \
         'alt="' + translate['Switch to timeline view'] + '" ' + \
-        'src="/users/' + nickname + '/' + bannerFile + '" /></a>\n'
+        'src="/users/' + nickname + '/' + banner_file + '" /></a>\n'
     themeForm += '<div class="container">\n'
 
     themeForm += \
@@ -211,8 +211,8 @@ def html_theme_designer(css_cache: {}, base_dir: str,
     themeForm += '  <form method="POST" action="' + \
         '/users/' + nickname + '/changeThemeSettings">\n'
 
-    resetKey = accessKeys['menuLogout']
-    submitKey = accessKeys['submitButton']
+    resetKey = access_keys['menuLogout']
+    submitKey = access_keys['submitButton']
     themeForm += \
         '    <center>\n' + \
         '    <button type="submit" class="button" ' + \

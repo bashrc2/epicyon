@@ -86,13 +86,13 @@ def meta_data_instance(showAccounts: bool,
                        instanceDescriptionShort: str,
                        instanceDescription: str,
                        http_prefix: str, base_dir: str,
-                       adminNickname: str, domain: str, domain_full: str,
+                       admin_nickname: str, domain: str, domain_full: str,
                        registration: bool, system_language: str,
                        version: str) -> {}:
     """ /api/v1/instance endpoint
     """
     adminActorFilename = \
-        base_dir + '/accounts/' + adminNickname + '@' + domain + '.json'
+        base_dir + '/accounts/' + admin_nickname + '@' + domain + '.json'
     if not os.path.isfile(adminActorFilename):
         return {}
 

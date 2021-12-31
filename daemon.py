@@ -1551,10 +1551,10 @@ class PubServer(BaseHTTPRequestHandler):
             if queueFilename not in self.server.inbox_queue:
                 self.server.inbox_queue.append(queueFilename)
             if self.server.debug:
-                timeDiff = int((time.time() - beginSaveTime) * 1000)
-                if timeDiff > 200:
+                time_diff = int((time.time() - beginSaveTime) * 1000)
+                if time_diff > 200:
                     print('SLOW: slow save of inbox queue item ' +
-                          queueFilename + ' took ' + str(timeDiff) + ' mS')
+                          queueFilename + ' took ' + str(time_diff) + ' mS')
             self.send_response(201)
             self.end_headers()
             self.server.POSTbusy = False
@@ -2049,7 +2049,7 @@ class PubServer(BaseHTTPRequestHandler):
                        base_dir: str, http_prefix: str, nickname: str,
                        domain: str, domain_full: str, port: int,
                        onion_domain: str, i2p_domain: str,
-                       debug: bool, accessKeys: {},
+                       debug: bool, access_keys: {},
                        defaultTimeline: str) -> None:
         """Receive POST from webapp_accesskeys
         """
@@ -2060,30 +2060,31 @@ class PubServer(BaseHTTPRequestHandler):
         length = int(self.headers['Content-length'])
 
         try:
-            accessKeysParams = self.rfile.read(length).decode('utf-8')
+            access_keys_params = self.rfile.read(length).decode('utf-8')
         except SocketError as ex:
             if ex.errno == errno.ECONNRESET:
-                print('WARN: POST accessKeysParams ' +
+                print('WARN: POST access_keys_params ' +
                       'connection reset by peer')
             else:
-                print('WARN: POST accessKeysParams socket error')
+                print('WARN: POST access_keys_params socket error')
             self.send_response(400)
             self.end_headers()
             self.server.POSTbusy = False
             return
         except ValueError as ex:
-            print('ERROR: POST accessKeysParams rfile.read failed, ' + str(ex))
+            print('ERROR: POST access_keys_params rfile.read failed, ' +
+                  str(ex))
             self.send_response(400)
             self.end_headers()
             self.server.POSTbusy = False
             return
-        accessKeysParams = \
-            urllib.parse.unquote_plus(accessKeysParams)
+        access_keys_params = \
+            urllib.parse.unquote_plus(access_keys_params)
 
         # key shortcuts screen, back button
         # See html_access_keys
-        if 'submitAccessKeysCancel=' in accessKeysParams or \
-           'submitAccessKeys=' not in accessKeysParams:
+        if 'submitAccessKeysCancel=' in access_keys_params or \
+           'submitAccessKeys=' not in access_keys_params:
             if calling_domain.endswith('.onion') and onion_domain:
                 originPathStr = \
                     'http://' + onion_domain + usersPath + '/' + \
@@ -2096,29 +2097,29 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         saveKeys = False
-        accessKeysTemplate = self.server.accessKeys
-        for variableName, key in accessKeysTemplate.items():
-            if not accessKeys.get(variableName):
-                accessKeys[variableName] = accessKeysTemplate[variableName]
+        access_keysTemplate = self.server.access_keys
+        for variableName, key in access_keysTemplate.items():
+            if not access_keys.get(variableName):
+                access_keys[variableName] = access_keysTemplate[variableName]
 
             variableName2 = variableName.replace(' ', '_')
-            if variableName2 + '=' in accessKeysParams:
-                newKey = accessKeysParams.split(variableName2 + '=')[1]
+            if variableName2 + '=' in access_keys_params:
+                newKey = access_keys_params.split(variableName2 + '=')[1]
                 if '&' in newKey:
                     newKey = newKey.split('&')[0]
                 if newKey:
                     if len(newKey) > 1:
                         newKey = newKey[0]
-                    if newKey != accessKeys[variableName]:
-                        accessKeys[variableName] = newKey
+                    if newKey != access_keys[variableName]:
+                        access_keys[variableName] = newKey
                         saveKeys = True
 
         if saveKeys:
-            accessKeysFilename = \
-                acct_dir(base_dir, nickname, domain) + '/accessKeys.json'
-            save_json(accessKeys, accessKeysFilename)
+            access_keysFilename = \
+                acct_dir(base_dir, nickname, domain) + '/access_keys.json'
+            save_json(access_keys, access_keysFilename)
             if not self.server.keyShortcuts.get(nickname):
-                self.server.keyShortcuts[nickname] = accessKeys.copy()
+                self.server.keyShortcuts[nickname] = access_keys.copy()
 
         # redirect back from key shortcuts screen
         if calling_domain.endswith('.onion') and onion_domain:
@@ -2136,7 +2137,7 @@ class PubServer(BaseHTTPRequestHandler):
                              base_dir: str, http_prefix: str, nickname: str,
                              domain: str, domain_full: str, port: int,
                              onion_domain: str, i2p_domain: str,
-                             debug: bool, accessKeys: {},
+                             debug: bool, access_keys: {},
                              defaultTimeline: str, theme_name: str,
                              allow_local_network_access: bool,
                              system_language: str) -> None:
@@ -2488,9 +2489,9 @@ class PubServer(BaseHTTPRequestHandler):
         # person options screen, permission to post to newswire
         # See html_person_options
         if '&submitPostToNews=' in optionsConfirmParams:
-            adminNickname = get_config_param(self.server.base_dir, 'admin')
+            admin_nickname = get_config_param(self.server.base_dir, 'admin')
             if (chooserNickname != optionsNickname and
-                (chooserNickname == adminNickname or
+                (chooserNickname == admin_nickname or
                  (is_moderator(self.server.base_dir, chooserNickname) and
                   not is_moderator(self.server.base_dir, optionsNickname)))):
                 postsToNews = None
@@ -2533,9 +2534,9 @@ class PubServer(BaseHTTPRequestHandler):
         # person options screen, permission to post to featured articles
         # See html_person_options
         if '&submitPostToFeatures=' in optionsConfirmParams:
-            adminNickname = get_config_param(self.server.base_dir, 'admin')
+            admin_nickname = get_config_param(self.server.base_dir, 'admin')
             if (chooserNickname != optionsNickname and
-                (chooserNickname == adminNickname or
+                (chooserNickname == admin_nickname or
                  (is_moderator(self.server.base_dir, chooserNickname) and
                   not is_moderator(self.server.base_dir, optionsNickname)))):
                 postsToFeatures = None
@@ -2579,9 +2580,9 @@ class PubServer(BaseHTTPRequestHandler):
         # person options screen, permission to post to newswire
         # See html_person_options
         if '&submitModNewsPosts=' in optionsConfirmParams:
-            adminNickname = get_config_param(self.server.base_dir, 'admin')
+            admin_nickname = get_config_param(self.server.base_dir, 'admin')
             if (chooserNickname != optionsNickname and
-                (chooserNickname == adminNickname or
+                (chooserNickname == admin_nickname or
                  (is_moderator(self.server.base_dir, chooserNickname) and
                   not is_moderator(self.server.base_dir, optionsNickname)))):
                 modPostsToNews = None
@@ -2694,13 +2695,13 @@ class PubServer(BaseHTTPRequestHandler):
                 print('Sending DM to ' + optionsActor)
             reportPath = path.replace('/personoptions', '') + '/newdm'
 
-            accessKeys = self.server.accessKeys
+            access_keys = self.server.access_keys
             if '/users/' in path:
                 nickname = path.split('/users/')[1]
                 if '/' in nickname:
                     nickname = nickname.split('/')[0]
                 if self.server.keyShortcuts.get(nickname):
-                    accessKeys = self.server.keyShortcuts[nickname]
+                    access_keys = self.server.keyShortcuts[nickname]
 
             customSubmitText = get_config_param(base_dir, 'customSubmitText')
             conversationId = None
@@ -2717,7 +2718,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.defaultTimeline,
                                 self.server.newswire,
                                 self.server.theme_name,
-                                True, accessKeys,
+                                True, access_keys,
                                 customSubmitText,
                                 conversationId,
                                 self.server.recent_posts_cache,
@@ -2829,13 +2830,13 @@ class PubServer(BaseHTTPRequestHandler):
             reportPath = \
                 path.replace('/personoptions', '') + '/newreport'
 
-            accessKeys = self.server.accessKeys
+            access_keys = self.server.access_keys
             if '/users/' in path:
                 nickname = path.split('/users/')[1]
                 if '/' in nickname:
                     nickname = nickname.split('/')[0]
                 if self.server.keyShortcuts.get(nickname):
-                    accessKeys = self.server.keyShortcuts[nickname]
+                    access_keys = self.server.keyShortcuts[nickname]
 
             customSubmitText = get_config_param(base_dir, 'customSubmitText')
             conversationId = None
@@ -2851,7 +2852,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.defaultTimeline,
                                 self.server.newswire,
                                 self.server.theme_name,
-                                True, accessKeys,
+                                True, access_keys,
                                 customSubmitText,
                                 conversationId,
                                 self.server.recent_posts_cache,
@@ -3549,9 +3550,9 @@ class PubServer(BaseHTTPRequestHandler):
                     allow_local_network_access = \
                         self.server.allow_local_network_access
 
-                    accessKeys = self.server.accessKeys
+                    access_keys = self.server.access_keys
                     if self.server.keyShortcuts.get(nickname):
-                        accessKeys = self.server.keyShortcuts[nickname]
+                        access_keys = self.server.keyShortcuts[nickname]
 
                     signing_priv_key_pem = \
                         self.server.signing_priv_key_pem
@@ -3589,7 +3590,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                   peertube_instances,
                                                   allow_local_network_access,
                                                   self.server.theme_name,
-                                                  accessKeys,
+                                                  access_keys,
                                                   self.server.system_language,
                                                   self.server.max_like_count,
                                                   signing_priv_key_pem,
@@ -3874,9 +3875,9 @@ class PubServer(BaseHTTPRequestHandler):
             shareActor = removeShareConfirmParams.split('actor=')[1]
             if '&' in shareActor:
                 shareActor = shareActor.split('&')[0]
-            adminNickname = get_config_param(base_dir, 'admin')
+            admin_nickname = get_config_param(base_dir, 'admin')
             adminActor = \
-                local_actor_url(http_prefix, adminNickname, domain_full)
+                local_actor_url(http_prefix, admin_nickname, domain_full)
             actor = originPathStr
             actorNickname = get_nickname_from_actor(actor)
             if actor == shareActor or actor == adminActor or \
@@ -3941,9 +3942,9 @@ class PubServer(BaseHTTPRequestHandler):
             shareActor = removeShareConfirmParams.split('actor=')[1]
             if '&' in shareActor:
                 shareActor = shareActor.split('&')[0]
-            adminNickname = get_config_param(base_dir, 'admin')
+            admin_nickname = get_config_param(base_dir, 'admin')
             adminActor = \
-                local_actor_url(http_prefix, adminNickname, domain_full)
+                local_actor_url(http_prefix, admin_nickname, domain_full)
             actor = originPathStr
             actorNickname = get_nickname_from_actor(actor)
             if actor == shareActor or actor == adminActor or \
@@ -4165,9 +4166,9 @@ class PubServer(BaseHTTPRequestHandler):
                             print('EX: _links_update unable to delete ' +
                                   linksFilename)
 
-            adminNickname = \
+            admin_nickname = \
                 get_config_param(base_dir, 'admin')
-            if nickname == adminNickname:
+            if nickname == admin_nickname:
                 if fields.get('editedAbout'):
                     aboutStr = fields['editedAbout']
                     if not dangerous_markup(aboutStr,
@@ -4747,7 +4748,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.POSTbusy = False
                 return
 
-            adminNickname = get_config_param(self.server.base_dir, 'admin')
+            admin_nickname = get_config_param(self.server.base_dir, 'admin')
 
             # get the various avatar, banner and background images
             actorChanged = True
@@ -4762,7 +4763,7 @@ class PubServer(BaseHTTPRequestHandler):
             for mType in profileMediaTypes:
                 # some images can only be changed by the admin
                 if mType == 'instanceLogo':
-                    if nickname != adminNickname:
+                    if nickname != admin_nickname:
                         print('WARN: only the admin can change ' +
                               'instance logo')
                         continue
@@ -4817,7 +4818,7 @@ class PubServer(BaseHTTPRequestHandler):
                     continue
 
                 if mType == 'submitImportTheme':
-                    if nickname == adminNickname or \
+                    if nickname == admin_nickname or \
                        is_artist(base_dir, nickname):
                         if import_theme(base_dir, filename):
                             print(nickname + ' uploaded a theme')
@@ -5028,7 +5029,7 @@ class PubServer(BaseHTTPRequestHandler):
                         if checkNameAndBio:
                             redirectPath = 'previewAvatar'
 
-                    if nickname == adminNickname or \
+                    if nickname == admin_nickname or \
                        is_artist(base_dir, nickname):
                         # change theme
                         if fields.get('themeDropdown'):
@@ -5061,7 +5062,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             domain,
                                             domain_full)
 
-                    if nickname == adminNickname:
+                    if nickname == admin_nickname:
                         # change media instance status
                         if fields.get('mediaInstance'):
                             self.server.media_instance = False
@@ -5546,14 +5547,14 @@ class PubServer(BaseHTTPRequestHandler):
                         if checkNameAndBio:
                             redirectPath = 'previewAvatar'
 
-                    adminNickname = \
+                    admin_nickname = \
                         get_config_param(base_dir, 'admin')
 
-                    if adminNickname:
+                    if admin_nickname:
                         # whether to require jsonld signatures
                         # on all incoming posts
                         if path.startswith('/users/' +
-                                           adminNickname + '/'):
+                                           admin_nickname + '/'):
                             show_node_info_accounts = False
                             if fields.get('showNodeInfoAccounts'):
                                 if fields['showNodeInfoAccounts'] == 'on':
@@ -5650,7 +5651,7 @@ class PubServer(BaseHTTPRequestHandler):
                         # change moderators list
                         if fields.get('moderators'):
                             if path.startswith('/users/' +
-                                               adminNickname + '/'):
+                                               admin_nickname + '/'):
                                 moderatorsFile = \
                                     base_dir + \
                                     '/accounts/moderators.txt'
@@ -5718,7 +5719,7 @@ class PubServer(BaseHTTPRequestHandler):
                         # change site editors list
                         if fields.get('editors'):
                             if path.startswith('/users/' +
-                                               adminNickname + '/'):
+                                               admin_nickname + '/'):
                                 editorsFile = \
                                     base_dir + \
                                     '/accounts/editors.txt'
@@ -5781,7 +5782,7 @@ class PubServer(BaseHTTPRequestHandler):
                         # change site counselors list
                         if fields.get('counselors'):
                             if path.startswith('/users/' +
-                                               adminNickname + '/'):
+                                               admin_nickname + '/'):
                                 counselorsFile = \
                                     base_dir + \
                                     '/accounts/counselors.txt'
@@ -5847,7 +5848,7 @@ class PubServer(BaseHTTPRequestHandler):
                         # change site artists list
                         if fields.get('artists'):
                             if path.startswith('/users/' +
-                                               adminNickname + '/'):
+                                               admin_nickname + '/'):
                                 artistsFile = \
                                     base_dir + \
                                     '/accounts/artists.txt'
@@ -5933,7 +5934,7 @@ class PubServer(BaseHTTPRequestHandler):
                         if (fields['removeCustomFont'] == 'on' and
                             (is_artist(base_dir, nickname) or
                              path.startswith('/users/' +
-                                             adminNickname + '/'))):
+                                             admin_nickname + '/'))):
                             fontExt = ('woff', 'woff2', 'otf', 'ttf')
                             for ext in fontExt:
                                 if os.path.isfile(base_dir +
@@ -6194,7 +6195,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 if actor_json['type'] != 'Group':
                                     # only allow admin to create groups
                                     if path.startswith('/users/' +
-                                                       adminNickname + '/'):
+                                                       admin_nickname + '/'):
                                         actor_json['type'] = 'Group'
                                         actorChanged = True
                         else:
@@ -6204,7 +6205,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 actorChanged = True
 
                     # grayscale theme
-                    if path.startswith('/users/' + adminNickname + '/') or \
+                    if path.startswith('/users/' + admin_nickname + '/') or \
                        is_artist(base_dir, nickname):
                         grayscale = False
                         if fields.get('grayscale'):
@@ -6216,7 +6217,7 @@ class PubServer(BaseHTTPRequestHandler):
                             disable_grayscale(base_dir)
 
                     # low bandwidth images checkbox
-                    if path.startswith('/users/' + adminNickname + '/') or \
+                    if path.startswith('/users/' + admin_nickname + '/') or \
                        is_artist(base_dir, nickname):
                         currLowBandwidth = \
                             get_config_param(base_dir, 'lowBandwidth')
@@ -7152,13 +7153,13 @@ class PubServer(BaseHTTPRequestHandler):
                                         optionsActor, optionsProfileUrl,
                                         self.server.person_cache, 5)
 
-            accessKeys = self.server.accessKeys
+            access_keys = self.server.access_keys
             if '/users/' in path:
                 nickname = path.split('/users/')[1]
                 if '/' in nickname:
                     nickname = nickname.split('/')[0]
                 if self.server.keyShortcuts.get(nickname):
-                    accessKeys = self.server.keyShortcuts[nickname]
+                    access_keys = self.server.keyShortcuts[nickname]
             msg = \
                 html_person_options(self.server.defaultTimeline,
                                     self.server.css_cache,
@@ -7184,7 +7185,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.text_mode_banner,
                                     self.server.news_instance,
                                     authorized,
-                                    accessKeys, isGroup).encode('utf-8')
+                                    access_keys, isGroup).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
                               cookie, calling_domain, False)
@@ -9717,9 +9718,9 @@ class PubServer(BaseHTTPRequestHandler):
                     icons_as_buttons = \
                         self.server.icons_as_buttons
 
-                    accessKeys = self.server.accessKeys
+                    access_keys = self.server.access_keys
                     if self.server.keyShortcuts.get(nickname):
-                        accessKeys = self.server.keyShortcuts[nickname]
+                        access_keys = self.server.keyShortcuts[nickname]
 
                     rolesList = get_actor_roles_list(actor_json)
                     city = \
@@ -9752,7 +9753,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.allow_local_network_access,
                                      self.server.text_mode_banner,
                                      self.server.debug,
-                                     accessKeys, city,
+                                     access_keys, city,
                                      self.server.system_language,
                                      self.server.max_like_count,
                                      shared_items_federated_domains,
@@ -9827,9 +9828,9 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.icons_as_buttons
                                 allow_local_network_access = \
                                     self.server.allow_local_network_access
-                                accessKeys = self.server.accessKeys
+                                access_keys = self.server.access_keys
                                 if self.server.keyShortcuts.get(nickname):
-                                    accessKeys = \
+                                    access_keys = \
                                         self.server.keyShortcuts[nickname]
                                 actorSkillsList = \
                                     get_occupation_skills(actor_json)
@@ -9870,7 +9871,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                  allow_local_network_access,
                                                  self.server.text_mode_banner,
                                                  self.server.debug,
-                                                 accessKeys, city,
+                                                 access_keys, city,
                                                  self.server.system_language,
                                                  self.server.max_like_count,
                                                  shared_items_fed_domains,
@@ -10263,9 +10264,9 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.full_width_tl_button_header
                         minimalNick = is_minimal(base_dir, domain, nickname)
 
-                        accessKeys = self.server.accessKeys
+                        access_keys = self.server.access_keys
                         if self.server.keyShortcuts.get(nickname):
-                            accessKeys = \
+                            access_keys = \
                                 self.server.keyShortcuts[nickname]
                         shared_items_federated_domains = \
                             self.server.shared_items_federated_domains
@@ -10304,7 +10305,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.peertube_instances,
                                          allow_local_network_access,
                                          self.server.text_mode_banner,
-                                         accessKeys,
+                                         access_keys,
                                          self.server.system_language,
                                          self.server.max_like_count,
                                          shared_items_federated_domains,
@@ -10412,9 +10413,9 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.full_width_tl_button_header
                         minimalNick = is_minimal(base_dir, domain, nickname)
 
-                        accessKeys = self.server.accessKeys
+                        access_keys = self.server.access_keys
                         if self.server.keyShortcuts.get(nickname):
-                            accessKeys = \
+                            access_keys = \
                                 self.server.keyShortcuts[nickname]
 
                         shared_items_federated_domains = \
@@ -10458,7 +10459,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.peertube_instances,
                                             allow_local_network_access,
                                             self.server.text_mode_banner,
-                                            accessKeys,
+                                            access_keys,
                                             self.server.system_language,
                                             self.server.max_like_count,
                                             shared_items_federated_domains,
@@ -10559,9 +10560,9 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.full_width_tl_button_header
                     minimalNick = is_minimal(base_dir, domain, nickname)
 
-                    accessKeys = self.server.accessKeys
+                    access_keys = self.server.access_keys
                     if self.server.keyShortcuts.get(nickname):
-                        accessKeys = \
+                        access_keys = \
                             self.server.keyShortcuts[nickname]
 
                     shared_items_federated_domains = \
@@ -10605,7 +10606,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.peertube_instances,
                                            allow_local_network_access,
                                            self.server.text_mode_banner,
-                                           accessKeys,
+                                           access_keys,
                                            self.server.system_language,
                                            self.server.max_like_count,
                                            shared_items_federated_domains,
@@ -10706,9 +10707,9 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.full_width_tl_button_header
                     minimalNick = is_minimal(base_dir, domain, nickname)
 
-                    accessKeys = self.server.accessKeys
+                    access_keys = self.server.access_keys
                     if self.server.keyShortcuts.get(nickname):
-                        accessKeys = \
+                        access_keys = \
                             self.server.keyShortcuts[nickname]
                     fed_domains = \
                         self.server.shared_items_federated_domains
@@ -10750,7 +10751,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.peertube_instances,
                                          allow_local_network_access,
                                          self.server.text_mode_banner,
-                                         accessKeys,
+                                         access_keys,
                                          self.server.system_language,
                                          self.server.max_like_count,
                                          fed_domains,
@@ -10851,9 +10852,9 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.full_width_tl_button_header
                     minimalNick = is_minimal(base_dir, domain, nickname)
 
-                    accessKeys = self.server.accessKeys
+                    access_keys = self.server.access_keys
                     if self.server.keyShortcuts.get(nickname):
-                        accessKeys = \
+                        access_keys = \
                             self.server.keyShortcuts[nickname]
                     fed_domains = \
                         self.server.shared_items_federated_domains
@@ -10895,7 +10896,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.peertube_instances,
                                          allow_local_network_access,
                                          self.server.text_mode_banner,
-                                         accessKeys,
+                                         access_keys,
                                          self.server.system_language,
                                          self.server.max_like_count,
                                          fed_domains,
@@ -11007,9 +11008,9 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.full_width_tl_button_header
                     minimalNick = is_minimal(base_dir, domain, nickname)
 
-                    accessKeys = self.server.accessKeys
+                    access_keys = self.server.access_keys
                     if self.server.keyShortcuts.get(nickname):
-                        accessKeys = \
+                        access_keys = \
                             self.server.keyShortcuts[nickname]
                     fed_domains = \
                         self.server.shared_items_federated_domains
@@ -11049,7 +11050,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.peertube_instances,
                                         self.server.allow_local_network_access,
                                         self.server.text_mode_banner,
-                                        accessKeys,
+                                        access_keys,
                                         self.server.system_language,
                                         self.server.max_like_count,
                                         fed_domains,
@@ -11158,9 +11159,9 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.full_width_tl_button_header
                     minimalNick = is_minimal(base_dir, domain, nickname)
 
-                    accessKeys = self.server.accessKeys
+                    access_keys = self.server.access_keys
                     if self.server.keyShortcuts.get(nickname):
-                        accessKeys = \
+                        access_keys = \
                             self.server.keyShortcuts[nickname]
 
                     shared_items_federated_domains = \
@@ -11206,7 +11207,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.peertube_instances,
                                             allow_local_network_access,
                                             self.server.text_mode_banner,
-                                            accessKeys,
+                                            access_keys,
                                             self.server.system_language,
                                             self.server.max_like_count,
                                             shared_items_federated_domains,
@@ -11276,9 +11277,9 @@ class PubServer(BaseHTTPRequestHandler):
                         else:
                             pageNumber = 1
 
-                    accessKeys = self.server.accessKeys
+                    access_keys = self.server.access_keys
                     if self.server.keyShortcuts.get(nickname):
-                        accessKeys = \
+                        access_keys = \
                             self.server.keyShortcuts[nickname]
                     full_width_tl_button_header = \
                         self.server.full_width_tl_button_header
@@ -11314,7 +11315,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.peertube_instances,
                                     self.server.allow_local_network_access,
                                     self.server.text_mode_banner,
-                                    accessKeys,
+                                    access_keys,
                                     self.server.system_language,
                                     self.server.max_like_count,
                                     self.server.shared_items_federated_domains,
@@ -11362,9 +11363,9 @@ class PubServer(BaseHTTPRequestHandler):
                         else:
                             pageNumber = 1
 
-                    accessKeys = self.server.accessKeys
+                    access_keys = self.server.access_keys
                     if self.server.keyShortcuts.get(nickname):
-                        accessKeys = \
+                        access_keys = \
                             self.server.keyShortcuts[nickname]
                     full_width_tl_button_header = \
                         self.server.full_width_tl_button_header
@@ -11399,7 +11400,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.peertube_instances,
                                     self.server.allow_local_network_access,
                                     self.server.text_mode_banner,
-                                    accessKeys,
+                                    access_keys,
                                     self.server.system_language,
                                     self.server.max_like_count,
                                     self.server.shared_items_federated_domains,
@@ -11479,9 +11480,9 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.full_width_tl_button_header
                         minimalNick = is_minimal(base_dir, domain, nickname)
 
-                        accessKeys = self.server.accessKeys
+                        access_keys = self.server.access_keys
                         if self.server.keyShortcuts.get(nickname):
-                            accessKeys = \
+                            access_keys = \
                                 self.server.keyShortcuts[nickname]
 
                         shared_items_federated_domains = \
@@ -11526,7 +11527,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.peertube_instances,
                                            allow_local_network_access,
                                            self.server.text_mode_banner,
-                                           accessKeys,
+                                           access_keys,
                                            self.server.system_language,
                                            self.server.max_like_count,
                                            shared_items_federated_domains,
@@ -11627,9 +11628,9 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.full_width_tl_button_header
                 minimalNick = is_minimal(base_dir, domain, nickname)
 
-                accessKeys = self.server.accessKeys
+                access_keys = self.server.access_keys
                 if self.server.keyShortcuts.get(nickname):
-                    accessKeys = \
+                    access_keys = \
                         self.server.keyShortcuts[nickname]
 
                 msg = \
@@ -11664,7 +11665,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.peertube_instances,
                                 self.server.allow_local_network_access,
                                 self.server.text_mode_banner,
-                                accessKeys,
+                                access_keys,
                                 self.server.system_language,
                                 self.server.max_like_count,
                                 self.server.shared_items_federated_domains,
@@ -11753,9 +11754,9 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.full_width_tl_button_header
                         moderationActionStr = ''
 
-                        accessKeys = self.server.accessKeys
+                        access_keys = self.server.access_keys
                         if self.server.keyShortcuts.get(nickname):
-                            accessKeys = \
+                            access_keys = \
                                 self.server.keyShortcuts[nickname]
 
                         shared_items_federated_domains = \
@@ -11799,7 +11800,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.peertube_instances,
                                             allow_local_network_access,
                                             self.server.text_mode_banner,
-                                            accessKeys,
+                                            access_keys,
                                             self.server.system_language,
                                             self.server.max_like_count,
                                             shared_items_federated_domains,
@@ -11884,13 +11885,13 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.GETbusy = False
                         return True
 
-                    accessKeys = self.server.accessKeys
+                    access_keys = self.server.access_keys
                     if '/users/' in path:
                         nickname = path.split('/users/')[1]
                         if '/' in nickname:
                             nickname = nickname.split('/')[0]
                         if self.server.keyShortcuts.get(nickname):
-                            accessKeys = \
+                            access_keys = \
                                 self.server.keyShortcuts[nickname]
 
                     city = get_spoofed_city(self.server.city,
@@ -11923,7 +11924,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.allow_local_network_access,
                                      self.server.text_mode_banner,
                                      self.server.debug,
-                                     accessKeys, city,
+                                     access_keys, city,
                                      self.server.system_language,
                                      self.server.max_like_count,
                                      shared_items_federated_domains,
@@ -12004,14 +12005,14 @@ class PubServer(BaseHTTPRequestHandler):
                         self._404()
                         return True
 
-                    accessKeys = self.server.accessKeys
+                    access_keys = self.server.access_keys
                     city = None
                     if '/users/' in path:
                         nickname = path.split('/users/')[1]
                         if '/' in nickname:
                             nickname = nickname.split('/')[0]
                         if self.server.keyShortcuts.get(nickname):
-                            accessKeys = \
+                            access_keys = \
                                 self.server.keyShortcuts[nickname]
 
                         city = get_spoofed_city(self.server.city,
@@ -12046,7 +12047,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.allow_local_network_access,
                                      self.server.text_mode_banner,
                                      self.server.debug,
-                                     accessKeys, city,
+                                     access_keys, city,
                                      self.server.system_language,
                                      self.server.max_like_count,
                                      shared_items_federated_domains,
@@ -12125,14 +12126,14 @@ class PubServer(BaseHTTPRequestHandler):
                         self._404()
                         return True
 
-                    accessKeys = self.server.accessKeys
+                    access_keys = self.server.access_keys
                     city = None
                     if '/users/' in path:
                         nickname = path.split('/users/')[1]
                         if '/' in nickname:
                             nickname = nickname.split('/')[0]
                         if self.server.keyShortcuts.get(nickname):
-                            accessKeys = \
+                            access_keys = \
                                 self.server.keyShortcuts[nickname]
 
                         city = get_spoofed_city(self.server.city,
@@ -12168,7 +12169,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.allow_local_network_access,
                                      self.server.text_mode_banner,
                                      self.server.debug,
-                                     accessKeys, city,
+                                     access_keys, city,
                                      self.server.system_language,
                                      self.server.max_like_count,
                                      shared_items_federated_domains,
@@ -12266,14 +12267,14 @@ class PubServer(BaseHTTPRequestHandler):
                 self._404()
                 return True
 
-            accessKeys = self.server.accessKeys
+            access_keys = self.server.access_keys
             city = None
             if '/users/' in path:
                 nickname = path.split('/users/')[1]
                 if '/' in nickname:
                     nickname = nickname.split('/')[0]
                 if self.server.keyShortcuts.get(nickname):
-                    accessKeys = \
+                    access_keys = \
                         self.server.keyShortcuts[nickname]
 
                 city = get_spoofed_city(self.server.city,
@@ -12305,7 +12306,7 @@ class PubServer(BaseHTTPRequestHandler):
                              self.server.allow_local_network_access,
                              self.server.text_mode_banner,
                              self.server.debug,
-                             accessKeys, city,
+                             access_keys, city,
                              self.server.system_language,
                              self.server.max_like_count,
                              self.server.shared_items_federated_domains,
@@ -12626,14 +12627,14 @@ class PubServer(BaseHTTPRequestHandler):
         """Shows a banner image on the search screen
         """
         nickname = get_nickname_from_actor(path)
-        bannerFilename = \
+        banner_filename = \
             acct_dir(base_dir, nickname, domain) + '/search_banner.png'
-        if not os.path.isfile(bannerFilename):
+        if not os.path.isfile(banner_filename):
             if os.path.isfile(base_dir + '/theme/default/search_banner.png'):
                 copyfile(base_dir + '/theme/default/search_banner.png',
-                         bannerFilename)
-        if os.path.isfile(bannerFilename):
-            if self._etag_exists(bannerFilename):
+                         banner_filename)
+        if os.path.isfile(banner_filename):
+            if self._etag_exists(banner_filename):
                 # The file has not changed
                 self._304()
                 return True
@@ -12642,7 +12643,7 @@ class PubServer(BaseHTTPRequestHandler):
             mediaBinary = None
             while tries < 5:
                 try:
-                    with open(bannerFilename, 'rb') as avFile:
+                    with open(banner_filename, 'rb') as avFile:
                         mediaBinary = avFile.read()
                         break
                 except Exception as ex:
@@ -12651,8 +12652,8 @@ class PubServer(BaseHTTPRequestHandler):
                     time.sleep(1)
                     tries += 1
             if mediaBinary:
-                mimeType = media_file_mime_type(bannerFilename)
-                self._set_headers_etag(bannerFilename, mimeType,
+                mimeType = media_file_mime_type(banner_filename)
+                self._set_headers_etag(banner_filename, mimeType,
                                        mediaBinary, None,
                                        self.server.domain_full,
                                        False, None)
@@ -12674,11 +12675,11 @@ class PubServer(BaseHTTPRequestHandler):
         if not nickname:
             self._404()
             return True
-        bannerFilename = \
+        banner_filename = \
             acct_dir(base_dir, nickname, domain) + '/' + \
             side + '_col_image.png'
-        if os.path.isfile(bannerFilename):
-            if self._etag_exists(bannerFilename):
+        if os.path.isfile(banner_filename):
+            if self._etag_exists(banner_filename):
                 # The file has not changed
                 self._304()
                 return True
@@ -12687,7 +12688,7 @@ class PubServer(BaseHTTPRequestHandler):
             mediaBinary = None
             while tries < 5:
                 try:
-                    with open(bannerFilename, 'rb') as avFile:
+                    with open(banner_filename, 'rb') as avFile:
                         mediaBinary = avFile.read()
                         break
                 except Exception as ex:
@@ -12695,8 +12696,8 @@ class PubServer(BaseHTTPRequestHandler):
                     time.sleep(1)
                     tries += 1
             if mediaBinary:
-                mimeType = media_file_mime_type(bannerFilename)
-                self._set_headers_etag(bannerFilename, mimeType,
+                mimeType = media_file_mime_type(banner_filename)
+                self._set_headers_etag(banner_filename, mimeType,
                                        mediaBinary, None,
                                        self.server.domain_full,
                                        False, None)
@@ -13027,9 +13028,9 @@ class PubServer(BaseHTTPRequestHandler):
                     print('Reply is within time interval: ' +
                           str(replyIntervalHours) + ' hours')
 
-            accessKeys = self.server.accessKeys
+            access_keys = self.server.access_keys
             if self.server.keyShortcuts.get(nickname):
-                accessKeys = self.server.keyShortcuts[nickname]
+                access_keys = self.server.keyShortcuts[nickname]
 
             customSubmitText = get_config_param(base_dir, 'customSubmitText')
 
@@ -13055,7 +13056,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.defaultTimeline,
                                 self.server.newswire,
                                 self.server.theme_name,
-                                noDropDown, accessKeys,
+                                noDropDown, access_keys,
                                 customSubmitText,
                                 conversationId,
                                 self.server.recent_posts_cache,
@@ -13138,10 +13139,10 @@ class PubServer(BaseHTTPRequestHandler):
             else:
                 city = self.server.city
 
-            accessKeys = self.server.accessKeys
+            access_keys = self.server.access_keys
             if '/users/' in path:
                 if self.server.keyShortcuts.get(nickname):
-                    accessKeys = self.server.keyShortcuts[nickname]
+                    access_keys = self.server.keyShortcuts[nickname]
 
             default_reply_interval_hrs = self.server.default_reply_interval_hrs
             msg = html_edit_profile(self.server.css_cache,
@@ -13156,7 +13157,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.text_mode_banner,
                                     city,
                                     self.server.user_agents_blocked,
-                                    accessKeys,
+                                    access_keys,
                                     default_reply_interval_hrs,
                                     self.server.cw_lists,
                                     self.server.lists_enabled).encode('utf-8')
@@ -13181,9 +13182,9 @@ class PubServer(BaseHTTPRequestHandler):
             if '/' in nickname:
                 nickname = nickname.split('/')[0]
 
-            accessKeys = self.server.accessKeys
+            access_keys = self.server.access_keys
             if self.server.keyShortcuts.get(nickname):
-                accessKeys = self.server.keyShortcuts[nickname]
+                access_keys = self.server.keyShortcuts[nickname]
 
             msg = html_edit_links(self.server.css_cache,
                                   translate,
@@ -13192,7 +13193,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   port,
                                   http_prefix,
                                   self.server.defaultTimeline,
-                                  theme, accessKeys).encode('utf-8')
+                                  theme, access_keys).encode('utf-8')
             if msg:
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
@@ -13214,9 +13215,9 @@ class PubServer(BaseHTTPRequestHandler):
             if '/' in nickname:
                 nickname = nickname.split('/')[0]
 
-            accessKeys = self.server.accessKeys
+            access_keys = self.server.access_keys
             if self.server.keyShortcuts.get(nickname):
-                accessKeys = self.server.keyShortcuts[nickname]
+                access_keys = self.server.keyShortcuts[nickname]
 
             msg = html_edit_newswire(self.server.css_cache,
                                      translate,
@@ -13226,7 +13227,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      http_prefix,
                                      self.server.defaultTimeline,
                                      self.server.theme_name,
-                                     accessKeys).encode('utf-8')
+                                     access_keys).encode('utf-8')
             if msg:
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
@@ -14510,9 +14511,9 @@ class PubServer(BaseHTTPRequestHandler):
             if '/' in nickname:
                 nickname = nickname.split('/')[0]
 
-            accessKeys = self.server.accessKeys
+            access_keys = self.server.access_keys
             if self.server.keyShortcuts.get(nickname):
-                accessKeys = \
+                access_keys = \
                     self.server.keyShortcuts[nickname]
 
             msg = \
@@ -14520,8 +14521,8 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.base_dir,
                                  nickname, self.server.domain,
                                  self.server.translate,
-                                 accessKeys,
-                                 self.server.accessKeys,
+                                 access_keys,
+                                 self.server.access_keys,
                                  self.server.defaultTimeline)
             msg = msg.encode('utf-8')
             msglen = len(msg)
@@ -14549,7 +14550,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.translate,
                                     self.server.defaultTimeline,
                                     self.server.theme_name,
-                                    self.server.accessKeys)
+                                    self.server.access_keys)
             msg = msg.encode('utf-8')
             msglen = len(msg)
             self._login_headers('text/html', msglen, calling_domain)
@@ -15060,9 +15061,9 @@ class PubServer(BaseHTTPRequestHandler):
                 rss_icon_at_top = self.server.rss_icon_at_top
                 icons_as_buttons = self.server.icons_as_buttons
                 defaultTimeline = self.server.defaultTimeline
-                accessKeys = self.server.accessKeys
+                access_keys = self.server.access_keys
                 if self.server.keyShortcuts.get(nickname):
-                    accessKeys = self.server.keyShortcuts[nickname]
+                    access_keys = self.server.keyShortcuts[nickname]
                 msg = \
                     html_newswire_mobile(self.server.css_cache,
                                          self.server.base_dir,
@@ -15080,7 +15081,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          icons_as_buttons,
                                          defaultTimeline,
                                          self.server.theme_name,
-                                         accessKeys).encode('utf-8')
+                                         access_keys).encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
                                   cookie, calling_domain, False)
@@ -15099,9 +15100,9 @@ class PubServer(BaseHTTPRequestHandler):
                     self._404()
                     self.server.GETbusy = False
                     return
-                accessKeys = self.server.accessKeys
+                access_keys = self.server.access_keys
                 if self.server.keyShortcuts.get(nickname):
-                    accessKeys = self.server.keyShortcuts[nickname]
+                    access_keys = self.server.keyShortcuts[nickname]
                 timelinePath = \
                     '/users/' + nickname + '/' + self.server.defaultTimeline
                 icons_as_buttons = self.server.icons_as_buttons
@@ -15120,7 +15121,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       icons_as_buttons,
                                       defaultTimeline,
                                       self.server.theme_name,
-                                      accessKeys,
+                                      access_keys,
                                       sharedItemsDomains).encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen, cookie, calling_domain,
@@ -15196,9 +15197,9 @@ class PubServer(BaseHTTPRequestHandler):
                 if '/' in nickname:
                     nickname = nickname.split('/')[0]
 
-                accessKeys = self.server.accessKeys
+                access_keys = self.server.access_keys
                 if self.server.keyShortcuts.get(nickname):
-                    accessKeys = self.server.keyShortcuts[nickname]
+                    access_keys = self.server.keyShortcuts[nickname]
 
                 # show the search screen
                 msg = html_search(self.server.css_cache,
@@ -15208,7 +15209,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.defaultTimeline,
                                   self.server.theme_name,
                                   self.server.text_mode_banner,
-                                  accessKeys).encode('utf-8')
+                                  access_keys).encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen, cookie, calling_domain,
                                   False)
@@ -15249,9 +15250,9 @@ class PubServer(BaseHTTPRequestHandler):
                 if '/' in nickname:
                     nickname = nickname.split('/')[0]
 
-                accessKeys = self.server.accessKeys
+                access_keys = self.server.access_keys
                 if self.server.keyShortcuts.get(nickname):
-                    accessKeys = self.server.keyShortcuts[nickname]
+                    access_keys = self.server.keyShortcuts[nickname]
 
                 # show the calendar screen
                 msg = html_calendar(self.server.person_cache,
@@ -15261,7 +15262,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.http_prefix,
                                     self.server.domain_full,
                                     self.server.text_mode_banner,
-                                    accessKeys).encode('utf-8')
+                                    access_keys).encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen, cookie, calling_domain,
                                   False)
@@ -17997,9 +17998,9 @@ class PubServer(BaseHTTPRequestHandler):
                     nickname = nickname.split('/')[0]
 
                 if not self.server.keyShortcuts.get(nickname):
-                    accessKeys = self.server.accessKeys
-                    self.server.keyShortcuts[nickname] = accessKeys.copy()
-                accessKeys = self.server.keyShortcuts[nickname]
+                    access_keys = self.server.access_keys
+                    self.server.keyShortcuts[nickname] = access_keys.copy()
+                access_keys = self.server.keyShortcuts[nickname]
 
                 self._key_shortcuts(self.path,
                                     calling_domain, cookie,
@@ -18012,7 +18013,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.onion_domain,
                                     self.server.i2p_domain,
                                     self.server.debug,
-                                    accessKeys,
+                                    access_keys,
                                     self.server.defaultTimeline)
                 self.server.POSTbusy = False
                 return
@@ -18025,9 +18026,9 @@ class PubServer(BaseHTTPRequestHandler):
                     nickname = nickname.split('/')[0]
 
                 if not self.server.keyShortcuts.get(nickname):
-                    accessKeys = self.server.accessKeys
-                    self.server.keyShortcuts[nickname] = accessKeys.copy()
-                accessKeys = self.server.keyShortcuts[nickname]
+                    access_keys = self.server.access_keys
+                    self.server.keyShortcuts[nickname] = access_keys.copy()
+                access_keys = self.server.keyShortcuts[nickname]
                 allow_local_network_access = \
                     self.server.allow_local_network_access
 
@@ -18042,7 +18043,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.onion_domain,
                                           self.server.i2p_domain,
                                           self.server.debug,
-                                          accessKeys,
+                                          access_keys,
                                           self.server.defaultTimeline,
                                           self.server.theme_name,
                                           allow_local_network_access,
@@ -18644,7 +18645,7 @@ def run_daemon(content_license_url: str,
     httpd.text_mode_banner = get_text_mode_banner(base_dir)
 
     # key shortcuts SHIFT + ALT + [key]
-    httpd.accessKeys = {
+    httpd.access_keys = {
         'Page up': ',',
         'Page down': '.',
         'submitButton': 'y',
@@ -18691,7 +18692,7 @@ def run_daemon(content_license_url: str,
 
     httpd.keyShortcuts = {}
     load_access_keys_for_accounts(base_dir, httpd.keyShortcuts,
-                                  httpd.accessKeys)
+                                  httpd.access_keys)
 
     # wheither to use low bandwidth images
     httpd.low_bandwidth = low_bandwidth

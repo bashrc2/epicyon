@@ -80,7 +80,7 @@ def _html_new_post_drop_down(scopeIcon: str, scopeDescription: str,
                              dropdownReminderSuffix: str,
                              dropdownReportSuffix: str,
                              noDropDown: bool,
-                             accessKeys: {}) -> str:
+                             access_keys: {}) -> str:
     """Returns the html for a drop down list of new post types
     """
     dropDownContent = '<nav><div class="newPostDropdown">\n'
@@ -100,7 +100,7 @@ def _html_new_post_drop_down(scopeIcon: str, scopeDescription: str,
     if showPublicOnDropdown:
         dropDownContent += \
             '<li><a href="' + pathBase + dropdownNewPostSuffix + \
-            '" accesskey="' + accessKeys['Public'] + '">' + \
+            '" accesskey="' + access_keys['Public'] + '">' + \
             '<img loading="lazy" alt="" title="" src="/' + \
             'icons/scope_public.png"/><b>' + \
             translate['Public'] + '</b><br>' + \
@@ -108,7 +108,7 @@ def _html_new_post_drop_down(scopeIcon: str, scopeDescription: str,
         if defaultTimeline == 'tlfeatures':
             dropDownContent += \
                 '<li><a href="' + pathBase + dropdownNewBlogSuffix + \
-                '" accesskey="' + accessKeys['menuBlogs'] + '">' + \
+                '" accesskey="' + access_keys['menuBlogs'] + '">' + \
                 '<img loading="lazy" alt="" title="" src="/' + \
                 'icons/scope_blog.png"/><b>' + \
                 translate['Article'] + '</b><br>' + \
@@ -116,7 +116,7 @@ def _html_new_post_drop_down(scopeIcon: str, scopeDescription: str,
         else:
             dropDownContent += \
                 '<li><a href="' + pathBase + dropdownNewBlogSuffix + \
-                '" accesskey="' + accessKeys['menuBlogs'] + '">' + \
+                '" accesskey="' + access_keys['menuBlogs'] + '">' + \
                 '<img loading="lazy" alt="" title="" src="/' + \
                 'icons/scope_blog.png"/><b>' + \
                 translate['Blog'] + '</b><br>' + \
@@ -129,14 +129,14 @@ def _html_new_post_drop_down(scopeIcon: str, scopeDescription: str,
             translate['Not on public timeline'] + '</a></li>\n'
     dropDownContent += \
         '<li><a href="' + pathBase + dropdownFollowersSuffix + \
-        '" accesskey="' + accessKeys['menuFollowers'] + '">' + \
+        '" accesskey="' + access_keys['menuFollowers'] + '">' + \
         '<img loading="lazy" alt="" title="" src="/' + \
         'icons/scope_followers.png"/><b>' + \
         translate['Followers'] + '</b><br>' + \
         translate['Only to followers'] + '</a></li>\n'
     dropDownContent += \
         '<li><a href="' + pathBase + dropdownDMSuffix + \
-        '" accesskey="' + accessKeys['menuDM'] + '">' + \
+        '" accesskey="' + access_keys['menuDM'] + '">' + \
         '<img loading="lazy" alt="" title="" src="/' + \
         'icons/scope_dm.png"/><b>' + \
         translate['DM'] + '</b><br>' + \
@@ -144,14 +144,14 @@ def _html_new_post_drop_down(scopeIcon: str, scopeDescription: str,
 
     dropDownContent += \
         '<li><a href="' + pathBase + dropdownReminderSuffix + \
-        '" accesskey="' + accessKeys['Reminder'] + '">' + \
+        '" accesskey="' + access_keys['Reminder'] + '">' + \
         '<img loading="lazy" alt="" title="" src="/' + \
         'icons/scope_reminder.png"/><b>' + \
         translate['Reminder'] + '</b><br>' + \
         translate['Scheduled note to yourself'] + '</a></li>\n'
     dropDownContent += \
         '<li><a href="' + pathBase + dropdownReportSuffix + \
-        '" accesskey="' + accessKeys['reportButton'] + '">' + \
+        '" accesskey="' + access_keys['reportButton'] + '">' + \
         '<img loading="lazy" alt="" title="" src="/' + \
         'icons/scope_report.png"/><b>' + \
         translate['Report'] + '</b><br>' + \
@@ -160,14 +160,14 @@ def _html_new_post_drop_down(scopeIcon: str, scopeDescription: str,
     if not replyStr:
         dropDownContent += \
             '<li><a href="' + pathBase + \
-            '/newshare" accesskey="' + accessKeys['menuShares'] + '">' + \
+            '/newshare" accesskey="' + access_keys['menuShares'] + '">' + \
             '<img loading="lazy" alt="" title="" src="/' + \
             'icons/scope_share.png"/><b>' + \
             translate['Shares'] + '</b><br>' + \
             translate['Describe a shared item'] + '</a></li>\n'
         dropDownContent += \
             '<li><a href="' + pathBase + \
-            '/newwanted" accesskey="' + accessKeys['menuWanted'] + '">' + \
+            '/newwanted" accesskey="' + access_keys['menuWanted'] + '">' + \
             '<img loading="lazy" alt="" title="" src="/' + \
             'icons/scope_wanted.png"/><b>' + \
             translate['Wanted'] + '</b><br>' + \
@@ -195,7 +195,7 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
                   domain_full: str,
                   defaultTimeline: str, newswire: {},
                   theme: str, noDropDown: bool,
-                  accessKeys: {}, customSubmitText: str,
+                  access_keys: {}, customSubmitText: str,
                   conversationId: str,
                   recent_posts_cache: {}, max_recent_posts: int,
                   session, cached_webfingers: {},
@@ -239,7 +239,7 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
     messageBoxHeight = 400
 
     # filename of the banner shown at the top
-    bannerFile, bannerFilename = \
+    banner_file, banner_filename = \
         get_banner_file(base_dir, nickname, domain, theme)
 
     if not path.endswith('/newshare') and not path.endswith('/newwanted'):
@@ -345,9 +345,9 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
             newPostText = \
                 '<p>' + file.read() + '</p>\n'
 
-    cssFilename = base_dir + '/epicyon-profile.css'
+    css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
-        cssFilename = base_dir + '/epicyon.css'
+        css_filename = base_dir + '/epicyon.css'
 
     if '?' in path:
         path = path.split('?')[0]
@@ -638,7 +638,7 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
         dateAndLocation += '</div>\n'
 
     instanceTitle = get_config_param(base_dir, 'instanceTitle')
-    newPostForm = html_header_with_external_style(cssFilename,
+    newPostForm = html_header_with_external_style(css_filename,
                                                   instanceTitle, None)
 
     newPostForm += \
@@ -646,9 +646,9 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
         '<a href="/users/' + nickname + '/' + defaultTimeline + '" title="' + \
         translate['Switch to timeline view'] + '" alt="' + \
         translate['Switch to timeline view'] + '" ' + \
-        'accesskey="' + accessKeys['menuTimeline'] + '">\n'
+        'accesskey="' + access_keys['menuTimeline'] + '">\n'
     newPostForm += '<img loading="lazy" class="timeline-banner" src="' + \
-        '/users/' + nickname + '/' + bannerFile + '" alt="" /></a>\n' + \
+        '/users/' + nickname + '/' + banner_file + '" alt="" /></a>\n' + \
         '</header>\n'
 
     mentionsStr = ''
@@ -721,7 +721,7 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
                                      dropdownDMSuffix,
                                      dropdownReminderSuffix,
                                      dropdownReportSuffix,
-                                     noDropDown, accessKeys)
+                                     noDropDown, access_keys)
     else:
         if not shareDescription:
             # reporting a post to moderator
@@ -771,7 +771,7 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
     newPostForm += \
         '      <td><input type="submit" name="submitPost" value="' + \
         submitText + '" ' + \
-        'accesskey="' + accessKeys['submitButton'] + '"></td>\n'
+        'accesskey="' + access_keys['submitButton'] + '"></td>\n'
 
     newPostForm += '      </tr>\n</table>\n'
     newPostForm += '    </div>\n'

@@ -301,15 +301,15 @@ def _verify_recent_signature(signedDateStr: str) -> bool:
     currDate = datetime.datetime.utcnow()
     dateFormat = "%a, %d %b %Y %H:%M:%S %Z"
     signedDate = datetime.datetime.strptime(signedDateStr, dateFormat)
-    timeDiffSec = (currDate - signedDate).seconds
+    time_diffSec = (currDate - signedDate).seconds
     # 12 hours tollerance
-    if timeDiffSec > 43200:
+    if time_diffSec > 43200:
         print('WARN: Header signed too long ago: ' + signedDateStr)
-        print(str(timeDiffSec / (60 * 60)) + ' hours')
+        print(str(time_diffSec / (60 * 60)) + ' hours')
         return False
-    if timeDiffSec < 0:
+    if time_diffSec < 0:
         print('WARN: Header signed in the future! ' + signedDateStr)
-        print(str(timeDiffSec / (60 * 60)) + ' hours')
+        print(str(time_diffSec / (60 * 60)) + ' hours')
         return False
     return True
 

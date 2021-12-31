@@ -16,33 +16,33 @@ from utils import save_json
 
 
 def fitness_performance(startTime, fitnessState: {},
-                        fitnessId: str, watchPoint: str, debug: bool) -> None:
+                        fitnessId: str, watch_point: str, debug: bool) -> None:
     """Log a performance watchpoint
     """
     if 'performance' not in fitnessState:
         fitnessState['performance'] = {}
     if fitnessId not in fitnessState['performance']:
         fitnessState['performance'][fitnessId] = {}
-    if watchPoint not in fitnessState['performance'][fitnessId]:
-        fitnessState['performance'][fitnessId][watchPoint] = {
+    if watch_point not in fitnessState['performance'][fitnessId]:
+        fitnessState['performance'][fitnessId][watch_point] = {
             "total": float(0),
             "ctr": int(0)
         }
 
-    timeDiff = float(time.time() - startTime)
+    time_diff = float(time.time() - startTime)
 
-    fitnessState['performance'][fitnessId][watchPoint]['total'] += timeDiff
-    fitnessState['performance'][fitnessId][watchPoint]['ctr'] += 1
-    if fitnessState['performance'][fitnessId][watchPoint]['ctr'] >= 1024:
-        fitnessState['performance'][fitnessId][watchPoint]['total'] /= 2
-        fitnessState['performance'][fitnessId][watchPoint]['ctr'] = \
-            int(fitnessState['performance'][fitnessId][watchPoint]['ctr'] / 2)
+    fitnessState['performance'][fitnessId][watch_point]['total'] += time_diff
+    fitnessState['performance'][fitnessId][watch_point]['ctr'] += 1
+    if fitnessState['performance'][fitnessId][watch_point]['ctr'] >= 1024:
+        fitnessState['performance'][fitnessId][watch_point]['total'] /= 2
+        fitnessState['performance'][fitnessId][watch_point]['ctr'] = \
+            int(fitnessState['performance'][fitnessId][watch_point]['ctr'] / 2)
 
     if debug:
-        ctr = fitnessState['performance'][fitnessId][watchPoint]['ctr']
-        total = fitnessState['performance'][fitnessId][watchPoint]['total']
+        ctr = fitnessState['performance'][fitnessId][watch_point]['ctr']
+        total = fitnessState['performance'][fitnessId][watch_point]['total']
         print('FITNESS: performance/' + fitnessId + '/' +
-              watchPoint + '/' + str(total * 1000 / ctr))
+              watch_point + '/' + str(total * 1000 / ctr))
 
 
 def sorted_watch_points(fitness: {}, fitnessId: str) -> []:
@@ -54,12 +54,12 @@ def sorted_watch_points(fitness: {}, fitnessId: str) -> []:
     if not fitness['performance'].get(fitnessId):
         return []
     result = []
-    for watchPoint, item in fitness['performance'][fitnessId].items():
+    for watch_point, item in fitness['performance'][fitnessId].items():
         if not item.get('total'):
             continue
-        averageTime = item['total'] * 1000 / item['ctr']
-        averageTimeStr = str(averageTime).zfill(8)
-        result.append(averageTimeStr + ' ' + watchPoint)
+        average_time = item['total'] * 1000 / item['ctr']
+        average_time_str = str(average_time).zfill(8)
+        result.append(average_time_str + ' ' + watch_point)
     result.sort(reverse=True)
     return result
 
@@ -68,16 +68,17 @@ def html_watch_points_graph(base_dir: str, fitness: {}, fitnessId: str,
                             maxEntries: int) -> str:
     """Returns the html for a graph of watchpoints
     """
-    watchPointsList = sorted_watch_points(fitness, fitnessId)
+    watch_points_list = sorted_watch_points(fitness, fitnessId)
 
-    cssFilename = base_dir + '/epicyon-graph.css'
+    css_filename = base_dir + '/epicyon-graph.css'
     if os.path.isfile(base_dir + '/graph.css'):
-        cssFilename = base_dir + '/graph.css'
+        css_filename = base_dir + '/graph.css'
 
-    instanceTitle = \
+    instance_title = \
         get_config_param(base_dir, 'instanceTitle')
-    htmlStr = html_header_with_external_style(cssFilename, instanceTitle, None)
-    htmlStr += \
+    html_str = \
+        html_header_with_external_style(css_filename, instance_title, None)
+    html_str += \
         '<table class="graph">\n' + \
         '<caption>Watchpoints for ' + fitnessId + '</caption>\n' + \
         '<thead>\n' + \
@@ -88,23 +89,23 @@ def html_watch_points_graph(base_dir: str, fitness: {}, fitnessId: str,
         '</thead><tbody>\n'
 
     # get the maximum time
-    maxAverageTime = float(1)
-    if len(watchPointsList) > 0:
-        maxAverageTime = float(watchPointsList[0].split(' ')[0])
-    for watchPoint in watchPointsList:
-        averageTime = float(watchPoint.split(' ')[0])
-        if averageTime > maxAverageTime:
-            maxAverageTime = averageTime
+    max_average_time = float(1)
+    if len(watch_points_list) > 0:
+        max_average_time = float(watch_points_list[0].split(' ')[0])
+    for watch_point in watch_points_list:
+        average_time = float(watch_point.split(' ')[0])
+        if average_time > max_average_time:
+            max_average_time = average_time
 
     ctr = 0
-    for watchPoint in watchPointsList:
-        name = watchPoint.split(' ', 1)[1]
-        averageTime = float(watchPoint.split(' ')[0])
-        heightPercent = int(averageTime * 100 / maxAverageTime)
-        timeMS = int(averageTime)
+    for watch_point in watch_points_list:
+        name = watch_point.split(' ', 1)[1]
+        average_time = float(watch_point.split(' ')[0])
+        heightPercent = int(average_time * 100 / max_average_time)
+        timeMS = int(average_time)
         if heightPercent == 0:
             continue
-        htmlStr += \
+        html_str += \
             '<tr style="height:' + str(heightPercent) + '%">\n' + \
             '  <th scope="row">' + name + '</th>\n' + \
             '  <td><span>' + str(timeMS) + '</span></td>\n' + \
@@ -113,8 +114,8 @@ def html_watch_points_graph(base_dir: str, fitness: {}, fitnessId: str,
         if ctr >= maxEntries:
             break
 
-    htmlStr += '</tbody></table>\n' + html_footer()
-    return htmlStr
+    html_str += '</tbody></table>\n' + html_footer()
+    return html_str
 
 
 def fitness_thread(base_dir: str, fitness: {}):

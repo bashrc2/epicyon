@@ -196,8 +196,8 @@ def masto_api_v1_response(path: str, calling_domain: str,
         sendJsonStr = \
             'masto API custom emojis sent ' + path + callingInfo
 
-    adminNickname = get_config_param(base_dir, 'admin')
-    if adminNickname and path == '/api/v1/instance':
+    admin_nickname = get_config_param(base_dir, 'admin')
+    if admin_nickname and path == '/api/v1/instance':
         instanceDescriptionShort = \
             get_config_param(base_dir, 'instanceDescriptionShort')
         if not instanceDescriptionShort:
@@ -224,7 +224,7 @@ def masto_api_v1_response(path: str, calling_domain: str,
                                instanceDescription,
                                http_prefix,
                                base_dir,
-                               adminNickname,
+                               admin_nickname,
                                domain,
                                domain_full,
                                registration,

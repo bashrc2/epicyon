@@ -174,8 +174,8 @@ def _update_cached_hashtag_swarm(base_dir: str, nickname: str, domain: str,
             pass
         if modifiedDate:
             currDate = datetime.datetime.utcnow()
-            timeDiff = currDate - modifiedDate
-            diffMins = int(timeDiff.total_seconds() / 60)
+            time_diff = currDate - modifiedDate
+            diffMins = int(time_diff.total_seconds() / 60)
             if diffMins < 10:
                 # was saved recently, so don't save again
                 # This avoids too much disk I/O
@@ -566,11 +566,11 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
     digestStartTime = time.time()
     digestAlgorithm = get_digest_algorithm_from_headers(httpHeaders)
     digest = message_content_digest(messageBytes, digestAlgorithm)
-    timeDiffStr = str(int((time.time() - digestStartTime) * 1000))
+    time_diffStr = str(int((time.time() - digestStartTime) * 1000))
     if debug:
-        while len(timeDiffStr) < 6:
-            timeDiffStr = '0' + timeDiffStr
-        print('DIGEST|' + timeDiffStr + '|' + filename)
+        while len(time_diffStr) < 6:
+            time_diffStr = '0' + time_diffStr
+        print('DIGEST|' + time_diffStr + '|' + filename)
 
     newQueueItem = {
         'originalId': originalPostId,
@@ -3602,12 +3602,12 @@ def _inbox_after_initial(recent_posts_cache: {}, max_recent_posts: int,
                                                         cw_lists,
                                                         lists_enabled)
                         if debug:
-                            timeDiff = \
+                            time_diff = \
                                 str(int((time.time() - htmlCacheStartTime) *
                                         1000))
                             print('Saved ' + boxname +
                                   ' post as html to cache in ' +
-                                  timeDiff + ' mS')
+                                  time_diff + ' mS')
 
             handleName = handle.split('@')[0]
 

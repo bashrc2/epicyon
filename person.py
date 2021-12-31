@@ -1060,10 +1060,10 @@ def suspend_account(base_dir: str, nickname: str, domain: str) -> None:
     """Suspends the given account
     """
     # Don't suspend the admin
-    adminNickname = get_config_param(base_dir, 'admin')
-    if not adminNickname:
+    admin_nickname = get_config_param(base_dir, 'admin')
+    if not admin_nickname:
         return
-    if nickname == adminNickname:
+    if nickname == admin_nickname:
         return
 
     # Don't suspend moderators
@@ -1118,10 +1118,10 @@ def can_remove_post(base_dir: str, nickname: str,
     domain_full = get_full_domain(domain, port)
 
     # is the post by the admin?
-    adminNickname = get_config_param(base_dir, 'admin')
-    if not adminNickname:
+    admin_nickname = get_config_param(base_dir, 'admin')
+    if not admin_nickname:
         return False
-    if domain_full + '/users/' + adminNickname + '/' in post_id:
+    if domain_full + '/users/' + admin_nickname + '/' in post_id:
         return False
 
     # is the post by a moderator?
@@ -1177,10 +1177,10 @@ def remove_account(base_dir: str, nickname: str,
     """Removes an account
     """
     # Don't remove the admin
-    adminNickname = get_config_param(base_dir, 'admin')
-    if not adminNickname:
+    admin_nickname = get_config_param(base_dir, 'admin')
+    if not admin_nickname:
         return False
-    if nickname == adminNickname:
+    if nickname == admin_nickname:
         return False
 
     # Don't remove moderators

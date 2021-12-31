@@ -63,12 +63,12 @@ def html_welcome_profile(base_dir: str, nickname: str, domain: str,
             profileText = markdown_to_html(remove_html(profileText))
 
     profileForm = ''
-    cssFilename = base_dir + '/epicyon-welcome.css'
+    css_filename = base_dir + '/epicyon-welcome.css'
     if os.path.isfile(base_dir + '/welcome.css'):
-        cssFilename = base_dir + '/welcome.css'
+        css_filename = base_dir + '/welcome.css'
 
     profileForm = \
-        html_header_with_external_style(cssFilename, instanceTitle, None)
+        html_header_with_external_style(css_filename, instanceTitle, None)
 
     # get the url of the avatar
     for ext in get_image_extensions():

@@ -282,14 +282,14 @@ def _desktop_clear_screen() -> None:
 def _desktop_show_banner() -> None:
     """Shows the banner at the top
     """
-    bannerFilename = 'banner.txt'
-    if not os.path.isfile(bannerFilename):
+    banner_filename = 'banner.txt'
+    if not os.path.isfile(banner_filename):
         bannerTheme = 'starlight'
-        bannerFilename = 'theme/' + bannerTheme + '/banner.txt'
-        if not os.path.isfile(bannerFilename):
+        banner_filename = 'theme/' + bannerTheme + '/banner.txt'
+        if not os.path.isfile(banner_filename):
             return
-    with open(bannerFilename, 'r') as bannerFile:
-        banner = bannerFile.read()
+    with open(banner_filename, 'r') as banner_file:
+        banner = banner_file.read()
         if banner:
             print(banner + '\n')
 

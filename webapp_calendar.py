@@ -52,14 +52,14 @@ def html_calendar_delete_confirm(css_cache: {}, translate: {}, base_dir: str,
         return None
 
     delete_postStr = None
-    cssFilename = base_dir + '/epicyon-profile.css'
+    css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
-        cssFilename = base_dir + '/epicyon.css'
+        css_filename = base_dir + '/epicyon.css'
 
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
     delete_postStr = \
-        html_header_with_external_style(cssFilename, instanceTitle, None)
+        html_header_with_external_style(css_filename, instanceTitle, None)
     delete_postStr += \
         '<center><h1>' + postTime + ' ' + str(year) + '/' + \
         str(monthNumber) + \
@@ -111,9 +111,9 @@ def _html_calendar_day(person_cache: {}, css_cache: {}, translate: {},
         except OSError:
             print('EX: _html_calendar_day unable to delete ' + calendarFile)
 
-    cssFilename = base_dir + '/epicyon-calendar.css'
+    css_filename = base_dir + '/epicyon-calendar.css'
     if os.path.isfile(base_dir + '/calendar.css'):
-        cssFilename = base_dir + '/calendar.css'
+        css_filename = base_dir + '/calendar.css'
 
     calActor = actor
     if '/users/' in actor:
@@ -121,7 +121,7 @@ def _html_calendar_day(person_cache: {}, css_cache: {}, translate: {},
 
     instanceTitle = get_config_param(base_dir, 'instanceTitle')
     calendarStr = \
-        html_header_with_external_style(cssFilename, instanceTitle, None)
+        html_header_with_external_style(css_filename, instanceTitle, None)
     calendarStr += '<main><table class="calendar">\n'
     calendarStr += '<caption class="calendar__banner--month">\n'
     calendarStr += \
@@ -249,7 +249,7 @@ def _html_calendar_day(person_cache: {}, css_cache: {}, translate: {},
 def html_calendar(person_cache: {}, css_cache: {}, translate: {},
                   base_dir: str, path: str,
                   http_prefix: str, domain_full: str,
-                  text_mode_banner: str, accessKeys: {}) -> str:
+                  text_mode_banner: str, access_keys: {}) -> str:
     """Show the calendar for a person
     """
     domain = remove_domain_port(domain_full)
@@ -334,9 +334,9 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
             (date(year + 1, 1, 1) - date(year, monthNumber, 1)).days
     # print('daysInMonth ' + str(monthNumber) + ': ' + str(daysInMonth))
 
-    cssFilename = base_dir + '/epicyon-calendar.css'
+    css_filename = base_dir + '/epicyon-calendar.css'
     if os.path.isfile(base_dir + '/calendar.css'):
-        cssFilename = base_dir + '/calendar.css'
+        css_filename = base_dir + '/calendar.css'
 
     calActor = actor
     if '/users/' in actor:
@@ -345,7 +345,7 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
     headerStr = \
-        html_header_with_external_style(cssFilename, instanceTitle, None)
+        html_header_with_external_style(css_filename, instanceTitle, None)
 
     # the main graphical calendar as a table
     calendarStr = '<main><table class="calendar">\n'
@@ -353,19 +353,19 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
     calendarStr += \
         '  <a href="' + calActor + '/calendar?year=' + str(prevYear) + \
         '?month=' + str(prevMonthNumber) + '" ' + \
-        'accesskey="' + accessKeys['Page up'] + '">'
+        'accesskey="' + access_keys['Page up'] + '">'
     calendarStr += \
         '  <img loading="lazy" alt="' + translate['Previous month'] + \
         '" title="' + translate['Previous month'] + '" src="/icons' + \
         '/prev.png" class="buttonprev"/></a>\n'
     calendarStr += '  <a href="' + calActor + '/inbox" title="'
     calendarStr += translate['Switch to timeline view'] + '" ' + \
-        'accesskey="' + accessKeys['menuTimeline'] + '">'
+        'accesskey="' + access_keys['menuTimeline'] + '">'
     calendarStr += '  <h1>' + monthName + '</h1></a>\n'
     calendarStr += \
         '  <a href="' + calActor + '/calendar?year=' + str(nextYear) + \
         '?month=' + str(nextMonthNumber) + '" ' + \
-        'accesskey="' + accessKeys['Page down'] + '">'
+        'accesskey="' + access_keys['Page down'] + '">'
     calendarStr += \
         '  <img loading="lazy" alt="' + translate['Next month'] + \
         '" title="' + translate['Next month'] + '" src="/icons' + \
@@ -382,10 +382,10 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
     calendarStr += '<tbody>\n'
 
     # beginning of the links used for accessibility
-    navLinks = {}
+    nav_links = {}
     timelineLinkStr = html_hide_from_screen_reader('🏠') + ' ' + \
         translate['Switch to timeline view']
-    navLinks[timelineLinkStr] = calActor + '/inbox'
+    nav_links[timelineLinkStr] = calActor + '/inbox'
 
     dayOfMonth = 0
     dow = week_day_of_month_start(monthNumber, year)
@@ -415,7 +415,7 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
                     menuOptionStr = \
                         html_hide_from_screen_reader('📅') + ' ' + \
                         dayDescription
-                    navLinks[menuOptionStr] = url
+                    nav_links[menuOptionStr] = url
                     # there are events for this day
                     if not isToday:
                         calendarStr += \
@@ -447,16 +447,16 @@ def html_calendar(person_cache: {}, css_cache: {}, translate: {},
     # end of the links used for accessibility
     nextMonthStr = \
         html_hide_from_screen_reader('→') + ' ' + translate['Next month']
-    navLinks[nextMonthStr] = calActor + '/calendar?year=' + str(nextYear) + \
+    nav_links[nextMonthStr] = calActor + '/calendar?year=' + str(nextYear) + \
         '?month=' + str(nextMonthNumber)
     prevMonthStr = \
         html_hide_from_screen_reader('←') + ' ' + translate['Previous month']
-    navLinks[prevMonthStr] = calActor + '/calendar?year=' + str(prevYear) + \
+    nav_links[prevMonthStr] = calActor + '/calendar?year=' + str(prevYear) + \
         '?month=' + str(prevMonthNumber)
-    navAccessKeys = {
+    nav_access_keys = {
     }
     screenReaderCal = \
-        html_keyboard_navigation(text_mode_banner, navLinks, navAccessKeys,
+        html_keyboard_navigation(text_mode_banner, nav_links, nav_access_keys,
                                  monthName)
 
     newEventStr = \

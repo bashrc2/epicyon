@@ -57,12 +57,12 @@ def html_welcome_final(base_dir: str, nickname: str, domain: str,
             finalText = markdown_to_html(remove_html(finalText))
 
     finalForm = ''
-    cssFilename = base_dir + '/epicyon-welcome.css'
+    css_filename = base_dir + '/epicyon-welcome.css'
     if os.path.isfile(base_dir + '/welcome.css'):
-        cssFilename = base_dir + '/welcome.css'
+        css_filename = base_dir + '/welcome.css'
 
     finalForm = \
-        html_header_with_external_style(cssFilename, instanceTitle, None)
+        html_header_with_external_style(css_filename, instanceTitle, None)
 
     finalForm += \
         '<div class="container">' + finalText + '</div>\n' + \

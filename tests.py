@@ -3937,9 +3937,9 @@ def _test_constant_time_string():
         constant_time_string_check(test_str, test_str)
     end = time.time()
     avTime2 = ((end - start) * 1000000 / itterations)
-    timeDiffMicroseconds = abs(avTime2 - avTime1)
+    time_diffMicroseconds = abs(avTime2 - avTime1)
     # time difference should be less than 10uS
-    assert int(timeDiffMicroseconds) < 10
+    assert int(time_diffMicroseconds) < 10
 
     # change multiple characters and observe timing difference
     start = time.time()
@@ -3948,9 +3948,9 @@ def _test_constant_time_string():
         constant_time_string_check(test_str, test_str2)
     end = time.time()
     avTime2 = ((end - start) * 1000000 / itterations)
-    timeDiffMicroseconds = abs(avTime2 - avTime1)
+    time_diffMicroseconds = abs(avTime2 - avTime1)
     # time difference should be less than 10uS
-    assert int(timeDiffMicroseconds) < 10
+    assert int(time_diffMicroseconds) < 10
 
 
 def _test_replace_email_quote():

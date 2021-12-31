@@ -83,12 +83,12 @@ def html_welcome_screen(base_dir: str, nickname: str,
             welcomeText = markdown_to_html(remove_html(welcomeText))
 
     welcomeForm = ''
-    cssFilename = base_dir + '/epicyon-welcome.css'
+    css_filename = base_dir + '/epicyon-welcome.css'
     if os.path.isfile(base_dir + '/welcome.css'):
-        cssFilename = base_dir + '/welcome.css'
+        css_filename = base_dir + '/welcome.css'
 
     welcomeForm = \
-        html_header_with_external_style(cssFilename, instanceTitle, None)
+        html_header_with_external_style(css_filename, instanceTitle, None)
     welcomeForm += \
         '<form enctype="multipart/form-data" method="POST" ' + \
         'accept-charset="UTF-8" ' + \

@@ -60,7 +60,7 @@ def get_right_column_content(base_dir: str, nickname: str, domain_full: str,
                              showHeaderImage: bool,
                              theme: str,
                              defaultTimeline: str,
-                             accessKeys: {}) -> str:
+                             access_keys: {}) -> str:
     """Returns html content for the right column
     """
     htmlStr = ''
@@ -77,7 +77,7 @@ def get_right_column_content(base_dir: str, nickname: str, domain_full: str,
             '        <a href="' + \
             '/users/' + nickname + '/newblog?nodropdown" ' + \
             'title="' + titleStr + '" ' + \
-            'accesskey="' + accessKeys['menuNewPost'] + '">' + \
+            'accesskey="' + access_keys['menuNewPost'] + '">' + \
             '<button class="publishbtn">' + \
             translate['Publish'] + '</button></a>\n'
     else:
@@ -134,7 +134,7 @@ def get_right_column_content(base_dir: str, nickname: str, domain_full: str,
             htmlStr += \
                 '        <a href="' + \
                 '/users/' + nickname + '/editnewswire" ' + \
-                'accesskey="' + accessKeys['menuEdit'] + '">' + \
+                'accesskey="' + access_keys['menuEdit'] + '">' + \
                 '<img class="' + editImageClass + \
                 '" loading="lazy" alt="' + \
                 translate['Edit newswire'] + ' | " title="' + \
@@ -145,7 +145,7 @@ def get_right_column_content(base_dir: str, nickname: str, domain_full: str,
             htmlStr += \
                 '        <a href="' + \
                 '/users/' + nickname + '/editnewswire" ' + \
-                'accesskey="' + accessKeys['menuEdit'] + '">' + \
+                'accesskey="' + access_keys['menuEdit'] + '">' + \
                 '<img class="' + editImageClass + \
                 '" loading="lazy" alt="' + \
                 translate['Edit newswire'] + ' | " title="' + \
@@ -179,7 +179,7 @@ def get_right_column_content(base_dir: str, nickname: str, domain_full: str,
             htmlStr += \
                 '        <a href="' + \
                 '/users/' + nickname + '/newblog?nodropdown" ' + \
-                'accesskey="' + accessKeys['menuNewPost'] + '">' + \
+                'accesskey="' + access_keys['menuNewPost'] + '">' + \
                 '<img class="' + editImageClass + \
                 '" loading="lazy" alt="' + \
                 titleStr + '" title="' + \
@@ -360,16 +360,17 @@ def html_citations(base_dir: str, nickname: str, domain: str,
                 citationsSelected.append(dateStr)
 
     # the css filename
-    cssFilename = base_dir + '/epicyon-profile.css'
+    css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
-        cssFilename = base_dir + '/epicyon.css'
+        css_filename = base_dir + '/epicyon.css'
 
-    instanceTitle = \
+    instance_title = \
         get_config_param(base_dir, 'instanceTitle')
-    htmlStr = html_header_with_external_style(cssFilename, instanceTitle, None)
+    htmlStr = \
+        html_header_with_external_style(css_filename, instance_title, None)
 
     # top banner
-    bannerFile, bannerFilename = \
+    banner_file, banner_filename = \
         get_banner_file(base_dir, nickname, domain, theme)
     htmlStr += \
         '<a href="/users/' + nickname + '/newblog" title="' + \
@@ -377,7 +378,7 @@ def html_citations(base_dir: str, nickname: str, domain: str,
         translate['Go Back'] + '">\n'
     htmlStr += '<img loading="lazy" class="timeline-banner" ' + \
         'alt="" src="' + \
-        '/users/' + nickname + '/' + bannerFile + '" /></a>\n'
+        '/users/' + nickname + '/' + banner_file + '" /></a>\n'
 
     htmlStr += \
         '<form enctype="multipart/form-data" method="POST" ' + \
@@ -457,15 +458,15 @@ def html_newswire_mobile(css_cache: {}, base_dir: str, nickname: str,
                          icons_as_buttons: bool,
                          defaultTimeline: str,
                          theme: str,
-                         accessKeys: {}) -> str:
+                         access_keys: {}) -> str:
     """Shows the mobile version of the newswire right column
     """
     htmlStr = ''
 
     # the css filename
-    cssFilename = base_dir + '/epicyon-profile.css'
+    css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
-        cssFilename = base_dir + '/epicyon.css'
+        css_filename = base_dir + '/epicyon.css'
 
     if nickname == 'news':
         editor = False
@@ -479,18 +480,19 @@ def html_newswire_mobile(css_cache: {}, base_dir: str, nickname: str,
 
     showPublishButton = editor
 
-    instanceTitle = \
+    instance_title = \
         get_config_param(base_dir, 'instanceTitle')
-    htmlStr = html_header_with_external_style(cssFilename, instanceTitle, None)
+    htmlStr = \
+        html_header_with_external_style(css_filename, instance_title, None)
 
-    bannerFile, bannerFilename = \
+    banner_file, banner_filename = \
         get_banner_file(base_dir, nickname, domain, theme)
     htmlStr += \
         '<a href="/users/' + nickname + '/' + defaultTimeline + '" ' + \
-        'accesskey="' + accessKeys['menuTimeline'] + '">' + \
+        'accesskey="' + access_keys['menuTimeline'] + '">' + \
         '<img loading="lazy" class="timeline-banner" ' + \
         'alt="' + translate['Timeline banner image'] + '" ' + \
-        'src="/users/' + nickname + '/' + bannerFile + '" /></a>\n'
+        'src="/users/' + nickname + '/' + banner_file + '" /></a>\n'
 
     htmlStr += '<div class="col-right-mobile">\n'
 
@@ -506,7 +508,7 @@ def html_newswire_mobile(css_cache: {}, base_dir: str, nickname: str,
                                  False, timelinePath, showPublishButton,
                                  show_publish_as_icon, rss_icon_at_top, False,
                                  authorized, False, theme,
-                                 defaultTimeline, accessKeys)
+                                 defaultTimeline, access_keys)
     if editor and not newswire:
         htmlStr += '<br><br><br>\n'
         htmlStr += '<center>\n  '
@@ -522,7 +524,7 @@ def html_newswire_mobile(css_cache: {}, base_dir: str, nickname: str,
 def html_edit_newswire(css_cache: {}, translate: {}, base_dir: str, path: str,
                        domain: str, port: int, http_prefix: str,
                        defaultTimeline: str, theme: str,
-                       accessKeys: {}) -> str:
+                       access_keys: {}) -> str:
     """Shows the edit newswire screen
     """
     if '/users/' not in path:
@@ -538,18 +540,18 @@ def html_edit_newswire(css_cache: {}, translate: {}, base_dir: str, path: str,
     if not is_moderator(base_dir, nickname):
         return ''
 
-    cssFilename = base_dir + '/epicyon-links.css'
+    css_filename = base_dir + '/epicyon-links.css'
     if os.path.isfile(base_dir + '/links.css'):
-        cssFilename = base_dir + '/links.css'
+        css_filename = base_dir + '/links.css'
 
     # filename of the banner shown at the top
-    bannerFile, bannerFilename = \
+    banner_file, banner_filename = \
         get_banner_file(base_dir, nickname, domain, theme)
 
-    instanceTitle = \
+    instance_title = \
         get_config_param(base_dir, 'instanceTitle')
     editNewswireForm = \
-        html_header_with_external_style(cssFilename, instanceTitle, None)
+        html_header_with_external_style(css_filename, instance_title, None)
 
     # top banner
     editNewswireForm += \
@@ -557,9 +559,9 @@ def html_edit_newswire(css_cache: {}, translate: {}, base_dir: str, path: str,
         '<a href="/users/' + nickname + '/' + defaultTimeline + '" title="' + \
         translate['Switch to timeline view'] + '" alt="' + \
         translate['Switch to timeline view'] + '" ' + \
-        'accesskey="' + accessKeys['menuTimeline'] + '">\n'
+        'accesskey="' + access_keys['menuTimeline'] + '">\n'
     editNewswireForm += '<img loading="lazy" class="timeline-banner" src="' + \
-        '/users/' + nickname + '/' + bannerFile + '" ' + \
+        '/users/' + nickname + '/' + banner_file + '" ' + \
         'alt="" /></a>\n</header>'
 
     editNewswireForm += \
@@ -574,7 +576,7 @@ def html_edit_newswire(css_cache: {}, translate: {}, base_dir: str, path: str,
     editNewswireForm += \
         '      <input type="submit" name="submitNewswire" value="' + \
         translate['Submit'] + '" ' + \
-        'accesskey="' + accessKeys['submitButton'] + '">\n'
+        'accesskey="' + access_keys['submitButton'] + '">\n'
     editNewswireForm += \
         '    </div>\n'
 
@@ -668,14 +670,14 @@ def html_edit_news_post(css_cache: {}, translate: {}, base_dir: str, path: str,
     if not post_json_object:
         return ''
 
-    cssFilename = base_dir + '/epicyon-links.css'
+    css_filename = base_dir + '/epicyon-links.css'
     if os.path.isfile(base_dir + '/links.css'):
-        cssFilename = base_dir + '/links.css'
+        css_filename = base_dir + '/links.css'
 
-    instanceTitle = \
+    instance_title = \
         get_config_param(base_dir, 'instanceTitle')
     editNewsPostForm = \
-        html_header_with_external_style(cssFilename, instanceTitle, None)
+        html_header_with_external_style(css_filename, instance_title, None)
     editNewsPostForm += \
         '<form enctype="multipart/form-data" method="POST" ' + \
         'accept-charset="UTF-8" action="' + path + '/newseditdata">\n'

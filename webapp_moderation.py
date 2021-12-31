@@ -50,7 +50,7 @@ def html_moderation(css_cache: {}, defaultTimeline: str,
                     theme: str, peertube_instances: [],
                     allow_local_network_access: bool,
                     text_mode_banner: str,
-                    accessKeys: {}, system_language: str,
+                    access_keys: {}, system_language: str,
                     max_like_count: int,
                     shared_items_federated_domains: [],
                     signing_priv_key_pem: str,
@@ -77,7 +77,7 @@ def html_moderation(css_cache: {}, defaultTimeline: str,
                          publish_button_at_top,
                          authorized, moderationActionStr, theme,
                          peertube_instances, allow_local_network_access,
-                         text_mode_banner, accessKeys, system_language,
+                         text_mode_banner, access_keys, system_language,
                          max_like_count, shared_items_federated_domains,
                          signing_priv_key_pem, cw_lists, lists_enabled)
 
@@ -95,14 +95,14 @@ def html_account_info(css_cache: {}, translate: {},
     msgStr1 = 'This account interacts with the following instances'
 
     infoForm = ''
-    cssFilename = base_dir + '/epicyon-profile.css'
+    css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
-        cssFilename = base_dir + '/epicyon.css'
+        css_filename = base_dir + '/epicyon.css'
 
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
     infoForm = \
-        html_header_with_external_style(cssFilename, instanceTitle, None)
+        html_header_with_external_style(css_filename, instanceTitle, None)
 
     searchNickname = get_nickname_from_actor(searchHandle)
     searchDomain, searchPort = get_domain_from_actor(searchHandle)
@@ -284,13 +284,13 @@ def html_moderation_info(css_cache: {}, translate: {},
         'Any blocks or suspensions made by moderators will be shown here.'
 
     infoForm = ''
-    cssFilename = base_dir + '/epicyon-profile.css'
+    css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
-        cssFilename = base_dir + '/epicyon.css'
+        css_filename = base_dir + '/epicyon.css'
 
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
-    infoForm = html_header_with_external_style(cssFilename,
+    infoForm = html_header_with_external_style(css_filename,
                                                instanceTitle, None)
 
     infoForm += \

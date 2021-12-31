@@ -17,7 +17,7 @@ from webapp_utils import html_footer
 
 
 def load_access_keys_for_accounts(base_dir: str, keyShortcuts: {},
-                                  accessKeysTemplate: {}) -> None:
+                                  access_keysTemplate: {}) -> None:
     """Loads key shortcuts for each account
     """
     for subdir, dirs, files in os.walk(base_dir + '/accounts'):
@@ -25,57 +25,57 @@ def load_access_keys_for_accounts(base_dir: str, keyShortcuts: {},
             if not is_account_dir(acct):
                 continue
             accountDir = os.path.join(base_dir + '/accounts', acct)
-            accessKeysFilename = accountDir + '/accessKeys.json'
-            if not os.path.isfile(accessKeysFilename):
+            access_keysFilename = accountDir + '/access_keys.json'
+            if not os.path.isfile(access_keysFilename):
                 continue
             nickname = acct.split('@')[0]
-            accessKeys = load_json(accessKeysFilename)
-            if accessKeys:
-                keyShortcuts[nickname] = accessKeysTemplate.copy()
-                for variableName, key in accessKeysTemplate.items():
-                    if accessKeys.get(variableName):
+            access_keys = load_json(access_keysFilename)
+            if access_keys:
+                keyShortcuts[nickname] = access_keysTemplate.copy()
+                for variableName, key in access_keysTemplate.items():
+                    if access_keys.get(variableName):
                         keyShortcuts[nickname][variableName] = \
-                            accessKeys[variableName]
+                            access_keys[variableName]
         break
 
 
 def html_access_keys(css_cache: {}, base_dir: str,
                      nickname: str, domain: str,
-                     translate: {}, accessKeys: {},
+                     translate: {}, access_keys: {},
                      defaultAccessKeys: {},
                      defaultTimeline: str) -> str:
     """Show and edit key shortcuts
     """
-    accessKeysFilename = \
-        acct_dir(base_dir, nickname, domain) + '/accessKeys.json'
-    if os.path.isfile(accessKeysFilename):
-        accessKeysFromFile = load_json(accessKeysFilename)
-        if accessKeysFromFile:
-            accessKeys = accessKeysFromFile
+    access_keysFilename = \
+        acct_dir(base_dir, nickname, domain) + '/access_keys.json'
+    if os.path.isfile(access_keysFilename):
+        access_keysFromFile = load_json(access_keysFilename)
+        if access_keysFromFile:
+            access_keys = access_keysFromFile
 
-    accessKeysForm = ''
-    cssFilename = base_dir + '/epicyon-profile.css'
+    access_keysForm = ''
+    css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
-        cssFilename = base_dir + '/epicyon.css'
+        css_filename = base_dir + '/epicyon.css'
 
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
-    accessKeysForm = \
-        html_header_with_external_style(cssFilename, instanceTitle, None)
-    accessKeysForm += '<div class="container">\n'
+    access_keysForm = \
+        html_header_with_external_style(css_filename, instanceTitle, None)
+    access_keysForm += '<div class="container">\n'
 
-    accessKeysForm += \
+    access_keysForm += \
         '    <h1>' + translate['Key Shortcuts'] + '</h1>\n'
-    accessKeysForm += \
+    access_keysForm += \
         '<p>' + translate['These access keys may be used'] + \
         '<label class="labels"></label></p>'
 
-    accessKeysForm += '  <form method="POST" action="' + \
+    access_keysForm += '  <form method="POST" action="' + \
         '/users/' + nickname + '/changeAccessKeys">\n'
 
-    timelineKey = accessKeys['menuTimeline']
-    submitKey = accessKeys['submitButton']
-    accessKeysForm += \
+    timelineKey = access_keys['menuTimeline']
+    submitKey = access_keys['submitButton']
+    access_keysForm += \
         '    <center>\n' + \
         '    <button type="submit" class="button" ' + \
         'name="submitAccessKeysCancel" accesskey="' + timelineKey + '">' + \
@@ -84,12 +84,12 @@ def html_access_keys(css_cache: {}, base_dir: str,
         'name="submitAccessKeys" accesskey="' + submitKey + '">' + \
         translate['Submit'] + '</button>\n    </center>\n'
 
-    accessKeysForm += '    <table class="accesskeys">\n'
-    accessKeysForm += '      <colgroup>\n'
-    accessKeysForm += '        <col span="1" class="accesskeys-left">\n'
-    accessKeysForm += '        <col span="1" class="accesskeys-center">\n'
-    accessKeysForm += '      </colgroup>\n'
-    accessKeysForm += '      <tbody>\n'
+    access_keysForm += '    <table class="accesskeys">\n'
+    access_keysForm += '      <colgroup>\n'
+    access_keysForm += '        <col span="1" class="accesskeys-left">\n'
+    access_keysForm += '        <col span="1" class="accesskeys-center">\n'
+    access_keysForm += '      </colgroup>\n'
+    access_keysForm += '      <tbody>\n'
 
     for variableName, key in defaultAccessKeys.items():
         if not translate.get(variableName):
@@ -98,8 +98,8 @@ def html_access_keys(css_cache: {}, base_dir: str,
         keyStr += \
             '<td><label class="labels">' + \
             translate[variableName] + '</label></td>'
-        if accessKeys.get(variableName):
-            key = accessKeys[variableName]
+        if access_keys.get(variableName):
+            key = access_keys[variableName]
         if len(key) > 1:
             key = key[0]
         keyStr += \
@@ -107,11 +107,11 @@ def html_access_keys(css_cache: {}, base_dir: str,
             'name="' + variableName.replace(' ', '_') + '" ' + \
             'value="' + key + '">'
         keyStr += '</td></tr>\n'
-        accessKeysForm += keyStr
+        access_keysForm += keyStr
 
-    accessKeysForm += '      </tbody>\n'
-    accessKeysForm += '    </table>\n'
-    accessKeysForm += '  </form>\n'
-    accessKeysForm += '</div>\n'
-    accessKeysForm += html_footer()
-    return accessKeysForm
+    access_keysForm += '      </tbody>\n'
+    access_keysForm += '    </table>\n'
+    access_keysForm += '  </form>\n'
+    access_keysForm += '</div>\n'
+    access_keysForm += html_footer()
+    return access_keysForm

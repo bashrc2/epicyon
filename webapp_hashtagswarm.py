@@ -203,13 +203,14 @@ def html_search_hashtag_category(css_cache: {}, translate: {},
 
     set_custom_background(base_dir, 'search-background', 'follow-background')
 
-    cssFilename = base_dir + '/epicyon-search.css'
+    css_filename = base_dir + '/epicyon-search.css'
     if os.path.isfile(base_dir + '/search.css'):
-        cssFilename = base_dir + '/search.css'
+        css_filename = base_dir + '/search.css'
 
     instanceTitle = \
         get_config_param(base_dir, 'instanceTitle')
-    htmlStr = html_header_with_external_style(cssFilename, instanceTitle, None)
+    htmlStr = \
+        html_header_with_external_style(css_filename, instanceTitle, None)
 
     # show a banner above the search box
     searchBannerFile, searchBannerFilename = \

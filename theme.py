@@ -397,13 +397,13 @@ def _set_background_format(base_dir: str, name: str,
     """
     if extension == 'jpg':
         return
-    cssFilename = base_dir + '/' + backgroundType + '.css'
-    if not os.path.isfile(cssFilename):
+    css_filename = base_dir + '/' + backgroundType + '.css'
+    if not os.path.isfile(css_filename):
         return
-    with open(cssFilename, 'r') as cssfile:
+    with open(css_filename, 'r') as cssfile:
         css = cssfile.read()
         css = css.replace('background.jpg', 'background.' + extension)
-        with open(cssFilename, 'w+') as cssfile2:
+        with open(css_filename, 'w+') as cssfile2:
             cssfile2.write(css)
 
 
@@ -594,9 +594,9 @@ def _set_theme_fonts(base_dir: str, theme_name: str) -> None:
 def get_text_mode_banner(base_dir: str) -> str:
     """Returns the banner used for shell browsers, like Lynx
     """
-    text_mode_bannerFilename = base_dir + '/accounts/banner.txt'
-    if os.path.isfile(text_mode_bannerFilename):
-        with open(text_mode_bannerFilename, 'r') as fp:
+    text_mode_banner_filename = base_dir + '/accounts/banner.txt'
+    if os.path.isfile(text_mode_banner_filename):
+        with open(text_mode_banner_filename, 'r') as fp:
             bannerStr = fp.read()
             if bannerStr:
                 return bannerStr.replace('\n', '<br>')
@@ -640,7 +640,7 @@ def _set_text_mode_theme(base_dir: str, name: str) -> None:
                   base_dir + '/accounts/logo.txt')
 
     # set the text mode banner which appears in browsers such as Lynx
-    text_mode_bannerFilename = \
+    text_mode_banner_filename = \
         base_dir + '/theme/' + name + '/banner.txt'
     if os.path.isfile(base_dir + '/accounts/banner.txt'):
         try:
@@ -648,13 +648,13 @@ def _set_text_mode_theme(base_dir: str, name: str) -> None:
         except OSError:
             print('EX: _set_text_mode_theme unable to delete ' +
                   base_dir + '/accounts/banner.txt')
-    if os.path.isfile(text_mode_bannerFilename):
+    if os.path.isfile(text_mode_banner_filename):
         try:
-            copyfile(text_mode_bannerFilename,
+            copyfile(text_mode_banner_filename,
                      base_dir + '/accounts/banner.txt')
         except OSError:
             print('EX: _set_text_mode_theme unable to copy ' +
-                  text_mode_bannerFilename + ' ' +
+                  text_mode_banner_filename + ' ' +
                   base_dir + '/accounts/banner.txt')
 
 
@@ -666,7 +666,7 @@ def _set_theme_images(base_dir: str, name: str) -> None:
 
     profileImageFilename = \
         base_dir + '/theme/' + theme_name_lower + '/image.png'
-    bannerFilename = \
+    banner_filename = \
         base_dir + '/theme/' + theme_name_lower + '/banner.png'
     searchBannerFilename = \
         base_dir + '/theme/' + theme_name_lower + '/search_banner.png'
@@ -721,7 +721,7 @@ def _set_theme_images(base_dir: str, name: str) -> None:
                                   backgroundType + '-background.' + ext)
 
             if os.path.isfile(profileImageFilename) and \
-               os.path.isfile(bannerFilename):
+               os.path.isfile(banner_filename):
                 try:
                     copyfile(profileImageFilename,
                              accountDir + '/image.png')
@@ -730,11 +730,11 @@ def _set_theme_images(base_dir: str, name: str) -> None:
                           profileImageFilename)
 
                 try:
-                    copyfile(bannerFilename,
+                    copyfile(banner_filename,
                              accountDir + '/banner.png')
                 except OSError:
                     print('EX: _set_theme_images unable to copy ' +
-                          bannerFilename)
+                          banner_filename)
 
                 try:
                     if os.path.isfile(searchBannerFilename):
