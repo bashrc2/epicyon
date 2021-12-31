@@ -31,7 +31,7 @@ from webapp_utils import get_broken_link_substitute
 from webapp_utils import html_keyboard_navigation
 
 
-def html_person_options(defaultTimeline: str,
+def html_person_options(default_timeline: str,
                         css_cache: {}, translate: {}, base_dir: str,
                         domain: str, domain_full: str,
                         originPathStr: str,
@@ -352,7 +352,7 @@ def html_person_options(defaultTimeline: str,
     optionsStr += optionsLinkStr
     backPath = '/'
     if nickname:
-        backPath = '/users/' + nickname + '/' + defaultTimeline
+        backPath = '/users/' + nickname + '/' + default_timeline
         if 'moderation' in backToPath:
             backPath = '/users/' + nickname + '/moderation'
     if authorized and originPathStr == '/users/' + nickname:

@@ -59,7 +59,7 @@ def get_right_column_content(base_dir: str, nickname: str, domain_full: str,
                              authorized: bool,
                              showHeaderImage: bool,
                              theme: str,
-                             defaultTimeline: str,
+                             default_timeline: str,
                              access_keys: {}) -> str:
     """Returns html content for the right column
     """
@@ -71,7 +71,7 @@ def get_right_column_content(base_dir: str, nickname: str, domain_full: str,
         # only show the publish button if logged in, otherwise replace it with
         # a login button
         titleStr = translate['Publish a blog article']
-        if defaultTimeline == 'tlfeatures':
+        if default_timeline == 'tlfeatures':
             titleStr = translate['Publish a news article']
         publishButtonStr = \
             '        <a href="' + \
@@ -174,7 +174,7 @@ def get_right_column_content(base_dir: str, nickname: str, domain_full: str,
     if showPublishButton:
         if show_publish_as_icon:
             titleStr = translate['Publish a blog article']
-            if defaultTimeline == 'tlfeatures':
+            if default_timeline == 'tlfeatures':
                 titleStr = translate['Publish a news article']
             htmlStr += \
                 '        <a href="' + \
@@ -330,7 +330,7 @@ def _html_newswire(base_dir: str, newswire: {}, nickname: str, moderator: bool,
 
 
 def html_citations(base_dir: str, nickname: str, domain: str,
-                   http_prefix: str, defaultTimeline: str,
+                   http_prefix: str, default_timeline: str,
                    translate: {}, newswire: {}, css_cache: {},
                    blogTitle: str, blogContent: str,
                    blogImageFilename: str,
@@ -456,7 +456,7 @@ def html_newswire_mobile(css_cache: {}, base_dir: str, nickname: str,
                          authorized: bool,
                          rss_icon_at_top: bool,
                          icons_as_buttons: bool,
-                         defaultTimeline: str,
+                         default_timeline: str,
                          theme: str,
                          access_keys: {}) -> str:
     """Shows the mobile version of the newswire right column
@@ -488,7 +488,7 @@ def html_newswire_mobile(css_cache: {}, base_dir: str, nickname: str,
     banner_file, banner_filename = \
         get_banner_file(base_dir, nickname, domain, theme)
     htmlStr += \
-        '<a href="/users/' + nickname + '/' + defaultTimeline + '" ' + \
+        '<a href="/users/' + nickname + '/' + default_timeline + '" ' + \
         'accesskey="' + access_keys['menuTimeline'] + '">' + \
         '<img loading="lazy" class="timeline-banner" ' + \
         'alt="' + translate['Timeline banner image'] + '" ' + \
@@ -508,7 +508,7 @@ def html_newswire_mobile(css_cache: {}, base_dir: str, nickname: str,
                                  False, timelinePath, showPublishButton,
                                  show_publish_as_icon, rss_icon_at_top, False,
                                  authorized, False, theme,
-                                 defaultTimeline, access_keys)
+                                 default_timeline, access_keys)
     if editor and not newswire:
         htmlStr += '<br><br><br>\n'
         htmlStr += '<center>\n  '
@@ -523,7 +523,7 @@ def html_newswire_mobile(css_cache: {}, base_dir: str, nickname: str,
 
 def html_edit_newswire(css_cache: {}, translate: {}, base_dir: str, path: str,
                        domain: str, port: int, http_prefix: str,
-                       defaultTimeline: str, theme: str,
+                       default_timeline: str, theme: str,
                        access_keys: {}) -> str:
     """Shows the edit newswire screen
     """
@@ -556,7 +556,8 @@ def html_edit_newswire(css_cache: {}, translate: {}, base_dir: str, path: str,
     # top banner
     editNewswireForm += \
         '<header>' + \
-        '<a href="/users/' + nickname + '/' + defaultTimeline + '" title="' + \
+        '<a href="/users/' + nickname + '/' + default_timeline + \
+        '" title="' + \
         translate['Switch to timeline view'] + '" alt="' + \
         translate['Switch to timeline view'] + '" ' + \
         'accesskey="' + access_keys['menuTimeline'] + '">\n'

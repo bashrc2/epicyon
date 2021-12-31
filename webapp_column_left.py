@@ -356,7 +356,7 @@ def html_links_mobile(css_cache: {}, base_dir: str,
                       timelinePath: str, authorized: bool,
                       rss_icon_at_top: bool,
                       icons_as_buttons: bool,
-                      defaultTimeline: str,
+                      default_timeline: str,
                       theme: str, access_keys: {},
                       shared_items_federated_domains: []) -> str:
     """Show the left column links within mobile view
@@ -385,7 +385,7 @@ def html_links_mobile(css_cache: {}, base_dir: str,
     banner_file, banner_filename = \
         get_banner_file(base_dir, nickname, domain, theme)
     html_str += \
-        '<a href="/users/' + nickname + '/' + defaultTimeline + '" ' + \
+        '<a href="/users/' + nickname + '/' + default_timeline + '" ' + \
         'accesskey="' + access_keys['menuTimeline'] + '">' + \
         '<img loading="lazy" class="timeline-banner" ' + \
         'alt="' + translate['Switch to timeline view'] + '" ' + \
@@ -418,7 +418,7 @@ def html_links_mobile(css_cache: {}, base_dir: str,
 
 def html_edit_links(css_cache: {}, translate: {}, base_dir: str, path: str,
                     domain: str, port: int, http_prefix: str,
-                    defaultTimeline: str, theme: str,
+                    default_timeline: str, theme: str,
                     access_keys: {}) -> str:
     """Shows the edit links screen
     """
@@ -451,7 +451,8 @@ def html_edit_links(css_cache: {}, translate: {}, base_dir: str, path: str,
     # top banner
     edit_links_form += \
         '<header>\n' + \
-        '<a href="/users/' + nickname + '/' + defaultTimeline + '" title="' + \
+        '<a href="/users/' + nickname + '/' + default_timeline + \
+        '" title="' + \
         translate['Switch to timeline view'] + '" alt="' + \
         translate['Switch to timeline view'] + '" ' + \
         'accesskey="' + access_keys['menuTimeline'] + '">\n'

@@ -70,7 +70,7 @@ def _html_new_post_drop_down(scopeIcon: str, scopeDescription: str,
                              replyStr: str,
                              translate: {},
                              showPublicOnDropdown: bool,
-                             defaultTimeline: str,
+                             default_timeline: str,
                              pathBase: str,
                              dropdownNewPostSuffix: str,
                              dropdownNewBlogSuffix: str,
@@ -105,7 +105,7 @@ def _html_new_post_drop_down(scopeIcon: str, scopeDescription: str,
             'icons/scope_public.png"/><b>' + \
             translate['Public'] + '</b><br>' + \
             translate['Visible to anyone'] + '</a></li>\n'
-        if defaultTimeline == 'tlfeatures':
+        if default_timeline == 'tlfeatures':
             dropDownContent += \
                 '<li><a href="' + pathBase + dropdownNewBlogSuffix + \
                 '" accesskey="' + access_keys['menuBlogs'] + '">' + \
@@ -193,7 +193,7 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
                   category: str,
                   nickname: str, domain: str,
                   domain_full: str,
-                  defaultTimeline: str, newswire: {},
+                  default_timeline: str, newswire: {},
                   theme: str, noDropDown: bool,
                   access_keys: {}, customSubmitText: str,
                   conversationId: str,
@@ -395,7 +395,7 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
     if path.endswith('/newblog'):
         placeholderSubject = translate['Title']
         scopeIcon = 'scope_blog.png'
-        if defaultTimeline != 'tlfeatures':
+        if default_timeline != 'tlfeatures':
             scopeDescription = translate['Blog']
         else:
             scopeDescription = translate['Article']
@@ -643,7 +643,8 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
 
     newPostForm += \
         '<header>\n' + \
-        '<a href="/users/' + nickname + '/' + defaultTimeline + '" title="' + \
+        '<a href="/users/' + nickname + '/' + default_timeline + \
+        '" title="' + \
         translate['Switch to timeline view'] + '" alt="' + \
         translate['Switch to timeline view'] + '" ' + \
         'accesskey="' + access_keys['menuTimeline'] + '">\n'
@@ -712,7 +713,7 @@ def html_new_post(css_cache: {}, media_instance: bool, translate: {},
                                      replyStr,
                                      translate,
                                      showPublicOnDropdown,
-                                     defaultTimeline,
+                                     default_timeline,
                                      pathBase,
                                      dropdownNewPostSuffix,
                                      dropdownNewBlogSuffix,

@@ -1504,7 +1504,7 @@ def html_show_share(base_dir: str, domain: str, nickname: str,
                     http_prefix: str, domain_full: str,
                     itemID: str, translate: {},
                     shared_items_federated_domains: [],
-                    defaultTimeline: str, theme: str,
+                    default_timeline: str, theme: str,
                     sharesFileType: str, category: str) -> str:
     """Shows an individual shared item after selecting it from the left column
     """
@@ -1562,7 +1562,7 @@ def html_show_share(base_dir: str, domain: str, nickname: str,
     shareStr = \
         '<header>\n' + \
         '<a href="/users/' + nickname + '/' + \
-        defaultTimeline + '" title="" alt="">\n'
+        default_timeline + '" title="" alt="">\n'
     shareStr += '<img loading="lazy" class="timeline-banner" ' + \
         'alt="" ' + \
         'src="/users/' + nickname + '/' + banner_file + '" /></a>\n' + \

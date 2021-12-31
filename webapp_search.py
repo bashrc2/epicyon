@@ -374,7 +374,7 @@ def html_search_emoji_text_entry(css_cache: {}, translate: {},
 
 def html_search(css_cache: {}, translate: {},
                 base_dir: str, path: str, domain: str,
-                defaultTimeline: str, theme: str,
+                default_timeline: str, theme: str,
                 text_mode_banner: str, access_keys: {}) -> str:
     """Search called from the timeline icon
     """
@@ -404,7 +404,7 @@ def html_search(css_cache: {}, translate: {},
         usersPath = '/users/' + searchNickname
         followStr += \
             '<header>\n' + text_mode_bannerStr + \
-            '<a href="' + usersPath + '/' + defaultTimeline + '" title="' + \
+            '<a href="' + usersPath + '/' + default_timeline + '" title="' + \
             translate['Switch to timeline view'] + '" alt="' + \
             translate['Switch to timeline view'] + '" ' + \
             'accesskey="' + timelineKey + '">\n'

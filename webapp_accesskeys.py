@@ -43,7 +43,7 @@ def html_access_keys(css_cache: {}, base_dir: str,
                      nickname: str, domain: str,
                      translate: {}, access_keys: {},
                      defaultAccessKeys: {},
-                     defaultTimeline: str) -> str:
+                     default_timeline: str) -> str:
     """Show and edit key shortcuts
     """
     access_keysFilename = \

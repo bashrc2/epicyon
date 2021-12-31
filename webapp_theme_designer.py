@@ -168,7 +168,7 @@ color_to_hex = {
 
 def html_theme_designer(css_cache: {}, base_dir: str,
                         nickname: str, domain: str,
-                        translate: {}, defaultTimeline: str,
+                        translate: {}, default_timeline: str,
                         theme_name: str, access_keys: {}) -> str:
     """Edit theme settings
     """
@@ -197,7 +197,7 @@ def html_theme_designer(css_cache: {}, base_dir: str,
     banner_file, banner_filename = \
         get_banner_file(base_dir, nickname, domain, theme_name)
     themeForm += \
-        '<a href="/users/' + nickname + '/' + defaultTimeline + '" ' + \
+        '<a href="/users/' + nickname + '/' + default_timeline + '" ' + \
         'accesskey="' + access_keys['menuTimeline'] + '">' + \
         '<img loading="lazy" class="timeline-banner" ' + \
         'title="' + translate['Switch to timeline view'] + '" ' + \

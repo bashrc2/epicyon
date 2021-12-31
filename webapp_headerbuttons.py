@@ -17,7 +17,7 @@ from happening import day_events_check
 from webapp_utils import html_highlight_label
 
 
-def header_buttons_timeline(defaultTimeline: str,
+def header_buttons_timeline(default_timeline: str,
                             boxName: str,
                             pageNumber: int,
                             translate: {},
@@ -54,20 +54,20 @@ def header_buttons_timeline(defaultTimeline: str,
     # start of the button header with inbox, outbox, etc
     tlStr = '<div class="containerHeader"><nav>\n'
     # first button
-    if defaultTimeline == 'tlmedia':
+    if default_timeline == 'tlmedia':
         tlStr += \
             '<a href="' + usersPath + '/tlmedia" tabindex="-1" ' + \
             'accesskey="' + access_keys['menuMedia'] + '"' + \
             '><button class="' + \
             mediaButton + '"><span>' + translate['Media'] + \
             '</span></button></a>'
-    elif defaultTimeline == 'tlblogs':
+    elif default_timeline == 'tlblogs':
         tlStr += \
             '<a href="' + usersPath + \
             '/tlblogs" tabindex="-1"><button class="' + \
             blogsButton + '"><span>' + translate['Blogs'] + \
             '</span></button></a>'
-    elif defaultTimeline == 'tlfeatures':
+    elif default_timeline == 'tlfeatures':
         tlStr += \
             '<a href="' + usersPath + \
             '/tlfeatures" tabindex="-1"><button class="' + \
@@ -82,7 +82,7 @@ def header_buttons_timeline(defaultTimeline: str,
 
     # if this is a news instance and we are viewing the news timeline
     featuresHeader = False
-    if defaultTimeline == 'tlfeatures' and boxName == 'tlfeatures':
+    if default_timeline == 'tlfeatures' and boxName == 'tlfeatures':
         featuresHeader = True
 
     if not featuresHeader:
@@ -102,7 +102,7 @@ def header_buttons_timeline(defaultTimeline: str,
                 '</span></button></a>'
 
     # typically the media button
-    if defaultTimeline != 'tlmedia':
+    if default_timeline != 'tlmedia':
         if not minimal and not featuresHeader:
             tlStr += \
                 '<a href="' + usersPath + '/tlmedia" tabindex="-1" ' + \
@@ -121,10 +121,10 @@ def header_buttons_timeline(defaultTimeline: str,
     if not featuresHeader:
         # typically the blogs button
         # but may change if this is a blogging oriented instance
-        if defaultTimeline != 'tlblogs':
+        if default_timeline != 'tlblogs':
             if not minimal:
                 titleStr = translate['Blogs']
-                if defaultTimeline == 'tlfeatures':
+                if default_timeline == 'tlfeatures':
                     titleStr = translate['Article']
                 tlStr += \
                     '<a href="' + usersPath + \
@@ -141,7 +141,7 @@ def header_buttons_timeline(defaultTimeline: str,
 
     # typically the news button
     # but may change if this is a news oriented instance
-    if defaultTimeline == 'tlfeatures':
+    if default_timeline == 'tlfeatures':
         if not featuresHeader:
             tlStr += \
                 '<a href="' + usersPath + \

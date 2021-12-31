@@ -844,35 +844,35 @@ class PubServer(BaseHTTPRequestHandler):
             self.send_header('ETag', '"' + etag + '"')
         self.end_headers()
 
-    def _set_headers_etag(self, mediaFilename: str, fileFormat: str,
+    def _set_headers_etag(self, media_filename: str, fileFormat: str,
                           data, cookie: str, calling_domain: str,
                           permissive: bool, lastModified: str) -> None:
         datalen = len(data)
         self._set_headers_base(fileFormat, datalen, cookie, calling_domain,
                                permissive)
         etag = None
-        if os.path.isfile(mediaFilename + '.etag'):
+        if os.path.isfile(media_filename + '.etag'):
             try:
-                with open(mediaFilename + '.etag', 'r') as etagFile:
+                with open(media_filename + '.etag', 'r') as etagFile:
                     etag = etagFile.read()
             except OSError:
                 print('EX: _set_headers_etag ' +
-                      'unable to read ' + mediaFilename + '.etag')
+                      'unable to read ' + media_filename + '.etag')
         if not etag:
             etag = md5(data).hexdigest()  # nosec
             try:
-                with open(mediaFilename + '.etag', 'w+') as etagFile:
+                with open(media_filename + '.etag', 'w+') as etagFile:
                     etagFile.write(etag)
             except OSError:
                 print('EX: _set_headers_etag ' +
-                      'unable to write ' + mediaFilename + '.etag')
+                      'unable to write ' + media_filename + '.etag')
         # if etag:
         #     self.send_header('ETag', '"' + etag + '"')
         if lastModified:
             self.send_header('last-modified', lastModified)
         self.end_headers()
 
-    def _etag_exists(self, mediaFilename: str) -> bool:
+    def _etag_exists(self, media_filename: str) -> bool:
         """Does an etag header exist for the given file?
         """
         etagHeader = 'If-None-Match'
@@ -883,15 +883,15 @@ class PubServer(BaseHTTPRequestHandler):
 
         if self.headers.get(etagHeader):
             oldEtag = self.headers[etagHeader].replace('"', '')
-            if os.path.isfile(mediaFilename + '.etag'):
+            if os.path.isfile(media_filename + '.etag'):
                 # load the etag from file
                 currEtag = ''
                 try:
-                    with open(mediaFilename + '.etag', 'r') as etagFile:
+                    with open(media_filename + '.etag', 'r') as etagFile:
                         currEtag = etagFile.read()
                 except OSError:
                     print('EX: _etag_exists unable to read ' +
-                          str(mediaFilename))
+                          str(media_filename))
                 if currEtag and oldEtag == currEtag:
                     # The file has not changed
                     return True
@@ -1813,20 +1813,20 @@ class PubServer(BaseHTTPRequestHandler):
                                            onion_domain +
                                            '/users/' +
                                            loginNickname + '/' +
-                                           self.server.defaultTimeline,
+                                           self.server.default_timeline,
                                            cookieStr, calling_domain)
                 elif (calling_domain.endswith('.i2p') and i2p_domain):
                     self._redirect_headers('http://' +
                                            i2p_domain +
                                            '/users/' +
                                            loginNickname + '/' +
-                                           self.server.defaultTimeline,
+                                           self.server.default_timeline,
                                            cookieStr, calling_domain)
                 else:
                     self._redirect_headers(http_prefix + '://' +
                                            domain_full + '/users/' +
                                            loginNickname + '/' +
-                                           self.server.defaultTimeline,
+                                           self.server.default_timeline,
                                            cookieStr, calling_domain)
                 self.server.POSTbusy = False
                 return
@@ -1970,10 +1970,10 @@ class PubServer(BaseHTTPRequestHandler):
                     if moderationText.startswith('http') or \
                        moderationText.startswith('hyper'):
                         # https://domain
-                        blockDomain, blockPort = \
+                        block_domain, blockPort = \
                             get_domain_from_actor(moderationText)
                         fullBlockDomain = \
-                            get_full_domain(blockDomain, blockPort)
+                            get_full_domain(block_domain, blockPort)
                     if '@' in moderationText:
                         # nick@domain or *@domain
                         fullBlockDomain = moderationText.split('@')[1]
@@ -1989,10 +1989,10 @@ class PubServer(BaseHTTPRequestHandler):
                     if moderationText.startswith('http') or \
                        moderationText.startswith('hyper'):
                         # https://domain
-                        blockDomain, blockPort = \
+                        block_domain, blockPort = \
                             get_domain_from_actor(moderationText)
                         fullBlockDomain = \
-                            get_full_domain(blockDomain, blockPort)
+                            get_full_domain(block_domain, blockPort)
                     if '@' in moderationText:
                         # nick@domain or *@domain
                         fullBlockDomain = moderationText.split('@')[1]
@@ -2050,13 +2050,13 @@ class PubServer(BaseHTTPRequestHandler):
                        domain: str, domain_full: str, port: int,
                        onion_domain: str, i2p_domain: str,
                        debug: bool, access_keys: {},
-                       defaultTimeline: str) -> None:
+                       default_timeline: str) -> None:
         """Receive POST from webapp_accesskeys
         """
         usersPath = '/users/' + nickname
         originPathStr = \
             http_prefix + '://' + domain_full + usersPath + '/' + \
-            defaultTimeline
+            default_timeline
         length = int(self.headers['Content-length'])
 
         try:
@@ -2088,10 +2088,10 @@ class PubServer(BaseHTTPRequestHandler):
             if calling_domain.endswith('.onion') and onion_domain:
                 originPathStr = \
                     'http://' + onion_domain + usersPath + '/' + \
-                    defaultTimeline
+                    default_timeline
             elif calling_domain.endswith('.i2p') and i2p_domain:
                 originPathStr = \
-                    'http://' + i2p_domain + usersPath + '/' + defaultTimeline
+                    'http://' + i2p_domain + usersPath + '/' + default_timeline
             self._redirect_headers(originPathStr, cookie, calling_domain)
             self.server.POSTbusy = False
             return
@@ -2124,10 +2124,10 @@ class PubServer(BaseHTTPRequestHandler):
         # redirect back from key shortcuts screen
         if calling_domain.endswith('.onion') and onion_domain:
             originPathStr = \
-                'http://' + onion_domain + usersPath + '/' + defaultTimeline
+                'http://' + onion_domain + usersPath + '/' + default_timeline
         elif calling_domain.endswith('.i2p') and i2p_domain:
             originPathStr = \
-                'http://' + i2p_domain + usersPath + '/' + defaultTimeline
+                'http://' + i2p_domain + usersPath + '/' + default_timeline
         self._redirect_headers(originPathStr, cookie, calling_domain)
         self.server.POSTbusy = False
         return
@@ -2138,7 +2138,7 @@ class PubServer(BaseHTTPRequestHandler):
                              domain: str, domain_full: str, port: int,
                              onion_domain: str, i2p_domain: str,
                              debug: bool, access_keys: {},
-                             defaultTimeline: str, theme_name: str,
+                             default_timeline: str, theme_name: str,
                              allow_local_network_access: bool,
                              system_language: str) -> None:
         """Receive POST from webapp_theme_designer
@@ -2146,7 +2146,7 @@ class PubServer(BaseHTTPRequestHandler):
         usersPath = '/users/' + nickname
         originPathStr = \
             http_prefix + '://' + domain_full + usersPath + '/' + \
-            defaultTimeline
+            default_timeline
         length = int(self.headers['Content-length'])
 
         try:
@@ -2184,10 +2184,10 @@ class PubServer(BaseHTTPRequestHandler):
             if calling_domain.endswith('.onion') and onion_domain:
                 originPathStr = \
                     'http://' + onion_domain + usersPath + '/' + \
-                    defaultTimeline
+                    default_timeline
             elif calling_domain.endswith('.i2p') and i2p_domain:
                 originPathStr = \
-                    'http://' + i2p_domain + usersPath + '/' + defaultTimeline
+                    'http://' + i2p_domain + usersPath + '/' + default_timeline
             self._redirect_headers(originPathStr, cookie, calling_domain)
             self.server.POSTbusy = False
             return
@@ -2259,10 +2259,10 @@ class PubServer(BaseHTTPRequestHandler):
         # redirect back from theme designer screen
         if calling_domain.endswith('.onion') and onion_domain:
             originPathStr = \
-                'http://' + onion_domain + usersPath + '/' + defaultTimeline
+                'http://' + onion_domain + usersPath + '/' + default_timeline
         elif calling_domain.endswith('.i2p') and i2p_domain:
             originPathStr = \
-                'http://' + i2p_domain + usersPath + '/' + defaultTimeline
+                'http://' + i2p_domain + usersPath + '/' + default_timeline
         self._redirect_headers(originPathStr, cookie, calling_domain)
         self.server.POSTbusy = False
         return
@@ -2403,7 +2403,7 @@ class PubServer(BaseHTTPRequestHandler):
                          domain,
                          handle, petname)
             usersPathStr = \
-                usersPath + '/' + self.server.defaultTimeline + \
+                usersPath + '/' + self.server.default_timeline + \
                 '?page=' + str(page_number)
             self._redirect_headers(usersPathStr, cookie,
                                    calling_domain)
@@ -2423,7 +2423,7 @@ class PubServer(BaseHTTPRequestHandler):
                              domain,
                              handle, personNotes)
             usersPathStr = \
-                usersPath + '/' + self.server.defaultTimeline + \
+                usersPath + '/' + self.server.default_timeline + \
                 '?page=' + str(page_number)
             self._redirect_headers(usersPathStr, cookie,
                                    calling_domain)
@@ -2451,7 +2451,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             optionsNickname,
                                             optionsDomainFull)
             usersPathStr = \
-                usersPath + '/' + self.server.defaultTimeline + \
+                usersPath + '/' + self.server.default_timeline + \
                 '?page=' + str(page_number)
             self._redirect_headers(usersPathStr, cookie,
                                    calling_domain)
@@ -2479,7 +2479,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       optionsNickname,
                                       optionsDomainFull)
             usersPathStr = \
-                usersPath + '/' + self.server.defaultTimeline + \
+                usersPath + '/' + self.server.default_timeline + \
                 '?page=' + str(page_number)
             self._redirect_headers(usersPathStr, cookie,
                                    calling_domain)
@@ -2524,7 +2524,7 @@ class PubServer(BaseHTTPRequestHandler):
                         if nwWritten:
                             refresh_newswire(self.server.base_dir)
             usersPathStr = \
-                usersPath + '/' + self.server.defaultTimeline + \
+                usersPath + '/' + self.server.default_timeline + \
                 '?page=' + str(page_number)
             self._redirect_headers(usersPathStr, cookie,
                                    calling_domain)
@@ -2570,7 +2570,7 @@ class PubServer(BaseHTTPRequestHandler):
                         if featWritten:
                             refresh_newswire(self.server.base_dir)
             usersPathStr = \
-                usersPath + '/' + self.server.defaultTimeline + \
+                usersPath + '/' + self.server.default_timeline + \
                 '?page=' + str(page_number)
             self._redirect_headers(usersPathStr, cookie,
                                    calling_domain)
@@ -2610,7 +2610,7 @@ class PubServer(BaseHTTPRequestHandler):
                         except OSError:
                             print('EX: unable to write ' + nwFilename)
             usersPathStr = \
-                usersPath + '/' + self.server.defaultTimeline + \
+                usersPath + '/' + self.server.default_timeline + \
                 '?page=' + str(page_number)
             self._redirect_headers(usersPathStr, cookie,
                                    calling_domain)
@@ -2715,7 +2715,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 chooserNickname,
                                 domain,
                                 domain_full,
-                                self.server.defaultTimeline,
+                                self.server.default_timeline,
                                 self.server.newswire,
                                 self.server.theme_name,
                                 True, access_keys,
@@ -2739,7 +2739,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.signing_priv_key_pem,
                                 self.server.cw_lists,
                                 self.server.lists_enabled,
-                                self.server.defaultTimeline).encode('utf-8')
+                                self.server.default_timeline).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
                               cookie, calling_domain, False)
@@ -2792,7 +2792,7 @@ class PubServer(BaseHTTPRequestHandler):
                 elif (calling_domain.endswith('.i2p') and i2p_domain):
                     thisActor = 'http://' + i2p_domain + usersPath
                 actorPathStr = \
-                    thisActor + '/' + self.server.defaultTimeline + \
+                    thisActor + '/' + self.server.default_timeline + \
                     '?page=' + str(page_number)
                 self._redirect_headers(actorPathStr, cookie,
                                        calling_domain)
@@ -2815,7 +2815,7 @@ class PubServer(BaseHTTPRequestHandler):
                 elif (calling_domain.endswith('.i2p') and i2p_domain):
                     thisActor = 'http://' + i2p_domain + usersPath
                 actorPathStr = \
-                    thisActor + '/' + self.server.defaultTimeline + \
+                    thisActor + '/' + self.server.default_timeline + \
                     '?page=' + str(page_number)
                 self._redirect_headers(actorPathStr, cookie,
                                        calling_domain)
@@ -2849,7 +2849,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 chooserNickname,
                                 domain,
                                 domain_full,
-                                self.server.defaultTimeline,
+                                self.server.default_timeline,
                                 self.server.newswire,
                                 self.server.theme_name,
                                 True, access_keys,
@@ -2873,7 +2873,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.signing_priv_key_pem,
                                 self.server.cw_lists,
                                 self.server.lists_enabled,
-                                self.server.defaultTimeline).encode('utf-8')
+                                self.server.default_timeline).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
                               cookie, calling_domain, False)
@@ -3282,7 +3282,7 @@ class PubServer(BaseHTTPRequestHandler):
         if 'submitBack=' in searchParams:
             # go back on search screen
             self._redirect_headers(actorStr + '/' +
-                                   self.server.defaultTimeline,
+                                   self.server.default_timeline,
                                    cookie, calling_domain)
             self.server.POSTbusy = False
             return
@@ -3586,7 +3586,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                   yt_replace_domain,
                                                   twitter_replacement_domain,
                                                   show_published_date_only,
-                                                  self.server.defaultTimeline,
+                                                  self.server.default_timeline,
                                                   peertube_instances,
                                                   allow_local_network_access,
                                                   self.server.theme_name,
@@ -3680,7 +3680,7 @@ class PubServer(BaseHTTPRequestHandler):
                     return
         actorStr = self._get_instance_url(calling_domain) + usersPath
         self._redirect_headers(actorStr + '/' +
-                               self.server.defaultTimeline,
+                               self.server.default_timeline,
                                cookie, calling_domain)
         self.server.POSTbusy = False
 
@@ -3711,7 +3711,7 @@ class PubServer(BaseHTTPRequestHandler):
             elif (calling_domain.endswith('.i2p') and i2p_domain):
                 actor = 'http://' + i2p_domain + usersPath
             actorPathStr = \
-                actor + '/' + self.server.defaultTimeline + \
+                actor + '/' + self.server.default_timeline + \
                 '?page=' + str(page_number)
             self._redirect_headers(actorPathStr,
                                    cookie, calling_domain)
@@ -3763,7 +3763,7 @@ class PubServer(BaseHTTPRequestHandler):
         elif (calling_domain.endswith('.i2p') and i2p_domain):
             actor = 'http://' + i2p_domain + usersPath
         actorPathStr = \
-            actor + '/' + self.server.defaultTimeline + \
+            actor + '/' + self.server.default_timeline + \
             '?page=' + str(page_number)
         self._redirect_headers(actorPathStr, cookie,
                                calling_domain)
@@ -3818,17 +3818,17 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy = False
             return
 
-        mediaFilenameBase = accountsDir + '/upload'
-        mediaFilename = \
-            mediaFilenameBase + '.' + \
+        media_filenameBase = accountsDir + '/upload'
+        media_filename = \
+            media_filenameBase + '.' + \
             get_image_extension_from_mime_type(self.headers['Content-type'])
         try:
-            with open(mediaFilename, 'wb') as avFile:
+            with open(media_filename, 'wb') as avFile:
                 avFile.write(mediaBytes)
         except OSError:
-            print('EX: unable to write ' + mediaFilename)
+            print('EX: unable to write ' + media_filename)
         if debug:
-            print('DEBUG: image saved to ' + mediaFilename)
+            print('DEBUG: image saved to ' + media_filename)
         self.send_response(201)
         self.end_headers()
         self.server.POSTbusy = False
@@ -4073,7 +4073,7 @@ class PubServer(BaseHTTPRequestHandler):
                       base_dir: str, http_prefix: str,
                       domain: str, domain_full: str,
                       onion_domain: str, i2p_domain: str, debug: bool,
-                      defaultTimeline: str,
+                      default_timeline: str,
                       allow_local_network_access: bool) -> None:
         """Updates the left links column of the timeline
         """
@@ -4205,7 +4205,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   TOSFilename)
 
         # redirect back to the default timeline
-        self._redirect_headers(actorStr + '/' + defaultTimeline,
+        self._redirect_headers(actorStr + '/' + default_timeline,
                                cookie, calling_domain)
         self.server.POSTbusy = False
 
@@ -4214,7 +4214,7 @@ class PubServer(BaseHTTPRequestHandler):
                               base_dir: str, http_prefix: str,
                               domain: str, domain_full: str,
                               onion_domain: str, i2p_domain: str, debug: bool,
-                              defaultTimeline: str,
+                              default_timeline: str,
                               allow_local_network_access: bool) -> None:
         """On the screen after selecting a hashtag from the swarm, this sets
         the category for that tag
@@ -4316,7 +4316,7 @@ class PubServer(BaseHTTPRequestHandler):
                          base_dir: str, http_prefix: str,
                          domain: str, domain_full: str,
                          onion_domain: str, i2p_domain: str, debug: bool,
-                         defaultTimeline: str) -> None:
+                         default_timeline: str) -> None:
         """Updates the right newswire column of the timeline
         """
         usersPath = path.replace('/newswiredata', '')
@@ -4462,7 +4462,7 @@ class PubServer(BaseHTTPRequestHandler):
                               newswireTrustedFilename)
 
         # redirect back to the default timeline
-        self._redirect_headers(actorStr + '/' + defaultTimeline,
+        self._redirect_headers(actorStr + '/' + default_timeline,
                                cookie, calling_domain)
         self.server.POSTbusy = False
 
@@ -4471,7 +4471,7 @@ class PubServer(BaseHTTPRequestHandler):
                           base_dir: str, http_prefix: str,
                           domain: str, domain_full: str,
                           onion_domain: str, i2p_domain: str, debug: bool,
-                          defaultTimeline: str,
+                          default_timeline: str,
                           newswire: {}) -> None:
         """Updates the citations for a blog post after hitting
         update button on the citations screen
@@ -4561,7 +4561,7 @@ class PubServer(BaseHTTPRequestHandler):
                         base_dir: str, http_prefix: str,
                         domain: str, domain_full: str,
                         onion_domain: str, i2p_domain: str, debug: bool,
-                        defaultTimeline: str) -> None:
+                        default_timeline: str) -> None:
         """edits a news post after receiving POST
         """
         usersPath = path.replace('/newseditdata', '')
@@ -4874,7 +4874,7 @@ class PubServer(BaseHTTPRequestHandler):
                 checkNameAndBio = True
                 redirectPath = '/welcome_final'
             elif 'name="welcomeCompleteButton"' in postBytesStr:
-                redirectPath = '/' + self.server.defaultTimeline
+                redirectPath = '/' + self.server.default_timeline
                 welcome_screen_is_complete(self.server.base_dir, nickname,
                                            self.server.domain)
                 onFinalWelcomeScreen = True
@@ -5067,12 +5067,12 @@ class PubServer(BaseHTTPRequestHandler):
                         # change media instance status
                         if fields.get('mediaInstance'):
                             self.server.media_instance = False
-                            self.server.defaultTimeline = 'inbox'
+                            self.server.default_timeline = 'inbox'
                             if fields['mediaInstance'] == 'on':
                                 self.server.media_instance = True
                                 self.server.blogs_instance = False
                                 self.server.news_instance = False
-                                self.server.defaultTimeline = 'tlmedia'
+                                self.server.default_timeline = 'tlmedia'
                             set_config_param(base_dir, "mediaInstance",
                                              self.server.media_instance)
                             set_config_param(base_dir, "blogsInstance",
@@ -5082,7 +5082,7 @@ class PubServer(BaseHTTPRequestHandler):
                         else:
                             if self.server.media_instance:
                                 self.server.media_instance = False
-                                self.server.defaultTimeline = 'inbox'
+                                self.server.default_timeline = 'inbox'
                                 set_config_param(base_dir, "mediaInstance",
                                                  self.server.media_instance)
 
@@ -5094,12 +5094,12 @@ class PubServer(BaseHTTPRequestHandler):
                         # change news instance status
                         if fields.get('newsInstance'):
                             self.server.news_instance = False
-                            self.server.defaultTimeline = 'inbox'
+                            self.server.default_timeline = 'inbox'
                             if fields['newsInstance'] == 'on':
                                 self.server.news_instance = True
                                 self.server.blogs_instance = False
                                 self.server.media_instance = False
-                                self.server.defaultTimeline = 'tlfeatures'
+                                self.server.default_timeline = 'tlfeatures'
                             set_config_param(base_dir, "mediaInstance",
                                              self.server.media_instance)
                             set_config_param(base_dir, "blogsInstance",
@@ -5109,19 +5109,19 @@ class PubServer(BaseHTTPRequestHandler):
                         else:
                             if self.server.news_instance:
                                 self.server.news_instance = False
-                                self.server.defaultTimeline = 'inbox'
+                                self.server.default_timeline = 'inbox'
                                 set_config_param(base_dir, "newsInstance",
                                                  self.server.media_instance)
 
                         # change blog instance status
                         if fields.get('blogsInstance'):
                             self.server.blogs_instance = False
-                            self.server.defaultTimeline = 'inbox'
+                            self.server.default_timeline = 'inbox'
                             if fields['blogsInstance'] == 'on':
                                 self.server.blogs_instance = True
                                 self.server.media_instance = False
                                 self.server.news_instance = False
-                                self.server.defaultTimeline = 'tlblogs'
+                                self.server.default_timeline = 'tlblogs'
                             set_config_param(base_dir, "blogsInstance",
                                              self.server.blogs_instance)
                             set_config_param(base_dir, "mediaInstance",
@@ -5131,7 +5131,7 @@ class PubServer(BaseHTTPRequestHandler):
                         else:
                             if self.server.blogs_instance:
                                 self.server.blogs_instance = False
-                                self.server.defaultTimeline = 'inbox'
+                                self.server.default_timeline = 'inbox'
                                 set_config_param(base_dir, "blogsInstance",
                                                  self.server.blogs_instance)
 
@@ -7162,7 +7162,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.server.keyShortcuts.get(nickname):
                     access_keys = self.server.keyShortcuts[nickname]
             msg = \
-                html_person_options(self.server.defaultTimeline,
+                html_person_options(self.server.default_timeline,
                                     self.server.css_cache,
                                     self.server.translate,
                                     base_dir, domain,
@@ -7221,28 +7221,28 @@ class PubServer(BaseHTTPRequestHandler):
            path_is_video(path) or \
            path_is_audio(path):
             mediaStr = path.split('/media/')[1]
-            mediaFilename = base_dir + '/media/' + mediaStr
-            if os.path.isfile(mediaFilename):
-                if self._etag_exists(mediaFilename):
+            media_filename = base_dir + '/media/' + mediaStr
+            if os.path.isfile(media_filename):
+                if self._etag_exists(media_filename):
                     # The file has not changed
                     self._304()
                     return
 
-                mediaFileType = media_file_mime_type(mediaFilename)
+                mediaFileType = media_file_mime_type(media_filename)
 
-                t = os.path.getmtime(mediaFilename)
+                t = os.path.getmtime(media_filename)
                 lastModifiedTime = datetime.datetime.fromtimestamp(t)
                 lastModifiedTimeStr = \
                     lastModifiedTime.strftime('%a, %d %b %Y %H:%M:%S GMT')
 
                 mediaBinary = None
                 try:
-                    with open(mediaFilename, 'rb') as avFile:
+                    with open(media_filename, 'rb') as avFile:
                         mediaBinary = avFile.read()
                 except OSError:
-                    print('EX: unable to read media binary ' + mediaFilename)
+                    print('EX: unable to read media binary ' + media_filename)
                 if mediaBinary:
-                    self._set_headers_etag(mediaFilename, mediaFileType,
+                    self._set_headers_etag(media_filename, mediaFileType,
                                            mediaBinary, None,
                                            None, True,
                                            lastModifiedTimeStr)
@@ -7350,16 +7350,16 @@ class PubServer(BaseHTTPRequestHandler):
         else:
             theme = mediaStr.split('/')[0]
             iconFilename = mediaStr.split('/')[1]
-        mediaFilename = \
+        media_filename = \
             base_dir + '/theme/' + theme + '/icons/' + iconFilename
-        if self._etag_exists(mediaFilename):
+        if self._etag_exists(media_filename):
             # The file has not changed
             self._304()
             return
         if self.server.iconsCache.get(mediaStr):
             mediaBinary = self.server.iconsCache[mediaStr]
-            mimeTypeStr = media_file_mime_type(mediaFilename)
-            self._set_headers_etag(mediaFilename,
+            mimeTypeStr = media_file_mime_type(media_filename)
+            self._set_headers_etag(media_filename,
                                    mimeTypeStr,
                                    mediaBinary, None,
                                    self.server.domain_full,
@@ -7369,16 +7369,16 @@ class PubServer(BaseHTTPRequestHandler):
                                 '_GET', '_show_icon', self.server.debug)
             return
         else:
-            if os.path.isfile(mediaFilename):
+            if os.path.isfile(media_filename):
                 mediaBinary = None
                 try:
-                    with open(mediaFilename, 'rb') as avFile:
+                    with open(media_filename, 'rb') as avFile:
                         mediaBinary = avFile.read()
                 except OSError:
-                    print('EX: unable to read icon image ' + mediaFilename)
+                    print('EX: unable to read icon image ' + media_filename)
                 if mediaBinary:
-                    mimeType = media_file_mime_type(mediaFilename)
-                    self._set_headers_etag(mediaFilename,
+                    mimeType = media_file_mime_type(media_filename)
+                    self._set_headers_etag(media_filename,
                                            mimeType,
                                            mediaBinary, None,
                                            self.server.domain_full,
@@ -7406,26 +7406,26 @@ class PubServer(BaseHTTPRequestHandler):
         else:
             theme = mediaStr.split('/')[0]
             iconFilename = mediaStr.split('/')[1]
-        mediaFilename = \
+        media_filename = \
             base_dir + '/theme/' + theme + '/helpimages/' + iconFilename
         # if there is no theme-specific help image then use the default one
-        if not os.path.isfile(mediaFilename):
-            mediaFilename = \
+        if not os.path.isfile(media_filename):
+            media_filename = \
                 base_dir + '/theme/default/helpimages/' + iconFilename
-        if self._etag_exists(mediaFilename):
+        if self._etag_exists(media_filename):
             # The file has not changed
             self._304()
             return
-        if os.path.isfile(mediaFilename):
+        if os.path.isfile(media_filename):
             mediaBinary = None
             try:
-                with open(mediaFilename, 'rb') as avFile:
+                with open(media_filename, 'rb') as avFile:
                     mediaBinary = avFile.read()
             except OSError:
-                print('EX: unable to read help image ' + mediaFilename)
+                print('EX: unable to read help image ' + media_filename)
             if mediaBinary:
-                mimeType = media_file_mime_type(mediaFilename)
-                self._set_headers_etag(mediaFilename,
+                mimeType = media_file_mime_type(media_filename)
+                self._set_headers_etag(media_filename,
                                        mimeType,
                                        mediaBinary, None,
                                        self.server.domain_full,
@@ -7489,21 +7489,21 @@ class PubServer(BaseHTTPRequestHandler):
                             base_dir: str, GETstartTime) -> None:
         """Shows an avatar image obtained from the cache
         """
-        mediaFilename = base_dir + '/cache' + path
-        if os.path.isfile(mediaFilename):
-            if self._etag_exists(mediaFilename):
+        media_filename = base_dir + '/cache' + path
+        if os.path.isfile(media_filename):
+            if self._etag_exists(media_filename):
                 # The file has not changed
                 self._304()
                 return
             mediaBinary = None
             try:
-                with open(mediaFilename, 'rb') as avFile:
+                with open(media_filename, 'rb') as avFile:
                     mediaBinary = avFile.read()
             except OSError:
-                print('EX: unable to read cached avatar ' + mediaFilename)
+                print('EX: unable to read cached avatar ' + media_filename)
             if mediaBinary:
-                mimeType = media_file_mime_type(mediaFilename)
-                self._set_headers_etag(mediaFilename,
+                mimeType = media_file_mime_type(media_filename)
+                self._set_headers_etag(media_filename,
                                        mimeType,
                                        mediaBinary, None,
                                        refererDomain,
@@ -7995,7 +7995,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         originPathStrAbsolute = \
             http_prefix + '://' + domain_full + originPathStr + '/' + \
-            self.server.defaultTimeline
+            self.server.default_timeline
         if calling_domain.endswith('.onion') and onion_domain:
             originPathStrAbsolute = \
                 'http://' + onion_domain + originPathStr
@@ -8049,7 +8049,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         originPathStrAbsolute = \
             http_prefix + '://' + domain_full + originPathStr + '/' + \
-            self.server.defaultTimeline
+            self.server.default_timeline
         if calling_domain.endswith('.onion') and onion_domain:
             originPathStrAbsolute = \
                 'http://' + onion_domain + originPathStr
@@ -9166,7 +9166,7 @@ class PubServer(BaseHTTPRequestHandler):
         deleteUrl = path.split('?delete=')[1]
         if '?' in deleteUrl:
             deleteUrl = deleteUrl.split('?')[0]
-        timelineStr = self.server.defaultTimeline
+        timelineStr = self.server.default_timeline
         if '?tl=' in path:
             timelineStr = path.split('?tl=')[1]
             if '?' in timelineStr:
@@ -9258,7 +9258,7 @@ class PubServer(BaseHTTPRequestHandler):
             if '?' in timelineBookmark:
                 timelineBookmark = timelineBookmark.split('?')[0]
             timelineBookmark = '#' + timelineBookmark
-        timelineStr = self.server.defaultTimeline
+        timelineStr = self.server.default_timeline
         if '?tl=' in path:
             timelineStr = path.split('?tl=')[1]
             if '?' in timelineStr:
@@ -9369,7 +9369,7 @@ class PubServer(BaseHTTPRequestHandler):
             if '?' in timelineBookmark:
                 timelineBookmark = timelineBookmark.split('?')[0]
             timelineBookmark = '#' + timelineBookmark
-        timelineStr = self.server.defaultTimeline
+        timelineStr = self.server.default_timeline
         if '?tl=' in path:
             timelineStr = path.split('?tl=')[1]
             if '?' in timelineStr:
@@ -9711,8 +9711,8 @@ class PubServer(BaseHTTPRequestHandler):
                     person_lookup(domain, path.replace('/roles', ''),
                                   base_dir)
                 if getPerson:
-                    defaultTimeline = \
-                        self.server.defaultTimeline
+                    default_timeline = \
+                        self.server.default_timeline
                     recent_posts_cache = \
                         self.server.recent_posts_cache
                     cached_webfingers = \
@@ -9739,7 +9739,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.rss_icon_at_top,
                                      self.server.css_cache,
                                      icons_as_buttons,
-                                     defaultTimeline,
+                                     default_timeline,
                                      recent_posts_cache,
                                      self.server.max_recent_posts,
                                      self.server.translate,
@@ -9818,8 +9818,8 @@ class PubServer(BaseHTTPRequestHandler):
                                               path.replace('/skills', ''),
                                               base_dir)
                             if getPerson:
-                                defaultTimeline =  \
-                                    self.server.defaultTimeline
+                                default_timeline =  \
+                                    self.server.default_timeline
                                 recent_posts_cache = \
                                     self.server.recent_posts_cache
                                 cached_webfingers = \
@@ -9857,7 +9857,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                  self.server.rss_icon_at_top,
                                                  self.server.css_cache,
                                                  icons_as_buttons,
-                                                 defaultTimeline,
+                                                 default_timeline,
                                                  recent_posts_cache,
                                                  self.server.max_recent_posts,
                                                  self.server.translate,
@@ -10203,7 +10203,7 @@ class PubServer(BaseHTTPRequestHandler):
                     proxy_type: str, cookie: str,
                     debug: str,
                     recent_posts_cache: {}, session,
-                    defaultTimeline: str,
+                    default_timeline: str,
                     max_recent_posts: int,
                     translate: {},
                     cached_webfingers: {},
@@ -10279,7 +10279,7 @@ class PubServer(BaseHTTPRequestHandler):
                         allow_local_network_access = \
                             self.server.allow_local_network_access
                         msg = html_inbox(self.server.css_cache,
-                                         defaultTimeline,
+                                         default_timeline,
                                          recent_posts_cache,
                                          max_recent_posts,
                                          translate,
@@ -10434,7 +10434,7 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.show_published_date_only
                         msg = \
                             html_inbox_d_ms(self.server.css_cache,
-                                            self.server.defaultTimeline,
+                                            self.server.default_timeline,
                                             self.server.recent_posts_cache,
                                             self.server.max_recent_posts,
                                             self.server.translate,
@@ -10581,7 +10581,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.show_published_date_only
                     msg = \
                         html_inbox_replies(self.server.css_cache,
-                                           self.server.defaultTimeline,
+                                           self.server.default_timeline,
                                            self.server.recent_posts_cache,
                                            self.server.max_recent_posts,
                                            self.server.translate,
@@ -10725,7 +10725,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.twitter_replacement_domain
                     msg = \
                         html_inbox_media(self.server.css_cache,
-                                         self.server.defaultTimeline,
+                                         self.server.default_timeline,
                                          self.server.recent_posts_cache,
                                          self.server.max_recent_posts,
                                          self.server.translate,
@@ -10870,7 +10870,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.twitter_replacement_domain
                     msg = \
                         html_inbox_blogs(self.server.css_cache,
-                                         self.server.defaultTimeline,
+                                         self.server.default_timeline,
                                          self.server.recent_posts_cache,
                                          self.server.max_recent_posts,
                                          self.server.translate,
@@ -11023,7 +11023,7 @@ class PubServer(BaseHTTPRequestHandler):
 
                     msg = \
                         html_inbox_news(self.server.css_cache,
-                                        self.server.defaultTimeline,
+                                        self.server.default_timeline,
                                         self.server.recent_posts_cache,
                                         self.server.max_recent_posts,
                                         self.server.translate,
@@ -11180,7 +11180,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.show_published_date_only
                     msg = \
                         html_inbox_features(self.server.css_cache,
-                                            self.server.defaultTimeline,
+                                            self.server.default_timeline,
                                             self.server.recent_posts_cache,
                                             self.server.max_recent_posts,
                                             self.server.translate,
@@ -11292,7 +11292,7 @@ class PubServer(BaseHTTPRequestHandler):
 
                     msg = \
                         html_shares(self.server.css_cache,
-                                    self.server.defaultTimeline,
+                                    self.server.default_timeline,
                                     self.server.recent_posts_cache,
                                     self.server.max_recent_posts,
                                     self.server.translate,
@@ -11377,7 +11377,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.full_width_tl_button_header
                     msg = \
                         html_wanted(self.server.css_cache,
-                                    self.server.defaultTimeline,
+                                    self.server.default_timeline,
                                     self.server.recent_posts_cache,
                                     self.server.max_recent_posts,
                                     self.server.translate,
@@ -11501,7 +11501,7 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.show_published_date_only
                         msg = \
                             html_bookmarks(self.server.css_cache,
-                                           self.server.defaultTimeline,
+                                           self.server.default_timeline,
                                            self.server.recent_posts_cache,
                                            self.server.max_recent_posts,
                                            self.server.translate,
@@ -11641,7 +11641,7 @@ class PubServer(BaseHTTPRequestHandler):
 
                 msg = \
                     html_outbox(self.server.css_cache,
-                                self.server.defaultTimeline,
+                                self.server.default_timeline,
                                 self.server.recent_posts_cache,
                                 self.server.max_recent_posts,
                                 self.server.translate,
@@ -11775,7 +11775,7 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.show_published_date_only
                         msg = \
                             html_moderation(self.server.css_cache,
-                                            self.server.defaultTimeline,
+                                            self.server.default_timeline,
                                             self.server.recent_posts_cache,
                                             self.server.max_recent_posts,
                                             self.server.translate,
@@ -11908,7 +11908,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.rss_icon_at_top,
                                      self.server.css_cache,
                                      self.server.icons_as_buttons,
-                                     self.server.defaultTimeline,
+                                     self.server.default_timeline,
                                      self.server.recent_posts_cache,
                                      self.server.max_recent_posts,
                                      self.server.translate,
@@ -12031,7 +12031,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.rss_icon_at_top,
                                      self.server.css_cache,
                                      self.server.icons_as_buttons,
-                                     self.server.defaultTimeline,
+                                     self.server.default_timeline,
                                      self.server.recent_posts_cache,
                                      self.server.max_recent_posts,
                                      self.server.translate,
@@ -12152,7 +12152,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.rss_icon_at_top,
                                      self.server.css_cache,
                                      self.server.icons_as_buttons,
-                                     self.server.defaultTimeline,
+                                     self.server.default_timeline,
                                      self.server.recent_posts_cache,
                                      self.server.max_recent_posts,
                                      self.server.translate,
@@ -12289,7 +12289,7 @@ class PubServer(BaseHTTPRequestHandler):
                              self.server.rss_icon_at_top,
                              self.server.css_cache,
                              self.server.icons_as_buttons,
-                             self.server.defaultTimeline,
+                             self.server.default_timeline,
                              self.server.recent_posts_cache,
                              self.server.max_recent_posts,
                              self.server.translate,
@@ -12820,25 +12820,25 @@ class PubServer(BaseHTTPRequestHandler):
             return True
 
         mediaStr = path.split('/sharefiles/')[1]
-        mediaFilename = base_dir + '/sharefiles/' + mediaStr
-        if not os.path.isfile(mediaFilename):
+        media_filename = base_dir + '/sharefiles/' + mediaStr
+        if not os.path.isfile(media_filename):
             self._404()
             return True
 
-        if self._etag_exists(mediaFilename):
+        if self._etag_exists(media_filename):
             # The file has not changed
             self._304()
             return True
 
-        mediaFileType = get_image_mime_type(mediaFilename)
+        mediaFileType = get_image_mime_type(media_filename)
         mediaBinary = None
         try:
-            with open(mediaFilename, 'rb') as avFile:
+            with open(media_filename, 'rb') as avFile:
                 mediaBinary = avFile.read()
         except OSError:
-            print('EX: unable to read binary ' + mediaFilename)
+            print('EX: unable to read binary ' + media_filename)
         if mediaBinary:
-            self._set_headers_etag(mediaFilename,
+            self._set_headers_etag(media_filename,
                                    mediaFileType,
                                    mediaBinary, None,
                                    self.server.domain_full,
@@ -13058,7 +13058,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 reply_category,
                                 nickname, domain,
                                 domain_full,
-                                self.server.defaultTimeline,
+                                self.server.default_timeline,
                                 self.server.newswire,
                                 self.server.theme_name,
                                 no_drop_down, access_keys,
@@ -13082,7 +13082,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.signing_priv_key_pem,
                                 self.server.cw_lists,
                                 self.server.lists_enabled,
-                                self.server.defaultTimeline).encode('utf-8')
+                                self.server.default_timeline).encode('utf-8')
             if not msg:
                 print('Error replying to ' + in_reply_to_url)
                 self._404()
@@ -13156,7 +13156,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     path, domain,
                                     port,
                                     http_prefix,
-                                    self.server.defaultTimeline,
+                                    self.server.default_timeline,
                                     self.server.theme_name,
                                     peertube_instances,
                                     self.server.text_mode_banner,
@@ -13197,7 +13197,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   path, domain,
                                   port,
                                   http_prefix,
-                                  self.server.defaultTimeline,
+                                  self.server.default_timeline,
                                   theme, access_keys).encode('utf-8')
             if msg:
                 msglen = len(msg)
@@ -13230,7 +13230,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      path, domain,
                                      port,
                                      http_prefix,
-                                     self.server.defaultTimeline,
+                                     self.server.default_timeline,
                                      self.server.theme_name,
                                      access_keys).encode('utf-8')
             if msg:
@@ -14292,7 +14292,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.domain_full,
                                 item_id, self.server.translate,
                                 self.server.shared_items_federated_domains,
-                                self.server.defaultTimeline,
+                                self.server.default_timeline,
                                 self.server.theme_name, 'shares', category)
             if not msg:
                 if calling_domain.endswith('.onion') and \
@@ -14332,7 +14332,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.domain_full,
                                 item_id, self.server.translate,
                                 self.server.shared_items_federated_domains,
-                                self.server.defaultTimeline,
+                                self.server.default_timeline,
                                 self.server.theme_name, 'wanted', category)
             if not msg:
                 if calling_domain.endswith('.onion') and \
@@ -14528,7 +14528,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.translate,
                                  access_keys,
                                  self.server.access_keys,
-                                 self.server.defaultTimeline)
+                                 self.server.default_timeline)
             msg = msg.encode('utf-8')
             msglen = len(msg)
             self._login_headers('text/html', msglen, calling_domain)
@@ -14553,7 +14553,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.base_dir,
                                     nickname, self.server.domain,
                                     self.server.translate,
-                                    self.server.defaultTimeline,
+                                    self.server.default_timeline,
                                     self.server.theme_name,
                                     self.server.access_keys)
             msg = msg.encode('utf-8')
@@ -14681,10 +14681,10 @@ class PubServer(BaseHTTPRequestHandler):
            self.path == '/logo256.png' or \
            self.path == '/logo512.png' or \
            self.path == '/apple-touch-icon.png':
-            mediaFilename = \
+            media_filename = \
                 self.server.base_dir + '/img' + self.path
-            if os.path.isfile(mediaFilename):
-                if self._etag_exists(mediaFilename):
+            if os.path.isfile(media_filename):
+                if self._etag_exists(media_filename):
                     # The file has not changed
                     self._304()
                     return
@@ -14693,7 +14693,7 @@ class PubServer(BaseHTTPRequestHandler):
                 mediaBinary = None
                 while tries < 5:
                     try:
-                        with open(mediaFilename, 'rb') as avFile:
+                        with open(media_filename, 'rb') as avFile:
                             mediaBinary = avFile.read()
                             break
                     except Exception as ex:
@@ -14702,8 +14702,8 @@ class PubServer(BaseHTTPRequestHandler):
                         time.sleep(1)
                         tries += 1
                 if mediaBinary:
-                    mimeType = media_file_mime_type(mediaFilename)
-                    self._set_headers_etag(mediaFilename, mimeType,
+                    mimeType = media_file_mime_type(media_filename)
+                    self._set_headers_etag(media_filename, mimeType,
                                            mediaBinary, cookie,
                                            self.server.domain_full,
                                            False, None)
@@ -15060,12 +15060,12 @@ class PubServer(BaseHTTPRequestHandler):
                     self._404()
                     self.server.GETbusy = False
                     return
-                timelinePath = \
-                    '/users/' + nickname + '/' + self.server.defaultTimeline
+                timeline_path = \
+                    '/users/' + nickname + '/' + self.server.default_timeline
                 show_publish_as_icon = self.server.show_publish_as_icon
                 rss_icon_at_top = self.server.rss_icon_at_top
                 icons_as_buttons = self.server.icons_as_buttons
-                defaultTimeline = self.server.defaultTimeline
+                default_timeline = self.server.default_timeline
                 access_keys = self.server.access_keys
                 if self.server.keyShortcuts.get(nickname):
                     access_keys = self.server.keyShortcuts[nickname]
@@ -15079,12 +15079,12 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.translate,
                                          self.server.newswire,
                                          self.server.positive_voting,
-                                         timelinePath,
+                                         timeline_path,
                                          show_publish_as_icon,
                                          authorized,
                                          rss_icon_at_top,
                                          icons_as_buttons,
-                                         defaultTimeline,
+                                         default_timeline,
                                          self.server.theme_name,
                                          access_keys).encode('utf-8')
                 msglen = len(msg)
@@ -15108,10 +15108,10 @@ class PubServer(BaseHTTPRequestHandler):
                 access_keys = self.server.access_keys
                 if self.server.keyShortcuts.get(nickname):
                     access_keys = self.server.keyShortcuts[nickname]
-                timelinePath = \
-                    '/users/' + nickname + '/' + self.server.defaultTimeline
+                timeline_path = \
+                    '/users/' + nickname + '/' + self.server.default_timeline
                 icons_as_buttons = self.server.icons_as_buttons
-                defaultTimeline = self.server.defaultTimeline
+                default_timeline = self.server.default_timeline
                 sharedItemsDomains = \
                     self.server.shared_items_federated_domains
                 msg = \
@@ -15120,11 +15120,11 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.domain_full,
                                       self.server.http_prefix,
                                       self.server.translate,
-                                      timelinePath,
+                                      timeline_path,
                                       authorized,
                                       self.server.rss_icon_at_top,
                                       icons_as_buttons,
-                                      defaultTimeline,
+                                      default_timeline,
                                       self.server.theme_name,
                                       access_keys,
                                       sharedItemsDomains).encode('utf-8')
@@ -15175,10 +15175,10 @@ class PubServer(BaseHTTPRequestHandler):
             nickname = self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname = nickname.split('/')[0]
-                notMin = not is_minimal(self.server.base_dir,
-                                        self.server.domain, nickname)
+                not_min = not is_minimal(self.server.base_dir,
+                                         self.server.domain, nickname)
                 set_minimal(self.server.base_dir,
-                            self.server.domain, nickname, notMin)
+                            self.server.domain, nickname, not_min)
                 if not (self.server.media_instance or
                         self.server.blogs_instance):
                     self.path = '/users/' + nickname + '/inbox'
@@ -15211,7 +15211,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.translate,
                                   self.server.base_dir, self.path,
                                   self.server.domain,
-                                  self.server.defaultTimeline,
+                                  self.server.default_timeline,
                                   self.server.theme_name,
                                   self.server.text_mode_banner,
                                   access_keys).encode('utf-8')
@@ -15681,13 +15681,13 @@ class PubServer(BaseHTTPRequestHandler):
                     mentionsList = in_reply_to_url.split('?')
                     for m in mentionsList:
                         if m.startswith('mention='):
-                            replyHandle = m.replace('mention=', '')
-                            if replyHandle not in reply_to_list:
-                                reply_to_list.append(replyHandle)
+                            reply_handle = m.replace('mention=', '')
+                            if reply_handle not in reply_to_list:
+                                reply_to_list.append(reply_handle)
                         if m.startswith('page='):
-                            replyPageStr = m.replace('page=', '')
-                            if replyPageStr.isdigit():
-                                reply_page_number = int(replyPageStr)
+                            reply_page_str = m.replace('page=', '')
+                            if reply_page_str.isdigit():
+                                reply_page_number = int(reply_page_str)
 #                        if m.startswith('actor='):
 #                            replytoActor = m.replace('actor=', '')
                     in_reply_to_url = mentionsList[0]
@@ -15702,13 +15702,13 @@ class PubServer(BaseHTTPRequestHandler):
                     mentionsList = in_reply_to_url.split('?')
                     for m in mentionsList:
                         if m.startswith('mention='):
-                            replyHandle = m.replace('mention=', '')
+                            reply_handle = m.replace('mention=', '')
                             if m.replace('mention=', '') not in reply_to_list:
-                                reply_to_list.append(replyHandle)
+                                reply_to_list.append(reply_handle)
                         if m.startswith('page='):
-                            replyPageStr = m.replace('page=', '')
-                            if replyPageStr.isdigit():
-                                reply_page_number = int(replyPageStr)
+                            reply_page_str = m.replace('page=', '')
+                            if reply_page_str.isdigit():
+                                reply_page_number = int(reply_page_str)
 #                        if m.startswith('actor='):
 #                            replytoActor = m.replace('actor=', '')
                     in_reply_to_url = mentionsList[0]
@@ -15727,14 +15727,14 @@ class PubServer(BaseHTTPRequestHandler):
                     mentionsList = in_reply_to_url.split('?')
                     for m in mentionsList:
                         if m.startswith('mention='):
-                            replyHandle = m.replace('mention=', '')
-                            in_reply_to_url = replyHandle
-                            if replyHandle not in reply_to_list:
-                                reply_to_list.append(replyHandle)
+                            reply_handle = m.replace('mention=', '')
+                            in_reply_to_url = reply_handle
+                            if reply_handle not in reply_to_list:
+                                reply_to_list.append(reply_handle)
                         elif m.startswith('page='):
-                            replyPageStr = m.replace('page=', '')
-                            if replyPageStr.isdigit():
-                                reply_page_number = int(replyPageStr)
+                            reply_page_str = m.replace('page=', '')
+                            if reply_page_str.isdigit():
+                                reply_page_number = int(reply_page_str)
                         elif m.startswith('category='):
                             reply_category = m.replace('category=', '')
                         elif m.startswith('sharedesc:'):
@@ -15746,10 +15746,10 @@ class PubServer(BaseHTTPRequestHandler):
                 else:
                     # single parameter
                     if in_reply_to_url.startswith('mention='):
-                        replyHandle = in_reply_to_url.replace('mention=', '')
-                        in_reply_to_url = replyHandle
-                        if replyHandle not in reply_to_list:
-                            reply_to_list.append(replyHandle)
+                        reply_handle = in_reply_to_url.replace('mention=', '')
+                        in_reply_to_url = reply_handle
+                        if reply_handle not in reply_to_list:
+                            reply_to_list.append(reply_handle)
                     elif in_reply_to_url.startswith('sharedesc:'):
                         # get the title for the shared item
                         share_description = \
@@ -16005,7 +16005,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 cookie, self.server.debug,
                                 self.server.recent_posts_cache,
                                 self.server.session,
-                                self.server.defaultTimeline,
+                                self.server.default_timeline,
                                 self.server.max_recent_posts,
                                 self.server.translate,
                                 self.server.cached_webfingers,
@@ -16193,14 +16193,14 @@ class PubServer(BaseHTTPRequestHandler):
                 self._400()
                 self.server.GETbusy = False
                 return
-            blockDomain = self.path.split('/accountinfo?blockdomain=')[1]
-            searchHandle = blockDomain.split('?handle=')[1]
+            block_domain = self.path.split('/accountinfo?blockdomain=')[1]
+            searchHandle = block_domain.split('?handle=')[1]
             searchHandle = urllib.parse.unquote_plus(searchHandle)
-            blockDomain = blockDomain.split('?handle=')[0]
-            blockDomain = urllib.parse.unquote_plus(blockDomain.strip())
-            if '?' in blockDomain:
-                blockDomain = blockDomain.split('?')[0]
-            add_global_block(self.server.base_dir, '*', blockDomain)
+            block_domain = block_domain.split('?handle=')[0]
+            block_domain = urllib.parse.unquote_plus(block_domain.strip())
+            if '?' in block_domain:
+                block_domain = block_domain.split('?')[0]
+            add_global_block(self.server.base_dir, '*', block_domain)
             msg = \
                 html_account_info(self.server.css_cache,
                                   self.server.translate,
@@ -16232,12 +16232,12 @@ class PubServer(BaseHTTPRequestHandler):
                 self._400()
                 self.server.GETbusy = False
                 return
-            blockDomain = self.path.split('/accountinfo?unblockdomain=')[1]
-            searchHandle = blockDomain.split('?handle=')[1]
+            block_domain = self.path.split('/accountinfo?unblockdomain=')[1]
+            searchHandle = block_domain.split('?handle=')[1]
             searchHandle = urllib.parse.unquote_plus(searchHandle)
-            blockDomain = blockDomain.split('?handle=')[0]
-            blockDomain = urllib.parse.unquote_plus(blockDomain.strip())
-            remove_global_block(self.server.base_dir, '*', blockDomain)
+            block_domain = block_domain.split('?handle=')[0]
+            block_domain = urllib.parse.unquote_plus(block_domain.strip())
+            remove_global_block(self.server.base_dir, '*', block_domain)
             msg = \
                 html_account_info(self.server.css_cache,
                                   self.server.translate,
@@ -16428,8 +16428,8 @@ class PubServer(BaseHTTPRequestHandler):
         if os.path.isfile(filename):
             content = None
             try:
-                with open(filename, 'r', encoding='utf-8') as File:
-                    content = File.read()
+                with open(filename, 'r', encoding='utf-8') as rfile:
+                    content = rfile.read()
             except OSError:
                 print('EX: unable to read file ' + filename)
             if content:
@@ -16481,35 +16481,35 @@ class PubServer(BaseHTTPRequestHandler):
                path_is_video(self.path) or \
                path_is_audio(self.path):
                 mediaStr = self.path.split('/media/')[1]
-                mediaFilename = \
+                media_filename = \
                     self.server.base_dir + '/media/' + mediaStr
-                if os.path.isfile(mediaFilename):
-                    checkPath = mediaFilename
-                    fileLength = os.path.getsize(mediaFilename)
-                    mediaTagFilename = mediaFilename + '.etag'
-                    if os.path.isfile(mediaTagFilename):
+                if os.path.isfile(media_filename):
+                    checkPath = media_filename
+                    fileLength = os.path.getsize(media_filename)
+                    media_tag_filename = media_filename + '.etag'
+                    if os.path.isfile(media_tag_filename):
                         try:
-                            with open(mediaTagFilename, 'r') as etagFile:
+                            with open(media_tag_filename, 'r') as etagFile:
                                 etag = etagFile.read()
                         except OSError:
                             print('EX: do_HEAD unable to read ' +
-                                  mediaTagFilename)
+                                  media_tag_filename)
                     else:
                         mediaBinary = None
                         try:
-                            with open(mediaFilename, 'rb') as avFile:
+                            with open(media_filename, 'rb') as avFile:
                                 mediaBinary = avFile.read()
                         except OSError:
                             print('EX: unable to read media binary ' +
-                                  mediaFilename)
+                                  media_filename)
                         if mediaBinary:
                             etag = md5(mediaBinary).hexdigest()  # nosec
                             try:
-                                with open(mediaTagFilename, 'w+') as etagFile:
-                                    etagFile.write(etag)
+                                with open(media_tag_filename, 'w+') as efile:
+                                    efile.write(etag)
                             except OSError:
                                 print('EX: do_HEAD unable to write ' +
-                                      mediaTagFilename)
+                                      media_tag_filename)
 
         mediaFileType = media_file_mime_type(checkPath)
         self._set_headers_head(mediaFileType, fileLength,
@@ -16680,9 +16680,9 @@ class PubServer(BaseHTTPRequestHandler):
                     print('EX: _receive_new_post_process unable to write ' +
                           lastUsedFilename)
 
-            mentionsStr = ''
+            mentions_str = ''
             if fields.get('mentions'):
-                mentionsStr = fields['mentions'].strip() + ' '
+                mentions_str = fields['mentions'].strip() + ' '
             if not fields.get('commentsEnabled'):
                 comments_enabled = False
             else:
@@ -16690,9 +16690,9 @@ class PubServer(BaseHTTPRequestHandler):
 
             if postType == 'newpost':
                 if not fields.get('pinToProfile'):
-                    pinToProfile = False
+                    pin_to_profile = False
                 else:
-                    pinToProfile = True
+                    pin_to_profile = True
                     # is the post message empty?
                     if not fields['message']:
                         # remove the pinned content from profile screen
@@ -16712,7 +16712,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.domain,
                                        self.server.port,
                                        self.server.http_prefix,
-                                       mentionsStr + fields['message'],
+                                       mentions_str + fields['message'],
                                        False, False, False, comments_enabled,
                                        filename, attachment_media_type,
                                        fields['imageDescription'],
@@ -16730,15 +16730,15 @@ class PubServer(BaseHTTPRequestHandler):
                 if message_json:
                     if fields['schedulePost']:
                         return 1
-                    if pinToProfile:
+                    if pin_to_profile:
                         sys_language = self.server.system_language
                         contentStr = \
                             get_base_content_from_post(message_json,
                                                        sys_language)
-                        followersOnly = False
+                        followers_only = False
                         pin_post(self.server.base_dir,
                                  nickname, self.server.domain, contentStr,
-                                 followersOnly)
+                                 followers_only)
                         return 1
                     if self._post_to_outbox(message_json,
                                             self.server.project_version,
@@ -16760,7 +16760,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        nickname,
                                        self.server.domain,
                                        self.server.http_prefix,
-                                       self.server.defaultTimeline,
+                                       self.server.default_timeline,
                                        self.server.translate,
                                        self.server.newswire,
                                        self.server.css_cache,
@@ -16786,8 +16786,8 @@ class PubServer(BaseHTTPRequestHandler):
                     print('WARN: blog posts must have content')
                     return -1
                 # submit button on newblog screen
-                followersOnly = False
-                saveToFile = False
+                followers_only = False
+                save_to_file = False
                 client_to_server = False
                 city = None
                 conversation_id = None
@@ -16798,7 +16798,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.domain, self.server.port,
                                      self.server.http_prefix,
                                      fields['message'],
-                                     followersOnly, saveToFile,
+                                     followers_only, save_to_file,
                                      client_to_server, comments_enabled,
                                      filename, attachment_media_type,
                                      fields['imageDescription'],
@@ -16936,8 +16936,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.base_dir,
                                         nickname,
                                         self.server.domain)
-                followersOnly = False
-                saveToFile = False
+                followers_only = False
+                save_to_file = False
                 client_to_server = False
 
                 conversation_id = None
@@ -16949,8 +16949,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          nickname,
                                          self.server.domain, self.server.port,
                                          self.server.http_prefix,
-                                         mentionsStr + fields['message'],
-                                         followersOnly, saveToFile,
+                                         mentions_str + fields['message'],
+                                         followers_only, save_to_file,
                                          client_to_server, comments_enabled,
                                          filename, attachment_media_type,
                                          fields['imageDescription'],
@@ -16986,22 +16986,23 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.base_dir,
                                         nickname,
                                         self.server.domain)
-                followersOnly = True
-                saveToFile = False
+                followers_only = True
+                save_to_file = False
                 client_to_server = False
 
                 conversation_id = None
                 if fields.get('conversationId'):
                     conversation_id = fields['conversationId']
 
+                mentions_message = mentions_str + fields['message']
                 message_json = \
                     create_followers_only_post(self.server.base_dir,
                                                nickname,
                                                self.server.domain,
                                                self.server.port,
                                                self.server.http_prefix,
-                                               mentionsStr + fields['message'],
-                                               followersOnly, saveToFile,
+                                               mentions_message,
+                                               followers_only, save_to_file,
                                                client_to_server,
                                                comments_enabled,
                                                filename, attachment_media_type,
@@ -17036,13 +17037,13 @@ class PubServer(BaseHTTPRequestHandler):
             elif postType == 'newdm':
                 message_json = None
                 print('A DM was posted')
-                if '@' in mentionsStr:
+                if '@' in mentions_str:
                     city = get_spoofed_city(self.server.city,
                                             self.server.base_dir,
                                             nickname,
                                             self.server.domain)
-                    followersOnly = True
-                    saveToFile = False
+                    followers_only = True
+                    save_to_file = False
                     client_to_server = False
 
                     conversation_id = None
@@ -17056,9 +17057,10 @@ class PubServer(BaseHTTPRequestHandler):
                                                    self.server.domain,
                                                    self.server.port,
                                                    self.server.http_prefix,
-                                                   mentionsStr +
+                                                   mentions_str +
                                                    fields['message'],
-                                                   followersOnly, saveToFile,
+                                                   followers_only,
+                                                   save_to_file,
                                                    client_to_server,
                                                    comments_enabled,
                                                    filename,
@@ -17098,25 +17100,26 @@ class PubServer(BaseHTTPRequestHandler):
                 message_json = None
                 handle = nickname + '@' + self.server.domain_full
                 print('A reminder was posted for ' + handle)
-                if '@' + handle not in mentionsStr:
-                    mentionsStr = '@' + handle + ' ' + mentionsStr
+                if '@' + handle not in mentions_str:
+                    mentions_str = '@' + handle + ' ' + mentions_str
                 city = get_spoofed_city(self.server.city,
                                         self.server.base_dir,
                                         nickname,
                                         self.server.domain)
-                followersOnly = True
-                saveToFile = False
+                followers_only = True
+                save_to_file = False
                 client_to_server = False
                 comments_enabled = False
                 conversation_id = None
+                mentions_message = mentions_str + fields['message']
                 message_json = \
                     create_direct_message_post(self.server.base_dir,
                                                nickname,
                                                self.server.domain,
                                                self.server.port,
                                                self.server.http_prefix,
-                                               mentionsStr + fields['message'],
-                                               followersOnly, saveToFile,
+                                               mentions_message,
+                                               followers_only, save_to_file,
                                                client_to_server,
                                                comments_enabled,
                                                filename, attachment_media_type,
@@ -17159,7 +17162,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        nickname,
                                        self.server.domain, self.server.port,
                                        self.server.http_prefix,
-                                       mentionsStr + fields['message'],
+                                       mentions_str + fields['message'],
                                        True, False, False, True,
                                        filename, attachment_media_type,
                                        fields['imageDescription'],
@@ -17173,40 +17176,39 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.project_version,
                                             nickname):
                         return 1
-                    else:
-                        return -1
+                    return -1
             elif postType == 'newquestion':
                 if not fields.get('duration'):
                     return -1
                 if not fields.get('message'):
                     return -1
 #                questionStr = fields['message']
-                qOptions = []
-                for questionCtr in range(8):
-                    if fields.get('questionOption' + str(questionCtr)):
-                        qOptions.append(fields['questionOption' +
-                                               str(questionCtr)])
-                if not qOptions:
+                q_options = []
+                for question_ctr in range(8):
+                    if fields.get('questionOption' + str(question_ctr)):
+                        q_options.append(fields['questionOption' +
+                                                str(question_ctr)])
+                if not q_options:
                     return -1
                 city = get_spoofed_city(self.server.city,
                                         self.server.base_dir,
                                         nickname,
                                         self.server.domain)
-                intDuration = int(fields['duration'])
+                int_duration = int(fields['duration'])
                 message_json = \
                     create_question_post(self.server.base_dir,
                                          nickname,
                                          self.server.domain,
                                          self.server.port,
                                          self.server.http_prefix,
-                                         fields['message'], qOptions,
+                                         fields['message'], q_options,
                                          False, False, False,
                                          comments_enabled,
                                          filename, attachment_media_type,
                                          fields['imageDescription'],
                                          city,
                                          fields['subject'],
-                                         intDuration,
+                                         int_duration,
                                          self.server.system_language,
                                          self.server.low_bandwidth,
                                          self.server.content_license_url)
@@ -17689,7 +17691,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.onion_domain,
                                        self.server.i2p_domain,
                                        self.server.debug,
-                                       self.server.defaultTimeline,
+                                       self.server.default_timeline,
                                        self.server.allow_local_network_access)
             self.server.POSTbusy = False
             return
@@ -17716,7 +17718,7 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.domain_full,
                                self.server.onion_domain,
                                self.server.i2p_domain, self.server.debug,
-                               self.server.defaultTimeline,
+                               self.server.default_timeline,
                                self.server.allow_local_network_access)
             self.server.POSTbusy = False
             return
@@ -17730,7 +17732,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.domain_full,
                                   self.server.onion_domain,
                                   self.server.i2p_domain, self.server.debug,
-                                  self.server.defaultTimeline)
+                                  self.server.default_timeline)
             self.server.POSTbusy = False
             return
 
@@ -17743,7 +17745,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.domain_full,
                                    self.server.onion_domain,
                                    self.server.i2p_domain, self.server.debug,
-                                   self.server.defaultTimeline,
+                                   self.server.default_timeline,
                                    self.server.newswire)
             self.server.POSTbusy = False
             return
@@ -17755,7 +17757,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.domain_full,
                                  self.server.onion_domain,
                                  self.server.i2p_domain, self.server.debug,
-                                 self.server.defaultTimeline)
+                                 self.server.default_timeline)
             self.server.POSTbusy = False
             return
 
@@ -18018,7 +18020,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.i2p_domain,
                                     self.server.debug,
                                     access_keys,
-                                    self.server.defaultTimeline)
+                                    self.server.default_timeline)
                 self.server.POSTbusy = False
                 return
 
@@ -18048,7 +18050,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.i2p_domain,
                                           self.server.debug,
                                           access_keys,
-                                          self.server.defaultTimeline,
+                                          self.server.default_timeline,
                                           self.server.theme_name,
                                           allow_local_network_access,
                                           self.server.system_language)
@@ -18112,7 +18114,7 @@ class PubServer(BaseHTTPRequestHandler):
                     print('POST was not authorized')
                 break
 
-            postRedirect = self.server.defaultTimeline
+            postRedirect = self.server.default_timeline
             if currPostType == 'newshare':
                 postRedirect = 'tlshares'
             elif currPostType == 'newwanted':
@@ -18929,13 +18931,13 @@ def run_daemon(content_license_url: str,
         news_instance = True
 
     httpd.news_instance = news_instance
-    httpd.defaultTimeline = 'inbox'
+    httpd.default_timeline = 'inbox'
     if media_instance:
-        httpd.defaultTimeline = 'tlmedia'
+        httpd.default_timeline = 'tlmedia'
     if blogs_instance:
-        httpd.defaultTimeline = 'tlblogs'
+        httpd.default_timeline = 'tlblogs'
     if news_instance:
-        httpd.defaultTimeline = 'tlfeatures'
+        httpd.default_timeline = 'tlfeatures'
 
     set_news_avatar(base_dir,
                     httpd.theme_name,
