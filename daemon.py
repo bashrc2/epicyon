@@ -5397,38 +5397,38 @@ class PubServer(BaseHTTPRequestHandler):
                             actorChanged = True
 
                     # change Enigma public key
-                    currentEnigmaPubKey = get_enigma_pub_key(actor_json)
+                    currentenigma_pub_key = get_enigma_pub_key(actor_json)
                     if fields.get('enigmapubkey'):
-                        if fields['enigmapubkey'] != currentEnigmaPubKey:
+                        if fields['enigmapubkey'] != currentenigma_pub_key:
                             set_enigma_pub_key(actor_json,
                                                fields['enigmapubkey'])
                             actorChanged = True
                     else:
-                        if currentEnigmaPubKey:
+                        if currentenigma_pub_key:
                             set_enigma_pub_key(actor_json, '')
                             actorChanged = True
 
                     # change PGP public key
-                    currentPGPpubKey = get_pgp_pub_key(actor_json)
+                    currentpgp_pub_key = get_pgp_pub_key(actor_json)
                     if fields.get('pgp'):
-                        if fields['pgp'] != currentPGPpubKey:
+                        if fields['pgp'] != currentpgp_pub_key:
                             set_pgp_pub_key(actor_json,
                                             fields['pgp'])
                             actorChanged = True
                     else:
-                        if currentPGPpubKey:
+                        if currentpgp_pub_key:
                             set_pgp_pub_key(actor_json, '')
                             actorChanged = True
 
                     # change PGP fingerprint
-                    currentPGPfingerprint = get_pgp_fingerprint(actor_json)
+                    currentpgp_fingerprint = get_pgp_fingerprint(actor_json)
                     if fields.get('openpgp'):
-                        if fields['openpgp'] != currentPGPfingerprint:
+                        if fields['openpgp'] != currentpgp_fingerprint:
                             set_pgp_fingerprint(actor_json,
                                                 fields['openpgp'])
                             actorChanged = True
                     else:
-                        if currentPGPfingerprint:
+                        if currentpgp_fingerprint:
                             set_pgp_fingerprint(actor_json, '')
                             actorChanged = True
 
@@ -7097,20 +7097,20 @@ class PubServer(BaseHTTPRequestHandler):
             if len(optionsList) > 3:
                 optionsLink = optionsList[3]
             isGroup = False
-            donateUrl = None
-            websiteUrl = None
-            EnigmaPubKey = None
-            PGPpubKey = None
-            PGPfingerprint = None
-            xmppAddress = None
-            matrixAddress = None
-            blogAddress = None
-            toxAddress = None
-            briarAddress = None
-            jamiAddress = None
+            donate_url = None
+            website_url = None
+            enigma_pub_key = None
+            pgp_pub_key = None
+            pgp_fingerprint = None
+            xmpp_address = None
+            matrix_address = None
+            blog_address = None
+            tox_address = None
+            briar_address = None
+            jami_address = None
             cwtch_address = None
-            ssbAddress = None
-            emailAddress = None
+            ssb_address = None
+            email_address = None
             lockedAccount = False
             alsoKnownAs = None
             movedTo = ''
@@ -7127,20 +7127,20 @@ class PubServer(BaseHTTPRequestHandler):
                 if actor_json['type'] == 'Group':
                     isGroup = True
                 lockedAccount = get_locked_account(actor_json)
-                donateUrl = get_donation_url(actor_json)
-                websiteUrl = get_website(actor_json, self.server.translate)
-                xmppAddress = get_xmpp_address(actor_json)
-                matrixAddress = get_matrix_address(actor_json)
-                ssbAddress = get_ssb_address(actor_json)
-                blogAddress = get_blog_address(actor_json)
-                toxAddress = get_tox_address(actor_json)
-                briarAddress = get_briar_address(actor_json)
-                jamiAddress = get_jami_address(actor_json)
+                donate_url = get_donation_url(actor_json)
+                website_url = get_website(actor_json, self.server.translate)
+                xmpp_address = get_xmpp_address(actor_json)
+                matrix_address = get_matrix_address(actor_json)
+                ssb_address = get_ssb_address(actor_json)
+                blog_address = get_blog_address(actor_json)
+                tox_address = get_tox_address(actor_json)
+                briar_address = get_briar_address(actor_json)
+                jami_address = get_jami_address(actor_json)
                 cwtch_address = get_cwtch_address(actor_json)
-                emailAddress = get_email_address(actor_json)
-                EnigmaPubKey = get_enigma_pub_key(actor_json)
-                PGPpubKey = get_pgp_pub_key(actor_json)
-                PGPfingerprint = get_pgp_fingerprint(actor_json)
+                email_address = get_email_address(actor_json)
+                enigma_pub_key = get_enigma_pub_key(actor_json)
+                pgp_pub_key = get_pgp_pub_key(actor_json)
+                pgp_fingerprint = get_pgp_fingerprint(actor_json)
                 if actor_json.get('alsoKnownAs'):
                     alsoKnownAs = actor_json['alsoKnownAs']
 
@@ -7169,14 +7169,14 @@ class PubServer(BaseHTTPRequestHandler):
                                     optionsActor,
                                     optionsProfileUrl,
                                     optionsLink,
-                                    pageNumber, donateUrl, websiteUrl,
-                                    xmppAddress, matrixAddress,
-                                    ssbAddress, blogAddress,
-                                    toxAddress, briarAddress,
-                                    jamiAddress, cwtch_address,
-                                    EnigmaPubKey,
-                                    PGPpubKey, PGPfingerprint,
-                                    emailAddress,
+                                    pageNumber, donate_url, website_url,
+                                    xmpp_address, matrix_address,
+                                    ssb_address, blog_address,
+                                    tox_address, briar_address,
+                                    jami_address, cwtch_address,
+                                    enigma_pub_key,
+                                    pgp_pub_key, pgp_fingerprint,
+                                    email_address,
                                     self.server.dormant_months,
                                     backToPath,
                                     lockedAccount,

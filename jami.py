@@ -39,22 +39,22 @@ def get_jami_address(actor_json: {}) -> str:
     return ''
 
 
-def set_jami_address(actor_json: {}, jamiAddress: str) -> None:
+def set_jami_address(actor_json: {}, jami_address: str) -> None:
     """Sets an jami address for the given actor
     """
     notJamiAddress = False
 
-    if len(jamiAddress) < 2:
+    if len(jami_address) < 2:
         notJamiAddress = True
-    if '"' in jamiAddress:
+    if '"' in jami_address:
         notJamiAddress = True
-    if ' ' in jamiAddress:
+    if ' ' in jami_address:
         notJamiAddress = True
-    if '.' in jamiAddress:
+    if '.' in jami_address:
         notJamiAddress = True
-    if ',' in jamiAddress:
+    if ',' in jami_address:
         notJamiAddress = True
-    if '<' in jamiAddress:
+    if '<' in jami_address:
         notJamiAddress = True
 
     if not actor_json.get('attachment'):
@@ -85,12 +85,12 @@ def set_jami_address(actor_json: {}, jamiAddress: str) -> None:
             continue
         if property_value['type'] != 'PropertyValue':
             continue
-        property_value['value'] = jamiAddress
+        property_value['value'] = jami_address
         return
 
     newJamiAddress = {
         "name": "Jami",
         "type": "PropertyValue",
-        "value": jamiAddress
+        "value": jami_address
     }
     actor_json['attachment'].append(newJamiAddress)

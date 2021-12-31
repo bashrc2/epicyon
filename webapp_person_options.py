@@ -39,20 +39,20 @@ def html_person_options(defaultTimeline: str,
                         optionsProfileUrl: str,
                         optionsLink: str,
                         pageNumber: int,
-                        donateUrl: str,
+                        donate_url: str,
                         webAddress: str,
-                        xmppAddress: str,
-                        matrixAddress: str,
-                        ssbAddress: str,
-                        blogAddress: str,
-                        toxAddress: str,
-                        briarAddress: str,
-                        jamiAddress: str,
+                        xmpp_address: str,
+                        matrix_address: str,
+                        ssb_address: str,
+                        blog_address: str,
+                        tox_address: str,
+                        briar_address: str,
+                        jami_address: str,
                         cwtch_address: str,
-                        EnigmaPubKey: str,
-                        PGPpubKey: str,
-                        PGPfingerprint: str,
-                        emailAddress: str,
+                        enigma_pub_key: str,
+                        pgp_pub_key: str,
+                        pgp_fingerprint: str,
+                        email_address: str,
                         dormant_months: int,
                         backToPath: str,
                         lockedAccount: bool,
@@ -122,9 +122,9 @@ def html_person_options(defaultTimeline: str,
             snoozeButtonStr = 'Unsnooze'
 
     donateStr = ''
-    if donateUrl:
+    if donate_url:
         donateStr = \
-            '    <a href="' + donateUrl + \
+            '    <a href="' + donate_url + \
             ' tabindex="-1""><button class="button" name="submitDonate">' + \
             translate['Donate'] + '</button></a>\n'
 
@@ -188,55 +188,56 @@ def html_person_options(defaultTimeline: str,
         otherAccountsHtml += '</p>\n'
         if ctr > 0:
             optionsStr += otherAccountsHtml
-    if emailAddress:
+    if email_address:
         optionsStr += \
             '<p class="imText">' + translate['Email'] + \
             ': <a href="mailto:' + \
-            emailAddress + '">' + remove_html(emailAddress) + '</a></p>\n'
-    if xmppAddress:
+            email_address + '">' + remove_html(email_address) + '</a></p>\n'
+    if xmpp_address:
         optionsStr += \
             '<p class="imText">' + translate['XMPP'] + \
-            ': <a href="xmpp:' + remove_html(xmppAddress) + '">' + \
-            xmppAddress + '</a></p>\n'
-    if matrixAddress:
+            ': <a href="xmpp:' + remove_html(xmpp_address) + '">' + \
+            xmpp_address + '</a></p>\n'
+    if matrix_address:
         optionsStr += \
             '<p class="imText">' + translate['Matrix'] + ': ' + \
-            remove_html(matrixAddress) + '</p>\n'
-    if ssbAddress:
+            remove_html(matrix_address) + '</p>\n'
+    if ssb_address:
         optionsStr += \
-            '<p class="imText">SSB: ' + remove_html(ssbAddress) + '</p>\n'
-    if blogAddress:
+            '<p class="imText">SSB: ' + remove_html(ssb_address) + '</p>\n'
+    if blog_address:
         optionsStr += \
             '<p class="imText">Blog: <a href="' + \
-            remove_html(blogAddress) + '">' + \
-            remove_html(blogAddress) + '</a></p>\n'
-    if toxAddress:
+            remove_html(blog_address) + '">' + \
+            remove_html(blog_address) + '</a></p>\n'
+    if tox_address:
         optionsStr += \
-            '<p class="imText">Tox: ' + remove_html(toxAddress) + '</p>\n'
-    if briarAddress:
-        if briarAddress.startswith('briar://'):
+            '<p class="imText">Tox: ' + remove_html(tox_address) + '</p>\n'
+    if briar_address:
+        if briar_address.startswith('briar://'):
             optionsStr += \
                 '<p class="imText">' + \
-                remove_html(briarAddress) + '</p>\n'
+                remove_html(briar_address) + '</p>\n'
         else:
             optionsStr += \
                 '<p class="imText">briar://' + \
-                remove_html(briarAddress) + '</p>\n'
-    if jamiAddress:
+                remove_html(briar_address) + '</p>\n'
+    if jami_address:
         optionsStr += \
-            '<p class="imText">Jami: ' + remove_html(jamiAddress) + '</p>\n'
+            '<p class="imText">Jami: ' + remove_html(jami_address) + '</p>\n'
     if cwtch_address:
         optionsStr += \
             '<p class="imText">Cwtch: ' + remove_html(cwtch_address) + '</p>\n'
-    if EnigmaPubKey:
+    if enigma_pub_key:
         optionsStr += \
-            '<p class="imText">Enigma: ' + remove_html(EnigmaPubKey) + '</p>\n'
-    if PGPfingerprint:
+            '<p class="imText">Enigma: ' + \
+            remove_html(enigma_pub_key) + '</p>\n'
+    if pgp_fingerprint:
         optionsStr += '<p class="pgp">PGP: ' + \
-            remove_html(PGPfingerprint).replace('\n', '<br>') + '</p>\n'
-    if PGPpubKey:
+            remove_html(pgp_fingerprint).replace('\n', '<br>') + '</p>\n'
+    if pgp_pub_key:
         optionsStr += '<p class="pgp">' + \
-            remove_html(PGPpubKey).replace('\n', '<br>') + '</p>\n'
+            remove_html(pgp_pub_key).replace('\n', '<br>') + '</p>\n'
     optionsStr += '  <form method="POST" action="' + \
         originPathStr + '/personoptions">\n'
     optionsStr += '    <input type="hidden" name="pageNumber" value="' + \

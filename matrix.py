@@ -36,7 +36,7 @@ def get_matrix_address(actor_json: {}) -> str:
     return ''
 
 
-def set_matrix_address(actor_json: {}, matrixAddress: str) -> None:
+def set_matrix_address(actor_json: {}, matrix_address: str) -> None:
     """Sets an matrix address for the given actor
     """
     if not actor_json.get('attachment'):
@@ -56,17 +56,17 @@ def set_matrix_address(actor_json: {}, matrixAddress: str) -> None:
     if propertyFound:
         actor_json['attachment'].remove(propertyFound)
 
-    if '@' not in matrixAddress:
+    if '@' not in matrix_address:
         return
-    if not matrixAddress.startswith('@'):
+    if not matrix_address.startswith('@'):
         return
-    if '.' not in matrixAddress:
+    if '.' not in matrix_address:
         return
-    if '"' in matrixAddress:
+    if '"' in matrix_address:
         return
-    if '<' in matrixAddress:
+    if '<' in matrix_address:
         return
-    if ':' not in matrixAddress:
+    if ':' not in matrix_address:
         return
 
     for property_value in actor_json['attachment']:
@@ -78,12 +78,12 @@ def set_matrix_address(actor_json: {}, matrixAddress: str) -> None:
             continue
         if property_value['type'] != 'PropertyValue':
             continue
-        property_value['value'] = matrixAddress
+        property_value['value'] = matrix_address
         return
 
     newMatrixAddress = {
         "name": "Matrix",
         "type": "PropertyValue",
-        "value": matrixAddress
+        "value": matrix_address
     }
     actor_json['attachment'].append(newMatrixAddress)

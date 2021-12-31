@@ -34,17 +34,17 @@ def get_xmpp_address(actor_json: {}) -> str:
     return ''
 
 
-def set_xmpp_address(actor_json: {}, xmppAddress: str) -> None:
+def set_xmpp_address(actor_json: {}, xmpp_address: str) -> None:
     """Sets an xmpp address for the given actor
     """
     notXmppAddress = False
-    if '@' not in xmppAddress:
+    if '@' not in xmpp_address:
         notXmppAddress = True
-    if '.' not in xmppAddress:
+    if '.' not in xmpp_address:
         notXmppAddress = True
-    if '"' in xmppAddress:
+    if '"' in xmpp_address:
         notXmppAddress = True
-    if '<' in xmppAddress:
+    if '<' in xmpp_address:
         notXmppAddress = True
 
     if not actor_json.get('attachment'):
@@ -78,12 +78,12 @@ def set_xmpp_address(actor_json: {}, xmppAddress: str) -> None:
             continue
         if property_value['type'] != 'PropertyValue':
             continue
-        property_value['value'] = xmppAddress
+        property_value['value'] = xmpp_address
         return
 
     newXmppAddress = {
         "name": "XMPP",
         "type": "PropertyValue",
-        "value": xmppAddress
+        "value": xmpp_address
     }
     actor_json['attachment'].append(newXmppAddress)

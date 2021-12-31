@@ -229,10 +229,10 @@ def _set_actor_property_url(actor_json: {},
     actor_json['attachment'].append(newAddress)
 
 
-def set_blog_address(actor_json: {}, blogAddress: str) -> None:
+def set_blog_address(actor_json: {}, blog_address: str) -> None:
     """Sets an blog address for the given actor
     """
-    _set_actor_property_url(actor_json, 'Blog', remove_html(blogAddress))
+    _set_actor_property_url(actor_json, 'Blog', remove_html(blog_address))
 
 
 def update_avatar_image_cache(signing_priv_key_pem: str,

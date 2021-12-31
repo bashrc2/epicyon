@@ -37,9 +37,9 @@ def get_donation_url(actor_json: {}) -> str:
             continue
         if '<a href="' not in property_value['value']:
             continue
-        donateUrl = property_value['value'].split('<a href="')[1]
-        if '"' in donateUrl:
-            return donateUrl.split('"')[0]
+        donate_url = property_value['value'].split('<a href="')[1]
+        if '"' in donate_url:
+            return donate_url.split('"')[0]
     return ''
 
 
@@ -65,17 +65,17 @@ def get_website(actor_json: {}, translate: {}) -> str:
     return ''
 
 
-def set_donation_url(actor_json: {}, donateUrl: str) -> None:
+def set_donation_url(actor_json: {}, donate_url: str) -> None:
     """Sets a link used for donations
     """
     notUrl = False
-    if '.' not in donateUrl:
+    if '.' not in donate_url:
         notUrl = True
-    if '://' not in donateUrl:
+    if '://' not in donate_url:
         notUrl = True
-    if ' ' in donateUrl:
+    if ' ' in donate_url:
         notUrl = True
-    if '<' in donateUrl:
+    if '<' in donate_url:
         notUrl = True
 
     if not actor_json.get('attachment'):
@@ -84,7 +84,7 @@ def set_donation_url(actor_json: {}, donateUrl: str) -> None:
     donationType = _get_donation_types()
     donateName = None
     for paymentService in donationType:
-        if paymentService in donateUrl:
+        if paymentService in donate_url:
             donateName = paymentService
     if not donateName:
         return
@@ -106,9 +106,9 @@ def set_donation_url(actor_json: {}, donateUrl: str) -> None:
         return
 
     donateValue = \
-        '<a href="' + donateUrl + \
+        '<a href="' + donate_url + \
         '" rel="me nofollow noopener noreferrer" target="_blank">' + \
-        donateUrl + '</a>'
+        donate_url + '</a>'
 
     for property_value in actor_json['attachment']:
         if not property_value.get('name'):
@@ -130,18 +130,18 @@ def set_donation_url(actor_json: {}, donateUrl: str) -> None:
     actor_json['attachment'].append(newDonate)
 
 
-def set_website(actor_json: {}, websiteUrl: str, translate: {}) -> None:
+def set_website(actor_json: {}, website_url: str, translate: {}) -> None:
     """Sets a web address
     """
-    websiteUrl = websiteUrl.strip()
+    website_url = website_url.strip()
     notUrl = False
-    if '.' not in websiteUrl:
+    if '.' not in website_url:
         notUrl = True
-    if '://' not in websiteUrl:
+    if '://' not in website_url:
         notUrl = True
-    if ' ' in websiteUrl:
+    if ' ' in website_url:
         notUrl = True
-    if '<' in websiteUrl:
+    if '<' in website_url:
         notUrl = True
 
     if not actor_json.get('attachment'):
@@ -169,6 +169,6 @@ def set_website(actor_json: {}, websiteUrl: str, translate: {}) -> None:
     newEntry = {
         "name": 'Website',
         "type": "PropertyValue",
-        "value": websiteUrl
+        "value": website_url
     }
     actor_json['attachment'].append(newEntry)

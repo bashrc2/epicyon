@@ -91,17 +91,17 @@ def get_pgp_fingerprint(actor_json: {}) -> str:
     return ''
 
 
-def set_email_address(actor_json: {}, emailAddress: str) -> None:
+def set_email_address(actor_json: {}, email_address: str) -> None:
     """Sets the email address for the given actor
     """
     notEmailAddress = False
-    if '@' not in emailAddress:
+    if '@' not in email_address:
         notEmailAddress = True
-    if '.' not in emailAddress:
+    if '.' not in email_address:
         notEmailAddress = True
-    if '<' in emailAddress:
+    if '<' in email_address:
         notEmailAddress = True
-    if emailAddress.startswith('@'):
+    if email_address.startswith('@'):
         notEmailAddress = True
 
     if not actor_json.get('attachment'):
@@ -132,27 +132,27 @@ def set_email_address(actor_json: {}, emailAddress: str) -> None:
             continue
         if property_value['type'] != 'PropertyValue':
             continue
-        property_value['value'] = emailAddress
+        property_value['value'] = email_address
         return
 
     newEmailAddress = {
         "name": "Email",
         "type": "PropertyValue",
-        "value": emailAddress
+        "value": email_address
     }
     actor_json['attachment'].append(newEmailAddress)
 
 
-def set_pgp_pub_key(actor_json: {}, PGPpubKey: str) -> None:
+def set_pgp_pub_key(actor_json: {}, pgp_pub_key: str) -> None:
     """Sets a PGP public key for the given actor
     """
     removeKey = False
-    if not PGPpubKey:
+    if not pgp_pub_key:
         removeKey = True
     else:
-        if not contains_pgp_public_key(PGPpubKey):
+        if not contains_pgp_public_key(pgp_pub_key):
             removeKey = True
-        if '<' in PGPpubKey:
+        if '<' in pgp_pub_key:
             removeKey = True
 
     if not actor_json.get('attachment'):
@@ -183,15 +183,15 @@ def set_pgp_pub_key(actor_json: {}, PGPpubKey: str) -> None:
             continue
         if property_value['type'] != 'PropertyValue':
             continue
-        property_value['value'] = PGPpubKey
+        property_value['value'] = pgp_pub_key
         return
 
-    newPGPpubKey = {
+    newpgp_pub_key = {
         "name": "PGP",
         "type": "PropertyValue",
-        "value": PGPpubKey
+        "value": pgp_pub_key
     }
-    actor_json['attachment'].append(newPGPpubKey)
+    actor_json['attachment'].append(newpgp_pub_key)
 
 
 def set_pgp_fingerprint(actor_json: {}, fingerprint: str) -> None:
@@ -235,12 +235,12 @@ def set_pgp_fingerprint(actor_json: {}, fingerprint: str) -> None:
         property_value['value'] = fingerprint.strip()
         return
 
-    newPGPfingerprint = {
+    newpgp_fingerprint = {
         "name": "OpenPGP",
         "type": "PropertyValue",
         "value": fingerprint
     }
-    actor_json['attachment'].append(newPGPfingerprint)
+    actor_json['attachment'].append(newpgp_fingerprint)
 
 
 def extract_pgp_public_key(content: str) -> str:
@@ -470,15 +470,15 @@ def pgp_public_key_upload(base_dir: str, session,
     if not test:
         if debug:
             print('Getting PGP public key')
-        PGPpubKey = pgp_local_public_key()
-        if not PGPpubKey:
+        pgp_pub_key = pgp_local_public_key()
+        if not pgp_pub_key:
             return None
-        PGPpubKeyId = _pgp_local_public_key_id()
+        pgp_pub_keyId = _pgp_local_public_key_id()
     else:
         if debug:
             print('Testing with PGP public key ' + test)
-        PGPpubKey = test
-        PGPpubKeyId = None
+        pgp_pub_key = test
+        pgp_pub_keyId = None
 
     domain_full = get_full_domain(domain, port)
     if debug:
@@ -531,15 +531,15 @@ def pgp_public_key_upload(base_dir: str, session,
         return None
 
     # set the pgp details
-    if PGPpubKeyId:
-        set_pgp_fingerprint(actor_json, PGPpubKeyId)
+    if pgp_pub_keyId:
+        set_pgp_fingerprint(actor_json, pgp_pub_keyId)
     else:
         if debug:
             print('No PGP key Id. Continuing anyway.')
 
     if debug:
         print('Setting PGP key within ' + actor)
-    set_pgp_pub_key(actor_json, PGPpubKey)
+    set_pgp_pub_key(actor_json, pgp_pub_key)
 
     # create an actor update
     statusNumber, published = get_status_number()

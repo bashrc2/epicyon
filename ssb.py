@@ -39,21 +39,21 @@ def get_ssb_address(actor_json: {}) -> str:
     return ''
 
 
-def set_ssb_address(actor_json: {}, ssbAddress: str) -> None:
+def set_ssb_address(actor_json: {}, ssb_address: str) -> None:
     """Sets an ssb address for the given actor
     """
     notSSBAddress = False
-    if not ssbAddress.startswith('@'):
+    if not ssb_address.startswith('@'):
         notSSBAddress = True
-    if '=.' not in ssbAddress:
+    if '=.' not in ssb_address:
         notSSBAddress = True
-    if '"' in ssbAddress:
+    if '"' in ssb_address:
         notSSBAddress = True
-    if ' ' in ssbAddress:
+    if ' ' in ssb_address:
         notSSBAddress = True
-    if ',' in ssbAddress:
+    if ',' in ssb_address:
         notSSBAddress = True
-    if '<' in ssbAddress:
+    if '<' in ssb_address:
         notSSBAddress = True
 
     if not actor_json.get('attachment'):
@@ -84,12 +84,12 @@ def set_ssb_address(actor_json: {}, ssbAddress: str) -> None:
             continue
         if property_value['type'] != 'PropertyValue':
             continue
-        property_value['value'] = ssbAddress
+        property_value['value'] = ssb_address
         return
 
     newSSBAddress = {
         "name": "SSB",
         "type": "PropertyValue",
-        "value": ssbAddress
+        "value": ssb_address
     }
     actor_json['attachment'].append(newSSBAddress)
