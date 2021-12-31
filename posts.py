@@ -93,9 +93,9 @@ from context import get_individual_post_context
 def is_moderator(base_dir: str, nickname: str) -> bool:
     """Returns true if the given nickname is a moderator
     """
-    moderatorsFile = base_dir + '/accounts/moderators.txt'
+    moderators_file = base_dir + '/accounts/moderators.txt'
 
-    if not os.path.isfile(moderatorsFile):
+    if not os.path.isfile(moderators_file):
         admin_name = get_config_param(base_dir, 'admin')
         if not admin_name:
             return False
@@ -103,8 +103,8 @@ def is_moderator(base_dir: str, nickname: str) -> bool:
             return True
         return False
 
-    with open(moderatorsFile, 'r') as f:
-        lines = f.readlines()
+    with open(moderators_file, 'r') as fp_mod:
+        lines = fp_mod.readlines()
         if len(lines) == 0:
             admin_name = get_config_param(base_dir, 'admin')
             if not admin_name:
@@ -119,21 +119,21 @@ def is_moderator(base_dir: str, nickname: str) -> bool:
 
 
 def no_of_followers_on_domain(base_dir: str, handle: str,
-                              domain: str, followFile='followers.txt') -> int:
+                              domain: str, follow_file='followers.txt') -> int:
     """Returns the number of followers of the given handle from the given domain
     """
-    filename = base_dir + '/accounts/' + handle + '/' + followFile
+    filename = base_dir + '/accounts/' + handle + '/' + follow_file
     if not os.path.isfile(filename):
         return 0
 
     ctr = 0
-    with open(filename, 'r') as followersFilename:
-        for followerHandle in followersFilename:
-            if '@' in followerHandle:
-                followerDomain = followerHandle.split('@')[1]
-                followerDomain = followerDomain.replace('\n', '')
-                followerDomain = followerDomain.replace('\r', '')
-                if domain == followerDomain:
+    with open(filename, 'r') as followers_file:
+        for follower_handle in followers_file:
+            if '@' in follower_handle:
+                follower_domain = follower_handle.split('@')[1]
+                follower_domain = follower_domain.replace('\n', '')
+                follower_domain = follower_domain.replace('\r', '')
+                if domain == follower_domain:
                     ctr += 1
     return ctr
 
@@ -144,11 +144,11 @@ def _get_local_private_key(base_dir: str, nickname: str, domain: str) -> str:
     if not domain or not nickname:
         return None
     handle = nickname + '@' + domain
-    keyFilename = base_dir + '/keys/private/' + handle.lower() + '.key'
-    if not os.path.isfile(keyFilename):
+    key_filename = base_dir + '/keys/private/' + handle.lower() + '.key'
+    if not os.path.isfile(key_filename):
         return None
-    with open(keyFilename, 'r') as pemFile:
-        return pemFile.read()
+    with open(key_filename, 'r') as pem_file:
+        return pem_file.read()
     return None
 
 
@@ -165,25 +165,25 @@ def _get_local_public_key(base_dir: str, nickname: str, domain: str) -> str:
     if not domain or not nickname:
         return None
     handle = nickname + '@' + domain
-    keyFilename = base_dir + '/keys/public/' + handle.lower() + '.key'
-    if not os.path.isfile(keyFilename):
+    key_filename = base_dir + '/keys/public/' + handle.lower() + '.key'
+    if not os.path.isfile(key_filename):
         return None
-    with open(keyFilename, 'r') as pemFile:
-        return pemFile.read()
+    with open(key_filename, 'r') as pem_file:
+        return pem_file.read()
     return None
 
 
 def _get_person_key(nickname: str, domain: str, base_dir: str,
-                    keyType: str = 'public', debug: bool = False):
+                    key_type: str = 'public', debug: bool = False):
     """Returns the public or private key of a person
     """
-    if keyType == 'private':
+    if key_type == 'private':
         keyPem = _get_local_private_key(base_dir, nickname, domain)
     else:
         keyPem = _get_local_public_key(base_dir, nickname, domain)
     if not keyPem:
         if debug:
-            print('DEBUG: ' + keyType + ' key file not found')
+            print('DEBUG: ' + key_type + ' key file not found')
         return ''
     if len(keyPem) < 20:
         if debug:
@@ -192,25 +192,25 @@ def _get_person_key(nickname: str, domain: str, base_dir: str,
     return keyPem
 
 
-def _clean_html(rawHtml: str) -> str:
-    # text=BeautifulSoup(rawHtml, 'html.parser').get_text()
-    text = rawHtml
+def _clean_html(raw_html: str) -> str:
+    # text=BeautifulSoup(raw_html, 'html.parser').get_text()
+    text = raw_html
     return html.unescape(text)
 
 
-def get_user_url(wfRequest: {}, sourceId: int, debug: bool) -> str:
+def get_user_url(wf_request: {}, source_id: int, debug: bool) -> str:
     """Gets the actor url from a webfinger request
     """
-    if not wfRequest.get('links'):
-        if sourceId == 72367:
-            print('get_user_url ' + str(sourceId) +
+    if not wf_request.get('links'):
+        if source_id == 72367:
+            print('get_user_url ' + str(source_id) +
                   ' failed to get display name for webfinger ' +
-                  str(wfRequest))
+                  str(wf_request))
         else:
             print('get_user_url webfinger activity+json contains no links ' +
-                  str(sourceId) + ' ' + str(wfRequest))
+                  str(source_id) + ' ' + str(wf_request))
         return None
-    for link in wfRequest['links']:
+    for link in wf_request['links']:
         if not (link.get('type') and link.get('href')):
             continue
         if link['type'] != 'application/activity+json':
@@ -219,7 +219,7 @@ def get_user_url(wfRequest: {}, sourceId: int, debug: bool) -> str:
             if debug and not has_users_path(link['href']):
                 print('get_user_url webfinger activity+json ' +
                       'contains single user instance actor ' +
-                      str(sourceId) + ' ' + str(link))
+                      str(source_id) + ' ' + str(link))
         else:
             return link['href'].replace('/@', '/users/')
         return link['href']
@@ -227,67 +227,68 @@ def get_user_url(wfRequest: {}, sourceId: int, debug: bool) -> str:
 
 
 def parse_user_feed(signing_priv_key_pem: str,
-                    session, feedUrl: str, asHeader: {},
+                    session, feed_url: str, as_header: {},
                     project_version: str, http_prefix: str,
-                    originDomain: str, debug: bool, depth: int = 0) -> []:
+                    origin_domain: str, debug: bool, depth: int = 0) -> []:
     if depth > 10:
         if debug:
             print('Maximum search depth reached')
         return None
 
     if debug:
-        print('Getting user feed for ' + feedUrl)
-        print('User feed header ' + str(asHeader))
+        print('Getting user feed for ' + feed_url)
+        print('User feed header ' + str(as_header))
         print('http_prefix ' + str(http_prefix))
-        print('originDomain ' + str(originDomain))
+        print('origin_domain ' + str(origin_domain))
 
-    feedJson = get_json(signing_priv_key_pem, session, feedUrl, asHeader, None,
-                        debug, project_version, http_prefix, originDomain)
-    if not feedJson:
-        profileStr = 'https://www.w3.org/ns/activitystreams'
-        acceptStr = 'application/ld+json; profile="' + profileStr + '"'
-        if asHeader['Accept'] != acceptStr:
-            asHeader = {
-                'Accept': acceptStr
+    feed_json = \
+        get_json(signing_priv_key_pem, session, feed_url, as_header, None,
+                 debug, project_version, http_prefix, origin_domain)
+    if not feed_json:
+        profile_str = 'https://www.w3.org/ns/activitystreams'
+        accept_str = 'application/ld+json; profile="' + profile_str + '"'
+        if as_header['Accept'] != accept_str:
+            as_header = {
+                'Accept': accept_str
             }
-            feedJson = get_json(signing_priv_key_pem, session, feedUrl,
-                                asHeader, None, debug, project_version,
-                                http_prefix, originDomain)
-    if not feedJson:
+            feed_json = get_json(signing_priv_key_pem, session, feed_url,
+                                 as_header, None, debug, project_version,
+                                 http_prefix, origin_domain)
+    if not feed_json:
         if debug:
             print('No user feed was returned')
         return None
 
     if debug:
         print('User feed:')
-        pprint(feedJson)
+        pprint(feed_json)
 
-    if 'orderedItems' in feedJson:
-        return feedJson['orderedItems']
-    elif 'items' in feedJson:
-        return feedJson['items']
+    if 'orderedItems' in feed_json:
+        return feed_json['orderedItems']
+    elif 'items' in feed_json:
+        return feed_json['items']
 
-    nextUrl = None
-    if 'first' in feedJson:
-        nextUrl = feedJson['first']
-    elif 'next' in feedJson:
-        nextUrl = feedJson['next']
+    next_url = None
+    if 'first' in feed_json:
+        next_url = feed_json['first']
+    elif 'next' in feed_json:
+        next_url = feed_json['next']
 
     if debug:
-        print('User feed next url: ' + str(nextUrl))
+        print('User feed next url: ' + str(next_url))
 
-    if nextUrl:
-        if isinstance(nextUrl, str):
-            if '?max_id=0' not in nextUrl:
+    if next_url:
+        if isinstance(next_url, str):
+            if '?max_id=0' not in next_url:
                 userFeed = \
                     parse_user_feed(signing_priv_key_pem,
-                                    session, nextUrl, asHeader,
+                                    session, next_url, as_header,
                                     project_version, http_prefix,
-                                    originDomain, debug, depth + 1)
+                                    origin_domain, debug, depth + 1)
                 if userFeed:
                     return userFeed
-        elif isinstance(nextUrl, dict):
-            userFeed = nextUrl
+        elif isinstance(next_url, dict):
+            userFeed = next_url
             if userFeed.get('orderedItems'):
                 return userFeed['orderedItems']
             elif userFeed.get('items'):
@@ -296,141 +297,144 @@ def parse_user_feed(signing_priv_key_pem: str,
 
 
 def _get_person_box_actor(session, base_dir: str, actor: str,
-                          profileStr: str, asHeader: {},
+                          profile_str: str, as_header: {},
                           debug: bool, project_version: str,
-                          http_prefix: str, originDomain: str,
+                          http_prefix: str, origin_domain: str,
                           person_cache: {},
                           signing_priv_key_pem: str,
-                          sourceId: int) -> {}:
+                          source_id: int) -> {}:
     """Returns the actor json for the given actor url
     """
-    personJson = \
+    person_json = \
         get_person_from_cache(base_dir, actor, person_cache, True)
-    if personJson:
-        return personJson
+    if person_json:
+        return person_json
 
     if '/channel/' in actor or '/accounts/' in actor:
-        asHeader = {
-            'Accept': 'application/ld+json; profile="' + profileStr + '"'
+        as_header = {
+            'Accept': 'application/ld+json; profile="' + profile_str + '"'
         }
-    personJson = get_json(signing_priv_key_pem, session, actor, asHeader, None,
-                          debug, project_version, http_prefix, originDomain)
-    if personJson:
-        return personJson
-    asHeader = {
-        'Accept': 'application/ld+json; profile="' + profileStr + '"'
+    person_json = \
+        get_json(signing_priv_key_pem, session, actor, as_header, None,
+                 debug, project_version, http_prefix, origin_domain)
+    if person_json:
+        return person_json
+    as_header = {
+        'Accept': 'application/ld+json; profile="' + profile_str + '"'
     }
-    personJson = get_json(signing_priv_key_pem, session, actor, asHeader, None,
-                          debug, project_version, http_prefix, originDomain)
-    if personJson:
-        return personJson
-    print('Unable to get actor for ' + actor + ' ' + str(sourceId))
+    person_json = \
+        get_json(signing_priv_key_pem, session, actor, as_header, None,
+                 debug, project_version, http_prefix, origin_domain)
+    if person_json:
+        return person_json
+    print('Unable to get actor for ' + actor + ' ' + str(source_id))
     if not signing_priv_key_pem:
         print('No signing key provided when getting actor')
     return None
 
 
-def get_person_box(signing_priv_key_pem: str, originDomain: str,
-                   base_dir: str, session, wfRequest: {}, person_cache: {},
+def get_person_box(signing_priv_key_pem: str, origin_domain: str,
+                   base_dir: str, session, wf_request: {}, person_cache: {},
                    project_version: str, http_prefix: str,
                    nickname: str, domain: str,
-                   boxName: str = 'inbox',
-                   sourceId=0) -> (str, str, str, str, str, str, str, bool):
+                   box_name: str = 'inbox',
+                   source_id=0) -> (str, str, str, str, str, str, str, bool):
     debug = False
-    profileStr = 'https://www.w3.org/ns/activitystreams'
-    asHeader = {
-        'Accept': 'application/activity+json; profile="' + profileStr + '"'
+    profile_str = 'https://www.w3.org/ns/activitystreams'
+    as_header = {
+        'Accept': 'application/activity+json; profile="' + profile_str + '"'
     }
-    if not wfRequest:
+    if not wf_request:
         print('No webfinger given')
         return None, None, None, None, None, None, None, None
 
-    # get the actor / personUrl
-    if not wfRequest.get('errors'):
+    # get the actor / person_url
+    if not wf_request.get('errors'):
         # get the actor url from webfinger links
-        personUrl = get_user_url(wfRequest, sourceId, debug)
+        person_url = get_user_url(wf_request, source_id, debug)
     else:
         if nickname == 'dev':
             # try single user instance
             print('get_person_box: Trying single user instance with ld+json')
-            personUrl = http_prefix + '://' + domain
-            asHeader = {
-                'Accept': 'application/ld+json; profile="' + profileStr + '"'
+            person_url = http_prefix + '://' + domain
+            as_header = {
+                'Accept': 'application/ld+json; profile="' + profile_str + '"'
             }
         else:
             # the final fallback is a mastodon style url
-            personUrl = local_actor_url(http_prefix, nickname, domain)
-    if not personUrl:
+            person_url = local_actor_url(http_prefix, nickname, domain)
+    if not person_url:
         return None, None, None, None, None, None, None, None
 
     # get the actor json from the url
-    personJson = \
-        _get_person_box_actor(session, base_dir, personUrl,
-                              profileStr, asHeader,
+    person_json = \
+        _get_person_box_actor(session, base_dir, person_url,
+                              profile_str, as_header,
                               debug, project_version,
-                              http_prefix, originDomain,
+                              http_prefix, origin_domain,
                               person_cache, signing_priv_key_pem,
-                              sourceId)
-    if not personJson:
+                              source_id)
+    if not person_json:
         return None, None, None, None, None, None, None, None
 
-    isGroup = False
-    if personJson.get('type'):
-        if personJson['type'] == 'Group':
-            isGroup = True
+    is_group = False
+    if person_json.get('type'):
+        if person_json['type'] == 'Group':
+            is_group = True
 
     # get the url for the box/collection
-    boxJson = None
-    if not personJson.get(boxName):
-        if personJson.get('endpoints'):
-            if personJson['endpoints'].get(boxName):
-                boxJson = personJson['endpoints'][boxName]
+    box_json = None
+    if not person_json.get(box_name):
+        if person_json.get('endpoints'):
+            if person_json['endpoints'].get(box_name):
+                box_json = person_json['endpoints'][box_name]
     else:
-        boxJson = personJson[boxName]
-    if not boxJson:
+        box_json = person_json[box_name]
+    if not box_json:
         return None, None, None, None, None, None, None, None
 
     personId = None
-    if personJson.get('id'):
-        personId = personJson['id']
-    pubKeyId = None
-    pubKey = None
-    if personJson.get('publicKey'):
-        if personJson['publicKey'].get('id'):
-            pubKeyId = personJson['publicKey']['id']
-        if personJson['publicKey'].get('publicKeyPem'):
-            pubKey = personJson['publicKey']['publicKeyPem']
-    sharedInbox = None
-    if personJson.get('sharedInbox'):
-        sharedInbox = personJson['sharedInbox']
+    if person_json.get('id'):
+        personId = person_json['id']
+    pub_key_id = None
+    pub_key = None
+    if person_json.get('publicKey'):
+        if person_json['publicKey'].get('id'):
+            pub_key_id = person_json['publicKey']['id']
+        if person_json['publicKey'].get('publicKeyPem'):
+            pub_key = person_json['publicKey']['publicKeyPem']
+    shared_inbox = None
+    if person_json.get('sharedInbox'):
+        shared_inbox = person_json['sharedInbox']
     else:
-        if personJson.get('endpoints'):
-            if personJson['endpoints'].get('sharedInbox'):
-                sharedInbox = personJson['endpoints']['sharedInbox']
-    avatarUrl = None
-    if personJson.get('icon'):
-        if personJson['icon'].get('url'):
-            avatarUrl = personJson['icon']['url']
-    displayName = None
-    if personJson.get('name'):
-        displayName = personJson['name']
-        if dangerous_markup(personJson['name'], False):
-            displayName = '*ADVERSARY*'
+        if person_json.get('endpoints'):
+            if person_json['endpoints'].get('sharedInbox'):
+                shared_inbox = person_json['endpoints']['sharedInbox']
+    avatar_url = None
+    if person_json.get('icon'):
+        if person_json['icon'].get('url'):
+            avatar_url = person_json['icon']['url']
+    display_name = None
+    if person_json.get('name'):
+        display_name = person_json['name']
+        if dangerous_markup(person_json['name'], False):
+            display_name = '*ADVERSARY*'
         elif is_filtered(base_dir,
                          nickname, domain,
-                         displayName):
-            displayName = '*FILTERED*'
+                         display_name):
+            display_name = '*FILTERED*'
         # have they moved?
-        if personJson.get('movedTo'):
-            displayName += ' ⌂'
+        if person_json.get('movedTo'):
+            display_name += ' ⌂'
 
-    store_person_in_cache(base_dir, personUrl, personJson, person_cache, True)
+    store_person_in_cache(base_dir, person_url, person_json,
+                          person_cache, True)
 
-    return boxJson, pubKeyId, pubKey, personId, sharedInbox, \
-        avatarUrl, displayName, isGroup
+    return box_json, pub_key_id, pub_key, personId, shared_inbox, \
+        avatar_url, display_name, is_group
 
 
-def _is_public_feed_post(item: {}, personPosts: {}, debug: bool) -> bool:
+def _is_public_feed_post(item: {}, person_posts: {}, debug: bool) -> bool:
     """Is the given post a public feed post?
     """
     if not isinstance(item, dict):
@@ -473,33 +477,33 @@ def _is_public_feed_post(item: {}, personPosts: {}, debug: bool) -> bool:
             if debug:
                 print('No published attribute')
             return False
-    if not personPosts.get(item['id']):
-        thisItem = item
+    if not person_posts.get(item['id']):
+        this_item = item
         if item.get('object'):
-            thisItem = item['object']
+            this_item = item['object']
         # check that this is a public post
         # #Public should appear in the "to" list
         itemIsNote = False
         if item['type'] == 'Note' or item['type'] == 'Page':
             itemIsNote = True
 
-        if isinstance(thisItem, dict):
-            if thisItem.get('to'):
-                isPublic = False
-                for recipient in thisItem['to']:
+        if isinstance(this_item, dict):
+            if this_item.get('to'):
+                is_public = False
+                for recipient in this_item['to']:
                     if recipient.endswith('#Public'):
-                        isPublic = True
+                        is_public = True
                         break
-                if not isPublic:
+                if not is_public:
                     return False
-        elif isinstance(thisItem, str) or itemIsNote:
+        elif isinstance(this_item, str) or itemIsNote:
             if item.get('to'):
-                isPublic = False
+                is_public = False
                 for recipient in item['to']:
                     if recipient.endswith('#Public'):
-                        isPublic = True
+                        is_public = True
                         break
-                if not isPublic:
+                if not is_public:
                     return False
     return True
 
@@ -523,35 +527,35 @@ def is_create_inside_announce(item: {}) -> bool:
     return True
 
 
-def _get_posts(session, outboxUrl: str, maxPosts: int,
+def _get_posts(session, outbox_url: str, max_posts: int,
                max_mentions: int,
-               max_emoji: int, maxAttachments: int,
+               max_emoji: int, max_attachments: int,
                federation_list: [],
                person_cache: {}, raw: bool,
                simple: bool, debug: bool,
                project_version: str, http_prefix: str,
-               originDomain: str, system_language: str,
+               origin_domain: str, system_language: str,
                signing_priv_key_pem: str) -> {}:
     """Gets public posts from an outbox
     """
     if debug:
-        print('Getting outbox posts for ' + outboxUrl)
-    personPosts = {}
-    if not outboxUrl:
-        return personPosts
-    profileStr = 'https://www.w3.org/ns/activitystreams'
-    acceptStr = \
+        print('Getting outbox posts for ' + outbox_url)
+    person_posts = {}
+    if not outbox_url:
+        return person_posts
+    profile_str = 'https://www.w3.org/ns/activitystreams'
+    accept_str = \
         'application/activity+json; ' + \
-        'profile="' + profileStr + '"'
-    asHeader = {
-        'Accept': acceptStr
+        'profile="' + profile_str + '"'
+    as_header = {
+        'Accept': accept_str
     }
-    if '/outbox/' in outboxUrl:
-        acceptStr = \
+    if '/outbox/' in outbox_url:
+        accept_str = \
             'application/ld+json; ' + \
-            'profile="' + profileStr + '"'
-        asHeader = {
-            'Accept': acceptStr
+            'profile="' + profile_str + '"'
+        as_header = {
+            'Accept': accept_str
         }
     if raw:
         if debug:
@@ -559,13 +563,13 @@ def _get_posts(session, outboxUrl: str, maxPosts: int,
         result = []
         i = 0
         userFeed = parse_user_feed(signing_priv_key_pem,
-                                   session, outboxUrl, asHeader,
+                                   session, outbox_url, as_header,
                                    project_version, http_prefix,
-                                   originDomain, debug)
+                                   origin_domain, debug)
         for item in userFeed:
             result.append(item)
             i += 1
-            if i == maxPosts:
+            if i == max_posts:
                 break
         pprint(result)
         return None
@@ -573,23 +577,23 @@ def _get_posts(session, outboxUrl: str, maxPosts: int,
     if debug:
         print('Returning a human readable version of the feed')
     userFeed = parse_user_feed(signing_priv_key_pem,
-                               session, outboxUrl, asHeader,
+                               session, outbox_url, as_header,
                                project_version, http_prefix,
-                               originDomain, debug)
+                               origin_domain, debug)
     if not userFeed:
-        return personPosts
+        return person_posts
 
     i = 0
     for item in userFeed:
         if is_create_inside_announce(item):
             item = item['object']
 
-        if not _is_public_feed_post(item, personPosts, debug):
+        if not _is_public_feed_post(item, person_posts, debug):
             continue
 
-        thisItem = item
+        this_item = item
         if item['type'] != 'Note' and item['type'] != 'Page':
-            thisItem = item['object']
+            this_item = item['object']
 
         content = get_base_content_from_post(item, system_language)
         content = content.replace('&apos;', "'")
@@ -597,32 +601,32 @@ def _get_posts(session, outboxUrl: str, maxPosts: int,
         mentions = []
         emoji = {}
         summary = ''
-        inReplyTo = ''
+        in_reply_to = ''
         attachment = []
         sensitive = False
-        if isinstance(thisItem, dict):
-            if thisItem.get('tag'):
-                for tagItem in thisItem['tag']:
-                    if not tagItem.get('type'):
+        if isinstance(this_item, dict):
+            if this_item.get('tag'):
+                for tag_item in this_item['tag']:
+                    if not tag_item.get('type'):
                         continue
-                    tagType = tagItem['type'].lower()
+                    tagType = tag_item['type'].lower()
                     if tagType == 'emoji':
-                        if tagItem.get('name') and tagItem.get('icon'):
-                            if tagItem['icon'].get('url'):
+                        if tag_item.get('name') and tag_item.get('icon'):
+                            if tag_item['icon'].get('url'):
                                 # No emoji from non-permitted domains
-                                if url_permitted(tagItem['icon']['url'],
+                                if url_permitted(tag_item['icon']['url'],
                                                  federation_list):
-                                    emojiName = tagItem['name']
-                                    emojiIcon = tagItem['icon']['url']
-                                    emoji[emojiName] = emojiIcon
+                                    emoji_name = tag_item['name']
+                                    emoji_icon = tag_item['icon']['url']
+                                    emoji[emoji_name] = emoji_icon
                                 else:
                                     if debug:
                                         print('url not permitted ' +
-                                              tagItem['icon']['url'])
+                                              tag_item['icon']['url'])
                     if tagType == 'mention':
-                        if tagItem.get('name'):
-                            if tagItem['name'] not in mentions:
-                                mentions.append(tagItem['name'])
+                        if tag_item.get('name'):
+                            if tag_item['name'] not in mentions:
+                                mentions.append(tag_item['name'])
             if len(mentions) > max_mentions:
                 if debug:
                     print('max mentions reached')
@@ -632,25 +636,25 @@ def _get_posts(session, outboxUrl: str, maxPosts: int,
                     print('max emojis reached')
                 continue
 
-            if thisItem.get('summary'):
-                if thisItem['summary']:
-                    summary = thisItem['summary']
+            if this_item.get('summary'):
+                if this_item['summary']:
+                    summary = this_item['summary']
 
-            if thisItem.get('inReplyTo'):
-                if thisItem['inReplyTo']:
-                    if isinstance(thisItem['inReplyTo'], str):
+            if this_item.get('inReplyTo'):
+                if this_item['inReplyTo']:
+                    if isinstance(this_item['inReplyTo'], str):
                         # No replies to non-permitted domains
-                        if not url_permitted(thisItem['inReplyTo'],
+                        if not url_permitted(this_item['inReplyTo'],
                                              federation_list):
                             if debug:
                                 print('url not permitted ' +
-                                      thisItem['inReplyTo'])
+                                      this_item['inReplyTo'])
                             continue
-                        inReplyTo = thisItem['inReplyTo']
+                        in_reply_to = this_item['inReplyTo']
 
-            if thisItem.get('attachment'):
-                if thisItem['attachment']:
-                    for attach in thisItem['attachment']:
+            if this_item.get('attachment'):
+                if this_item['attachment']:
+                    for attach in this_item['attachment']:
                         if attach.get('name') and attach.get('url'):
                             # no attachments from non-permitted domains
                             if url_permitted(attach['url'],
@@ -663,17 +667,17 @@ def _get_posts(session, outboxUrl: str, maxPosts: int,
                                           attach['url'])
 
             sensitive = False
-            if thisItem.get('sensitive'):
-                sensitive = thisItem['sensitive']
+            if this_item.get('sensitive'):
+                sensitive = this_item['sensitive']
 
         if content:
             if simple:
                 print(_clean_html(content) + '\n')
             else:
                 pprint(item)
-                personPosts[item['id']] = {
+                person_posts[item['id']] = {
                     "sensitive": sensitive,
-                    "inreplyto": inReplyTo,
+                    "inreplyto": in_reply_to,
                     "summary": summary,
                     "html": content,
                     "plaintext": _clean_html(content),
@@ -683,9 +687,9 @@ def _get_posts(session, outboxUrl: str, maxPosts: int,
                 }
             i += 1
 
-            if i == maxPosts:
+            if i == max_posts:
                 break
-    return personPosts
+    return person_posts
 
 
 def _get_common_words() -> str:
@@ -710,17 +714,17 @@ def _get_common_words() -> str:
     )
 
 
-def _update_word_frequency(content: str, wordFrequency: {}) -> None:
+def _update_word_frequency(content: str, word_frequency: {}) -> None:
     """Creates a dictionary containing words and the number of times
     that they appear
     """
-    plainText = remove_html(content)
-    removeChars = ('.', ';', '?', '\n', ':')
-    for ch in removeChars:
-        plainText = plainText.replace(ch, ' ')
-    wordsList = plainText.split(' ')
-    commonWords = _get_common_words()
-    for word in wordsList:
+    plain_text = remove_html(content)
+    remove_chars = ('.', ';', '?', '\n', ':')
+    for char in remove_chars:
+        plain_text = plain_text.replace(char, ' ')
+    words_list = plain_text.split(' ')
+    common_words = _get_common_words()
+    for word in words_list:
         wordLen = len(word)
         if wordLen < 3:
             continue
@@ -734,84 +738,84 @@ def _update_word_frequency(content: str, wordFrequency: {}) -> None:
            "--" in word or \
            '//' in word:
             continue
-        if word.lower() in commonWords:
+        if word.lower() in common_words:
             continue
-        if wordFrequency.get(word):
-            wordFrequency[word] += 1
+        if word_frequency.get(word):
+            word_frequency[word] += 1
         else:
-            wordFrequency[word] = 1
+            word_frequency[word] = 1
 
 
-def get_post_domains(session, outboxUrl: str, maxPosts: int,
+def get_post_domains(session, outbox_url: str, max_posts: int,
                      max_mentions: int,
-                     max_emoji: int, maxAttachments: int,
+                     max_emoji: int, max_attachments: int,
                      federation_list: [],
                      person_cache: {},
                      debug: bool,
                      project_version: str, http_prefix: str,
                      domain: str,
-                     wordFrequency: {},
-                     domainList: [], system_language: str,
+                     word_frequency: {},
+                     domain_list: [], system_language: str,
                      signing_priv_key_pem: str) -> []:
     """Returns a list of domains referenced within public posts
     """
-    if not outboxUrl:
+    if not outbox_url:
         return []
-    profileStr = 'https://www.w3.org/ns/activitystreams'
-    acceptStr = \
+    profile_str = 'https://www.w3.org/ns/activitystreams'
+    accept_str = \
         'application/activity+json; ' + \
-        'profile="' + profileStr + '"'
-    asHeader = {
-        'Accept': acceptStr
+        'profile="' + profile_str + '"'
+    as_header = {
+        'Accept': accept_str
     }
-    if '/outbox/' in outboxUrl:
-        acceptStr = \
+    if '/outbox/' in outbox_url:
+        accept_str = \
             'application/ld+json; ' + \
-            'profile="' + profileStr + '"'
-        asHeader = {
-            'Accept': acceptStr
+            'profile="' + profile_str + '"'
+        as_header = {
+            'Accept': accept_str
         }
 
-    postDomains = domainList
+    post_domains = domain_list
 
     i = 0
     userFeed = parse_user_feed(signing_priv_key_pem,
-                               session, outboxUrl, asHeader,
+                               session, outbox_url, as_header,
                                project_version, http_prefix, domain, debug)
     for item in userFeed:
         i += 1
-        if i > maxPosts:
+        if i > max_posts:
             break
         if not has_object_dict(item):
             continue
-        contentStr = get_base_content_from_post(item, system_language)
-        if contentStr:
-            _update_word_frequency(contentStr, wordFrequency)
+        content_str = get_base_content_from_post(item, system_language)
+        if content_str:
+            _update_word_frequency(content_str, word_frequency)
         if item['object'].get('inReplyTo'):
             if isinstance(item['object']['inReplyTo'], str):
-                postDomain, postPort = \
+                post_domain, postPort = \
                     get_domain_from_actor(item['object']['inReplyTo'])
-                if postDomain not in postDomains:
-                    postDomains.append(postDomain)
+                if post_domain not in post_domains:
+                    post_domains.append(post_domain)
 
         if item['object'].get('tag'):
-            for tagItem in item['object']['tag']:
-                if not tagItem.get('type'):
+            for tag_item in item['object']['tag']:
+                if not tag_item.get('type'):
                     continue
-                tagType = tagItem['type'].lower()
+                tagType = tag_item['type'].lower()
                 if tagType == 'mention':
-                    if tagItem.get('href'):
-                        postDomain, postPort = \
-                            get_domain_from_actor(tagItem['href'])
-                        if postDomain not in postDomains:
-                            postDomains.append(postDomain)
-    return postDomains
+                    if tag_item.get('href'):
+                        post_domain, postPort = \
+                            get_domain_from_actor(tag_item['href'])
+                        if post_domain not in post_domains:
+                            post_domains.append(post_domain)
+    return post_domains
 
 
 def _get_posts_for_blocked_domains(base_dir: str,
-                                   session, outboxUrl: str, maxPosts: int,
+                                   session, outbox_url: str, max_posts: int,
                                    max_mentions: int,
-                                   max_emoji: int, maxAttachments: int,
+                                   max_emoji: int, max_attachments: int,
                                    federation_list: [],
                                    person_cache: {},
                                    debug: bool,
@@ -820,69 +824,69 @@ def _get_posts_for_blocked_domains(base_dir: str,
                                    signing_priv_key_pem: str) -> {}:
     """Returns a dictionary of posts for blocked domains
     """
-    if not outboxUrl:
+    if not outbox_url:
         return {}
-    profileStr = 'https://www.w3.org/ns/activitystreams'
-    acceptStr = \
+    profile_str = 'https://www.w3.org/ns/activitystreams'
+    accept_str = \
         'application/activity+json; ' + \
-        'profile="' + profileStr + '"'
-    asHeader = {
-        'Accept': acceptStr
+        'profile="' + profile_str + '"'
+    as_header = {
+        'Accept': accept_str
     }
-    if '/outbox/' in outboxUrl:
-        acceptStr = \
+    if '/outbox/' in outbox_url:
+        accept_str = \
             'application/ld+json; ' + \
-            'profile="' + profileStr + '"'
-        asHeader = {
-            'Accept': acceptStr
+            'profile="' + profile_str + '"'
+        as_header = {
+            'Accept': accept_str
         }
 
-    blockedPosts = {}
+    blocked_posts = {}
 
     i = 0
     userFeed = parse_user_feed(signing_priv_key_pem,
-                               session, outboxUrl, asHeader,
+                               session, outbox_url, as_header,
                                project_version, http_prefix, domain, debug)
     for item in userFeed:
         i += 1
-        if i > maxPosts:
+        if i > max_posts:
             break
         if not has_object_dict(item):
             continue
         if item['object'].get('inReplyTo'):
             if isinstance(item['object']['inReplyTo'], str):
-                postDomain, postPort = \
+                post_domain, postPort = \
                     get_domain_from_actor(item['object']['inReplyTo'])
-                if is_blocked_domain(base_dir, postDomain):
+                if is_blocked_domain(base_dir, post_domain):
                     if item['object'].get('url'):
                         url = item['object']['url']
                     else:
                         url = item['object']['id']
-                    if not blockedPosts.get(postDomain):
-                        blockedPosts[postDomain] = [url]
+                    if not blocked_posts.get(post_domain):
+                        blocked_posts[post_domain] = [url]
                     else:
-                        if url not in blockedPosts[postDomain]:
-                            blockedPosts[postDomain].append(url)
+                        if url not in blocked_posts[post_domain]:
+                            blocked_posts[post_domain].append(url)
 
         if item['object'].get('tag'):
-            for tagItem in item['object']['tag']:
-                if not tagItem.get('type'):
+            for tag_item in item['object']['tag']:
+                if not tag_item.get('type'):
                     continue
-                tagType = tagItem['type'].lower()
-                if tagType == 'mention' and tagItem.get('href'):
-                    postDomain, postPort = \
-                        get_domain_from_actor(tagItem['href'])
-                    if is_blocked_domain(base_dir, postDomain):
+                tagType = tag_item['type'].lower()
+                if tagType == 'mention' and tag_item.get('href'):
+                    post_domain, postPort = \
+                        get_domain_from_actor(tag_item['href'])
+                    if is_blocked_domain(base_dir, post_domain):
                         if item['object'].get('url'):
                             url = item['object']['url']
                         else:
                             url = item['object']['id']
-                        if not blockedPosts.get(postDomain):
-                            blockedPosts[postDomain] = [url]
+                        if not blocked_posts.get(post_domain):
+                            blocked_posts[post_domain] = [url]
                         else:
-                            if url not in blockedPosts[postDomain]:
-                                blockedPosts[postDomain].append(url)
-    return blockedPosts
+                            if url not in blocked_posts[post_domain]:
+                                blocked_posts[post_domain].append(url)
+    return blocked_posts
 
 
 def delete_all_posts(base_dir: str,
@@ -892,15 +896,15 @@ def delete_all_posts(base_dir: str,
     if boxname != 'inbox' and boxname != 'outbox' and \
        boxname != 'tlblogs' and boxname != 'tlnews':
         return
-    boxDir = create_person_dir(nickname, domain, base_dir, boxname)
-    for deleteFilename in os.scandir(boxDir):
+    box_dir = create_person_dir(nickname, domain, base_dir, boxname)
+    for deleteFilename in os.scandir(box_dir):
         deleteFilename = deleteFilename.name
-        filePath = os.path.join(boxDir, deleteFilename)
+        file_path = os.path.join(box_dir, deleteFilename)
         try:
-            if os.path.isfile(filePath):
-                os.unlink(filePath)
-            elif os.path.isdir(filePath):
-                shutil.rmtree(filePath, ignore_errors=False, onerror=None)
+            if os.path.isfile(file_path):
+                os.unlink(file_path)
+            elif os.path.isdir(file_path):
+                shutil.rmtree(file_path, ignore_errors=False, onerror=None)
         except Exception as ex:
             print('ERROR: delete_all_posts ' + str(ex))
 
@@ -915,27 +919,27 @@ def save_post_to_box(base_dir: str, http_prefix: str, post_id: str,
        boxname != 'tlblogs' and boxname != 'tlnews' and \
        boxname != 'scheduled':
         return None
-    originalDomain = domain
+    original_domain = domain
     domain = remove_domain_port(domain)
 
     if not post_id:
-        statusNumber, published = get_status_number()
+        status_number, published = get_status_number()
         post_id = \
-            local_actor_url(http_prefix, nickname, originalDomain) + \
-            '/statuses/' + statusNumber
+            local_actor_url(http_prefix, nickname, original_domain) + \
+            '/statuses/' + status_number
         post_json_object['id'] = post_id + '/activity'
     if has_object_dict(post_json_object):
         post_json_object['object']['id'] = post_id
         post_json_object['object']['atomUri'] = post_id
 
-    boxDir = create_person_dir(nickname, domain, base_dir, boxname)
-    filename = boxDir + '/' + post_id.replace('/', '#') + '.json'
+    box_dir = create_person_dir(nickname, domain, base_dir, boxname)
+    filename = box_dir + '/' + post_id.replace('/', '#') + '.json'
 
     save_json(post_json_object, filename)
     return filename
 
 
-def _update_hashtags_index(base_dir: str, tag: {}, newPostId: str) -> None:
+def _update_hashtags_index(base_dir: str, tag: {}, new_post_id: str) -> None:
     """Writes the post url for hashtags to a file
     This allows posts for a hashtag to be quickly looked up
     """
@@ -943,55 +947,63 @@ def _update_hashtags_index(base_dir: str, tag: {}, newPostId: str) -> None:
         return
 
     # create hashtags directory
-    tagsDir = base_dir + '/tags'
-    if not os.path.isdir(tagsDir):
-        os.mkdir(tagsDir)
-    tagName = tag['name']
-    tagsFilename = tagsDir + '/' + tagName[1:] + '.txt'
-    tagline = newPostId + '\n'
+    tags_dir = base_dir + '/tags'
+    if not os.path.isdir(tags_dir):
+        os.mkdir(tags_dir)
+    tag_name = tag['name']
+    tags_filename = tags_dir + '/' + tag_name[1:] + '.txt'
+    tagline = new_post_id + '\n'
 
-    if not os.path.isfile(tagsFilename):
+    if not os.path.isfile(tags_filename):
         # create a new tags index file
-        with open(tagsFilename, 'w+') as tagsFile:
-            tagsFile.write(tagline)
+        try:
+            with open(tags_filename, 'w+') as tags_file:
+                tags_file.write(tagline)
+        except OSError:
+            print('EX: _update_hashtags_index unable to write tags file ' +
+                  tags_filename)
     else:
         # prepend to tags index file
-        if tagline not in open(tagsFilename).read():
+        if tagline not in open(tags_filename).read():
             try:
-                with open(tagsFilename, 'r+') as tagsFile:
-                    content = tagsFile.read()
+                with open(tags_filename, 'r+') as tags_file:
+                    content = tags_file.read()
                     if tagline not in content:
-                        tagsFile.seek(0, 0)
-                        tagsFile.write(tagline + content)
-            except Exception as ex:
-                print('WARN: Failed to write entry to tags file ' +
-                      tagsFilename + ' ' + str(ex))
+                        tags_file.seek(0, 0)
+                        tags_file.write(tagline + content)
+            except OSError as ex:
+                print('EX: Failed to write entry to tags file ' +
+                      tags_filename + ' ' + str(ex))
 
 
 def _add_schedule_post(base_dir: str, nickname: str, domain: str,
-                       eventDateStr: str, post_id: str) -> None:
+                       event_date_str: str, post_id: str) -> None:
     """Adds a scheduled post to the index
     """
     handle = nickname + '@' + domain
-    scheduleIndexFilename = \
+    schedule_index_filename = \
         base_dir + '/accounts/' + handle + '/schedule.index'
 
-    indexStr = eventDateStr + ' ' + post_id.replace('/', '#')
-    if os.path.isfile(scheduleIndexFilename):
-        if indexStr not in open(scheduleIndexFilename).read():
+    indexStr = event_date_str + ' ' + post_id.replace('/', '#')
+    if os.path.isfile(schedule_index_filename):
+        if indexStr not in open(schedule_index_filename).read():
             try:
-                with open(scheduleIndexFilename, 'r+') as scheduleFile:
-                    content = scheduleFile.read()
+                with open(schedule_index_filename, 'r+') as schedule_file:
+                    content = schedule_file.read()
                     if indexStr + '\n' not in content:
-                        scheduleFile.seek(0, 0)
-                        scheduleFile.write(indexStr + '\n' + content)
+                        schedule_file.seek(0, 0)
+                        schedule_file.write(indexStr + '\n' + content)
                         print('DEBUG: scheduled post added to index')
-            except Exception as ex:
-                print('WARN: Failed to write entry to scheduled posts index ' +
-                      scheduleIndexFilename + ' ' + str(ex))
+            except OSError as ex:
+                print('EX: Failed to write entry to scheduled posts index ' +
+                      schedule_index_filename + ' ' + str(ex))
     else:
-        with open(scheduleIndexFilename, 'w+') as scheduleFile:
-            scheduleFile.write(indexStr + '\n')
+        try:
+            with open(schedule_index_filename, 'w+') as schedule_file:
+                schedule_file.write(indexStr + '\n')
+        except OSError as ex:
+            print('EX: Failed to write entry to scheduled posts index2 ' +
+                  schedule_index_filename + ' ' + str(ex))
 
 
 def valid_content_warning(cw: str) -> str:
@@ -1012,8 +1024,11 @@ def _load_auto_cw(base_dir: str, nickname: str, domain: str) -> []:
     filename = acct_dir(base_dir, nickname, domain) + '/autocw.txt'
     if not os.path.isfile(filename):
         return []
-    with open(filename, 'r') as f:
-        return f.readlines()
+    try:
+        with open(filename, 'r') as fp_auto:
+            return fp_auto.readlines()
+    except OSError:
+        print('EX: unable to load auto cw file ' + filename)
     return []
 
 
@@ -1022,94 +1037,94 @@ def _add_auto_cw(base_dir: str, nickname: str, domain: str,
     """Appends any automatic CW to the subject line
     and returns the new subject line
     """
-    newSubject = subject
-    autoCWList = _load_auto_cw(base_dir, nickname, domain)
-    for cwRule in autoCWList:
+    new_subject = subject
+    auto_cw_list = _load_auto_cw(base_dir, nickname, domain)
+    for cwRule in auto_cw_list:
         if '->' not in cwRule:
             continue
         rulematch = cwRule.split('->')[0].strip()
         if rulematch not in content:
             continue
         cwStr = cwRule.split('->')[1].strip()
-        if newSubject:
-            if cwStr not in newSubject:
-                newSubject += ', ' + cwStr
+        if new_subject:
+            if cwStr not in new_subject:
+                new_subject += ', ' + cwStr
         else:
-            newSubject = cwStr
-    return newSubject
+            new_subject = cwStr
+    return new_subject
 
 
 def _create_post_cw_from_reply(base_dir: str, nickname: str, domain: str,
-                               inReplyTo: str,
+                               in_reply_to: str,
                                sensitive: bool, summary: str) -> (bool, str):
     """If this is a reply and the original post has a CW
     then use the same CW
     """
-    if inReplyTo and not sensitive:
+    if in_reply_to and not sensitive:
         # locate the post which this is a reply to and check if
         # it has a content warning. If it does then reproduce
         # the same warning
-        replyPostFilename = \
-            locate_post(base_dir, nickname, domain, inReplyTo)
-        if replyPostFilename:
-            replyToJson = load_json(replyPostFilename)
-            if replyToJson:
-                if replyToJson.get('object'):
-                    if replyToJson['object'].get('sensitive'):
-                        if replyToJson['object']['sensitive']:
+        reply_post_filename = \
+            locate_post(base_dir, nickname, domain, in_reply_to)
+        if reply_post_filename:
+            reply_to_json = load_json(reply_post_filename)
+            if reply_to_json:
+                if reply_to_json.get('object'):
+                    if reply_to_json['object'].get('sensitive'):
+                        if reply_to_json['object']['sensitive']:
                             sensitive = True
-                            if replyToJson['object'].get('summary'):
-                                summary = replyToJson['object']['summary']
+                            if reply_to_json['object'].get('summary'):
+                                summary = reply_to_json['object']['summary']
     return sensitive, summary
 
 
 def _create_post_s2s(base_dir: str, nickname: str, domain: str, port: int,
-                     http_prefix: str, content: str, statusNumber: str,
-                     published: str, newPostId: str, postContext: {},
-                     toRecipients: [], toCC: [], inReplyTo: str,
-                     sensitive: bool, commentsEnabled: bool,
-                     tags: [], attachImageFilename: str,
-                     mediaType: str, imageDescription: str, city: str,
-                     postObjectType: str, summary: str,
-                     inReplyToAtomUri: str, system_language: str,
-                     conversationId: str, low_bandwidth: bool,
+                     http_prefix: str, content: str, status_number: str,
+                     published: str, new_post_id: str, post_context: {},
+                     to_recipients: [], to_cc: [], in_reply_to: str,
+                     sensitive: bool, comments_enabled: bool,
+                     tags: [], attach_image_filename: str,
+                     media_type: str, image_description: str, city: str,
+                     post_object_type: str, summary: str,
+                     in_reply_to_atom_uri: str, system_language: str,
+                     conversation_id: str, low_bandwidth: bool,
                      content_license_url: str) -> {}:
     """Creates a new server-to-server post
     """
     actorUrl = local_actor_url(http_prefix, nickname, domain)
-    idStr = \
+    id_str = \
         local_actor_url(http_prefix, nickname, domain) + \
-        '/statuses/' + statusNumber + '/replies'
-    newPostUrl = \
-        http_prefix + '://' + domain + '/@' + nickname + '/' + statusNumber
-    newPostAttributedTo = \
+        '/statuses/' + status_number + '/replies'
+    new_post_url = \
+        http_prefix + '://' + domain + '/@' + nickname + '/' + status_number
+    new_post_attributed_to = \
         local_actor_url(http_prefix, nickname, domain)
-    if not conversationId:
-        conversationId = newPostId
-    newPost = {
-        '@context': postContext,
-        'id': newPostId + '/activity',
+    if not conversation_id:
+        conversation_id = new_post_id
+    new_post = {
+        '@context': post_context,
+        'id': new_post_id + '/activity',
         'type': 'Create',
         'actor': actorUrl,
         'published': published,
-        'to': toRecipients,
-        'cc': toCC,
+        'to': to_recipients,
+        'cc': to_cc,
         'object': {
-            'id': newPostId,
-            'conversation': conversationId,
-            'type': postObjectType,
+            'id': new_post_id,
+            'conversation': conversation_id,
+            'type': post_object_type,
             'summary': summary,
-            'inReplyTo': inReplyTo,
+            'inReplyTo': in_reply_to,
             'published': published,
-            'url': newPostUrl,
-            'attributedTo': newPostAttributedTo,
-            'to': toRecipients,
-            'cc': toCC,
+            'url': new_post_url,
+            'attributedTo': new_post_attributed_to,
+            'to': to_recipients,
+            'cc': to_cc,
             'sensitive': sensitive,
-            'atomUri': newPostId,
-            'inReplyToAtomUri': inReplyToAtomUri,
-            'commentsEnabled': commentsEnabled,
-            'rejectReplies': not commentsEnabled,
+            'atomUri': new_post_id,
+            'inReplyToAtomUri': in_reply_to_atom_uri,
+            'commentsEnabled': comments_enabled,
+            'rejectReplies': not comments_enabled,
             'mediaType': 'text/html',
             'content': content,
             'contentMap': {
@@ -1118,64 +1133,64 @@ def _create_post_s2s(base_dir: str, nickname: str, domain: str, port: int,
             'attachment': [],
             'tag': tags,
             'replies': {
-                'id': idStr,
+                'id': id_str,
                 'type': 'Collection',
                 'first': {
                     'type': 'CollectionPage',
-                    'next': idStr + '?only_other_accounts=true&page=true',
-                    'partOf': idStr,
+                    'next': id_str + '?only_other_accounts=true&page=true',
+                    'partOf': id_str,
                     'items': []
                 }
             }
         }
     }
-    if attachImageFilename:
-        newPost['object'] = \
+    if attach_image_filename:
+        new_post['object'] = \
             attach_media(base_dir, http_prefix, nickname, domain, port,
-                         newPost['object'], attachImageFilename,
-                         mediaType, imageDescription, city, low_bandwidth,
+                         new_post['object'], attach_image_filename,
+                         media_type, image_description, city, low_bandwidth,
                          content_license_url)
-    return newPost
+    return new_post
 
 
 def _create_post_c2s(base_dir: str, nickname: str, domain: str, port: int,
-                     http_prefix: str, content: str, statusNumber: str,
-                     published: str, newPostId: str, postContext: {},
-                     toRecipients: [], toCC: [], inReplyTo: str,
-                     sensitive: bool, commentsEnabled: bool,
-                     tags: [], attachImageFilename: str,
-                     mediaType: str, imageDescription: str, city: str,
-                     postObjectType: str, summary: str,
-                     inReplyToAtomUri: str, system_language: str,
-                     conversationId: str, low_bandwidth: str,
+                     http_prefix: str, content: str, status_number: str,
+                     published: str, new_post_id: str, post_context: {},
+                     to_recipients: [], to_cc: [], in_reply_to: str,
+                     sensitive: bool, comments_enabled: bool,
+                     tags: [], attach_image_filename: str,
+                     media_type: str, image_description: str, city: str,
+                     post_object_type: str, summary: str,
+                     in_reply_to_atom_uri: str, system_language: str,
+                     conversation_id: str, low_bandwidth: str,
                      content_license_url: str) -> {}:
     """Creates a new client-to-server post
     """
     domain_full = get_full_domain(domain, port)
-    idStr = \
+    id_str = \
         local_actor_url(http_prefix, nickname, domain_full) + \
-        '/statuses/' + statusNumber + '/replies'
-    newPostUrl = \
-        http_prefix + '://' + domain + '/@' + nickname + '/' + statusNumber
-    if not conversationId:
-        conversationId = newPostId
-    newPost = {
-        "@context": postContext,
-        'id': newPostId,
-        'conversation': conversationId,
-        'type': postObjectType,
+        '/statuses/' + status_number + '/replies'
+    new_post_url = \
+        http_prefix + '://' + domain + '/@' + nickname + '/' + status_number
+    if not conversation_id:
+        conversation_id = new_post_id
+    new_post = {
+        "@context": post_context,
+        'id': new_post_id,
+        'conversation': conversation_id,
+        'type': post_object_type,
         'summary': summary,
-        'inReplyTo': inReplyTo,
+        'inReplyTo': in_reply_to,
         'published': published,
-        'url': newPostUrl,
+        'url': new_post_url,
         'attributedTo': local_actor_url(http_prefix, nickname, domain_full),
-        'to': toRecipients,
-        'cc': toCC,
+        'to': to_recipients,
+        'cc': to_cc,
         'sensitive': sensitive,
-        'atomUri': newPostId,
-        'inReplyToAtomUri': inReplyToAtomUri,
-        'commentsEnabled': commentsEnabled,
-        'rejectReplies': not commentsEnabled,
+        'atomUri': new_post_id,
+        'inReplyToAtomUri': in_reply_to_atom_uri,
+        'commentsEnabled': comments_enabled,
+        'rejectReplies': not comments_enabled,
         'mediaType': 'text/html',
         'content': content,
         'contentMap': {
@@ -1184,204 +1199,208 @@ def _create_post_c2s(base_dir: str, nickname: str, domain: str, port: int,
         'attachment': [],
         'tag': tags,
         'replies': {
-            'id': idStr,
+            'id': id_str,
             'type': 'Collection',
             'first': {
                 'type': 'CollectionPage',
-                'next': idStr + '?only_other_accounts=true&page=true',
-                'partOf': idStr,
+                'next': id_str + '?only_other_accounts=true&page=true',
+                'partOf': id_str,
                 'items': []
             }
         }
     }
-    if attachImageFilename:
-        newPost = \
+    if attach_image_filename:
+        new_post = \
             attach_media(base_dir, http_prefix, nickname, domain, port,
-                         newPost, attachImageFilename,
-                         mediaType, imageDescription, city, low_bandwidth,
+                         new_post, attach_image_filename,
+                         media_type, image_description, city, low_bandwidth,
                          content_license_url)
-    return newPost
+    return new_post
 
 
-def _create_post_place_and_time(eventDate: str, endDate: str,
-                                eventTime: str, endTime: str,
+def _create_post_place_and_time(event_date: str, end_date: str,
+                                event_time: str, end_time: str,
                                 summary: str, content: str,
-                                schedulePost: bool,
-                                eventUUID: str,
+                                schedule_post: bool,
+                                event_uuid: str,
                                 location: str,
                                 tags: []) -> str:
     """Adds a place and time to the tags on a new post
     """
-    endDateStr = None
-    if endDate:
-        eventName = summary
-        if not eventName:
-            eventName = content
-        endDateStr = endDate
-        if endTime:
-            if endTime.endswith('Z'):
-                endDateStr = endDate + 'T' + endTime
+    end_date_str = None
+    if end_date:
+        event_name = summary
+        if not event_name:
+            event_name = content
+        end_date_str = end_date
+        if end_time:
+            if end_time.endswith('Z'):
+                end_date_str = end_date + 'T' + end_time
             else:
-                endDateStr = endDate + 'T' + endTime + \
+                end_date_str = end_date + 'T' + end_time + \
                     ':00' + strftime("%z", gmtime())
         else:
-            endDateStr = endDate + 'T12:00:00Z'
+            end_date_str = end_date + 'T12:00:00Z'
 
     # get the starting date and time
-    eventDateStr = None
-    if eventDate:
-        eventName = summary
-        if not eventName:
-            eventName = content
-        eventDateStr = eventDate
-        if eventTime:
-            if eventTime.endswith('Z'):
-                eventDateStr = eventDate + 'T' + eventTime
+    event_date_str = None
+    if event_date:
+        event_name = summary
+        if not event_name:
+            event_name = content
+        event_date_str = event_date
+        if event_time:
+            if event_time.endswith('Z'):
+                event_date_str = event_date + 'T' + event_time
             else:
-                eventDateStr = eventDate + 'T' + eventTime + \
+                event_date_str = event_date + 'T' + event_time + \
                     ':00' + strftime("%z", gmtime())
         else:
-            eventDateStr = eventDate + 'T12:00:00Z'
-        if not endDateStr:
-            endDateStr = eventDateStr
-        if not schedulePost and not eventUUID:
+            event_date_str = event_date + 'T12:00:00Z'
+        if not end_date_str:
+            end_date_str = event_date_str
+        if not schedule_post and not event_uuid:
             tags.append({
                 "@context": "https://www.w3.org/ns/activitystreams",
                 "type": "Event",
-                "name": eventName,
-                "startTime": eventDateStr,
-                "endTime": endDateStr
+                "name": event_name,
+                "startTime": event_date_str,
+                "endTime": end_date_str
             })
-    if location and not eventUUID:
+    if location and not event_uuid:
         tags.append({
             "@context": "https://www.w3.org/ns/activitystreams",
             "type": "Place",
             "name": location
         })
-    return eventDateStr
+    return event_date_str
 
 
-def _consolidate_actors_list(actorsList: []) -> None:
+def _consolidate_actors_list(actors_list: []) -> None:
     """ consolidate duplicated actors
     https://domain/@nick gets merged with https://domain/users/nick
     """
-    possibleDuplicateActors = []
-    for ccActor in actorsList:
-        if '/@' in ccActor:
-            if ccActor not in possibleDuplicateActors:
-                possibleDuplicateActors.append(ccActor)
-    if possibleDuplicateActors:
-        uPaths = get_user_paths()
-        removeActors = []
-        for ccActor in possibleDuplicateActors:
-            for usrPath in uPaths:
-                ccActorFull = ccActor.replace('/@', usrPath)
-                if ccActorFull in actorsList:
-                    if ccActor not in removeActors:
-                        removeActors.append(ccActor)
+    possible_duplicate_actors = []
+    for cc_actor in actors_list:
+        if '/@' in cc_actor:
+            if cc_actor not in possible_duplicate_actors:
+                possible_duplicate_actors.append(cc_actor)
+    if possible_duplicate_actors:
+        u_paths = get_user_paths()
+        remove_actors = []
+        for cc_actor in possible_duplicate_actors:
+            for usrPath in u_paths:
+                cc_actorFull = cc_actor.replace('/@', usrPath)
+                if cc_actorFull in actors_list:
+                    if cc_actor not in remove_actors:
+                        remove_actors.append(cc_actor)
                     break
-        for ccActor in removeActors:
-            actorsList.remove(ccActor)
+        for cc_actor in remove_actors:
+            actors_list.remove(cc_actor)
 
 
-def _create_post_mentions(ccUrl: str, newPost: {},
-                          toRecipients: [], tags: []) -> None:
+def _create_post_mentions(cc_url: str, new_post: {},
+                          to_recipients: [], tags: []) -> None:
     """Updates mentions for a new post
     """
-    if not ccUrl:
+    if not cc_url:
         return
-    if len(ccUrl) == 0:
+    if len(cc_url) == 0:
         return
 
-    if newPost.get('object'):
-        if ccUrl not in newPost['object']['cc']:
-            newPost['object']['cc'] = [ccUrl] + newPost['object']['cc']
+    if new_post.get('object'):
+        if cc_url not in new_post['object']['cc']:
+            new_post['object']['cc'] = [cc_url] + new_post['object']['cc']
 
         # if this is a public post then include any mentions in cc
-        toCC = newPost['object']['cc']
-        if len(toRecipients) != 1:
+        to_cc = new_post['object']['cc']
+        if len(to_recipients) != 1:
             return
-        if toRecipients[0].endswith('#Public') and \
-           ccUrl.endswith('/followers'):
+        if to_recipients[0].endswith('#Public') and \
+           cc_url.endswith('/followers'):
             for tag in tags:
                 if tag['type'] != 'Mention':
                     continue
-                if tag['href'] not in toCC:
-                    newPost['object']['cc'].append(tag['href'])
+                if tag['href'] not in to_cc:
+                    new_post['object']['cc'].append(tag['href'])
 
-        _consolidate_actors_list(newPost['object']['cc'])
-        newPost['cc'] = newPost['object']['cc']
+        _consolidate_actors_list(new_post['object']['cc'])
+        new_post['cc'] = new_post['object']['cc']
     else:
-        if ccUrl not in newPost['cc']:
-            newPost['cc'] = [ccUrl] + newPost['cc']
+        if cc_url not in new_post['cc']:
+            new_post['cc'] = [cc_url] + new_post['cc']
         _consolidate_actors_list(['cc'])
 
 
 def _create_post_mod_report(base_dir: str,
-                            isModerationReport: bool, newPost: {},
-                            newPostId: str) -> None:
+                            is_moderation_report: bool, new_post: {},
+                            new_post_id: str) -> None:
     """ if this is a moderation report then add a status
     """
-    if not isModerationReport:
+    if not is_moderation_report:
         return
     # add status
-    if newPost.get('object'):
-        newPost['object']['moderationStatus'] = 'pending'
+    if new_post.get('object'):
+        new_post['object']['moderationStatus'] = 'pending'
     else:
-        newPost['moderationStatus'] = 'pending'
+        new_post['moderationStatus'] = 'pending'
     # save to index file
-    moderationIndexFile = base_dir + '/accounts/moderation.txt'
-    with open(moderationIndexFile, 'a+') as modFile:
-        modFile.write(newPostId + '\n')
+    moderation_index_file = base_dir + '/accounts/moderation.txt'
+    try:
+        with open(moderation_index_file, 'a+') as mod_file:
+            mod_file.write(new_post_id + '\n')
+    except OSError:
+        print('EX: unable to write moderation index file ' +
+              moderation_index_file)
 
 
-def get_actor_from_in_reply_to(inReplyTo: str) -> str:
+def get_actor_from_in_reply_to(in_reply_to: str) -> str:
     """Tries to get the replied to actor from the inReplyTo post id
     Note: this will not always be successful for some instance types
     """
-    replyNickname = get_nickname_from_actor(inReplyTo)
+    replyNickname = get_nickname_from_actor(in_reply_to)
     if not replyNickname:
         return None
-    replyActor = None
-    if '/' + replyNickname + '/' in inReplyTo:
-        replyActor = \
-            inReplyTo.split('/' + replyNickname + '/')[0] + \
+    reply_actor = None
+    if '/' + replyNickname + '/' in in_reply_to:
+        reply_actor = \
+            in_reply_to.split('/' + replyNickname + '/')[0] + \
             '/' + replyNickname
-    elif '#' + replyNickname + '#' in inReplyTo:
-        replyActor = \
-            inReplyTo.split('#' + replyNickname + '#')[0] + \
+    elif '#' + replyNickname + '#' in in_reply_to:
+        reply_actor = \
+            in_reply_to.split('#' + replyNickname + '#')[0] + \
             '#' + replyNickname
-        replyActor = replyActor.replace('#', '/')
-    if not replyActor:
+        reply_actor = reply_actor.replace('#', '/')
+    if not reply_actor:
         return None
-    if '://' not in replyActor:
+    if '://' not in reply_actor:
         return None
-    return replyActor
+    return reply_actor
 
 
 def _create_post_base(base_dir: str,
                       nickname: str, domain: str, port: int,
-                      toUrl: str, ccUrl: str, http_prefix: str, content: str,
-                      followersOnly: bool, saveToFile: bool,
-                      client_to_server: bool, commentsEnabled: bool,
-                      attachImageFilename: str,
-                      mediaType: str, imageDescription: str, city: str,
-                      isModerationReport: bool,
-                      isArticle: bool,
-                      inReplyTo: str,
-                      inReplyToAtomUri: str,
-                      subject: str, schedulePost: bool,
-                      eventDate: str, eventTime: str,
+                      to_url: str, cc_url: str, http_prefix: str, content: str,
+                      followers_only: bool, save_to_file: bool,
+                      client_to_server: bool, comments_enabled: bool,
+                      attach_image_filename: str,
+                      media_type: str, image_description: str, city: str,
+                      is_moderation_report: bool,
+                      is_article: bool,
+                      in_reply_to: str,
+                      in_reply_to_atom_uri: str,
+                      subject: str, schedule_post: bool,
+                      event_date: str, event_time: str,
                       location: str,
-                      eventUUID: str, category: str,
-                      joinMode: str,
-                      endDate: str, endTime: str,
-                      maximumAttendeeCapacity: int,
-                      repliesModerationOption: str,
-                      anonymousParticipationEnabled: bool,
-                      eventStatus: str, ticketUrl: str,
+                      event_uuid: str, category: str,
+                      join_mode: str,
+                      end_date: str, end_time: str,
+                      maximum_attendee_capacity: int,
+                      replies_moderation_option: str,
+                      anonymous_participation_enabled: bool,
+                      event_status: str, ticket_url: str,
                       system_language: str,
-                      conversationId: str, low_bandwidth: bool,
+                      conversation_id: str, low_bandwidth: bool,
                       content_license_url: str) -> {}:
     """Creates a message
     """
@@ -1396,7 +1415,7 @@ def _create_post_base(base_dir: str,
         mentionedRecipients = ''
 
     tags = []
-    hashtagsDict = {}
+    hashtags_dict = {}
 
     domain = get_full_domain(domain, port)
 
@@ -1406,11 +1425,11 @@ def _create_post_base(base_dir: str,
             add_html_tags(base_dir, http_prefix,
                           nickname, domain, content,
                           mentionedRecipients,
-                          hashtagsDict, True)
+                          hashtags_dict, True)
 
     # replace emoji with unicode
     tags = []
-    for tagName, tag in hashtagsDict.items():
+    for tag_name, tag in hashtags_dict.items():
         tags.append(tag)
 
     # get list of tags
@@ -1419,17 +1438,17 @@ def _create_post_base(base_dir: str,
             replace_emoji_from_tags(None, base_dir, content, tags, 'content',
                                     False)
     # remove replaced emoji
-    hashtagsDictCopy = hashtagsDict.copy()
-    for tagName, tag in hashtagsDictCopy.items():
+    hashtags_dict_copy = hashtags_dict.copy()
+    for tag_name, tag in hashtags_dict_copy.items():
         if tag.get('name'):
             if tag['name'].startswith(':'):
                 if tag['name'] not in content:
-                    del hashtagsDict[tagName]
+                    del hashtags_dict[tag_name]
 
-    statusNumber, published = get_status_number()
-    newPostId = \
+    status_number, published = get_status_number()
+    new_post_id = \
         local_actor_url(http_prefix, nickname, domain) + \
-        '/statuses/' + statusNumber
+        '/statuses/' + status_number
 
     sensitive = False
     summary = None
@@ -1437,129 +1456,130 @@ def _create_post_base(base_dir: str,
         summary = remove_invalid_chars(valid_content_warning(subject))
         sensitive = True
 
-    toRecipients = []
-    toCC = []
-    if toUrl:
-        if not isinstance(toUrl, str):
-            print('ERROR: toUrl is not a string')
+    to_recipients = []
+    to_cc = []
+    if to_url:
+        if not isinstance(to_url, str):
+            print('ERROR: to_url is not a string')
             return None
-        toRecipients = [toUrl]
+        to_recipients = [to_url]
 
     # who to send to
     if mentionedRecipients:
         for mention in mentionedRecipients:
-            if mention not in toCC:
-                toCC.append(mention)
+            if mention not in to_cc:
+                to_cc.append(mention)
 
-    isPublic = False
-    for recipient in toRecipients:
+    is_public = False
+    for recipient in to_recipients:
         if recipient.endswith('#Public'):
-            isPublic = True
+            is_public = True
             break
 
     # create a list of hashtags
     # Only posts which are #Public are searchable by hashtag
-    if hashtagsDict:
-        for tagName, tag in hashtagsDict.items():
+    if hashtags_dict:
+        for tag_name, tag in hashtags_dict.items():
             if not post_tag_exists(tag['type'], tag['name'], tags):
                 tags.append(tag)
-            if isPublic:
-                _update_hashtags_index(base_dir, tag, newPostId)
+            if is_public:
+                _update_hashtags_index(base_dir, tag, new_post_id)
         # print('Content tags: ' + str(tags))
 
     sensitive, summary = \
         _create_post_cw_from_reply(base_dir, nickname, domain,
-                                   inReplyTo, sensitive, summary)
+                                   in_reply_to, sensitive, summary)
 
-    eventDateStr = \
-        _create_post_place_and_time(eventDate, endDate,
-                                    eventTime, endTime,
-                                    summary, content, schedulePost,
-                                    eventUUID, location, tags)
+    event_date_str = \
+        _create_post_place_and_time(event_date, end_date,
+                                    event_time, end_time,
+                                    summary, content, schedule_post,
+                                    event_uuid, location, tags)
 
-    postContext = get_individual_post_context()
+    post_context = get_individual_post_context()
 
-    if not isPublic:
+    if not is_public:
         # make sure that CC doesn't also contain a To address
         # eg. To: [ "https://mydomain/users/foo/followers" ]
         #     CC: [ "X", "Y", "https://mydomain/users/foo", "Z" ]
-        removeFromCC = []
-        for ccRecipient in toCC:
-            for sendToActor in toRecipients:
-                if ccRecipient in sendToActor and \
-                   ccRecipient not in removeFromCC:
-                    removeFromCC.append(ccRecipient)
+        remove_from_cc = []
+        for cc_recipient in to_cc:
+            for sendToActor in to_recipients:
+                if cc_recipient in sendToActor and \
+                   cc_recipient not in remove_from_cc:
+                    remove_from_cc.append(cc_recipient)
                     break
-        for ccRemoval in removeFromCC:
-            toCC.remove(ccRemoval)
+        for cc_removal in remove_from_cc:
+            to_cc.remove(cc_removal)
     else:
-        if inReplyTo:
+        if in_reply_to:
             # If this is a public post then get the actor being
             # replied to end ensure that it is within the CC list
-            replyActor = get_actor_from_in_reply_to(inReplyTo)
-            if replyActor:
-                if replyActor not in toCC:
-                    toCC.append(replyActor)
+            reply_actor = get_actor_from_in_reply_to(in_reply_to)
+            if reply_actor:
+                if reply_actor not in to_cc:
+                    to_cc.append(reply_actor)
 
     # the type of post to be made
-    postObjectType = 'Note'
-    if isArticle:
-        postObjectType = 'Article'
+    post_object_type = 'Note'
+    if is_article:
+        post_object_type = 'Article'
 
     if not client_to_server:
-        newPost = \
+        new_post = \
             _create_post_s2s(base_dir, nickname, domain, port,
-                             http_prefix, content, statusNumber,
-                             published, newPostId, postContext,
-                             toRecipients, toCC, inReplyTo,
-                             sensitive, commentsEnabled,
-                             tags, attachImageFilename,
-                             mediaType, imageDescription, city,
-                             postObjectType, summary,
-                             inReplyToAtomUri, system_language,
-                             conversationId, low_bandwidth,
+                             http_prefix, content, status_number,
+                             published, new_post_id, post_context,
+                             to_recipients, to_cc, in_reply_to,
+                             sensitive, comments_enabled,
+                             tags, attach_image_filename,
+                             media_type, image_description, city,
+                             post_object_type, summary,
+                             in_reply_to_atom_uri, system_language,
+                             conversation_id, low_bandwidth,
                              content_license_url)
     else:
-        newPost = \
+        new_post = \
             _create_post_c2s(base_dir, nickname, domain, port,
-                             http_prefix, content, statusNumber,
-                             published, newPostId, postContext,
-                             toRecipients, toCC, inReplyTo,
-                             sensitive, commentsEnabled,
-                             tags, attachImageFilename,
-                             mediaType, imageDescription, city,
-                             postObjectType, summary,
-                             inReplyToAtomUri, system_language,
-                             conversationId, low_bandwidth,
+                             http_prefix, content, status_number,
+                             published, new_post_id, post_context,
+                             to_recipients, to_cc, in_reply_to,
+                             sensitive, comments_enabled,
+                             tags, attach_image_filename,
+                             media_type, image_description, city,
+                             post_object_type, summary,
+                             in_reply_to_atom_uri, system_language,
+                             conversation_id, low_bandwidth,
                              content_license_url)
 
-    _create_post_mentions(ccUrl, newPost, toRecipients, tags)
+    _create_post_mentions(cc_url, new_post, to_recipients, tags)
 
-    _create_post_mod_report(base_dir, isModerationReport, newPost, newPostId)
+    _create_post_mod_report(base_dir, is_moderation_report,
+                            new_post, new_post_id)
 
     # If a patch has been posted - i.e. the output from
     # git format-patch - then convert the activitypub type
-    convert_post_to_patch(base_dir, nickname, domain, newPost)
+    convert_post_to_patch(base_dir, nickname, domain, new_post)
 
-    if schedulePost:
-        if eventDate and eventTime:
+    if schedule_post:
+        if event_date and event_time:
             # add an item to the scheduled post index file
             _add_schedule_post(base_dir, nickname, domain,
-                               eventDateStr, newPostId)
-            save_post_to_box(base_dir, http_prefix, newPostId,
-                             nickname, domain, newPost, 'scheduled')
+                               event_date_str, new_post_id)
+            save_post_to_box(base_dir, http_prefix, new_post_id,
+                             nickname, domain, new_post, 'scheduled')
         else:
             print('Unable to create scheduled post without ' +
                   'date and time values')
-            return newPost
-    elif saveToFile:
-        if isArticle:
-            save_post_to_box(base_dir, http_prefix, newPostId,
-                             nickname, domain, newPost, 'tlblogs')
+            return new_post
+    elif save_to_file:
+        if is_article:
+            save_post_to_box(base_dir, http_prefix, new_post_id,
+                             nickname, domain, new_post, 'tlblogs')
         else:
-            save_post_to_box(base_dir, http_prefix, newPostId,
-                             nickname, domain, newPost, 'outbox')
-    return newPost
+            save_post_to_box(base_dir, http_prefix, new_post_id,
+                             nickname, domain, new_post, 'outbox')
+    return new_post
 
 
 def outbox_message_create_wrap(http_prefix: str,
@@ -1570,18 +1590,18 @@ def outbox_message_create_wrap(http_prefix: str,
     """
 
     domain = get_full_domain(domain, port)
-    statusNumber, published = get_status_number()
+    status_number, published = get_status_number()
     if message_json.get('published'):
         published = message_json['published']
-    newPostId = \
+    new_post_id = \
         local_actor_url(http_prefix, nickname, domain) + \
-        '/statuses/' + statusNumber
+        '/statuses/' + status_number
     cc = []
     if message_json.get('cc'):
         cc = message_json['cc']
-    newPost = {
+    new_post = {
         "@context": "https://www.w3.org/ns/activitystreams",
-        'id': newPostId + '/activity',
+        'id': new_post_id + '/activity',
         'type': 'Create',
         'actor': local_actor_url(http_prefix, nickname, domain),
         'published': published,
@@ -1589,13 +1609,13 @@ def outbox_message_create_wrap(http_prefix: str,
         'cc': cc,
         'object': message_json
     }
-    newPost['object']['id'] = newPost['id']
-    newPost['object']['url'] = \
-        http_prefix + '://' + domain + '/@' + nickname + '/' + statusNumber
-    newPost['object']['atomUri'] = \
+    new_post['object']['id'] = new_post['id']
+    new_post['object']['url'] = \
+        http_prefix + '://' + domain + '/@' + nickname + '/' + status_number
+    new_post['object']['atomUri'] = \
         local_actor_url(http_prefix, nickname, domain) + \
-        '/statuses/' + statusNumber
-    return newPost
+        '/statuses/' + status_number
+    return new_post
 
 
 def _post_is_addressed_to_followers(base_dir: str,
@@ -1608,56 +1628,56 @@ def _post_is_addressed_to_followers(base_dir: str,
 
     if not post_json_object.get('object'):
         return False
-    toList = []
-    ccList = []
+    to_list = []
+    cc_list = []
     if post_json_object['type'] != 'Update' and \
        has_object_dict(post_json_object):
         if post_json_object['object'].get('to'):
-            toList = post_json_object['object']['to']
+            to_list = post_json_object['object']['to']
         if post_json_object['object'].get('cc'):
-            ccList = post_json_object['object']['cc']
+            cc_list = post_json_object['object']['cc']
     else:
         if post_json_object.get('to'):
-            toList = post_json_object['to']
+            to_list = post_json_object['to']
         if post_json_object.get('cc'):
-            ccList = post_json_object['cc']
+            cc_list = post_json_object['cc']
 
-    followersUrl = \
+    followers_url = \
         local_actor_url(http_prefix, nickname, domain_full) + '/followers'
 
     # does the followers url exist in 'to' or 'cc' lists?
-    addressedToFollowers = False
-    if followersUrl in toList:
-        addressedToFollowers = True
-    elif followersUrl in ccList:
-        addressedToFollowers = True
-    return addressedToFollowers
+    addressed_to_followers = False
+    if followers_url in to_list:
+        addressed_to_followers = True
+    elif followers_url in cc_list:
+        addressed_to_followers = True
+    return addressed_to_followers
 
 
 def pin_post(base_dir: str, nickname: str, domain: str,
-             pinnedContent: str, followersOnly: bool) -> None:
+             pinned_content: str, followers_only: bool) -> None:
     """Pins the given post Id to the profile of then given account
     """
-    accountDir = acct_dir(base_dir, nickname, domain)
-    pinnedFilename = accountDir + '/pinToProfile.txt'
+    account_dir = acct_dir(base_dir, nickname, domain)
+    pinned_filename = account_dir + '/pinToProfile.txt'
     try:
-        with open(pinnedFilename, 'w+') as pinFile:
-            pinFile.write(pinnedContent)
+        with open(pinned_filename, 'w+') as pinFile:
+            pinFile.write(pinned_content)
     except OSError:
-        print('EX: unable to write ' + pinnedFilename)
+        print('EX: unable to write ' + pinned_filename)
 
 
 def undo_pinned_post(base_dir: str, nickname: str, domain: str) -> None:
     """Removes pinned content for then given account
     """
-    accountDir = acct_dir(base_dir, nickname, domain)
-    pinnedFilename = accountDir + '/pinToProfile.txt'
-    if not os.path.isfile(pinnedFilename):
+    account_dir = acct_dir(base_dir, nickname, domain)
+    pinned_filename = account_dir + '/pinToProfile.txt'
+    if not os.path.isfile(pinned_filename):
         return
     try:
-        os.remove(pinnedFilename)
+        os.remove(pinned_filename)
     except OSError:
-        print('EX: undo_pinned_post unable to delete ' + pinnedFilename)
+        print('EX: undo_pinned_post unable to delete ' + pinned_filename)
 
 
 def get_pinned_post_as_json(base_dir: str, http_prefix: str,
@@ -1665,30 +1685,30 @@ def get_pinned_post_as_json(base_dir: str, http_prefix: str,
                             domain_full: str, system_language: str) -> {}:
     """Returns the pinned profile post as json
     """
-    accountDir = acct_dir(base_dir, nickname, domain)
-    pinnedFilename = accountDir + '/pinToProfile.txt'
-    pinnedPostJson = {}
+    account_dir = acct_dir(base_dir, nickname, domain)
+    pinned_filename = account_dir + '/pinToProfile.txt'
+    pinned_post_json = {}
     actor = local_actor_url(http_prefix, nickname, domain_full)
-    if os.path.isfile(pinnedFilename):
-        pinnedContent = None
-        with open(pinnedFilename, 'r') as pinFile:
-            pinnedContent = pinFile.read()
-        if pinnedContent:
-            pinnedPostJson = {
+    if os.path.isfile(pinned_filename):
+        pinned_content = None
+        with open(pinned_filename, 'r') as pin_file:
+            pinned_content = pin_file.read()
+        if pinned_content:
+            pinned_post_json = {
                 'atomUri': actor + '/pinned',
                 'attachment': [],
                 'attributedTo': actor,
                 'cc': [
                     actor + '/followers'
                 ],
-                'content': pinnedContent,
+                'content': pinned_content,
                 'contentMap': {
-                    system_language: pinnedContent
+                    system_language: pinned_content
                 },
                 'id': actor + '/pinned',
                 'inReplyTo': None,
                 'inReplyToAtomUri': None,
-                'published': file_last_modified(pinnedFilename),
+                'published': file_last_modified(pinned_filename),
                 'replies': {},
                 'sensitive': False,
                 'summary': None,
@@ -1697,7 +1717,7 @@ def get_pinned_post_as_json(base_dir: str, http_prefix: str,
                 'type': 'Note',
                 'url': replace_users_with_at(actor) + '/pinned'
             }
-    return pinnedPostJson
+    return pinned_post_json
 
 
 def json_pin_post(base_dir: str, http_prefix: str,
@@ -1705,192 +1725,198 @@ def json_pin_post(base_dir: str, http_prefix: str,
                   domain_full: str, system_language: str) -> {}:
     """Returns a pinned post as json
     """
-    pinnedPostJson = \
+    pinned_post_json = \
         get_pinned_post_as_json(base_dir, http_prefix,
                                 nickname, domain,
                                 domain_full, system_language)
-    itemsList = []
-    if pinnedPostJson:
-        itemsList = [pinnedPostJson]
+    items_list = []
+    if pinned_post_json:
+        items_list = [pinned_post_json]
 
     actor = local_actor_url(http_prefix, nickname, domain_full)
-    postContext = get_individual_post_context()
+    post_context = get_individual_post_context()
     return {
-        '@context': postContext,
+        '@context': post_context,
         'id': actor + '/collections/featured',
-        'orderedItems': itemsList,
-        'totalItems': len(itemsList),
+        'orderedItems': items_list,
+        'totalItems': len(items_list),
         'type': 'OrderedCollection'
     }
 
 
 def regenerate_index_for_box(base_dir: str,
-                             nickname: str, domain: str, boxName: str) -> None:
+                             nickname: str, domain: str,
+                             box_name: str) -> None:
     """Generates an index for the given box if it doesn't exist
     Used by unit tests to artificially create an index
     """
-    boxDir = acct_dir(base_dir, nickname, domain) + '/' + boxName
-    boxIndexFilename = boxDir + '.index'
+    box_dir = acct_dir(base_dir, nickname, domain) + '/' + box_name
+    boxIndexFilename = box_dir + '.index'
 
-    if not os.path.isdir(boxDir):
+    if not os.path.isdir(box_dir):
         return
     if os.path.isfile(boxIndexFilename):
         return
 
-    indexLines = []
-    for subdir, dirs, files in os.walk(boxDir):
+    index_lines = []
+    for subdir, dirs, files in os.walk(box_dir):
         for f in files:
             if ':##' not in f:
                 continue
-            indexLines.append(f)
+            index_lines.append(f)
         break
 
-    indexLines.sort(reverse=True)
+    index_lines.sort(reverse=True)
 
     result = ''
-    with open(boxIndexFilename, 'w+') as fp:
-        for line in indexLines:
-            result += line + '\n'
-            fp.write(line + '\n')
-    print('Index generated for ' + boxName + '\n' + result)
+    try:
+        with open(boxIndexFilename, 'w+') as fp_box:
+            for line in index_lines:
+                result += line + '\n'
+                fp_box.write(line + '\n')
+    except OSError:
+        print('EX: unable to generate index for ' + box_name + ' ' + result)
+    print('Index generated for ' + box_name + '\n' + result)
 
 
 def create_public_post(base_dir: str,
                        nickname: str, domain: str, port: int, http_prefix: str,
-                       content: str, followersOnly: bool, saveToFile: bool,
-                       client_to_server: bool, commentsEnabled: bool,
-                       attachImageFilename: str, mediaType: str,
-                       imageDescription: str, city: str,
-                       inReplyTo: str,
-                       inReplyToAtomUri: str, subject: str,
-                       schedulePost: bool,
-                       eventDate: str, eventTime: str,
+                       content: str, followers_only: bool, save_to_file: bool,
+                       client_to_server: bool, comments_enabled: bool,
+                       attach_image_filename: str, media_type: str,
+                       image_description: str, city: str,
+                       in_reply_to: str,
+                       in_reply_to_atom_uri: str, subject: str,
+                       schedule_post: bool,
+                       event_date: str, event_time: str,
                        location: str,
-                       isArticle: bool,
+                       is_article: bool,
                        system_language: str,
-                       conversationId: str, low_bandwidth: bool,
+                       conversation_id: str, low_bandwidth: bool,
                        content_license_url: str) -> {}:
     """Public post
     """
     domain_full = get_full_domain(domain, port)
-    isModerationReport = False
-    eventUUID = None
+    is_moderation_report = False
+    event_uuid = None
     category = None
-    joinMode = None
-    endDate = None
-    endTime = None
-    maximumAttendeeCapacity = None
-    repliesModerationOption = None
-    anonymousParticipationEnabled = None
-    eventStatus = None
-    ticketUrl = None
-    localActor = local_actor_url(http_prefix, nickname, domain_full)
+    join_mode = None
+    end_date = None
+    end_time = None
+    maximum_attendee_capacity = None
+    replies_moderation_option = None
+    anonymous_participation_enabled = None
+    event_status = None
+    ticket_url = None
+    local_actor = local_actor_url(http_prefix, nickname, domain_full)
     return _create_post_base(base_dir, nickname, domain, port,
                              'https://www.w3.org/ns/activitystreams#Public',
-                             localActor + '/followers',
-                             http_prefix, content, followersOnly, saveToFile,
-                             client_to_server, commentsEnabled,
-                             attachImageFilename, mediaType,
-                             imageDescription, city,
-                             isModerationReport, isArticle,
-                             inReplyTo, inReplyToAtomUri, subject,
-                             schedulePost, eventDate, eventTime, location,
-                             eventUUID, category, joinMode, endDate, endTime,
-                             maximumAttendeeCapacity,
-                             repliesModerationOption,
-                             anonymousParticipationEnabled,
-                             eventStatus, ticketUrl, system_language,
-                             conversationId, low_bandwidth,
+                             local_actor + '/followers',
+                             http_prefix, content, followers_only,
+                             save_to_file,
+                             client_to_server, comments_enabled,
+                             attach_image_filename, media_type,
+                             image_description, city,
+                             is_moderation_report, is_article,
+                             in_reply_to, in_reply_to_atom_uri, subject,
+                             schedule_post, event_date, event_time, location,
+                             event_uuid, category, join_mode,
+                             end_date, end_time,
+                             maximum_attendee_capacity,
+                             replies_moderation_option,
+                             anonymous_participation_enabled,
+                             event_status, ticket_url, system_language,
+                             conversation_id, low_bandwidth,
                              content_license_url)
 
 
 def _append_citations_to_blog_post(base_dir: str,
                                    nickname: str, domain: str,
-                                   blogJson: {}) -> None:
+                                   blog_json: {}) -> None:
     """Appends any citations to a new blog post
     """
     # append citations tags, stored in a file
-    citationsFilename = \
+    citations_filename = \
         acct_dir(base_dir, nickname, domain) + '/.citations.txt'
-    if not os.path.isfile(citationsFilename):
+    if not os.path.isfile(citations_filename):
         return
-    citationsSeparator = '#####'
-    with open(citationsFilename, 'r') as f:
+    citations_separator = '#####'
+    with open(citations_filename, 'r') as f:
         citations = f.readlines()
         for line in citations:
-            if citationsSeparator not in line:
+            if citations_separator not in line:
                 continue
-            sections = line.strip().split(citationsSeparator)
+            sections = line.strip().split(citations_separator)
             if len(sections) != 3:
                 continue
             # dateStr = sections[0]
             title = sections[1]
             link = sections[2]
-            tagJson = {
+            tag_json = {
                 "type": "Article",
                 "name": title,
                 "url": link
             }
-            blogJson['object']['tag'].append(tagJson)
+            blog_json['object']['tag'].append(tag_json)
 
 
 def create_blog_post(base_dir: str,
                      nickname: str, domain: str, port: int, http_prefix: str,
-                     content: str, followersOnly: bool, saveToFile: bool,
-                     client_to_server: bool, commentsEnabled: bool,
-                     attachImageFilename: str, mediaType: str,
-                     imageDescription: str, city: str,
-                     inReplyTo: str, inReplyToAtomUri: str,
-                     subject: str, schedulePost: bool,
-                     eventDate: str, eventTime: str,
+                     content: str, followers_only: bool, save_to_file: bool,
+                     client_to_server: bool, comments_enabled: bool,
+                     attach_image_filename: str, media_type: str,
+                     image_description: str, city: str,
+                     in_reply_to: str, in_reply_to_atom_uri: str,
+                     subject: str, schedule_post: bool,
+                     event_date: str, event_time: str,
                      location: str, system_language: str,
-                     conversationId: str, low_bandwidth: bool,
+                     conversation_id: str, low_bandwidth: bool,
                      content_license_url: str) -> {}:
-    blogJson = \
+    blog_json = \
         create_public_post(base_dir,
                            nickname, domain, port, http_prefix,
-                           content, followersOnly, saveToFile,
-                           client_to_server, commentsEnabled,
-                           attachImageFilename, mediaType,
-                           imageDescription, city,
-                           inReplyTo, inReplyToAtomUri, subject,
-                           schedulePost,
-                           eventDate, eventTime, location,
-                           True, system_language, conversationId,
+                           content, followers_only, save_to_file,
+                           client_to_server, comments_enabled,
+                           attach_image_filename, media_type,
+                           image_description, city,
+                           in_reply_to, in_reply_to_atom_uri, subject,
+                           schedule_post,
+                           event_date, event_time, location,
+                           True, system_language, conversation_id,
                            low_bandwidth, content_license_url)
-    blogJson['object']['url'] = \
-        blogJson['object']['url'].replace('/@', '/users/')
-    _append_citations_to_blog_post(base_dir, nickname, domain, blogJson)
+    blog_json['object']['url'] = \
+        blog_json['object']['url'].replace('/@', '/users/')
+    _append_citations_to_blog_post(base_dir, nickname, domain, blog_json)
 
-    return blogJson
+    return blog_json
 
 
 def create_news_post(base_dir: str,
                      domain: str, port: int, http_prefix: str,
-                     content: str, followersOnly: bool, saveToFile: bool,
-                     attachImageFilename: str, mediaType: str,
-                     imageDescription: str, city: str,
+                     content: str, followers_only: bool, save_to_file: bool,
+                     attach_image_filename: str, media_type: str,
+                     image_description: str, city: str,
                      subject: str, system_language: str,
-                     conversationId: str, low_bandwidth: bool,
+                     conversation_id: str, low_bandwidth: bool,
                      content_license_url: str) -> {}:
     client_to_server = False
-    inReplyTo = None
-    inReplyToAtomUri = None
-    schedulePost = False
-    eventDate = None
-    eventTime = None
+    in_reply_to = None
+    in_reply_to_atom_uri = None
+    schedule_post = False
+    event_date = None
+    event_time = None
     location = None
     blog = \
         create_public_post(base_dir,
                            'news', domain, port, http_prefix,
-                           content, followersOnly, saveToFile,
+                           content, followers_only, save_to_file,
                            client_to_server, False,
-                           attachImageFilename, mediaType,
-                           imageDescription, city,
-                           inReplyTo, inReplyToAtomUri, subject,
-                           schedulePost,
-                           eventDate, eventTime, location,
-                           True, system_language, conversationId,
+                           attach_image_filename, media_type,
+                           image_description, city,
+                           in_reply_to, in_reply_to_atom_uri, subject,
+                           schedule_post,
+                           event_date, event_time, location,
+                           True, system_language, conversation_id,
                            low_bandwidth, content_license_url)
     blog['object']['type'] = 'Article'
     return blog
@@ -1899,26 +1925,26 @@ def create_news_post(base_dir: str,
 def create_question_post(base_dir: str,
                          nickname: str, domain: str, port: int,
                          http_prefix: str,
-                         content: str, qOptions: [],
-                         followersOnly: bool, saveToFile: bool,
-                         client_to_server: bool, commentsEnabled: bool,
-                         attachImageFilename: str, mediaType: str,
-                         imageDescription: str, city: str,
+                         content: str, q_options: [],
+                         followers_only: bool, save_to_file: bool,
+                         client_to_server: bool, comments_enabled: bool,
+                         attach_image_filename: str, media_type: str,
+                         image_description: str, city: str,
                          subject: str, durationDays: int,
                          system_language: str, low_bandwidth: bool,
                          content_license_url: str) -> {}:
     """Question post with multiple choice options
     """
     domain_full = get_full_domain(domain, port)
-    localActor = local_actor_url(http_prefix, nickname, domain_full)
+    local_actor = local_actor_url(http_prefix, nickname, domain_full)
     message_json = \
         _create_post_base(base_dir, nickname, domain, port,
                           'https://www.w3.org/ns/activitystreams#Public',
-                          localActor + '/followers',
-                          http_prefix, content, followersOnly, saveToFile,
-                          client_to_server, commentsEnabled,
-                          attachImageFilename, mediaType,
-                          imageDescription, city,
+                          local_actor + '/followers',
+                          http_prefix, content, followers_only, save_to_file,
+                          client_to_server, comments_enabled,
+                          attach_image_filename, media_type,
+                          image_description, city,
                           False, False, None, None, subject,
                           False, None, None, None, None, None,
                           None, None, None,
@@ -1928,15 +1954,15 @@ def create_question_post(base_dir: str,
     message_json['object']['oneOf'] = []
     message_json['object']['votersCount'] = 0
     curr_time = datetime.datetime.utcnow()
-    daysSinceEpoch = \
+    days_since_epoch = \
         int((curr_time - datetime.datetime(1970, 1, 1)).days + durationDays)
-    endTime = datetime.datetime(1970, 1, 1) + \
-        datetime.timedelta(daysSinceEpoch)
-    message_json['object']['endTime'] = endTime.strftime("%Y-%m-%dT%H:%M:%SZ")
-    for questionOption in qOptions:
+    end_time = datetime.datetime(1970, 1, 1) + \
+        datetime.timedelta(days_since_epoch)
+    message_json['object']['endTime'] = end_time.strftime("%Y-%m-%dT%H:%M:%SZ")
+    for question_option in q_options:
         message_json['object']['oneOf'].append({
             "type": "Note",
-            "name": questionOption,
+            "name": question_option,
             "replies": {
                 "type": "Collection",
                 "totalItems": 0
@@ -1948,68 +1974,70 @@ def create_question_post(base_dir: str,
 def create_unlisted_post(base_dir: str,
                          nickname: str, domain: str, port: int,
                          http_prefix: str,
-                         content: str, followersOnly: bool, saveToFile: bool,
-                         client_to_server: bool, commentsEnabled: bool,
-                         attachImageFilename: str, mediaType: str,
-                         imageDescription: str, city: str,
-                         inReplyTo: str, inReplyToAtomUri: str,
-                         subject: str, schedulePost: bool,
-                         eventDate: str, eventTime: str,
+                         content: str, followers_only: bool,
+                         save_to_file: bool,
+                         client_to_server: bool, comments_enabled: bool,
+                         attach_image_filename: str, media_type: str,
+                         image_description: str, city: str,
+                         in_reply_to: str, in_reply_to_atom_uri: str,
+                         subject: str, schedule_post: bool,
+                         event_date: str, event_time: str,
                          location: str, system_language: str,
-                         conversationId: str, low_bandwidth: bool,
+                         conversation_id: str, low_bandwidth: bool,
                          content_license_url: str) -> {}:
     """Unlisted post. This has the #Public and followers links inverted.
     """
     domain_full = get_full_domain(domain, port)
-    localActor = local_actor_url(http_prefix, nickname, domain_full)
+    local_actor = local_actor_url(http_prefix, nickname, domain_full)
     return _create_post_base(base_dir, nickname, domain, port,
-                             localActor + '/followers',
+                             local_actor + '/followers',
                              'https://www.w3.org/ns/activitystreams#Public',
-                             http_prefix, content, followersOnly, saveToFile,
-                             client_to_server, commentsEnabled,
-                             attachImageFilename, mediaType,
-                             imageDescription, city,
+                             http_prefix, content, followers_only,
+                             save_to_file,
+                             client_to_server, comments_enabled,
+                             attach_image_filename, media_type,
+                             image_description, city,
                              False, False,
-                             inReplyTo, inReplyToAtomUri, subject,
-                             schedulePost, eventDate, eventTime, location,
+                             in_reply_to, in_reply_to_atom_uri, subject,
+                             schedule_post, event_date, event_time, location,
                              None, None, None, None, None,
                              None, None, None, None, None, system_language,
-                             conversationId, low_bandwidth,
+                             conversation_id, low_bandwidth,
                              content_license_url)
 
 
 def create_followers_only_post(base_dir: str,
                                nickname: str, domain: str, port: int,
                                http_prefix: str,
-                               content: str, followersOnly: bool,
-                               saveToFile: bool,
-                               client_to_server: bool, commentsEnabled: bool,
-                               attachImageFilename: str, mediaType: str,
-                               imageDescription: str, city: str,
-                               inReplyTo: str,
-                               inReplyToAtomUri: str,
-                               subject: str, schedulePost: bool,
-                               eventDate: str, eventTime: str,
+                               content: str, followers_only: bool,
+                               save_to_file: bool,
+                               client_to_server: bool, comments_enabled: bool,
+                               attach_image_filename: str, media_type: str,
+                               image_description: str, city: str,
+                               in_reply_to: str,
+                               in_reply_to_atom_uri: str,
+                               subject: str, schedule_post: bool,
+                               event_date: str, event_time: str,
                                location: str, system_language: str,
-                               conversationId: str, low_bandwidth: bool,
+                               conversation_id: str, low_bandwidth: bool,
                                content_license_url: str) -> {}:
     """Followers only post
     """
     domain_full = get_full_domain(domain, port)
-    localActor = local_actor_url(http_prefix, nickname, domain_full)
+    local_actor = local_actor_url(http_prefix, nickname, domain_full)
     return _create_post_base(base_dir, nickname, domain, port,
-                             localActor + '/followers',
-                             None,
-                             http_prefix, content, followersOnly, saveToFile,
-                             client_to_server, commentsEnabled,
-                             attachImageFilename, mediaType,
-                             imageDescription, city,
+                             local_actor + '/followers', None,
+                             http_prefix, content, followers_only,
+                             save_to_file,
+                             client_to_server, comments_enabled,
+                             attach_image_filename, media_type,
+                             image_description, city,
                              False, False,
-                             inReplyTo, inReplyToAtomUri, subject,
-                             schedulePost, eventDate, eventTime, location,
+                             in_reply_to, in_reply_to_atom_uri, subject,
+                             schedule_post, event_date, event_time, location,
                              None, None, None, None, None,
                              None, None, None, None, None, system_language,
-                             conversationId, low_bandwidth,
+                             conversation_id, low_bandwidth,
                              content_license_url)
 
 
@@ -2032,18 +2060,18 @@ def get_mentioned_people(base_dir: str, http_prefix: str,
             if not os.path.isdir(base_dir + '/accounts/' + handle):
                 continue
         else:
-            externalDomain = handle.split('@')[1]
-            if not ('.' in externalDomain or
-                    externalDomain == 'localhost'):
+            external_domain = handle.split('@')[1]
+            if not ('.' in external_domain or
+                    external_domain == 'localhost'):
                 continue
-        mentionedNickname = handle.split('@')[0]
-        mentionedDomain = handle.split('@')[1].strip('\n').strip('\r')
-        if ':' in mentionedDomain:
-            mentionedDomain = remove_domain_port(mentionedDomain)
-        if not valid_nickname(mentionedDomain, mentionedNickname):
+        mentioned_nickname = handle.split('@')[0]
+        mentioned_domain = handle.split('@')[1].strip('\n').strip('\r')
+        if ':' in mentioned_domain:
+            mentioned_domain = remove_domain_port(mentioned_domain)
+        if not valid_nickname(mentioned_domain, mentioned_nickname):
             continue
         actor = \
-            local_actor_url(http_prefix, mentionedNickname,
+            local_actor_url(http_prefix, mentioned_nickname,
                             handle.split('@')[1])
         mentions.append(actor)
     return mentions
@@ -2052,50 +2080,50 @@ def get_mentioned_people(base_dir: str, http_prefix: str,
 def create_direct_message_post(base_dir: str,
                                nickname: str, domain: str, port: int,
                                http_prefix: str,
-                               content: str, followersOnly: bool,
-                               saveToFile: bool, client_to_server: bool,
-                               commentsEnabled: bool,
-                               attachImageFilename: str, mediaType: str,
-                               imageDescription: str, city: str,
-                               inReplyTo: str,
-                               inReplyToAtomUri: str,
+                               content: str, followers_only: bool,
+                               save_to_file: bool, client_to_server: bool,
+                               comments_enabled: bool,
+                               attach_image_filename: str, media_type: str,
+                               image_description: str, city: str,
+                               in_reply_to: str,
+                               in_reply_to_atom_uri: str,
                                subject: str, debug: bool,
-                               schedulePost: bool,
-                               eventDate: str, eventTime: str,
+                               schedule_post: bool,
+                               event_date: str, event_time: str,
                                location: str, system_language: str,
-                               conversationId: str, low_bandwidth: bool,
+                               conversation_id: str, low_bandwidth: bool,
                                content_license_url: str) -> {}:
     """Direct Message post
     """
     content = resolve_petnames(base_dir, nickname, domain, content)
-    mentionedPeople = \
+    mentioned_people = \
         get_mentioned_people(base_dir, http_prefix, content, domain, debug)
     if debug:
-        print('mentionedPeople: ' + str(mentionedPeople))
-    if not mentionedPeople:
+        print('mentioned_people: ' + str(mentioned_people))
+    if not mentioned_people:
         return None
-    postTo = None
-    postCc = None
+    post_to = None
+    post_cc = None
     message_json = \
         _create_post_base(base_dir, nickname, domain, port,
-                          postTo, postCc,
-                          http_prefix, content, followersOnly, saveToFile,
-                          client_to_server, commentsEnabled,
-                          attachImageFilename, mediaType,
-                          imageDescription, city,
+                          post_to, post_cc,
+                          http_prefix, content, followers_only, save_to_file,
+                          client_to_server, comments_enabled,
+                          attach_image_filename, media_type,
+                          image_description, city,
                           False, False,
-                          inReplyTo, inReplyToAtomUri, subject,
-                          schedulePost, eventDate, eventTime, location,
+                          in_reply_to, in_reply_to_atom_uri, subject,
+                          schedule_post, event_date, event_time, location,
                           None, None, None, None, None,
                           None, None, None, None, None, system_language,
-                          conversationId, low_bandwidth,
+                          conversation_id, low_bandwidth,
                           content_license_url)
     # mentioned recipients go into To rather than Cc
     message_json['to'] = message_json['object']['cc']
     message_json['object']['to'] = message_json['to']
     message_json['cc'] = []
     message_json['object']['cc'] = []
-    if schedulePost:
+    if schedule_post:
         post_id = remove_id_ending(message_json['object']['id'])
         save_post_to_box(base_dir, http_prefix, post_id,
                          nickname, domain, message_json, 'scheduled')
@@ -2104,10 +2132,10 @@ def create_direct_message_post(base_dir: str,
 
 def create_report_post(base_dir: str,
                        nickname: str, domain: str, port: int, http_prefix: str,
-                       content: str, followersOnly: bool, saveToFile: bool,
-                       client_to_server: bool, commentsEnabled: bool,
-                       attachImageFilename: str, mediaType: str,
-                       imageDescription: str, city: str,
+                       content: str, followers_only: bool, save_to_file: bool,
+                       client_to_server: bool, comments_enabled: bool,
+                       attach_image_filename: str, media_type: str,
+                       image_description: str, city: str,
                        debug: bool, subject: str, system_language: str,
                        low_bandwidth: bool,
                        content_license_url: str) -> {}:
@@ -2116,18 +2144,18 @@ def create_report_post(base_dir: str,
     domain_full = get_full_domain(domain, port)
 
     # add a title to distinguish moderation reports from other posts
-    reportTitle = 'Moderation Report'
+    report_title = 'Moderation Report'
     if not subject:
-        subject = reportTitle
+        subject = report_title
     else:
-        if not subject.startswith(reportTitle):
-            subject = reportTitle + ': ' + subject
+        if not subject.startswith(report_title):
+            subject = report_title + ': ' + subject
 
     # create the list of moderators from the moderators file
-    moderatorsList = []
-    moderatorsFile = base_dir + '/accounts/moderators.txt'
-    if os.path.isfile(moderatorsFile):
-        with open(moderatorsFile, 'r') as fileHandler:
+    moderators_list = []
+    moderators_file = base_dir + '/accounts/moderators.txt'
+    if os.path.isfile(moderators_file):
+        with open(moderators_file, 'r') as fileHandler:
             for line in fileHandler:
                 line = line.strip('\n').strip('\r')
                 if line.startswith('#'):
@@ -2138,49 +2166,50 @@ def create_report_post(base_dir: str,
                     line = line[1:]
                 if '@' in line:
                     nick = line.split('@')[0]
-                    moderatorActor = \
+                    moderator_actor = \
                         local_actor_url(http_prefix, nick, domain_full)
-                    if moderatorActor not in moderatorsList:
-                        moderatorsList.append(moderatorActor)
+                    if moderator_actor not in moderators_list:
+                        moderators_list.append(moderator_actor)
                     continue
                 if line.startswith('http') or line.startswith('hyper'):
                     # must be a local address - no remote moderators
                     if '://' + domain_full + '/' in line:
-                        if line not in moderatorsList:
-                            moderatorsList.append(line)
+                        if line not in moderators_list:
+                            moderators_list.append(line)
                 else:
                     if '/' not in line:
-                        moderatorActor = \
+                        moderator_actor = \
                             local_actor_url(http_prefix, line, domain_full)
-                        if moderatorActor not in moderatorsList:
-                            moderatorsList.append(moderatorActor)
-    if len(moderatorsList) == 0:
+                        if moderator_actor not in moderators_list:
+                            moderators_list.append(moderator_actor)
+    if len(moderators_list) == 0:
         # if there are no moderators then the admin becomes the moderator
-        adminNickname = get_config_param(base_dir, 'admin')
-        if adminNickname:
-            localActor = \
-                local_actor_url(http_prefix, adminNickname, domain_full)
-            moderatorsList.append(localActor)
-    if not moderatorsList:
+        admin_nickname = get_config_param(base_dir, 'admin')
+        if admin_nickname:
+            local_actor = \
+                local_actor_url(http_prefix, admin_nickname, domain_full)
+            moderators_list.append(local_actor)
+    if not moderators_list:
         return None
     if debug:
         print('DEBUG: Sending report to moderators')
-        print(str(moderatorsList))
-    postTo = moderatorsList
-    postCc = None
+        print(str(moderators_list))
+    post_to = moderators_list
+    post_cc = None
     post_json_object = None
-    for toUrl in postTo:
+    for to_url in post_to:
         # who is this report going to?
-        toNickname = toUrl.split('/users/')[1]
-        handle = toNickname + '@' + domain
+        to_nickname = to_url.split('/users/')[1]
+        handle = to_nickname + '@' + domain
 
         post_json_object = \
             _create_post_base(base_dir, nickname, domain, port,
-                              toUrl, postCc,
-                              http_prefix, content, followersOnly, saveToFile,
-                              client_to_server, commentsEnabled,
-                              attachImageFilename, mediaType,
-                              imageDescription, city,
+                              to_url, post_cc,
+                              http_prefix, content, followers_only,
+                              save_to_file,
+                              client_to_server, comments_enabled,
+                              attach_image_filename, media_type,
+                              image_description, city,
                               True, False, None, None, subject,
                               False, None, None, None, None, None,
                               None, None, None,
@@ -2191,179 +2220,179 @@ def create_report_post(base_dir: str,
 
         # save a notification file so that the moderator
         # knows something new has appeared
-        newReportFile = base_dir + '/accounts/' + handle + '/.newReport'
-        if os.path.isfile(newReportFile):
+        new_report_file = base_dir + '/accounts/' + handle + '/.newReport'
+        if os.path.isfile(new_report_file):
             continue
         try:
-            with open(newReportFile, 'w+') as fp:
-                fp.write(toUrl + '/moderation')
+            with open(new_report_file, 'w+') as fp_report:
+                fp_report.write(to_url + '/moderation')
         except OSError:
-            print('EX: create_report_post unable to write ' + newReportFile)
+            print('EX: create_report_post unable to write ' + new_report_file)
 
     return post_json_object
 
 
 def thread_send_post(session, post_jsonStr: str, federation_list: [],
-                     inboxUrl: str, base_dir: str,
-                     signatureHeaderJson: {}, postLog: [],
+                     inbox_url: str, base_dir: str,
+                     signature_header_json: {}, post_log: [],
                      debug: bool) -> None:
     """Sends a with retries
     """
     tries = 0
-    sendIntervalSec = 30
+    send_interval_sec = 30
     for attempt in range(20):
-        postResult = None
+        post_result = None
         unauthorized = False
         if debug:
-            print('Getting post_json_string for ' + inboxUrl)
+            print('Getting post_json_string for ' + inbox_url)
         try:
-            postResult, unauthorized, returnCode = \
+            post_result, unauthorized, return_code = \
                 post_json_string(session, post_jsonStr, federation_list,
-                                 inboxUrl, signatureHeaderJson,
+                                 inbox_url, signature_header_json,
                                  debug)
-            if returnCode >= 500 and returnCode < 600:
+            if return_code >= 500 and return_code < 600:
                 # if an instance is returning a code which indicates that
                 # it might have a runtime error, like 503, then don't
                 # continue to post to it
                 break
             if debug:
-                print('Obtained post_json_string for ' + inboxUrl +
+                print('Obtained post_json_string for ' + inbox_url +
                       ' unauthorized: ' + str(unauthorized))
         except Exception as ex:
             print('ERROR: post_json_string failed ' + str(ex))
         if unauthorized:
             print('WARN: thread_send_post: Post is unauthorized ' +
-                  inboxUrl + ' ' + post_jsonStr)
+                  inbox_url + ' ' + post_jsonStr)
             break
-        if postResult:
+        if post_result:
             logStr = 'Success on try ' + str(tries) + ': ' + post_jsonStr
         else:
             logStr = 'Retry ' + str(tries) + ': ' + post_jsonStr
-        postLog.append(logStr)
+        post_log.append(logStr)
         # keep the length of the log finite
         # Don't accumulate massive files on systems with limited resources
-        while len(postLog) > 16:
-            postLog.pop(0)
+        while len(post_log) > 16:
+            post_log.pop(0)
         if debug:
             # save the log file
-            postLogFilename = base_dir + '/post.log'
-            if os.path.isfile(postLogFilename):
-                with open(postLogFilename, 'a+') as logFile:
-                    logFile.write(logStr + '\n')
+            post_log_filename = base_dir + '/post.log'
+            if os.path.isfile(post_log_filename):
+                with open(post_log_filename, 'a+') as log_file:
+                    log_file.write(logStr + '\n')
             else:
-                with open(postLogFilename, 'w+') as logFile:
-                    logFile.write(logStr + '\n')
+                with open(post_log_filename, 'w+') as log_file:
+                    log_file.write(logStr + '\n')
 
-        if postResult:
+        if post_result:
             if debug:
-                print('DEBUG: successful json post to ' + inboxUrl)
+                print('DEBUG: successful json post to ' + inbox_url)
             # our work here is done
             break
         if debug:
             print(post_jsonStr)
-            print('DEBUG: json post to ' + inboxUrl +
+            print('DEBUG: json post to ' + inbox_url +
                   ' failed. Waiting for ' +
-                  str(sendIntervalSec) + ' seconds.')
-        time.sleep(sendIntervalSec)
+                  str(send_interval_sec) + ' seconds.')
+        time.sleep(send_interval_sec)
         tries += 1
 
 
 def send_post(signing_priv_key_pem: str, project_version: str,
               session, base_dir: str, nickname: str, domain: str, port: int,
-              toNickname: str, toDomain: str, toPort: int, cc: str,
-              http_prefix: str, content: str, followersOnly: bool,
-              saveToFile: bool, client_to_server: bool,
-              commentsEnabled: bool,
-              attachImageFilename: str, mediaType: str,
-              imageDescription: str, city: str,
-              federation_list: [], send_threads: [], postLog: [],
+              to_nickname: str, to_domain: str, to_port: int, cc: str,
+              http_prefix: str, content: str, followers_only: bool,
+              save_to_file: bool, client_to_server: bool,
+              comments_enabled: bool,
+              attach_image_filename: str, media_type: str,
+              image_description: str, city: str,
+              federation_list: [], send_threads: [], post_log: [],
               cached_webfingers: {}, person_cache: {},
-              isArticle: bool, system_language: str,
+              is_article: bool, system_language: str,
               shared_items_federated_domains: [],
-              sharedItemFederationTokens: {},
+              shared_item_federation_tokens: {},
               low_bandwidth: bool, content_license_url: str,
-              debug: bool = False, inReplyTo: str = None,
-              inReplyToAtomUri: str = None, subject: str = None) -> int:
+              debug: bool = False, in_reply_to: str = None,
+              in_reply_to_atom_uri: str = None, subject: str = None) -> int:
     """Post to another inbox. Used by unit tests.
     """
-    withDigest = True
-    conversationId = None
+    with_digest = True
+    conversation_id = None
 
-    if toNickname == 'inbox':
+    if to_nickname == 'inbox':
         # shared inbox actor on @domain@domain
-        toNickname = toDomain
+        to_nickname = to_domain
 
-    toDomain = get_full_domain(toDomain, toPort)
+    to_domain = get_full_domain(to_domain, to_port)
 
-    handle = http_prefix + '://' + toDomain + '/@' + toNickname
+    handle = http_prefix + '://' + to_domain + '/@' + to_nickname
 
     # lookup the inbox for the To handle
-    wfRequest = webfinger_handle(session, handle, http_prefix,
-                                 cached_webfingers,
-                                 domain, project_version, debug, False,
-                                 signing_priv_key_pem)
-    if not wfRequest:
+    wf_request = webfinger_handle(session, handle, http_prefix,
+                                  cached_webfingers,
+                                  domain, project_version, debug, False,
+                                  signing_priv_key_pem)
+    if not wf_request:
         return 1
-    if not isinstance(wfRequest, dict):
+    if not isinstance(wf_request, dict):
         print('WARN: Webfinger for ' + handle + ' did not return a dict. ' +
-              str(wfRequest))
+              str(wf_request))
         return 1
 
     if not client_to_server:
-        postToBox = 'inbox'
+        post_to_box = 'inbox'
     else:
-        postToBox = 'outbox'
-        if isArticle:
-            postToBox = 'tlblogs'
+        post_to_box = 'outbox'
+        if is_article:
+            post_to_box = 'tlblogs'
 
     # get the actor inbox for the To handle
-    originDomain = domain
-    (inboxUrl, pubKeyId, pubKey, toPersonId, sharedInbox, avatarUrl,
-     displayName, _) = get_person_box(signing_priv_key_pem,
-                                      originDomain,
-                                      base_dir, session, wfRequest,
-                                      person_cache,
-                                      project_version, http_prefix,
-                                      nickname, domain, postToBox,
-                                      72533)
+    origin_domain = domain
+    (inbox_url, pub_key_id, pub_key, to_person_id, shared_inbox, avatar_url,
+     display_name, _) = get_person_box(signing_priv_key_pem,
+                                       origin_domain,
+                                       base_dir, session, wf_request,
+                                       person_cache,
+                                       project_version, http_prefix,
+                                       nickname, domain, post_to_box,
+                                       72533)
 
-    if not inboxUrl:
+    if not inbox_url:
         return 3
-    if not pubKey:
+    if not pub_key:
         return 4
-    if not toPersonId:
+    if not to_person_id:
         return 5
-    # sharedInbox is optional
+    # shared_inbox is optional
 
     post_json_object = \
         _create_post_base(base_dir, nickname, domain, port,
-                          toPersonId, cc, http_prefix, content,
-                          followersOnly, saveToFile, client_to_server,
-                          commentsEnabled,
-                          attachImageFilename, mediaType,
-                          imageDescription, city,
-                          False, isArticle, inReplyTo,
-                          inReplyToAtomUri, subject,
+                          to_person_id, cc, http_prefix, content,
+                          followers_only, save_to_file, client_to_server,
+                          comments_enabled,
+                          attach_image_filename, media_type,
+                          image_description, city,
+                          False, is_article, in_reply_to,
+                          in_reply_to_atom_uri, subject,
                           False, None, None, None, None, None,
                           None, None, None,
                           None, None, None, None, None, system_language,
-                          conversationId, low_bandwidth,
+                          conversation_id, low_bandwidth,
                           content_license_url)
 
     # get the senders private key
-    privateKeyPem = _get_person_key(nickname, domain, base_dir, 'private')
-    if len(privateKeyPem) == 0:
+    private_key_pem = _get_person_key(nickname, domain, base_dir, 'private')
+    if len(private_key_pem) == 0:
         return 6
 
-    if toDomain not in inboxUrl:
+    if to_domain not in inbox_url:
         return 7
-    postPath = inboxUrl.split(toDomain, 1)[1]
+    postPath = inbox_url.split(to_domain, 1)[1]
 
     if not post_json_object.get('signature'):
         try:
-            signedPostJsonObject = post_json_object.copy()
-            generate_json_signature(signedPostJsonObject, privateKeyPem)
-            post_json_object = signedPostJsonObject
+            signed_post_json_object = post_json_object.copy()
+            generate_json_signature(signed_post_json_object, private_key_pem)
+            post_json_object = signed_post_json_object
         except Exception as ex:
             print('WARN: failed to JSON-LD sign post, ' + str(ex))
             pass
@@ -2373,31 +2402,31 @@ def send_post(signing_priv_key_pem: str, project_version: str,
     post_jsonStr = json.dumps(post_json_object)
 
     # construct the http header, including the message body digest
-    signatureHeaderJson = \
-        create_signed_header(None, privateKeyPem, nickname, domain, port,
-                             toDomain, toPort,
-                             postPath, http_prefix, withDigest, post_jsonStr,
+    signature_header_json = \
+        create_signed_header(None, private_key_pem, nickname, domain, port,
+                             to_domain, to_port,
+                             postPath, http_prefix, with_digest, post_jsonStr,
                              None)
 
     # if the "to" domain is within the shared items
     # federation list then send the token for this domain
     # so that it can request a catalog
-    if toDomain in shared_items_federated_domains:
+    if to_domain in shared_items_federated_domains:
         domain_full = get_full_domain(domain, port)
-        if sharedItemFederationTokens.get(domain_full):
-            signatureHeaderJson['Origin'] = domain_full
-            signatureHeaderJson['SharesCatalog'] = \
-                sharedItemFederationTokens[domain_full]
+        if shared_item_federation_tokens.get(domain_full):
+            signature_header_json['Origin'] = domain_full
+            signature_header_json['SharesCatalog'] = \
+                shared_item_federation_tokens[domain_full]
             if debug:
                 print('SharesCatalog added to header')
         elif debug:
-            print(domain_full + ' not in sharedItemFederationTokens')
+            print(domain_full + ' not in shared_item_federation_tokens')
     elif debug:
-        print(toDomain + ' not in shared_items_federated_domains ' +
+        print(to_domain + ' not in shared_items_federated_domains ' +
               str(shared_items_federated_domains))
 
     if debug:
-        print('signatureHeaderJson: ' + str(signatureHeaderJson))
+        print('signature_header_json: ' + str(signature_header_json))
 
     # Keep the number of threads being used small
     while len(send_threads) > 1000:
@@ -2410,9 +2439,9 @@ def send_post(signing_priv_key_pem: str, project_version: str,
                           args=(session,
                                 post_jsonStr,
                                 federation_list,
-                                inboxUrl, base_dir,
-                                signatureHeaderJson.copy(),
-                                postLog,
+                                inbox_url, base_dir,
+                                signature_header_json.copy(),
+                                post_log,
                                 debug), daemon=True)
     send_threads.append(thr)
     thr.start()
@@ -2421,21 +2450,22 @@ def send_post(signing_priv_key_pem: str, project_version: str,
 
 def send_post_via_server(signing_priv_key_pem: str, project_version: str,
                          base_dir: str, session,
-                         fromNickname: str, password: str,
-                         fromDomain: str, fromPort: int,
-                         toNickname: str, toDomain: str, toPort: int, cc: str,
-                         http_prefix: str, content: str, followersOnly: bool,
-                         commentsEnabled: bool,
-                         attachImageFilename: str, mediaType: str,
-                         imageDescription: str, city: str,
+                         from_nickname: str, password: str,
+                         from_domain: str, from_port: int,
+                         to_nickname: str, to_domain: str, to_port: int,
+                         cc: str,
+                         http_prefix: str, content: str, followers_only: bool,
+                         comments_enabled: bool,
+                         attach_image_filename: str, media_type: str,
+                         image_description: str, city: str,
                          cached_webfingers: {}, person_cache: {},
-                         isArticle: bool, system_language: str,
+                         is_article: bool, system_language: str,
                          low_bandwidth: bool,
                          content_license_url: str,
                          debug: bool = False,
-                         inReplyTo: str = None,
-                         inReplyToAtomUri: str = None,
-                         conversationId: str = None,
+                         in_reply_to: str = None,
+                         in_reply_to_atom_uri: str = None,
+                         conversation_id: str = None,
                          subject: str = None) -> int:
     """Send a post via a proxy (c2s)
     """
@@ -2443,115 +2473,117 @@ def send_post_via_server(signing_priv_key_pem: str, project_version: str,
         print('WARN: No session for send_post_via_server')
         return 6
 
-    fromDomainFull = get_full_domain(fromDomain, fromPort)
+    from_domain_full = get_full_domain(from_domain, from_port)
 
-    handle = http_prefix + '://' + fromDomainFull + '/@' + fromNickname
+    handle = http_prefix + '://' + from_domain_full + '/@' + from_nickname
 
     # lookup the inbox for the To handle
-    wfRequest = \
+    wf_request = \
         webfinger_handle(session, handle, http_prefix, cached_webfingers,
-                         fromDomainFull, project_version, debug, False,
+                         from_domain_full, project_version, debug, False,
                          signing_priv_key_pem)
-    if not wfRequest:
+    if not wf_request:
         if debug:
             print('DEBUG: post webfinger failed for ' + handle)
         return 1
-    if not isinstance(wfRequest, dict):
+    if not isinstance(wf_request, dict):
         print('WARN: post webfinger for ' + handle +
-              ' did not return a dict. ' + str(wfRequest))
+              ' did not return a dict. ' + str(wf_request))
         return 1
 
-    postToBox = 'outbox'
-    if isArticle:
-        postToBox = 'tlblogs'
+    post_to_box = 'outbox'
+    if is_article:
+        post_to_box = 'tlblogs'
 
     # get the actor inbox for the To handle
-    originDomain = fromDomain
-    (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
-     displayName, _) = get_person_box(signing_priv_key_pem,
-                                      originDomain,
-                                      base_dir, session, wfRequest,
-                                      person_cache,
-                                      project_version, http_prefix,
-                                      fromNickname,
-                                      fromDomainFull, postToBox,
-                                      82796)
-    if not inboxUrl:
+    origin_domain = from_domain
+    (inbox_url, pub_key_id, pub_key, from_person_id, shared_inbox, avatar_url,
+     display_name, _) = get_person_box(signing_priv_key_pem,
+                                       origin_domain,
+                                       base_dir, session, wf_request,
+                                       person_cache,
+                                       project_version, http_prefix,
+                                       from_nickname,
+                                       from_domain_full, post_to_box,
+                                       82796)
+    if not inbox_url:
         if debug:
-            print('DEBUG: post no ' + postToBox +
+            print('DEBUG: post no ' + post_to_box +
                   ' was found for ' + handle)
         return 3
-    if not fromPersonId:
+    if not from_person_id:
         if debug:
             print('DEBUG: post no actor was found for ' + handle)
         return 4
 
     # Get the json for the c2s post, not saving anything to file
     # Note that base_dir is set to None
-    saveToFile = False
+    save_to_file = False
     client_to_server = True
-    if toDomain.lower().endswith('public'):
-        toPersonId = 'https://www.w3.org/ns/activitystreams#Public'
-        cc = local_actor_url(http_prefix, fromNickname, fromDomainFull) + \
+    if to_domain.lower().endswith('public'):
+        to_person_id = 'https://www.w3.org/ns/activitystreams#Public'
+        cc = local_actor_url(http_prefix, from_nickname, from_domain_full) + \
             '/followers'
     else:
-        if toDomain.lower().endswith('followers') or \
-           toDomain.lower().endswith('followersonly'):
-            toPersonId = \
-                local_actor_url(http_prefix, fromNickname, fromDomainFull) + \
+        if to_domain.lower().endswith('followers') or \
+           to_domain.lower().endswith('followersonly'):
+            to_person_id = \
+                local_actor_url(http_prefix,
+                                from_nickname, from_domain_full) + \
                 '/followers'
         else:
-            toDomainFull = get_full_domain(toDomain, toPort)
-            toPersonId = local_actor_url(http_prefix, toNickname, toDomainFull)
+            to_domainFull = get_full_domain(to_domain, to_port)
+            to_person_id = \
+                local_actor_url(http_prefix, to_nickname, to_domainFull)
 
     post_json_object = \
         _create_post_base(base_dir,
-                          fromNickname, fromDomain, fromPort,
-                          toPersonId, cc, http_prefix, content,
-                          followersOnly, saveToFile, client_to_server,
-                          commentsEnabled,
-                          attachImageFilename, mediaType,
-                          imageDescription, city,
-                          False, isArticle, inReplyTo,
-                          inReplyToAtomUri, subject,
+                          from_nickname, from_domain, from_port,
+                          to_person_id, cc, http_prefix, content,
+                          followers_only, save_to_file, client_to_server,
+                          comments_enabled,
+                          attach_image_filename, media_type,
+                          image_description, city,
+                          False, is_article, in_reply_to,
+                          in_reply_to_atom_uri, subject,
                           False, None, None, None, None, None,
                           None, None, None,
                           None, None, None, None, None, system_language,
-                          conversationId, low_bandwidth,
+                          conversation_id, low_bandwidth,
                           content_license_url)
 
-    authHeader = create_basic_auth_header(fromNickname, password)
+    auth_header = create_basic_auth_header(from_nickname, password)
 
-    if attachImageFilename:
+    if attach_image_filename:
         headers = {
-            'host': fromDomainFull,
-            'Authorization': authHeader
+            'host': from_domain_full,
+            'Authorization': auth_header
         }
-        postResult = \
-            post_image(session, attachImageFilename, [],
-                       inboxUrl, headers)
-        if not postResult:
+        post_result = \
+            post_image(session, attach_image_filename, [],
+                       inbox_url, headers)
+        if not post_result:
             if debug:
                 print('DEBUG: post failed to upload image')
 #            return 9
 
     headers = {
-        'host': fromDomainFull,
+        'host': from_domain_full,
         'Content-type': 'application/json',
-        'Authorization': authHeader
+        'Authorization': auth_header
     }
-    postDumps = json.dumps(post_json_object)
-    postResult, unauthorized, returnCode = \
-        post_json_string(session, postDumps, [],
-                         inboxUrl, headers, debug, 5, True)
-    if not postResult:
+    post_dumps = json.dumps(post_json_object)
+    post_result, unauthorized, return_code = \
+        post_json_string(session, post_dumps, [],
+                         inbox_url, headers, debug, 5, True)
+    if not post_result:
         if debug:
             if unauthorized:
                 print('DEBUG: POST failed for c2s to ' +
-                      inboxUrl + ' unathorized')
+                      inbox_url + ' unathorized')
             else:
                 print('DEBUG: POST failed for c2s to ' +
-                      inboxUrl + ' return code ' + str(returnCode))
+                      inbox_url + ' return code ' + str(return_code))
         return 5
 
     if debug:
@@ -2563,21 +2595,21 @@ def group_followers_by_domain(base_dir: str, nickname: str, domain: str) -> {}:
     """Returns a dictionary with followers grouped by domain
     """
     handle = nickname + '@' + domain
-    followersFilename = base_dir + '/accounts/' + handle + '/followers.txt'
-    if not os.path.isfile(followersFilename):
+    followers_filename = base_dir + '/accounts/' + handle + '/followers.txt'
+    if not os.path.isfile(followers_filename):
         return None
     grouped = {}
-    with open(followersFilename, 'r') as f:
-        for followerHandle in f:
-            if '@' not in followerHandle:
+    with open(followers_filename, 'r') as foll_file:
+        for follower_handle in foll_file:
+            if '@' not in follower_handle:
                 continue
             fHandle = \
-                followerHandle.strip().replace('\n', '').replace('\r', '')
-            followerDomain = fHandle.split('@')[1]
-            if not grouped.get(followerDomain):
-                grouped[followerDomain] = [fHandle]
+                follower_handle.strip().replace('\n', '').replace('\r', '')
+            follower_domain = fHandle.split('@')[1]
+            if not grouped.get(follower_domain):
+                grouped[follower_domain] = [fHandle]
             else:
-                grouped[followerDomain].append(fHandle)
+                grouped[follower_domain].append(fHandle)
     return grouped
 
 
@@ -2616,14 +2648,14 @@ def _add_followers_to_public_post(post_json_object: {}) -> None:
 
 def send_signed_json(post_json_object: {}, session, base_dir: str,
                      nickname: str, domain: str, port: int,
-                     toNickname: str, toDomain: str, toPort: int, cc: str,
-                     http_prefix: str, saveToFile: bool,
+                     to_nickname: str, to_domain: str, to_port: int, cc: str,
+                     http_prefix: str, save_to_file: bool,
                      client_to_server: bool, federation_list: [],
-                     send_threads: [], postLog: [], cached_webfingers: {},
+                     send_threads: [], post_log: [], cached_webfingers: {},
                      person_cache: {}, debug: bool, project_version: str,
-                     sharedItemsToken: str, group_account: bool,
+                     shared_items_token: str, group_account: bool,
                      signing_priv_key_pem: str,
-                     sourceId: int) -> int:
+                     source_id: int) -> int:
     """Sends a signed json object to an inbox/outbox
     """
     if debug:
@@ -2631,134 +2663,134 @@ def send_signed_json(post_json_object: {}, session, base_dir: str,
     if not session:
         print('WARN: No session specified for send_signed_json')
         return 8
-    withDigest = True
+    with_digest = True
 
-    if toDomain.endswith('.onion') or toDomain.endswith('.i2p'):
+    if to_domain.endswith('.onion') or to_domain.endswith('.i2p'):
         http_prefix = 'http'
 
-    if toNickname == 'inbox':
+    if to_nickname == 'inbox':
         # shared inbox actor on @domain@domain
-        toNickname = toDomain
+        to_nickname = to_domain
 
-    toDomain = get_full_domain(toDomain, toPort)
+    to_domain = get_full_domain(to_domain, to_port)
 
-    toDomainUrl = http_prefix + '://' + toDomain
-    if not site_is_active(toDomainUrl, 10):
-        print('Domain is inactive: ' + toDomainUrl)
+    to_domain_url = http_prefix + '://' + to_domain
+    if not site_is_active(to_domain_url, 10):
+        print('Domain is inactive: ' + to_domain_url)
         return 9
-    print('Domain is active: ' + toDomainUrl)
-    handleBase = toDomainUrl + '/@'
-    if toNickname:
-        handle = handleBase + toNickname
+    print('Domain is active: ' + to_domain_url)
+    handle_base = to_domain_url + '/@'
+    if to_nickname:
+        handle = handle_base + to_nickname
     else:
-        singleUserInstanceNickname = 'dev'
-        handle = handleBase + singleUserInstanceNickname
+        single_user_instance_nickname = 'dev'
+        handle = handle_base + single_user_instance_nickname
 
     if debug:
-        print('DEBUG: handle - ' + handle + ' toPort ' + str(toPort))
+        print('DEBUG: handle - ' + handle + ' to_port ' + str(to_port))
 
     # lookup the inbox for the To handle
-    wfRequest = webfinger_handle(session, handle, http_prefix,
-                                 cached_webfingers,
-                                 domain, project_version, debug, group_account,
-                                 signing_priv_key_pem)
-    if not wfRequest:
+    wf_request = webfinger_handle(session, handle, http_prefix,
+                                  cached_webfingers,
+                                  domain, project_version, debug,
+                                  group_account, signing_priv_key_pem)
+    if not wf_request:
         if debug:
             print('DEBUG: webfinger for ' + handle + ' failed')
         return 1
-    if not isinstance(wfRequest, dict):
+    if not isinstance(wf_request, dict):
         print('WARN: Webfinger for ' + handle + ' did not return a dict. ' +
-              str(wfRequest))
+              str(wf_request))
         return 1
 
-    if wfRequest.get('errors'):
+    if wf_request.get('errors'):
         if debug:
             print('DEBUG: webfinger for ' + handle +
-                  ' failed with errors ' + str(wfRequest['errors']))
+                  ' failed with errors ' + str(wf_request['errors']))
 
     if not client_to_server:
-        postToBox = 'inbox'
+        post_to_box = 'inbox'
     else:
-        postToBox = 'outbox'
+        post_to_box = 'outbox'
 
     # get the actor inbox/outbox for the To handle
-    originDomain = domain
-    (inboxUrl, pubKeyId, pubKey, toPersonId, sharedInboxUrl, avatarUrl,
-     displayName, _) = get_person_box(signing_priv_key_pem,
-                                      originDomain,
-                                      base_dir, session, wfRequest,
-                                      person_cache,
-                                      project_version, http_prefix,
-                                      nickname, domain, postToBox,
-                                      sourceId)
+    origin_domain = domain
+    (inbox_url, pub_key_id, pub_key, to_person_id,
+     shared_inbox_url, avatar_url,
+     display_name, _) = get_person_box(signing_priv_key_pem,
+                                       origin_domain,
+                                       base_dir, session, wf_request,
+                                       person_cache,
+                                       project_version, http_prefix,
+                                       nickname, domain, post_to_box,
+                                       source_id)
 
-    print("inboxUrl: " + str(inboxUrl))
-    print("toPersonId: " + str(toPersonId))
-    print("sharedInboxUrl: " + str(sharedInboxUrl))
-    if inboxUrl:
-        if inboxUrl.endswith('/actor/inbox'):
-            inboxUrl = sharedInboxUrl
+    print("inbox_url: " + str(inbox_url))
+    print("to_person_id: " + str(to_person_id))
+    print("shared_inbox_url: " + str(shared_inbox_url))
+    if inbox_url:
+        if inbox_url.endswith('/actor/inbox'):
+            inbox_url = shared_inbox_url
 
-    if not inboxUrl:
+    if not inbox_url:
         if debug:
-            print('DEBUG: missing inboxUrl')
+            print('DEBUG: missing inbox_url')
         return 3
 
     if debug:
-        print('DEBUG: Sending to endpoint ' + inboxUrl)
+        print('DEBUG: Sending to endpoint ' + inbox_url)
 
-    if not pubKey:
+    if not pub_key:
         if debug:
             print('DEBUG: missing pubkey')
         return 4
-    if not toPersonId:
+    if not to_person_id:
         if debug:
             print('DEBUG: missing personId')
         return 5
-    # sharedInbox is optional
+    # shared_inbox is optional
 
     # get the senders private key
-    privateKeyPem = \
+    private_key_pem = \
         _get_person_key(nickname, domain, base_dir, 'private', debug)
-    if len(privateKeyPem) == 0:
+    if len(private_key_pem) == 0:
         if debug:
             print('DEBUG: Private key not found for ' +
                   nickname + '@' + domain +
                   ' in ' + base_dir + '/keys/private')
         return 6
 
-    if toDomain not in inboxUrl:
+    if to_domain not in inbox_url:
         if debug:
-            print('DEBUG: ' + toDomain + ' is not in ' + inboxUrl)
+            print('DEBUG: ' + to_domain + ' is not in ' + inbox_url)
         return 7
-    postPath = inboxUrl.split(toDomain, 1)[1]
+    postPath = inbox_url.split(to_domain, 1)[1]
 
     _add_followers_to_public_post(post_json_object)
 
     if not post_json_object.get('signature'):
         try:
-            signedPostJsonObject = post_json_object.copy()
-            generate_json_signature(signedPostJsonObject, privateKeyPem)
-            post_json_object = signedPostJsonObject
+            signed_post_json_object = post_json_object.copy()
+            generate_json_signature(signed_post_json_object, private_key_pem)
+            post_json_object = signed_post_json_object
         except Exception as ex:
             print('WARN: failed to JSON-LD sign post, ' + str(ex))
-            pass
 
     # convert json to string so that there are no
     # subsequent conversions after creating message body digest
     post_jsonStr = json.dumps(post_json_object)
 
     # construct the http header, including the message body digest
-    signatureHeaderJson = \
-        create_signed_header(None, privateKeyPem, nickname, domain, port,
-                             toDomain, toPort,
-                             postPath, http_prefix, withDigest, post_jsonStr,
+    signature_header_json = \
+        create_signed_header(None, private_key_pem, nickname, domain, port,
+                             to_domain, to_port,
+                             postPath, http_prefix, with_digest, post_jsonStr,
                              None)
     # optionally add a token so that the receiving instance may access
     # your shared items catalog
-    if sharedItemsToken:
-        signatureHeaderJson['Origin'] = get_full_domain(domain, port)
-        signatureHeaderJson['SharesCatalog'] = sharedItemsToken
+    if shared_items_token:
+        signature_header_json['Origin'] = get_full_domain(domain, port)
+        signature_header_json['SharesCatalog'] = shared_items_token
     elif debug:
         print('Not sending shared items federation token')
 
@@ -2777,16 +2809,16 @@ def send_signed_json(post_json_object: {}, session, base_dir: str,
                           args=(session,
                                 post_jsonStr,
                                 federation_list,
-                                inboxUrl, base_dir,
-                                signatureHeaderJson.copy(),
-                                postLog,
+                                inbox_url, base_dir,
+                                signature_header_json.copy(),
+                                post_log,
                                 debug), daemon=True)
     send_threads.append(thr)
     # thr.start()
     return 0
 
 
-def add_to_field(activityType: str, post_json_object: {},
+def add_to_field(activity_type: str, post_json_object: {},
                  debug: bool) -> ({}, bool):
     """The Follow/Add/Remove activity doesn't have a 'to' field and so one
     needs to be added so that activity distribution happens in a consistent way
@@ -2799,20 +2831,20 @@ def add_to_field(activityType: str, post_json_object: {},
         pprint(post_json_object)
         print('DEBUG: no "to" field when sending to named addresses 2')
 
-    isSameType = False
-    toFieldAdded = False
+    is_same_type = False
+    to_field_added = False
     if post_json_object.get('object'):
         if isinstance(post_json_object['object'], str):
             if post_json_object.get('type'):
-                if post_json_object['type'] == activityType:
-                    isSameType = True
+                if post_json_object['type'] == activity_type:
+                    is_same_type = True
                     if debug:
-                        print('DEBUG: "to" field assigned to ' + activityType)
+                        print('DEBUG: "to" field assigned to ' + activity_type)
                     toAddress = post_json_object['object']
                     if '/statuses/' in toAddress:
                         toAddress = toAddress.split('/statuses/')[0]
                     post_json_object['to'] = [toAddress]
-                    toFieldAdded = True
+                    to_field_added = True
         elif has_object_dict(post_json_object):
             # add a to field to bookmark add or remove
             if post_json_object.get('type') and \
@@ -2825,27 +2857,27 @@ def add_to_field(activityType: str, post_json_object: {},
                             [post_json_object['actor']]
                         post_json_object['object']['to'] = \
                             [post_json_object['actor']]
-                        toFieldAdded = True
+                        to_field_added = True
 
-            if not toFieldAdded and \
+            if not to_field_added and \
                post_json_object['object'].get('type'):
-                if post_json_object['object']['type'] == activityType:
-                    isSameType = True
+                if post_json_object['object']['type'] == activity_type:
+                    is_same_type = True
                     if isinstance(post_json_object['object']['object'], str):
                         if debug:
                             print('DEBUG: "to" field assigned to ' +
-                                  activityType)
+                                  activity_type)
                         toAddress = post_json_object['object']['object']
                         if '/statuses/' in toAddress:
                             toAddress = toAddress.split('/statuses/')[0]
                         post_json_object['object']['to'] = [toAddress]
                         post_json_object['to'] = \
                             [post_json_object['object']['object']]
-                        toFieldAdded = True
+                        to_field_added = True
 
-    if not isSameType:
+    if not is_same_type:
         return post_json_object, True
-    if toFieldAdded:
+    if to_field_added:
         return post_json_object, True
     return post_json_object, False
 
@@ -2869,12 +2901,12 @@ def _send_to_named_addresses(session, base_dir: str,
                              nickname: str, domain: str,
                              onion_domain: str, i2p_domain: str, port: int,
                              http_prefix: str, federation_list: [],
-                             send_threads: [], postLog: [],
+                             send_threads: [], post_log: [],
                              cached_webfingers: {}, person_cache: {},
                              post_json_object: {}, debug: bool,
                              project_version: str,
                              shared_items_federated_domains: [],
-                             sharedItemFederationTokens: {},
+                             shared_item_federation_tokens: {},
                              signing_priv_key_pem: str) -> None:
     """sends a post to the specific named addresses in to/cc
     """
@@ -2883,14 +2915,14 @@ def _send_to_named_addresses(session, base_dir: str,
         return
     if not post_json_object.get('object'):
         return
-    isProfileUpdate = False
+    is_profile_update = False
     if has_object_dict(post_json_object):
         if _is_profile_update(post_json_object):
             # use the original object, which has a 'to'
-            recipientsObject = post_json_object
-            isProfileUpdate = True
+            recipients_object = post_json_object
+            is_profile_update = True
 
-        if not isProfileUpdate:
+        if not is_profile_update:
             if not post_json_object['object'].get('to'):
                 if debug:
                     pprint(post_json_object)
@@ -2907,28 +2939,28 @@ def _send_to_named_addresses(session, base_dir: str,
                                 [post_json_object['object']['object']]
                 if not post_json_object['object'].get('to'):
                     return
-            recipientsObject = post_json_object['object']
+            recipients_object = post_json_object['object']
     else:
-        post_json_object, fieldAdded = \
+        post_json_object, field_added = \
             add_to_field('Follow', post_json_object, debug)
-        if not fieldAdded:
+        if not field_added:
             return
-        post_json_object, fieldAdded = \
+        post_json_object, field_added = \
             add_to_field('Like', post_json_object, debug)
-        if not fieldAdded:
+        if not field_added:
             return
-        recipientsObject = post_json_object
+        recipients_object = post_json_object
 
     recipients = []
-    recipientType = ('to', 'cc')
-    for rType in recipientType:
-        if not recipientsObject.get(rType):
+    recipient_type = ('to', 'cc')
+    for rtype in recipient_type:
+        if not recipients_object.get(rtype):
             continue
-        if isinstance(recipientsObject[rType], list):
+        if isinstance(recipients_object[rtype], list):
             if debug:
-                pprint(recipientsObject)
-                print('recipientsObject: ' + str(recipientsObject[rType]))
-            for address in recipientsObject[rType]:
+                pprint(recipients_object)
+                print('recipients_object: ' + str(recipients_object[rtype]))
+            for address in recipients_object[rtype]:
                 if not address:
                     continue
                 if '/' not in address:
@@ -2938,8 +2970,8 @@ def _send_to_named_addresses(session, base_dir: str,
                 if address.endswith('/followers'):
                     continue
                 recipients.append(address)
-        elif isinstance(recipientsObject[rType], str):
-            address = recipientsObject[rType]
+        elif isinstance(recipients_object[rtype], str):
+            address = recipients_object[rtype]
             if address:
                 if '/' in address:
                     if address.endswith('#Public'):
@@ -2957,64 +2989,65 @@ def _send_to_named_addresses(session, base_dir: str,
     # this is after the message has arrived at the server
     client_to_server = False
     for address in recipients:
-        toNickname = get_nickname_from_actor(address)
-        if not toNickname:
+        to_nickname = get_nickname_from_actor(address)
+        if not to_nickname:
             continue
-        toDomain, toPort = get_domain_from_actor(address)
-        if not toDomain:
+        to_domain, to_port = get_domain_from_actor(address)
+        if not to_domain:
             continue
         # Don't send profile/actor updates to yourself
-        if isProfileUpdate:
+        if is_profile_update:
             domain_full = get_full_domain(domain, port)
-            toDomainFull = get_full_domain(toDomain, toPort)
-            if nickname == toNickname and \
-               domain_full == toDomainFull:
+            to_domainFull = get_full_domain(to_domain, to_port)
+            if nickname == to_nickname and \
+               domain_full == to_domainFull:
                 if debug:
                     print('Not sending profile update to self. ' +
                           nickname + '@' + domain_full)
                 continue
         if debug:
             domain_full = get_full_domain(domain, port)
-            toDomainFull = get_full_domain(toDomain, toPort)
+            to_domainFull = get_full_domain(to_domain, to_port)
             print('DEBUG: Post sending s2s: ' + nickname + '@' + domain_full +
-                  ' to ' + toNickname + '@' + toDomainFull)
+                  ' to ' + to_nickname + '@' + to_domainFull)
 
         # if we have an alt onion domain and we are sending to
         # another onion domain then switch the clearnet
         # domain for the onion one
-        fromDomain = domain
-        fromDomainFull = get_full_domain(domain, port)
-        fromHttpPrefix = http_prefix
+        from_domain = domain
+        from_domain_full = get_full_domain(domain, port)
+        from_http_prefix = http_prefix
         if onion_domain:
-            if toDomain.endswith('.onion'):
-                fromDomain = onion_domain
-                fromDomainFull = onion_domain
-                fromHttpPrefix = 'http'
+            if to_domain.endswith('.onion'):
+                from_domain = onion_domain
+                from_domain_full = onion_domain
+                from_http_prefix = 'http'
         elif i2p_domain:
-            if toDomain.endswith('.i2p'):
-                fromDomain = i2p_domain
-                fromDomainFull = i2p_domain
-                fromHttpPrefix = 'http'
+            if to_domain.endswith('.i2p'):
+                from_domain = i2p_domain
+                from_domain_full = i2p_domain
+                from_http_prefix = 'http'
         cc = []
 
         # if the "to" domain is within the shared items
         # federation list then send the token for this domain
         # so that it can request a catalog
-        sharedItemsToken = None
-        if toDomain in shared_items_federated_domains:
-            if sharedItemFederationTokens.get(fromDomainFull):
-                sharedItemsToken = sharedItemFederationTokens[fromDomainFull]
+        shared_items_token = None
+        if to_domain in shared_items_federated_domains:
+            if shared_item_federation_tokens.get(from_domain_full):
+                shared_items_token = \
+                    shared_item_federation_tokens[from_domain_full]
 
         group_account = has_group_type(base_dir, address, person_cache)
 
         send_signed_json(post_json_object, session, base_dir,
-                         nickname, fromDomain, port,
-                         toNickname, toDomain, toPort,
-                         cc, fromHttpPrefix, True, client_to_server,
+                         nickname, from_domain, port,
+                         to_nickname, to_domain, to_port,
+                         cc, from_http_prefix, True, client_to_server,
                          federation_list,
-                         send_threads, postLog, cached_webfingers,
+                         send_threads, post_log, cached_webfingers,
                          person_cache, debug, project_version,
-                         sharedItemsToken, group_account,
+                         shared_items_token, group_account,
                          signing_priv_key_pem, 34436782)
 
 
@@ -3023,30 +3056,30 @@ def send_to_named_addresses_thread(session, base_dir: str,
                                    onion_domain: str,
                                    i2p_domain: str, port: int,
                                    http_prefix: str, federation_list: [],
-                                   send_threads: [], postLog: [],
+                                   send_threads: [], post_log: [],
                                    cached_webfingers: {}, person_cache: {},
                                    post_json_object: {}, debug: bool,
                                    project_version: str,
                                    shared_items_federated_domains: [],
-                                   sharedItemFederationTokens: {},
+                                   shared_item_federation_tokens: {},
                                    signing_priv_key_pem: str):
     """Returns a thread used to send a post to named addresses
     """
-    sendThread = \
+    send_thread = \
         thread_with_trace(target=_send_to_named_addresses,
                           args=(session, base_dir,
                                 nickname, domain,
                                 onion_domain, i2p_domain, port,
                                 http_prefix, federation_list,
-                                send_threads, postLog,
+                                send_threads, post_log,
                                 cached_webfingers, person_cache,
                                 post_json_object, debug,
                                 project_version,
                                 shared_items_federated_domains,
-                                sharedItemFederationTokens,
+                                shared_item_federation_tokens,
                                 signing_priv_key_pem), daemon=True)
     try:
-        sendThread.start()
+        send_thread.start()
     except SocketError as ex:
         print('WARN: socket error while starting ' +
               'thread to send to named addresses. ' + str(ex))
@@ -3055,7 +3088,7 @@ def send_to_named_addresses_thread(session, base_dir: str,
         print('WARN: error while starting ' +
               'thread to send to named addresses. ' + str(ex))
         return None
-    return sendThread
+    return send_thread
 
 
 def _has_shared_inbox(session, http_prefix: str, domain: str,
@@ -3063,17 +3096,17 @@ def _has_shared_inbox(session, http_prefix: str, domain: str,
     """Returns true if the given domain has a shared inbox
     This tries the new and the old way of webfingering the shared inbox
     """
-    tryHandles = []
+    try_handles = []
     if ':' not in domain:
-        tryHandles.append(domain + '@' + domain)
-    tryHandles.append('inbox@' + domain)
-    for handle in tryHandles:
-        wfRequest = webfinger_handle(session, handle, http_prefix, {},
-                                     domain, __version__, debug, False,
-                                     signing_priv_key_pem)
-        if wfRequest:
-            if isinstance(wfRequest, dict):
-                if not wfRequest.get('errors'):
+        try_handles.append(domain + '@' + domain)
+    try_handles.append('inbox@' + domain)
+    for handle in try_handles:
+        wf_request = webfinger_handle(session, handle, http_prefix, {},
+                                      domain, __version__, debug, False,
+                                      signing_priv_key_pem)
+        if wf_request:
+            if isinstance(wf_request, dict):
+                if not wf_request.get('errors'):
                     return True
     return False
 
@@ -3085,11 +3118,11 @@ def _sending_profile_update(post_json_object: {}) -> bool:
         return False
     if not has_object_stringType(post_json_object, False):
         return False
-    activityType = post_json_object['object']['type']
-    if activityType == 'Person' or \
-       activityType == 'Application' or \
-       activityType == 'Group' or \
-       activityType == 'Service':
+    activity_type = post_json_object['object']['type']
+    if activity_type == 'Person' or \
+       activity_type == 'Application' or \
+       activity_type == 'Group' or \
+       activity_type == 'Service':
         return True
     return False
 
@@ -3099,12 +3132,12 @@ def send_to_followers(session, base_dir: str,
                       domain: str,
                       onion_domain: str, i2p_domain: str, port: int,
                       http_prefix: str, federation_list: [],
-                      send_threads: [], postLog: [],
+                      send_threads: [], post_log: [],
                       cached_webfingers: {}, person_cache: {},
                       post_json_object: {}, debug: bool,
                       project_version: str,
                       shared_items_federated_domains: [],
-                      sharedItemFederationTokens: {},
+                      shared_item_federation_tokens: {},
                       signing_priv_key_pem: str) -> None:
     """sends a post to the followers of the given nickname
     """
@@ -3132,129 +3165,129 @@ def send_to_followers(session, base_dir: str,
     client_to_server = False
 
     # for each instance
-    sendingStartTime = datetime.datetime.utcnow()
+    sending_start_time = datetime.datetime.utcnow()
     print('Sending post to followers begins ' +
-          sendingStartTime.strftime("%Y-%m-%dT%H:%M:%SZ"))
-    sendingCtr = 0
-    for followerDomain, followerHandles in grouped.items():
+          sending_start_time.strftime("%Y-%m-%dT%H:%M:%SZ"))
+    sending_ctr = 0
+    for follower_domain, follower_handles in grouped.items():
         print('Sending post to followers progress ' +
-              str(int(sendingCtr * 100 / len(grouped.items()))) + '% ' +
-              followerDomain)
-        sendingCtr += 1
+              str(int(sending_ctr * 100 / len(grouped.items()))) + '% ' +
+              follower_domain)
+        sending_ctr += 1
 
         if debug:
-            pprint(followerHandles)
+            pprint(follower_handles)
 
         # if the followers domain is within the shared items
         # federation list then send the token for this domain
         # so that it can request a catalog
-        sharedItemsToken = None
-        if followerDomain in shared_items_federated_domains:
+        shared_items_token = None
+        if follower_domain in shared_items_federated_domains:
             domain_full = get_full_domain(domain, port)
-            if sharedItemFederationTokens.get(domain_full):
-                sharedItemsToken = sharedItemFederationTokens[domain_full]
+            if shared_item_federation_tokens.get(domain_full):
+                shared_items_token = shared_item_federation_tokens[domain_full]
 
         # check that the follower's domain is active
-        followerDomainUrl = http_prefix + '://' + followerDomain
-        if not site_is_active(followerDomainUrl, 10):
+        follower_domain_url = http_prefix + '://' + follower_domain
+        if not site_is_active(follower_domain_url, 10):
             print('Sending post to followers domain is inactive: ' +
-                  followerDomainUrl)
+                  follower_domain_url)
             continue
         print('Sending post to followers domain is active: ' +
-              followerDomainUrl)
+              follower_domain_url)
 
-        withSharedInbox = \
-            _has_shared_inbox(session, http_prefix, followerDomain, debug,
+        with_shared_inbox = \
+            _has_shared_inbox(session, http_prefix, follower_domain, debug,
                               signing_priv_key_pem)
         if debug:
-            if withSharedInbox:
-                print(followerDomain + ' has shared inbox')
-        if not withSharedInbox:
-            print('Sending post to followers, ' + followerDomain +
+            if with_shared_inbox:
+                print(follower_domain + ' has shared inbox')
+        if not with_shared_inbox:
+            print('Sending post to followers, ' + follower_domain +
                   ' does not have a shared inbox')
 
-        toPort = port
+        to_port = port
         index = 0
-        toDomain = followerHandles[index].split('@')[1]
-        if ':' in toDomain:
-            toPort = get_port_from_domain(toDomain)
-            toDomain = remove_domain_port(toDomain)
+        to_domain = follower_handles[index].split('@')[1]
+        if ':' in to_domain:
+            to_port = get_port_from_domain(to_domain)
+            to_domain = remove_domain_port(to_domain)
 
         cc = ''
 
         # if we are sending to an onion domain and we
         # have an alt onion domain then use the alt
-        fromDomain = domain
-        fromHttpPrefix = http_prefix
+        from_domain = domain
+        from_http_prefix = http_prefix
         if onion_domain:
-            if toDomain.endswith('.onion'):
-                fromDomain = onion_domain
-                fromHttpPrefix = 'http'
+            if to_domain.endswith('.onion'):
+                from_domain = onion_domain
+                from_http_prefix = 'http'
         elif i2p_domain:
-            if toDomain.endswith('.i2p'):
-                fromDomain = i2p_domain
-                fromHttpPrefix = 'http'
+            if to_domain.endswith('.i2p'):
+                from_domain = i2p_domain
+                from_http_prefix = 'http'
 
-        if withSharedInbox:
-            toNickname = followerHandles[index].split('@')[0]
+        if with_shared_inbox:
+            to_nickname = follower_handles[index].split('@')[0]
 
             group_account = False
-            if toNickname.startswith('!'):
+            if to_nickname.startswith('!'):
                 group_account = True
-                toNickname = toNickname[1:]
+                to_nickname = to_nickname[1:]
 
             # if there are more than one followers on the domain
             # then send the post to the shared inbox
-            if len(followerHandles) > 1:
-                toNickname = 'inbox'
+            if len(follower_handles) > 1:
+                to_nickname = 'inbox'
 
-            if toNickname != 'inbox' and post_json_object.get('type'):
+            if to_nickname != 'inbox' and post_json_object.get('type'):
                 if _sending_profile_update(post_json_object):
                     print('Sending post to followers ' +
-                          'shared inbox of ' + toDomain)
-                    toNickname = 'inbox'
+                          'shared inbox of ' + to_domain)
+                    to_nickname = 'inbox'
 
             print('Sending post to followers from ' +
                   nickname + '@' + domain +
-                  ' to ' + toNickname + '@' + toDomain)
+                  ' to ' + to_nickname + '@' + to_domain)
 
             send_signed_json(post_json_object, session, base_dir,
-                             nickname, fromDomain, port,
-                             toNickname, toDomain, toPort,
-                             cc, fromHttpPrefix, True, client_to_server,
+                             nickname, from_domain, port,
+                             to_nickname, to_domain, to_port,
+                             cc, from_http_prefix, True, client_to_server,
                              federation_list,
-                             send_threads, postLog, cached_webfingers,
+                             send_threads, post_log, cached_webfingers,
                              person_cache, debug, project_version,
-                             sharedItemsToken, group_account,
+                             shared_items_token, group_account,
                              signing_priv_key_pem, 639342)
         else:
             # send to individual followers without using a shared inbox
-            for handle in followerHandles:
+            for handle in follower_handles:
                 print('Sending post to followers ' + handle)
-                toNickname = handle.split('@')[0]
+                to_nickname = handle.split('@')[0]
 
                 group_account = False
-                if toNickname.startswith('!'):
+                if to_nickname.startswith('!'):
                     group_account = True
-                    toNickname = toNickname[1:]
+                    to_nickname = to_nickname[1:]
 
                 if post_json_object['type'] != 'Update':
                     print('Sending post to followers from ' +
                           nickname + '@' + domain + ' to ' +
-                          toNickname + '@' + toDomain)
+                          to_nickname + '@' + to_domain)
                 else:
                     print('Sending post to followers profile update from ' +
                           nickname + '@' + domain + ' to ' +
-                          toNickname + '@' + toDomain)
+                          to_nickname + '@' + to_domain)
 
                 send_signed_json(post_json_object, session, base_dir,
-                                 nickname, fromDomain, port,
-                                 toNickname, toDomain, toPort,
-                                 cc, fromHttpPrefix, True, client_to_server,
+                                 nickname, from_domain, port,
+                                 to_nickname, to_domain, to_port,
+                                 cc, from_http_prefix, True, client_to_server,
                                  federation_list,
-                                 send_threads, postLog, cached_webfingers,
+                                 send_threads, post_log, cached_webfingers,
                                  person_cache, debug, project_version,
-                                 sharedItemsToken, group_account,
+                                 shared_items_token, group_account,
                                  signing_priv_key_pem, 634219)
 
         time.sleep(4)
@@ -3262,9 +3295,10 @@ def send_to_followers(session, base_dir: str,
     if debug:
         print('DEBUG: End of send_to_followers')
 
-    sendingEndTime = datetime.datetime.utcnow()
-    sendingMins = int((sendingEndTime - sendingStartTime).total_seconds() / 60)
-    print('Sending post to followers ends ' + str(sendingMins) + ' mins')
+    sending_end_time = datetime.datetime.utcnow()
+    sending_mins = \
+        int((sending_end_time - sending_start_time).total_seconds() / 60)
+    print('Sending post to followers ends ' + str(sending_mins) + ' mins')
 
 
 def send_to_followers_thread(session, base_dir: str,
@@ -3272,30 +3306,30 @@ def send_to_followers_thread(session, base_dir: str,
                              domain: str,
                              onion_domain: str, i2p_domain: str, port: int,
                              http_prefix: str, federation_list: [],
-                             send_threads: [], postLog: [],
+                             send_threads: [], post_log: [],
                              cached_webfingers: {}, person_cache: {},
                              post_json_object: {}, debug: bool,
                              project_version: str,
                              shared_items_federated_domains: [],
-                             sharedItemFederationTokens: {},
+                             shared_item_federation_tokens: {},
                              signing_priv_key_pem: str):
     """Returns a thread used to send a post to followers
     """
-    sendThread = \
+    send_thread = \
         thread_with_trace(target=send_to_followers,
                           args=(session, base_dir,
                                 nickname, domain,
                                 onion_domain, i2p_domain, port,
                                 http_prefix, federation_list,
-                                send_threads, postLog,
+                                send_threads, post_log,
                                 cached_webfingers, person_cache,
                                 post_json_object.copy(), debug,
                                 project_version,
                                 shared_items_federated_domains,
-                                sharedItemFederationTokens,
+                                shared_item_federation_tokens,
                                 signing_priv_key_pem), daemon=True)
     try:
-        sendThread.start()
+        send_thread.start()
     except SocketError as ex:
         print('WARN: socket error while starting ' +
               'thread to send to followers. ' + str(ex))
@@ -3304,164 +3338,166 @@ def send_to_followers_thread(session, base_dir: str,
         print('WARN: error while starting ' +
               'thread to send to followers. ' + str(ex))
         return None
-    return sendThread
+    return send_thread
 
 
 def create_inbox(recent_posts_cache: {},
                  session, base_dir: str, nickname: str, domain: str, port: int,
-                 http_prefix: str, itemsPerPage: int, headerOnly: bool,
-                 pageNumber: int) -> {}:
+                 http_prefix: str, items_per_page: int, header_only: bool,
+                 page_number: int) -> {}:
     return _create_box_indexed(recent_posts_cache,
                                session, base_dir, 'inbox',
                                nickname, domain, port, http_prefix,
-                               itemsPerPage, headerOnly, True,
-                               0, False, 0, pageNumber)
+                               items_per_page, header_only, True,
+                               0, False, 0, page_number)
 
 
 def create_bookmarks_timeline(session, base_dir: str,
                               nickname: str, domain: str,
-                              port: int, http_prefix: str, itemsPerPage: int,
-                              headerOnly: bool, pageNumber: int) -> {}:
+                              port: int, http_prefix: str, items_per_page: int,
+                              header_only: bool, page_number: int) -> {}:
     return _create_box_indexed({}, session, base_dir, 'tlbookmarks',
                                nickname, domain,
-                               port, http_prefix, itemsPerPage, headerOnly,
-                               True, 0, False, 0, pageNumber)
+                               port, http_prefix, items_per_page, header_only,
+                               True, 0, False, 0, page_number)
 
 
 def create_dm_timeline(recent_posts_cache: {},
                        session, base_dir: str, nickname: str, domain: str,
-                       port: int, http_prefix: str, itemsPerPage: int,
-                       headerOnly: bool, pageNumber: int) -> {}:
+                       port: int, http_prefix: str, items_per_page: int,
+                       header_only: bool, page_number: int) -> {}:
     return _create_box_indexed(recent_posts_cache,
                                session, base_dir, 'dm', nickname,
-                               domain, port, http_prefix, itemsPerPage,
-                               headerOnly, True, 0, False, 0, pageNumber)
+                               domain, port, http_prefix, items_per_page,
+                               header_only, True, 0, False, 0, page_number)
 
 
 def create_replies_timeline(recent_posts_cache: {},
                             session, base_dir: str, nickname: str, domain: str,
-                            port: int, http_prefix: str, itemsPerPage: int,
-                            headerOnly: bool, pageNumber: int) -> {}:
+                            port: int, http_prefix: str, items_per_page: int,
+                            header_only: bool, page_number: int) -> {}:
     return _create_box_indexed(recent_posts_cache, session,
                                base_dir, 'tlreplies',
                                nickname, domain, port, http_prefix,
-                               itemsPerPage, headerOnly, True,
-                               0, False, 0, pageNumber)
+                               items_per_page, header_only, True,
+                               0, False, 0, page_number)
 
 
 def create_blogs_timeline(session, base_dir: str, nickname: str, domain: str,
-                          port: int, http_prefix: str, itemsPerPage: int,
-                          headerOnly: bool, pageNumber: int) -> {}:
+                          port: int, http_prefix: str, items_per_page: int,
+                          header_only: bool, page_number: int) -> {}:
     return _create_box_indexed({}, session, base_dir, 'tlblogs', nickname,
                                domain, port, http_prefix,
-                               itemsPerPage, headerOnly, True,
-                               0, False, 0, pageNumber)
+                               items_per_page, header_only, True,
+                               0, False, 0, page_number)
 
 
 def create_features_timeline(session, base_dir: str,
                              nickname: str, domain: str,
-                             port: int, http_prefix: str, itemsPerPage: int,
-                             headerOnly: bool, pageNumber: int) -> {}:
+                             port: int, http_prefix: str, items_per_page: int,
+                             header_only: bool, page_number: int) -> {}:
     return _create_box_indexed({}, session, base_dir, 'tlfeatures', nickname,
                                domain, port, http_prefix,
-                               itemsPerPage, headerOnly, True,
-                               0, False, 0, pageNumber)
+                               items_per_page, header_only, True,
+                               0, False, 0, page_number)
 
 
 def create_media_timeline(session, base_dir: str, nickname: str, domain: str,
-                          port: int, http_prefix: str, itemsPerPage: int,
-                          headerOnly: bool, pageNumber: int) -> {}:
+                          port: int, http_prefix: str, items_per_page: int,
+                          header_only: bool, page_number: int) -> {}:
     return _create_box_indexed({}, session, base_dir, 'tlmedia', nickname,
                                domain, port, http_prefix,
-                               itemsPerPage, headerOnly, True,
-                               0, False, 0, pageNumber)
+                               items_per_page, header_only, True,
+                               0, False, 0, page_number)
 
 
 def create_news_timeline(session, base_dir: str, nickname: str, domain: str,
-                         port: int, http_prefix: str, itemsPerPage: int,
-                         headerOnly: bool, newswire_votes_threshold: int,
+                         port: int, http_prefix: str, items_per_page: int,
+                         header_only: bool, newswire_votes_threshold: int,
                          positive_voting: bool, voting_time_mins: int,
-                         pageNumber: int) -> {}:
+                         page_number: int) -> {}:
     return _create_box_indexed({}, session, base_dir, 'outbox', 'news',
                                domain, port, http_prefix,
-                               itemsPerPage, headerOnly, True,
+                               items_per_page, header_only, True,
                                newswire_votes_threshold, positive_voting,
-                               voting_time_mins, pageNumber)
+                               voting_time_mins, page_number)
 
 
 def create_outbox(session, base_dir: str, nickname: str, domain: str,
                   port: int, http_prefix: str,
-                  itemsPerPage: int, headerOnly: bool, authorized: bool,
-                  pageNumber: int) -> {}:
+                  items_per_page: int, header_only: bool, authorized: bool,
+                  page_number: int) -> {}:
     return _create_box_indexed({}, session, base_dir, 'outbox',
                                nickname, domain, port, http_prefix,
-                               itemsPerPage, headerOnly, authorized,
-                               0, False, 0, pageNumber)
+                               items_per_page, header_only, authorized,
+                               0, False, 0, page_number)
 
 
 def create_moderation(base_dir: str, nickname: str, domain: str, port: int,
-                      http_prefix: str, itemsPerPage: int, headerOnly: bool,
-                      pageNumber: int) -> {}:
-    boxDir = create_person_dir(nickname, domain, base_dir, 'inbox')
+                      http_prefix: str, items_per_page: int, header_only: bool,
+                      page_number: int) -> {}:
+    box_dir = create_person_dir(nickname, domain, base_dir, 'inbox')
     boxname = 'moderation'
 
     domain = get_full_domain(domain, port)
 
-    if not pageNumber:
-        pageNumber = 1
+    if not page_number:
+        page_number = 1
 
-    pageStr = '?page=' + str(pageNumber)
-    boxUrl = local_actor_url(http_prefix, nickname, domain) + '/' + boxname
-    boxHeader = {
+    page_str = '?page=' + str(page_number)
+    box_url = local_actor_url(http_prefix, nickname, domain) + '/' + boxname
+    box_header = {
         '@context': 'https://www.w3.org/ns/activitystreams',
-        'first': boxUrl + '?page=true',
-        'id': boxUrl,
-        'last': boxUrl + '?page=true',
+        'first': box_url + '?page=true',
+        'id': box_url,
+        'last': box_url + '?page=true',
         'totalItems': 0,
         'type': 'OrderedCollection'
     }
     boxItems = {
         '@context': 'https://www.w3.org/ns/activitystreams',
-        'id': boxUrl + pageStr,
+        'id': box_url + page_str,
         'orderedItems': [
         ],
-        'partOf': boxUrl,
+        'partOf': box_url,
         'type': 'OrderedCollectionPage'
     }
 
     if is_moderator(base_dir, nickname):
-        moderationIndexFile = base_dir + '/accounts/moderation.txt'
-        if os.path.isfile(moderationIndexFile):
-            with open(moderationIndexFile, 'r') as f:
-                lines = f.readlines()
-            boxHeader['totalItems'] = len(lines)
-            if headerOnly:
-                return boxHeader
+        moderation_index_file = base_dir + '/accounts/moderation.txt'
+        if os.path.isfile(moderation_index_file):
+            with open(moderation_index_file, 'r') as index_file:
+                lines = index_file.readlines()
+            box_header['totalItems'] = len(lines)
+            if header_only:
+                return box_header
 
-            pageLines = []
+            page_lines = []
             if len(lines) > 0:
-                endLineNumber = len(lines) - 1 - int(itemsPerPage * pageNumber)
-                if endLineNumber < 0:
-                    endLineNumber = 0
-                startLineNumber = \
-                    len(lines) - 1 - int(itemsPerPage * (pageNumber - 1))
-                if startLineNumber < 0:
-                    startLineNumber = 0
-                lineNumber = startLineNumber
-                while lineNumber >= endLineNumber:
-                    pageLines.append(lines[lineNumber].strip('\n').strip('\r'))
-                    lineNumber -= 1
+                end_line_number = \
+                    len(lines) - 1 - int(items_per_page * page_number)
+                if end_line_number < 0:
+                    end_line_number = 0
+                start_line_number = \
+                    len(lines) - 1 - int(items_per_page * (page_number - 1))
+                if start_line_number < 0:
+                    start_line_number = 0
+                line_number = start_line_number
+                while line_number >= end_line_number:
+                    line_no_str = lines[line_number].strip('\n').strip('\r')
+                    page_lines.append(line_no_str)
+                    line_number -= 1
 
-            for postUrl in pageLines:
+            for post_url in page_lines:
                 post_filename = \
-                    boxDir + '/' + postUrl.replace('/', '#') + '.json'
+                    box_dir + '/' + post_url.replace('/', '#') + '.json'
                 if os.path.isfile(post_filename):
                     post_json_object = load_json(post_filename)
                     if post_json_object:
                         boxItems['orderedItems'].append(post_json_object)
 
-    if headerOnly:
-        return boxHeader
+    if header_only:
+        return box_header
     return boxItems
 
 
@@ -3478,7 +3514,7 @@ def is_image_media(session, base_dir: str, http_prefix: str,
     """Returns true if the given post has attached image media
     """
     if post_json_object['type'] == 'Announce':
-        blockedCache = {}
+        blocked_cache = {}
         post_jsonAnnounce = \
             download_announce(session, base_dir, http_prefix,
                               nickname, domain, post_json_object,
@@ -3490,7 +3526,7 @@ def is_image_media(session, base_dir: str, http_prefix: str,
                               system_language,
                               domain_full, person_cache,
                               signing_priv_key_pem,
-                              blockedCache)
+                              blocked_cache)
         if post_jsonAnnounce:
             post_json_object = post_jsonAnnounce
     if post_json_object['type'] != 'Create':
@@ -3517,61 +3553,61 @@ def is_image_media(session, base_dir: str, http_prefix: str,
     return False
 
 
-def _add_post_string_to_timeline(postStr: str, boxname: str,
-                                 postsInBox: [], boxActor: str) -> bool:
+def _add_post_string_to_timeline(post_str: str, boxname: str,
+                                 posts_in_box: [], box_actor: str) -> bool:
     """ is this a valid timeline post?
     """
     # must be a recognized ActivityPub type
-    if ('"Note"' in postStr or
-        '"EncryptedMessage"' in postStr or
-        '"Event"' in postStr or
-        '"Article"' in postStr or
-        '"Patch"' in postStr or
-        '"Announce"' in postStr or
-        ('"Question"' in postStr and
-         ('"Create"' in postStr or '"Update"' in postStr))):
+    if ('"Note"' in post_str or
+        '"EncryptedMessage"' in post_str or
+        '"Event"' in post_str or
+        '"Article"' in post_str or
+        '"Patch"' in post_str or
+        '"Announce"' in post_str or
+        ('"Question"' in post_str and
+         ('"Create"' in post_str or '"Update"' in post_str))):
 
         if boxname == 'dm':
-            if '#Public' in postStr or '/followers' in postStr:
+            if '#Public' in post_str or '/followers' in post_str:
                 return False
         elif boxname == 'tlreplies':
-            if boxActor not in postStr:
+            if box_actor not in post_str:
                 return False
         elif (boxname == 'tlblogs' or
               boxname == 'tlnews' or
               boxname == 'tlfeatures'):
-            if '"Create"' not in postStr:
+            if '"Create"' not in post_str:
                 return False
-            if '"Article"' not in postStr:
+            if '"Article"' not in post_str:
                 return False
         elif boxname == 'tlmedia':
-            if '"Create"' in postStr:
-                if ('mediaType' not in postStr or
-                    ('image/' not in postStr and
-                     'video/' not in postStr and
-                     'audio/' not in postStr)):
+            if '"Create"' in post_str:
+                if ('mediaType' not in post_str or
+                    ('image/' not in post_str and
+                     'video/' not in post_str and
+                     'audio/' not in post_str)):
                     return False
         # add the post to the dictionary
-        postsInBox.append(postStr)
+        posts_in_box.append(post_str)
         return True
     return False
 
 
-def _add_post_to_timeline(filePath: str, boxname: str,
-                          postsInBox: [], boxActor: str) -> bool:
+def _add_post_to_timeline(file_path: str, boxname: str,
+                          posts_in_box: [], box_actor: str) -> bool:
     """ Reads a post from file and decides whether it is valid
     """
-    with open(filePath, 'r') as postFile:
-        postStr = postFile.read()
+    with open(file_path, 'r') as post_file:
+        post_str = post_file.read()
 
-        if filePath.endswith('.json'):
-            repliesFilename = filePath.replace('.json', '.replies')
+        if file_path.endswith('.json'):
+            repliesFilename = file_path.replace('.json', '.replies')
             if os.path.isfile(repliesFilename):
                 # append a replies identifier, which will later be removed
-                postStr += '<hasReplies>'
+                post_str += '<hasReplies>'
 
-        return _add_post_string_to_timeline(postStr, boxname, postsInBox,
-                                            boxActor)
+        return _add_post_string_to_timeline(post_str, boxname, posts_in_box,
+                                            box_actor)
     return False
 
 
@@ -3605,12 +3641,12 @@ def remove_post_interactions(post_json_object: {}, force: bool) -> bool:
             'items': []
         }
     # remove other collections
-    removeCollections = (
+    remove_collections = (
         'replies', 'shares', 'bookmarks', 'ignores'
     )
-    for removeName in removeCollections:
-        if postObj.get(removeName):
-            postObj[removeName] = {}
+    for remove_name in remove_collections:
+        if postObj.get(remove_name):
+            postObj[remove_name] = {}
     return True
 
 
@@ -3626,30 +3662,30 @@ def _passed_newswire_voting(newswire_votes_threshold: int,
         return True
     # note that the presence of an arrival file also indicates
     # that this post is moderated
-    arrivalDate = \
+    arrival_date = \
         locate_news_arrival(base_dir, domain, post_filename)
-    if not arrivalDate:
+    if not arrival_date:
         return True
     # how long has elapsed since this post arrived?
-    currDate = datetime.datetime.utcnow()
-    timeDiffMins = \
-        int((currDate - arrivalDate).total_seconds() / 60)
+    curr_date = datetime.datetime.utcnow()
+    time_diff_mins = \
+        int((curr_date - arrival_date).total_seconds() / 60)
     # has the voting time elapsed?
-    if timeDiffMins < voting_time_mins:
+    if time_diff_mins < voting_time_mins:
         # voting is still happening, so don't add this
         # post to the timeline
         return False
     # if there a votes file for this post?
-    votesFilename = \
+    votes_filename = \
         locate_news_votes(base_dir, domain, post_filename)
-    if not votesFilename:
+    if not votes_filename:
         return True
     # load the votes file and count the votes
-    votesJson = load_json(votesFilename, 0, 2)
-    if not votesJson:
+    votes_json = load_json(votes_filename, 0, 2)
+    if not votes_json:
         return True
     if not positive_voting:
-        if votes_on_newswire_item(votesJson) >= \
+        if votes_on_newswire_item(votes_json) >= \
            newswire_votes_threshold:
             # Too many veto votes.
             # Continue without incrementing
@@ -3669,13 +3705,14 @@ def _create_box_indexed(recent_posts_cache: {},
                         session, base_dir: str, boxname: str,
                         nickname: str, domain: str, port: int,
                         http_prefix: str,
-                        itemsPerPage: int, headerOnly: bool, authorized: bool,
+                        items_per_page: int, header_only: bool,
+                        authorized: bool,
                         newswire_votes_threshold: int, positive_voting: bool,
-                        voting_time_mins: int, pageNumber: int) -> {}:
+                        voting_time_mins: int, page_number: int) -> {}:
     """Constructs the box feed for a person with the given nickname
     """
-    if not authorized or not pageNumber:
-        pageNumber = 1
+    if not authorized or not page_number:
+        page_number = 1
 
     if boxname != 'inbox' and boxname != 'dm' and \
        boxname != 'tlreplies' and boxname != 'tlmedia' and \
@@ -3688,62 +3725,62 @@ def _create_box_indexed(recent_posts_cache: {},
 
     # bookmarks and events timelines are like the inbox
     # but have their own separate index
-    indexBoxName = boxname
-    timelineNickname = nickname
+    index_box_name = boxname
+    timeline_nickname = nickname
     if boxname == "tlbookmarks":
         boxname = "bookmarks"
-        indexBoxName = boxname
+        index_box_name = boxname
     elif boxname == "tlfeatures":
         boxname = "tlblogs"
-        indexBoxName = boxname
-        timelineNickname = 'news'
+        index_box_name = boxname
+        timeline_nickname = 'news'
 
-    originalDomain = domain
+    original_domain = domain
     domain = get_full_domain(domain, port)
 
-    boxActor = local_actor_url(http_prefix, nickname, domain)
+    box_actor = local_actor_url(http_prefix, nickname, domain)
 
-    pageStr = '?page=true'
-    if pageNumber:
-        if pageNumber < 1:
-            pageNumber = 1
+    page_str = '?page=true'
+    if page_number:
+        if page_number < 1:
+            page_number = 1
         try:
-            pageStr = '?page=' + str(pageNumber)
+            page_str = '?page=' + str(page_number)
         except BaseException:
             print('EX: _create_box_indexed ' +
                   'unable to convert page number to string')
             pass
-    boxUrl = local_actor_url(http_prefix, nickname, domain) + '/' + boxname
-    boxHeader = {
+    box_url = local_actor_url(http_prefix, nickname, domain) + '/' + boxname
+    box_header = {
         '@context': 'https://www.w3.org/ns/activitystreams',
-        'first': boxUrl + '?page=true',
-        'id': boxUrl,
-        'last': boxUrl + '?page=true',
+        'first': box_url + '?page=true',
+        'id': box_url,
+        'last': box_url + '?page=true',
         'totalItems': 0,
         'type': 'OrderedCollection'
     }
     boxItems = {
         '@context': 'https://www.w3.org/ns/activitystreams',
-        'id': boxUrl + pageStr,
+        'id': box_url + page_str,
         'orderedItems': [
         ],
-        'partOf': boxUrl,
+        'partOf': box_url,
         'type': 'OrderedCollectionPage'
     }
 
-    postsInBox = []
-    postUrlsInBox = []
+    posts_in_box = []
+    post_urls_in_box = []
 
-    indexFilename = \
-        acct_dir(base_dir, timelineNickname, originalDomain) + \
-        '/' + indexBoxName + '.index'
-    totalPostsCount = 0
-    postsAddedToTimeline = 0
-    if os.path.isfile(indexFilename):
-        with open(indexFilename, 'r') as indexFile:
-            postsAddedToTimeline = 0
-            while postsAddedToTimeline < itemsPerPage:
-                post_filename = indexFile.readline()
+    index_filename = \
+        acct_dir(base_dir, timeline_nickname, original_domain) + \
+        '/' + index_box_name + '.index'
+    total_posts_count = 0
+    posts_added_to_timeline = 0
+    if os.path.isfile(index_filename):
+        with open(index_filename, 'r') as index_file:
+            posts_added_to_timeline = 0
+            while posts_added_to_timeline < items_per_page:
+                post_filename = index_file.readline()
 
                 if not post_filename:
                     break
@@ -3757,8 +3794,8 @@ def _create_box_indexed(recent_posts_cache: {},
                     continue
 
                 # Skip through any posts previous to the current page
-                if totalPostsCount < int((pageNumber - 1) * itemsPerPage):
-                    totalPostsCount += 1
+                if total_posts_count < int((page_number - 1) * items_per_page):
+                    total_posts_count += 1
                     continue
 
                 # if this is a full path then remove the directories
@@ -3768,117 +3805,118 @@ def _create_box_indexed(recent_posts_cache: {},
                 # filename of the post without any extension or path
                 # This should also correspond to any index entry in
                 # the posts cache
-                postUrl = \
+                post_url = \
                     post_filename.replace('\n', '').replace('\r', '')
-                postUrl = postUrl.replace('.json', '').strip()
+                post_url = post_url.replace('.json', '').strip()
 
-                if postUrl in postUrlsInBox:
+                if post_url in post_urls_in_box:
                     continue
 
                 # is the post cached in memory?
                 if recent_posts_cache.get('index'):
-                    if postUrl in recent_posts_cache['index']:
-                        if recent_posts_cache['json'].get(postUrl):
-                            url = recent_posts_cache['json'][postUrl]
+                    if post_url in recent_posts_cache['index']:
+                        if recent_posts_cache['json'].get(post_url):
+                            url = recent_posts_cache['json'][post_url]
                             if _add_post_string_to_timeline(url,
                                                             boxname,
-                                                            postsInBox,
-                                                            boxActor):
-                                totalPostsCount += 1
-                                postsAddedToTimeline += 1
-                                postUrlsInBox.append(postUrl)
+                                                            posts_in_box,
+                                                            box_actor):
+                                total_posts_count += 1
+                                posts_added_to_timeline += 1
+                                post_urls_in_box.append(post_url)
                                 continue
                             else:
                                 print('Post not added to timeline')
 
                 # read the post from file
-                fullPostFilename = \
+                full_post_filename = \
                     locate_post(base_dir, nickname,
-                                originalDomain, postUrl, False)
-                if fullPostFilename:
+                                original_domain, post_url, False)
+                if full_post_filename:
                     # has the post been rejected?
-                    if os.path.isfile(fullPostFilename + '.reject'):
+                    if os.path.isfile(full_post_filename + '.reject'):
                         continue
 
-                    if _add_post_to_timeline(fullPostFilename, boxname,
-                                             postsInBox, boxActor):
-                        postsAddedToTimeline += 1
-                        totalPostsCount += 1
-                        postUrlsInBox.append(postUrl)
+                    if _add_post_to_timeline(full_post_filename, boxname,
+                                             posts_in_box, box_actor):
+                        posts_added_to_timeline += 1
+                        total_posts_count += 1
+                        post_urls_in_box.append(post_url)
                     else:
-                        print('WARN: Unable to add post ' + postUrl +
+                        print('WARN: Unable to add post ' + post_url +
                               ' nickname ' + nickname +
                               ' timeline ' + boxname)
                 else:
-                    if timelineNickname != nickname:
+                    if timeline_nickname != nickname:
                         # if this is the features timeline
-                        fullPostFilename = \
-                            locate_post(base_dir, timelineNickname,
-                                        originalDomain, postUrl, False)
-                        if fullPostFilename:
-                            if _add_post_to_timeline(fullPostFilename, boxname,
-                                                     postsInBox, boxActor):
-                                postsAddedToTimeline += 1
-                                totalPostsCount += 1
-                                postUrlsInBox.append(postUrl)
+                        full_post_filename = \
+                            locate_post(base_dir, timeline_nickname,
+                                        original_domain, post_url, False)
+                        if full_post_filename:
+                            if _add_post_to_timeline(full_post_filename,
+                                                     boxname,
+                                                     posts_in_box, box_actor):
+                                posts_added_to_timeline += 1
+                                total_posts_count += 1
+                                post_urls_in_box.append(post_url)
                             else:
                                 print('WARN: Unable to add features post ' +
-                                      postUrl + ' nickname ' + nickname +
+                                      post_url + ' nickname ' + nickname +
                                       ' timeline ' + boxname)
                         else:
                             print('WARN: features timeline. ' +
-                                  'Unable to locate post ' + postUrl)
+                                  'Unable to locate post ' + post_url)
                     else:
-                        print('WARN: Unable to locate post ' + postUrl +
+                        print('WARN: Unable to locate post ' + post_url +
                               ' nickname ' + nickname)
 
-    if totalPostsCount < 3:
+    if total_posts_count < 3:
         print('Posts added to json timeline ' + boxname + ': ' +
-              str(postsAddedToTimeline))
+              str(posts_added_to_timeline))
 
     # Generate first and last entries within header
-    if totalPostsCount > 0:
-        lastPage = int(totalPostsCount / itemsPerPage)
-        if lastPage < 1:
-            lastPage = 1
-        boxHeader['last'] = \
+    if total_posts_count > 0:
+        last_page = int(total_posts_count / items_per_page)
+        if last_page < 1:
+            last_page = 1
+        box_header['last'] = \
             local_actor_url(http_prefix, nickname, domain) + \
-            '/' + boxname + '?page=' + str(lastPage)
+            '/' + boxname + '?page=' + str(last_page)
 
-    if headerOnly:
-        boxHeader['totalItems'] = len(postsInBox)
-        prevPageStr = 'true'
-        if pageNumber > 1:
-            prevPageStr = str(pageNumber - 1)
-        boxHeader['prev'] = \
+    if header_only:
+        box_header['totalItems'] = len(posts_in_box)
+        prev_page_str = 'true'
+        if page_number > 1:
+            prev_page_str = str(page_number - 1)
+        box_header['prev'] = \
             local_actor_url(http_prefix, nickname, domain) + \
-            '/' + boxname + '?page=' + prevPageStr
+            '/' + boxname + '?page=' + prev_page_str
 
-        nextPageStr = str(pageNumber + 1)
-        boxHeader['next'] = \
+        next_page_str = str(page_number + 1)
+        box_header['next'] = \
             local_actor_url(http_prefix, nickname, domain) + \
-            '/' + boxname + '?page=' + nextPageStr
-        return boxHeader
+            '/' + boxname + '?page=' + next_page_str
+        return box_header
 
-    for postStr in postsInBox:
+    for post_str in posts_in_box:
         # Check if the post has replies
-        hasReplies = False
-        if postStr.endswith('<hasReplies>'):
-            hasReplies = True
+        has_replies = False
+        if post_str.endswith('<hasReplies>'):
+            has_replies = True
             # remove the replies identifier
-            postStr = postStr.replace('<hasReplies>', '')
+            post_str = post_str.replace('<hasReplies>', '')
 
         p = None
         try:
-            p = json.loads(postStr)
+            p = json.loads(post_str)
         except BaseException:
-            print('EX: _create_box_indexed unable to load json ' + postStr)
+            print('EX: _create_box_indexed unable to load json ' + post_str)
             continue
 
         # Does this post have replies?
         # This will be used to indicate that replies exist within the html
         # created by individual_post_as_html
-        p['hasReplies'] = hasReplies
+        p['hasReplies'] = has_replies
 
         if not authorized:
             if not remove_post_interactions(p, False):
@@ -3892,7 +3930,7 @@ def _create_box_indexed(recent_posts_cache: {},
 def expire_cache(base_dir: str, person_cache: {},
                  http_prefix: str, archive_dir: str,
                  recent_posts_cache: {},
-                 maxPostsInBox=32000):
+                 max_posts_in_box=32000):
     """Thread used to expire actors from the cache and archive old posts
     """
     while True:
@@ -3900,15 +3938,15 @@ def expire_cache(base_dir: str, person_cache: {},
         time.sleep(60 * 60 * 24)
         expire_person_cache(person_cache)
         archive_posts(base_dir, http_prefix, archive_dir, recent_posts_cache,
-                      maxPostsInBox)
+                      max_posts_in_box)
 
 
 def archive_posts(base_dir: str, http_prefix: str, archive_dir: str,
                   recent_posts_cache: {},
-                  maxPostsInBox=32000) -> None:
+                  max_posts_in_box=32000) -> None:
     """Archives posts for all accounts
     """
-    if maxPostsInBox == 0:
+    if max_posts_in_box == 0:
         return
 
     if archive_dir:
@@ -3924,7 +3962,7 @@ def archive_posts(base_dir: str, http_prefix: str, archive_dir: str,
             if '@' in handle:
                 nickname = handle.split('@')[0]
                 domain = handle.split('@')[1]
-                archiveSubdir = None
+                archive_subdir = None
                 if archive_dir:
                     if not os.path.isdir(archive_dir + '/accounts/' + handle):
                         os.mkdir(archive_dir + '/accounts/' + handle)
@@ -3936,19 +3974,19 @@ def archive_posts(base_dir: str, http_prefix: str, archive_dir: str,
                                          handle + '/outbox'):
                         os.mkdir(archive_dir + '/accounts/' +
                                  handle + '/outbox')
-                    archiveSubdir = archive_dir + '/accounts/' + \
+                    archive_subdir = archive_dir + '/accounts/' + \
                         handle + '/inbox'
                 archive_posts_for_person(http_prefix,
                                          nickname, domain, base_dir,
-                                         'inbox', archiveSubdir,
-                                         recent_posts_cache, maxPostsInBox)
+                                         'inbox', archive_subdir,
+                                         recent_posts_cache, max_posts_in_box)
                 if archive_dir:
-                    archiveSubdir = archive_dir + '/accounts/' + \
+                    archive_subdir = archive_dir + '/accounts/' + \
                         handle + '/outbox'
                 archive_posts_for_person(http_prefix,
                                          nickname, domain, base_dir,
-                                         'outbox', archiveSubdir,
-                                         recent_posts_cache, maxPostsInBox)
+                                         'outbox', archive_subdir,
+                                         recent_posts_cache, max_posts_in_box)
         break
 
 
@@ -3956,7 +3994,7 @@ def archive_posts_for_person(http_prefix: str, nickname: str, domain: str,
                              base_dir: str,
                              boxname: str, archive_dir: str,
                              recent_posts_cache: {},
-                             maxPostsInBox=32000) -> None:
+                             max_posts_in_box=32000) -> None:
     """Retain a maximum number of posts within the given box
     Move any others to an archive directory
     """
@@ -3965,112 +4003,114 @@ def archive_posts_for_person(http_prefix: str, nickname: str, domain: str,
     if archive_dir:
         if not os.path.isdir(archive_dir):
             os.mkdir(archive_dir)
-    boxDir = create_person_dir(nickname, domain, base_dir, boxname)
-    postsInBox = os.scandir(boxDir)
-    noOfPosts = 0
-    for f in postsInBox:
-        noOfPosts += 1
-    if noOfPosts <= maxPostsInBox:
-        print('Checked ' + str(noOfPosts) + ' ' + boxname +
+    box_dir = create_person_dir(nickname, domain, base_dir, boxname)
+    posts_in_box = os.scandir(box_dir)
+    no_of_posts = 0
+    for f in posts_in_box:
+        no_of_posts += 1
+    if no_of_posts <= max_posts_in_box:
+        print('Checked ' + str(no_of_posts) + ' ' + boxname +
               ' posts for ' + nickname + '@' + domain)
         return
 
     # remove entries from the index
     handle = nickname + '@' + domain
-    indexFilename = base_dir + '/accounts/' + handle + '/' + boxname + '.index'
-    if os.path.isfile(indexFilename):
-        indexCtr = 0
+    index_filename = \
+        base_dir + '/accounts/' + handle + '/' + boxname + '.index'
+    if os.path.isfile(index_filename):
+        index_ctr = 0
         # get the existing index entries as a string
         newIndex = ''
-        with open(indexFilename, 'r') as indexFile:
-            for post_id in indexFile:
+        with open(index_filename, 'r') as index_file:
+            for post_id in index_file:
                 newIndex += post_id
-                indexCtr += 1
-                if indexCtr >= maxPostsInBox:
+                index_ctr += 1
+                if index_ctr >= max_posts_in_box:
                     break
         # save the new index file
         if len(newIndex) > 0:
-            with open(indexFilename, 'w+') as indexFile:
-                indexFile.write(newIndex)
+            with open(index_filename, 'w+') as index_file:
+                index_file.write(newIndex)
 
-    postsInBoxDict = {}
-    postsCtr = 0
-    postsInBox = os.scandir(boxDir)
-    for post_filename in postsInBox:
+    posts_in_box_dict = {}
+    posts_ctr = 0
+    posts_in_box = os.scandir(box_dir)
+    for post_filename in posts_in_box:
         post_filename = post_filename.name
         if not post_filename.endswith('.json'):
             continue
         # Time of file creation
-        fullFilename = os.path.join(boxDir, post_filename)
+        fullFilename = os.path.join(box_dir, post_filename)
         if os.path.isfile(fullFilename):
             content = open(fullFilename).read()
             if '"published":' in content:
-                publishedStr = content.split('"published":')[1]
-                if '"' in publishedStr:
-                    publishedStr = publishedStr.split('"')[1]
-                    if publishedStr.endswith('Z'):
-                        postsInBoxDict[publishedStr] = post_filename
-                        postsCtr += 1
+                published_str = content.split('"published":')[1]
+                if '"' in published_str:
+                    published_str = published_str.split('"')[1]
+                    if published_str.endswith('Z'):
+                        posts_in_box_dict[published_str] = post_filename
+                        posts_ctr += 1
 
-    noOfPosts = postsCtr
-    if noOfPosts <= maxPostsInBox:
-        print('Checked ' + str(noOfPosts) + ' ' + boxname +
+    no_of_posts = posts_ctr
+    if no_of_posts <= max_posts_in_box:
+        print('Checked ' + str(no_of_posts) + ' ' + boxname +
               ' posts for ' + nickname + '@' + domain)
         return
 
     # sort the list in ascending order of date
-    postsInBoxSorted = \
-        OrderedDict(sorted(postsInBoxDict.items(), reverse=False))
+    posts_in_box_sorted = \
+        OrderedDict(sorted(posts_in_box_dict.items(), reverse=False))
 
     # directory containing cached html posts
-    postCacheDir = boxDir.replace('/' + boxname, '/postcache')
+    post_cache_dir = box_dir.replace('/' + boxname, '/postcache')
 
-    removeCtr = 0
-    for publishedStr, post_filename in postsInBoxSorted.items():
-        filePath = os.path.join(boxDir, post_filename)
-        if not os.path.isfile(filePath):
+    remove_ctr = 0
+    for published_str, post_filename in posts_in_box_sorted.items():
+        file_path = os.path.join(box_dir, post_filename)
+        if not os.path.isfile(file_path):
             continue
         if archive_dir:
             archivePath = os.path.join(archive_dir, post_filename)
-            os.rename(filePath, archivePath)
+            os.rename(file_path, archivePath)
 
             extensions = ('replies', 'votes', 'arrived', 'muted')
             for ext in extensions:
-                extPath = filePath.replace('.json', '.' + ext)
-                if os.path.isfile(extPath):
-                    os.rename(extPath,
+                ext_path = file_path.replace('.json', '.' + ext)
+                if os.path.isfile(ext_path):
+                    os.rename(ext_path,
                               archivePath.replace('.json', '.' + ext))
                 else:
-                    extPath = filePath.replace('.json',
-                                               '.json.' + ext)
-                    if os.path.isfile(extPath):
-                        os.rename(extPath,
+                    ext_path = file_path.replace('.json',
+                                                 '.json.' + ext)
+                    if os.path.isfile(ext_path):
+                        os.rename(ext_path,
                                   archivePath.replace('.json', '.json.' + ext))
         else:
             delete_post(base_dir, http_prefix, nickname, domain,
-                        filePath, False, recent_posts_cache)
+                        file_path, False, recent_posts_cache)
 
         # remove cached html posts
-        postCacheFilename = \
-            os.path.join(postCacheDir, post_filename).replace('.json', '.html')
-        if os.path.isfile(postCacheFilename):
+        post_cache_filename = \
+            os.path.join(post_cache_dir, post_filename)
+        post_cache_filename = post_cache_filename.replace('.json', '.html')
+        if os.path.isfile(post_cache_filename):
             try:
-                os.remove(postCacheFilename)
+                os.remove(post_cache_filename)
             except OSError:
                 print('EX: archive_posts_for_person unable to delete ' +
-                      postCacheFilename)
+                      post_cache_filename)
 
-        noOfPosts -= 1
-        removeCtr += 1
-        if noOfPosts <= maxPostsInBox:
+        no_of_posts -= 1
+        remove_ctr += 1
+        if no_of_posts <= max_posts_in_box:
             break
     if archive_dir:
-        print('Archived ' + str(removeCtr) + ' ' + boxname +
+        print('Archived ' + str(remove_ctr) + ' ' + boxname +
               ' posts for ' + nickname + '@' + domain)
     else:
-        print('Removed ' + str(removeCtr) + ' ' + boxname +
+        print('Removed ' + str(remove_ctr) + ' ' + boxname +
               ' posts for ' + nickname + '@' + domain)
-    print(nickname + '@' + domain + ' has ' + str(noOfPosts) +
+    print(nickname + '@' + domain + ' has ' + str(no_of_posts) +
           ' in ' + boxname)
 
 
@@ -4080,7 +4120,7 @@ def get_public_posts_of_person(base_dir: str, nickname: str, domain: str,
                                debug: bool, project_version: str,
                                system_language: str,
                                signing_priv_key_pem: str,
-                               originDomain: str) -> None:
+                               origin_domain: str) -> None:
     """ This is really just for test purposes
     """
     if debug:
@@ -4105,29 +4145,29 @@ def get_public_posts_of_person(base_dir: str, nickname: str, domain: str,
     domain_full = get_full_domain(domain, port)
     handle = http_prefix + "://" + domain_full + "/@" + nickname
 
-    wfRequest = \
+    wf_request = \
         webfinger_handle(session, handle, http_prefix, cached_webfingers,
-                         originDomain, project_version, debug, group_account,
+                         origin_domain, project_version, debug, group_account,
                          signing_priv_key_pem)
-    if not wfRequest:
+    if not wf_request:
         if debug:
             print('No webfinger result was returned for ' + handle)
         sys.exit()
-    if not isinstance(wfRequest, dict):
+    if not isinstance(wf_request, dict):
         print('Webfinger for ' + handle + ' did not return a dict. ' +
-              str(wfRequest))
+              str(wf_request))
         sys.exit()
 
     if debug:
         print('Getting the outbox for ' + handle)
-    (personUrl, pubKeyId, pubKey, personId, shaedInbox, avatarUrl,
-     displayName, _) = get_person_box(signing_priv_key_pem,
-                                      originDomain,
-                                      base_dir, session, wfRequest,
-                                      person_cache,
-                                      project_version, http_prefix,
-                                      nickname, domain, 'outbox',
-                                      62524)
+    (person_url, pub_key_id, pub_key, personId, shaedInbox, avatar_url,
+     display_name, _) = get_person_box(signing_priv_key_pem,
+                                       origin_domain,
+                                       base_dir, session, wf_request,
+                                       person_cache,
+                                       project_version, http_prefix,
+                                       nickname, domain, 'outbox',
+                                       62524)
     if debug:
         print('Actor url: ' + str(personId))
     if not personId:
@@ -4135,19 +4175,19 @@ def get_public_posts_of_person(base_dir: str, nickname: str, domain: str,
 
     max_mentions = 10
     max_emoji = 10
-    maxAttachments = 5
-    _get_posts(session, personUrl, 30, max_mentions, max_emoji,
-               maxAttachments, federation_list,
+    max_attachments = 5
+    _get_posts(session, person_url, 30, max_mentions, max_emoji,
+               max_attachments, federation_list,
                person_cache, raw, simple, debug,
-               project_version, http_prefix, originDomain, system_language,
+               project_version, http_prefix, origin_domain, system_language,
                signing_priv_key_pem)
 
 
 def get_public_post_domains(session, base_dir: str, nickname: str, domain: str,
-                            originDomain: str,
+                            origin_domain: str,
                             proxy_type: str, port: int, http_prefix: str,
                             debug: bool, project_version: str,
-                            wordFrequency: {}, domainList: [],
+                            word_frequency: {}, domain_list: [],
                             system_language: str,
                             signing_priv_key_pem: str) -> []:
     """ Returns a list of domains referenced within public posts
@@ -4155,84 +4195,85 @@ def get_public_post_domains(session, base_dir: str, nickname: str, domain: str,
     if not session:
         session = create_session(proxy_type)
     if not session:
-        return domainList
+        return domain_list
     person_cache = {}
     cached_webfingers = {}
     federation_list = []
 
     domain_full = get_full_domain(domain, port)
     handle = http_prefix + "://" + domain_full + "/@" + nickname
-    wfRequest = \
+    wf_request = \
         webfinger_handle(session, handle, http_prefix, cached_webfingers,
                          domain, project_version, debug, False,
                          signing_priv_key_pem)
-    if not wfRequest:
-        return domainList
-    if not isinstance(wfRequest, dict):
+    if not wf_request:
+        return domain_list
+    if not isinstance(wf_request, dict):
         print('Webfinger for ' + handle + ' did not return a dict. ' +
-              str(wfRequest))
-        return domainList
+              str(wf_request))
+        return domain_list
 
-    (personUrl, pubKeyId, pubKey, personId, sharedInbox, avatarUrl,
-     displayName, _) = get_person_box(signing_priv_key_pem,
-                                      originDomain,
-                                      base_dir, session, wfRequest,
-                                      person_cache,
-                                      project_version, http_prefix,
-                                      nickname, domain, 'outbox',
-                                      92522)
+    (person_url, pub_key_id, pub_key, personId, shared_inbox, avatar_url,
+     display_name, _) = get_person_box(signing_priv_key_pem,
+                                       origin_domain,
+                                       base_dir, session, wf_request,
+                                       person_cache,
+                                       project_version, http_prefix,
+                                       nickname, domain, 'outbox',
+                                       92522)
     max_mentions = 99
     max_emoji = 99
-    maxAttachments = 5
-    postDomains = \
-        get_post_domains(session, personUrl, 64, max_mentions, max_emoji,
-                         maxAttachments, federation_list,
+    max_attachments = 5
+    post_domains = \
+        get_post_domains(session, person_url, 64, max_mentions, max_emoji,
+                         max_attachments, federation_list,
                          person_cache, debug,
                          project_version, http_prefix, domain,
-                         wordFrequency, domainList, system_language,
+                         word_frequency, domain_list, system_language,
                          signing_priv_key_pem)
-    postDomains.sort()
-    return postDomains
+    post_domains.sort()
+    return post_domains
 
 
 def download_follow_collection(signing_priv_key_pem: str,
-                               followType: str,
+                               follow_type: str,
                                session, http_prefix: str,
-                               actor: str, pageNumber: int,
-                               noOfPages: int, debug: bool) -> []:
+                               actor: str, page_number: int,
+                               no_of_pages: int, debug: bool) -> []:
     """Returns a list of following/followers for the given actor
     by downloading the json for their following/followers collection
     """
     prof = 'https://www.w3.org/ns/activitystreams'
     if '/channel/' not in actor or '/accounts/' not in actor:
-        acceptStr = \
+        accept_str = \
             'application/activity+json; ' + \
             'profile="' + prof + '"'
-        sessionHeaders = {
-            'Accept': acceptStr
+        session_headers = {
+            'Accept': accept_str
         }
     else:
-        acceptStr = \
+        accept_str = \
             'application/ld+json; ' + \
             'profile="' + prof + '"'
-        sessionHeaders = {
-            'Accept': acceptStr
+        session_headers = {
+            'Accept': accept_str
         }
     result = []
-    for pageCtr in range(noOfPages):
-        url = actor + '/' + followType + '?page=' + str(pageNumber + pageCtr)
-        followersJson = \
-            get_json(signing_priv_key_pem, session, url, sessionHeaders, None,
+    for page_ctr in range(no_of_pages):
+        url = \
+            actor + '/' + follow_type + '?page=' + str(page_number + page_ctr)
+        followers_json = \
+            get_json(signing_priv_key_pem, session, url, session_headers, None,
                      debug, __version__, http_prefix, None)
-        if followersJson:
-            if followersJson.get('orderedItems'):
-                for followerActor in followersJson['orderedItems']:
-                    if followerActor not in result:
-                        result.append(followerActor)
-            elif followersJson.get('items'):
-                for followerActor in followersJson['items']:
-                    if followerActor not in result:
-                        result.append(followerActor)
+        if followers_json:
+            if followers_json.get('orderedItems'):
+                for follower_actor in followers_json['orderedItems']:
+                    if follower_actor not in result:
+                        result.append(follower_actor)
+            elif followers_json.get('items'):
+                for follower_actor in followers_json['items']:
+                    if follower_actor not in result:
+                        result.append(follower_actor)
             else:
                 break
         else:
@@ -4241,10 +4282,10 @@ def download_follow_collection(signing_priv_key_pem: str,
 
 
 def get_public_post_info(session, base_dir: str, nickname: str, domain: str,
-                         originDomain: str,
+                         origin_domain: str,
                          proxy_type: str, port: int, http_prefix: str,
                          debug: bool, project_version: str,
-                         wordFrequency: {}, system_language: str,
+                         word_frequency: {}, system_language: str,
                          signing_priv_key_pem: str) -> []:
     """ Returns a dict of domains referenced within public posts
     """
@@ -4258,57 +4299,57 @@ def get_public_post_info(session, base_dir: str, nickname: str, domain: str,
 
     domain_full = get_full_domain(domain, port)
     handle = http_prefix + "://" + domain_full + "/@" + nickname
-    wfRequest = \
+    wf_request = \
         webfinger_handle(session, handle, http_prefix, cached_webfingers,
                          domain, project_version, debug, False,
                          signing_priv_key_pem)
-    if not wfRequest:
+    if not wf_request:
         return {}
-    if not isinstance(wfRequest, dict):
+    if not isinstance(wf_request, dict):
         print('Webfinger for ' + handle + ' did not return a dict. ' +
-              str(wfRequest))
+              str(wf_request))
         return {}
 
-    (personUrl, pubKeyId, pubKey, personId, sharedInbox, avatarUrl,
-     displayName, _) = get_person_box(signing_priv_key_pem,
-                                      originDomain,
-                                      base_dir, session, wfRequest,
-                                      person_cache,
-                                      project_version, http_prefix,
-                                      nickname, domain, 'outbox',
-                                      13863)
+    (person_url, pub_key_id, pub_key, personId, shared_inbox, avatar_url,
+     display_name, _) = get_person_box(signing_priv_key_pem,
+                                       origin_domain,
+                                       base_dir, session, wf_request,
+                                       person_cache,
+                                       project_version, http_prefix,
+                                       nickname, domain, 'outbox',
+                                       13863)
     max_mentions = 99
     max_emoji = 99
-    maxAttachments = 5
-    maxPosts = 64
-    postDomains = \
-        get_post_domains(session, personUrl, maxPosts,
+    max_attachments = 5
+    max_posts = 64
+    post_domains = \
+        get_post_domains(session, person_url, max_posts,
                          max_mentions, max_emoji,
-                         maxAttachments, federation_list,
+                         max_attachments, federation_list,
                          person_cache, debug,
                          project_version, http_prefix, domain,
-                         wordFrequency, [], system_language,
+                         word_frequency, [], system_language,
                          signing_priv_key_pem)
-    postDomains.sort()
-    domainsInfo = {}
-    for d in postDomains:
-        if not domainsInfo.get(d):
-            domainsInfo[d] = []
+    post_domains.sort()
+    domains_info = {}
+    for d in post_domains:
+        if not domains_info.get(d):
+            domains_info[d] = []
 
-    blockedPosts = \
+    blocked_posts = \
         _get_posts_for_blocked_domains(base_dir, session,
-                                       personUrl, maxPosts,
+                                       person_url, max_posts,
                                        max_mentions,
-                                       max_emoji, maxAttachments,
+                                       max_emoji, max_attachments,
                                        federation_list,
                                        person_cache,
                                        debug,
                                        project_version, http_prefix,
                                        domain, signing_priv_key_pem)
-    for blockedDomain, postUrlList in blockedPosts.items():
-        domainsInfo[blockedDomain] += postUrlList
+    for blocked_domain, post_url_list in blocked_posts.items():
+        domains_info[blocked_domain] += post_url_list
 
-    return domainsInfo
+    return domains_info
 
 
 def get_public_post_domains_blocked(session, base_dir: str,
@@ -4316,45 +4357,45 @@ def get_public_post_domains_blocked(session, base_dir: str,
                                     proxy_type: str, port: int,
                                     http_prefix: str,
                                     debug: bool, project_version: str,
-                                    wordFrequency: {}, domainList: [],
+                                    word_frequency: {}, domain_list: [],
                                     system_language: str,
                                     signing_priv_key_pem: str) -> []:
     """ Returns a list of domains referenced within public posts which
     are globally blocked on this instance
     """
-    originDomain = domain
-    postDomains = \
+    origin_domain = domain
+    post_domains = \
         get_public_post_domains(session, base_dir, nickname, domain,
-                                originDomain,
+                                origin_domain,
                                 proxy_type, port, http_prefix,
                                 debug, project_version,
-                                wordFrequency, domainList, system_language,
+                                word_frequency, domain_list, system_language,
                                 signing_priv_key_pem)
-    if not postDomains:
+    if not post_domains:
         return []
 
-    blockingFilename = base_dir + '/accounts/blocking.txt'
-    if not os.path.isfile(blockingFilename):
+    blocking_filename = base_dir + '/accounts/blocking.txt'
+    if not os.path.isfile(blocking_filename):
         return []
 
     # read the blocked domains as a single string
     blockedStr = ''
-    with open(blockingFilename, 'r') as fp:
-        blockedStr = fp.read()
+    with open(blocking_filename, 'r') as fp_block:
+        blockedStr = fp_block.read()
 
-    blockedDomains = []
-    for domainName in postDomains:
+    blocked_domains = []
+    for domainName in post_domains:
         if '@' not in domainName:
             continue
         # get the domain after the @
         domainName = domainName.split('@')[1].strip()
         if is_evil(domainName):
-            blockedDomains.append(domainName)
+            blocked_domains.append(domainName)
             continue
         if domainName in blockedStr:
-            blockedDomains.append(domainName)
+            blocked_domains.append(domainName)
 
-    return blockedDomains
+    return blocked_domains
 
 
 def _get_non_mutuals_of_person(base_dir: str,
@@ -4366,163 +4407,163 @@ def _get_non_mutuals_of_person(base_dir: str,
         get_followers_list(base_dir, nickname, domain, 'followers.txt')
     following = \
         get_followers_list(base_dir, nickname, domain, 'following.txt')
-    nonMutuals = []
+    non_mutuals = []
     for handle in followers:
         if handle not in following:
-            nonMutuals.append(handle)
-    return nonMutuals
+            non_mutuals.append(handle)
+    return non_mutuals
 
 
 def check_domains(session, base_dir: str,
                   nickname: str, domain: str,
                   proxy_type: str, port: int, http_prefix: str,
                   debug: bool, project_version: str,
-                  maxBlockedDomains: int, singleCheck: bool,
+                  max_blocked_domains: int, singleCheck: bool,
                   system_language: str,
                   signing_priv_key_pem: str) -> None:
     """Checks follower accounts for references to globally blocked domains
     """
-    wordFrequency = {}
-    nonMutuals = _get_non_mutuals_of_person(base_dir, nickname, domain)
-    if not nonMutuals:
+    word_frequency = {}
+    non_mutuals = _get_non_mutuals_of_person(base_dir, nickname, domain)
+    if not non_mutuals:
         print('No non-mutual followers were found')
         return
-    followerWarningFilename = base_dir + '/accounts/followerWarnings.txt'
-    updateFollowerWarnings = False
-    followerWarningStr = ''
-    if os.path.isfile(followerWarningFilename):
-        with open(followerWarningFilename, 'r') as fp:
-            followerWarningStr = fp.read()
+    follower_warning_filename = base_dir + '/accounts/followerWarnings.txt'
+    update_follower_warnings = False
+    follower_warning_str = ''
+    if os.path.isfile(follower_warning_filename):
+        with open(follower_warning_filename, 'r') as fp_warn:
+            follower_warning_str = fp_warn.read()
 
     if singleCheck:
         # checks a single random non-mutual
-        index = random.randrange(0, len(nonMutuals))
-        handle = nonMutuals[index]
+        index = random.randrange(0, len(non_mutuals))
+        handle = non_mutuals[index]
         if '@' in handle:
-            nonMutualNickname = handle.split('@')[0]
-            nonMutualDomain = handle.split('@')[1].strip()
-            blockedDomains = \
+            non_mutual_nickname = handle.split('@')[0]
+            non_mutual_domain = handle.split('@')[1].strip()
+            blocked_domains = \
                 get_public_post_domains_blocked(session, base_dir,
-                                                nonMutualNickname,
-                                                nonMutualDomain,
+                                                non_mutual_nickname,
+                                                non_mutual_domain,
                                                 proxy_type, port, http_prefix,
                                                 debug, project_version,
-                                                wordFrequency, [],
+                                                word_frequency, [],
                                                 system_language,
                                                 signing_priv_key_pem)
-            if blockedDomains:
-                if len(blockedDomains) > maxBlockedDomains:
-                    followerWarningStr += handle + '\n'
-                    updateFollowerWarnings = True
+            if blocked_domains:
+                if len(blocked_domains) > max_blocked_domains:
+                    follower_warning_str += handle + '\n'
+                    update_follower_warnings = True
     else:
         # checks all non-mutuals
-        for handle in nonMutuals:
+        for handle in non_mutuals:
             if '@' not in handle:
                 continue
-            if handle in followerWarningStr:
+            if handle in follower_warning_str:
                 continue
-            nonMutualNickname = handle.split('@')[0]
-            nonMutualDomain = handle.split('@')[1].strip()
-            blockedDomains = \
+            non_mutual_nickname = handle.split('@')[0]
+            non_mutual_domain = handle.split('@')[1].strip()
+            blocked_domains = \
                 get_public_post_domains_blocked(session, base_dir,
-                                                nonMutualNickname,
-                                                nonMutualDomain,
+                                                non_mutual_nickname,
+                                                non_mutual_domain,
                                                 proxy_type, port, http_prefix,
                                                 debug, project_version,
-                                                wordFrequency, [],
+                                                word_frequency, [],
                                                 system_language,
                                                 signing_priv_key_pem)
-            if blockedDomains:
+            if blocked_domains:
                 print(handle)
-                for d in blockedDomains:
+                for d in blocked_domains:
                     print('  ' + d)
-                if len(blockedDomains) > maxBlockedDomains:
-                    followerWarningStr += handle + '\n'
-                    updateFollowerWarnings = True
+                if len(blocked_domains) > max_blocked_domains:
+                    follower_warning_str += handle + '\n'
+                    update_follower_warnings = True
 
-    if updateFollowerWarnings and followerWarningStr:
-        with open(followerWarningFilename, 'w+') as fp:
-            fp.write(followerWarningStr)
+    if update_follower_warnings and follower_warning_str:
+        with open(follower_warning_filename, 'w+') as fp_warn:
+            fp_warn.write(follower_warning_str)
         if not singleCheck:
-            print(followerWarningStr)
+            print(follower_warning_str)
 
 
 def populate_replies_json(base_dir: str, nickname: str, domain: str,
-                          postRepliesFilename: str, authorized: bool,
-                          repliesJson: {}) -> None:
-    pubStr = 'https://www.w3.org/ns/activitystreams#Public'
+                          post_replies_filename: str, authorized: bool,
+                          replies_json: {}) -> None:
+    pub_str = 'https://www.w3.org/ns/activitystreams#Public'
     # populate the items list with replies
     repliesBoxes = ('outbox', 'inbox')
-    with open(postRepliesFilename, 'r') as repliesFile:
-        for messageId in repliesFile:
+    with open(post_replies_filename, 'r') as replies_file:
+        for message_id in replies_file:
             replyFound = False
             # examine inbox and outbox
             for boxname in repliesBoxes:
-                messageId2 = messageId.replace('\n', '').replace('\r', '')
-                searchFilename = \
+                message_id2 = message_id.replace('\n', '').replace('\r', '')
+                search_filename = \
                     acct_dir(base_dir, nickname, domain) + '/' + \
                     boxname + '/' + \
-                    messageId2.replace('/', '#') + '.json'
-                if os.path.isfile(searchFilename):
+                    message_id2.replace('/', '#') + '.json'
+                if os.path.isfile(search_filename):
                     if authorized or \
-                       pubStr in open(searchFilename).read():
-                        post_json_object = load_json(searchFilename)
+                       pub_str in open(search_filename).read():
+                        post_json_object = load_json(search_filename)
                         if post_json_object:
                             if post_json_object['object'].get('cc'):
                                 pjo = post_json_object
                                 if (authorized or
-                                    (pubStr in pjo['object']['to'] or
-                                     pubStr in pjo['object']['cc'])):
-                                    repliesJson['orderedItems'].append(pjo)
+                                    (pub_str in pjo['object']['to'] or
+                                     pub_str in pjo['object']['cc'])):
+                                    replies_json['orderedItems'].append(pjo)
                                     replyFound = True
                             else:
                                 if authorized or \
-                                   pubStr in post_json_object['object']['to']:
+                                   pub_str in post_json_object['object']['to']:
                                     pjo = post_json_object
-                                    repliesJson['orderedItems'].append(pjo)
+                                    replies_json['orderedItems'].append(pjo)
                                     replyFound = True
                     break
             # if not in either inbox or outbox then examine the shared inbox
             if not replyFound:
-                messageId2 = messageId.replace('\n', '').replace('\r', '')
-                searchFilename = \
+                message_id2 = message_id.replace('\n', '').replace('\r', '')
+                search_filename = \
                     base_dir + \
                     '/accounts/inbox@' + \
                     domain + '/inbox/' + \
-                    messageId2.replace('/', '#') + '.json'
-                if os.path.isfile(searchFilename):
+                    message_id2.replace('/', '#') + '.json'
+                if os.path.isfile(search_filename):
                     if authorized or \
-                       pubStr in open(searchFilename).read():
+                       pub_str in open(search_filename).read():
                         # get the json of the reply and append it to
                         # the collection
-                        post_json_object = load_json(searchFilename)
+                        post_json_object = load_json(search_filename)
                         if post_json_object:
                             if post_json_object['object'].get('cc'):
                                 pjo = post_json_object
                                 if (authorized or
-                                    (pubStr in pjo['object']['to'] or
-                                     pubStr in pjo['object']['cc'])):
+                                    (pub_str in pjo['object']['to'] or
+                                     pub_str in pjo['object']['cc'])):
                                     pjo = post_json_object
-                                    repliesJson['orderedItems'].append(pjo)
+                                    replies_json['orderedItems'].append(pjo)
                             else:
                                 if authorized or \
-                                   pubStr in post_json_object['object']['to']:
+                                   pub_str in post_json_object['object']['to']:
                                     pjo = post_json_object
-                                    repliesJson['orderedItems'].append(pjo)
+                                    replies_json['orderedItems'].append(pjo)
 
 
-def _reject_announce(announceFilename: str,
+def _reject_announce(announce_filename: str,
                      base_dir: str, nickname: str, domain: str,
-                     announcePostId: str, recent_posts_cache: {}):
+                     announce_post_id: str, recent_posts_cache: {}):
     """Marks an announce as rejected
     """
-    reject_post_id(base_dir, nickname, domain, announcePostId,
+    reject_post_id(base_dir, nickname, domain, announce_post_id,
                    recent_posts_cache)
 
     # reject the post referenced by the announce activity object
-    if not os.path.isfile(announceFilename + '.reject'):
-        with open(announceFilename + '.reject', 'w+') as rejectAnnounceFile:
-            rejectAnnounceFile.write('\n')
+    if not os.path.isfile(announce_filename + '.reject'):
+        with open(announce_filename + '.reject', 'w+') as reject_announce_file:
+            reject_announce_file.write('\n')
 
 
 def download_announce(session, base_dir: str, http_prefix: str,
@@ -4536,7 +4577,7 @@ def download_announce(session, base_dir: str, http_prefix: str,
                       system_language: str,
                       domain_full: str, person_cache: {},
                       signing_priv_key_pem: str,
-                      blockedCache: {}) -> {}:
+                      blocked_cache: {}) -> {}:
     """Download the post referenced by an announce
     """
     if not post_json_object.get('object'):
@@ -4548,68 +4589,69 @@ def download_announce(session, base_dir: str, http_prefix: str,
         return None
 
     # get the announced post
-    announceCacheDir = base_dir + '/cache/announce/' + nickname
-    if not os.path.isdir(announceCacheDir):
-        os.mkdir(announceCacheDir)
+    announce_cache_dir = base_dir + '/cache/announce/' + nickname
+    if not os.path.isdir(announce_cache_dir):
+        os.mkdir(announce_cache_dir)
 
     post_id = None
     if post_json_object.get('id'):
         post_id = remove_id_ending(post_json_object['id'])
-    announceFilename = \
-        announceCacheDir + '/' + \
+    announce_filename = \
+        announce_cache_dir + '/' + \
         post_json_object['object'].replace('/', '#') + '.json'
 
-    if os.path.isfile(announceFilename + '.reject'):
+    if os.path.isfile(announce_filename + '.reject'):
         return None
 
-    if os.path.isfile(announceFilename):
+    if os.path.isfile(announce_filename):
         if debug:
             print('Reading cached Announce content for ' +
                   post_json_object['object'])
-        post_json_object = load_json(announceFilename)
+        post_json_object = load_json(announce_filename)
         if post_json_object:
             return post_json_object
     else:
-        profileStr = 'https://www.w3.org/ns/activitystreams'
-        acceptStr = \
+        profile_str = 'https://www.w3.org/ns/activitystreams'
+        accept_str = \
             'application/activity+json; ' + \
-            'profile="' + profileStr + '"'
-        asHeader = {
-            'Accept': acceptStr
+            'profile="' + profile_str + '"'
+        as_header = {
+            'Accept': accept_str
         }
         if '/channel/' in post_json_object['actor'] or \
            '/accounts/' in post_json_object['actor']:
-            acceptStr = \
+            accept_str = \
                 'application/ld+json; ' + \
-                'profile="' + profileStr + '"'
-            asHeader = {
-                'Accept': acceptStr
+                'profile="' + profile_str + '"'
+            as_header = {
+                'Accept': accept_str
             }
-        actorNickname = get_nickname_from_actor(post_json_object['actor'])
-        actorDomain, actorPort = \
+        actor_nickname = get_nickname_from_actor(post_json_object['actor'])
+        actor_domain, actor_port = \
             get_domain_from_actor(post_json_object['actor'])
-        if not actorDomain:
+        if not actor_domain:
             print('Announce actor does not contain a ' +
                   'valid domain or port number: ' +
                   str(post_json_object['actor']))
             return None
-        if is_blocked(base_dir, nickname, domain, actorNickname, actorDomain):
+        if is_blocked(base_dir, nickname, domain,
+                      actor_nickname, actor_domain):
             print('Announce download blocked actor: ' +
-                  actorNickname + '@' + actorDomain)
+                  actor_nickname + '@' + actor_domain)
             return None
-        objectNickname = get_nickname_from_actor(post_json_object['object'])
-        objectDomain, objectPort = \
+        object_nickname = get_nickname_from_actor(post_json_object['object'])
+        object_domain, objectPort = \
             get_domain_from_actor(post_json_object['object'])
-        if not objectDomain:
+        if not object_domain:
             print('Announce object does not contain a ' +
                   'valid domain or port number: ' +
                   str(post_json_object['object']))
             return None
-        if is_blocked(base_dir, nickname, domain, objectNickname,
-                      objectDomain):
-            if objectNickname and objectDomain:
+        if is_blocked(base_dir, nickname, domain, object_nickname,
+                      object_domain):
+            if object_nickname and object_domain:
                 print('Announce download blocked object: ' +
-                      objectNickname + '@' + objectDomain)
+                      object_nickname + '@' + object_domain)
             else:
                 print('Announce download blocked object: ' +
                       str(post_json_object['object']))
@@ -4617,159 +4659,159 @@ def download_announce(session, base_dir: str, http_prefix: str,
         if debug:
             print('Downloading Announce content for ' +
                   post_json_object['object'])
-        announcedJson = \
+        announced_json = \
             get_json(signing_priv_key_pem, session,
                      post_json_object['object'],
-                     asHeader, None, debug, project_version,
+                     as_header, None, debug, project_version,
                      http_prefix, domain)
 
-        if not announcedJson:
+        if not announced_json:
             return None
 
-        if not isinstance(announcedJson, dict):
+        if not isinstance(announced_json, dict):
             print('WARN: announce json is not a dict - ' +
                   post_json_object['object'])
-            _reject_announce(announceFilename,
+            _reject_announce(announce_filename,
                              base_dir, nickname, domain, post_id,
                              recent_posts_cache)
             return None
-        if not announcedJson.get('id'):
-            _reject_announce(announceFilename,
+        if not announced_json.get('id'):
+            _reject_announce(announce_filename,
                              base_dir, nickname, domain, post_id,
                              recent_posts_cache)
             return None
-        if not announcedJson.get('type'):
-            _reject_announce(announceFilename,
+        if not announced_json.get('type'):
+            _reject_announce(announce_filename,
                              base_dir, nickname, domain, post_id,
                              recent_posts_cache)
             return None
-        if announcedJson['type'] == 'Video':
-            convertedJson = \
+        if announced_json['type'] == 'Video':
+            converted_json = \
                 convert_video_to_note(base_dir, nickname, domain,
                                       system_language,
-                                      announcedJson, blockedCache)
-            if convertedJson:
-                announcedJson = convertedJson
-        if '/statuses/' not in announcedJson['id']:
-            _reject_announce(announceFilename,
+                                      announced_json, blocked_cache)
+            if converted_json:
+                announced_json = converted_json
+        if '/statuses/' not in announced_json['id']:
+            _reject_announce(announce_filename,
                              base_dir, nickname, domain, post_id,
                              recent_posts_cache)
             return None
-        if not has_users_path(announcedJson['id']):
-            _reject_announce(announceFilename,
+        if not has_users_path(announced_json['id']):
+            _reject_announce(announce_filename,
                              base_dir, nickname, domain, post_id,
                              recent_posts_cache)
             return None
-        if announcedJson['type'] != 'Note' and \
-           announcedJson['type'] != 'Page' and \
-           announcedJson['type'] != 'Article':
+        if announced_json['type'] != 'Note' and \
+           announced_json['type'] != 'Page' and \
+           announced_json['type'] != 'Article':
             # You can only announce Note or Article types
-            _reject_announce(announceFilename,
+            _reject_announce(announce_filename,
                              base_dir, nickname, domain, post_id,
                              recent_posts_cache)
             return None
-        if not announcedJson.get('content'):
-            _reject_announce(announceFilename,
+        if not announced_json.get('content'):
+            _reject_announce(announce_filename,
                              base_dir, nickname, domain, post_id,
                              recent_posts_cache)
             return None
-        if not announcedJson.get('published'):
-            _reject_announce(announceFilename,
+        if not announced_json.get('published'):
+            _reject_announce(announce_filename,
                              base_dir, nickname, domain, post_id,
                              recent_posts_cache)
             return None
-        if not valid_post_date(announcedJson['published'], 90, debug):
-            _reject_announce(announceFilename,
+        if not valid_post_date(announced_json['published'], 90, debug):
+            _reject_announce(announce_filename,
                              base_dir, nickname, domain, post_id,
                              recent_posts_cache)
             return None
         if not understood_post_language(base_dir, nickname, domain,
-                                        announcedJson, system_language,
+                                        announced_json, system_language,
                                         http_prefix, domain_full,
                                         person_cache):
             return None
         # Check the content of the announce
-        contentStr = announcedJson['content']
-        if dangerous_markup(contentStr, allow_local_network_access):
-            _reject_announce(announceFilename,
+        content_str = announced_json['content']
+        if dangerous_markup(content_str, allow_local_network_access):
+            _reject_announce(announce_filename,
                              base_dir, nickname, domain, post_id,
                              recent_posts_cache)
             return None
 
-        if is_filtered(base_dir, nickname, domain, contentStr):
-            _reject_announce(announceFilename,
+        if is_filtered(base_dir, nickname, domain, content_str):
+            _reject_announce(announce_filename,
                              base_dir, nickname, domain, post_id,
                              recent_posts_cache)
             return None
 
-        if invalid_ciphertext(contentStr):
-            _reject_announce(announceFilename,
+        if invalid_ciphertext(content_str):
+            _reject_announce(announce_filename,
                              base_dir, nickname, domain, post_id,
                              recent_posts_cache)
             print('WARN: Invalid ciphertext within announce ' +
-                  str(announcedJson))
+                  str(announced_json))
             return None
 
         # remove any long words
-        contentStr = remove_long_words(contentStr, 40, [])
+        content_str = remove_long_words(content_str, 40, [])
 
         # Prevent the same word from being repeated many times
-        contentStr = limit_repeated_words(contentStr, 6)
+        content_str = limit_repeated_words(content_str, 6)
 
         # remove text formatting, such as bold/italics
-        contentStr = remove_text_formatting(contentStr)
+        content_str = remove_text_formatting(content_str)
 
         # set the content after santitization
-        announcedJson['content'] = contentStr
+        announced_json['content'] = content_str
 
         # wrap in create to be consistent with other posts
-        announcedJson = \
+        announced_json = \
             outbox_message_create_wrap(http_prefix,
-                                       actorNickname, actorDomain, actorPort,
-                                       announcedJson)
-        if announcedJson['type'] != 'Create':
+                                       actor_nickname, actor_domain,
+                                       actor_port, announced_json)
+        if announced_json['type'] != 'Create':
             # Create wrap failed
-            _reject_announce(announceFilename,
+            _reject_announce(announce_filename,
                              base_dir, nickname, domain, post_id,
                              recent_posts_cache)
             return None
 
         # labelAccusatoryPost(post_json_object, translate)
         # set the id to the original status
-        announcedJson['id'] = post_json_object['object']
-        announcedJson['object']['id'] = post_json_object['object']
+        announced_json['id'] = post_json_object['object']
+        announced_json['object']['id'] = post_json_object['object']
         # check that the repeat isn't for a blocked account
-        attributedNickname = \
-            get_nickname_from_actor(announcedJson['object']['id'])
-        attributedDomain, attributedPort = \
-            get_domain_from_actor(announcedJson['object']['id'])
-        if attributedNickname and attributedDomain:
-            attributedDomain = \
-                get_full_domain(attributedDomain, attributedPort)
+        attributed_nickname = \
+            get_nickname_from_actor(announced_json['object']['id'])
+        attributed_domain, attributed_port = \
+            get_domain_from_actor(announced_json['object']['id'])
+        if attributed_nickname and attributed_domain:
+            attributed_domain = \
+                get_full_domain(attributed_domain, attributed_port)
             if is_blocked(base_dir, nickname, domain,
-                          attributedNickname, attributedDomain):
-                _reject_announce(announceFilename,
+                          attributed_nickname, attributed_domain):
+                _reject_announce(announce_filename,
                                  base_dir, nickname, domain, post_id,
                                  recent_posts_cache)
                 return None
-        post_json_object = announcedJson
+        post_json_object = announced_json
         replace_you_tube(post_json_object, yt_replace_domain, system_language)
         replace_twitter(post_json_object, twitter_replacement_domain,
                         system_language)
-        if save_json(post_json_object, announceFilename):
+        if save_json(post_json_object, announce_filename):
             return post_json_object
     return None
 
 
 def is_muted_conv(base_dir: str, nickname: str, domain: str, post_id: str,
-                  conversationId: str) -> bool:
+                  conversation_id: str) -> bool:
     """Returns true if the given post is muted
     """
-    if conversationId:
-        convMutedFilename = \
+    if conversation_id:
+        conv_muted_filename = \
             acct_dir(base_dir, nickname, domain) + '/conversation/' + \
-            conversationId.replace('/', '#') + '.muted'
-        if os.path.isfile(convMutedFilename):
+            conversation_id.replace('/', '#') + '.muted'
+        if os.path.isfile(conv_muted_filename):
             return True
     post_filename = locate_post(base_dir, nickname, domain, post_id)
     if not post_filename:
@@ -4780,9 +4822,9 @@ def is_muted_conv(base_dir: str, nickname: str, domain: str, post_id: str,
 
 
 def send_block_via_server(base_dir: str, session,
-                          fromNickname: str, password: str,
-                          fromDomain: str, fromPort: int,
-                          http_prefix: str, blockedUrl: str,
+                          from_nickname: str, password: str,
+                          from_domain: str, from_port: int,
+                          http_prefix: str, blocked_url: str,
                           cached_webfingers: {}, person_cache: {},
                           debug: bool, project_version: str,
                           signing_priv_key_pem: str) -> {}:
@@ -4792,82 +4834,83 @@ def send_block_via_server(base_dir: str, session,
         print('WARN: No session for send_block_via_server')
         return 6
 
-    fromDomainFull = get_full_domain(fromDomain, fromPort)
+    from_domain_full = get_full_domain(from_domain, from_port)
 
-    blockActor = local_actor_url(http_prefix, fromNickname, fromDomainFull)
-    toUrl = 'https://www.w3.org/ns/activitystreams#Public'
-    ccUrl = blockActor + '/followers'
+    block_actor = local_actor_url(http_prefix, from_nickname, from_domain_full)
+    to_url = 'https://www.w3.org/ns/activitystreams#Public'
+    cc_url = block_actor + '/followers'
 
-    newBlockJson = {
+    new_block_json = {
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Block',
-        'actor': blockActor,
-        'object': blockedUrl,
-        'to': [toUrl],
-        'cc': [ccUrl]
+        'actor': block_actor,
+        'object': blocked_url,
+        'to': [to_url],
+        'cc': [cc_url]
     }
 
-    handle = http_prefix + '://' + fromDomainFull + '/@' + fromNickname
+    handle = http_prefix + '://' + from_domain_full + '/@' + from_nickname
 
     # lookup the inbox for the To handle
-    wfRequest = webfinger_handle(session, handle, http_prefix,
-                                 cached_webfingers,
-                                 fromDomain, project_version, debug, False,
-                                 signing_priv_key_pem)
-    if not wfRequest:
+    wf_request = webfinger_handle(session, handle, http_prefix,
+                                  cached_webfingers,
+                                  from_domain, project_version, debug, False,
+                                  signing_priv_key_pem)
+    if not wf_request:
         if debug:
             print('DEBUG: block webfinger failed for ' + handle)
         return 1
-    if not isinstance(wfRequest, dict):
+    if not isinstance(wf_request, dict):
         print('WARN: block Webfinger for ' + handle +
-              ' did not return a dict. ' + str(wfRequest))
+              ' did not return a dict. ' + str(wf_request))
         return 1
 
-    postToBox = 'outbox'
+    post_to_box = 'outbox'
 
     # get the actor inbox for the To handle
-    originDomain = fromDomain
-    (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
-     displayName, _) = get_person_box(signing_priv_key_pem,
-                                      originDomain,
-                                      base_dir, session, wfRequest,
-                                      person_cache,
-                                      project_version, http_prefix,
-                                      fromNickname,
-                                      fromDomain, postToBox, 72652)
+    origin_domain = from_domain
+    (inbox_url, pub_key_id, pub_key, from_person_id, shared_inbox, avatar_url,
+     display_name, _) = get_person_box(signing_priv_key_pem,
+                                       origin_domain,
+                                       base_dir, session, wf_request,
+                                       person_cache,
+                                       project_version, http_prefix,
+                                       from_nickname,
+                                       from_domain, post_to_box, 72652)
 
-    if not inboxUrl:
+    if not inbox_url:
         if debug:
-            print('DEBUG: block no ' + postToBox + ' was found for ' + handle)
+            print('DEBUG: block no ' + post_to_box +
+                  ' was found for ' + handle)
         return 3
-    if not fromPersonId:
+    if not from_person_id:
         if debug:
             print('DEBUG: block no actor was found for ' + handle)
         return 4
 
-    authHeader = create_basic_auth_header(fromNickname, password)
+    auth_header = create_basic_auth_header(from_nickname, password)
 
     headers = {
-        'host': fromDomain,
+        'host': from_domain,
         'Content-type': 'application/json',
-        'Authorization': authHeader
+        'Authorization': auth_header
     }
-    postResult = post_json(http_prefix, fromDomainFull,
-                           session, newBlockJson, [], inboxUrl,
-                           headers, 30, True)
-    if not postResult:
+    post_result = post_json(http_prefix, from_domain_full,
+                            session, new_block_json, [], inbox_url,
+                            headers, 30, True)
+    if not post_result:
         print('WARN: block unable to post')
 
     if debug:
         print('DEBUG: c2s POST block success')
 
-    return newBlockJson
+    return new_block_json
 
 
 def send_mute_via_server(base_dir: str, session,
-                         fromNickname: str, password: str,
-                         fromDomain: str, fromPort: int,
-                         http_prefix: str, mutedUrl: str,
+                         from_nickname: str, password: str,
+                         from_domain: str, from_port: int,
+                         http_prefix: str, muted_url: str,
                          cached_webfingers: {}, person_cache: {},
                          debug: bool, project_version: str,
                          signing_priv_key_pem: str) -> {}:
@@ -4877,78 +4920,78 @@ def send_mute_via_server(base_dir: str, session,
         print('WARN: No session for send_mute_via_server')
         return 6
 
-    fromDomainFull = get_full_domain(fromDomain, fromPort)
+    from_domain_full = get_full_domain(from_domain, from_port)
 
-    actor = local_actor_url(http_prefix, fromNickname, fromDomainFull)
+    actor = local_actor_url(http_prefix, from_nickname, from_domain_full)
     handle = replace_users_with_at(actor)
 
-    newMuteJson = {
+    new_mute_json = {
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Ignore',
         'actor': actor,
         'to': [actor],
-        'object': mutedUrl
+        'object': muted_url
     }
 
     # lookup the inbox for the To handle
-    wfRequest = webfinger_handle(session, handle, http_prefix,
-                                 cached_webfingers,
-                                 fromDomain, project_version, debug, False,
-                                 signing_priv_key_pem)
-    if not wfRequest:
+    wf_request = webfinger_handle(session, handle, http_prefix,
+                                  cached_webfingers,
+                                  from_domain, project_version, debug, False,
+                                  signing_priv_key_pem)
+    if not wf_request:
         if debug:
             print('DEBUG: mute webfinger failed for ' + handle)
         return 1
-    if not isinstance(wfRequest, dict):
+    if not isinstance(wf_request, dict):
         print('WARN: mute Webfinger for ' + handle +
-              ' did not return a dict. ' + str(wfRequest))
+              ' did not return a dict. ' + str(wf_request))
         return 1
 
-    postToBox = 'outbox'
+    post_to_box = 'outbox'
 
     # get the actor inbox for the To handle
-    originDomain = fromDomain
-    (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
-     displayName, _) = get_person_box(signing_priv_key_pem,
-                                      originDomain,
-                                      base_dir, session, wfRequest,
-                                      person_cache,
-                                      project_version, http_prefix,
-                                      fromNickname,
-                                      fromDomain, postToBox, 72652)
+    origin_domain = from_domain
+    (inbox_url, pub_key_id, pub_key, from_person_id, shared_inbox, avatar_url,
+     display_name, _) = get_person_box(signing_priv_key_pem,
+                                       origin_domain,
+                                       base_dir, session, wf_request,
+                                       person_cache,
+                                       project_version, http_prefix,
+                                       from_nickname,
+                                       from_domain, post_to_box, 72652)
 
-    if not inboxUrl:
+    if not inbox_url:
         if debug:
-            print('DEBUG: mute no ' + postToBox + ' was found for ' + handle)
+            print('DEBUG: mute no ' + post_to_box + ' was found for ' + handle)
         return 3
-    if not fromPersonId:
+    if not from_person_id:
         if debug:
             print('DEBUG: mute no actor was found for ' + handle)
         return 4
 
-    authHeader = create_basic_auth_header(fromNickname, password)
+    auth_header = create_basic_auth_header(from_nickname, password)
 
     headers = {
-        'host': fromDomain,
+        'host': from_domain,
         'Content-type': 'application/json',
-        'Authorization': authHeader
+        'Authorization': auth_header
     }
-    postResult = post_json(http_prefix, fromDomainFull,
-                           session, newMuteJson, [], inboxUrl,
-                           headers, 3, True)
-    if postResult is None:
+    post_result = post_json(http_prefix, from_domain_full,
+                            session, new_mute_json, [], inbox_url,
+                            headers, 3, True)
+    if post_result is None:
         print('WARN: mute unable to post')
 
     if debug:
         print('DEBUG: c2s POST mute success')
 
-    return newMuteJson
+    return new_mute_json
 
 
 def send_undo_mute_via_server(base_dir: str, session,
-                              fromNickname: str, password: str,
-                              fromDomain: str, fromPort: int,
-                              http_prefix: str, mutedUrl: str,
+                              from_nickname: str, password: str,
+                              from_domain: str, from_port: int,
+                              http_prefix: str, muted_url: str,
                               cached_webfingers: {}, person_cache: {},
                               debug: bool, project_version: str,
                               signing_priv_key_pem: str) -> {}:
@@ -4958,12 +5001,12 @@ def send_undo_mute_via_server(base_dir: str, session,
         print('WARN: No session for send_undo_mute_via_server')
         return 6
 
-    fromDomainFull = get_full_domain(fromDomain, fromPort)
+    from_domain_full = get_full_domain(from_domain, from_port)
 
-    actor = local_actor_url(http_prefix, fromNickname, fromDomainFull)
+    actor = local_actor_url(http_prefix, from_nickname, from_domain_full)
     handle = replace_users_with_at(actor)
 
-    undoMuteJson = {
+    undo_mute_json = {
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Undo',
         'actor': actor,
@@ -4972,70 +5015,70 @@ def send_undo_mute_via_server(base_dir: str, session,
             'type': 'Ignore',
             'actor': actor,
             'to': [actor],
-            'object': mutedUrl
+            'object': muted_url
         }
     }
 
     # lookup the inbox for the To handle
-    wfRequest = webfinger_handle(session, handle, http_prefix,
-                                 cached_webfingers,
-                                 fromDomain, project_version, debug, False,
-                                 signing_priv_key_pem)
-    if not wfRequest:
+    wf_request = webfinger_handle(session, handle, http_prefix,
+                                  cached_webfingers,
+                                  from_domain, project_version, debug, False,
+                                  signing_priv_key_pem)
+    if not wf_request:
         if debug:
             print('DEBUG: undo mute webfinger failed for ' + handle)
         return 1
-    if not isinstance(wfRequest, dict):
+    if not isinstance(wf_request, dict):
         print('WARN: undo mute Webfinger for ' + handle +
-              ' did not return a dict. ' + str(wfRequest))
+              ' did not return a dict. ' + str(wf_request))
         return 1
 
-    postToBox = 'outbox'
+    post_to_box = 'outbox'
 
     # get the actor inbox for the To handle
-    originDomain = fromDomain
-    (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
-     displayName, _) = get_person_box(signing_priv_key_pem,
-                                      originDomain,
-                                      base_dir, session, wfRequest,
-                                      person_cache,
-                                      project_version, http_prefix,
-                                      fromNickname,
-                                      fromDomain, postToBox, 72652)
+    origin_domain = from_domain
+    (inbox_url, pub_key_id, pub_key, from_person_id, shared_inbox, avatar_url,
+     display_name, _) = get_person_box(signing_priv_key_pem,
+                                       origin_domain,
+                                       base_dir, session, wf_request,
+                                       person_cache,
+                                       project_version, http_prefix,
+                                       from_nickname,
+                                       from_domain, post_to_box, 72652)
 
-    if not inboxUrl:
+    if not inbox_url:
         if debug:
-            print('DEBUG: undo mute no ' + postToBox +
+            print('DEBUG: undo mute no ' + post_to_box +
                   ' was found for ' + handle)
         return 3
-    if not fromPersonId:
+    if not from_person_id:
         if debug:
             print('DEBUG: undo mute no actor was found for ' + handle)
         return 4
 
-    authHeader = create_basic_auth_header(fromNickname, password)
+    auth_header = create_basic_auth_header(from_nickname, password)
 
     headers = {
-        'host': fromDomain,
+        'host': from_domain,
         'Content-type': 'application/json',
-        'Authorization': authHeader
+        'Authorization': auth_header
     }
-    postResult = post_json(http_prefix, fromDomainFull,
-                           session, undoMuteJson, [], inboxUrl,
-                           headers, 3, True)
-    if postResult is None:
+    post_result = post_json(http_prefix, from_domain_full,
+                            session, undo_mute_json, [], inbox_url,
+                            headers, 3, True)
+    if post_result is None:
         print('WARN: undo mute unable to post')
 
     if debug:
         print('DEBUG: c2s POST undo mute success')
 
-    return undoMuteJson
+    return undo_mute_json
 
 
 def send_undo_block_via_server(base_dir: str, session,
-                               fromNickname: str, password: str,
-                               fromDomain: str, fromPort: int,
-                               http_prefix: str, blockedUrl: str,
+                               from_nickname: str, password: str,
+                               from_domain: str, from_port: int,
+                               http_prefix: str, blocked_url: str,
                                cached_webfingers: {}, person_cache: {},
                                debug: bool, project_version: str,
                                signing_priv_key_pem: str) -> {}:
@@ -5045,85 +5088,85 @@ def send_undo_block_via_server(base_dir: str, session,
         print('WARN: No session for send_block_via_server')
         return 6
 
-    fromDomainFull = get_full_domain(fromDomain, fromPort)
+    from_domain_full = get_full_domain(from_domain, from_port)
 
-    blockActor = local_actor_url(http_prefix, fromNickname, fromDomainFull)
-    toUrl = 'https://www.w3.org/ns/activitystreams#Public'
-    ccUrl = blockActor + '/followers'
+    block_actor = local_actor_url(http_prefix, from_nickname, from_domain_full)
+    to_url = 'https://www.w3.org/ns/activitystreams#Public'
+    cc_url = block_actor + '/followers'
 
-    newBlockJson = {
+    new_block_json = {
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Undo',
-        'actor': blockActor,
+        'actor': block_actor,
         'object': {
             'type': 'Block',
-            'actor': blockActor,
-            'object': blockedUrl,
-            'to': [toUrl],
-            'cc': [ccUrl]
+            'actor': block_actor,
+            'object': blocked_url,
+            'to': [to_url],
+            'cc': [cc_url]
         }
     }
 
-    handle = http_prefix + '://' + fromDomainFull + '/@' + fromNickname
+    handle = http_prefix + '://' + from_domain_full + '/@' + from_nickname
 
     # lookup the inbox for the To handle
-    wfRequest = webfinger_handle(session, handle, http_prefix,
-                                 cached_webfingers,
-                                 fromDomain, project_version, debug, False,
-                                 signing_priv_key_pem)
-    if not wfRequest:
+    wf_request = webfinger_handle(session, handle, http_prefix,
+                                  cached_webfingers,
+                                  from_domain, project_version, debug, False,
+                                  signing_priv_key_pem)
+    if not wf_request:
         if debug:
             print('DEBUG: unblock webfinger failed for ' + handle)
         return 1
-    if not isinstance(wfRequest, dict):
+    if not isinstance(wf_request, dict):
         print('WARN: unblock webfinger for ' + handle +
-              ' did not return a dict. ' + str(wfRequest))
+              ' did not return a dict. ' + str(wf_request))
         return 1
 
-    postToBox = 'outbox'
+    post_to_box = 'outbox'
 
     # get the actor inbox for the To handle
-    originDomain = fromDomain
-    (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
-     displayName, _) = get_person_box(signing_priv_key_pem,
-                                      originDomain,
-                                      base_dir, session, wfRequest,
-                                      person_cache,
-                                      project_version, http_prefix,
-                                      fromNickname,
-                                      fromDomain, postToBox, 53892)
+    origin_domain = from_domain
+    (inbox_url, pub_key_id, pub_key, from_person_id, shared_inbox, avatar_url,
+     display_name, _) = get_person_box(signing_priv_key_pem,
+                                       origin_domain,
+                                       base_dir, session, wf_request,
+                                       person_cache,
+                                       project_version, http_prefix,
+                                       from_nickname,
+                                       from_domain, post_to_box, 53892)
 
-    if not inboxUrl:
+    if not inbox_url:
         if debug:
-            print('DEBUG: unblock no ' + postToBox +
+            print('DEBUG: unblock no ' + post_to_box +
                   ' was found for ' + handle)
         return 3
-    if not fromPersonId:
+    if not from_person_id:
         if debug:
             print('DEBUG: unblock no actor was found for ' + handle)
         return 4
 
-    authHeader = create_basic_auth_header(fromNickname, password)
+    auth_header = create_basic_auth_header(from_nickname, password)
 
     headers = {
-        'host': fromDomain,
+        'host': from_domain,
         'Content-type': 'application/json',
-        'Authorization': authHeader
+        'Authorization': auth_header
     }
-    postResult = post_json(http_prefix, fromDomainFull,
-                           session, newBlockJson, [], inboxUrl,
-                           headers, 30, True)
-    if not postResult:
+    post_result = post_json(http_prefix, from_domain_full,
+                            session, new_block_json, [], inbox_url,
+                            headers, 30, True)
+    if not post_result:
         print('WARN: unblock unable to post')
 
     if debug:
         print('DEBUG: c2s POST unblock success')
 
-    return newBlockJson
+    return new_block_json
 
 
 def post_is_muted(base_dir: str, nickname: str, domain: str,
-                  post_json_object: {}, messageId: str) -> bool:
+                  post_json_object: {}, message_id: str) -> bool:
     """ Returns true if the given post is muted
     """
     is_muted = None
@@ -5133,21 +5176,22 @@ def post_is_muted(base_dir: str, nickname: str, domain: str,
         return is_muted
 
     is_muted = False
-    postDir = acct_dir(base_dir, nickname, domain)
-    muteFilename = \
-        postDir + '/inbox/' + messageId.replace('/', '#') + '.json.muted'
-    if os.path.isfile(muteFilename):
+    post_dir = acct_dir(base_dir, nickname, domain)
+    mute_filename = \
+        post_dir + '/inbox/' + message_id.replace('/', '#') + '.json.muted'
+    if os.path.isfile(mute_filename):
         is_muted = True
     else:
-        muteFilename = \
-            postDir + '/outbox/' + messageId.replace('/', '#') + '.json.muted'
-        if os.path.isfile(muteFilename):
+        mute_filename = \
+            post_dir + '/outbox/' + \
+            message_id.replace('/', '#') + '.json.muted'
+        if os.path.isfile(mute_filename):
             is_muted = True
         else:
-            muteFilename = \
+            mute_filename = \
                 base_dir + '/accounts/cache/announce/' + nickname + \
-                '/' + messageId.replace('/', '#') + '.json.muted'
-            if os.path.isfile(muteFilename):
+                '/' + message_id.replace('/', '#') + '.json.muted'
+            if os.path.isfile(mute_filename):
                 is_muted = True
     return is_muted
 
@@ -5156,7 +5200,7 @@ def c2s_box_json(base_dir: str, session,
                  nickname: str, password: str,
                  domain: str, port: int,
                  http_prefix: str,
-                 boxName: str, pageNumber: int,
+                 box_name: str, page_number: int,
                  debug: bool, signing_priv_key_pem: str) -> {}:
     """C2S Authenticated GET of posts for a timeline
     """
@@ -5167,50 +5211,50 @@ def c2s_box_json(base_dir: str, session,
     domain_full = get_full_domain(domain, port)
     actor = local_actor_url(http_prefix, nickname, domain_full)
 
-    authHeader = create_basic_auth_header(nickname, password)
+    auth_header = create_basic_auth_header(nickname, password)
 
-    profileStr = 'https://www.w3.org/ns/activitystreams'
+    profile_str = 'https://www.w3.org/ns/activitystreams'
     headers = {
         'host': domain,
         'Content-type': 'application/json',
-        'Authorization': authHeader,
-        'Accept': 'application/ld+json; profile="' + profileStr + '"'
+        'Authorization': auth_header,
+        'Accept': 'application/ld+json; profile="' + profile_str + '"'
     }
 
     # GET json
-    url = actor + '/' + boxName + '?page=' + str(pageNumber)
-    boxJson = get_json(signing_priv_key_pem, session, url, headers, None,
-                       debug, __version__, http_prefix, None)
+    url = actor + '/' + box_name + '?page=' + str(page_number)
+    box_json = get_json(signing_priv_key_pem, session, url, headers, None,
+                        debug, __version__, http_prefix, None)
 
-    if boxJson is not None and debug:
+    if box_json is not None and debug:
         print('DEBUG: GET c2s_box_json success')
 
-    return boxJson
+    return box_json
 
 
 def seconds_between_published(published1: str, published2: str) -> int:
     """Returns the number of seconds between two published dates
     """
     try:
-        published1Time = \
+        published1_time = \
             datetime.datetime.strptime(published1, '%Y-%m-%dT%H:%M:%SZ')
     except BaseException:
         print('EX: seconds_between_published unable to parse date 1 ' +
               str(published1))
         return -1
     try:
-        published2Time = \
+        published2_time = \
             datetime.datetime.strptime(published2, '%Y-%m-%dT%H:%M:%SZ')
     except BaseException:
         print('EX: seconds_between_published unable to parse date 2 ' +
               str(published2))
         return -1
-    return (published2Time - published1Time).seconds
+    return (published2_time - published1_time).seconds
 
 
 def edited_post_filename(base_dir: str, nickname: str, domain: str,
                          post_json_object: {}, debug: bool,
-                         maxTimeDiffSeconds: int) -> str:
+                         max_time_diff_seconds: int) -> str:
     """Returns the filename of the edited post
     """
     if not has_object_dict(post_json_object):
@@ -5238,8 +5282,8 @@ def edited_post_filename(base_dir: str, nickname: str, domain: str,
     post_id = remove_id_ending(post_json_object['object']['id'])
     lastpost_id = None
     try:
-        with open(actorFilename, 'r') as fp:
-            lastpost_id = fp.read()
+        with open(actorFilename, 'r') as fp_actor:
+            lastpost_id = fp_actor.read()
     except OSError:
         print('EX: edited_post_filename unable to read ' + actorFilename)
         return ''
@@ -5272,10 +5316,10 @@ def edited_post_filename(base_dir: str, nickname: str, domain: str,
         return ''
     if not isinstance(lastpost_json['object']['attributedTo'], str):
         return ''
-    timeDiffSeconds = \
+    time_diff_seconds = \
         seconds_between_published(lastpost_json['object']['published'],
                                   post_json_object['object']['published'])
-    if timeDiffSeconds > maxTimeDiffSeconds:
+    if time_diff_seconds > max_time_diff_seconds:
         return ''
     if debug:
         print(post_id + ' might be an edit of ' + lastpost_id)
@@ -5286,52 +5330,53 @@ def edited_post_filename(base_dir: str, nickname: str, domain: str,
     return lastpost_filename
 
 
-def get_original_post_from_announce_url(announceUrl: str, base_dir: str,
+def get_original_post_from_announce_url(announce_url: str, base_dir: str,
                                         nickname: str,
                                         domain: str) -> (str, str, str):
     """From the url of an announce this returns the actor, url and
     filename (if available) of the original post being announced
     """
-    post_filename = locate_post(base_dir, nickname, domain, announceUrl)
+    post_filename = locate_post(base_dir, nickname, domain, announce_url)
     if not post_filename:
         return None, None, None
-    announcePostJson = load_json(post_filename, 0, 1)
-    if not announcePostJson:
+    announce_post_json = load_json(post_filename, 0, 1)
+    if not announce_post_json:
         return None, None, post_filename
-    if not announcePostJson.get('type'):
+    if not announce_post_json.get('type'):
         return None, None, post_filename
-    if announcePostJson['type'] != 'Announce':
+    if announce_post_json['type'] != 'Announce':
         return None, None, post_filename
-    if not announcePostJson.get('object'):
+    if not announce_post_json.get('object'):
         return None, None, post_filename
-    if not isinstance(announcePostJson['object'], str):
+    if not isinstance(announce_post_json['object'], str):
         return None, None, post_filename
     actor = url = None
     # do we have the original post?
-    origPostId = announcePostJson['object']
-    origFilename = locate_post(base_dir, nickname, domain, origPostId)
-    if origFilename:
+    orig_post_id = announce_post_json['object']
+    orig_filename = locate_post(base_dir, nickname, domain, orig_post_id)
+    if orig_filename:
         # we have the original post
-        origPostJson = load_json(origFilename, 0, 1)
-        if origPostJson:
-            if has_object_dict(origPostJson):
-                if origPostJson['object'].get('attributedTo'):
-                    if isinstance(origPostJson['object']['attributedTo'], str):
-                        actor = origPostJson['object']['attributedTo']
-                        url = origPostId
-                elif origPostJson['object'].get('actor'):
-                    actor = origPostJson['actor']
-                    url = origPostId
+        orig_post_json = load_json(orig_filename, 0, 1)
+        if orig_post_json:
+            if has_object_dict(orig_post_json):
+                if orig_post_json['object'].get('attributedTo'):
+                    attrib = orig_post_json['object']['attributedTo']
+                    if isinstance(attrib, str):
+                        actor = orig_post_json['object']['attributedTo']
+                        url = orig_post_id
+                elif orig_post_json['object'].get('actor'):
+                    actor = orig_post_json['actor']
+                    url = orig_post_id
     else:
         # we don't have the original post
-        if has_users_path(origPostId):
+        if has_users_path(orig_post_id):
             # get the actor from the original post url
-            origNick = get_nickname_from_actor(origPostId)
-            origDomain, origPort = get_domain_from_actor(origPostId)
-            if origNick and origDomain:
+            orig_nick = get_nickname_from_actor(orig_post_id)
+            orig_domain, orig_port = get_domain_from_actor(orig_post_id)
+            if orig_nick and orig_domain:
                 actor = \
-                    origPostId.split('/' + origNick + '/')[0] + \
-                    '/' + origNick
-                url = origPostId
+                    orig_post_id.split('/' + orig_nick + '/')[0] + \
+                    '/' + orig_nick
+                url = orig_post_id
 
-    return actor, url, origFilename
+    return actor, url, orig_filename
