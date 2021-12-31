@@ -352,7 +352,7 @@ def post_json_string(session, post_jsonStr: str,
     if not url_permitted(inbox_url, federation_list):
         if not quiet:
             print('post_json_string: ' + inbox_url + ' not permitted')
-        return None, None, 0
+        return False, True, 0
 
     try:
         post_result = \
