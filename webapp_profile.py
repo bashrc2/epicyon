@@ -1420,8 +1420,8 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
     moderators = ''
     moderators_file = base_dir + '/accounts/moderators.txt'
     if os.path.isfile(moderators_file):
-        with open(moderators_file, 'r') as f:
-            moderators = f.read()
+        with open(moderators_file, 'r') as mod_file:
+            moderators = mod_file.read()
     # site moderators
     role_assign_str = \
         begin_edit_section(translate['Role Assignment']) + \
