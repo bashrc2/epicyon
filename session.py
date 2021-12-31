@@ -348,6 +348,12 @@ def post_json_string(session, post_jsonStr: str,
     conversions between string and json format don't invalidate
     the message body digest of http signatures
     """
+    # check that we are posting to a permitted domain
+    if not url_permitted(inbox_url, federation_list):
+        if not quiet:
+            print('post_json_string: ' + inbox_url + ' not permitted')
+        return None, None, 0
+
     try:
         post_result = \
             session.post(url=inbox_url, data=post_jsonStr,
