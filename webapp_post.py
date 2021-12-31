@@ -1500,7 +1500,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
     announceJsonObject = None
     if post_json_object['type'] == 'Announce':
         announceJsonObject = post_json_object.copy()
-        blockedCache = {}
+        blocked_cache = {}
         post_jsonAnnounce = \
             download_announce(session, base_dir, http_prefix,
                               nickname, domain, post_json_object,
@@ -1512,7 +1512,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
                               system_language,
                               domain_full, person_cache,
                               signing_priv_key_pem,
-                              blockedCache)
+                              blocked_cache)
         if not post_jsonAnnounce:
             # if the announce could not be downloaded then mark it as rejected
             announcedPostId = remove_id_ending(post_json_object['id'])

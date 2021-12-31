@@ -674,7 +674,7 @@ def _read_local_box_post(session, nickname: str, domain: str,
                          translate: {}, yourActor: str,
                          domain_full: str, person_cache: {},
                          signing_priv_key_pem: str,
-                         blockedCache: {}) -> {}:
+                         blocked_cache: {}) -> {}:
     """Reads a post from the given timeline
     Returns the post json
     """
@@ -715,7 +715,7 @@ def _read_local_box_post(session, nickname: str, domain: str,
                               system_language,
                               domain_full, person_cache,
                               signing_priv_key_pem,
-                              blockedCache)
+                              blocked_cache)
         if post_json_object2:
             if has_object_dict(post_json_object2):
                 if post_json_object2['object'].get('attributedTo') and \
@@ -1339,7 +1339,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
 
     content_license_url = 'https://creativecommons.org/licenses/by/4.0'
 
-    blockedCache = {}
+    blocked_cache = {}
 
     indent = '   '
     if showNewPosts:
@@ -1653,7 +1653,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                              espeak, translate, yourActor,
                                              domain_full, person_cache,
                                              signing_priv_key_pem,
-                                             blockedCache)
+                                             blocked_cache)
                     print('')
                     sayStr = 'Press Enter to continue...'
                     sayStr2 = _highlight_text(sayStr)
@@ -2439,7 +2439,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                               system_language,
                                               domain_full, person_cache,
                                               signing_priv_key_pem,
-                                              blockedCache)
+                                              blocked_cache)
                         if post_json_object2:
                             post_json_object = post_json_object2
                 if post_json_object:

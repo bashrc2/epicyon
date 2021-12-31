@@ -395,57 +395,57 @@ def save_domain_qrcode(base_dir: str, http_prefix: str,
     """Saves a qrcode image for the domain name
     This helps to transfer onion or i2p domains to a mobile device
     """
-    qrcodeFilename = base_dir + '/accounts/qrcode.png'
+    qrcode_filename = base_dir + '/accounts/qrcode.png'
     url = pyqrcode.create(http_prefix + '://' + domain_full)
-    url.png(qrcodeFilename, scale)
+    url.png(qrcode_filename, scale)
 
 
 class PubServer(BaseHTTPRequestHandler):
     protocol_version = 'HTTP/1.1'
 
-    def _update_known_crawlers(self, uaStr: str) -> None:
+    def _update_known_crawlers(self, ua_str: str) -> None:
         """Updates a dictionary of known crawlers accessing nodeinfo
         or the masto API
         """
-        if not uaStr:
+        if not ua_str:
             return
 
         curr_time = int(time.time())
-        if self.server.knownCrawlers.get(uaStr):
-            self.server.knownCrawlers[uaStr]['hits'] += 1
-            self.server.knownCrawlers[uaStr]['lastseen'] = curr_time
+        if self.server.known_crawlers.get(ua_str):
+            self.server.known_crawlers[ua_str]['hits'] += 1
+            self.server.known_crawlers[ua_str]['lastseen'] = curr_time
         else:
-            self.server.knownCrawlers[uaStr] = {
+            self.server.known_crawlers[ua_str] = {
                 "lastseen": curr_time,
                 "hits": 1
             }
 
-        if curr_time - self.server.lastKnownCrawler >= 30:
+        if curr_time - self.server.last_known_crawler >= 30:
             # remove any old observations
-            removeCrawlers = []
-            for ua, item in self.server.knownCrawlers.items():
+            remove_crawlers = []
+            for uagent, item in self.server.known_crawlers.items():
                 if curr_time - item['lastseen'] >= 60 * 60 * 24 * 30:
-                    removeCrawlers.append(ua)
-            for ua in removeCrawlers:
-                del self.server.knownCrawlers[ua]
+                    remove_crawlers.append(uagent)
+            for uagent in remove_crawlers:
+                del self.server.known_crawlers[uagent]
             # save the list of crawlers
-            save_json(self.server.knownCrawlers,
+            save_json(self.server.known_crawlers,
                       self.server.base_dir + '/accounts/knownCrawlers.json')
-        self.server.lastKnownCrawler = curr_time
+        self.server.last_known_crawler = curr_time
 
     def _get_instance_url(self, calling_domain: str) -> str:
         """Returns the URL for this instance
         """
         if calling_domain.endswith('.onion') and \
            self.server.onion_domain:
-            instanceUrl = 'http://' + self.server.onion_domain
+            instance_url = 'http://' + self.server.onion_domain
         elif (calling_domain.endswith('.i2p') and
               self.server.i2p_domain):
-            instanceUrl = 'http://' + self.server.i2p_domain
+            instance_url = 'http://' + self.server.i2p_domain
         else:
-            instanceUrl = \
+            instance_url = \
                 self.server.http_prefix + '://' + self.server.domain_full
-        return instanceUrl
+        return instance_url
 
     def _getheader_signature_input(self):
         """There are different versions of http signatures with
@@ -455,9 +455,9 @@ class PubServer(BaseHTTPRequestHandler):
             # https://tools.ietf.org/html/
             # draft-ietf-httpbis-message-signatures-01
             return self.headers['Signature-Input']
-        elif self.headers.get('signature-input'):
+        if self.headers.get('signature-input'):
             return self.headers['signature-input']
-        elif self.headers.get('signature'):
+        if self.headers.get('signature'):
             # Ye olde Masto http sig
             return self.headers['signature']
         return None
@@ -467,34 +467,34 @@ class PubServer(BaseHTTPRequestHandler):
               str(client_address))
         pass
 
-    def _send_reply_to_question(self, nickname: str, messageId: str,
+    def _send_reply_to_question(self, nickname: str, message_id: str,
                                 answer: str) -> None:
         """Sends a reply to a question
         """
-        votesFilename = \
+        votes_filename = \
             acct_dir(self.server.base_dir, nickname, self.server.domain) + \
             '/questions.txt'
 
-        if os.path.isfile(votesFilename):
+        if os.path.isfile(votes_filename):
             # have we already voted on this?
-            if messageId in open(votesFilename).read():
-                print('Already voted on message ' + messageId)
+            if message_id in open(votes_filename).read():
+                print('Already voted on message ' + message_id)
                 return
 
-        print('Voting on message ' + messageId)
+        print('Voting on message ' + message_id)
         print('Vote for: ' + answer)
-        commentsEnabled = True
-        attachImageFilename = None
-        mediaType = None
-        imageDescription = None
-        inReplyTo = messageId
-        inReplyToAtomUri = messageId
+        comments_enabled = True
+        attach_image_filename = None
+        media_type = None
+        image_description = None
+        in_reply_to = message_id
+        in_reply_to_atom_uri = message_id
         subject = None
-        schedulePost = False
-        eventDate = None
-        eventTime = None
+        schedule_post = False
+        event_date = None
+        event_time = None
         location = None
-        conversationId = None
+        conversation_id = None
         city = get_spoofed_city(self.server.city,
                                 self.server.base_dir,
                                 nickname, self.server.domain)
@@ -505,18 +505,18 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.domain, self.server.port,
                                self.server.http_prefix,
                                answer, False, False, False,
-                               commentsEnabled,
-                               attachImageFilename, mediaType,
-                               imageDescription, city,
-                               inReplyTo,
-                               inReplyToAtomUri,
+                               comments_enabled,
+                               attach_image_filename, media_type,
+                               image_description, city,
+                               in_reply_to,
+                               in_reply_to_atom_uri,
                                subject,
-                               schedulePost,
-                               eventDate,
-                               eventTime,
+                               schedule_post,
+                               event_date,
+                               event_time,
                                location, False,
                                self.server.system_language,
-                               conversationId,
+                               conversation_id,
                                self.server.low_bandwidth,
                                self.server.content_license_url)
         if message_json:
@@ -526,7 +526,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.project_version, nickname):
                 post_filename = \
                     locate_post(self.server.base_dir, nickname,
-                                self.server.domain, messageId)
+                                self.server.domain, message_id)
                 if post_filename:
                     post_json_object = load_json(post_filename)
                     if post_json_object:
@@ -538,27 +538,27 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.debug)
                         # record the vote
                         try:
-                            with open(votesFilename, 'a+') as votesFile:
-                                votesFile.write(messageId + '\n')
+                            with open(votes_filename, 'a+') as votes_file:
+                                votes_file.write(message_id + '\n')
                         except OSError:
                             print('EX: unable to write vote ' +
-                                  votesFilename)
+                                  votes_filename)
 
                         # ensure that the cached post is removed if it exists,
                         # so that it then will be recreated
-                        cachedPostFilename = \
+                        cached_post_filename = \
                             get_cached_post_filename(self.server.base_dir,
                                                      nickname,
                                                      self.server.domain,
                                                      post_json_object)
-                        if cachedPostFilename:
-                            if os.path.isfile(cachedPostFilename):
+                        if cached_post_filename:
+                            if os.path.isfile(cached_post_filename):
                                 try:
-                                    os.remove(cachedPostFilename)
+                                    os.remove(cached_post_filename)
                                 except OSError:
                                     print('EX: _send_reply_to_question ' +
                                           'unable to delete ' +
-                                          cachedPostFilename)
+                                          cached_post_filename)
                         # remove from memory cache
                         remove_post_from_cache(post_json_object,
                                                self.server.recent_posts_cache)
@@ -567,72 +567,72 @@ class PubServer(BaseHTTPRequestHandler):
         else:
             print('ERROR: unable to create vote')
 
-    def _blocked_user_agent(self, calling_domain: str, agentStr: str) -> bool:
+    def _blocked_user_agent(self, calling_domain: str, agent_str: str) -> bool:
         """Should a GET or POST be blocked based upon its user agent?
         """
-        if not agentStr:
+        if not agent_str:
             return False
 
-        agentStrLower = agentStr.lower()
-        defaultAgentBlocks = [
+        agent_str_lower = agent_str.lower()
+        default_agent_blocks = [
             'fedilist'
         ]
-        for uaBlock in defaultAgentBlocks:
-            if uaBlock in agentStrLower:
-                print('Blocked User agent: ' + uaBlock)
+        for ua_block in default_agent_blocks:
+            if ua_block in agent_str_lower:
+                print('Blocked User agent: ' + ua_block)
                 return True
 
-        agentDomain = None
+        agent_domain = None
 
-        if agentStr:
+        if agent_str:
             # is this a web crawler? If so the block it
-            if 'bot/' in agentStrLower or 'bot-' in agentStrLower:
+            if 'bot/' in agent_str_lower or 'bot-' in agent_str_lower:
                 if self.server.news_instance:
                     return False
-                print('Blocked Crawler: ' + agentStr)
+                print('Blocked Crawler: ' + agent_str)
                 return True
             # get domain name from User-Agent
-            agentDomain = user_agent_domain(agentStr, self.server.debug)
+            agent_domain = user_agent_domain(agent_str, self.server.debug)
         else:
             # no User-Agent header is present
             return True
 
         # is the User-Agent type blocked? eg. "Mastodon"
         if self.server.user_agents_blocked:
-            blockedUA = False
+            blocked_ua = False
             for agentName in self.server.user_agents_blocked:
-                if agentName in agentStr:
-                    blockedUA = True
+                if agentName in agent_str:
+                    blocked_ua = True
                     break
-            if blockedUA:
+            if blocked_ua:
                 return True
 
-        if not agentDomain:
+        if not agent_domain:
             return False
 
         # is the User-Agent domain blocked
-        blockedUA = False
-        if not agentDomain.startswith(calling_domain):
-            self.server.blockedCacheLastUpdated = \
+        blocked_ua = False
+        if not agent_domain.startswith(calling_domain):
+            self.server.blocked_cache_last_updated = \
                 update_blocked_cache(self.server.base_dir,
-                                     self.server.blockedCache,
-                                     self.server.blockedCacheLastUpdated,
-                                     self.server.blockedCacheUpdateSecs)
+                                     self.server.blocked_cache,
+                                     self.server.blocked_cache_last_updated,
+                                     self.server.blocked_cache_update_secs)
 
-            blockedUA = is_blocked_domain(self.server.base_dir, agentDomain,
-                                          self.server.blockedCache)
+            blocked_ua = is_blocked_domain(self.server.base_dir, agent_domain,
+                                           self.server.blocked_cache)
             # if self.server.debug:
-            if blockedUA:
-                print('Blocked User agent: ' + agentDomain)
-        return blockedUA
+            if blocked_ua:
+                print('Blocked User agent: ' + agent_domain)
+        return blocked_ua
 
     def _request_csv(self) -> bool:
         """Should a csv response be given?
         """
         if not self.headers.get('Accept'):
             return False
-        acceptStr = self.headers['Accept']
-        if 'text/csv' in acceptStr:
+        accept_str = self.headers['Accept']
+        if 'text/csv' in accept_str:
             return True
         return False
 
@@ -641,33 +641,33 @@ class PubServer(BaseHTTPRequestHandler):
         """
         if not self.headers.get('Accept'):
             return False
-        acceptStr = self.headers['Accept']
+        accept_str = self.headers['Accept']
         if self.server.debug:
-            print('ACCEPT: ' + acceptStr)
-        if 'application/ssml' in acceptStr:
-            if 'text/html' not in acceptStr:
+            print('ACCEPT: ' + accept_str)
+        if 'application/ssml' in accept_str:
+            if 'text/html' not in accept_str:
                 return False
-        if 'image/' in acceptStr:
-            if 'text/html' not in acceptStr:
+        if 'image/' in accept_str:
+            if 'text/html' not in accept_str:
                 return False
-        if 'video/' in acceptStr:
-            if 'text/html' not in acceptStr:
+        if 'video/' in accept_str:
+            if 'text/html' not in accept_str:
                 return False
-        if 'audio/' in acceptStr:
-            if 'text/html' not in acceptStr:
+        if 'audio/' in accept_str:
+            if 'text/html' not in accept_str:
                 return False
-        if acceptStr.startswith('*'):
+        if accept_str.startswith('*'):
             if self.headers.get('User-Agent'):
                 if 'ELinks' in self.headers['User-Agent'] or \
                    'Lynx' in self.headers['User-Agent']:
                     return True
             return False
-        if 'json' in acceptStr:
+        if 'json' in accept_str:
             return False
         return True
 
     def _signed_ge_tkey_id(self) -> str:
-        """Returns the actor from the signed GET keyId
+        """Returns the actor from the signed GET key_id
         """
         signature = None
         if self.headers.get('signature'):
@@ -682,30 +682,30 @@ class PubServer(BaseHTTPRequestHandler):
                       'GET has no signature in headers')
             return None
 
-        # get the keyId, which is typically the instance actor
-        keyId = None
-        signatureParams = signature.split(',')
-        for signatureItem in signatureParams:
-            if signatureItem.startswith('keyId='):
-                if '"' in signatureItem:
-                    keyId = signatureItem.split('"')[1]
+        # get the key_id, which is typically the instance actor
+        key_id = None
+        signature_params = signature.split(',')
+        for signature_item in signature_params:
+            if signature_item.startswith('keyId='):
+                if '"' in signature_item:
+                    key_id = signature_item.split('"')[1]
                     # remove #main-key
-                    if '#' in keyId:
-                        keyId = keyId.split('#')[0]
-                    return keyId
+                    if '#' in key_id:
+                        key_id = key_id.split('#')[0]
+                    return key_id
         return None
 
-    def _establish_session(self, callingFunction: str) -> bool:
+    def _establish_session(self, calling_function: str) -> bool:
         """Recreates session if needed
         """
         if self.server.session:
             return True
-        print('DEBUG: creating new session during ' + callingFunction)
+        print('DEBUG: creating new session during ' + calling_function)
         self.server.session = create_session(self.server.proxy_type)
         if self.server.session:
             return True
         print('ERROR: GET failed to create session during ' +
-              callingFunction)
+              calling_function)
         return False
 
     def _secure_mode(self, force: bool = False) -> bool:
@@ -714,17 +714,17 @@ class PubServer(BaseHTTPRequestHandler):
         if not self.server.secure_mode and not force:
             return True
 
-        keyId = self._signed_ge_tkey_id()
-        if not keyId:
+        key_id = self._signed_ge_tkey_id()
+        if not key_id:
             if self.server.debug:
                 print('AUTH: secure mode, ' +
-                      'failed to obtain keyId from signature')
+                      'failed to obtain key_id from signature')
             return False
 
-        # is the keyId (actor) valid?
-        if not url_permitted(keyId, self.server.federation_list):
+        # is the key_id (actor) valid?
+        if not url_permitted(key_id, self.server.federation_list):
             if self.server.debug:
-                print('AUTH: Secure mode GET request not permitted: ' + keyId)
+                print('AUTH: Secure mode GET request not permitted: ' + key_id)
             return False
 
         if not self._establish_session("secure mode"):
@@ -733,7 +733,7 @@ class PubServer(BaseHTTPRequestHandler):
         # obtain the public key
         pubKey = \
             get_person_pub_key(self.server.base_dir,
-                               self.server.session, keyId,
+                               self.server.session, key_id,
                                self.server.person_cache, self.server.debug,
                                self.server.project_version,
                                self.server.http_prefix,
@@ -742,7 +742,7 @@ class PubServer(BaseHTTPRequestHandler):
         if not pubKey:
             if self.server.debug:
                 print('AUTH: secure mode failed to ' +
-                      'obtain public key for ' + keyId)
+                      'obtain public key for ' + key_id)
             return False
 
         # verify the GET request without any digest
@@ -753,7 +753,7 @@ class PubServer(BaseHTTPRequestHandler):
             return True
 
         if self.server.debug:
-            print('AUTH: secure mode authorization failed for ' + keyId)
+            print('AUTH: secure mode authorization failed for ' + key_id)
         return False
 
     def _login_headers(self, fileFormat: str, length: int,
@@ -1038,7 +1038,7 @@ class PubServer(BaseHTTPRequestHandler):
         return False
 
     def _masto_api_v1(self, path: str, calling_domain: str,
-                      uaStr: str,
+                      ua_str: str,
                       authorized: bool,
                       http_prefix: str,
                       base_dir: str, nickname: str, domain: str,
@@ -1059,13 +1059,13 @@ class PubServer(BaseHTTPRequestHandler):
         print('mastodon api v1: ' + path)
         print('mastodon api v1: authorized ' + str(authorized))
         print('mastodon api v1: nickname ' + str(nickname))
-        self._update_known_crawlers(uaStr)
+        self._update_known_crawlers(ua_str)
 
         broch_mode = broch_mode_is_active(base_dir)
         sendJson, sendJsonStr = \
             masto_api_v1_response(path,
                                   calling_domain,
-                                  uaStr,
+                                  ua_str,
                                   authorized,
                                   http_prefix,
                                   base_dir,
@@ -1104,7 +1104,7 @@ class PubServer(BaseHTTPRequestHandler):
         return True
 
     def _masto_api(self, path: str, calling_domain: str,
-                   uaStr: str,
+                   ua_str: str,
                    authorized: bool, http_prefix: str,
                    base_dir: str, nickname: str, domain: str,
                    domain_full: str,
@@ -1115,19 +1115,19 @@ class PubServer(BaseHTTPRequestHandler):
                    project_version: str,
                    customEmoji: [],
                    show_node_info_accounts: bool) -> bool:
-        return self._masto_api_v1(path, calling_domain, uaStr, authorized,
+        return self._masto_api_v1(path, calling_domain, ua_str, authorized,
                                   http_prefix, base_dir, nickname, domain,
                                   domain_full, onion_domain, i2p_domain,
                                   translate, registration, system_language,
                                   project_version, customEmoji,
                                   show_node_info_accounts)
 
-    def _nodeinfo(self, uaStr: str, calling_domain: str) -> bool:
+    def _nodeinfo(self, ua_str: str, calling_domain: str) -> bool:
         if not self.path.startswith('/nodeinfo/2.0'):
             return False
         if self.server.debug:
             print('DEBUG: nodeinfo ' + self.path)
-        self._update_known_crawlers(uaStr)
+        self._update_known_crawlers(ua_str)
 
         # If we are in broch mode then don't show potentially
         # sensitive metadata.
@@ -1144,9 +1144,9 @@ class PubServer(BaseHTTPRequestHandler):
         if broch_mode:
             show_node_info_accounts = False
 
-        instanceUrl = self._get_instance_url(calling_domain)
-        aboutUrl = instanceUrl + '/about'
-        termsOfServiceUrl = instanceUrl + '/terms'
+        instance_url = self._get_instance_url(calling_domain)
+        aboutUrl = instance_url + '/about'
+        termsOfServiceUrl = instance_url + '/terms'
         info = meta_data_node_info(self.server.base_dir,
                                    aboutUrl, termsOfServiceUrl,
                                    self.server.registration,
@@ -1260,25 +1260,25 @@ class PubServer(BaseHTTPRequestHandler):
         return True
 
     def _post_to_outbox(self, message_json: {}, version: str,
-                        postToNickname: str) -> bool:
+                        post_to_nickname: str) -> bool:
         """post is received by the outbox
         Client to server message post
         https://www.w3.org/TR/activitypub/#client-to-server-outbox-delivery
         """
         city = self.server.city
 
-        if postToNickname:
-            print('Posting to nickname ' + postToNickname)
-            self.postToNickname = postToNickname
+        if post_to_nickname:
+            print('Posting to nickname ' + post_to_nickname)
+            self.post_to_nickname = post_to_nickname
             city = get_spoofed_city(self.server.city,
                                     self.server.base_dir,
-                                    postToNickname, self.server.domain)
+                                    post_to_nickname, self.server.domain)
 
         shared_items_federated_domains = \
             self.server.shared_items_federated_domains
         return post_message_to_outbox(self.server.session,
                                       self.server.translate,
-                                      message_json, self.postToNickname,
+                                      message_json, self.post_to_nickname,
                                       self.server, self.server.base_dir,
                                       self.server.http_prefix,
                                       self.server.domain,
@@ -1347,7 +1347,7 @@ class PubServer(BaseHTTPRequestHandler):
     def _post_to_outbox_thread(self, message_json: {}) -> bool:
         """Creates a thread to send a post
         """
-        accountOutboxThreadName = self.postToNickname
+        accountOutboxThreadName = self.post_to_nickname
         if not accountOutboxThreadName:
             accountOutboxThreadName = '*'
 
@@ -1462,14 +1462,14 @@ class PubServer(BaseHTTPRequestHandler):
         messageDomain, messagePort = \
             get_domain_from_actor(message_json['actor'])
 
-        self.server.blockedCacheLastUpdated = \
+        self.server.blocked_cache_last_updated = \
             update_blocked_cache(self.server.base_dir,
-                                 self.server.blockedCache,
-                                 self.server.blockedCacheLastUpdated,
-                                 self.server.blockedCacheUpdateSecs)
+                                 self.server.blocked_cache,
+                                 self.server.blocked_cache_last_updated,
+                                 self.server.blocked_cache_update_secs)
 
         if is_blocked_domain(self.server.base_dir, messageDomain,
-                             self.server.blockedCache):
+                             self.server.blocked_cache):
             print('POST from blocked domain ' + messageDomain)
             self._400()
             self.server.POSTbusy = False
@@ -1528,11 +1528,11 @@ class PubServer(BaseHTTPRequestHandler):
                   str(originalMessageJson))
             return 5
 
-        self.server.blockedCacheLastUpdated = \
+        self.server.blocked_cache_last_updated = \
             update_blocked_cache(self.server.base_dir,
-                                 self.server.blockedCache,
-                                 self.server.blockedCacheLastUpdated,
-                                 self.server.blockedCacheUpdateSecs)
+                                 self.server.blocked_cache,
+                                 self.server.blocked_cache_last_updated,
+                                 self.server.blocked_cache_update_secs)
 
         queueFilename = \
             save_post_to_inbox_queue(self.server.base_dir,
@@ -1544,7 +1544,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      headersDict,
                                      self.path,
                                      self.server.debug,
-                                     self.server.blockedCache,
+                                     self.server.blocked_cache,
                                      self.server.system_language)
         if queueFilename:
             # add json to the queue
@@ -2275,7 +2275,7 @@ class PubServer(BaseHTTPRequestHandler):
                         debug: bool) -> None:
         """Receive POST from person options screen
         """
-        pageNumber = 1
+        page_number = 1
         usersPath = path.split('/personoptions')[0]
         originPathStr = http_prefix + '://' + domain_full + usersPath
 
@@ -2316,11 +2316,11 @@ class PubServer(BaseHTTPRequestHandler):
 
         # page number to return to
         if 'pageNumber=' in optionsConfirmParams:
-            pageNumberStr = optionsConfirmParams.split('pageNumber=')[1]
-            if '&' in pageNumberStr:
-                pageNumberStr = pageNumberStr.split('&')[0]
-            if pageNumberStr.isdigit():
-                pageNumber = int(pageNumberStr)
+            page_number_str = optionsConfirmParams.split('pageNumber=')[1]
+            if '&' in page_number_str:
+                page_number_str = page_number_str.split('&')[0]
+            if page_number_str.isdigit():
+                page_number = int(page_number_str)
 
         # actor for the person
         optionsActor = optionsConfirmParams.split('actor=')[1]
@@ -2404,7 +2404,7 @@ class PubServer(BaseHTTPRequestHandler):
                          handle, petname)
             usersPathStr = \
                 usersPath + '/' + self.server.defaultTimeline + \
-                '?page=' + str(pageNumber)
+                '?page=' + str(page_number)
             self._redirect_headers(usersPathStr, cookie,
                                    calling_domain)
             self.server.POSTbusy = False
@@ -2424,7 +2424,7 @@ class PubServer(BaseHTTPRequestHandler):
                              handle, personNotes)
             usersPathStr = \
                 usersPath + '/' + self.server.defaultTimeline + \
-                '?page=' + str(pageNumber)
+                '?page=' + str(page_number)
             self._redirect_headers(usersPathStr, cookie,
                                    calling_domain)
             self.server.POSTbusy = False
@@ -2452,7 +2452,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             optionsDomainFull)
             usersPathStr = \
                 usersPath + '/' + self.server.defaultTimeline + \
-                '?page=' + str(pageNumber)
+                '?page=' + str(page_number)
             self._redirect_headers(usersPathStr, cookie,
                                    calling_domain)
             self.server.POSTbusy = False
@@ -2480,7 +2480,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       optionsDomainFull)
             usersPathStr = \
                 usersPath + '/' + self.server.defaultTimeline + \
-                '?page=' + str(pageNumber)
+                '?page=' + str(page_number)
             self._redirect_headers(usersPathStr, cookie,
                                    calling_domain)
             self.server.POSTbusy = False
@@ -2525,7 +2525,7 @@ class PubServer(BaseHTTPRequestHandler):
                             refresh_newswire(self.server.base_dir)
             usersPathStr = \
                 usersPath + '/' + self.server.defaultTimeline + \
-                '?page=' + str(pageNumber)
+                '?page=' + str(page_number)
             self._redirect_headers(usersPathStr, cookie,
                                    calling_domain)
             self.server.POSTbusy = False
@@ -2571,7 +2571,7 @@ class PubServer(BaseHTTPRequestHandler):
                             refresh_newswire(self.server.base_dir)
             usersPathStr = \
                 usersPath + '/' + self.server.defaultTimeline + \
-                '?page=' + str(pageNumber)
+                '?page=' + str(page_number)
             self._redirect_headers(usersPathStr, cookie,
                                    calling_domain)
             self.server.POSTbusy = False
@@ -2611,7 +2611,7 @@ class PubServer(BaseHTTPRequestHandler):
                             print('EX: unable to write ' + nwFilename)
             usersPathStr = \
                 usersPath + '/' + self.server.defaultTimeline + \
-                '?page=' + str(pageNumber)
+                '?page=' + str(page_number)
             self._redirect_headers(usersPathStr, cookie,
                                    calling_domain)
             self.server.POSTbusy = False
@@ -2704,14 +2704,14 @@ class PubServer(BaseHTTPRequestHandler):
                     access_keys = self.server.keyShortcuts[nickname]
 
             customSubmitText = get_config_param(base_dir, 'customSubmitText')
-            conversationId = None
+            conversation_id = None
             msg = html_new_post(self.server.css_cache,
                                 False, self.server.translate,
                                 base_dir,
                                 http_prefix,
                                 reportPath, None,
                                 [optionsActor], None, None,
-                                pageNumber, '',
+                                page_number, '',
                                 chooserNickname,
                                 domain,
                                 domain_full,
@@ -2720,7 +2720,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.theme_name,
                                 True, access_keys,
                                 customSubmitText,
-                                conversationId,
+                                conversation_id,
                                 self.server.recent_posts_cache,
                                 self.server.max_recent_posts,
                                 self.server.session,
@@ -2793,7 +2793,7 @@ class PubServer(BaseHTTPRequestHandler):
                     thisActor = 'http://' + i2p_domain + usersPath
                 actorPathStr = \
                     thisActor + '/' + self.server.defaultTimeline + \
-                    '?page=' + str(pageNumber)
+                    '?page=' + str(page_number)
                 self._redirect_headers(actorPathStr, cookie,
                                        calling_domain)
                 self.server.POSTbusy = False
@@ -2816,7 +2816,7 @@ class PubServer(BaseHTTPRequestHandler):
                     thisActor = 'http://' + i2p_domain + usersPath
                 actorPathStr = \
                     thisActor + '/' + self.server.defaultTimeline + \
-                    '?page=' + str(pageNumber)
+                    '?page=' + str(page_number)
                 self._redirect_headers(actorPathStr, cookie,
                                        calling_domain)
                 self.server.POSTbusy = False
@@ -2839,13 +2839,13 @@ class PubServer(BaseHTTPRequestHandler):
                     access_keys = self.server.keyShortcuts[nickname]
 
             customSubmitText = get_config_param(base_dir, 'customSubmitText')
-            conversationId = None
+            conversation_id = None
             msg = html_new_post(self.server.css_cache,
                                 False, self.server.translate,
                                 base_dir,
                                 http_prefix,
                                 reportPath, None, [],
-                                None, postUrl, pageNumber, '',
+                                None, postUrl, page_number, '',
                                 chooserNickname,
                                 domain,
                                 domain_full,
@@ -2854,7 +2854,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.theme_name,
                                 True, access_keys,
                                 customSubmitText,
-                                conversationId,
+                                conversation_id,
                                 self.server.recent_posts_cache,
                                 self.server.max_recent_posts,
                                 self.server.session,
@@ -2961,11 +2961,11 @@ class PubServer(BaseHTTPRequestHandler):
                     }
                 }
                 pathUsersSection = path.split('/users/')[1]
-                self.postToNickname = pathUsersSection.split('/')[0]
+                self.post_to_nickname = pathUsersSection.split('/')[0]
                 group_account = has_group_type(self.server.base_dir,
                                                followingActor,
                                                self.server.person_cache)
-                unfollow_account(self.server.base_dir, self.postToNickname,
+                unfollow_account(self.server.base_dir, self.post_to_nickname,
                                  self.server.domain,
                                  followingNickname, followingDomainFull,
                                  self.server.debug, group_account)
@@ -3250,13 +3250,13 @@ class PubServer(BaseHTTPRequestHandler):
         """Receive a search query
         """
         # get the page number
-        pageNumber = 1
+        page_number = 1
         if '/searchhandle?page=' in path:
-            pageNumberStr = path.split('/searchhandle?page=')[1]
-            if '#' in pageNumberStr:
-                pageNumberStr = pageNumberStr.split('#')[0]
-            if pageNumberStr.isdigit():
-                pageNumber = int(pageNumberStr)
+            page_number_str = path.split('/searchhandle?page=')[1]
+            if '#' in page_number_str:
+                page_number_str = page_number_str.split('#')[0]
+            if page_number_str.isdigit():
+                page_number = int(page_number_str)
             path = path.split('?page=')[0]
 
         usersPath = path.replace('/searchhandle', '')
@@ -3400,7 +3400,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         domain,
                                         searchStr,
                                         max_posts_in_feed,
-                                        pageNumber,
+                                        page_number,
                                         self.server.project_version,
                                         self.server.recent_posts_cache,
                                         self.server.max_recent_posts,
@@ -3468,7 +3468,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         domain,
                                         searchStr,
                                         max_posts_in_feed,
-                                        pageNumber,
+                                        page_number,
                                         self.server.project_version,
                                         self.server.recent_posts_cache,
                                         self.server.max_recent_posts,
@@ -3640,7 +3640,7 @@ class PubServer(BaseHTTPRequestHandler):
                     html_search_shared_items(self.server.css_cache,
                                              self.server.translate,
                                              base_dir,
-                                             searchStr[1:], pageNumber,
+                                             searchStr[1:], page_number,
                                              max_posts_in_feed,
                                              http_prefix,
                                              domain_full,
@@ -3663,7 +3663,7 @@ class PubServer(BaseHTTPRequestHandler):
                     html_search_shared_items(self.server.css_cache,
                                              self.server.translate,
                                              base_dir,
-                                             searchStr, pageNumber,
+                                             searchStr, page_number,
                                              max_posts_in_feed,
                                              http_prefix,
                                              domain_full,
@@ -3692,13 +3692,13 @@ class PubServer(BaseHTTPRequestHandler):
                       debug: bool) -> None:
         """Receive a vote via POST
         """
-        pageNumber = 1
+        page_number = 1
         if '?page=' in path:
-            pageNumberStr = path.split('?page=')[1]
-            if '#' in pageNumberStr:
-                pageNumberStr = pageNumberStr.split('#')[0]
-            if pageNumberStr.isdigit():
-                pageNumber = int(pageNumberStr)
+            page_number_str = path.split('?page=')[1]
+            if '#' in page_number_str:
+                page_number_str = page_number_str.split('#')[0]
+            if page_number_str.isdigit():
+                page_number = int(page_number_str)
             path = path.split('?page=')[0]
 
         # the actor who votes
@@ -3712,7 +3712,7 @@ class PubServer(BaseHTTPRequestHandler):
                 actor = 'http://' + i2p_domain + usersPath
             actorPathStr = \
                 actor + '/' + self.server.defaultTimeline + \
-                '?page=' + str(pageNumber)
+                '?page=' + str(page_number)
             self._redirect_headers(actorPathStr,
                                    cookie, calling_domain)
             self.server.POSTbusy = False
@@ -3745,11 +3745,11 @@ class PubServer(BaseHTTPRequestHandler):
             urllib.parse.unquote_plus(questionParams.strip())
 
         # post being voted on
-        messageId = None
+        message_id = None
         if 'messageId=' in questionParams:
-            messageId = questionParams.split('messageId=')[1]
-            if '&' in messageId:
-                messageId = messageId.split('&')[0]
+            message_id = questionParams.split('messageId=')[1]
+            if '&' in message_id:
+                message_id = message_id.split('&')[0]
 
         answer = None
         if 'answer=' in questionParams:
@@ -3757,14 +3757,14 @@ class PubServer(BaseHTTPRequestHandler):
             if '&' in answer:
                 answer = answer.split('&')[0]
 
-        self._send_reply_to_question(nickname, messageId, answer)
+        self._send_reply_to_question(nickname, message_id, answer)
         if calling_domain.endswith('.onion') and onion_domain:
             actor = 'http://' + onion_domain + usersPath
         elif (calling_domain.endswith('.i2p') and i2p_domain):
             actor = 'http://' + i2p_domain + usersPath
         actorPathStr = \
             actor + '/' + self.server.defaultTimeline + \
-            '?page=' + str(pageNumber)
+            '?page=' + str(page_number)
         self._redirect_headers(actorPathStr, cookie,
                                calling_domain)
         self.server.POSTbusy = False
@@ -3882,14 +3882,14 @@ class PubServer(BaseHTTPRequestHandler):
             actorNickname = get_nickname_from_actor(actor)
             if actor == shareActor or actor == adminActor or \
                is_moderator(base_dir, actorNickname):
-                itemID = removeShareConfirmParams.split('itemID=')[1]
-                if '&' in itemID:
-                    itemID = itemID.split('&')[0]
+                item_id = removeShareConfirmParams.split('itemID=')[1]
+                if '&' in item_id:
+                    item_id = item_id.split('&')[0]
                 shareNickname = get_nickname_from_actor(shareActor)
                 if shareNickname:
                     shareDomain, sharePort = get_domain_from_actor(shareActor)
                     remove_shared_item(base_dir,
-                                       shareNickname, shareDomain, itemID,
+                                       shareNickname, shareDomain, item_id,
                                        http_prefix, domain_full, 'shares')
 
         if calling_domain.endswith('.onion') and onion_domain:
@@ -3949,14 +3949,14 @@ class PubServer(BaseHTTPRequestHandler):
             actorNickname = get_nickname_from_actor(actor)
             if actor == shareActor or actor == adminActor or \
                is_moderator(base_dir, actorNickname):
-                itemID = removeShareConfirmParams.split('itemID=')[1]
-                if '&' in itemID:
-                    itemID = itemID.split('&')[0]
+                item_id = removeShareConfirmParams.split('itemID=')[1]
+                if '&' in item_id:
+                    item_id = item_id.split('&')[0]
                 shareNickname = get_nickname_from_actor(shareActor)
                 if shareNickname:
                     shareDomain, sharePort = get_domain_from_actor(shareActor)
                     remove_shared_item(base_dir,
-                                       shareNickname, shareDomain, itemID,
+                                       shareNickname, shareDomain, item_id,
                                        http_prefix, domain_full, 'wanted')
 
         if calling_domain.endswith('.onion') and onion_domain:
@@ -3975,7 +3975,7 @@ class PubServer(BaseHTTPRequestHandler):
                              debug: bool) -> None:
         """Endpoint for removing posts after confirmation
         """
-        pageNumber = 1
+        page_number = 1
         usersPath = path.split('/rmpost')[0]
         originPathStr = \
             http_prefix + '://' + \
@@ -4011,12 +4011,12 @@ class PubServer(BaseHTTPRequestHandler):
             if '&' in removeMessageId:
                 removeMessageId = removeMessageId.split('&')[0]
             if 'pageNumber=' in removePostConfirmParams:
-                pageNumberStr = \
+                page_number_str = \
                     removePostConfirmParams.split('pageNumber=')[1]
-                if '&' in pageNumberStr:
-                    pageNumberStr = pageNumberStr.split('&')[0]
-                if pageNumberStr.isdigit():
-                    pageNumber = int(pageNumberStr)
+                if '&' in page_number_str:
+                    page_number_str = page_number_str.split('&')[0]
+                if page_number_str.isdigit():
+                    page_number = int(page_number_str)
             yearStr = None
             if 'year=' in removePostConfirmParams:
                 yearStr = removePostConfirmParams.split('year=')[1]
@@ -4040,14 +4040,15 @@ class PubServer(BaseHTTPRequestHandler):
                     'cc': [removePostActor + '/followers'],
                     'type': 'Delete'
                 }
-                self.postToNickname = get_nickname_from_actor(removePostActor)
-                if self.postToNickname:
+                self.post_to_nickname = \
+                    get_nickname_from_actor(removePostActor)
+                if self.post_to_nickname:
                     if monthStr and yearStr:
                         if monthStr.isdigit() and yearStr.isdigit():
                             yearInt = int(yearStr)
                             monthInt = int(monthStr)
                             remove_calendar_event(base_dir,
-                                                  self.postToNickname,
+                                                  self.post_to_nickname,
                                                   domain,
                                                   yearInt,
                                                   monthInt,
@@ -4057,12 +4058,12 @@ class PubServer(BaseHTTPRequestHandler):
             originPathStr = 'http://' + onion_domain + usersPath
         elif (calling_domain.endswith('.i2p') and i2p_domain):
             originPathStr = 'http://' + i2p_domain + usersPath
-        if pageNumber == 1:
+        if page_number == 1:
             self._redirect_headers(originPathStr + '/outbox', cookie,
                                    calling_domain)
         else:
-            pageNumberStr = str(pageNumber)
-            actorPathStr = originPathStr + '/outbox?page=' + pageNumberStr
+            page_number_str = str(page_number)
+            actorPathStr = originPathStr + '/outbox?page=' + page_number_str
             self._redirect_headers(actorPathStr,
                                    cookie, calling_domain)
         self.server.POSTbusy = False
@@ -4806,7 +4807,7 @@ class PubServer(BaseHTTPRequestHandler):
                         acct_dir(base_dir, nickname, domain) + \
                         '/' + mType + '.temp'
 
-                filename, attachmentMediaType = \
+                filename, attachment_media_type = \
                     save_media_in_form_post(mediaBytes, debug,
                                             filenameBase)
                 if filename:
@@ -7079,7 +7080,7 @@ class PubServer(BaseHTTPRequestHandler):
         optionsStr = path.split('?options=')[1]
         originPathStr = path.split('?options=')[0]
         if ';' in optionsStr and '/users/news/' not in path:
-            pageNumber = 1
+            page_number = 1
             optionsList = optionsStr.split(';')
             optionsActor = optionsList[0]
             optionsPageNumber = optionsList[1]
@@ -7093,7 +7094,7 @@ class PubServer(BaseHTTPRequestHandler):
                     '/users/' + optionsProfileUrl + '/avatar.' + ext
                 backToPath = 'moderation'
             if optionsPageNumber.isdigit():
-                pageNumber = int(optionsPageNumber)
+                page_number = int(optionsPageNumber)
             optionsLink = None
             if len(optionsList) > 3:
                 optionsLink = optionsList[3]
@@ -7170,7 +7171,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     optionsActor,
                                     optionsProfileUrl,
                                     optionsLink,
-                                    pageNumber, donate_url, website_url,
+                                    page_number, donate_url, website_url,
                                     xmpp_address, matrix_address,
                                     ssb_address, blog_address,
                                     tox_address, briar_address,
@@ -7522,13 +7523,13 @@ class PubServer(BaseHTTPRequestHandler):
                         GETstartTime) -> None:
         """Return the result of a hashtag search
         """
-        pageNumber = 1
+        page_number = 1
         if '?page=' in path:
-            pageNumberStr = path.split('?page=')[1]
-            if '#' in pageNumberStr:
-                pageNumberStr = pageNumberStr.split('#')[0]
-            if pageNumberStr.isdigit():
-                pageNumber = int(pageNumberStr)
+            page_number_str = path.split('?page=')[1]
+            if '#' in page_number_str:
+                page_number_str = page_number_str.split('#')[0]
+            if page_number_str.isdigit():
+                page_number = int(page_number_str)
         hashtag = path.split('/tags/')[1]
         if '?page=' in hashtag:
             hashtag = hashtag.split('?page=')[0]
@@ -7554,7 +7555,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.recent_posts_cache,
                                 self.server.max_recent_posts,
                                 self.server.translate,
-                                base_dir, hashtag, pageNumber,
+                                base_dir, hashtag, page_number,
                                 max_posts_in_hashtag_feed, self.server.session,
                                 self.server.cached_webfingers,
                                 self.server.person_cache,
@@ -7659,7 +7660,7 @@ class PubServer(BaseHTTPRequestHandler):
                          debug: bool) -> None:
         """The announce/repeat button was pressed on a post
         """
-        pageNumber = 1
+        page_number = 1
         repeatUrl = path.split('?repeat=')[1]
         if '?' in repeatUrl:
             repeatUrl = repeatUrl.split('?')[0]
@@ -7670,26 +7671,26 @@ class PubServer(BaseHTTPRequestHandler):
                 timelineBookmark = timelineBookmark.split('?')[0]
             timelineBookmark = '#' + timelineBookmark
         if '?page=' in path:
-            pageNumberStr = path.split('?page=')[1]
-            if '?' in pageNumberStr:
-                pageNumberStr = pageNumberStr.split('?')[0]
-            if '#' in pageNumberStr:
-                pageNumberStr = pageNumberStr.split('#')[0]
-            if pageNumberStr.isdigit():
-                pageNumber = int(pageNumberStr)
+            page_number_str = path.split('?page=')[1]
+            if '?' in page_number_str:
+                page_number_str = page_number_str.split('?')[0]
+            if '#' in page_number_str:
+                page_number_str = page_number_str.split('#')[0]
+            if page_number_str.isdigit():
+                page_number = int(page_number_str)
         timelineStr = 'inbox'
         if '?tl=' in path:
             timelineStr = path.split('?tl=')[1]
             if '?' in timelineStr:
                 timelineStr = timelineStr.split('?')[0]
         actor = path.split('?repeat=')[0]
-        self.postToNickname = get_nickname_from_actor(actor)
-        if not self.postToNickname:
+        self.post_to_nickname = get_nickname_from_actor(actor)
+        if not self.post_to_nickname:
             print('WARN: unable to find nickname in ' + actor)
             actorAbsolute = self._get_instance_url(calling_domain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
-                '?page=' + str(pageNumber)
+                '?page=' + str(page_number)
             self._redirect_headers(actorPathStr, cookie,
                                    calling_domain)
             return
@@ -7698,7 +7699,8 @@ class PubServer(BaseHTTPRequestHandler):
             return
         self.server.actorRepeat = path.split('?actor=')[1]
         announceToStr = \
-            local_actor_url(http_prefix, self.postToNickname, domain_full) + \
+            local_actor_url(http_prefix, self.post_to_nickname,
+                            domain_full) + \
             '/followers'
         if not repeatPrivate:
             announceToStr = 'https://www.w3.org/ns/activitystreams#Public'
@@ -7706,7 +7708,7 @@ class PubServer(BaseHTTPRequestHandler):
             create_announce(self.server.session,
                             base_dir,
                             self.server.federation_list,
-                            self.postToNickname,
+                            self.post_to_nickname,
                             domain, port,
                             announceToStr,
                             None, http_prefix,
@@ -7726,7 +7728,7 @@ class PubServer(BaseHTTPRequestHandler):
             announceId = remove_id_ending(announceJson['id'])
             announceFilename = \
                 save_post_to_box(base_dir, http_prefix, announceId,
-                                 self.postToNickname, domain_full,
+                                 self.post_to_nickname, domain_full,
                                  announceJson, 'outbox')
 
             # clear the icon from the cache so that it gets updated
@@ -7736,7 +7738,7 @@ class PubServer(BaseHTTPRequestHandler):
             # send out the announce within a separate thread
             self._post_to_outbox(announceJson,
                                  self.server.project_version,
-                                 self.postToNickname)
+                                 self.post_to_nickname)
 
             fitness_performance(GETstartTime, self.server.fitness,
                                 '_GET', '_announce_button postToOutboxThread',
@@ -7746,28 +7748,28 @@ class PubServer(BaseHTTPRequestHandler):
         if announceJson and announceFilename:
             if debug:
                 print('Generating html post for announce')
-            cachedPostFilename = \
-                get_cached_post_filename(base_dir, self.postToNickname,
+            cached_post_filename = \
+                get_cached_post_filename(base_dir, self.post_to_nickname,
                                          domain, announceJson)
             if debug:
                 print('Announced post json: ' + str(announceJson))
                 print('Announced post nickname: ' +
-                      self.postToNickname + ' ' + domain)
-                print('Announced post cache: ' + str(cachedPostFilename))
+                      self.post_to_nickname + ' ' + domain)
+                print('Announced post cache: ' + str(cached_post_filename))
             showIndividualPostIcons = True
             manuallyApproveFollowers = \
                 follower_approval_active(base_dir,
-                                         self.postToNickname, domain)
+                                         self.post_to_nickname, domain)
             showRepeats = not is_dm(announceJson)
             individual_post_as_html(self.server.signing_priv_key_pem, False,
                                     self.server.recent_posts_cache,
                                     self.server.max_recent_posts,
                                     self.server.translate,
-                                    pageNumber, base_dir,
+                                    page_number, base_dir,
                                     self.server.session,
                                     self.server.cached_webfingers,
                                     self.server.person_cache,
-                                    self.postToNickname, domain,
+                                    self.post_to_nickname, domain,
                                     self.server.port, announceJson,
                                     None, True,
                                     self.server.allow_deletion,
@@ -7791,7 +7793,7 @@ class PubServer(BaseHTTPRequestHandler):
         actorAbsolute = self._get_instance_url(calling_domain) + actor
         actorPathStr = \
             actorAbsolute + '/' + timelineStr + '?page=' + \
-            str(pageNumber) + timelineBookmark
+            str(page_number) + timelineBookmark
         fitness_performance(GETstartTime, self.server.fitness,
                             '_GET', '_announce_button',
                             self.server.debug)
@@ -7808,7 +7810,7 @@ class PubServer(BaseHTTPRequestHandler):
                               recent_posts_cache: {}) -> None:
         """Undo announce/repeat button was pressed
         """
-        pageNumber = 1
+        page_number = 1
 
         # the post which was referenced by the announce post
         repeatUrl = path.split('?unrepeat=')[1]
@@ -7822,26 +7824,26 @@ class PubServer(BaseHTTPRequestHandler):
                 timelineBookmark = timelineBookmark.split('?')[0]
             timelineBookmark = '#' + timelineBookmark
         if '?page=' in path:
-            pageNumberStr = path.split('?page=')[1]
-            if '?' in pageNumberStr:
-                pageNumberStr = pageNumberStr.split('?')[0]
-            if '#' in pageNumberStr:
-                pageNumberStr = pageNumberStr.split('#')[0]
-            if pageNumberStr.isdigit():
-                pageNumber = int(pageNumberStr)
+            page_number_str = path.split('?page=')[1]
+            if '?' in page_number_str:
+                page_number_str = page_number_str.split('?')[0]
+            if '#' in page_number_str:
+                page_number_str = page_number_str.split('#')[0]
+            if page_number_str.isdigit():
+                page_number = int(page_number_str)
         timelineStr = 'inbox'
         if '?tl=' in path:
             timelineStr = path.split('?tl=')[1]
             if '?' in timelineStr:
                 timelineStr = timelineStr.split('?')[0]
         actor = path.split('?unrepeat=')[0]
-        self.postToNickname = get_nickname_from_actor(actor)
-        if not self.postToNickname:
+        self.post_to_nickname = get_nickname_from_actor(actor)
+        if not self.post_to_nickname:
             print('WARN: unable to find nickname in ' + actor)
             actorAbsolute = self._get_instance_url(calling_domain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + '?page=' + \
-                str(pageNumber)
+                str(page_number)
             self._redirect_headers(actorPathStr, cookie,
                                    calling_domain)
             return
@@ -7850,7 +7852,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
         undoAnnounceActor = \
             http_prefix + '://' + domain_full + \
-            '/users/' + self.postToNickname
+            '/users/' + self.post_to_nickname
         unRepeatToStr = 'https://www.w3.org/ns/activitystreams#Public'
         newUndoAnnounce = {
             "@context": "https://www.w3.org/ns/activitystreams",
@@ -7887,12 +7889,13 @@ class PubServer(BaseHTTPRequestHandler):
                             debug, recent_posts_cache)
 
         self._post_to_outbox(newUndoAnnounce,
-                             self.server.project_version, self.postToNickname)
+                             self.server.project_version,
+                             self.post_to_nickname)
 
         actorAbsolute = self._get_instance_url(calling_domain) + actor
         actorPathStr = \
             actorAbsolute + '/' + timelineStr + '?page=' + \
-            str(pageNumber) + timelineBookmark
+            str(page_number) + timelineBookmark
         fitness_performance(GETstartTime, self.server.fitness,
                             '_GET', '_undo_announce_button',
                             self.server.debug)
@@ -8114,7 +8117,7 @@ class PubServer(BaseHTTPRequestHandler):
                      debug: str) -> None:
         """Press the like button
         """
-        pageNumber = 1
+        page_number = 1
         likeUrl = path.split('?like=')[1]
         if '?' in likeUrl:
             likeUrl = likeUrl.split('?')[0]
@@ -8126,26 +8129,26 @@ class PubServer(BaseHTTPRequestHandler):
             timelineBookmark = '#' + timelineBookmark
         actor = path.split('?like=')[0]
         if '?page=' in path:
-            pageNumberStr = path.split('?page=')[1]
-            if '?' in pageNumberStr:
-                pageNumberStr = pageNumberStr.split('?')[0]
-            if '#' in pageNumberStr:
-                pageNumberStr = pageNumberStr.split('#')[0]
-            if pageNumberStr.isdigit():
-                pageNumber = int(pageNumberStr)
+            page_number_str = path.split('?page=')[1]
+            if '?' in page_number_str:
+                page_number_str = page_number_str.split('?')[0]
+            if '#' in page_number_str:
+                page_number_str = page_number_str.split('#')[0]
+            if page_number_str.isdigit():
+                page_number = int(page_number_str)
         timelineStr = 'inbox'
         if '?tl=' in path:
             timelineStr = path.split('?tl=')[1]
             if '?' in timelineStr:
                 timelineStr = timelineStr.split('?')[0]
 
-        self.postToNickname = get_nickname_from_actor(actor)
-        if not self.postToNickname:
+        self.post_to_nickname = get_nickname_from_actor(actor)
+        if not self.post_to_nickname:
             print('WARN: unable to find nickname in ' + actor)
             actorAbsolute = self._get_instance_url(calling_domain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
-                '?page=' + str(pageNumber) + timelineBookmark
+                '?page=' + str(page_number) + timelineBookmark
             self._redirect_headers(actorPathStr, cookie,
                                    calling_domain)
             return
@@ -8153,7 +8156,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._404()
             return
         likeActor = \
-            local_actor_url(http_prefix, self.postToNickname, domain_full)
+            local_actor_url(http_prefix, self.post_to_nickname, domain_full)
         actorLiked = path.split('?actor=')[1]
         if '?' in actorLiked:
             actorLiked = actorLiked.split('?')[0]
@@ -8161,7 +8164,7 @@ class PubServer(BaseHTTPRequestHandler):
         # if this is an announce then send the like to the original post
         origActor, origPostUrl, origFilename = \
             get_original_post_from_announce_url(likeUrl, base_dir,
-                                                self.postToNickname, domain)
+                                                self.post_to_nickname, domain)
         likeUrl2 = likeUrl
         likedPostFilename = origFilename
         if origActor and origPostUrl:
@@ -8188,7 +8191,7 @@ class PubServer(BaseHTTPRequestHandler):
         # directly like the post file
         if not likedPostFilename:
             likedPostFilename = \
-                locate_post(base_dir, self.postToNickname, domain, likeUrl)
+                locate_post(base_dir, self.post_to_nickname, domain, likeUrl)
         if likedPostFilename:
             recent_posts_cache = self.server.recent_posts_cache
             likedPostJson = load_json(likedPostFilename, 0, 1)
@@ -8196,7 +8199,7 @@ class PubServer(BaseHTTPRequestHandler):
                 update_likes_collection(recent_posts_cache,
                                         base_dir, likedPostFilename,
                                         likeUrl, likeActor,
-                                        self.postToNickname,
+                                        self.post_to_nickname,
                                         domain, debug, likedPostJson)
                 likeUrl = origPostUrl
                 likedPostFilename = origFilename
@@ -8204,35 +8207,35 @@ class PubServer(BaseHTTPRequestHandler):
                 print('Updating likes for ' + likedPostFilename)
             update_likes_collection(recent_posts_cache,
                                     base_dir, likedPostFilename, likeUrl,
-                                    likeActor, self.postToNickname, domain,
+                                    likeActor, self.post_to_nickname, domain,
                                     debug, None)
             if debug:
                 print('Regenerating html post for changed likes collection')
             # clear the icon from the cache so that it gets updated
             if likedPostJson:
-                cachedPostFilename = \
-                    get_cached_post_filename(base_dir, self.postToNickname,
+                cached_post_filename = \
+                    get_cached_post_filename(base_dir, self.post_to_nickname,
                                              domain, likedPostJson)
                 if debug:
                     print('Liked post json: ' + str(likedPostJson))
                     print('Liked post nickname: ' +
-                          self.postToNickname + ' ' + domain)
-                    print('Liked post cache: ' + str(cachedPostFilename))
+                          self.post_to_nickname + ' ' + domain)
+                    print('Liked post cache: ' + str(cached_post_filename))
                 showIndividualPostIcons = True
                 manuallyApproveFollowers = \
                     follower_approval_active(base_dir,
-                                             self.postToNickname, domain)
+                                             self.post_to_nickname, domain)
                 showRepeats = not is_dm(likedPostJson)
                 individual_post_as_html(self.server.signing_priv_key_pem,
                                         False,
                                         self.server.recent_posts_cache,
                                         self.server.max_recent_posts,
                                         self.server.translate,
-                                        pageNumber, base_dir,
+                                        page_number, base_dir,
                                         self.server.session,
                                         self.server.cached_webfingers,
                                         self.server.person_cache,
-                                        self.postToNickname, domain,
+                                        self.post_to_nickname, domain,
                                         self.server.port, likedPostJson,
                                         None, True,
                                         self.server.allow_deletion,
@@ -8265,7 +8268,7 @@ class PubServer(BaseHTTPRequestHandler):
         actorAbsolute = self._get_instance_url(calling_domain) + actor
         actorPathStr = \
             actorAbsolute + '/' + timelineStr + \
-            '?page=' + str(pageNumber) + timelineBookmark
+            '?page=' + str(page_number) + timelineBookmark
         fitness_performance(GETstartTime, self.server.fitness,
                             '_GET', '_like_button',
                             self.server.debug)
@@ -8281,7 +8284,7 @@ class PubServer(BaseHTTPRequestHandler):
                           debug: str) -> None:
         """A button is pressed to undo
         """
-        pageNumber = 1
+        page_number = 1
         likeUrl = path.split('?unlike=')[1]
         if '?' in likeUrl:
             likeUrl = likeUrl.split('?')[0]
@@ -8292,26 +8295,26 @@ class PubServer(BaseHTTPRequestHandler):
                 timelineBookmark = timelineBookmark.split('?')[0]
             timelineBookmark = '#' + timelineBookmark
         if '?page=' in path:
-            pageNumberStr = path.split('?page=')[1]
-            if '?' in pageNumberStr:
-                pageNumberStr = pageNumberStr.split('?')[0]
-            if '#' in pageNumberStr:
-                pageNumberStr = pageNumberStr.split('#')[0]
-            if pageNumberStr.isdigit():
-                pageNumber = int(pageNumberStr)
+            page_number_str = path.split('?page=')[1]
+            if '?' in page_number_str:
+                page_number_str = page_number_str.split('?')[0]
+            if '#' in page_number_str:
+                page_number_str = page_number_str.split('#')[0]
+            if page_number_str.isdigit():
+                page_number = int(page_number_str)
         timelineStr = 'inbox'
         if '?tl=' in path:
             timelineStr = path.split('?tl=')[1]
             if '?' in timelineStr:
                 timelineStr = timelineStr.split('?')[0]
         actor = path.split('?unlike=')[0]
-        self.postToNickname = get_nickname_from_actor(actor)
-        if not self.postToNickname:
+        self.post_to_nickname = get_nickname_from_actor(actor)
+        if not self.post_to_nickname:
             print('WARN: unable to find nickname in ' + actor)
             actorAbsolute = self._get_instance_url(calling_domain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
-                '?page=' + str(pageNumber)
+                '?page=' + str(page_number)
             self._redirect_headers(actorPathStr, cookie,
                                    calling_domain)
             return
@@ -8319,7 +8322,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._404()
             return
         undoActor = \
-            local_actor_url(http_prefix, self.postToNickname, domain_full)
+            local_actor_url(http_prefix, self.post_to_nickname, domain_full)
         actorLiked = path.split('?actor=')[1]
         if '?' in actorLiked:
             actorLiked = actorLiked.split('?')[0]
@@ -8327,7 +8330,7 @@ class PubServer(BaseHTTPRequestHandler):
         # if this is an announce then send the like to the original post
         origActor, origPostUrl, origFilename = \
             get_original_post_from_announce_url(likeUrl, base_dir,
-                                                self.postToNickname, domain)
+                                                self.post_to_nickname, domain)
         likeUrl2 = likeUrl
         likedPostFilename = origFilename
         if origActor and origPostUrl:
@@ -8353,7 +8356,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # directly undo the like within the post file
         if not likedPostFilename:
-            likedPostFilename = locate_post(base_dir, self.postToNickname,
+            likedPostFilename = locate_post(base_dir, self.post_to_nickname,
                                             domain, likeUrl)
         if likedPostFilename:
             recent_posts_cache = self.server.recent_posts_cache
@@ -8378,18 +8381,18 @@ class PubServer(BaseHTTPRequestHandler):
                 showIndividualPostIcons = True
                 manuallyApproveFollowers = \
                     follower_approval_active(base_dir,
-                                             self.postToNickname, domain)
+                                             self.post_to_nickname, domain)
                 showRepeats = not is_dm(likedPostJson)
                 individual_post_as_html(self.server.signing_priv_key_pem,
                                         False,
                                         self.server.recent_posts_cache,
                                         self.server.max_recent_posts,
                                         self.server.translate,
-                                        pageNumber, base_dir,
+                                        page_number, base_dir,
                                         self.server.session,
                                         self.server.cached_webfingers,
                                         self.server.person_cache,
-                                        self.postToNickname, domain,
+                                        self.post_to_nickname, domain,
                                         self.server.port, likedPostJson,
                                         None, True,
                                         self.server.allow_deletion,
@@ -8418,7 +8421,7 @@ class PubServer(BaseHTTPRequestHandler):
         actorAbsolute = self._get_instance_url(calling_domain) + actor
         actorPathStr = \
             actorAbsolute + '/' + timelineStr + \
-            '?page=' + str(pageNumber) + timelineBookmark
+            '?page=' + str(page_number) + timelineBookmark
         fitness_performance(GETstartTime, self.server.fitness,
                             '_GET', '_undo_like_button',
                             self.server.debug)
@@ -8436,7 +8439,7 @@ class PubServer(BaseHTTPRequestHandler):
         Note that this is not the emoji reaction selection icon at the
         bottom of the post
         """
-        pageNumber = 1
+        page_number = 1
         reactionUrl = path.split('?react=')[1]
         if '?' in reactionUrl:
             reactionUrl = reactionUrl.split('?')[0]
@@ -8448,13 +8451,13 @@ class PubServer(BaseHTTPRequestHandler):
             timelineBookmark = '#' + timelineBookmark
         actor = path.split('?react=')[0]
         if '?page=' in path:
-            pageNumberStr = path.split('?page=')[1]
-            if '?' in pageNumberStr:
-                pageNumberStr = pageNumberStr.split('?')[0]
-            if '#' in pageNumberStr:
-                pageNumberStr = pageNumberStr.split('#')[0]
-            if pageNumberStr.isdigit():
-                pageNumber = int(pageNumberStr)
+            page_number_str = path.split('?page=')[1]
+            if '?' in page_number_str:
+                page_number_str = page_number_str.split('?')[0]
+            if '#' in page_number_str:
+                page_number_str = page_number_str.split('#')[0]
+            if page_number_str.isdigit():
+                page_number = int(page_number_str)
         timelineStr = 'inbox'
         if '?tl=' in path:
             timelineStr = path.split('?tl=')[1]
@@ -8470,18 +8473,18 @@ class PubServer(BaseHTTPRequestHandler):
             actorAbsolute = self._get_instance_url(calling_domain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
-                '?page=' + str(pageNumber) + timelineBookmark
+                '?page=' + str(page_number) + timelineBookmark
             self._redirect_headers(actorPathStr, cookie,
                                    calling_domain)
             return
         emojiContent = urllib.parse.unquote_plus(emojiContentEncoded)
-        self.postToNickname = get_nickname_from_actor(actor)
-        if not self.postToNickname:
+        self.post_to_nickname = get_nickname_from_actor(actor)
+        if not self.post_to_nickname:
             print('WARN: unable to find nickname in ' + actor)
             actorAbsolute = self._get_instance_url(calling_domain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
-                '?page=' + str(pageNumber) + timelineBookmark
+                '?page=' + str(page_number) + timelineBookmark
             self._redirect_headers(actorPathStr, cookie,
                                    calling_domain)
             return
@@ -8489,7 +8492,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._404()
             return
         reactionActor = \
-            local_actor_url(http_prefix, self.postToNickname, domain_full)
+            local_actor_url(http_prefix, self.post_to_nickname, domain_full)
         actorReaction = path.split('?actor=')[1]
         if '?' in actorReaction:
             actorReaction = actorReaction.split('?')[0]
@@ -8498,7 +8501,7 @@ class PubServer(BaseHTTPRequestHandler):
         # to the original post
         origActor, origPostUrl, origFilename = \
             get_original_post_from_announce_url(reactionUrl, base_dir,
-                                                self.postToNickname, domain)
+                                                self.post_to_nickname, domain)
         reactionUrl2 = reactionUrl
         reaction_postFilename = origFilename
         if origActor and origPostUrl:
@@ -8526,7 +8529,8 @@ class PubServer(BaseHTTPRequestHandler):
         # directly emoji reaction the post file
         if not reaction_postFilename:
             reaction_postFilename = \
-                locate_post(base_dir, self.postToNickname, domain, reactionUrl)
+                locate_post(base_dir, self.post_to_nickname, domain,
+                            reactionUrl)
         if reaction_postFilename:
             recent_posts_cache = self.server.recent_posts_cache
             reaction_post_json = load_json(reaction_postFilename, 0, 1)
@@ -8534,7 +8538,8 @@ class PubServer(BaseHTTPRequestHandler):
                 update_reaction_collection(recent_posts_cache,
                                            base_dir, reaction_postFilename,
                                            reactionUrl,
-                                           reactionActor, self.postToNickname,
+                                           reactionActor,
+                                           self.post_to_nickname,
                                            domain, debug, reaction_post_json,
                                            emojiContent)
                 reactionUrl = origPostUrl
@@ -8545,36 +8550,36 @@ class PubServer(BaseHTTPRequestHandler):
                                        base_dir, reaction_postFilename,
                                        reactionUrl,
                                        reactionActor,
-                                       self.postToNickname, domain,
+                                       self.post_to_nickname, domain,
                                        debug, None, emojiContent)
             if debug:
                 print('Regenerating html post for changed ' +
                       'emoji reaction collection')
             # clear the icon from the cache so that it gets updated
             if reaction_post_json:
-                cachedPostFilename = \
-                    get_cached_post_filename(base_dir, self.postToNickname,
+                cached_post_filename = \
+                    get_cached_post_filename(base_dir, self.post_to_nickname,
                                              domain, reaction_post_json)
                 if debug:
                     print('Reaction post json: ' + str(reaction_post_json))
                     print('Reaction post nickname: ' +
-                          self.postToNickname + ' ' + domain)
-                    print('Reaction post cache: ' + str(cachedPostFilename))
+                          self.post_to_nickname + ' ' + domain)
+                    print('Reaction post cache: ' + str(cached_post_filename))
                 showIndividualPostIcons = True
                 manuallyApproveFollowers = \
                     follower_approval_active(base_dir,
-                                             self.postToNickname, domain)
+                                             self.post_to_nickname, domain)
                 showRepeats = not is_dm(reaction_post_json)
                 individual_post_as_html(self.server.signing_priv_key_pem,
                                         False,
                                         self.server.recent_posts_cache,
                                         self.server.max_recent_posts,
                                         self.server.translate,
-                                        pageNumber, base_dir,
+                                        page_number, base_dir,
                                         self.server.session,
                                         self.server.cached_webfingers,
                                         self.server.person_cache,
-                                        self.postToNickname, domain,
+                                        self.post_to_nickname, domain,
                                         self.server.port, reaction_post_json,
                                         None, True,
                                         self.server.allow_deletion,
@@ -8605,7 +8610,7 @@ class PubServer(BaseHTTPRequestHandler):
         actorAbsolute = self._get_instance_url(calling_domain) + actor
         actorPathStr = \
             actorAbsolute + '/' + timelineStr + \
-            '?page=' + str(pageNumber) + timelineBookmark
+            '?page=' + str(page_number) + timelineBookmark
         fitness_performance(GETstartTime, self.server.fitness,
                             '_GET', '_reaction_button',
                             self.server.debug)
@@ -8621,7 +8626,7 @@ class PubServer(BaseHTTPRequestHandler):
                               debug: str) -> None:
         """A button is pressed to undo emoji reaction
         """
-        pageNumber = 1
+        page_number = 1
         reactionUrl = path.split('?unreact=')[1]
         if '?' in reactionUrl:
             reactionUrl = reactionUrl.split('?')[0]
@@ -8632,26 +8637,26 @@ class PubServer(BaseHTTPRequestHandler):
                 timelineBookmark = timelineBookmark.split('?')[0]
             timelineBookmark = '#' + timelineBookmark
         if '?page=' in path:
-            pageNumberStr = path.split('?page=')[1]
-            if '?' in pageNumberStr:
-                pageNumberStr = pageNumberStr.split('?')[0]
-            if '#' in pageNumberStr:
-                pageNumberStr = pageNumberStr.split('#')[0]
-            if pageNumberStr.isdigit():
-                pageNumber = int(pageNumberStr)
+            page_number_str = path.split('?page=')[1]
+            if '?' in page_number_str:
+                page_number_str = page_number_str.split('?')[0]
+            if '#' in page_number_str:
+                page_number_str = page_number_str.split('#')[0]
+            if page_number_str.isdigit():
+                page_number = int(page_number_str)
         timelineStr = 'inbox'
         if '?tl=' in path:
             timelineStr = path.split('?tl=')[1]
             if '?' in timelineStr:
                 timelineStr = timelineStr.split('?')[0]
         actor = path.split('?unreact=')[0]
-        self.postToNickname = get_nickname_from_actor(actor)
-        if not self.postToNickname:
+        self.post_to_nickname = get_nickname_from_actor(actor)
+        if not self.post_to_nickname:
             print('WARN: unable to find nickname in ' + actor)
             actorAbsolute = self._get_instance_url(calling_domain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
-                '?page=' + str(pageNumber)
+                '?page=' + str(page_number)
             self._redirect_headers(actorPathStr, cookie,
                                    calling_domain)
             return
@@ -8665,7 +8670,7 @@ class PubServer(BaseHTTPRequestHandler):
             actorAbsolute = self._get_instance_url(calling_domain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
-                '?page=' + str(pageNumber) + timelineBookmark
+                '?page=' + str(page_number) + timelineBookmark
             self._redirect_headers(actorPathStr, cookie,
                                    calling_domain)
             return
@@ -8674,7 +8679,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._404()
             return
         undoActor = \
-            local_actor_url(http_prefix, self.postToNickname, domain_full)
+            local_actor_url(http_prefix, self.post_to_nickname, domain_full)
         actorReaction = path.split('?actor=')[1]
         if '?' in actorReaction:
             actorReaction = actorReaction.split('?')[0]
@@ -8683,7 +8688,7 @@ class PubServer(BaseHTTPRequestHandler):
         # to the original post
         origActor, origPostUrl, origFilename = \
             get_original_post_from_announce_url(reactionUrl, base_dir,
-                                                self.postToNickname, domain)
+                                                self.post_to_nickname, domain)
         reactionUrl2 = reactionUrl
         reaction_postFilename = origFilename
         if origActor and origPostUrl:
@@ -8711,7 +8716,8 @@ class PubServer(BaseHTTPRequestHandler):
         # directly undo the emoji reaction within the post file
         if not reaction_postFilename:
             reaction_postFilename = \
-                locate_post(base_dir, self.postToNickname, domain, reactionUrl)
+                locate_post(base_dir, self.post_to_nickname, domain,
+                            reactionUrl)
         if reaction_postFilename:
             recent_posts_cache = self.server.recent_posts_cache
             reaction_post_json = load_json(reaction_postFilename, 0, 1)
@@ -8739,18 +8745,18 @@ class PubServer(BaseHTTPRequestHandler):
                 showIndividualPostIcons = True
                 manuallyApproveFollowers = \
                     follower_approval_active(base_dir,
-                                             self.postToNickname, domain)
+                                             self.post_to_nickname, domain)
                 showRepeats = not is_dm(reaction_post_json)
                 individual_post_as_html(self.server.signing_priv_key_pem,
                                         False,
                                         self.server.recent_posts_cache,
                                         self.server.max_recent_posts,
                                         self.server.translate,
-                                        pageNumber, base_dir,
+                                        page_number, base_dir,
                                         self.server.session,
                                         self.server.cached_webfingers,
                                         self.server.person_cache,
-                                        self.postToNickname, domain,
+                                        self.post_to_nickname, domain,
                                         self.server.port, reaction_post_json,
                                         None, True,
                                         self.server.allow_deletion,
@@ -8778,7 +8784,7 @@ class PubServer(BaseHTTPRequestHandler):
         actorAbsolute = self._get_instance_url(calling_domain) + actor
         actorPathStr = \
             actorAbsolute + '/' + timelineStr + \
-            '?page=' + str(pageNumber) + timelineBookmark
+            '?page=' + str(page_number) + timelineBookmark
         fitness_performance(GETstartTime, self.server.fitness,
                             '_GET', '_undo_reaction_button',
                             self.server.debug)
@@ -8793,7 +8799,7 @@ class PubServer(BaseHTTPRequestHandler):
                          debug: str) -> None:
         """Press the emoji reaction picker icon at the bottom of the post
         """
-        pageNumber = 1
+        page_number = 1
         reactionUrl = path.split('?selreact=')[1]
         if '?' in reactionUrl:
             reactionUrl = reactionUrl.split('?')[0]
@@ -8805,32 +8811,32 @@ class PubServer(BaseHTTPRequestHandler):
             timelineBookmark = '#' + timelineBookmark
         actor = path.split('?selreact=')[0]
         if '?page=' in path:
-            pageNumberStr = path.split('?page=')[1]
-            if '?' in pageNumberStr:
-                pageNumberStr = pageNumberStr.split('?')[0]
-            if '#' in pageNumberStr:
-                pageNumberStr = pageNumberStr.split('#')[0]
-            if pageNumberStr.isdigit():
-                pageNumber = int(pageNumberStr)
+            page_number_str = path.split('?page=')[1]
+            if '?' in page_number_str:
+                page_number_str = page_number_str.split('?')[0]
+            if '#' in page_number_str:
+                page_number_str = page_number_str.split('#')[0]
+            if page_number_str.isdigit():
+                page_number = int(page_number_str)
         timelineStr = 'inbox'
         if '?tl=' in path:
             timelineStr = path.split('?tl=')[1]
             if '?' in timelineStr:
                 timelineStr = timelineStr.split('?')[0]
-        self.postToNickname = get_nickname_from_actor(actor)
-        if not self.postToNickname:
+        self.post_to_nickname = get_nickname_from_actor(actor)
+        if not self.post_to_nickname:
             print('WARN: unable to find nickname in ' + actor)
             actorAbsolute = self._get_instance_url(calling_domain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
-                '?page=' + str(pageNumber) + timelineBookmark
+                '?page=' + str(page_number) + timelineBookmark
             self._redirect_headers(actorPathStr, cookie, calling_domain)
             return
 
         post_json_object = None
         reaction_postFilename = \
             locate_post(self.server.base_dir,
-                        self.postToNickname, domain, reactionUrl)
+                        self.post_to_nickname, domain, reactionUrl)
         if reaction_postFilename:
             post_json_object = load_json(reaction_postFilename)
         if not reaction_postFilename or not post_json_object:
@@ -8838,7 +8844,7 @@ class PubServer(BaseHTTPRequestHandler):
             actorAbsolute = self._get_instance_url(calling_domain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
-                '?page=' + str(pageNumber) + timelineBookmark
+                '?page=' + str(page_number) + timelineBookmark
             self._redirect_headers(actorPathStr, cookie, calling_domain)
             return
 
@@ -8851,7 +8857,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.session,
                                        self.server.cached_webfingers,
                                        self.server.person_cache,
-                                       self.postToNickname,
+                                       self.post_to_nickname,
                                        domain, port, post_json_object,
                                        self.server.http_prefix,
                                        self.server.project_version,
@@ -8866,7 +8872,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.signing_priv_key_pem,
                                        self.server.cw_lists,
                                        self.server.lists_enabled,
-                                       timelineStr, pageNumber)
+                                       timelineStr, page_number)
         msg = msg.encode('utf-8')
         msglen = len(msg)
         self._set_headers('text/html', msglen,
@@ -8886,7 +8892,7 @@ class PubServer(BaseHTTPRequestHandler):
                          debug: str) -> None:
         """Bookmark button was pressed
         """
-        pageNumber = 1
+        page_number = 1
         bookmarkUrl = path.split('?bookmark=')[1]
         if '?' in bookmarkUrl:
             bookmarkUrl = bookmarkUrl.split('?')[0]
@@ -8898,26 +8904,26 @@ class PubServer(BaseHTTPRequestHandler):
             timelineBookmark = '#' + timelineBookmark
         actor = path.split('?bookmark=')[0]
         if '?page=' in path:
-            pageNumberStr = path.split('?page=')[1]
-            if '?' in pageNumberStr:
-                pageNumberStr = pageNumberStr.split('?')[0]
-            if '#' in pageNumberStr:
-                pageNumberStr = pageNumberStr.split('#')[0]
-            if pageNumberStr.isdigit():
-                pageNumber = int(pageNumberStr)
+            page_number_str = path.split('?page=')[1]
+            if '?' in page_number_str:
+                page_number_str = page_number_str.split('?')[0]
+            if '#' in page_number_str:
+                page_number_str = page_number_str.split('#')[0]
+            if page_number_str.isdigit():
+                page_number = int(page_number_str)
         timelineStr = 'inbox'
         if '?tl=' in path:
             timelineStr = path.split('?tl=')[1]
             if '?' in timelineStr:
                 timelineStr = timelineStr.split('?')[0]
 
-        self.postToNickname = get_nickname_from_actor(actor)
-        if not self.postToNickname:
+        self.post_to_nickname = get_nickname_from_actor(actor)
+        if not self.post_to_nickname:
             print('WARN: unable to find nickname in ' + actor)
             actorAbsolute = self._get_instance_url(calling_domain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
-                '?page=' + str(pageNumber)
+                '?page=' + str(page_number)
             self._redirect_headers(actorPathStr, cookie,
                                    calling_domain)
             return
@@ -8925,13 +8931,13 @@ class PubServer(BaseHTTPRequestHandler):
             self._404()
             return
         bookmarkActor = \
-            local_actor_url(http_prefix, self.postToNickname, domain_full)
+            local_actor_url(http_prefix, self.post_to_nickname, domain_full)
         ccList = []
         bookmark_post(self.server.recent_posts_cache,
                       self.server.session,
                       base_dir,
                       self.server.federation_list,
-                      self.postToNickname,
+                      self.post_to_nickname,
                       domain, port,
                       ccList,
                       http_prefix,
@@ -8946,33 +8952,33 @@ class PubServer(BaseHTTPRequestHandler):
         if self.server.iconsCache.get('bookmark.png'):
             del self.server.iconsCache['bookmark.png']
         bookmarkFilename = \
-            locate_post(base_dir, self.postToNickname, domain, bookmarkUrl)
+            locate_post(base_dir, self.post_to_nickname, domain, bookmarkUrl)
         if bookmarkFilename:
             print('Regenerating html post for changed bookmark')
             bookmarkPostJson = load_json(bookmarkFilename, 0, 1)
             if bookmarkPostJson:
-                cachedPostFilename = \
-                    get_cached_post_filename(base_dir, self.postToNickname,
+                cached_post_filename = \
+                    get_cached_post_filename(base_dir, self.post_to_nickname,
                                              domain, bookmarkPostJson)
                 print('Bookmarked post json: ' + str(bookmarkPostJson))
                 print('Bookmarked post nickname: ' +
-                      self.postToNickname + ' ' + domain)
-                print('Bookmarked post cache: ' + str(cachedPostFilename))
+                      self.post_to_nickname + ' ' + domain)
+                print('Bookmarked post cache: ' + str(cached_post_filename))
                 showIndividualPostIcons = True
                 manuallyApproveFollowers = \
                     follower_approval_active(base_dir,
-                                             self.postToNickname, domain)
+                                             self.post_to_nickname, domain)
                 showRepeats = not is_dm(bookmarkPostJson)
                 individual_post_as_html(self.server.signing_priv_key_pem,
                                         False,
                                         self.server.recent_posts_cache,
                                         self.server.max_recent_posts,
                                         self.server.translate,
-                                        pageNumber, base_dir,
+                                        page_number, base_dir,
                                         self.server.session,
                                         self.server.cached_webfingers,
                                         self.server.person_cache,
-                                        self.postToNickname, domain,
+                                        self.post_to_nickname, domain,
                                         self.server.port, bookmarkPostJson,
                                         None, True,
                                         self.server.allow_deletion,
@@ -8999,7 +9005,7 @@ class PubServer(BaseHTTPRequestHandler):
         actorAbsolute = self._get_instance_url(calling_domain) + actor
         actorPathStr = \
             actorAbsolute + '/' + timelineStr + \
-            '?page=' + str(pageNumber) + timelineBookmark
+            '?page=' + str(page_number) + timelineBookmark
         fitness_performance(GETstartTime, self.server.fitness,
                             '_GET', '_bookmark_button',
                             self.server.debug)
@@ -9015,7 +9021,7 @@ class PubServer(BaseHTTPRequestHandler):
                               debug: str) -> None:
         """Button pressed to undo a bookmark
         """
-        pageNumber = 1
+        page_number = 1
         bookmarkUrl = path.split('?unbookmark=')[1]
         if '?' in bookmarkUrl:
             bookmarkUrl = bookmarkUrl.split('?')[0]
@@ -9026,26 +9032,26 @@ class PubServer(BaseHTTPRequestHandler):
                 timelineBookmark = timelineBookmark.split('?')[0]
             timelineBookmark = '#' + timelineBookmark
         if '?page=' in path:
-            pageNumberStr = path.split('?page=')[1]
-            if '?' in pageNumberStr:
-                pageNumberStr = pageNumberStr.split('?')[0]
-            if '#' in pageNumberStr:
-                pageNumberStr = pageNumberStr.split('#')[0]
-            if pageNumberStr.isdigit():
-                pageNumber = int(pageNumberStr)
+            page_number_str = path.split('?page=')[1]
+            if '?' in page_number_str:
+                page_number_str = page_number_str.split('?')[0]
+            if '#' in page_number_str:
+                page_number_str = page_number_str.split('#')[0]
+            if page_number_str.isdigit():
+                page_number = int(page_number_str)
         timelineStr = 'inbox'
         if '?tl=' in path:
             timelineStr = path.split('?tl=')[1]
             if '?' in timelineStr:
                 timelineStr = timelineStr.split('?')[0]
         actor = path.split('?unbookmark=')[0]
-        self.postToNickname = get_nickname_from_actor(actor)
-        if not self.postToNickname:
+        self.post_to_nickname = get_nickname_from_actor(actor)
+        if not self.post_to_nickname:
             print('WARN: unable to find nickname in ' + actor)
             actorAbsolute = self._get_instance_url(calling_domain) + actor
             actorPathStr = \
                 actorAbsolute + '/' + timelineStr + \
-                '?page=' + str(pageNumber)
+                '?page=' + str(page_number)
             self._redirect_headers(actorPathStr, cookie,
                                    calling_domain)
             return
@@ -9053,13 +9059,13 @@ class PubServer(BaseHTTPRequestHandler):
             self._404()
             return
         undoActor = \
-            local_actor_url(http_prefix, self.postToNickname, domain_full)
+            local_actor_url(http_prefix, self.post_to_nickname, domain_full)
         ccList = []
         undo_bookmark_post(self.server.recent_posts_cache,
                            self.server.session,
                            base_dir,
                            self.server.federation_list,
-                           self.postToNickname,
+                           self.post_to_nickname,
                            domain, port,
                            ccList,
                            http_prefix,
@@ -9076,33 +9082,33 @@ class PubServer(BaseHTTPRequestHandler):
         # self._post_to_outbox(undo_bookmarkJson,
         #                    self.server.project_version, None)
         bookmarkFilename = \
-            locate_post(base_dir, self.postToNickname, domain, bookmarkUrl)
+            locate_post(base_dir, self.post_to_nickname, domain, bookmarkUrl)
         if bookmarkFilename:
             print('Regenerating html post for changed unbookmark')
             bookmarkPostJson = load_json(bookmarkFilename, 0, 1)
             if bookmarkPostJson:
-                cachedPostFilename = \
-                    get_cached_post_filename(base_dir, self.postToNickname,
+                cached_post_filename = \
+                    get_cached_post_filename(base_dir, self.post_to_nickname,
                                              domain, bookmarkPostJson)
                 print('Unbookmarked post json: ' + str(bookmarkPostJson))
                 print('Unbookmarked post nickname: ' +
-                      self.postToNickname + ' ' + domain)
-                print('Unbookmarked post cache: ' + str(cachedPostFilename))
+                      self.post_to_nickname + ' ' + domain)
+                print('Unbookmarked post cache: ' + str(cached_post_filename))
                 showIndividualPostIcons = True
                 manuallyApproveFollowers = \
                     follower_approval_active(base_dir,
-                                             self.postToNickname, domain)
+                                             self.post_to_nickname, domain)
                 showRepeats = not is_dm(bookmarkPostJson)
                 individual_post_as_html(self.server.signing_priv_key_pem,
                                         False,
                                         self.server.recent_posts_cache,
                                         self.server.max_recent_posts,
                                         self.server.translate,
-                                        pageNumber, base_dir,
+                                        page_number, base_dir,
                                         self.server.session,
                                         self.server.cached_webfingers,
                                         self.server.person_cache,
-                                        self.postToNickname, domain,
+                                        self.post_to_nickname, domain,
                                         self.server.port, bookmarkPostJson,
                                         None, True,
                                         self.server.allow_deletion,
@@ -9128,7 +9134,7 @@ class PubServer(BaseHTTPRequestHandler):
         actorAbsolute = self._get_instance_url(calling_domain) + actor
         actorPathStr = \
             actorAbsolute + '/' + timelineStr + \
-            '?page=' + str(pageNumber) + timelineBookmark
+            '?page=' + str(page_number) + timelineBookmark
         fitness_performance(GETstartTime, self.server.fitness,
                             '_GET', '_undo_bookmark_button',
                             self.server.debug)
@@ -9148,15 +9154,15 @@ class PubServer(BaseHTTPRequestHandler):
             print('ERROR: no cookie given when deleting ' + path)
             self._400()
             return
-        pageNumber = 1
+        page_number = 1
         if '?page=' in path:
-            pageNumberStr = path.split('?page=')[1]
-            if '?' in pageNumberStr:
-                pageNumberStr = pageNumberStr.split('?')[0]
-            if '#' in pageNumberStr:
-                pageNumberStr = pageNumberStr.split('#')[0]
-            if pageNumberStr.isdigit():
-                pageNumber = int(pageNumberStr)
+            page_number_str = path.split('?page=')[1]
+            if '?' in page_number_str:
+                page_number_str = page_number_str.split('?')[0]
+            if '#' in page_number_str:
+                page_number_str = page_number_str.split('#')[0]
+            if page_number_str.isdigit():
+                page_number = int(page_number_str)
         deleteUrl = path.split('?delete=')[1]
         if '?' in deleteUrl:
             deleteUrl = deleteUrl.split('?')[0]
@@ -9182,8 +9188,8 @@ class PubServer(BaseHTTPRequestHandler):
                 self._redirect_headers(actor + '/' + timelineStr,
                                        cookie, calling_domain)
                 return
-            self.postToNickname = get_nickname_from_actor(actor)
-            if not self.postToNickname:
+            self.post_to_nickname = get_nickname_from_actor(actor)
+            if not self.post_to_nickname:
                 print('WARN: unable to find nickname in ' + actor)
                 if calling_domain.endswith('.onion') and onion_domain:
                     actor = 'http://' + onion_domain + usersPath
@@ -9200,7 +9206,7 @@ class PubServer(BaseHTTPRequestHandler):
                 html_confirm_delete(self.server.css_cache,
                                     self.server.recent_posts_cache,
                                     self.server.max_recent_posts,
-                                    self.server.translate, pageNumber,
+                                    self.server.translate, page_number,
                                     self.server.session, base_dir,
                                     deleteUrl, http_prefix,
                                     self.server.project_version,
@@ -9257,35 +9263,35 @@ class PubServer(BaseHTTPRequestHandler):
             timelineStr = path.split('?tl=')[1]
             if '?' in timelineStr:
                 timelineStr = timelineStr.split('?')[0]
-        pageNumber = 1
+        page_number = 1
         if '?page=' in path:
-            pageNumberStr = path.split('?page=')[1]
-            if '?' in pageNumberStr:
-                pageNumberStr = pageNumberStr.split('?')[0]
-            if '#' in pageNumberStr:
-                pageNumberStr = pageNumberStr.split('#')[0]
-            if pageNumberStr.isdigit():
-                pageNumber = int(pageNumberStr)
+            page_number_str = path.split('?page=')[1]
+            if '?' in page_number_str:
+                page_number_str = page_number_str.split('?')[0]
+            if '#' in page_number_str:
+                page_number_str = page_number_str.split('#')[0]
+            if page_number_str.isdigit():
+                page_number = int(page_number_str)
         actor = \
             http_prefix + '://' + domain_full + path.split('?mute=')[0]
         nickname = get_nickname_from_actor(actor)
         mute_post(base_dir, nickname, domain, port,
                   http_prefix, muteUrl,
                   self.server.recent_posts_cache, debug)
-        muteFilename = \
+        mute_filename = \
             locate_post(base_dir, nickname, domain, muteUrl)
-        if muteFilename:
+        if mute_filename:
             print('mute_post: Regenerating html post for changed mute status')
-            mute_post_json = load_json(muteFilename, 0, 1)
+            mute_post_json = load_json(mute_filename, 0, 1)
             if mute_post_json:
-                cachedPostFilename = \
+                cached_post_filename = \
                     get_cached_post_filename(base_dir, nickname,
                                              domain, mute_post_json)
                 print('mute_post: Muted post json: ' + str(mute_post_json))
                 print('mute_post: Muted post nickname: ' +
                       nickname + ' ' + domain)
                 print('mute_post: Muted post cache: ' +
-                      str(cachedPostFilename))
+                      str(cached_post_filename))
                 showIndividualPostIcons = True
                 manuallyApproveFollowers = \
                     follower_approval_active(base_dir,
@@ -9302,7 +9308,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.recent_posts_cache,
                                         self.server.max_recent_posts,
                                         self.server.translate,
-                                        pageNumber, base_dir,
+                                        page_number, base_dir,
                                         self.server.session,
                                         self.server.cached_webfingers,
                                         self.server.person_cache,
@@ -9329,7 +9335,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.cw_lists,
                                         self.server.lists_enabled)
             else:
-                print('WARN: Muted post not found: ' + muteFilename)
+                print('WARN: Muted post not found: ' + mute_filename)
 
         if calling_domain.endswith('.onion') and onion_domain:
             actor = \
@@ -9368,36 +9374,36 @@ class PubServer(BaseHTTPRequestHandler):
             timelineStr = path.split('?tl=')[1]
             if '?' in timelineStr:
                 timelineStr = timelineStr.split('?')[0]
-        pageNumber = 1
+        page_number = 1
         if '?page=' in path:
-            pageNumberStr = path.split('?page=')[1]
-            if '?' in pageNumberStr:
-                pageNumberStr = pageNumberStr.split('?')[0]
-            if '#' in pageNumberStr:
-                pageNumberStr = pageNumberStr.split('#')[0]
-            if pageNumberStr.isdigit():
-                pageNumber = int(pageNumberStr)
+            page_number_str = path.split('?page=')[1]
+            if '?' in page_number_str:
+                page_number_str = page_number_str.split('?')[0]
+            if '#' in page_number_str:
+                page_number_str = page_number_str.split('#')[0]
+            if page_number_str.isdigit():
+                page_number = int(page_number_str)
         actor = \
             http_prefix + '://' + domain_full + path.split('?unmute=')[0]
         nickname = get_nickname_from_actor(actor)
         unmute_post(base_dir, nickname, domain, port,
                     http_prefix, muteUrl,
                     self.server.recent_posts_cache, debug)
-        muteFilename = \
+        mute_filename = \
             locate_post(base_dir, nickname, domain, muteUrl)
-        if muteFilename:
+        if mute_filename:
             print('unmute_post: ' +
                   'Regenerating html post for changed unmute status')
-            mute_post_json = load_json(muteFilename, 0, 1)
+            mute_post_json = load_json(mute_filename, 0, 1)
             if mute_post_json:
-                cachedPostFilename = \
+                cached_post_filename = \
                     get_cached_post_filename(base_dir, nickname,
                                              domain, mute_post_json)
                 print('unmute_post: Unmuted post json: ' + str(mute_post_json))
                 print('unmute_post: Unmuted post nickname: ' +
                       nickname + ' ' + domain)
                 print('unmute_post: Unmuted post cache: ' +
-                      str(cachedPostFilename))
+                      str(cached_post_filename))
                 showIndividualPostIcons = True
                 manuallyApproveFollowers = \
                     follower_approval_active(base_dir, nickname, domain)
@@ -9413,7 +9419,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.recent_posts_cache,
                                         self.server.max_recent_posts,
                                         self.server.translate,
-                                        pageNumber, base_dir,
+                                        page_number, base_dir,
                                         self.server.session,
                                         self.server.cached_webfingers,
                                         self.server.person_cache,
@@ -9440,7 +9446,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.cw_lists,
                                         self.server.lists_enabled)
             else:
-                print('WARN: Unmuted post not found: ' + muteFilename)
+                print('WARN: Unmuted post not found: ' + mute_filename)
         if calling_domain.endswith('.onion') and onion_domain:
             actor = \
                 'http://' + onion_domain + path.split('?unmute=')[0]
@@ -10232,14 +10238,14 @@ class PubServer(BaseHTTPRequestHandler):
                     if self._request_http():
                         nickname = path.replace('/users/', '')
                         nickname = nickname.replace('/inbox', '')
-                        pageNumber = 1
+                        page_number = 1
                         if '?page=' in nickname:
-                            pageNumber = nickname.split('?page=')[1]
+                            page_number = nickname.split('?page=')[1]
                             nickname = nickname.split('?page=')[0]
-                            if pageNumber.isdigit():
-                                pageNumber = int(pageNumber)
+                            if page_number.isdigit():
+                                page_number = int(page_number)
                             else:
-                                pageNumber = 1
+                                page_number = 1
                         if 'page=' not in path:
                             # if no page was specified then show the first
                             inboxFeed = \
@@ -10277,7 +10283,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          recent_posts_cache,
                                          max_recent_posts,
                                          translate,
-                                         pageNumber, max_posts_in_feed,
+                                         page_number, max_posts_in_feed,
                                          session,
                                          base_dir,
                                          cached_webfingers,
@@ -10386,14 +10392,14 @@ class PubServer(BaseHTTPRequestHandler):
                     if self._request_http():
                         nickname = path.replace('/users/', '')
                         nickname = nickname.replace('/dm', '')
-                        pageNumber = 1
+                        page_number = 1
                         if '?page=' in nickname:
-                            pageNumber = nickname.split('?page=')[1]
+                            page_number = nickname.split('?page=')[1]
                             nickname = nickname.split('?page=')[0]
-                            if pageNumber.isdigit():
-                                pageNumber = int(pageNumber)
+                            if page_number.isdigit():
+                                page_number = int(page_number)
                             else:
-                                pageNumber = 1
+                                page_number = 1
                         if 'page=' not in path:
                             # if no page was specified then show the first
                             inboxDMFeed = \
@@ -10432,7 +10438,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.recent_posts_cache,
                                             self.server.max_recent_posts,
                                             self.server.translate,
-                                            pageNumber, max_posts_in_feed,
+                                            page_number, max_posts_in_feed,
                                             self.server.session,
                                             base_dir,
                                             self.server.cached_webfingers,
@@ -10534,14 +10540,14 @@ class PubServer(BaseHTTPRequestHandler):
                 if self._request_http():
                     nickname = path.replace('/users/', '')
                     nickname = nickname.replace('/tlreplies', '')
-                    pageNumber = 1
+                    page_number = 1
                     if '?page=' in nickname:
-                        pageNumber = nickname.split('?page=')[1]
+                        page_number = nickname.split('?page=')[1]
                         nickname = nickname.split('?page=')[0]
-                        if pageNumber.isdigit():
-                            pageNumber = int(pageNumber)
+                        if page_number.isdigit():
+                            page_number = int(page_number)
                         else:
-                            pageNumber = 1
+                            page_number = 1
                     if 'page=' not in path:
                         # if no page was specified then show the first
                         inboxRepliesFeed = \
@@ -10579,7 +10585,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.recent_posts_cache,
                                            self.server.max_recent_posts,
                                            self.server.translate,
-                                           pageNumber, max_posts_in_feed,
+                                           page_number, max_posts_in_feed,
                                            self.server.session,
                                            base_dir,
                                            self.server.cached_webfingers,
@@ -10681,14 +10687,14 @@ class PubServer(BaseHTTPRequestHandler):
                 if self._request_http():
                     nickname = path.replace('/users/', '')
                     nickname = nickname.replace('/tlmedia', '')
-                    pageNumber = 1
+                    page_number = 1
                     if '?page=' in nickname:
-                        pageNumber = nickname.split('?page=')[1]
+                        page_number = nickname.split('?page=')[1]
                         nickname = nickname.split('?page=')[0]
-                        if pageNumber.isdigit():
-                            pageNumber = int(pageNumber)
+                        if page_number.isdigit():
+                            page_number = int(page_number)
                         else:
-                            pageNumber = 1
+                            page_number = 1
                     if 'page=' not in path:
                         # if no page was specified then show the first
                         inboxMediaFeed = \
@@ -10723,7 +10729,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.recent_posts_cache,
                                          self.server.max_recent_posts,
                                          self.server.translate,
-                                         pageNumber, max_posts_in_media_feed,
+                                         page_number, max_posts_in_media_feed,
                                          self.server.session,
                                          base_dir,
                                          self.server.cached_webfingers,
@@ -10826,14 +10832,14 @@ class PubServer(BaseHTTPRequestHandler):
                 if self._request_http():
                     nickname = path.replace('/users/', '')
                     nickname = nickname.replace('/tlblogs', '')
-                    pageNumber = 1
+                    page_number = 1
                     if '?page=' in nickname:
-                        pageNumber = nickname.split('?page=')[1]
+                        page_number = nickname.split('?page=')[1]
                         nickname = nickname.split('?page=')[0]
-                        if pageNumber.isdigit():
-                            pageNumber = int(pageNumber)
+                        if page_number.isdigit():
+                            page_number = int(page_number)
                         else:
-                            pageNumber = 1
+                            page_number = 1
                     if 'page=' not in path:
                         # if no page was specified then show the first
                         inboxBlogsFeed = \
@@ -10868,7 +10874,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.recent_posts_cache,
                                          self.server.max_recent_posts,
                                          self.server.translate,
-                                         pageNumber, max_posts_in_blogs_feed,
+                                         page_number, max_posts_in_blogs_feed,
                                          self.server.session,
                                          base_dir,
                                          self.server.cached_webfingers,
@@ -10973,14 +10979,14 @@ class PubServer(BaseHTTPRequestHandler):
                 if self._request_http():
                     nickname = path.replace('/users/', '')
                     nickname = nickname.replace('/tlnews', '')
-                    pageNumber = 1
+                    page_number = 1
                     if '?page=' in nickname:
-                        pageNumber = nickname.split('?page=')[1]
+                        page_number = nickname.split('?page=')[1]
                         nickname = nickname.split('?page=')[0]
-                        if pageNumber.isdigit():
-                            pageNumber = int(pageNumber)
+                        if page_number.isdigit():
+                            page_number = int(page_number)
                         else:
-                            pageNumber = 1
+                            page_number = 1
                     if 'page=' not in path:
                         newswire_votes_threshold = \
                             self.server.newswire_votes_threshold
@@ -11021,7 +11027,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.recent_posts_cache,
                                         self.server.max_recent_posts,
                                         self.server.translate,
-                                        pageNumber, max_posts_in_news_feed,
+                                        page_number, max_posts_in_news_feed,
                                         self.server.session,
                                         base_dir,
                                         self.server.cached_webfingers,
@@ -11126,14 +11132,14 @@ class PubServer(BaseHTTPRequestHandler):
                 if self._request_http():
                     nickname = path.replace('/users/', '')
                     nickname = nickname.replace('/tlfeatures', '')
-                    pageNumber = 1
+                    page_number = 1
                     if '?page=' in nickname:
-                        pageNumber = nickname.split('?page=')[1]
+                        page_number = nickname.split('?page=')[1]
                         nickname = nickname.split('?page=')[0]
-                        if pageNumber.isdigit():
-                            pageNumber = int(pageNumber)
+                        if page_number.isdigit():
+                            page_number = int(page_number)
                         else:
-                            pageNumber = 1
+                            page_number = 1
                     if 'page=' not in path:
                         newswire_votes_threshold = \
                             self.server.newswire_votes_threshold
@@ -11178,7 +11184,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.recent_posts_cache,
                                             self.server.max_recent_posts,
                                             self.server.translate,
-                                            pageNumber,
+                                            page_number,
                                             max_posts_in_blogs_feed,
                                             self.server.session,
                                             base_dir,
@@ -11268,14 +11274,14 @@ class PubServer(BaseHTTPRequestHandler):
                 if self._request_http():
                     nickname = path.replace('/users/', '')
                     nickname = nickname.replace('/tlshares', '')
-                    pageNumber = 1
+                    page_number = 1
                     if '?page=' in nickname:
-                        pageNumber = nickname.split('?page=')[1]
+                        page_number = nickname.split('?page=')[1]
                         nickname = nickname.split('?page=')[0]
-                        if pageNumber.isdigit():
-                            pageNumber = int(pageNumber)
+                        if page_number.isdigit():
+                            page_number = int(page_number)
                         else:
-                            pageNumber = 1
+                            page_number = 1
 
                     access_keys = self.server.access_keys
                     if self.server.keyShortcuts.get(nickname):
@@ -11290,7 +11296,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.recent_posts_cache,
                                     self.server.max_recent_posts,
                                     self.server.translate,
-                                    pageNumber, max_posts_in_feed,
+                                    page_number, max_posts_in_feed,
                                     self.server.session,
                                     base_dir,
                                     self.server.cached_webfingers,
@@ -11354,14 +11360,14 @@ class PubServer(BaseHTTPRequestHandler):
                 if self._request_http():
                     nickname = path.replace('/users/', '')
                     nickname = nickname.replace('/tlwanted', '')
-                    pageNumber = 1
+                    page_number = 1
                     if '?page=' in nickname:
-                        pageNumber = nickname.split('?page=')[1]
+                        page_number = nickname.split('?page=')[1]
                         nickname = nickname.split('?page=')[0]
-                        if pageNumber.isdigit():
-                            pageNumber = int(pageNumber)
+                        if page_number.isdigit():
+                            page_number = int(page_number)
                         else:
-                            pageNumber = 1
+                            page_number = 1
 
                     access_keys = self.server.access_keys
                     if self.server.keyShortcuts.get(nickname):
@@ -11375,7 +11381,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.recent_posts_cache,
                                     self.server.max_recent_posts,
                                     self.server.translate,
-                                    pageNumber, max_posts_in_feed,
+                                    page_number, max_posts_in_feed,
                                     self.server.session,
                                     base_dir,
                                     self.server.cached_webfingers,
@@ -11453,14 +11459,14 @@ class PubServer(BaseHTTPRequestHandler):
                         nickname = path.replace('/users/', '')
                         nickname = nickname.replace('/tlbookmarks', '')
                         nickname = nickname.replace('/bookmarks', '')
-                        pageNumber = 1
+                        page_number = 1
                         if '?page=' in nickname:
-                            pageNumber = nickname.split('?page=')[1]
+                            page_number = nickname.split('?page=')[1]
                             nickname = nickname.split('?page=')[0]
-                            if pageNumber.isdigit():
-                                pageNumber = int(pageNumber)
+                            if page_number.isdigit():
+                                page_number = int(page_number)
                             else:
-                                pageNumber = 1
+                                page_number = 1
                         if 'page=' not in path:
                             # if no page was specified then show the first
                             bookmarksFeed = \
@@ -11499,7 +11505,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.recent_posts_cache,
                                            self.server.max_recent_posts,
                                            self.server.translate,
-                                           pageNumber, max_posts_in_feed,
+                                           page_number, max_posts_in_feed,
                                            self.server.session,
                                            base_dir,
                                            self.server.cached_webfingers,
@@ -11595,20 +11601,20 @@ class PubServer(BaseHTTPRequestHandler):
         if outboxFeed:
             nickname = \
                 path.replace('/users/', '').replace('/outbox', '')
-            pageNumber = 0
+            page_number = 0
             if '?page=' in nickname:
-                pageNumber = nickname.split('?page=')[1]
+                page_number = nickname.split('?page=')[1]
                 nickname = nickname.split('?page=')[0]
-                if pageNumber.isdigit():
-                    pageNumber = int(pageNumber)
+                if page_number.isdigit():
+                    page_number = int(page_number)
                 else:
-                    pageNumber = 1
+                    page_number = 1
             else:
                 if self._request_http():
-                    pageNumber = 1
-            if authorized and pageNumber >= 1:
+                    page_number = 1
+            if authorized and page_number >= 1:
                 # if a page wasn't specified then show the first one
-                pageStr = '?page=' + str(pageNumber)
+                pageStr = '?page=' + str(page_number)
                 outboxFeed = \
                     person_box_json(self.server.recent_posts_cache,
                                     self.server.session,
@@ -11621,7 +11627,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.positive_voting,
                                     self.server.voting_time_mins)
             else:
-                pageNumber = 1
+                page_number = 1
 
             if self._request_http():
                 full_width_tl_button_header = \
@@ -11639,7 +11645,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.recent_posts_cache,
                                 self.server.max_recent_posts,
                                 self.server.translate,
-                                pageNumber, max_posts_in_feed,
+                                page_number, max_posts_in_feed,
                                 self.server.session,
                                 base_dir,
                                 self.server.cached_webfingers,
@@ -11727,14 +11733,14 @@ class PubServer(BaseHTTPRequestHandler):
                     if self._request_http():
                         nickname = path.replace('/users/', '')
                         nickname = nickname.replace('/moderation', '')
-                        pageNumber = 1
+                        page_number = 1
                         if '?page=' in nickname:
-                            pageNumber = nickname.split('?page=')[1]
+                            page_number = nickname.split('?page=')[1]
                             nickname = nickname.split('?page=')[0]
-                            if pageNumber.isdigit():
-                                pageNumber = int(pageNumber)
+                            if page_number.isdigit():
+                                page_number = int(page_number)
                             else:
-                                pageNumber = 1
+                                page_number = 1
                         if 'page=' not in path:
                             # if no page was specified then show the first
                             moderationFeed = \
@@ -11773,7 +11779,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.recent_posts_cache,
                                             self.server.max_recent_posts,
                                             self.server.translate,
-                                            pageNumber, max_posts_in_feed,
+                                            page_number, max_posts_in_feed,
                                             self.server.session,
                                             base_dir,
                                             self.server.cached_webfingers,
@@ -11850,35 +11856,34 @@ class PubServer(BaseHTTPRequestHandler):
                           onion_domain: str, i2p_domain: str,
                           GETstartTime,
                           proxy_type: str, cookie: str,
-                          debug: str, sharesFileType: str) -> bool:
+                          debug: str, shares_file_type: str) -> bool:
         """Shows the shares feed
         """
         shares = \
             get_shares_feed_for_person(base_dir, domain, port, path,
-                                       http_prefix, sharesFileType,
+                                       http_prefix, shares_file_type,
                                        shares_per_page)
         if shares:
             if self._request_http():
-                pageNumber = 1
+                page_number = 1
                 if '?page=' not in path:
                     searchPath = path
                     # get a page of shares, not the summary
                     shares = \
                         get_shares_feed_for_person(base_dir, domain, port,
                                                    path + '?page=true',
-                                                   http_prefix, sharesFileType,
+                                                   http_prefix,
+                                                   shares_file_type,
                                                    shares_per_page)
                 else:
-                    pageNumberStr = path.split('?page=')[1]
-                    if '#' in pageNumberStr:
-                        pageNumberStr = pageNumberStr.split('#')[0]
-                    if pageNumberStr.isdigit():
-                        pageNumber = int(pageNumberStr)
+                    page_number_str = path.split('?page=')[1]
+                    if '#' in page_number_str:
+                        page_number_str = page_number_str.split('#')[0]
+                    if page_number_str.isdigit():
+                        page_number = int(page_number_str)
                     searchPath = path.split('?page=')[0]
-                getPerson = \
-                    person_lookup(domain,
-                                  searchPath.replace('/' + sharesFileType, ''),
-                                  base_dir)
+                search_path2 = searchPath.replace('/' + shares_file_type, '')
+                getPerson = person_lookup(domain, search_path2, base_dir)
                 if getPerson:
                     if not self._establish_session("showSharesFeed"):
                         self._404()
@@ -11910,7 +11915,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.project_version,
                                      base_dir, http_prefix,
                                      authorized,
-                                     getPerson, sharesFileType,
+                                     getPerson, shares_file_type,
                                      self.server.session,
                                      self.server.cached_webfingers,
                                      self.server.person_cache,
@@ -11929,7 +11934,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.max_like_count,
                                      shared_items_federated_domains,
                                      shares,
-                                     pageNumber, shares_per_page,
+                                     page_number, shares_per_page,
                                      self.server.cw_lists,
                                      self.server.lists_enabled,
                                      self.server.content_license_url)
@@ -11978,7 +11983,7 @@ class PubServer(BaseHTTPRequestHandler):
                                'following')
         if following:
             if self._request_http():
-                pageNumber = 1
+                page_number = 1
                 if '?page=' not in path:
                     searchPath = path
                     # get a page of following, not the summary
@@ -11990,11 +11995,11 @@ class PubServer(BaseHTTPRequestHandler):
                                            http_prefix,
                                            authorized, follows_per_page)
                 else:
-                    pageNumberStr = path.split('?page=')[1]
-                    if '#' in pageNumberStr:
-                        pageNumberStr = pageNumberStr.split('#')[0]
-                    if pageNumberStr.isdigit():
-                        pageNumber = int(pageNumberStr)
+                    page_number_str = path.split('?page=')[1]
+                    if '#' in page_number_str:
+                        page_number_str = page_number_str.split('#')[0]
+                    if page_number_str.isdigit():
+                        page_number = int(page_number_str)
                     searchPath = path.split('?page=')[0]
                 getPerson = \
                     person_lookup(domain,
@@ -12052,7 +12057,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.max_like_count,
                                      shared_items_federated_domains,
                                      following,
-                                     pageNumber,
+                                     page_number,
                                      follows_per_page,
                                      self.server.cw_lists,
                                      self.server.lists_enabled,
@@ -12098,7 +12103,7 @@ class PubServer(BaseHTTPRequestHandler):
                                authorized, follows_per_page, 'followers')
         if followers:
             if self._request_http():
-                pageNumber = 1
+                page_number = 1
                 if '?page=' not in path:
                     searchPath = path
                     # get a page of followers, not the summary
@@ -12111,11 +12116,11 @@ class PubServer(BaseHTTPRequestHandler):
                                            authorized, follows_per_page,
                                            'followers')
                 else:
-                    pageNumberStr = path.split('?page=')[1]
-                    if '#' in pageNumberStr:
-                        pageNumberStr = pageNumberStr.split('#')[0]
-                    if pageNumberStr.isdigit():
-                        pageNumber = int(pageNumberStr)
+                    page_number_str = path.split('?page=')[1]
+                    if '#' in page_number_str:
+                        page_number_str = page_number_str.split('#')[0]
+                    if page_number_str.isdigit():
+                        page_number = int(page_number_str)
                     searchPath = path.split('?page=')[0]
                 getPerson = \
                     person_lookup(domain,
@@ -12174,7 +12179,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.max_like_count,
                                      shared_items_federated_domains,
                                      followers,
-                                     pageNumber,
+                                     page_number,
                                      follows_per_page,
                                      self.server.cw_lists,
                                      self.server.lists_enabled,
@@ -12324,14 +12329,14 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.debug)
         else:
             if self._secure_mode():
-                acceptStr = self.headers['Accept']
+                accept_str = self.headers['Accept']
                 msgStr = json.dumps(actor_json, ensure_ascii=False)
                 msg = msgStr.encode('utf-8')
                 msglen = len(msg)
-                if 'application/ld+json' in acceptStr:
+                if 'application/ld+json' in accept_str:
                     self._set_headers('application/ld+json', msglen,
                                       cookie, calling_domain, False)
-                elif 'application/jrd+json' in acceptStr:
+                elif 'application/jrd+json' in accept_str:
                     self._set_headers('application/jrd+json', msglen,
                                       cookie, calling_domain, False)
                 else:
@@ -12366,7 +12371,7 @@ class PubServer(BaseHTTPRequestHandler):
             print('ERROR: no instance actor found')
             self._404()
             return False
-        acceptStr = self.headers['Accept']
+        accept_str = self.headers['Accept']
         if onion_domain and calling_domain.endswith('.onion'):
             actorDomainUrl = 'http://' + onion_domain
         elif i2p_domain and calling_domain.endswith('.i2p'):
@@ -12408,10 +12413,10 @@ class PubServer(BaseHTTPRequestHandler):
                                     'http://' + i2p_domain)
         msg = msgStr.encode('utf-8')
         msglen = len(msg)
-        if 'application/ld+json' in acceptStr:
+        if 'application/ld+json' in accept_str:
             self._set_headers('application/ld+json', msglen,
                               cookie, calling_domain, False)
-        elif 'application/jrd+json' in acceptStr:
+        elif 'application/jrd+json' in accept_str:
             self._set_headers('application/jrd+json', msglen,
                               cookie, calling_domain, False)
         else:
@@ -12434,24 +12439,24 @@ class PubServer(BaseHTTPRequestHandler):
                         translate: {}, debug: str) -> bool:
         """Shows a blog page
         """
-        pageNumber = 1
+        page_number = 1
         nickname = path.split('/blog/')[1]
         if '/' in nickname:
             nickname = nickname.split('/')[0]
         if '?' in nickname:
             nickname = nickname.split('?')[0]
         if '?page=' in path:
-            pageNumberStr = path.split('?page=')[1]
-            if '?' in pageNumberStr:
-                pageNumberStr = pageNumberStr.split('?')[0]
-            if '#' in pageNumberStr:
-                pageNumberStr = pageNumberStr.split('#')[0]
-            if pageNumberStr.isdigit():
-                pageNumber = int(pageNumberStr)
-                if pageNumber < 1:
-                    pageNumber = 1
-                elif pageNumber > 10:
-                    pageNumber = 10
+            page_number_str = path.split('?page=')[1]
+            if '?' in page_number_str:
+                page_number_str = page_number_str.split('?')[0]
+            if '#' in page_number_str:
+                page_number_str = page_number_str.split('#')[0]
+            if page_number_str.isdigit():
+                page_number = int(page_number_str)
+                if page_number < 1:
+                    page_number = 1
+                elif page_number > 10:
+                    page_number = 10
         if not self._establish_session("showBlogPage"):
             self._404()
             self.server.GETbusy = False
@@ -12463,7 +12468,7 @@ class PubServer(BaseHTTPRequestHandler):
                              translate,
                              nickname,
                              domain, port,
-                             max_posts_in_blogs_feed, pageNumber,
+                             max_posts_in_blogs_feed, page_number,
                              self.server.peertube_instances,
                              self.server.system_language,
                              self.server.person_cache,
@@ -12997,12 +13002,12 @@ class PubServer(BaseHTTPRequestHandler):
     def _show_new_post(self, calling_domain: str, path: str,
                        media_instance: bool, translate: {},
                        base_dir: str, http_prefix: str,
-                       inReplyToUrl: str, replyToList: [],
-                       shareDescription: str, replyPageNumber: int,
-                       replyCategory: str,
+                       in_reply_to_url: str, reply_to_list: [],
+                       share_description: str, reply_page_number: int,
+                       reply_category: str,
                        domain: str, domain_full: str,
                        GETstartTime, cookie,
-                       noDropDown: bool, conversationId: str) -> bool:
+                       no_drop_down: bool, conversation_id: str) -> bool:
         """Shows the new post screen
         """
         isNewPostEndpoint = False
@@ -13016,11 +13021,11 @@ class PubServer(BaseHTTPRequestHandler):
         if isNewPostEndpoint:
             nickname = get_nickname_from_actor(path)
 
-            if inReplyToUrl:
+            if in_reply_to_url:
                 replyIntervalHours = self.server.default_reply_interval_hrs
                 if not can_reply_to(base_dir, nickname, domain,
-                                    inReplyToUrl, replyIntervalHours):
-                    print('Reply outside of time window ' + inReplyToUrl +
+                                    in_reply_to_url, replyIntervalHours):
+                    print('Reply outside of time window ' + in_reply_to_url +
                           str(replyIntervalHours) + ' hours')
                     self._403()
                     return True
@@ -13035,9 +13040,9 @@ class PubServer(BaseHTTPRequestHandler):
             customSubmitText = get_config_param(base_dir, 'customSubmitText')
 
             post_json_object = None
-            if inReplyToUrl:
+            if in_reply_to_url:
                 replyPostFilename = \
-                    locate_post(base_dir, nickname, domain, inReplyToUrl)
+                    locate_post(base_dir, nickname, domain, in_reply_to_url)
                 if replyPostFilename:
                     post_json_object = load_json(replyPostFilename)
 
@@ -13046,19 +13051,19 @@ class PubServer(BaseHTTPRequestHandler):
                                 translate,
                                 base_dir,
                                 http_prefix,
-                                path, inReplyToUrl,
-                                replyToList,
-                                shareDescription, None,
-                                replyPageNumber,
-                                replyCategory,
+                                path, in_reply_to_url,
+                                reply_to_list,
+                                share_description, None,
+                                reply_page_number,
+                                reply_category,
                                 nickname, domain,
                                 domain_full,
                                 self.server.defaultTimeline,
                                 self.server.newswire,
                                 self.server.theme_name,
-                                noDropDown, access_keys,
+                                no_drop_down, access_keys,
                                 customSubmitText,
-                                conversationId,
+                                conversation_id,
                                 self.server.recent_posts_cache,
                                 self.server.max_recent_posts,
                                 self.server.session,
@@ -13079,7 +13084,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.lists_enabled,
                                 self.server.defaultTimeline).encode('utf-8')
             if not msg:
-                print('Error replying to ' + inReplyToUrl)
+                print('Error replying to ' + in_reply_to_url)
                 self._404()
                 return True
             msglen = len(msg)
@@ -13094,7 +13099,7 @@ class PubServer(BaseHTTPRequestHandler):
         return False
 
     def _show_known_crawlers(self, calling_domain: str, path: str,
-                             base_dir: str, knownCrawlers: {}) -> bool:
+                             base_dir: str, known_crawlers: {}) -> bool:
         """Show a list of known web crawlers
         """
         if '/users/' not in path:
@@ -13109,10 +13114,10 @@ class PubServer(BaseHTTPRequestHandler):
         crawlersList = []
         curr_time = int(time.time())
         recentCrawlers = 60 * 60 * 24 * 30
-        for uaStr, item in knownCrawlers.items():
+        for ua_str, item in known_crawlers.items():
             if item['lastseen'] - curr_time < recentCrawlers:
                 hitsStr = str(item['hits']).zfill(8)
-                crawlersList.append(hitsStr + ' ' + uaStr)
+                crawlersList.append(hitsStr + ' ' + ua_str)
         crawlersList.sort(reverse=True)
         msg = ''
         for lineStr in crawlersList:
@@ -13324,7 +13329,7 @@ class PubServer(BaseHTTPRequestHandler):
                              blockerNickname)
         return True
 
-    def _get_referer_domain(self, uaStr: str) -> str:
+    def _get_referer_domain(self, ua_str: str) -> str:
         """Returns the referer domain
         Which domain is the GET request coming from?
         """
@@ -13346,15 +13351,15 @@ class PubServer(BaseHTTPRequestHandler):
                     refererDomain = refererDomain.split('#')[0]
                 elif '"' in refererDomain:
                     refererDomain = refererDomain.split('"')[0]
-        elif uaStr:
-            if '+https://' in uaStr:
-                refererDomain = uaStr.split('+https://')[1]
+        elif ua_str:
+            if '+https://' in ua_str:
+                refererDomain = ua_str.split('+https://')[1]
                 if '/' in refererDomain:
                     refererDomain = refererDomain.split('/')[0]
                 elif ')' in refererDomain:
                     refererDomain = refererDomain.split(')')[0]
-            elif '+http://' in uaStr:
-                refererDomain = uaStr.split('+http://')[1]
+            elif '+http://' in ua_str:
+                refererDomain = ua_str.split('+http://')[1]
                 if '/' in refererDomain:
                     refererDomain = refererDomain.split('/')[0]
                 elif ')' in refererDomain:
@@ -13364,14 +13369,14 @@ class PubServer(BaseHTTPRequestHandler):
     def _get_user_agent(self) -> str:
         """Returns the user agent string from the headers
         """
-        uaStr = None
+        ua_str = None
         if self.headers.get('User-Agent'):
-            uaStr = self.headers['User-Agent']
+            ua_str = self.headers['User-Agent']
         elif self.headers.get('user-agent'):
-            uaStr = self.headers['user-agent']
+            ua_str = self.headers['user-agent']
         elif self.headers.get('User-agent'):
-            uaStr = self.headers['User-agent']
-        return uaStr
+            ua_str = self.headers['User-agent']
+        return ua_str
 
     def _permitted_crawler_path(self, path: str) -> bool:
         """Is the given path permitted to be crawled by a search engine?
@@ -13408,14 +13413,14 @@ class PubServer(BaseHTTPRequestHandler):
                     self._400()
                     return
 
-        uaStr = self._get_user_agent()
+        ua_str = self._get_user_agent()
 
         if not self._permitted_crawler_path(self.path):
-            if self._blocked_user_agent(calling_domain, uaStr):
+            if self._blocked_user_agent(calling_domain, ua_str):
                 self._400()
                 return
 
-        refererDomain = self._get_referer_domain(uaStr)
+        refererDomain = self._get_referer_domain(ua_str)
 
         GETstartTime = time.time()
 
@@ -13425,7 +13430,7 @@ class PubServer(BaseHTTPRequestHandler):
         # Since fediverse crawlers are quite active,
         # make returning info to them high priority
         # get nodeinfo endpoint
-        if self._nodeinfo(uaStr, calling_domain):
+        if self._nodeinfo(ua_str, calling_domain):
             return
 
         fitness_performance(GETstartTime, self.server.fitness,
@@ -13511,9 +13516,9 @@ class PubServer(BaseHTTPRequestHandler):
                 return
 
         # turn off dropdowns on new post screen
-        noDropDown = False
+        no_drop_down = False
         if self.path.endswith('?nodropdown'):
-            noDropDown = True
+            no_drop_down = True
             self.path = self.path.replace('?nodropdown', '')
 
         # redirect music to #nowplaying list
@@ -13766,7 +13771,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         # minimal mastodon api
-        if self._masto_api(self.path, calling_domain, uaStr,
+        if self._masto_api(self.path, calling_domain, ua_str,
                            authorized,
                            self.server.http_prefix,
                            self.server.base_dir,
@@ -14269,9 +14274,9 @@ class PubServer(BaseHTTPRequestHandler):
 
         # after selecting a shared item from the left column then show it
         if htmlGET and '?showshare=' in self.path and '/users/' in self.path:
-            itemID = self.path.split('?showshare=')[1]
-            if '?' in itemID:
-                itemID = itemID.split('?')[0]
+            item_id = self.path.split('?showshare=')[1]
+            if '?' in item_id:
+                item_id = item_id.split('?')[0]
             category = ''
             if '?category=' in self.path:
                 category = self.path.split('?category=')[1]
@@ -14279,13 +14284,13 @@ class PubServer(BaseHTTPRequestHandler):
                 category = category.split('?')[0]
             usersPath = self.path.split('?showshare=')[0]
             nickname = usersPath.replace('/users/', '')
-            itemID = urllib.parse.unquote_plus(itemID.strip())
+            item_id = urllib.parse.unquote_plus(item_id.strip())
             msg = \
                 html_show_share(self.server.base_dir,
                                 self.server.domain, nickname,
                                 self.server.http_prefix,
                                 self.server.domain_full,
-                                itemID, self.server.translate,
+                                item_id, self.server.translate,
                                 self.server.shared_items_federated_domains,
                                 self.server.defaultTimeline,
                                 self.server.theme_name, 'shares', category)
@@ -14311,21 +14316,21 @@ class PubServer(BaseHTTPRequestHandler):
 
         # after selecting a wanted item from the left column then show it
         if htmlGET and '?showwanted=' in self.path and '/users/' in self.path:
-            itemID = self.path.split('?showwanted=')[1]
-            if ';' in itemID:
-                itemID = itemID.split(';')[0]
+            item_id = self.path.split('?showwanted=')[1]
+            if ';' in item_id:
+                item_id = item_id.split(';')[0]
             category = self.path.split('?category=')[1]
             if ';' in category:
                 category = category.split(';')[0]
             usersPath = self.path.split('?showwanted=')[0]
             nickname = usersPath.replace('/users/', '')
-            itemID = urllib.parse.unquote_plus(itemID.strip())
+            item_id = urllib.parse.unquote_plus(item_id.strip())
             msg = \
                 html_show_share(self.server.base_dir,
                                 self.server.domain, nickname,
                                 self.server.http_prefix,
                                 self.server.domain_full,
-                                itemID, self.server.translate,
+                                item_id, self.server.translate,
                                 self.server.shared_items_federated_domains,
                                 self.server.defaultTimeline,
                                 self.server.theme_name, 'wanted', category)
@@ -14351,8 +14356,8 @@ class PubServer(BaseHTTPRequestHandler):
 
         # remove a shared item
         if htmlGET and '?rmshare=' in self.path:
-            itemID = self.path.split('?rmshare=')[1]
-            itemID = urllib.parse.unquote_plus(itemID.strip())
+            item_id = self.path.split('?rmshare=')[1]
+            item_id = urllib.parse.unquote_plus(item_id.strip())
             usersPath = self.path.split('?rmshare=')[0]
             actor = \
                 self.server.http_prefix + '://' + \
@@ -14360,7 +14365,7 @@ class PubServer(BaseHTTPRequestHandler):
             msg = html_confirm_remove_shared_item(self.server.css_cache,
                                                   self.server.translate,
                                                   self.server.base_dir,
-                                                  actor, itemID,
+                                                  actor, item_id,
                                                   calling_domain, 'shares')
             if not msg:
                 if calling_domain.endswith('.onion') and \
@@ -14384,8 +14389,8 @@ class PubServer(BaseHTTPRequestHandler):
 
         # remove a wanted item
         if htmlGET and '?rmwanted=' in self.path:
-            itemID = self.path.split('?rmwanted=')[1]
-            itemID = urllib.parse.unquote_plus(itemID.strip())
+            item_id = self.path.split('?rmwanted=')[1]
+            item_id = urllib.parse.unquote_plus(item_id.strip())
             usersPath = self.path.split('?rmwanted=')[0]
             actor = \
                 self.server.http_prefix + '://' + \
@@ -14393,7 +14398,7 @@ class PubServer(BaseHTTPRequestHandler):
             msg = html_confirm_remove_shared_item(self.server.css_cache,
                                                   self.server.translate,
                                                   self.server.base_dir,
-                                                  actor, itemID,
+                                                  actor, item_id,
                                                   calling_domain, 'wanted')
             if not msg:
                 if calling_domain.endswith('.onion') and \
@@ -15656,57 +15661,57 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.debug)
 
         # reply from the web interface icon
-        inReplyToUrl = None
+        in_reply_to_url = None
 #        replyWithDM = False
-        replyToList = []
-        replyPageNumber = 1
-        replyCategory = ''
-        shareDescription = None
-        conversationId = None
+        reply_to_list = []
+        reply_page_number = 1
+        reply_category = ''
+        share_description = None
+        conversation_id = None
 #        replytoActor = None
         if htmlGET:
             if '?conversationId=' in self.path:
-                conversationId = self.path.split('?conversationId=')[1]
-                if '?' in conversationId:
-                    conversationId = conversationId.split('?')[0]
+                conversation_id = self.path.split('?conversationId=')[1]
+                if '?' in conversation_id:
+                    conversation_id = conversation_id.split('?')[0]
             # public reply
             if '?replyto=' in self.path:
-                inReplyToUrl = self.path.split('?replyto=')[1]
-                if '?' in inReplyToUrl:
-                    mentionsList = inReplyToUrl.split('?')
+                in_reply_to_url = self.path.split('?replyto=')[1]
+                if '?' in in_reply_to_url:
+                    mentionsList = in_reply_to_url.split('?')
                     for m in mentionsList:
                         if m.startswith('mention='):
                             replyHandle = m.replace('mention=', '')
-                            if replyHandle not in replyToList:
-                                replyToList.append(replyHandle)
+                            if replyHandle not in reply_to_list:
+                                reply_to_list.append(replyHandle)
                         if m.startswith('page='):
                             replyPageStr = m.replace('page=', '')
                             if replyPageStr.isdigit():
-                                replyPageNumber = int(replyPageStr)
+                                reply_page_number = int(replyPageStr)
 #                        if m.startswith('actor='):
 #                            replytoActor = m.replace('actor=', '')
-                    inReplyToUrl = mentionsList[0]
+                    in_reply_to_url = mentionsList[0]
                 self.path = self.path.split('?replyto=')[0] + '/newpost'
                 if self.server.debug:
                     print('DEBUG: replyto path ' + self.path)
 
             # reply to followers
             if '?replyfollowers=' in self.path:
-                inReplyToUrl = self.path.split('?replyfollowers=')[1]
-                if '?' in inReplyToUrl:
-                    mentionsList = inReplyToUrl.split('?')
+                in_reply_to_url = self.path.split('?replyfollowers=')[1]
+                if '?' in in_reply_to_url:
+                    mentionsList = in_reply_to_url.split('?')
                     for m in mentionsList:
                         if m.startswith('mention='):
                             replyHandle = m.replace('mention=', '')
-                            if m.replace('mention=', '') not in replyToList:
-                                replyToList.append(replyHandle)
+                            if m.replace('mention=', '') not in reply_to_list:
+                                reply_to_list.append(replyHandle)
                         if m.startswith('page='):
                             replyPageStr = m.replace('page=', '')
                             if replyPageStr.isdigit():
-                                replyPageNumber = int(replyPageStr)
+                                reply_page_number = int(replyPageStr)
 #                        if m.startswith('actor='):
 #                            replytoActor = m.replace('actor=', '')
-                    inReplyToUrl = mentionsList[0]
+                    in_reply_to_url = mentionsList[0]
                 self.path = self.path.split('?replyfollowers=')[0] + \
                     '/newfollowers'
                 if self.server.debug:
@@ -15715,42 +15720,42 @@ class PubServer(BaseHTTPRequestHandler):
             # replying as a direct message,
             # for moderation posts or the dm timeline
             if '?replydm=' in self.path:
-                inReplyToUrl = self.path.split('?replydm=')[1]
-                inReplyToUrl = urllib.parse.unquote_plus(inReplyToUrl)
-                if '?' in inReplyToUrl:
+                in_reply_to_url = self.path.split('?replydm=')[1]
+                in_reply_to_url = urllib.parse.unquote_plus(in_reply_to_url)
+                if '?' in in_reply_to_url:
                     # multiple parameters
-                    mentionsList = inReplyToUrl.split('?')
+                    mentionsList = in_reply_to_url.split('?')
                     for m in mentionsList:
                         if m.startswith('mention='):
                             replyHandle = m.replace('mention=', '')
-                            inReplyToUrl = replyHandle
-                            if replyHandle not in replyToList:
-                                replyToList.append(replyHandle)
+                            in_reply_to_url = replyHandle
+                            if replyHandle not in reply_to_list:
+                                reply_to_list.append(replyHandle)
                         elif m.startswith('page='):
                             replyPageStr = m.replace('page=', '')
                             if replyPageStr.isdigit():
-                                replyPageNumber = int(replyPageStr)
+                                reply_page_number = int(replyPageStr)
                         elif m.startswith('category='):
-                            replyCategory = m.replace('category=', '')
+                            reply_category = m.replace('category=', '')
                         elif m.startswith('sharedesc:'):
                             # get the title for the shared item
-                            shareDescription = \
+                            share_description = \
                                 m.replace('sharedesc:', '').strip()
-                            shareDescription = \
-                                shareDescription.replace('_', ' ')
+                            share_description = \
+                                share_description.replace('_', ' ')
                 else:
                     # single parameter
-                    if inReplyToUrl.startswith('mention='):
-                        replyHandle = inReplyToUrl.replace('mention=', '')
-                        inReplyToUrl = replyHandle
-                        if replyHandle not in replyToList:
-                            replyToList.append(replyHandle)
-                    elif inReplyToUrl.startswith('sharedesc:'):
+                    if in_reply_to_url.startswith('mention='):
+                        replyHandle = in_reply_to_url.replace('mention=', '')
+                        in_reply_to_url = replyHandle
+                        if replyHandle not in reply_to_list:
+                            reply_to_list.append(replyHandle)
+                    elif in_reply_to_url.startswith('sharedesc:'):
                         # get the title for the shared item
-                        shareDescription = \
-                            inReplyToUrl.replace('sharedesc:', '').strip()
-                        shareDescription = \
-                            shareDescription.replace('_', ' ')
+                        share_description = \
+                            in_reply_to_url.replace('sharedesc:', '').strip()
+                        share_description = \
+                            share_description.replace('_', ' ')
 
                 self.path = self.path.split('?replydm=')[0] + '/newdm'
                 if self.server.debug:
@@ -15761,9 +15766,9 @@ class PubServer(BaseHTTPRequestHandler):
                '/users/' in self.path and \
                '?editblogpost=' in self.path and \
                ';actor=' in self.path:
-                messageId = self.path.split('?editblogpost=')[1]
-                if ';' in messageId:
-                    messageId = messageId.split(';')[0]
+                message_id = self.path.split('?editblogpost=')[1]
+                if ';' in message_id:
+                    message_id = message_id.split(';')[0]
                 actor = self.path.split(';actor=')[1]
                 if ';' in actor:
                     actor = actor.split(';')[0]
@@ -15772,13 +15777,13 @@ class PubServer(BaseHTTPRequestHandler):
                     postUrl = \
                         local_actor_url(self.server.http_prefix, nickname,
                                         self.server.domain_full) + \
-                        '/statuses/' + messageId
+                        '/statuses/' + message_id
                     msg = html_edit_blog(self.server.media_instance,
                                          self.server.translate,
                                          self.server.base_dir,
                                          self.server.http_prefix,
                                          self.path,
-                                         replyPageNumber,
+                                         reply_page_number,
                                          nickname, self.server.domain,
                                          postUrl,
                                          self.server.system_language)
@@ -15794,7 +15799,7 @@ class PubServer(BaseHTTPRequestHandler):
             # list of known crawlers accessing nodeinfo or masto API
             if self._show_known_crawlers(calling_domain, self.path,
                                          self.server.base_dir,
-                                         self.server.knownCrawlers):
+                                         self.server.known_crawlers):
                 self.server.GETbusy = False
                 return
 
@@ -15849,13 +15854,13 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.translate,
                                    self.server.base_dir,
                                    self.server.http_prefix,
-                                   inReplyToUrl, replyToList,
-                                   shareDescription, replyPageNumber,
-                                   replyCategory,
+                                   in_reply_to_url, reply_to_list,
+                                   share_description, reply_page_number,
+                                   reply_category,
                                    self.server.domain,
                                    self.server.domain_full,
                                    GETstartTime,
-                                   cookie, noDropDown, conversationId):
+                                   cookie, no_drop_down, conversation_id):
                 self.server.GETbusy = False
                 return
 
@@ -16571,7 +16576,7 @@ class PubServer(BaseHTTPRequestHandler):
                 acct_dir(self.server.base_dir,
                          nickname, self.server.domain) + '/upload.temp'
 
-            filename, attachmentMediaType = \
+            filename, attachment_media_type = \
                 save_media_in_form_post(mediaBytes, self.server.debug,
                                         filenameBase)
             if self.server.debug:
@@ -16679,9 +16684,9 @@ class PubServer(BaseHTTPRequestHandler):
             if fields.get('mentions'):
                 mentionsStr = fields['mentions'].strip() + ' '
             if not fields.get('commentsEnabled'):
-                commentsEnabled = False
+                comments_enabled = False
             else:
-                commentsEnabled = True
+                comments_enabled = True
 
             if postType == 'newpost':
                 if not fields.get('pinToProfile'):
@@ -16698,9 +16703,9 @@ class PubServer(BaseHTTPRequestHandler):
                 city = get_spoofed_city(self.server.city,
                                         self.server.base_dir,
                                         nickname, self.server.domain)
-                conversationId = None
+                conversation_id = None
                 if fields.get('conversationId'):
-                    conversationId = fields['conversationId']
+                    conversation_id = fields['conversationId']
                 message_json = \
                     create_public_post(self.server.base_dir,
                                        nickname,
@@ -16708,8 +16713,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.port,
                                        self.server.http_prefix,
                                        mentionsStr + fields['message'],
-                                       False, False, False, commentsEnabled,
-                                       filename, attachmentMediaType,
+                                       False, False, False, comments_enabled,
+                                       filename, attachment_media_type,
                                        fields['imageDescription'],
                                        city,
                                        fields['replyTo'], fields['replyTo'],
@@ -16719,7 +16724,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        fields['eventTime'],
                                        fields['location'], False,
                                        self.server.system_language,
-                                       conversationId,
+                                       conversation_id,
                                        self.server.low_bandwidth,
                                        self.server.content_license_url)
                 if message_json:
@@ -16761,7 +16766,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.css_cache,
                                        fields['subject'],
                                        fields['message'],
-                                       filename, attachmentMediaType,
+                                       filename, attachment_media_type,
                                        fields['imageDescription'],
                                        self.server.theme_name)
                     if message_json:
@@ -16785,17 +16790,17 @@ class PubServer(BaseHTTPRequestHandler):
                 saveToFile = False
                 client_to_server = False
                 city = None
-                conversationId = None
+                conversation_id = None
                 if fields.get('conversationId'):
-                    conversationId = fields['conversationId']
+                    conversation_id = fields['conversationId']
                 message_json = \
                     create_blog_post(self.server.base_dir, nickname,
                                      self.server.domain, self.server.port,
                                      self.server.http_prefix,
                                      fields['message'],
                                      followersOnly, saveToFile,
-                                     client_to_server, commentsEnabled,
-                                     filename, attachmentMediaType,
+                                     client_to_server, comments_enabled,
+                                     filename, attachment_media_type,
                                      fields['imageDescription'],
                                      city,
                                      fields['replyTo'], fields['replyTo'],
@@ -16805,7 +16810,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      fields['eventTime'],
                                      fields['location'],
                                      self.server.system_language,
-                                     conversationId,
+                                     conversation_id,
                                      self.server.low_bandwidth,
                                      self.server.content_license_url)
                 if message_json:
@@ -16897,7 +16902,7 @@ class PubServer(BaseHTTPRequestHandler):
                                              self.server.port,
                                              post_json_object['object'],
                                              filename,
-                                             attachmentMediaType,
+                                             attachment_media_type,
                                              imgDescription,
                                              city,
                                              self.server.low_bandwidth,
@@ -16935,9 +16940,9 @@ class PubServer(BaseHTTPRequestHandler):
                 saveToFile = False
                 client_to_server = False
 
-                conversationId = None
+                conversation_id = None
                 if fields.get('conversationId'):
-                    conversationId = fields['conversationId']
+                    conversation_id = fields['conversationId']
 
                 message_json = \
                     create_unlisted_post(self.server.base_dir,
@@ -16946,8 +16951,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.http_prefix,
                                          mentionsStr + fields['message'],
                                          followersOnly, saveToFile,
-                                         client_to_server, commentsEnabled,
-                                         filename, attachmentMediaType,
+                                         client_to_server, comments_enabled,
+                                         filename, attachment_media_type,
                                          fields['imageDescription'],
                                          city,
                                          fields['replyTo'],
@@ -16958,7 +16963,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          fields['eventTime'],
                                          fields['location'],
                                          self.server.system_language,
-                                         conversationId,
+                                         conversation_id,
                                          self.server.low_bandwidth,
                                          self.server.content_license_url)
                 if message_json:
@@ -16985,9 +16990,9 @@ class PubServer(BaseHTTPRequestHandler):
                 saveToFile = False
                 client_to_server = False
 
-                conversationId = None
+                conversation_id = None
                 if fields.get('conversationId'):
-                    conversationId = fields['conversationId']
+                    conversation_id = fields['conversationId']
 
                 message_json = \
                     create_followers_only_post(self.server.base_dir,
@@ -16998,8 +17003,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                mentionsStr + fields['message'],
                                                followersOnly, saveToFile,
                                                client_to_server,
-                                               commentsEnabled,
-                                               filename, attachmentMediaType,
+                                               comments_enabled,
+                                               filename, attachment_media_type,
                                                fields['imageDescription'],
                                                city,
                                                fields['replyTo'],
@@ -17010,7 +17015,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                fields['eventTime'],
                                                fields['location'],
                                                self.server.system_language,
-                                               conversationId,
+                                               conversation_id,
                                                self.server.low_bandwidth,
                                                self.server.content_license_url)
                 if message_json:
@@ -17040,9 +17045,9 @@ class PubServer(BaseHTTPRequestHandler):
                     saveToFile = False
                     client_to_server = False
 
-                    conversationId = None
+                    conversation_id = None
                     if fields.get('conversationId'):
-                        conversationId = fields['conversationId']
+                        conversation_id = fields['conversationId']
                     content_license_url = self.server.content_license_url
 
                     message_json = \
@@ -17055,9 +17060,9 @@ class PubServer(BaseHTTPRequestHandler):
                                                    fields['message'],
                                                    followersOnly, saveToFile,
                                                    client_to_server,
-                                                   commentsEnabled,
+                                                   comments_enabled,
                                                    filename,
-                                                   attachmentMediaType,
+                                                   attachment_media_type,
                                                    fields['imageDescription'],
                                                    city,
                                                    fields['replyTo'],
@@ -17069,7 +17074,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                    fields['eventTime'],
                                                    fields['location'],
                                                    self.server.system_language,
-                                                   conversationId,
+                                                   conversation_id,
                                                    self.server.low_bandwidth,
                                                    content_license_url)
                 if message_json:
@@ -17102,8 +17107,8 @@ class PubServer(BaseHTTPRequestHandler):
                 followersOnly = True
                 saveToFile = False
                 client_to_server = False
-                commentsEnabled = False
-                conversationId = None
+                comments_enabled = False
+                conversation_id = None
                 message_json = \
                     create_direct_message_post(self.server.base_dir,
                                                nickname,
@@ -17113,8 +17118,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                mentionsStr + fields['message'],
                                                followersOnly, saveToFile,
                                                client_to_server,
-                                               commentsEnabled,
-                                               filename, attachmentMediaType,
+                                               comments_enabled,
+                                               filename, attachment_media_type,
                                                fields['imageDescription'],
                                                city,
                                                None, None,
@@ -17124,7 +17129,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                fields['eventTime'],
                                                fields['location'],
                                                self.server.system_language,
-                                               conversationId,
+                                               conversation_id,
                                                self.server.low_bandwidth,
                                                self.server.content_license_url)
                 if message_json:
@@ -17136,11 +17141,10 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.project_version,
                                             nickname):
                         return 1
-                    else:
-                        return -1
+                    return -1
             elif postType == 'newreport':
-                if attachmentMediaType:
-                    if attachmentMediaType != 'image':
+                if attachment_media_type:
+                    if attachment_media_type != 'image':
                         return -1
                 # So as to be sure that this only goes to moderators
                 # and not accounts being reported we disable any
@@ -17157,7 +17161,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.http_prefix,
                                        mentionsStr + fields['message'],
                                        True, False, False, True,
-                                       filename, attachmentMediaType,
+                                       filename, attachment_media_type,
                                        fields['imageDescription'],
                                        city,
                                        self.server.debug, fields['subject'],
@@ -17197,8 +17201,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.http_prefix,
                                          fields['message'], qOptions,
                                          False, False, False,
-                                         commentsEnabled,
-                                         filename, attachmentMediaType,
+                                         comments_enabled,
+                                         filename, attachment_media_type,
                                          fields['imageDescription'],
                                          city,
                                          fields['subject'],
@@ -17233,35 +17237,35 @@ class PubServer(BaseHTTPRequestHandler):
                 if not fields.get('duration'):
                     print(postType + ' no duratio')
                     return -1
-                if attachmentMediaType:
-                    if attachmentMediaType != 'image':
+                if attachment_media_type:
+                    if attachment_media_type != 'image':
                         print('Attached media is not an image')
                         return -1
-                durationStr = fields['duration']
-                if durationStr:
-                    if ' ' not in durationStr:
-                        durationStr = durationStr + ' days'
+                duration_str = fields['duration']
+                if duration_str:
+                    if ' ' not in duration_str:
+                        duration_str = duration_str + ' days'
                 city = get_spoofed_city(self.server.city,
                                         self.server.base_dir,
                                         nickname,
                                         self.server.domain)
-                itemQty = 1
+                item_qty = 1
                 if fields['itemQty']:
                     if is_float(fields['itemQty']):
-                        itemQty = float(fields['itemQty'])
-                itemPrice = "0.00"
-                itemCurrency = "EUR"
+                        item_qty = float(fields['itemQty'])
+                item_price = "0.00"
+                item_currency = "EUR"
                 if fields['itemPrice']:
-                    itemPrice, itemCurrency = \
+                    item_price, item_currency = \
                         get_price_from_string(fields['itemPrice'])
                 if fields['itemCurrency']:
-                    itemCurrency = fields['itemCurrency']
+                    item_currency = fields['itemCurrency']
                 if postType == 'newshare':
                     print('Adding shared item')
-                    sharesFileType = 'shares'
+                    shares_file_type = 'shares'
                 else:
                     print('Adding wanted item')
-                    sharesFileType = 'wanted'
+                    shares_file_type = 'wanted'
                 add_share(self.server.base_dir,
                           self.server.http_prefix,
                           nickname,
@@ -17269,14 +17273,14 @@ class PubServer(BaseHTTPRequestHandler):
                           fields['subject'],
                           fields['message'],
                           filename,
-                          itemQty, fields['itemType'],
+                          item_qty, fields['itemType'],
                           fields['category'],
                           fields['location'],
-                          durationStr,
+                          duration_str,
                           self.server.debug,
-                          city, itemPrice, itemCurrency,
+                          city, item_price, item_currency,
                           self.server.system_language,
-                          self.server.translate, sharesFileType,
+                          self.server.translate, shares_file_type,
                           self.server.low_bandwidth,
                           self.server.content_license_url)
                 if filename:
@@ -17286,7 +17290,7 @@ class PubServer(BaseHTTPRequestHandler):
                         except OSError:
                             print('EX: _receive_new_post_process ' +
                                   'unable to delete ' + filename)
-                self.postToNickname = nickname
+                self.post_to_nickname = nickname
                 return 1
         return -1
 
@@ -17297,7 +17301,7 @@ class PubServer(BaseHTTPRequestHandler):
         """A new post has been created
         This creates a thread to send the new post
         """
-        pageNumber = 1
+        page_number = 1
 
         if '/users/' not in path:
             print('Not receiving new post for ' + path +
@@ -17312,13 +17316,13 @@ class PubServer(BaseHTTPRequestHandler):
         print('New post begins: ' + postType + ' ' + path)
 
         if '?page=' in path:
-            pageNumberStr = path.split('?page=')[1]
-            if '?' in pageNumberStr:
-                pageNumberStr = pageNumberStr.split('?')[0]
-            if '#' in pageNumberStr:
-                pageNumberStr = pageNumberStr.split('#')[0]
-            if pageNumberStr.isdigit():
-                pageNumber = int(pageNumberStr)
+            page_number_str = path.split('?page=')[1]
+            if '?' in page_number_str:
+                page_number_str = page_number_str.split('?')[0]
+            if '#' in page_number_str:
+                page_number_str = page_number_str.split('#')[0]
+            if page_number_str.isdigit():
+                page_number = int(page_number_str)
                 path = path.split('?page=')[0]
 
         # get the username who posted
@@ -17398,7 +17402,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                calling_domain, cookie,
                                                authorized,
                                                content_license_url)
-        return pageNumber
+        return page_number
 
     def _crypto_ap_iread_handle(self):
         """Reads handle
@@ -17604,9 +17608,9 @@ class PubServer(BaseHTTPRequestHandler):
         self.server.POSTbusy = True
         self.server.lastPOST = curr_timePOST
 
-        uaStr = self._get_user_agent()
+        ua_str = self._get_user_agent()
 
-        if self._blocked_user_agent(calling_domain, uaStr):
+        if self._blocked_user_agent(calling_domain, ua_str):
             self._400()
             self.server.POSTbusy = False
             return
@@ -17651,7 +17655,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # if this is a POST to the outbox then check authentication
         self.outboxAuthenticated = False
-        self.postToNickname = None
+        self.post_to_nickname = None
 
         fitness_performance(POSTstartTime, self.server.fitness,
                             '_POST', 'start',
@@ -18114,12 +18118,12 @@ class PubServer(BaseHTTPRequestHandler):
             elif currPostType == 'newwanted':
                 postRedirect = 'tlwanted'
 
-            pageNumber = \
+            page_number = \
                 self._receive_new_post(currPostType, self.path,
                                        calling_domain, cookie,
                                        authorized,
                                        self.server.content_license_url)
-            if pageNumber:
+            if page_number:
                 print(currPostType + ' post received')
                 nickname = self.path.split('/users/')[1]
                 if '?' in nickname:
@@ -18133,7 +18137,7 @@ class PubServer(BaseHTTPRequestHandler):
                         local_actor_url('http', nickname,
                                         self.server.onion_domain) + \
                         '/' + postRedirect + \
-                        '?page=' + str(pageNumber)
+                        '?page=' + str(page_number)
                     self._redirect_headers(actorPathStr, cookie,
                                            calling_domain)
                 elif (calling_domain.endswith('.i2p') and
@@ -18142,14 +18146,14 @@ class PubServer(BaseHTTPRequestHandler):
                         local_actor_url('http', nickname,
                                         self.server.i2p_domain) + \
                         '/' + postRedirect + \
-                        '?page=' + str(pageNumber)
+                        '?page=' + str(page_number)
                     self._redirect_headers(actorPathStr, cookie,
                                            calling_domain)
                 else:
                     actorPathStr = \
                         local_actor_url(self.server.http_prefix, nickname,
                                         self.server.domain_full) + \
-                        '/' + postRedirect + '?page=' + str(pageNumber)
+                        '/' + postRedirect + '?page=' + str(page_number)
                     self._redirect_headers(actorPathStr, cookie,
                                            calling_domain)
                 self.server.POSTbusy = False
@@ -18166,7 +18170,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if authorized:
                     self.outboxAuthenticated = True
                     pathUsersSection = self.path.split('/users/')[1]
-                    self.postToNickname = pathUsersSection.split('/')[0]
+                    self.post_to_nickname = pathUsersSection.split('/')[0]
             if not self.outboxAuthenticated:
                 self.send_response(405)
                 self.end_headers()
@@ -18373,10 +18377,10 @@ class PubServer(BaseHTTPRequestHandler):
                             '_POST', 'inbox_message_has_params',
                             self.server.debug)
 
-        headerSignature = self._getheader_signature_input()
+        header_signature = self._getheader_signature_input()
 
-        if headerSignature:
-            if 'keyId=' not in headerSignature:
+        if header_signature:
+            if 'keyId=' not in header_signature:
                 if self.server.debug:
                     print('DEBUG: POST to inbox has no keyId in ' +
                           'header signature parameter')
@@ -18413,10 +18417,10 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.server.debug:
                     print('DEBUG: This is not a users endpoint')
             else:
-                self.postToNickname = pathUsersSection.split('/')[0]
-                if self.postToNickname:
+                self.post_to_nickname = pathUsersSection.split('/')[0]
+                if self.post_to_nickname:
                     queueStatus = \
-                        self._update_inbox_queue(self.postToNickname,
+                        self._update_inbox_queue(self.post_to_nickname,
                                                  message_json, messageBytes)
                     if queueStatus >= 0 and queueStatus <= 3:
                         self.server.POSTbusy = False
@@ -18426,7 +18430,7 @@ class PubServer(BaseHTTPRequestHandler):
                               'without doing anything')
                 else:
                     if self.server.debug:
-                        print('self.postToNickname is None')
+                        print('self.post_to_nickname is None')
             self.send_response(403)
             self.end_headers()
             self.server.POSTbusy = False
@@ -18875,13 +18879,13 @@ def run_daemon(content_license_url: str,
 
     # create a cache of blocked domains in memory.
     # This limits the amount of slow disk reads which need to be done
-    httpd.blockedCache = []
-    httpd.blockedCacheLastUpdated = 0
-    httpd.blockedCacheUpdateSecs = 120
-    httpd.blockedCacheLastUpdated = \
-        update_blocked_cache(base_dir, httpd.blockedCache,
-                             httpd.blockedCacheLastUpdated,
-                             httpd.blockedCacheUpdateSecs)
+    httpd.blocked_cache = []
+    httpd.blocked_cache_last_updated = 0
+    httpd.blocked_cache_update_secs = 120
+    httpd.blocked_cache_last_updated = \
+        update_blocked_cache(base_dir, httpd.blocked_cache,
+                             httpd.blocked_cache_last_updated,
+                             httpd.blocked_cache_update_secs)
 
     # cache to store css files
     httpd.css_cache = {}
@@ -18904,12 +18908,12 @@ def run_daemon(content_license_url: str,
 
     # dict of known web crawlers accessing nodeinfo or the masto API
     # and how many times they have been seen
-    httpd.knownCrawlers = {}
-    knownCrawlersFilename = base_dir + '/accounts/knownCrawlers.json'
-    if os.path.isfile(knownCrawlersFilename):
-        httpd.knownCrawlers = load_json(knownCrawlersFilename)
+    httpd.known_crawlers = {}
+    known_crawlers_filename = base_dir + '/accounts/knownCrawlers.json'
+    if os.path.isfile(known_crawlers_filename):
+        httpd.known_crawlers = load_json(known_crawlers_filename)
     # when was the last crawler seen?
-    httpd.lastKnownCrawler = 0
+    httpd.last_known_crawler = 0
 
     if lists_enabled:
         httpd.lists_enabled = lists_enabled

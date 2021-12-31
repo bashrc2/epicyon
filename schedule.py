@@ -92,7 +92,7 @@ def _update_post_schedule(base_dir: str, handle: str, httpd,
             print('Sending scheduled post ' + post_id)
 
             if nickname:
-                httpd.postToNickname = nickname
+                httpd.post_to_nickname = nickname
             if not post_message_to_outbox(httpd.session,
                                           httpd.translate,
                                           post_json_object, nickname,

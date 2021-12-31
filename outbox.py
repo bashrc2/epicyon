@@ -178,7 +178,7 @@ def _person_receive_update_outbox(recent_posts_cache: {},
 
 
 def post_message_to_outbox(session, translate: {},
-                           message_json: {}, postToNickname: str,
+                           message_json: {}, post_to_nickname: str,
                            server, base_dir: str, http_prefix: str,
                            domain: str, domain_full: str,
                            onion_domain: str, i2p_domain: str, port: int,
@@ -216,7 +216,7 @@ def post_message_to_outbox(session, translate: {},
                 print('DEBUG: POST to outbox - adding Create wrapper')
             message_json = \
                 outbox_message_create_wrap(http_prefix,
-                                           postToNickname,
+                                           post_to_nickname,
                                            domain, port,
                                            message_json)
 
@@ -320,7 +320,7 @@ def post_message_to_outbox(session, translate: {},
 
                 mediaDir = \
                     base_dir + '/accounts/' + \
-                    postToNickname + '@' + domain
+                    post_to_nickname + '@' + domain
                 uploadMediaFilename = mediaDir + '/upload.' + fileExtension
                 if not os.path.isfile(uploadMediaFilename):
                     del message_json['object']['attachment']
@@ -374,16 +374,16 @@ def post_message_to_outbox(session, translate: {},
             save_post_to_box(base_dir,
                              http_prefix,
                              post_id,
-                             postToNickname, domain_full,
+                             post_to_nickname, domain_full,
                              message_json, outboxName)
         if not savedFilename:
             print('WARN: post not saved to outbox ' + outboxName)
             return False
 
         # save all instance blogs to the news actor
-        if postToNickname != 'news' and outboxName == 'tlblogs':
+        if post_to_nickname != 'news' and outboxName == 'tlblogs':
             if '/' in savedFilename:
-                if is_featured_writer(base_dir, postToNickname, domain):
+                if is_featured_writer(base_dir, post_to_nickname, domain):
                     savedPostId = savedFilename.split('/')[-1]
                     blogsDir = \
                         base_dir + '/accounts/news@' + domain + '/tlblogs'
@@ -397,7 +397,7 @@ def post_message_to_outbox(session, translate: {},
                 # clear the citations file if it exists
                 citationsFilename = \
                     base_dir + '/accounts/' + \
-                    postToNickname + '@' + domain + '/.citations.txt'
+                    post_to_nickname + '@' + domain + '/.citations.txt'
                 if os.path.isfile(citationsFilename):
                     try:
                         os.remove(citationsFilename)
@@ -413,7 +413,7 @@ def post_message_to_outbox(session, translate: {},
         if message_json['type'] in indexedActivities:
             indexes = [outboxName, "inbox"]
             selfActor = \
-                local_actor_url(http_prefix, postToNickname, domain_full)
+                local_actor_url(http_prefix, post_to_nickname, domain_full)
             for boxNameIndex in indexes:
                 if not boxNameIndex:
                     continue
@@ -421,7 +421,7 @@ def post_message_to_outbox(session, translate: {},
                 # should this also go to the media timeline?
                 if boxNameIndex == 'inbox':
                     if is_image_media(session, base_dir, http_prefix,
-                                      postToNickname, domain,
+                                      post_to_nickname, domain,
                                       message_json,
                                       translate,
                                       yt_replace_domain,
@@ -432,7 +432,7 @@ def post_message_to_outbox(session, translate: {},
                                       domain_full, person_cache,
                                       signing_priv_key_pem):
                         inbox_update_index('tlmedia', base_dir,
-                                           postToNickname + '@' + domain,
+                                           post_to_nickname + '@' + domain,
                                            savedFilename, debug)
 
                 if boxNameIndex == 'inbox' and outboxName == 'tlblogs':
@@ -444,7 +444,7 @@ def post_message_to_outbox(session, translate: {},
                     # show sent post within the inbox,
                     # as is the typical convention
                     inbox_update_index(boxNameIndex, base_dir,
-                                       postToNickname + '@' + domain,
+                                       post_to_nickname + '@' + domain,
                                        savedFilename, debug)
 
                     # regenerate the html
@@ -453,7 +453,7 @@ def post_message_to_outbox(session, translate: {},
                     showIndividualPostIcons = True
                     manuallyApproveFollowers = \
                         follower_approval_active(base_dir,
-                                                 postToNickname, domain)
+                                                 post_to_nickname, domain)
                     individual_post_as_html(signing_priv_key_pem,
                                             False, recent_posts_cache,
                                             max_recent_posts,
@@ -461,7 +461,7 @@ def post_message_to_outbox(session, translate: {},
                                             base_dir, session,
                                             cached_webfingers,
                                             person_cache,
-                                            postToNickname, domain, port,
+                                            post_to_nickname, domain, port,
                                             message_json, None, True,
                                             allow_deletion,
                                             http_prefix, __version__,
@@ -513,7 +513,7 @@ def post_message_to_outbox(session, translate: {},
     followersThread = \
         send_to_followers_thread(server.session,
                                  base_dir,
-                                 postToNickname,
+                                 post_to_nickname,
                                  domain, onion_domain, i2p_domain,
                                  port, http_prefix,
                                  federation_list,
@@ -534,62 +534,62 @@ def post_message_to_outbox(session, translate: {},
 
     if debug:
         print('DEBUG: handle skills changes requests')
-    outbox_skills(base_dir, postToNickname, message_json, debug)
+    outbox_skills(base_dir, post_to_nickname, message_json, debug)
 
     if debug:
         print('DEBUG: handle availability changes requests')
-    outbox_availability(base_dir, postToNickname, message_json, debug)
+    outbox_availability(base_dir, post_to_nickname, message_json, debug)
 
     if debug:
         print('DEBUG: handle any like requests')
     outbox_like(recent_posts_cache,
                 base_dir, http_prefix,
-                postToNickname, domain, port,
+                post_to_nickname, domain, port,
                 message_json, debug)
     if debug:
         print('DEBUG: handle any undo like requests')
     outbox_undo_like(recent_posts_cache,
                      base_dir, http_prefix,
-                     postToNickname, domain, port,
+                     post_to_nickname, domain, port,
                      message_json, debug)
 
     if debug:
         print('DEBUG: handle any emoji reaction requests')
     outbox_reaction(recent_posts_cache,
                     base_dir, http_prefix,
-                    postToNickname, domain, port,
+                    post_to_nickname, domain, port,
                     message_json, debug)
     if debug:
         print('DEBUG: handle any undo emoji reaction requests')
     outbox_undo_reaction(recent_posts_cache,
                          base_dir, http_prefix,
-                         postToNickname, domain, port,
+                         post_to_nickname, domain, port,
                          message_json, debug)
 
     if debug:
         print('DEBUG: handle any undo announce requests')
     outbox_undo_announce(recent_posts_cache,
                          base_dir, http_prefix,
-                         postToNickname, domain, port,
+                         post_to_nickname, domain, port,
                          message_json, debug)
 
     if debug:
         print('DEBUG: handle any bookmark requests')
     outbox_bookmark(recent_posts_cache,
                     base_dir, http_prefix,
-                    postToNickname, domain, port,
+                    post_to_nickname, domain, port,
                     message_json, debug)
     if debug:
         print('DEBUG: handle any undo bookmark requests')
     outbox_undo_bookmark(recent_posts_cache,
                          base_dir, http_prefix,
-                         postToNickname, domain, port,
+                         post_to_nickname, domain, port,
                          message_json, debug)
 
     if debug:
         print('DEBUG: handle delete requests')
     outbox_delete(base_dir, http_prefix,
-                  postToNickname, domain,
+                  post_to_nickname, domain,
                   message_json, debug,
                   allow_deletion,
                   recent_posts_cache)
@@ -597,20 +597,20 @@ def post_message_to_outbox(session, translate: {},
     if debug:
         print('DEBUG: handle block requests')
     outbox_block(base_dir, http_prefix,
-                 postToNickname, domain,
+                 post_to_nickname, domain,
                  port,
                  message_json, debug)
 
     if debug:
         print('DEBUG: handle undo block requests')
     outbox_undo_block(base_dir, http_prefix,
-                      postToNickname, domain,
+                      post_to_nickname, domain,
                       port, message_json, debug)
 
     if debug:
         print('DEBUG: handle mute requests')
     outbox_mute(base_dir, http_prefix,
-                postToNickname, domain,
+                post_to_nickname, domain,
                 port,
                 message_json, debug,
                 recent_posts_cache)
@@ -618,14 +618,14 @@ def post_message_to_outbox(session, translate: {},
     if debug:
         print('DEBUG: handle undo mute requests')
     outbox_undo_mute(base_dir, http_prefix,
-                     postToNickname, domain,
+                     post_to_nickname, domain,
                      port,
                      message_json, debug,
                      recent_posts_cache)
 
     if debug:
         print('DEBUG: handle share uploads')
-    outbox_share_upload(base_dir, http_prefix, postToNickname, domain,
+    outbox_share_upload(base_dir, http_prefix, post_to_nickname, domain,
                         port, message_json, debug, city,
                         system_language, translate, low_bandwidth,
                         content_license_url)
@@ -633,28 +633,28 @@ def post_message_to_outbox(session, translate: {},
     if debug:
         print('DEBUG: handle undo share uploads')
     outbox_undo_share_upload(base_dir, http_prefix,
-                             postToNickname, domain,
+                             post_to_nickname, domain,
                              port, message_json, debug)
 
     if debug:
         print('DEBUG: handle actor updates from c2s')
     _person_receive_update_outbox(recent_posts_cache,
                                   base_dir, http_prefix,
-                                  postToNickname, domain, port,
+                                  post_to_nickname, domain, port,
                                   message_json, debug)
 
     if debug:
         print('DEBUG: sending c2s post to named addresses')
         if message_json.get('to'):
             print('c2s sender: ' +
-                  postToNickname + '@' + domain + ':' + str(port) +
+                  post_to_nickname + '@' + domain + ':' + str(port) +
                   ' recipient: ' + str(message_json['to']))
         else:
             print('c2s sender: ' +
-                  postToNickname + '@' + domain + ':' + str(port))
+                  post_to_nickname + '@' + domain + ':' + str(port))
     namedAddressesThread = \
         send_to_named_addresses_thread(server.session, base_dir,
-                                       postToNickname,
+                                       post_to_nickname,
                                        domain, onion_domain, i2p_domain, port,
                                        http_prefix,
                                        federation_list,

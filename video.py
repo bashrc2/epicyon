@@ -17,7 +17,7 @@ from filters import is_filtered
 
 def convert_video_to_note(base_dir: str, nickname: str, domain: str,
                           system_language: str,
-                          post_json_object: {}, blockedCache: {}) -> {}:
+                          post_json_object: {}, blocked_cache: {}) -> {}:
     """Converts a PeerTube Video ActivityPub(ish) object into
     a Note, so that it can then be displayed in a timeline
     """
@@ -69,7 +69,7 @@ def convert_video_to_note(base_dir: str, nickname: str, domain: str,
         return None
     postDomainFull = get_full_domain(postDomain, postDomainPort)
     if is_blocked(base_dir, nickname, domain,
-                  postNickname, postDomainFull, blockedCache):
+                  postNickname, postDomainFull, blocked_cache):
         return None
 
     # check that the content is valid

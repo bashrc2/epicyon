@@ -457,7 +457,7 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
                              messageBytes: str,
                              httpHeaders: {},
                              postPath: str, debug: bool,
-                             blockedCache: [], system_language: str) -> str:
+                             blocked_cache: [], system_language: str) -> str:
     """Saves the given json to the inbox queue for the person
     keyId specifies the actor sending the post
     """
@@ -488,7 +488,7 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
             print('No post Domain in actor')
             return None
         if is_blocked(base_dir, nickname, domain,
-                      postNickname, postDomain, blockedCache):
+                      postNickname, postDomain, blocked_cache):
             if debug:
                 print('DEBUG: post from ' + postNickname + ' blocked')
             return None
@@ -501,7 +501,7 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
                     post_json_object['object']['inReplyTo']
                 replyDomain, replyPort = \
                     get_domain_from_actor(inReplyTo)
-                if is_blocked_domain(base_dir, replyDomain, blockedCache):
+                if is_blocked_domain(base_dir, replyDomain, blocked_cache):
                     if debug:
                         print('WARN: post contains reply from ' +
                               str(actor) +
@@ -513,7 +513,7 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
                     if replyNickname and replyDomain:
                         if is_blocked(base_dir, nickname, domain,
                                       replyNickname, replyDomain,
-                                      blockedCache):
+                                      blocked_cache):
                             if debug:
                                 print('WARN: post contains reply from ' +
                                       str(actor) +
@@ -1864,7 +1864,7 @@ def _receive_announce(recent_posts_cache: {},
                   message_json['type'])
         return False
 
-    blockedCache = {}
+    blocked_cache = {}
     prefixes = get_protocol_prefixes()
     # is the domain of the announce actor blocked?
     objectDomain = message_json['object']
@@ -1961,7 +1961,7 @@ def _receive_announce(recent_posts_cache: {},
                                          system_language,
                                          domain_full, person_cache,
                                          signing_priv_key_pem,
-                                         blockedCache)
+                                         blocked_cache)
     if not post_json_object:
         print('WARN: unable to download announce: ' + str(message_json))
         notInOnion = True
