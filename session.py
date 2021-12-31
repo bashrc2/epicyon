@@ -53,47 +53,45 @@ def create_session(proxy_type: str):
     return session
 
 
-def url_exists(session, url: str, timeoutSec: int = 3,
+def url_exists(session, url: str, timeout_sec: int = 3,
                http_prefix: str = 'https', domain: str = 'testdomain') -> bool:
     if not isinstance(url, str):
         print('url: ' + str(url))
         print('ERROR: url_exists failed, url should be a string')
         return False
-    sessionParams = {}
-    sessionHeaders = {}
-    sessionHeaders['User-Agent'] = 'Epicyon/' + __version__
+    session_params = {}
+    session_headers = {}
+    session_headers['User-Agent'] = 'Epicyon/' + __version__
     if domain:
-        sessionHeaders['User-Agent'] += \
+        session_headers['User-Agent'] += \
             '; +' + http_prefix + '://' + domain + '/'
     if not session:
         print('WARN: url_exists failed, no session specified')
         return True
     try:
-        result = session.get(url, headers=sessionHeaders,
-                             params=sessionParams,
-                             timeout=timeoutSec)
+        result = session.get(url, headers=session_headers,
+                             params=session_params,
+                             timeout=timeout_sec)
         if result:
             if result.status_code == 200 or \
                result.status_code == 304:
                 return True
-            else:
-                print('url_exists for ' + url + ' returned ' +
-                      str(result.status_code))
+            print('url_exists for ' + url + ' returned ' +
+                  str(result.status_code))
     except BaseException:
         print('EX: url_exists GET failed ' + str(url))
-        pass
     return False
 
 
-def _get_json_request(session, url: str, domain_full: str, sessionHeaders: {},
-                      sessionParams: {}, timeoutSec: int,
+def _get_json_request(session, url: str, domain_full: str, session_headers: {},
+                      session_params: {}, timeout_sec: int,
                       signing_priv_key_pem: str, quiet: bool, debug: bool,
-                      returnJson: bool) -> {}:
+                      return_json: bool) -> {}:
     """http GET for json
     """
     try:
-        result = session.get(url, headers=sessionHeaders,
-                             params=sessionParams, timeout=timeoutSec)
+        result = session.get(url, headers=session_headers,
+                             params=session_params, timeout=timeout_sec)
         if result.status_code != 200:
             if result.status_code == 401:
                 print("WARN: get_json " + url + ' rejected by secure mode')
@@ -107,26 +105,26 @@ def _get_json_request(session, url: str, domain_full: str, sessionHeaders: {},
                 print('WARN: get_json url: ' + url +
                       ' failed with error code ' +
                       str(result.status_code) +
-                      ' headers: ' + str(sessionHeaders))
-        if returnJson:
+                      ' headers: ' + str(session_headers))
+        if return_json:
             return result.json()
         return result.content
     except requests.exceptions.RequestException as ex:
-        sessionHeaders2 = sessionHeaders.copy()
-        if sessionHeaders2.get('Authorization'):
-            sessionHeaders2['Authorization'] = 'REDACTED'
+        session_headers2 = session_headers.copy()
+        if session_headers2.get('Authorization'):
+            session_headers2['Authorization'] = 'REDACTED'
         if debug and not quiet:
             print('ERROR: get_json failed, url: ' + str(url) + ', ' +
-                  'headers: ' + str(sessionHeaders2) + ', ' +
-                  'params: ' + str(sessionParams) + ', ' + str(ex))
+                  'headers: ' + str(session_headers2) + ', ' +
+                  'params: ' + str(session_params) + ', ' + str(ex))
     except ValueError as ex:
-        sessionHeaders2 = sessionHeaders.copy()
-        if sessionHeaders2.get('Authorization'):
-            sessionHeaders2['Authorization'] = 'REDACTED'
+        session_headers2 = session_headers.copy()
+        if session_headers2.get('Authorization'):
+            session_headers2['Authorization'] = 'REDACTED'
         if debug and not quiet:
             print('ERROR: get_json failed, url: ' + str(url) + ', ' +
-                  'headers: ' + str(sessionHeaders2) + ', ' +
-                  'params: ' + str(sessionParams) + ', ' + str(ex))
+                  'headers: ' + str(session_headers2) + ', ' +
+                  'params: ' + str(session_params) + ', ' + str(ex))
     except SocketError as ex:
         if not quiet:
             if ex.errno == errno.ECONNRESET:
@@ -135,8 +133,8 @@ def _get_json_request(session, url: str, domain_full: str, sessionHeaders: {},
     return None
 
 
-def _get_json_signed(session, url: str, domain_full: str, sessionHeaders: {},
-                     sessionParams: {}, timeoutSec: int,
+def _get_json_signed(session, url: str, domain_full: str, session_headers: {},
+                     session_params: {}, timeout_sec: int,
                      signing_priv_key_pem: str, quiet: bool,
                      debug: bool) -> {}:
     """Authorized fetch - a signed version of GET
@@ -149,9 +147,9 @@ def _get_json_signed(session, url: str, domain_full: str, sessionHeaders: {},
         print('Invalid url: ' + url)
         return None
     http_prefix = url.split('://')[0]
-    toDomainFull = url.split('://')[1]
-    if '/' in toDomainFull:
-        toDomainFull = toDomainFull.split('/')[0]
+    to_domain_full = url.split('://')[1]
+    if '/' in to_domain_full:
+        to_domain_full = to_domain_full.split('/')[0]
 
     if ':' in domain_full:
         domain = domain_full.split(':')[0]
@@ -163,72 +161,72 @@ def _get_json_signed(session, url: str, domain_full: str, sessionHeaders: {},
         else:
             port = 80
 
-    if ':' in toDomainFull:
-        toDomain = toDomainFull.split(':')[0]
-        toPort = toDomainFull.split(':')[1]
+    if ':' in to_domain_full:
+        to_domain = to_domain_full.split(':')[0]
+        to_port = to_domain_full.split(':')[1]
     else:
-        toDomain = toDomainFull
+        to_domain = to_domain_full
         if http_prefix == 'https':
-            toPort = 443
+            to_port = 443
         else:
-            toPort = 80
+            to_port = 80
 
     if debug:
         print('Signed GET domain: ' + domain + ' ' + str(port))
-        print('Signed GET toDomain: ' + toDomain + ' ' + str(toPort))
+        print('Signed GET to_domain: ' + to_domain + ' ' + str(to_port))
         print('Signed GET url: ' + url)
         print('Signed GET http_prefix: ' + http_prefix)
-    messageStr = ''
-    withDigest = False
-    if toDomainFull + '/' in url:
-        path = '/' + url.split(toDomainFull + '/')[1]
+    message_str = ''
+    with_digest = False
+    if to_domain_full + '/' in url:
+        path = '/' + url.split(to_domain_full + '/')[1]
     else:
         path = '/actor'
     content_type = 'application/activity+json'
-    if sessionHeaders.get('Accept'):
-        content_type = sessionHeaders['Accept']
-    signatureHeaderJson = \
+    if session_headers.get('Accept'):
+        content_type = session_headers['Accept']
+    signature_header_json = \
         create_signed_header(None, signing_priv_key_pem, 'actor', domain, port,
-                             toDomain, toPort, path, http_prefix, withDigest,
-                             messageStr, content_type)
+                             to_domain, to_port, path, http_prefix,
+                             with_digest, message_str, content_type)
     if debug:
-        print('Signed GET signatureHeaderJson ' + str(signatureHeaderJson))
+        print('Signed GET signature_header_json ' + str(signature_header_json))
     # update the session headers from the signature headers
-    sessionHeaders['Host'] = signatureHeaderJson['host']
-    sessionHeaders['Date'] = signatureHeaderJson['date']
-    sessionHeaders['Accept'] = signatureHeaderJson['accept']
-    sessionHeaders['Signature'] = signatureHeaderJson['signature']
-    sessionHeaders['Content-Length'] = '0'
+    session_headers['Host'] = signature_header_json['host']
+    session_headers['Date'] = signature_header_json['date']
+    session_headers['Accept'] = signature_header_json['accept']
+    session_headers['Signature'] = signature_header_json['signature']
+    session_headers['Content-Length'] = '0'
     if debug:
-        print('Signed GET sessionHeaders ' + str(sessionHeaders))
+        print('Signed GET session_headers ' + str(session_headers))
 
-    returnJson = True
+    return_json = True
     if 'json' not in content_type:
-        returnJson = False
-    return _get_json_request(session, url, domain_full, sessionHeaders,
-                             sessionParams, timeoutSec, None, quiet,
-                             debug, returnJson)
+        return_json = False
+    return _get_json_request(session, url, domain_full, session_headers,
+                             session_params, timeout_sec, None, quiet,
+                             debug, return_json)
 
 
 def get_json(signing_priv_key_pem: str,
              session, url: str, headers: {}, params: {}, debug: bool,
              version: str = '1.2.0', http_prefix: str = 'https',
              domain: str = 'testdomain',
-             timeoutSec: int = 20, quiet: bool = False) -> {}:
+             timeout_sec: int = 20, quiet: bool = False) -> {}:
     if not isinstance(url, str):
         if debug and not quiet:
             print('url: ' + str(url))
             print('ERROR: get_json failed, url should be a string')
         return None
-    sessionParams = {}
-    sessionHeaders = {}
+    session_params = {}
+    session_headers = {}
     if headers:
-        sessionHeaders = headers
+        session_headers = headers
     if params:
-        sessionParams = params
-    sessionHeaders['User-Agent'] = 'Epicyon/' + version
+        session_params = params
+    session_headers['User-Agent'] = 'Epicyon/' + version
     if domain:
-        sessionHeaders['User-Agent'] += \
+        session_headers['User-Agent'] += \
             '; +' + http_prefix + '://' + domain + '/'
     if not session:
         if not quiet:
@@ -240,35 +238,34 @@ def get_json(signing_priv_key_pem: str,
 
     if signing_priv_key_pem:
         return _get_json_signed(session, url, domain,
-                                sessionHeaders, sessionParams,
-                                timeoutSec, signing_priv_key_pem,
+                                session_headers, session_params,
+                                timeout_sec, signing_priv_key_pem,
                                 quiet, debug)
-    else:
-        return _get_json_request(session, url, domain, sessionHeaders,
-                                 sessionParams, timeoutSec,
-                                 None, quiet, debug, True)
+    return _get_json_request(session, url, domain, session_headers,
+                             session_params, timeout_sec,
+                             None, quiet, debug, True)
 
 
 def download_html(signing_priv_key_pem: str,
                   session, url: str, headers: {}, params: {}, debug: bool,
                   version: str = '1.2.0', http_prefix: str = 'https',
                   domain: str = 'testdomain',
-                  timeoutSec: int = 20, quiet: bool = False) -> {}:
+                  timeout_sec: int = 20, quiet: bool = False) -> {}:
     if not isinstance(url, str):
         if debug and not quiet:
             print('url: ' + str(url))
             print('ERROR: download_html failed, url should be a string')
         return None
-    sessionParams = {}
-    sessionHeaders = {}
+    session_params = {}
+    session_headers = {}
     if headers:
-        sessionHeaders = headers
+        session_headers = headers
     if params:
-        sessionParams = params
-    sessionHeaders['Accept'] = 'text/html'
-    sessionHeaders['User-Agent'] = 'Epicyon/' + version
+        session_params = params
+    session_headers['Accept'] = 'text/html'
+    session_headers['User-Agent'] = 'Epicyon/' + version
     if domain:
-        sessionHeaders['User-Agent'] += \
+        session_headers['User-Agent'] += \
             '; +' + http_prefix + '://' + domain + '/'
     if not session:
         if not quiet:
@@ -281,46 +278,45 @@ def download_html(signing_priv_key_pem: str,
 
     if signing_priv_key_pem:
         return _get_json_signed(session, url, domain,
-                                sessionHeaders, sessionParams,
-                                timeoutSec, signing_priv_key_pem,
+                                session_headers, session_params,
+                                timeout_sec, signing_priv_key_pem,
                                 quiet, debug)
-    else:
-        return _get_json_request(session, url, domain, sessionHeaders,
-                                 sessionParams, timeoutSec,
-                                 None, quiet, debug, False)
+    return _get_json_request(session, url, domain, session_headers,
+                             session_params, timeout_sec,
+                             None, quiet, debug, False)
 
 
 def post_json(http_prefix: str, domain_full: str,
               session, post_json_object: {}, federation_list: [],
-              inboxUrl: str, headers: {}, timeoutSec: int = 60,
+              inbox_url: str, headers: {}, timeout_sec: int = 60,
               quiet: bool = False) -> str:
     """Post a json message to the inbox of another person
     """
     # check that we are posting to a permitted domain
-    if not url_permitted(inboxUrl, federation_list):
+    if not url_permitted(inbox_url, federation_list):
         if not quiet:
-            print('post_json: ' + inboxUrl + ' not permitted')
+            print('post_json: ' + inbox_url + ' not permitted')
         return None
 
-    sessionHeaders = headers
-    sessionHeaders['User-Agent'] = 'Epicyon/' + __version__
-    sessionHeaders['User-Agent'] += \
+    session_headers = headers
+    session_headers['User-Agent'] = 'Epicyon/' + __version__
+    session_headers['User-Agent'] += \
         '; +' + http_prefix + '://' + domain_full + '/'
 
     try:
-        postResult = \
-            session.post(url=inboxUrl,
+        post_result = \
+            session.post(url=inbox_url,
                          data=json.dumps(post_json_object),
-                         headers=headers, timeout=timeoutSec)
+                         headers=headers, timeout=timeout_sec)
     except requests.Timeout as ex:
         if not quiet:
-            print('ERROR: post_json timeout ' + inboxUrl + ' ' +
+            print('ERROR: post_json timeout ' + inbox_url + ' ' +
                   json.dumps(post_json_object) + ' ' + str(headers))
             print(ex)
         return ''
     except requests.exceptions.RequestException as ex:
         if not quiet:
-            print('ERROR: post_json requests failed ' + inboxUrl + ' ' +
+            print('ERROR: post_json requests failed ' + inbox_url + ' ' +
                   json.dumps(post_json_object) + ' ' + str(headers) +
                   ' ' + str(ex))
         return None
@@ -330,32 +326,32 @@ def post_json(http_prefix: str, domain_full: str,
         return None
     except ValueError as ex:
         if not quiet:
-            print('ERROR: post_json failed ' + inboxUrl + ' ' +
+            print('ERROR: post_json failed ' + inbox_url + ' ' +
                   json.dumps(post_json_object) + ' ' + str(headers) +
                   ' ' + str(ex))
         return None
-    if postResult:
-        return postResult.text
+    if post_result:
+        return post_result.text
     return None
 
 
 def post_json_string(session, post_jsonStr: str,
                      federation_list: [],
-                     inboxUrl: str,
+                     inbox_url: str,
                      headers: {},
                      debug: bool,
-                     timeoutSec: int = 30,
+                     timeout_sec: int = 30,
                      quiet: bool = False) -> (bool, bool, int):
     """Post a json message string to the inbox of another person
-    The second boolean returned is true if the send is unauthorized
+    The second boolean returned is true if the send if unauthorized
     NOTE: Here we post a string rather than the original json so that
     conversions between string and json format don't invalidate
     the message body digest of http signatures
     """
     try:
-        postResult = \
-            session.post(url=inboxUrl, data=post_jsonStr,
-                         headers=headers, timeout=timeoutSec)
+        post_result = \
+            session.post(url=inbox_url, data=post_jsonStr,
+                         headers=headers, timeout=timeout_sec)
     except requests.exceptions.RequestException as ex:
         if not quiet:
             print('WARN: error during post_json_string requests ' + str(ex))
@@ -364,78 +360,78 @@ def post_json_string(session, post_jsonStr: str,
         if not quiet and ex.errno == errno.ECONNRESET:
             print('WARN: connection was reset during post_json_string')
         if not quiet:
-            print('ERROR: post_json_string failed ' + inboxUrl + ' ' +
+            print('ERROR: post_json_string failed ' + inbox_url + ' ' +
                   post_jsonStr + ' ' + str(headers))
         return None, None, 0
     except ValueError as ex:
         if not quiet:
             print('WARN: error during post_json_string ' + str(ex))
         return None, None, 0
-    if postResult.status_code < 200 or postResult.status_code > 202:
-        if postResult.status_code >= 400 and \
-           postResult.status_code <= 405 and \
-           postResult.status_code != 404:
+    if post_result.status_code < 200 or post_result.status_code > 202:
+        if post_result.status_code >= 400 and \
+           post_result.status_code <= 405 and \
+           post_result.status_code != 404:
             if not quiet:
-                print('WARN: Post to ' + inboxUrl +
+                print('WARN: Post to ' + inbox_url +
                       ' is unauthorized. Code ' +
-                      str(postResult.status_code))
-            return False, True, postResult.status_code
-        else:
-            if not quiet:
-                print('WARN: Failed to post to ' + inboxUrl +
-                      ' with headers ' + str(headers) +
-                      ' status code ' + str(postResult.status_code))
-            return False, False, postResult.status_code
+                      str(post_result.status_code))
+            return False, True, post_result.status_code
+
+        if not quiet:
+            print('WARN: Failed to post to ' + inbox_url +
+                  ' with headers ' + str(headers) +
+                  ' status code ' + str(post_result.status_code))
+        return False, False, post_result.status_code
     return True, False, 0
 
 
-def post_image(session, attachImageFilename: str, federation_list: [],
-               inboxUrl: str, headers: {}) -> str:
+def post_image(session, attach_image_filename: str, federation_list: [],
+               inbox_url: str, headers: {}) -> str:
     """Post an image to the inbox of another person or outbox via c2s
     """
     # check that we are posting to a permitted domain
-    if not url_permitted(inboxUrl, federation_list):
-        print('post_json: ' + inboxUrl + ' not permitted')
+    if not url_permitted(inbox_url, federation_list):
+        print('post_json: ' + inbox_url + ' not permitted')
         return None
 
-    if not is_image_file(attachImageFilename):
+    if not is_image_file(attach_image_filename):
         print('Image must be png, jpg, webp, avif, gif or svg')
         return None
-    if not os.path.isfile(attachImageFilename):
-        print('Image not found: ' + attachImageFilename)
+    if not os.path.isfile(attach_image_filename):
+        print('Image not found: ' + attach_image_filename)
         return None
     content_type = 'image/jpeg'
-    if attachImageFilename.endswith('.png'):
+    if attach_image_filename.endswith('.png'):
         content_type = 'image/png'
-    elif attachImageFilename.endswith('.gif'):
+    elif attach_image_filename.endswith('.gif'):
         content_type = 'image/gif'
-    elif attachImageFilename.endswith('.webp'):
+    elif attach_image_filename.endswith('.webp'):
         content_type = 'image/webp'
-    elif attachImageFilename.endswith('.avif'):
+    elif attach_image_filename.endswith('.avif'):
         content_type = 'image/avif'
-    elif attachImageFilename.endswith('.svg'):
+    elif attach_image_filename.endswith('.svg'):
         content_type = 'image/svg+xml'
     headers['Content-type'] = content_type
 
-    with open(attachImageFilename, 'rb') as avFile:
-        mediaBinary = avFile.read()
+    with open(attach_image_filename, 'rb') as av_file:
+        media_binary = av_file.read()
         try:
-            postResult = session.post(url=inboxUrl, data=mediaBinary,
-                                      headers=headers)
+            post_result = session.post(url=inbox_url, data=media_binary,
+                                       headers=headers)
         except requests.exceptions.RequestException as ex:
             print('WARN: error during post_image requests ' + str(ex))
             return None
         except SocketError as ex:
             if ex.errno == errno.ECONNRESET:
                 print('WARN: connection was reset during post_image')
-            print('ERROR: post_image failed ' + inboxUrl + ' ' +
+            print('ERROR: post_image failed ' + inbox_url + ' ' +
                   str(headers) + ' ' + str(ex))
             return None
         except ValueError as ex:
             print('WARN: error during post_image ' + str(ex))
             return None
-        if postResult:
-            return postResult.text
+        if post_result:
+            return post_result.text
     return None
 
 
@@ -448,7 +444,7 @@ def download_image(session, base_dir: str, url: str,
         return None
 
     # try different image types
-    imageFormats = {
+    image_formats = {
         'png': 'png',
         'jpg': 'jpeg',
         'jpeg': 'jpeg',
@@ -458,16 +454,16 @@ def download_image(session, base_dir: str, url: str,
         'avif': 'avif',
         'ico': 'x-icon'
     }
-    sessionHeaders = None
-    for imFormat, mimeType in imageFormats.items():
-        if url.endswith('.' + imFormat) or \
-           '.' + imFormat + '?' in url:
-            sessionHeaders = {
-                'Accept': 'image/' + mimeType
+    session_headers = None
+    for im_format, mime_type in image_formats.items():
+        if url.endswith('.' + im_format) or \
+           '.' + im_format + '?' in url:
+            session_headers = {
+                'Accept': 'image/' + mime_type
             }
             break
 
-    if not sessionHeaders:
+    if not session_headers:
         if debug:
             print('download_image: no session headers')
         return False
@@ -477,7 +473,7 @@ def download_image(session, base_dir: str, url: str,
             if debug:
                 print('Downloading image url: ' + url)
             result = session.get(url,
-                                 headers=sessionHeaders,
+                                 headers=session_headers,
                                  params=None)
             if result.status_code < 200 or \
                result.status_code > 202:
@@ -492,29 +488,29 @@ def download_image(session, base_dir: str, url: str,
                         print('EX: download_image unable to delete ' +
                               image_filename)
             else:
-                with open(image_filename, 'wb') as f:
-                    f.write(result.content)
+                with open(image_filename, 'wb') as im_file:
+                    im_file.write(result.content)
                     if debug:
                         print('Image downloaded from ' + url)
                     return True
-        except Exception as ex:
+        except BaseException as ex:
             print('EX: Failed to download image: ' +
                   str(url) + ' ' + str(ex))
     return False
 
 
 def download_image_any_mime_type(session, url: str,
-                                 timeoutSec: int, debug: bool):
+                                 timeout_sec: int, debug: bool):
     """http GET for an image with any mime type
     """
-    mimeType = None
+    mime_type = None
     content_type = None
     result = None
-    sessionHeaders = {
+    session_headers = {
         'Accept': 'image/x-icon, image/png, image/webp, image/jpeg, image/gif'
     }
     try:
-        result = session.get(url, headers=sessionHeaders, timeout=timeoutSec)
+        result = session.get(url, headers=session_headers, timeout=timeout_sec)
     except requests.exceptions.RequestException as ex:
         print('ERROR: download_image_any_mime_type failed: ' +
               str(url) + ', ' + str(ex))
@@ -547,7 +543,7 @@ def download_image_any_mime_type(session, url: str,
     if not content_type:
         return None, None
 
-    imageFormats = {
+    image_formats = {
         'ico': 'x-icon',
         'png': 'png',
         'jpg': 'jpeg',
@@ -557,7 +553,7 @@ def download_image_any_mime_type(session, url: str,
         'webp': 'webp',
         'avif': 'avif'
     }
-    for imFormat, mType in imageFormats.items():
-        if 'image/' + mType in content_type:
-            mimeType = 'image/' + mType
-    return result.content, mimeType
+    for _, m_type in image_formats.items():
+        if 'image/' + m_type in content_type:
+            mime_type = 'image/' + m_type
+    return result.content, mime_type
