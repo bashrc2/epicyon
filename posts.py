@@ -984,15 +984,15 @@ def _add_schedule_post(base_dir: str, nickname: str, domain: str,
     schedule_index_filename = \
         base_dir + '/accounts/' + handle + '/schedule.index'
 
-    indexStr = event_date_str + ' ' + post_id.replace('/', '#')
+    index_str = event_date_str + ' ' + post_id.replace('/', '#')
     if os.path.isfile(schedule_index_filename):
-        if indexStr not in open(schedule_index_filename).read():
+        if index_str not in open(schedule_index_filename).read():
             try:
                 with open(schedule_index_filename, 'r+') as schedule_file:
                     content = schedule_file.read()
-                    if indexStr + '\n' not in content:
+                    if index_str + '\n' not in content:
                         schedule_file.seek(0, 0)
-                        schedule_file.write(indexStr + '\n' + content)
+                        schedule_file.write(index_str + '\n' + content)
                         print('DEBUG: scheduled post added to index')
             except OSError as ex:
                 print('EX: Failed to write entry to scheduled posts index ' +
@@ -1000,7 +1000,7 @@ def _add_schedule_post(base_dir: str, nickname: str, domain: str,
     else:
         try:
             with open(schedule_index_filename, 'w+') as schedule_file:
-                schedule_file.write(indexStr + '\n')
+                schedule_file.write(index_str + '\n')
         except OSError as ex:
             print('EX: Failed to write entry to scheduled posts index2 ' +
                   schedule_index_filename + ' ' + str(ex))
@@ -1045,12 +1045,12 @@ def _add_auto_cw(base_dir: str, nickname: str, domain: str,
         rulematch = cwRule.split('->')[0].strip()
         if rulematch not in content:
             continue
-        cwStr = cwRule.split('->')[1].strip()
+        cw_str = cwRule.split('->')[1].strip()
         if new_subject:
-            if cwStr not in new_subject:
-                new_subject += ', ' + cwStr
+            if cw_str not in new_subject:
+                new_subject += ', ' + cw_str
         else:
-            new_subject = cwStr
+            new_subject = cw_str
     return new_subject
 
 
@@ -1289,8 +1289,8 @@ def _consolidate_actors_list(actors_list: []) -> None:
         u_paths = get_user_paths()
         remove_actors = []
         for cc_actor in possible_duplicate_actors:
-            for usrPath in u_paths:
-                cc_actorFull = cc_actor.replace('/@', usrPath)
+            for usr_path in u_paths:
+                cc_actorFull = cc_actor.replace('/@', usr_path)
                 if cc_actorFull in actors_list:
                     if cc_actor not in remove_actors:
                         remove_actors.append(cc_actor)
@@ -1504,8 +1504,8 @@ def _create_post_base(base_dir: str,
         #     CC: [ "X", "Y", "https://mydomain/users/foo", "Z" ]
         remove_from_cc = []
         for cc_recipient in to_cc:
-            for sendToActor in to_recipients:
-                if cc_recipient in sendToActor and \
+            for send_to_actor in to_recipients:
+                if cc_recipient in send_to_actor and \
                    cc_recipient not in remove_from_cc:
                     remove_from_cc.append(cc_recipient)
                     break
@@ -1849,7 +1849,7 @@ def _append_citations_to_blog_post(base_dir: str,
             sections = line.strip().split(citations_separator)
             if len(sections) != 3:
                 continue
-            # dateStr = sections[0]
+            # date_str = sections[0]
             title = sections[1]
             link = sections[2]
             tag_json = {
@@ -2232,7 +2232,7 @@ def create_report_post(base_dir: str,
     return post_json_object
 
 
-def thread_send_post(session, post_jsonStr: str, federation_list: [],
+def thread_send_post(session, post_json_str: str, federation_list: [],
                      inbox_url: str, base_dir: str,
                      signature_header_json: {}, post_log: [],
                      debug: bool) -> None:
@@ -2247,7 +2247,7 @@ def thread_send_post(session, post_jsonStr: str, federation_list: [],
             print('Getting post_json_string for ' + inbox_url)
         try:
             post_result, unauthorized, return_code = \
-                post_json_string(session, post_jsonStr, federation_list,
+                post_json_string(session, post_json_str, federation_list,
                                  inbox_url, signature_header_json,
                                  debug)
             if return_code >= 500 and return_code < 600:
@@ -2262,13 +2262,13 @@ def thread_send_post(session, post_jsonStr: str, federation_list: [],
             print('ERROR: post_json_string failed ' + str(ex))
         if unauthorized:
             print('WARN: thread_send_post: Post is unauthorized ' +
-                  inbox_url + ' ' + post_jsonStr)
+                  inbox_url + ' ' + post_json_str)
             break
         if post_result:
-            logStr = 'Success on try ' + str(tries) + ': ' + post_jsonStr
+            log_str = 'Success on try ' + str(tries) + ': ' + post_json_str
         else:
-            logStr = 'Retry ' + str(tries) + ': ' + post_jsonStr
-        post_log.append(logStr)
+            log_str = 'Retry ' + str(tries) + ': ' + post_json_str
+        post_log.append(log_str)
         # keep the length of the log finite
         # Don't accumulate massive files on systems with limited resources
         while len(post_log) > 16:
@@ -2278,10 +2278,10 @@ def thread_send_post(session, post_jsonStr: str, federation_list: [],
             post_log_filename = base_dir + '/post.log'
             if os.path.isfile(post_log_filename):
                 with open(post_log_filename, 'a+') as log_file:
-                    log_file.write(logStr + '\n')
+                    log_file.write(log_str + '\n')
             else:
                 with open(post_log_filename, 'w+') as log_file:
-                    log_file.write(logStr + '\n')
+                    log_file.write(log_str + '\n')
 
         if post_result:
             if debug:
@@ -2289,7 +2289,7 @@ def thread_send_post(session, post_jsonStr: str, federation_list: [],
             # our work here is done
             break
         if debug:
-            print(post_jsonStr)
+            print(post_json_str)
             print('DEBUG: json post to ' + inbox_url +
                   ' failed. Waiting for ' +
                   str(send_interval_sec) + ' seconds.')
@@ -2386,7 +2386,7 @@ def send_post(signing_priv_key_pem: str, project_version: str,
 
     if to_domain not in inbox_url:
         return 7
-    postPath = inbox_url.split(to_domain, 1)[1]
+    post_path = inbox_url.split(to_domain, 1)[1]
 
     if not post_json_object.get('signature'):
         try:
@@ -2395,18 +2395,17 @@ def send_post(signing_priv_key_pem: str, project_version: str,
             post_json_object = signed_post_json_object
         except Exception as ex:
             print('WARN: failed to JSON-LD sign post, ' + str(ex))
-            pass
 
     # convert json to string so that there are no
     # subsequent conversions after creating message body digest
-    post_jsonStr = json.dumps(post_json_object)
+    post_json_str = json.dumps(post_json_object)
 
     # construct the http header, including the message body digest
     signature_header_json = \
         create_signed_header(None, private_key_pem, nickname, domain, port,
                              to_domain, to_port,
-                             postPath, http_prefix, with_digest, post_jsonStr,
-                             None)
+                             post_path, http_prefix, with_digest,
+                             post_json_str, None)
 
     # if the "to" domain is within the shared items
     # federation list then send the token for this domain
@@ -2437,7 +2436,7 @@ def send_post(signing_priv_key_pem: str, project_version: str,
     thr = \
         thread_with_trace(target=thread_send_post,
                           args=(session,
-                                post_jsonStr,
+                                post_json_str,
                                 federation_list,
                                 inbox_url, base_dir,
                                 signature_header_json.copy(),
@@ -2764,7 +2763,7 @@ def send_signed_json(post_json_object: {}, session, base_dir: str,
         if debug:
             print('DEBUG: ' + to_domain + ' is not in ' + inbox_url)
         return 7
-    postPath = inbox_url.split(to_domain, 1)[1]
+    post_path = inbox_url.split(to_domain, 1)[1]
 
     _add_followers_to_public_post(post_json_object)
 
@@ -2778,14 +2777,14 @@ def send_signed_json(post_json_object: {}, session, base_dir: str,
 
     # convert json to string so that there are no
     # subsequent conversions after creating message body digest
-    post_jsonStr = json.dumps(post_json_object)
+    post_json_str = json.dumps(post_json_object)
 
     # construct the http header, including the message body digest
     signature_header_json = \
         create_signed_header(None, private_key_pem, nickname, domain, port,
                              to_domain, to_port,
-                             postPath, http_prefix, with_digest, post_jsonStr,
-                             None)
+                             post_path, http_prefix, with_digest,
+                             post_json_str, None)
     # optionally add a token so that the receiving instance may access
     # your shared items catalog
     if shared_items_token:
@@ -2807,7 +2806,7 @@ def send_signed_json(post_json_object: {}, session, base_dir: str,
     thr = \
         thread_with_trace(target=thread_send_post,
                           args=(session,
-                                post_jsonStr,
+                                post_json_str,
                                 federation_list,
                                 inbox_url, base_dir,
                                 signature_header_json.copy(),
@@ -3617,27 +3616,27 @@ def remove_post_interactions(post_json_object: {}, force: bool) -> bool:
     marketers and other surveillance-oriented organizations.
     Returns False if this is a private post
     """
-    hasObject = False
+    has_object = False
     if has_object_dict(post_json_object):
-        hasObject = True
-    if hasObject:
-        postObj = post_json_object['object']
+        has_object = True
+    if has_object:
+        post_obj = post_json_object['object']
         if not force:
             # If not authorized and it's a private post
             # then just don't show it within timelines
             if not is_public_post(post_json_object):
                 return False
     else:
-        postObj = post_json_object
+        post_obj = post_json_object
 
     # clear the likes
-    if postObj.get('likes'):
-        postObj['likes'] = {
+    if post_obj.get('likes'):
+        post_obj['likes'] = {
             'items': []
         }
     # clear the reactions
-    if postObj.get('reactions'):
-        postObj['reactions'] = {
+    if post_obj.get('reactions'):
+        post_obj['reactions'] = {
             'items': []
         }
     # remove other collections
@@ -3645,8 +3644,8 @@ def remove_post_interactions(post_json_object: {}, force: bool) -> bool:
         'replies', 'shares', 'bookmarks', 'ignores'
     )
     for remove_name in remove_collections:
-        if postObj.get(remove_name):
-            postObj[remove_name] = {}
+        if post_obj.get(remove_name):
+            post_obj[remove_name] = {}
     return True
 
 
@@ -3749,7 +3748,6 @@ def _create_box_indexed(recent_posts_cache: {},
         except BaseException:
             print('EX: _create_box_indexed ' +
                   'unable to convert page number to string')
-            pass
     box_url = local_actor_url(http_prefix, nickname, domain) + '/' + boxname
     box_header = {
         '@context': 'https://www.w3.org/ns/activitystreams',
@@ -4070,21 +4068,22 @@ def archive_posts_for_person(http_prefix: str, nickname: str, domain: str,
         if not os.path.isfile(file_path):
             continue
         if archive_dir:
-            archivePath = os.path.join(archive_dir, post_filename)
-            os.rename(file_path, archivePath)
+            archive_path = os.path.join(archive_dir, post_filename)
+            os.rename(file_path, archive_path)
 
             extensions = ('replies', 'votes', 'arrived', 'muted')
             for ext in extensions:
                 ext_path = file_path.replace('.json', '.' + ext)
                 if os.path.isfile(ext_path):
                     os.rename(ext_path,
-                              archivePath.replace('.json', '.' + ext))
+                              archive_path.replace('.json', '.' + ext))
                 else:
                     ext_path = file_path.replace('.json',
                                                  '.json.' + ext)
                     if os.path.isfile(ext_path):
                         os.rename(ext_path,
-                                  archivePath.replace('.json', '.json.' + ext))
+                                  archive_path.replace('.json',
+                                                       '.json.' + ext))
         else:
             delete_post(base_dir, http_prefix, nickname, domain,
                         file_path, False, recent_posts_cache)
@@ -4379,9 +4378,9 @@ def get_public_post_domains_blocked(session, base_dir: str,
         return []
 
     # read the blocked domains as a single string
-    blockedStr = ''
+    blocked_str = ''
     with open(blocking_filename, 'r') as fp_block:
-        blockedStr = fp_block.read()
+        blocked_str = fp_block.read()
 
     blocked_domains = []
     for domainName in post_domains:
@@ -4392,7 +4391,7 @@ def get_public_post_domains_blocked(session, base_dir: str,
         if is_evil(domainName):
             blocked_domains.append(domainName)
             continue
-        if domainName in blockedStr:
+        if domainName in blocked_str:
             blocked_domains.append(domainName)
 
     return blocked_domains
@@ -4418,7 +4417,7 @@ def check_domains(session, base_dir: str,
                   nickname: str, domain: str,
                   proxy_type: str, port: int, http_prefix: str,
                   debug: bool, project_version: str,
-                  max_blocked_domains: int, singleCheck: bool,
+                  max_blocked_domains: int, single_check: bool,
                   system_language: str,
                   signing_priv_key_pem: str) -> None:
     """Checks follower accounts for references to globally blocked domains
@@ -4435,7 +4434,7 @@ def check_domains(session, base_dir: str,
         with open(follower_warning_filename, 'r') as fp_warn:
             follower_warning_str = fp_warn.read()
 
-    if singleCheck:
+    if single_check:
         # checks a single random non-mutual
         index = random.randrange(0, len(non_mutuals))
         handle = non_mutuals[index]
@@ -4484,7 +4483,7 @@ def check_domains(session, base_dir: str,
     if update_follower_warnings and follower_warning_str:
         with open(follower_warning_filename, 'w+') as fp_warn:
             fp_warn.write(follower_warning_str)
-        if not singleCheck:
+        if not single_check:
             print(follower_warning_str)
 
 
