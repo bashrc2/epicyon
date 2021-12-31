@@ -17,8 +17,6 @@ from socket import error as SocketError
 import errno
 from http.client import HTTPConnection
 
-base_directory = None
-
 
 def create_session(proxy_type: str):
     session = None
