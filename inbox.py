@@ -2642,7 +2642,7 @@ def _send_to_group_members(session, base_dir: str, handle: str, port: int,
         print('\n\n=========================================================')
         print(handle + ' sending to group members')
 
-    sharedItemFederationTokens = {}
+    shared_item_federation_tokens = {}
     shared_items_federated_domains = []
     shared_items_federated_domainsStr = \
         get_config_param(base_dir, 'shared_items_federated_domains')
@@ -2695,7 +2695,7 @@ def _send_to_group_members(session, base_dir: str, handle: str, port: int,
                              cached_webfingers, person_cache,
                              announceJson, debug, __version__,
                              shared_items_federated_domains,
-                             sharedItemFederationTokens,
+                             shared_item_federation_tokens,
                              signing_priv_key_pem)
 
 
@@ -3074,7 +3074,7 @@ def _receive_question_vote(base_dir: str, nickname: str, domain: str,
     # send out an update
     questionJson['type'] = 'Update'
     shared_items_federated_domains = []
-    sharedItemFederationTokens = {}
+    shared_item_federation_tokens = {}
     send_to_followers_thread(session, base_dir, nickname, domain,
                              onion_domain, i2p_domain, port,
                              http_prefix, federation_list,
@@ -3082,7 +3082,7 @@ def _receive_question_vote(base_dir: str, nickname: str, domain: str,
                              cached_webfingers, person_cache,
                              post_json_object, debug, __version__,
                              shared_items_federated_domains,
-                             sharedItemFederationTokens,
+                             shared_item_federation_tokens,
                              signing_priv_key_pem)
 
 
@@ -3704,15 +3704,15 @@ def run_inbox_queue_watchdog(project_version: str, httpd) -> None:
     httpd.thrInboxQueue.start()
     while True:
         time.sleep(20)
-        if not httpd.thrInboxQueue.is_alive() or httpd.restartInboxQueue:
-            httpd.restartInboxQueueInProgress = True
+        if not httpd.thrInboxQueue.is_alive() or httpd.restart_inbox_queue:
+            httpd.restart_inbox_queue_in_progress = True
             httpd.thrInboxQueue.kill()
             httpd.thrInboxQueue = inbox_queueOriginal.clone(run_inbox_queue)
             httpd.inbox_queue.clear()
             httpd.thrInboxQueue.start()
             print('Restarting inbox queue...')
-            httpd.restartInboxQueueInProgress = False
-            httpd.restartInboxQueue = False
+            httpd.restart_inbox_queue_in_progress = False
+            httpd.restart_inbox_queue = False
 
 
 def _inbox_quota_exceeded(queue: {}, queueFilename: str,

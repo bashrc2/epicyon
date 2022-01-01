@@ -4646,6 +4646,9 @@ def _test_post_field_names():
             if ']' not in names_list[index]:
                 continue
             param_var_name = names_list[index].split(']')[0].strip()
+            if '"' not in param_var_name and \
+               "'" not in param_var_name:
+                continue
             orig_param_var_name = 'fields[' + param_var_name + ']'
             param_var_name = param_var_name.replace('"', '')
             param_var_name = param_var_name.replace("'", '')

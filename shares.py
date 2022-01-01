@@ -1693,7 +1693,7 @@ def _regenerate_shares_token(base_dir: str, domain_full: str,
     _generate_next_shares_token_update(base_dir, minDays, maxDays)
     # update the tokens used within the daemon
     shared_fed_domains = httpd.shared_items_federated_domains
-    httpd.sharedItemFederationTokens = \
+    httpd.shared_item_federation_tokens = \
         generate_shared_item_federation_tokens(shared_fed_domains,
                                                base_dir)
 

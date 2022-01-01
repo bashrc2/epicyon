@@ -193,7 +193,7 @@ def post_message_to_outbox(session, translate: {},
                            allow_local_network_access: bool,
                            city: str, system_language: str,
                            shared_items_federated_domains: [],
-                           sharedItemFederationTokens: {},
+                           shared_item_federation_tokens: {},
                            low_bandwidth: bool,
                            signing_priv_key_pem: str,
                            peertube_instances: str, theme: str,
@@ -524,7 +524,7 @@ def post_message_to_outbox(session, translate: {},
                                  message_json, debug,
                                  version,
                                  shared_items_federated_domains,
-                                 sharedItemFederationTokens,
+                                 shared_item_federation_tokens,
                                  signing_priv_key_pem)
     followers_threads.append(followersThread)
 
@@ -665,7 +665,7 @@ def post_message_to_outbox(session, translate: {},
                                        message_json, debug,
                                        version,
                                        shared_items_federated_domains,
-                                       sharedItemFederationTokens,
+                                       shared_item_federation_tokens,
                                        signing_priv_key_pem)
     followers_threads.append(namedAddressesThread)
     return True

@@ -16,7 +16,7 @@ from webapp_utils import html_header_with_external_style
 from webapp_utils import html_footer
 
 
-def load_access_keys_for_accounts(base_dir: str, keyShortcuts: {},
+def load_access_keys_for_accounts(base_dir: str, key_shortcuts: {},
                                   access_keysTemplate: {}) -> None:
     """Loads key shortcuts for each account
     """
@@ -31,10 +31,10 @@ def load_access_keys_for_accounts(base_dir: str, keyShortcuts: {},
             nickname = acct.split('@')[0]
             access_keys = load_json(access_keysFilename)
             if access_keys:
-                keyShortcuts[nickname] = access_keysTemplate.copy()
+                key_shortcuts[nickname] = access_keysTemplate.copy()
                 for variableName, key in access_keysTemplate.items():
                     if access_keys.get(variableName):
-                        keyShortcuts[nickname][variableName] = \
+                        key_shortcuts[nickname][variableName] = \
                             access_keys[variableName]
         break
 
