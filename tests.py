@@ -4569,7 +4569,7 @@ def _test_checkbox_names():
     print('testCheckboxNames')
 
     fnames = ['edit_text_field', 'edit_check_box', 'edit_text_area']
-    for subdir, dirs, files in os.walk('.'):
+    for _, _, files in os.walk('.'):
         for source_file in files:
             if not source_file.endswith('.py'):
                 continue
@@ -4610,11 +4610,13 @@ def _test_checkbox_names():
         break
 
 
-def _test_post_field_names():
+def _test_post_field_names(source_file: str, fieldnames: []):
     print('testPOSTfieldNames')
 
-    fnames = ['fields.get', 'actor_json.get']
-    source_file = 'daemon.py'
+    fnames = []
+    for field in fieldnames:
+        fnames.append(field + '.get')
+
     source_str = ''
     with open(source_file, 'r') as file_source:
         source_str = file_source.read()
@@ -4631,9 +4633,13 @@ def _test_post_field_names():
             if '"' not in param_var_name and \
                "'" not in param_var_name:
                 continue
+
+            quote_str = '"'
+            if "'" in param_var_name:
+                quote_str = "'"
+
             orig_param_var_name = fname + '(' + param_var_name + ')'
-            param_var_name = param_var_name.replace('"', '')
-            param_var_name = param_var_name.replace("'", '')
+            param_var_name = param_var_name.split(quote_str)[1]
             if ' ' in param_var_name:
                 continue
             if '/' in param_var_name:
@@ -4643,7 +4649,9 @@ def _test_post_field_names():
                       ' should be camel case')
                 assert False
 
-    fnames = [' fields[', 'actor_json[']
+    fnames = []
+    for field in fieldnames:
+        fnames.append(field + '[')
     for fname in fnames:
         if fname in source_str:
             names_list = source_str.split(fname)
@@ -4654,9 +4662,17 @@ def _test_post_field_names():
                 if '"' not in param_var_name and \
                    "'" not in param_var_name:
                     continue
+
+                quote_str = '"'
+                if "'" in param_var_name:
+                    quote_str = "'"
+
                 orig_param_var_name = fname.strip() + param_var_name + ']'
-                param_var_name = param_var_name.replace('"', '')
-                param_var_name = param_var_name.replace("'", '')
+                param_var_name = param_var_name.split(quote_str)[1]
+                if ' ' in param_var_name:
+                    continue
+                if '/' in param_var_name:
+                    continue
                 if '_' in param_var_name:
                     print(orig_param_var_name + ' in ' + source_file +
                           ' should be camel case')
@@ -6311,7 +6327,8 @@ def run_all_tests():
     _test_get_price_from_string()
     _test_post_variable_names()
     _test_config_param_names()
-    _test_post_field_names()
+    _test_post_field_names('daemon.py', ['fields', 'actor_json'])
+    _test_post_field_names('theme.py', ['config_json'])
     _test_checkbox_names()
     _test_functions()
     _test_get_actor_from_in_reply_to()

@@ -167,11 +167,11 @@ def _set_theme_in_config(base_dir: str, name: str) -> bool:
     config_filename = base_dir + '/config.json'
     if not os.path.isfile(config_filename):
         return False
-    configJson = load_json(config_filename, 0)
-    if not configJson:
+    config_json = load_json(config_filename, 0)
+    if not config_json:
         return False
-    configJson['theme'] = name
-    return save_json(configJson, config_filename)
+    config_json['theme'] = name
+    return save_json(config_json, config_filename)
 
 
 def _set_newswire_publish_as_icon(base_dir: str, useIcon: bool) -> bool:
@@ -180,11 +180,11 @@ def _set_newswire_publish_as_icon(base_dir: str, useIcon: bool) -> bool:
     config_filename = base_dir + '/config.json'
     if not os.path.isfile(config_filename):
         return False
-    configJson = load_json(config_filename, 0)
-    if not configJson:
+    config_json = load_json(config_filename, 0)
+    if not config_json:
         return False
-    configJson['show_publish_as_icon'] = useIcon
-    return save_json(configJson, config_filename)
+    config_json['showPublishAsIcon'] = useIcon
+    return save_json(config_json, config_filename)
 
 
 def _set_icons_as_buttons(base_dir: str, useButtons: bool) -> bool:
@@ -194,11 +194,11 @@ def _set_icons_as_buttons(base_dir: str, useButtons: bool) -> bool:
     config_filename = base_dir + '/config.json'
     if not os.path.isfile(config_filename):
         return False
-    configJson = load_json(config_filename, 0)
-    if not configJson:
+    config_json = load_json(config_filename, 0)
+    if not config_json:
         return False
-    configJson['icons_as_buttons'] = useButtons
-    return save_json(configJson, config_filename)
+    config_json['iconsAsButtons'] = useButtons
+    return save_json(config_json, config_filename)
 
 
 def _set_rss_icon_at_top(base_dir: str, atTop: bool) -> bool:
@@ -207,11 +207,11 @@ def _set_rss_icon_at_top(base_dir: str, atTop: bool) -> bool:
     config_filename = base_dir + '/config.json'
     if not os.path.isfile(config_filename):
         return False
-    configJson = load_json(config_filename, 0)
-    if not configJson:
+    config_json = load_json(config_filename, 0)
+    if not config_json:
         return False
-    configJson['rss_icon_at_top'] = atTop
-    return save_json(configJson, config_filename)
+    config_json['rssIconAtTop'] = atTop
+    return save_json(config_json, config_filename)
 
 
 def _set_publish_button_at_top(base_dir: str, atTop: bool) -> bool:
@@ -221,11 +221,11 @@ def _set_publish_button_at_top(base_dir: str, atTop: bool) -> bool:
     config_filename = base_dir + '/config.json'
     if not os.path.isfile(config_filename):
         return False
-    configJson = load_json(config_filename, 0)
-    if not configJson:
+    config_json = load_json(config_filename, 0)
+    if not config_json:
         return False
-    configJson['publish_button_at_top'] = atTop
-    return save_json(configJson, config_filename)
+    config_json['publishButtonAtTop'] = atTop
+    return save_json(config_json, config_filename)
 
 
 def _set_full_width_timeline_button_header(base_dir: str,
@@ -236,11 +236,11 @@ def _set_full_width_timeline_button_header(base_dir: str,
     config_filename = base_dir + '/config.json'
     if not os.path.isfile(config_filename):
         return False
-    configJson = load_json(config_filename, 0)
-    if not configJson:
+    config_json = load_json(config_filename, 0)
+    if not config_json:
         return False
-    configJson['full_width_tl_button_header'] = fullWidth
-    return save_json(configJson, config_filename)
+    config_json['fullWidthTlButtonHeader'] = fullWidth
+    return save_json(config_json, config_filename)
 
 
 def get_theme(base_dir: str) -> str:
@@ -248,10 +248,10 @@ def get_theme(base_dir: str) -> str:
     """
     config_filename = base_dir + '/config.json'
     if os.path.isfile(config_filename):
-        configJson = load_json(config_filename, 0)
-        if configJson:
-            if configJson.get('theme'):
-                return configJson['theme']
+        config_json = load_json(config_filename, 0)
+        if config_json:
+            if config_json.get('theme'):
+                return config_json['theme']
     return 'default'
 
 

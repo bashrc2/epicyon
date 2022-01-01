@@ -1518,7 +1518,7 @@ class PubServer(BaseHTTPRequestHandler):
             'Follow', 'Like', 'EmojiReact', 'Add', 'Remove', 'Ignore'
         )
         for add_to_type in add_to_field_types:
-            message_json, toFieldExists = \
+            message_json, _ = \
                 add_to_field(add_to_type, message_json, self.server.debug)
 
         begin_save_time = time.time()
@@ -1881,27 +1881,27 @@ class PubServer(BaseHTTPRequestHandler):
                     if '=' in moderation_str:
                         moderation_text = \
                             moderation_str.split('=')[1].strip()
-                        modText = moderation_text.replace('+', ' ')
+                        mod_text = moderation_text.replace('+', ' ')
                         moderation_text = \
-                            urllib.parse.unquote_plus(modText.strip())
+                            urllib.parse.unquote_plus(mod_text.strip())
                 elif moderation_str.startswith('submitInfo'):
                     search_handle = moderation_text
                     if search_handle:
                         if '/@' in search_handle:
-                            searchNickname = \
+                            search_nickname = \
                                 get_nickname_from_actor(search_handle)
-                            searchDomain, searchPort = \
+                            search_domain, search_port = \
                                 get_domain_from_actor(search_handle)
                             search_handle = \
-                                searchNickname + '@' + searchDomain
+                                search_nickname + '@' + search_domain
                         if '@' not in search_handle:
                             if search_handle.startswith('http'):
-                                searchNickname = \
+                                search_nickname = \
                                     get_nickname_from_actor(search_handle)
-                                searchDomain, searchPort = \
+                                search_domain, search_port = \
                                     get_domain_from_actor(search_handle)
                                 search_handle = \
-                                    searchNickname + '@' + searchDomain
+                                    search_nickname + '@' + search_domain
                         if '@' not in search_handle:
                             # is this a local nickname on this instance?
                             localHandle = \
@@ -1973,10 +1973,10 @@ class PubServer(BaseHTTPRequestHandler):
                     if moderation_text.startswith('http') or \
                        moderation_text.startswith('hyper'):
                         # https://domain
-                        block_domain, blockPort = \
+                        block_domain, block_port = \
                             get_domain_from_actor(moderation_text)
                         full_block_domain = \
-                            get_full_domain(block_domain, blockPort)
+                            get_full_domain(block_domain, block_port)
                     if '@' in moderation_text:
                         # nick@domain or *@domain
                         full_block_domain = moderation_text.split('@')[1]
@@ -1992,10 +1992,10 @@ class PubServer(BaseHTTPRequestHandler):
                     if moderation_text.startswith('http') or \
                        moderation_text.startswith('hyper'):
                         # https://domain
-                        block_domain, blockPort = \
+                        block_domain, block_port = \
                             get_domain_from_actor(moderation_text)
                         full_block_domain = \
-                            get_full_domain(block_domain, blockPort)
+                            get_full_domain(block_domain, block_port)
                     if '@' in moderation_text:
                         # nick@domain or *@domain
                         full_block_domain = moderation_text.split('@')[1]
@@ -2101,21 +2101,22 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         save_keys = False
-        access_keysTemplate = self.server.access_keys
-        for variable_name, key in access_keysTemplate.items():
+        access_keys_template = self.server.access_keys
+        for variable_name, _ in access_keys_template.items():
             if not access_keys.get(variable_name):
-                access_keys[variable_name] = access_keysTemplate[variable_name]
+                access_keys[variable_name] = \
+                    access_keys_template[variable_name]
 
             variable_name2 = variable_name.replace(' ', '_')
             if variable_name2 + '=' in access_keys_params:
-                newKey = access_keys_params.split(variable_name2 + '=')[1]
-                if '&' in newKey:
-                    newKey = newKey.split('&')[0]
-                if newKey:
-                    if len(newKey) > 1:
-                        newKey = newKey[0]
-                    if newKey != access_keys[variable_name]:
-                        access_keys[variable_name] = newKey
+                new_key = access_keys_params.split(variable_name2 + '=')[1]
+                if '&' in new_key:
+                    new_key = new_key.split('&')[0]
+                if new_key:
+                    if len(new_key) > 1:
+                        new_key = new_key[0]
+                    if new_key != access_keys[variable_name]:
+                        access_keys[variable_name] = new_key
                         save_keys = True
 
         if save_keys:
@@ -2338,9 +2339,9 @@ class PubServer(BaseHTTPRequestHandler):
             options_actor = options_actor.split('&')[0]
 
         # url of the avatar
-        optionsAvatarUrl = options_confirm_params.split('avatarUrl=')[1]
-        if '&' in optionsAvatarUrl:
-            optionsAvatarUrl = optionsAvatarUrl.split('&')[0]
+        options_avatar_url = options_confirm_params.split('avatarUrl=')[1]
+        if '&' in options_avatar_url:
+            options_avatar_url = options_avatar_url.split('&')[0]
 
         # link to a post, which can then be included in reports
         post_url = None
@@ -2384,11 +2385,11 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.postreq_busy = False
             return
 
-        optionsDomain, optionsPort = get_domain_from_actor(options_actor)
-        optionsDomainFull = get_full_domain(optionsDomain, optionsPort)
+        options_domain, options_port = get_domain_from_actor(options_actor)
+        options_domain_full = get_full_domain(options_domain, options_port)
         if chooser_nickname == options_nickname and \
-           optionsDomain == domain and \
-           optionsPort == port:
+           options_domain == domain and \
+           options_port == port:
             if debug:
                 print('You cannot perform an option action on yourself')
 
@@ -2407,7 +2408,7 @@ class PubServer(BaseHTTPRequestHandler):
         if '&submitPetname=' in options_confirm_params and petname:
             if debug:
                 print('Change petname to ' + petname)
-            handle = options_nickname + '@' + optionsDomainFull
+            handle = options_nickname + '@' + options_domain_full
             set_pet_name(base_dir,
                          chooser_nickname,
                          domain,
@@ -2425,7 +2426,7 @@ class PubServer(BaseHTTPRequestHandler):
         if '&submitPersonNotes=' in options_confirm_params:
             if debug:
                 print('Change person notes')
-            handle = options_nickname + '@' + optionsDomainFull
+            handle = options_nickname + '@' + options_domain_full
             if not person_notes:
                 person_notes = ''
             set_person_notes(base_dir,
@@ -2453,13 +2454,13 @@ class PubServer(BaseHTTPRequestHandler):
                                        chooser_nickname,
                                        domain,
                                        options_nickname,
-                                       optionsDomainFull)
+                                       options_domain_full)
             else:
                 remove_person_from_calendar(base_dir,
                                             chooser_nickname,
                                             domain,
                                             options_nickname,
-                                            optionsDomainFull)
+                                            options_domain_full)
             users_path_str = \
                 users_path + '/' + self.server.default_timeline + \
                 '?page=' + str(page_number)
@@ -2481,13 +2482,13 @@ class PubServer(BaseHTTPRequestHandler):
                                    chooser_nickname,
                                    domain,
                                    options_nickname,
-                                   optionsDomainFull)
+                                   options_domain_full)
             else:
                 remove_notify_on_post(base_dir,
                                       chooser_nickname,
                                       domain,
                                       options_nickname,
-                                      optionsDomainFull)
+                                      options_domain_full)
             users_path_str = \
                 users_path + '/' + self.server.default_timeline + \
                 '?page=' + str(page_number)
@@ -2511,7 +2512,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if '&' in posts_to_news:
                         posts_to_news = posts_to_news.split('&')[0]
                 account_dir = acct_dir(self.server.base_dir,
-                                       options_nickname, optionsDomain)
+                                       options_nickname, options_domain)
                 newswire_blocked_filename = account_dir + '/.nonewswire'
                 if posts_to_news == 'on':
                     if os.path.isfile(newswire_blocked_filename):
@@ -2557,7 +2558,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if '&' in posts_to_features:
                         posts_to_features = posts_to_features.split('&')[0]
                 account_dir = acct_dir(self.server.base_dir,
-                                       options_nickname, optionsDomain)
+                                       options_nickname, options_domain)
                 features_blocked_filename = account_dir + '/.nofeatures'
                 if posts_to_features == 'on':
                     if os.path.isfile(features_blocked_filename):
@@ -2603,7 +2604,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if '&' in mod_posts_to_news:
                         mod_posts_to_news = mod_posts_to_news.split('&')[0]
                 account_dir = acct_dir(self.server.base_dir,
-                                       options_nickname, optionsDomain)
+                                       options_nickname, options_domain)
                 newswire_mod_filename = account_dir + '/.newswiremoderated'
                 if mod_posts_to_news != 'on':
                     if os.path.isfile(newswire_mod_filename):
@@ -2635,11 +2636,11 @@ class PubServer(BaseHTTPRequestHandler):
                   ' of ' + options_actor)
             if add_block(base_dir, chooser_nickname,
                          domain,
-                         options_nickname, optionsDomainFull):
+                         options_nickname, options_domain_full):
                 # send block activity
                 self._send_block(http_prefix,
                                  chooser_nickname, domain_full,
-                                 options_nickname, optionsDomainFull)
+                                 options_nickname, options_domain_full)
 
         # person options screen, unblock button
         # See html_person_options
@@ -2652,7 +2653,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      base_dir,
                                      users_path,
                                      options_actor,
-                                     optionsAvatarUrl).encode('utf-8')
+                                     options_avatar_url).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
                               cookie, calling_domain, False)
@@ -2672,7 +2673,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     base_dir,
                                     users_path,
                                     options_actor,
-                                    optionsAvatarUrl).encode('utf-8')
+                                    options_avatar_url).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
                               cookie, calling_domain, False)
@@ -2691,7 +2692,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       base_dir,
                                       users_path,
                                       options_actor,
-                                      optionsAvatarUrl).encode('utf-8')
+                                      options_avatar_url).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
                               cookie, calling_domain, False)
@@ -2955,20 +2956,20 @@ class PubServer(BaseHTTPRequestHandler):
                 if debug:
                     print(follower_nickname + ' stops following ' +
                           following_actor)
-                followActor = \
+                follow_actor = \
                     local_actor_url(http_prefix,
                                     follower_nickname, domain_full)
                 status_number, _ = get_status_number()
-                followId = followActor + '/statuses/' + str(status_number)
+                follow_id = follow_actor + '/statuses/' + str(status_number)
                 unfollow_json = {
                     '@context': 'https://www.w3.org/ns/activitystreams',
-                    'id': followId + '/undo',
+                    'id': follow_id + '/undo',
                     'type': 'Undo',
-                    'actor': followActor,
+                    'actor': follow_actor,
                     'object': {
-                        'id': followId,
+                        'id': follow_id,
                         'type': 'Follow',
-                        'actor': followActor,
+                        'actor': follow_actor,
                         'object': following_actor
                     }
                 }
@@ -3357,7 +3358,7 @@ class PubServer(BaseHTTPRequestHandler):
                         break
                 # skill search
                 search_str = search_str.replace('*', '').strip()
-                skillStr = \
+                skill_str = \
                     html_skills_search(actor_str,
                                        self.server.css_cache,
                                        self.server.translate,
@@ -3366,8 +3367,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        search_str,
                                        self.server.instance_only_skills_search,
                                        64)
-                if skillStr:
-                    msg = skillStr.encode('utf-8')
+                if skill_str:
+                    msg = skill_str.encode('utf-8')
                     msglen = len(msg)
                     self._login_headers('text/html',
                                         msglen, calling_domain)
@@ -3405,7 +3406,7 @@ class PubServer(BaseHTTPRequestHandler):
                 # your post history search
                 nickname = get_nickname_from_actor(actor_str)
                 search_str = search_str.replace("'", '', 1).strip()
-                historyStr = \
+                history_str = \
                     html_history_search(self.server.css_cache,
                                         self.server.translate,
                                         base_dir,
@@ -3433,8 +3434,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.signing_priv_key_pem,
                                         self.server.cw_lists,
                                         self.server.lists_enabled)
-                if historyStr:
-                    msg = historyStr.encode('utf-8')
+                if history_str:
+                    msg = history_str.encode('utf-8')
                     msglen = len(msg)
                     self._login_headers('text/html',
                                         msglen, calling_domain)
@@ -3473,7 +3474,7 @@ class PubServer(BaseHTTPRequestHandler):
                 # bookmark search
                 nickname = get_nickname_from_actor(actor_str)
                 search_str = search_str.replace('-', '', 1).strip()
-                bookmarksStr = \
+                bookmarks_str = \
                     html_history_search(self.server.css_cache,
                                         self.server.translate,
                                         base_dir,
@@ -3501,8 +3502,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.signing_priv_key_pem,
                                         self.server.cw_lists,
                                         self.server.lists_enabled)
-                if bookmarksStr:
-                    msg = bookmarksStr.encode('utf-8')
+                if bookmarks_str:
+                    msg = bookmarks_str.encode('utf-8')
                     msglen = len(msg)
                     self._login_headers('text/html',
                                         msglen, calling_domain)
@@ -3526,19 +3527,19 @@ class PubServer(BaseHTTPRequestHandler):
                 if not self._establish_session("handle search"):
                     self.server.postreq_busy = False
                     return
-                profilePathStr = path.replace('/searchhandle', '')
+                profile_path_str = path.replace('/searchhandle', '')
 
                 # are we already following the searched for handle?
                 if is_following_actor(base_dir, nickname, domain, search_str):
                     if not has_users_path(search_str):
-                        searchNickname = get_nickname_from_actor(search_str)
-                        searchDomain, searchPort = \
+                        search_nickname = get_nickname_from_actor(search_str)
+                        search_domain, search_port = \
                             get_domain_from_actor(search_str)
-                        searchDomainFull = \
-                            get_full_domain(searchDomain, searchPort)
+                        search_domain_full = \
+                            get_full_domain(search_domain, search_port)
                         actor = \
-                            local_actor_url(http_prefix, searchNickname,
-                                            searchDomainFull)
+                            local_actor_url(http_prefix, search_nickname,
+                                            search_domain_full)
                     else:
                         actor = search_str
                     avatar_url = \
@@ -3548,10 +3549,10 @@ class PubServer(BaseHTTPRequestHandler):
                                              self.server.person_cache,
                                              None, True,
                                              self.server.signing_priv_key_pem)
-                    profilePathStr += \
+                    profile_path_str += \
                         '?options=' + actor + ';1;' + avatar_url
 
-                    self._show_person_options(calling_domain, profilePathStr,
+                    self._show_person_options(calling_domain, profile_path_str,
                                               base_dir, http_prefix,
                                               domain, domain_full,
                                               getreq_start_time,
@@ -3580,13 +3581,13 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.cached_webfingers
                     recent_posts_cache = \
                         self.server.recent_posts_cache
-                    profileStr = \
+                    profile_str = \
                         html_profile_after_search(self.server.css_cache,
                                                   recent_posts_cache,
                                                   self.server.max_recent_posts,
                                                   self.server.translate,
                                                   base_dir,
-                                                  profilePathStr,
+                                                  profile_path_str,
                                                   http_prefix,
                                                   nickname,
                                                   domain,
@@ -3610,8 +3611,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                   signing_priv_key_pem,
                                                   self.server.cw_lists,
                                                   self.server.lists_enabled)
-                if profileStr:
-                    msg = profileStr.encode('utf-8')
+                if profile_str:
+                    msg = profile_str.encode('utf-8')
                     msglen = len(msg)
                     self._login_headers('text/html',
                                         msglen, calling_domain)
