@@ -4613,7 +4613,7 @@ def _test_checkbox_names():
 def _test_post_field_names():
     print('testPOSTfieldNames')
 
-    fnames = ['fields.get']
+    fnames = ['fields.get', 'actor_json.get']
     source_file = 'daemon.py'
     source_str = ''
     with open(source_file, 'r') as file_source:
@@ -4628,6 +4628,9 @@ def _test_post_field_names():
             if ')' not in names_list[index]:
                 continue
             param_var_name = names_list[index].split(')')[0].strip()
+            if '"' not in param_var_name and \
+               "'" not in param_var_name:
+                continue
             orig_param_var_name = fname + '(' + param_var_name + ')'
             param_var_name = param_var_name.replace('"', '')
             param_var_name = param_var_name.replace("'", '')
@@ -4640,22 +4643,24 @@ def _test_post_field_names():
                       ' should be camel case')
                 assert False
 
-    if ' fields[' in source_str:
-        names_list = source_str.split(' fields[')
-        for index in range(1, len(names_list)):
-            if ']' not in names_list[index]:
-                continue
-            param_var_name = names_list[index].split(']')[0].strip()
-            if '"' not in param_var_name and \
-               "'" not in param_var_name:
-                continue
-            orig_param_var_name = 'fields[' + param_var_name + ']'
-            param_var_name = param_var_name.replace('"', '')
-            param_var_name = param_var_name.replace("'", '')
-            if '_' in param_var_name:
-                print(orig_param_var_name + ' in ' + source_file +
-                      ' should be camel case')
-                assert False
+    fnames = [' fields[', 'actor_json[']
+    for fname in fnames:
+        if fname in source_str:
+            names_list = source_str.split(fname)
+            for index in range(1, len(names_list)):
+                if ']' not in names_list[index]:
+                    continue
+                param_var_name = names_list[index].split(']')[0].strip()
+                if '"' not in param_var_name and \
+                   "'" not in param_var_name:
+                    continue
+                orig_param_var_name = fname.strip() + param_var_name + ']'
+                param_var_name = param_var_name.replace('"', '')
+                param_var_name = param_var_name.replace("'", '')
+                if '_' in param_var_name:
+                    print(orig_param_var_name + ' in ' + source_file +
+                          ' should be camel case')
+                    assert False
 
 
 def _test_functions():
