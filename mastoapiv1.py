@@ -92,7 +92,7 @@ def masto_api_v1_response(path: str, calling_domain: str,
                           registration: bool,
                           system_language: str,
                           project_version: str,
-                          customEmoji: [],
+                          custom_emoji: [],
                           show_node_info_accounts: bool,
                           broch_mode: bool) -> ({}, str):
     """This is a vestigil mastodon API for the purpose
@@ -192,7 +192,7 @@ def masto_api_v1_response(path: str, calling_domain: str,
         }
         sendJsonStr = 'masto API timelines sent ' + path + callingInfo
     elif path.startswith('/api/v1/custom_emojis'):
-        sendJson = customEmoji
+        sendJson = custom_emoji
         sendJsonStr = \
             'masto API custom emojis sent ' + path + callingInfo
 
