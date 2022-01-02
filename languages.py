@@ -119,7 +119,7 @@ def understood_post_language(base_dir: str, nickname: str, domain: str,
         if msg_object['contentMap'].get(lang):
             return True
     # is the language for this post supported by libretranslate?
-    libretranslate_url = get_config_param(base_dir, "libretranslate_url")
+    libretranslate_url = get_config_param(base_dir, "libretranslateUrl")
     if libretranslate_url:
         libretranslate_api_key = \
             get_config_param(base_dir, "libretranslateApiKey")
