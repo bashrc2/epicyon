@@ -24,37 +24,37 @@ def get_actor_languages(actor_json: {}) -> str:
     lang_list = get_actor_languages_list(actor_json)
     if not lang_list:
         return ''
-    languagesStr = ''
+    languages_str = ''
     for lang in lang_list:
-        if languagesStr:
-            languagesStr += ' / ' + lang
+        if languages_str:
+            languages_str += ' / ' + lang
         else:
-            languagesStr = lang
-    return languagesStr
+            languages_str = lang
+    return languages_str
 
 
 def set_actor_languages(base_dir: str, actor_json: {},
-                        languagesStr: str) -> None:
+                        languages_str: str) -> None:
     """Sets the languages used by the given actor
     """
     separator = ','
-    if '/' in languagesStr:
+    if '/' in languages_str:
         separator = '/'
-    elif ',' in languagesStr:
+    elif ',' in languages_str:
         separator = ','
-    elif ';' in languagesStr:
+    elif ';' in languages_str:
         separator = ';'
-    elif '+' in languagesStr:
+    elif '+' in languages_str:
         separator = '+'
-    elif ' ' in languagesStr:
+    elif ' ' in languages_str:
         separator = ' '
-    lang_list = languagesStr.lower().split(separator)
+    lang_list = languages_str.lower().split(separator)
     lang_list2 = ''
     for lang in lang_list:
         lang = lang.strip()
         if base_dir:
-            languageFilename = base_dir + '/translations/' + lang + '.json'
-            if os.path.isfile(languageFilename):
+            language_filename = base_dir + '/translations/' + lang + '.json'
+            if os.path.isfile(language_filename):
                 if lang_list2:
                     lang_list2 += ', ' + lang.strip()
                 else:
@@ -66,7 +66,7 @@ def set_actor_languages(base_dir: str, actor_json: {},
                 lang_list2 += lang.strip()
 
     # remove any existing value
-    propertyFound = None
+    property_found = None
     for property_value in actor_json['attachment']:
         if not property_value.get('name'):
             continue
@@ -74,20 +74,20 @@ def set_actor_languages(base_dir: str, actor_json: {},
             continue
         if not property_value['name'].lower().startswith('languages'):
             continue
-        propertyFound = property_value
+        property_found = property_value
         break
-    if propertyFound:
-        actor_json['attachment'].remove(propertyFound)
+    if property_found:
+        actor_json['attachment'].remove(property_found)
 
     if not lang_list2:
         return
 
-    newLanguages = {
+    new_languages = {
         "name": "Languages",
         "type": "PropertyValue",
         "value": lang_list2
     }
-    actor_json['attachment'].append(newLanguages)
+    actor_json['attachment'].append(new_languages)
 
 
 def understood_post_language(base_dir: str, nickname: str, domain: str,
@@ -97,41 +97,42 @@ def understood_post_language(base_dir: str, nickname: str, domain: str,
     """Returns true if the post is written in a language
     understood by this account
     """
-    msgObject = message_json
+    msg_object = message_json
     if has_object_dict(message_json):
-        msgObject = message_json['object']
-    if not msgObject.get('contentMap'):
+        msg_object = message_json['object']
+    if not msg_object.get('contentMap'):
         return True
-    if not isinstance(msgObject['contentMap'], dict):
+    if not isinstance(msg_object['contentMap'], dict):
         return True
-    if msgObject['contentMap'].get(system_language):
+    if msg_object['contentMap'].get(system_language):
         return True
-    personUrl = local_actor_url(http_prefix, nickname, domain_full)
+    person_url = local_actor_url(http_prefix, nickname, domain_full)
     actor_json = \
-        get_person_from_cache(base_dir, personUrl, person_cache, False)
+        get_person_from_cache(base_dir, person_url, person_cache, False)
     if not actor_json:
-        print('WARN: unable to load actor to check languages ' + personUrl)
+        print('WARN: unable to load actor to check languages ' + person_url)
         return False
     languages_understood = get_actor_languages_list(actor_json)
     if not languages_understood:
         return True
     for lang in languages_understood:
-        if msgObject['contentMap'].get(lang):
+        if msg_object['contentMap'].get(lang):
             return True
     # is the language for this post supported by libretranslate?
-    libretranslateUrl = get_config_param(base_dir, "libretranslateUrl")
-    if libretranslateUrl:
-        libretranslateApiKey = \
+    libretranslate_url = get_config_param(base_dir, "libretranslate_url")
+    if libretranslate_url:
+        libretranslate_api_key = \
             get_config_param(base_dir, "libretranslateApiKey")
         lang_list = \
-            libretranslate_languages(libretranslateUrl, libretranslateApiKey)
+            libretranslate_languages(libretranslate_url,
+                                     libretranslate_api_key)
         for lang in lang_list:
-            if msgObject['contentMap'].get(lang):
+            if msg_object['contentMap'].get(lang):
                 return True
     return False
 
 
-def libretranslate_languages(url: str, apiKey: str = None) -> []:
+def libretranslate_languages(url: str, api_key: str = None) -> []:
     """Returns a list of supported languages
     """
     if not url:
@@ -144,12 +145,12 @@ def libretranslate_languages(url: str, apiKey: str = None) -> []:
 
     params = dict()
 
-    if apiKey:
-        params["api_key"] = apiKey
+    if api_key:
+        params["api_key"] = api_key
 
-    urlParams = parse.urlencode(params)
+    url_params = parse.urlencode(params)
 
-    req = request.Request(url, data=urlParams.encode())
+    req = request.Request(url, data=url_params.encode())
 
     response = request.urlopen(req)
 
@@ -167,10 +168,10 @@ def libretranslate_languages(url: str, apiKey: str = None) -> []:
             continue
         if not lang.get('code'):
             continue
-        langCode = lang['code']
-        if len(langCode) != 2:
+        lang_code = lang['code']
+        if len(lang_code) != 2:
             continue
-        lang_list.append(langCode)
+        lang_list.append(lang_code)
     lang_list.sort()
     return lang_list
 
@@ -193,37 +194,37 @@ def get_links_from_content(content: str) -> {}:
         if '://' in url and '.' in url and \
            '>' in subsection:
             if url not in links:
-                linkText = subsection.split('>')[1]
-                if '<' in linkText:
-                    linkText = linkText.split('<')[0]
-                    links[linkText] = url
+                link_text = subsection.split('>')[1]
+                if '<' in link_text:
+                    link_text = link_text.split('<')[0]
+                    links[link_text] = url
     return links
 
 
 def add_links_to_content(content: str, links: {}) -> str:
     """Adds links back into plain text
     """
-    for linkText, url in links.items():
-        urlDesc = url
-        if linkText.startswith('@') and linkText in content:
+    for link_text, url in links.items():
+        url_desc = url
+        if link_text.startswith('@') and link_text in content:
             content = \
-                content.replace(linkText,
+                content.replace(link_text,
                                 '<a href="' + url +
                                 '" rel="nofollow noopener ' +
                                 'noreferrer" target="_blank">' +
-                                linkText + '</a>')
+                                link_text + '</a>')
         else:
-            if len(urlDesc) > 40:
-                urlDesc = urlDesc[:40]
+            if len(url_desc) > 40:
+                url_desc = url_desc[:40]
             content += \
                 '<p><a href="' + url + \
                 '" rel="nofollow noopener noreferrer" target="_blank">' + \
-                urlDesc + '</a></p>'
+                url_desc + '</a></p>'
     return content
 
 
 def libretranslate(url: str, text: str,
-                   source: str, target: str, apiKey: str = None) -> str:
+                   source: str, target: str, api_key: str = None) -> str:
     """Translate string using libretranslate
     """
     if not url:
@@ -235,7 +236,7 @@ def libretranslate(url: str, text: str,
         else:
             url += "translate"
 
-    originalText = text
+    original_text = text
 
     # get any links from the text
     links = get_links_from_content(text)
@@ -244,36 +245,36 @@ def libretranslate(url: str, text: str,
     text = remove_html(text)
 
     # remove any links from plain text version of the content
-    for _, url in links.items():
-        text = text.replace(url, '')
+    for _, url2 in links.items():
+        text = text.replace(url2, '')
 
-    ltParams = {
+    lt_params = {
         "q": text,
         "source": source,
         "target": target
     }
 
-    if apiKey:
-        ltParams["api_key"] = apiKey
+    if api_key:
+        lt_params["api_key"] = api_key
 
-    urlParams = parse.urlencode(ltParams)
+    url_params = parse.urlencode(lt_params)
 
-    req = request.Request(url, data=urlParams.encode())
+    req = request.Request(url, data=url_params.encode())
     try:
         response = request.urlopen(req)
     except BaseException:
         print('EX: Unable to translate: ' + text)
-        return originalText
+        return original_text
 
     response_str = response.read().decode()
 
-    translatedText = \
+    translated_text = \
         '<p>' + json.loads(response_str)['translatedText'] + '</p>'
 
     # append links form the original text
     if links:
-        translatedText = add_links_to_content(translatedText, links)
-    return translatedText
+        translated_text = add_links_to_content(translated_text, links)
+    return translated_text
 
 
 def auto_translate_post(base_dir: str, post_json_object: {},
@@ -282,31 +283,31 @@ def auto_translate_post(base_dir: str, post_json_object: {},
     """
     if not has_object_dict(post_json_object):
         return ''
-    msgObject = post_json_object['object']
-    if not msgObject.get('contentMap'):
+    msg_object = post_json_object['object']
+    if not msg_object.get('contentMap'):
         return ''
-    if not isinstance(msgObject['contentMap'], dict):
+    if not isinstance(msg_object['contentMap'], dict):
         return ''
 
     # is the language for this post supported by libretranslate?
-    libretranslateUrl = get_config_param(base_dir, "libretranslateUrl")
-    if not libretranslateUrl:
+    libretranslate_url = get_config_param(base_dir, "libretranslateUrl")
+    if not libretranslate_url:
         return ''
-    libretranslateApiKey = get_config_param(base_dir, "libretranslateApiKey")
+    libretranslate_api_key = get_config_param(base_dir, "libretranslateApiKey")
     lang_list = \
-        libretranslate_languages(libretranslateUrl, libretranslateApiKey)
+        libretranslate_languages(libretranslate_url, libretranslate_api_key)
     for lang in lang_list:
-        if msgObject['contentMap'].get(lang):
-            content = msgObject['contentMap'][lang]
-            translatedText = \
-                libretranslate(libretranslateUrl, content,
+        if msg_object['contentMap'].get(lang):
+            content = msg_object['contentMap'][lang]
+            translated_text = \
+                libretranslate(libretranslate_url, content,
                                lang, system_language,
-                               libretranslateApiKey)
-            if translatedText:
-                if remove_html(translatedText) == remove_html(content):
+                               libretranslate_api_key)
+            if translated_text:
+                if remove_html(translated_text) == remove_html(content):
                     return content
-                translatedText = \
+                translated_text = \
                     '<p>' + translate['Translated'].upper() + '</p>' + \
-                    translatedText
-            return translatedText
+                    translated_text
+            return translated_text
     return ''

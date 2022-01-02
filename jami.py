@@ -42,26 +42,26 @@ def get_jami_address(actor_json: {}) -> str:
 def set_jami_address(actor_json: {}, jami_address: str) -> None:
     """Sets an jami address for the given actor
     """
-    notJamiAddress = False
+    not_jami_address = False
 
     if len(jami_address) < 2:
-        notJamiAddress = True
+        not_jami_address = True
     if '"' in jami_address:
-        notJamiAddress = True
+        not_jami_address = True
     if ' ' in jami_address:
-        notJamiAddress = True
+        not_jami_address = True
     if '.' in jami_address:
-        notJamiAddress = True
+        not_jami_address = True
     if ',' in jami_address:
-        notJamiAddress = True
+        not_jami_address = True
     if '<' in jami_address:
-        notJamiAddress = True
+        not_jami_address = True
 
     if not actor_json.get('attachment'):
         actor_json['attachment'] = []
 
     # remove any existing value
-    propertyFound = None
+    property_found = None
     for property_value in actor_json['attachment']:
         if not property_value.get('name'):
             continue
@@ -69,11 +69,11 @@ def set_jami_address(actor_json: {}, jami_address: str) -> None:
             continue
         if not property_value['name'].lower().startswith('jami'):
             continue
-        propertyFound = property_value
+        property_found = property_value
         break
-    if propertyFound:
-        actor_json['attachment'].remove(propertyFound)
-    if notJamiAddress:
+    if property_found:
+        actor_json['attachment'].remove(property_found)
+    if not_jami_address:
         return
 
     for property_value in actor_json['attachment']:
@@ -88,9 +88,9 @@ def set_jami_address(actor_json: {}, jami_address: str) -> None:
         property_value['value'] = jami_address
         return
 
-    newJamiAddress = {
+    new_jami_address = {
         "name": "Jami",
         "type": "PropertyValue",
         "value": jami_address
     }
-    actor_json['attachment'].append(newJamiAddress)
+    actor_json['attachment'].append(new_jami_address)
