@@ -26,23 +26,23 @@ from utils import get_sha_256
 def _options_hash(doc: {}) -> str:
     """Returns a hash of the signature, with a few fields removed
     """
-    docSig = dict(doc["signature"])
+    doc_sig = dict(doc["signature"])
 
     # remove fields from signature
-    for k in ["type", "id", "signatureValue"]:
-        if k in docSig:
-            del docSig[k]
+    for key in ["type", "id", "signatureValue"]:
+        if key in doc_sig:
+            del doc_sig[key]
 
-    docSig["@context"] = "https://w3id.org/identity/v1"
+    doc_sig["@context"] = "https://w3id.org/identity/v1"
     options = {
         "algorithm": "URDNA2015",
         "format": "application/nquads"
     }
 
-    normalized = normalize(docSig, options)
-    h = hashlib.new("sha256")
-    h.update(normalized.encode("utf-8"))
-    return h.hexdigest()
+    normalized = normalize(doc_sig, options)
+    hsh = hashlib.new("sha256")
+    hsh.update(normalized.encode("utf-8"))
+    return hsh.hexdigest()
 
 
 def _doc_hash(doc: {}) -> str:
@@ -60,18 +60,18 @@ def _doc_hash(doc: {}) -> str:
     }
 
     normalized = normalize(doc, options)
-    h = hashlib.new("sha256")
-    h.update(normalized.encode("utf-8"))
-    return h.hexdigest()
+    hsh = hashlib.new("sha256")
+    hsh.update(normalized.encode("utf-8"))
+    return hsh.hexdigest()
 
 
-def verify_json_signature(doc: {}, publicKeyPem: str) -> bool:
+def verify_json_signature(doc: {}, public_key_pem: str) -> bool:
     """Returns True if the given ActivityPub post was sent
     by an actor having the given public key
     """
     if not has_valid_context(doc):
         return False
-    pubkey = load_pem_public_key(publicKeyPem.encode('utf-8'),
+    pubkey = load_pem_public_key(public_key_pem.encode('utf-8'),
                                  backend=default_backend())
     to_be_signed = _options_hash(doc) + _doc_hash(doc)
     signature = doc["signature"]["signatureValue"]
@@ -91,7 +91,7 @@ def verify_json_signature(doc: {}, publicKeyPem: str) -> bool:
         return False
 
 
-def generate_json_signature(doc: {}, privateKeyPem: str) -> None:
+def generate_json_signature(doc: {}, private_key_pem: str) -> None:
     """Adds a json signature to the given ActivityPub post
     """
     if not doc.get('actor'):
@@ -106,7 +106,7 @@ def generate_json_signature(doc: {}, privateKeyPem: str) -> None:
     doc["signature"] = options
     to_be_signed = _options_hash(doc) + _doc_hash(doc)
 
-    key = load_pem_private_key(privateKeyPem.encode('utf-8'),
+    key = load_pem_private_key(private_key_pem.encode('utf-8'),
                                None, backend=default_backend())
     digest = get_sha_256(to_be_signed.encode("utf-8"))
     signature = key.sign(digest,
