@@ -39,8 +39,8 @@ def manual_deny_follow_request(session, base_dir: str,
         if deny_handle in open(rejected_follows_filename).read():
             remove_from_follow_requests(base_dir, nickname, domain,
                                         deny_handle, debug)
-            print(deny_handle + ' has already been rejected as a follower of ' +
-                  nickname)
+            print(deny_handle +
+                  ' has already been rejected as a follower of ' + nickname)
             return
 
     remove_from_follow_requests(base_dir, nickname, domain, deny_handle, debug)

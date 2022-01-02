@@ -34,8 +34,8 @@ def _markdown_emphasis_html(markdown: str) -> str:
         '_,': '</ul>,',
         '_\n': '</ul>\n'
     }
-    for md, html in replacements.items():
-        markdown = markdown.replace(md, html)
+    for md_str, html in replacements.items():
+        markdown = markdown.replace(md_str, html)
 
     if markdown.startswith('**'):
         markdown = markdown[2:] + '<b>'
@@ -60,26 +60,26 @@ def _markdown_replace_quotes(markdown: str) -> str:
         return markdown
     lines = markdown.split('\n')
     result = ''
-    prevQuoteLine = None
+    prev_quote_line = None
     for line in lines:
         if '> ' not in line:
             result += line + '\n'
-            prevQuoteLine = None
+            prev_quote_line = None
             continue
-        lineStr = line.strip()
-        if not lineStr.startswith('> '):
+        line_str = line.strip()
+        if not line_str.startswith('> '):
             result += line + '\n'
-            prevQuoteLine = None
+            prev_quote_line = None
             continue
-        lineStr = lineStr.replace('> ', '', 1).strip()
-        if prevQuoteLine:
-            newPrevLine = prevQuoteLine.replace('</i></blockquote>\n', '')
-            result = result.replace(prevQuoteLine, newPrevLine) + ' '
-            lineStr += '</i></blockquote>\n'
+        line_str = line_str.replace('> ', '', 1).strip()
+        if prev_quote_line:
+            new_prev_line = prev_quote_line.replace('</i></blockquote>\n', '')
+            result = result.replace(prev_quote_line, new_prev_line) + ' '
+            line_str += '</i></blockquote>\n'
         else:
-            lineStr = '<blockquote><i>' + lineStr + '</i></blockquote>\n'
-        result += lineStr
-        prevQuoteLine = lineStr
+            line_str = '<blockquote><i>' + line_str + '</i></blockquote>\n'
+        result += line_str
+        prev_quote_line = line_str
 
     if '</blockquote>\n' in result:
         result = result.replace('</blockquote>\n', '</blockquote>')
@@ -94,37 +94,37 @@ def _markdown_replace_links(markdown: str, images: bool = False) -> str:
     """Replaces markdown links with html
     Optionally replace image links
     """
-    replaceLinks = {}
+    replace_links = {}
     text = markdown
-    startChars = '['
+    start_chars = '['
     if images:
-        startChars = '!['
-    while startChars in text:
+        start_chars = '!['
+    while start_chars in text:
         if ')' not in text:
             break
-        text = text.split(startChars, 1)[1]
-        markdownLink = startChars + text.split(')')[0] + ')'
-        if ']' not in markdownLink or \
-           '(' not in markdownLink:
+        text = text.split(start_chars, 1)[1]
+        markdown_link = start_chars + text.split(')')[0] + ')'
+        if ']' not in markdown_link or \
+           '(' not in markdown_link:
             text = text.split(')', 1)[1]
             continue
         if not images:
-            replaceLinks[markdownLink] = \
+            replace_links[markdown_link] = \
                 '<a href="' + \
-                markdownLink.split('(')[1].split(')')[0] + \
+                markdown_link.split('(')[1].split(')')[0] + \
                 '" target="_blank" rel="nofollow noopener noreferrer">' + \
-                markdownLink.split(startChars)[1].split(']')[0] + \
+                markdown_link.split(start_chars)[1].split(']')[0] + \
                 '</a>'
         else:
-            replaceLinks[markdownLink] = \
+            replace_links[markdown_link] = \
                 '<img class="markdownImage" src="' + \
-                markdownLink.split('(')[1].split(')')[0] + \
+                markdown_link.split('(')[1].split(')')[0] + \
                 '" alt="' + \
-                markdownLink.split(startChars)[1].split(']')[0] + \
+                markdown_link.split(start_chars)[1].split(']')[0] + \
                 '" />'
         text = text.split(')', 1)[1]
-    for mdLink, htmlLink in replaceLinks.items():
-        markdown = markdown.replace(mdLink, htmlLink)
+    for md_link, html_link in replace_links.items():
+        markdown = markdown.replace(md_link, html_link)
     return markdown
 
 
@@ -137,8 +137,8 @@ def markdown_to_html(markdown: str) -> str:
     markdown = _markdown_replace_links(markdown)
 
     # replace headers
-    linesList = markdown.split('\n')
-    htmlStr = ''
+    lines_list = markdown.split('\n')
+    html_str = ''
     ctr = 0
     titles = {
         "h5": '#####',
@@ -147,15 +147,15 @@ def markdown_to_html(markdown: str) -> str:
         "h2": '##',
         "h1": '#'
     }
-    for line in linesList:
+    for line in lines_list:
         if ctr > 0:
-            htmlStr += '<br>'
-        for h, hashes in titles.items():
+            html_str += '<br>'
+        for hsh, hashes in titles.items():
             if line.startswith(hashes):
                 line = line.replace(hashes, '').strip()
-                line = '<' + h + '>' + line + '</' + h + '>'
+                line = '<' + hsh + '>' + line + '</' + hsh + '>'
                 ctr = -1
                 break
-        htmlStr += line
+        html_str += line
         ctr += 1
-    return htmlStr
+    return html_str
