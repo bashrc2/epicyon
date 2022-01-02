@@ -60,26 +60,26 @@ def _update_moved_handle(base_dir: str, nickname: str, domain: str,
         return ctr
     if handle.startswith('@'):
         handle = handle[1:]
-    wfRequest = webfinger_handle(session, handle,
-                                 http_prefix, cached_webfingers,
-                                 domain, __version__, debug, False,
-                                 signing_priv_key_pem)
-    if not wfRequest:
+    wf_request = webfinger_handle(session, handle,
+                                  http_prefix, cached_webfingers,
+                                  domain, __version__, debug, False,
+                                  signing_priv_key_pem)
+    if not wf_request:
         print('updateMovedHandle unable to webfinger ' + handle)
         return ctr
 
-    if not isinstance(wfRequest, dict):
+    if not isinstance(wf_request, dict):
         print('updateMovedHandle webfinger for ' + handle +
-              ' did not return a dict. ' + str(wfRequest))
+              ' did not return a dict. ' + str(wf_request))
         return ctr
 
     personUrl = None
-    if wfRequest.get('errors'):
-        print('wfRequest error: ' + str(wfRequest['errors']))
+    if wf_request.get('errors'):
+        print('wf_request error: ' + str(wf_request['errors']))
         return ctr
 
     if not personUrl:
-        personUrl = get_user_url(wfRequest, 0, debug)
+        personUrl = get_user_url(wf_request, 0, debug)
         if not personUrl:
             return ctr
 

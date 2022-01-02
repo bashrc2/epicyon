@@ -1523,7 +1523,7 @@ def get_actor_json(hostDomain: str, handle: str, http: bool, gnunet: bool,
         nickname = domain
 
     personUrl = None
-    wfRequest = None
+    wf_request = None
 
     if '://' in originalActor and \
        originalActor.lower().endswith('/actor'):
@@ -1536,27 +1536,27 @@ def get_actor_json(hostDomain: str, handle: str, http: bool, gnunet: bool,
         personUrl = originalActor
     else:
         handle = nickname + '@' + domain
-        wfRequest = webfinger_handle(session, handle,
-                                     http_prefix, cached_webfingers,
-                                     hostDomain, __version__, debug,
-                                     group_account, signing_priv_key_pem)
-        if not wfRequest:
+        wf_request = webfinger_handle(session, handle,
+                                      http_prefix, cached_webfingers,
+                                      hostDomain, __version__, debug,
+                                      group_account, signing_priv_key_pem)
+        if not wf_request:
             if not quiet:
                 print('get_actor_json Unable to webfinger ' + handle)
             return None, None
-        if not isinstance(wfRequest, dict):
+        if not isinstance(wf_request, dict):
             if not quiet:
                 print('get_actor_json Webfinger for ' + handle +
-                      ' did not return a dict. ' + str(wfRequest))
+                      ' did not return a dict. ' + str(wf_request))
             return None, None
 
         if not quiet:
-            pprint(wfRequest)
+            pprint(wf_request)
 
-        if wfRequest.get('errors'):
+        if wf_request.get('errors'):
             if not quiet or debug:
-                print('get_actor_json wfRequest error: ' +
-                      str(wfRequest['errors']))
+                print('get_actor_json wf_request error: ' +
+                      str(wf_request['errors']))
             if has_users_path(handle):
                 personUrl = originalActor
             else:
@@ -1568,8 +1568,8 @@ def get_actor_json(hostDomain: str, handle: str, http: bool, gnunet: bool,
     headersList = (
         "activity+json", "ld+json", "jrd+json"
     )
-    if not personUrl and wfRequest:
-        personUrl = get_user_url(wfRequest, 0, debug)
+    if not personUrl and wf_request:
+        personUrl = get_user_url(wf_request, 0, debug)
     if nickname == domain:
         paths = get_user_paths()
         for userPath in paths:

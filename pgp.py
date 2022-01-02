@@ -556,19 +556,19 @@ def pgp_public_key_upload(base_dir: str, session,
         print('actor update is ' + str(actorUpdate))
 
     # lookup the inbox for the To handle
-    wfRequest = \
+    wf_request = \
         webfinger_handle(session, handle, http_prefix, cached_webfingers,
                          domain, __version__, debug, False,
                          signing_priv_key_pem)
-    if not wfRequest:
+    if not wf_request:
         if debug:
             print('DEBUG: pgp actor update webfinger failed for ' +
                   handle)
         return None
-    if not isinstance(wfRequest, dict):
+    if not isinstance(wf_request, dict):
         if debug:
             print('WARN: Webfinger for ' + handle +
-                  ' did not return a dict. ' + str(wfRequest))
+                  ' did not return a dict. ' + str(wf_request))
         return None
 
     postToBox = 'outbox'
@@ -577,7 +577,7 @@ def pgp_public_key_upload(base_dir: str, session,
     originDomain = domain
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
      displayName, _) = get_person_box(signing_priv_key_pem, originDomain,
-                                      base_dir, session, wfRequest,
+                                      base_dir, session, wf_request,
                                       person_cache,
                                       __version__, http_prefix, nickname,
                                       domain, postToBox, 35725)

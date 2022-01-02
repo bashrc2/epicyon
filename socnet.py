@@ -51,23 +51,23 @@ def instances_graph(base_dir: str, handles: str,
 
         domain_full = get_full_domain(domain, port)
         handle = http_prefix + "://" + domain_full + "/@" + nickname
-        wfRequest = \
+        wf_request = \
             webfinger_handle(session, handle, http_prefix,
                              cached_webfingers,
                              domain, project_version, debug, False,
                              signing_priv_key_pem)
-        if not wfRequest:
+        if not wf_request:
             return dotGraphStr + '}\n'
-        if not isinstance(wfRequest, dict):
+        if not isinstance(wf_request, dict):
             print('Webfinger for ' + handle + ' did not return a dict. ' +
-                  str(wfRequest))
+                  str(wf_request))
             return dotGraphStr + '}\n'
 
         originDomain = None
         (personUrl, pubKeyId, pubKey, personId, shaedInbox, avatarUrl,
          displayName, _) = get_person_box(signing_priv_key_pem,
                                           originDomain,
-                                          base_dir, session, wfRequest,
+                                          base_dir, session, wf_request,
                                           person_cache,
                                           project_version, http_prefix,
                                           nickname, domain, 'outbox',

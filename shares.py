@@ -609,18 +609,18 @@ def send_share_via_server(base_dir, session,
     handle = http_prefix + '://' + fromDomainFull + '/@' + fromNickname
 
     # lookup the inbox for the To handle
-    wfRequest = \
+    wf_request = \
         webfinger_handle(session, handle, http_prefix,
                          cached_webfingers,
                          fromDomain, project_version, debug, False,
                          signing_priv_key_pem)
-    if not wfRequest:
+    if not wf_request:
         if debug:
             print('DEBUG: share webfinger failed for ' + handle)
         return 1
-    if not isinstance(wfRequest, dict):
+    if not isinstance(wf_request, dict):
         print('WARN: share webfinger for ' + handle +
-              ' did not return a dict. ' + str(wfRequest))
+              ' did not return a dict. ' + str(wf_request))
         return 1
 
     postToBox = 'outbox'
@@ -630,7 +630,7 @@ def send_share_via_server(base_dir, session,
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
      displayName, _) = get_person_box(signing_priv_key_pem,
                                       originDomain,
-                                      base_dir, session, wfRequest,
+                                      base_dir, session, wf_request,
                                       person_cache, project_version,
                                       http_prefix, fromNickname,
                                       fromDomain, postToBox,
@@ -714,17 +714,17 @@ def send_undo_share_via_server(base_dir: str, session,
     handle = http_prefix + '://' + fromDomainFull + '/@' + fromNickname
 
     # lookup the inbox for the To handle
-    wfRequest = \
+    wf_request = \
         webfinger_handle(session, handle, http_prefix, cached_webfingers,
                          fromDomain, project_version, debug, False,
                          signing_priv_key_pem)
-    if not wfRequest:
+    if not wf_request:
         if debug:
             print('DEBUG: unshare webfinger failed for ' + handle)
         return 1
-    if not isinstance(wfRequest, dict):
+    if not isinstance(wf_request, dict):
         print('WARN: unshare webfinger for ' + handle +
-              ' did not return a dict. ' + str(wfRequest))
+              ' did not return a dict. ' + str(wf_request))
         return 1
 
     postToBox = 'outbox'
@@ -734,7 +734,7 @@ def send_undo_share_via_server(base_dir: str, session,
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
      displayName, _) = get_person_box(signing_priv_key_pem,
                                       originDomain,
-                                      base_dir, session, wfRequest,
+                                      base_dir, session, wf_request,
                                       person_cache, project_version,
                                       http_prefix, fromNickname,
                                       fromDomain, postToBox,
@@ -829,18 +829,18 @@ def send_wanted_via_server(base_dir, session,
     handle = http_prefix + '://' + fromDomainFull + '/@' + fromNickname
 
     # lookup the inbox for the To handle
-    wfRequest = \
+    wf_request = \
         webfinger_handle(session, handle, http_prefix,
                          cached_webfingers,
                          fromDomain, project_version, debug, False,
                          signing_priv_key_pem)
-    if not wfRequest:
+    if not wf_request:
         if debug:
             print('DEBUG: share webfinger failed for ' + handle)
         return 1
-    if not isinstance(wfRequest, dict):
+    if not isinstance(wf_request, dict):
         print('WARN: wanted webfinger for ' + handle +
-              ' did not return a dict. ' + str(wfRequest))
+              ' did not return a dict. ' + str(wf_request))
         return 1
 
     postToBox = 'outbox'
@@ -850,7 +850,7 @@ def send_wanted_via_server(base_dir, session,
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
      displayName, _) = get_person_box(signing_priv_key_pem,
                                       originDomain,
-                                      base_dir, session, wfRequest,
+                                      base_dir, session, wf_request,
                                       person_cache, project_version,
                                       http_prefix, fromNickname,
                                       fromDomain, postToBox,
@@ -934,17 +934,17 @@ def send_undo_wanted_via_server(base_dir: str, session,
     handle = http_prefix + '://' + fromDomainFull + '/@' + fromNickname
 
     # lookup the inbox for the To handle
-    wfRequest = \
+    wf_request = \
         webfinger_handle(session, handle, http_prefix, cached_webfingers,
                          fromDomain, project_version, debug, False,
                          signing_priv_key_pem)
-    if not wfRequest:
+    if not wf_request:
         if debug:
             print('DEBUG: unwant webfinger failed for ' + handle)
         return 1
-    if not isinstance(wfRequest, dict):
+    if not isinstance(wf_request, dict):
         print('WARN: unwant webfinger for ' + handle +
-              ' did not return a dict. ' + str(wfRequest))
+              ' did not return a dict. ' + str(wf_request))
         return 1
 
     postToBox = 'outbox'
@@ -954,7 +954,7 @@ def send_undo_wanted_via_server(base_dir: str, session,
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
      displayName, _) = get_person_box(signing_priv_key_pem,
                                       originDomain,
-                                      base_dir, session, wfRequest,
+                                      base_dir, session, wf_request,
                                       person_cache, project_version,
                                       http_prefix, fromNickname,
                                       fromDomain, postToBox,

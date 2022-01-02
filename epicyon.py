@@ -2200,21 +2200,21 @@ if args.followers:
     signing_priv_key_pem = None
     if args.secure_mode:
         signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
-    wfRequest = webfinger_handle(session, handle,
-                                 http_prefix, cached_webfingers,
-                                 hostDomain, __version__, debug, False,
-                                 signing_priv_key_pem)
-    if not wfRequest:
+    wf_request = webfinger_handle(session, handle,
+                                  http_prefix, cached_webfingers,
+                                  hostDomain, __version__, debug, False,
+                                  signing_priv_key_pem)
+    if not wf_request:
         print('Unable to webfinger ' + handle)
         sys.exit()
-    if not isinstance(wfRequest, dict):
+    if not isinstance(wf_request, dict):
         print('Webfinger for ' + handle + ' did not return a dict. ' +
-              str(wfRequest))
+              str(wf_request))
         sys.exit()
 
     personUrl = None
-    if wfRequest.get('errors'):
-        print('wfRequest error: ' + str(wfRequest['errors']))
+    if wf_request.get('errors'):
+        print('wf_request error: ' + str(wf_request['errors']))
         if has_users_path(args.followers):
             personUrl = originalActor
         else:
@@ -2225,7 +2225,7 @@ if args.followers:
         'Accept': 'application/activity+json; profile="' + profileStr + '"'
     }
     if not personUrl:
-        personUrl = get_user_url(wfRequest, 0, args.debug)
+        personUrl = get_user_url(wf_request, 0, args.debug)
     if nickname == domain:
         personUrl = personUrl.replace('/users/', '/actor/')
         personUrl = personUrl.replace('/accounts/', '/actor/')

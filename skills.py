@@ -207,18 +207,18 @@ def send_skill_via_server(base_dir: str, session, nickname: str, password: str,
     handle = http_prefix + '://' + domain_full + '/@' + nickname
 
     # lookup the inbox for the To handle
-    wfRequest = \
+    wf_request = \
         webfinger_handle(session, handle, http_prefix,
                          cached_webfingers,
                          domain, project_version, debug, False,
                          signing_priv_key_pem)
-    if not wfRequest:
+    if not wf_request:
         if debug:
             print('DEBUG: skill webfinger failed for ' + handle)
         return 1
-    if not isinstance(wfRequest, dict):
+    if not isinstance(wf_request, dict):
         print('WARN: skill webfinger for ' + handle +
-              ' did not return a dict. ' + str(wfRequest))
+              ' did not return a dict. ' + str(wf_request))
         return 1
 
     postToBox = 'outbox'
@@ -228,7 +228,7 @@ def send_skill_via_server(base_dir: str, session, nickname: str, password: str,
     (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
      displayName, _) = get_person_box(signing_priv_key_pem,
                                       originDomain,
-                                      base_dir, session, wfRequest,
+                                      base_dir, session, wf_request,
                                       person_cache, project_version,
                                       http_prefix, nickname, domain,
                                       postToBox, 76121)
