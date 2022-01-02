@@ -6329,6 +6329,9 @@ def run_all_tests():
     _test_config_param_names()
     _test_post_field_names('daemon.py', ['fields', 'actor_json'])
     _test_post_field_names('theme.py', ['config_json'])
+    _test_post_field_names('inbox.py',
+                           ['queue_json', 'post_json_object',
+                            'message_json', 'liked_post_json'])
     _test_checkbox_names()
     _test_functions()
     _test_get_actor_from_in_reply_to()
