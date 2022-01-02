@@ -102,17 +102,16 @@ from migrate import migrate_accounts
 from desktop_client import run_desktop_client
 
 
-def str2bool(v) -> bool:
+def str2bool(value_str) -> bool:
     """Returns true if the given value is a boolean
     """
-    if isinstance(v, bool):
-        return v
-    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+    if isinstance(value_str, bool):
+        return value_str
+    if value_str.lower() in ('yes', 'true', 't', 'y', '1'):
         return True
-    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+    if value_str.lower() in ('no', 'false', 'f', 'n', '0'):
         return False
-    else:
-        raise argparse.ArgumentTypeError('Boolean value expected.')
+    raise argparse.ArgumentTypeError('Boolean value expected.')
 
 
 parser = argparse.ArgumentParser(description='ActivityPub Server')
