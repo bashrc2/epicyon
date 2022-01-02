@@ -14,7 +14,7 @@ def _get_donation_types() -> []:
             'subscribestar')
 
 
-def _get_websiteStrings() -> []:
+def _get_website_strings() -> []:
     return ['www', 'website', 'web', 'homepage']
 
 
@@ -23,11 +23,11 @@ def get_donation_url(actor_json: {}) -> str:
     """
     if not actor_json.get('attachment'):
         return ''
-    donationType = _get_donation_types()
+    donation_type = _get_donation_types()
     for property_value in actor_json['attachment']:
         if not property_value.get('name'):
             continue
-        if property_value['name'].lower() not in donationType:
+        if property_value['name'].lower() not in donation_type:
             continue
         if not property_value.get('type'):
             continue
@@ -48,12 +48,12 @@ def get_website(actor_json: {}, translate: {}) -> str:
     """
     if not actor_json.get('attachment'):
         return ''
-    matchStrings = _get_websiteStrings()
-    matchStrings.append(translate['Website'].lower())
+    match_strings = _get_website_strings()
+    match_strings.append(translate['Website'].lower())
     for property_value in actor_json['attachment']:
         if not property_value.get('name'):
             continue
-        if property_value['name'].lower() not in matchStrings:
+        if property_value['name'].lower() not in match_strings:
             continue
         if not property_value.get('type'):
             continue
@@ -68,44 +68,44 @@ def get_website(actor_json: {}, translate: {}) -> str:
 def set_donation_url(actor_json: {}, donate_url: str) -> None:
     """Sets a link used for donations
     """
-    notUrl = False
+    not_url = False
     if '.' not in donate_url:
-        notUrl = True
+        not_url = True
     if '://' not in donate_url:
-        notUrl = True
+        not_url = True
     if ' ' in donate_url:
-        notUrl = True
+        not_url = True
     if '<' in donate_url:
-        notUrl = True
+        not_url = True
 
     if not actor_json.get('attachment'):
         actor_json['attachment'] = []
 
-    donationType = _get_donation_types()
-    donateName = None
-    for paymentService in donationType:
-        if paymentService in donate_url:
-            donateName = paymentService
-    if not donateName:
+    donation_type = _get_donation_types()
+    donate_name = None
+    for payment_service in donation_type:
+        if payment_service in donate_url:
+            donate_name = payment_service
+    if not donate_name:
         return
 
     # remove any existing value
-    propertyFound = None
+    property_found = None
     for property_value in actor_json['attachment']:
         if not property_value.get('name'):
             continue
         if not property_value.get('type'):
             continue
-        if not property_value['name'].lower() != donateName:
+        if not property_value['name'].lower() != donate_name:
             continue
-        propertyFound = property_value
+        property_found = property_value
         break
-    if propertyFound:
-        actor_json['attachment'].remove(propertyFound)
-    if notUrl:
+    if property_found:
+        actor_json['attachment'].remove(property_found)
+    if not_url:
         return
 
-    donateValue = \
+    donate_value = \
         '<a href="' + donate_url + \
         '" rel="me nofollow noopener noreferrer" target="_blank">' + \
         donate_url + '</a>'
@@ -115,60 +115,60 @@ def set_donation_url(actor_json: {}, donate_url: str) -> None:
             continue
         if not property_value.get('type'):
             continue
-        if property_value['name'].lower() != donateName:
+        if property_value['name'].lower() != donate_name:
             continue
         if property_value['type'] != 'PropertyValue':
             continue
-        property_value['value'] = donateValue
+        property_value['value'] = donate_value
         return
 
-    newDonate = {
-        "name": donateName,
+    new_donate = {
+        "name": donate_name,
         "type": "PropertyValue",
-        "value": donateValue
+        "value": donate_value
     }
-    actor_json['attachment'].append(newDonate)
+    actor_json['attachment'].append(new_donate)
 
 
 def set_website(actor_json: {}, website_url: str, translate: {}) -> None:
     """Sets a web address
     """
     website_url = website_url.strip()
-    notUrl = False
+    not_url = False
     if '.' not in website_url:
-        notUrl = True
+        not_url = True
     if '://' not in website_url:
-        notUrl = True
+        not_url = True
     if ' ' in website_url:
-        notUrl = True
+        not_url = True
     if '<' in website_url:
-        notUrl = True
+        not_url = True
 
     if not actor_json.get('attachment'):
         actor_json['attachment'] = []
 
-    matchStrings = _get_websiteStrings()
-    matchStrings.append(translate['Website'].lower())
+    match_strings = _get_website_strings()
+    match_strings.append(translate['Website'].lower())
 
     # remove any existing value
-    propertyFound = None
+    property_found = None
     for property_value in actor_json['attachment']:
         if not property_value.get('name'):
             continue
         if not property_value.get('type'):
             continue
-        if property_value['name'].lower() not in matchStrings:
+        if property_value['name'].lower() not in match_strings:
             continue
-        propertyFound = property_value
+        property_found = property_value
         break
-    if propertyFound:
-        actor_json['attachment'].remove(propertyFound)
-    if notUrl:
+    if property_found:
+        actor_json['attachment'].remove(property_found)
+    if not_url:
         return
 
-    newEntry = {
+    new_entry = {
         "name": 'Website',
         "type": "PropertyValue",
         "value": website_url
     }
-    actor_json['attachment'].append(newEntry)
+    actor_json['attachment'].append(new_entry)
