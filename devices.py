@@ -38,16 +38,16 @@ from utils import local_actor_url
 
 
 def e2e_eremove_device(base_dir: str, nickname: str, domain: str,
-                       deviceId: str) -> bool:
+                       device_id: str) -> bool:
     """Unregisters a device for e2ee
     """
-    personDir = acct_dir(base_dir, nickname, domain)
-    deviceFilename = personDir + '/devices/' + deviceId + '.json'
-    if os.path.isfile(deviceFilename):
+    person_dir = acct_dir(base_dir, nickname, domain)
+    device_filename = person_dir + '/devices/' + device_id + '.json'
+    if os.path.isfile(device_filename):
         try:
-            os.remove(deviceFilename)
+            os.remove(device_filename)
         except OSError:
-            print('EX: e2e_eremove_device unable to delete ' + deviceFilename)
+            print('EX: e2e_eremove_device unable to delete ' + device_filename)
         return True
     return False
 
@@ -103,70 +103,70 @@ def e2e_evalid_device(deviceJson: {}) -> bool:
 
 
 def e2e_eadd_device(base_dir: str, nickname: str, domain: str,
-                    deviceId: str, name: str, claimUrl: str,
-                    fingerprintPublicKey: str,
-                    identityPublicKey: str,
-                    fingerprintKeyType="Ed25519Key",
-                    identityKeyType="Curve25519Key") -> bool:
+                    device_id: str, name: str, claim_url: str,
+                    fingerprint_public_key: str,
+                    identity_public_key: str,
+                    fingerprint_key_type="Ed25519Key",
+                    identity_key_type="Curve25519Key") -> bool:
     """Registers a device for e2ee
-    claimUrl could be something like:
+    claim_url could be something like:
         http://localhost:3000/users/admin/claim?id=11119
     """
-    if ' ' in deviceId or '/' in deviceId or \
-       '?' in deviceId or '#' in deviceId or \
-       '.' in deviceId:
+    if ' ' in device_id or '/' in device_id or \
+       '?' in device_id or '#' in device_id or \
+       '.' in device_id:
         return False
-    personDir = acct_dir(base_dir, nickname, domain)
-    if not os.path.isdir(personDir):
+    person_dir = acct_dir(base_dir, nickname, domain)
+    if not os.path.isdir(person_dir):
         return False
-    if not os.path.isdir(personDir + '/devices'):
-        os.mkdir(personDir + '/devices')
-    deviceDict = {
-        "deviceId": deviceId,
+    if not os.path.isdir(person_dir + '/devices'):
+        os.mkdir(person_dir + '/devices')
+    device_dict = {
+        "deviceId": device_id,
         "type": "Device",
         "name": name,
-        "claim": claimUrl,
+        "claim": claim_url,
         "fingerprintKey": {
-            "type": fingerprintKeyType,
-            "publicKeyBase64": fingerprintPublicKey
+            "type": fingerprint_key_type,
+            "publicKeyBase64": fingerprint_public_key
         },
         "identityKey": {
-            "type": identityKeyType,
-            "publicKeyBase64": identityPublicKey
+            "type": identity_key_type,
+            "publicKeyBase64": identity_public_key
         }
     }
-    deviceFilename = personDir + '/devices/' + deviceId + '.json'
-    return save_json(deviceDict, deviceFilename)
+    device_filename = person_dir + '/devices/' + device_id + '.json'
+    return save_json(device_dict, device_filename)
 
 
 def e2e_edevices_collection(base_dir: str, nickname: str, domain: str,
                             domain_full: str, http_prefix: str) -> {}:
     """Returns a list of registered devices
     """
-    personDir = acct_dir(base_dir, nickname, domain)
-    if not os.path.isdir(personDir):
+    person_dir = acct_dir(base_dir, nickname, domain)
+    if not os.path.isdir(person_dir):
         return {}
-    personId = local_actor_url(http_prefix, nickname, domain_full)
-    if not os.path.isdir(personDir + '/devices'):
-        os.mkdir(personDir + '/devices')
-    deviceList = []
-    for subdir, dirs, files in os.walk(personDir + '/devices/'):
+    person_id = local_actor_url(http_prefix, nickname, domain_full)
+    if not os.path.isdir(person_dir + '/devices'):
+        os.mkdir(person_dir + '/devices')
+    device_list = []
+    for _, _, files in os.walk(person_dir + '/devices/'):
         for dev in files:
             if not dev.endswith('.json'):
                 continue
-            deviceFilename = os.path.join(personDir + '/devices', dev)
-            devJson = load_json(deviceFilename)
-            if devJson:
-                deviceList.append(devJson)
+            device_filename = os.path.join(person_dir + '/devices', dev)
+            dev_json = load_json(device_filename)
+            if dev_json:
+                device_list.append(dev_json)
         break
 
-    devicesDict = {
-        'id': personId + '/collections/devices',
+    devices_dict = {
+        'id': person_id + '/collections/devices',
         'type': 'Collection',
-        'totalItems': len(deviceList),
-        'items': deviceList
+        'totalItems': len(device_list),
+        'items': device_list
     }
-    return devicesDict
+    return devices_dict
 
 
 def e2e_edecrypt_message_from_device(message_json: {}) -> str:
