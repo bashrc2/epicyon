@@ -28,18 +28,18 @@ def get_enigma_pub_key(actor_json: {}) -> str:
     return ''
 
 
-def set_enigma_pub_key(actor_json: {}, enigmaPubKey: str) -> None:
+def set_enigma_pub_key(actor_json: {}, enigma_pub_key: str) -> None:
     """Sets a Enigma public key for the given actor
     """
-    removeKey = False
-    if not enigmaPubKey:
-        removeKey = True
+    remove_key = False
+    if not enigma_pub_key:
+        remove_key = True
 
     if not actor_json.get('attachment'):
         actor_json['attachment'] = []
 
     # remove any existing value
-    propertyFound = None
+    property_found = None
     for property_value in actor_json['attachment']:
         if not property_value.get('name'):
             continue
@@ -47,11 +47,11 @@ def set_enigma_pub_key(actor_json: {}, enigmaPubKey: str) -> None:
             continue
         if not property_value['name'].lower().startswith('enigma'):
             continue
-        propertyFound = property_value
+        property_found = property_value
         break
-    if propertyFound:
+    if property_found:
         actor_json['attachment'].remove(property_value)
-    if removeKey:
+    if remove_key:
         return
 
     for property_value in actor_json['attachment']:
@@ -63,12 +63,12 @@ def set_enigma_pub_key(actor_json: {}, enigmaPubKey: str) -> None:
             continue
         if property_value['type'] != 'PropertyValue':
             continue
-        property_value['value'] = enigmaPubKey
+        property_value['value'] = enigma_pub_key
         return
 
-    newenigmaPubKey = {
+    new_enigma_pub_key = {
         "name": "Enigma",
         "type": "PropertyValue",
-        "value": enigmaPubKey
+        "value": enigma_pub_key
     }
-    actor_json['attachment'].append(newenigmaPubKey)
+    actor_json['attachment'].append(new_enigma_pub_key)
