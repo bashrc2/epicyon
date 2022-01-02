@@ -1885,12 +1885,18 @@ class PubServer(BaseHTTPRequestHandler):
                         moderation_text = \
                             urllib.parse.unquote_plus(mod_text.strip())
                 elif moderation_str.startswith('submitInfo'):
+                    if '=' in moderation_str:
+                        moderation_text = \
+                            moderation_str.split('=')[1].strip()
+                        mod_text = moderation_text.replace('+', ' ')
+                        moderation_text = \
+                            urllib.parse.unquote_plus(mod_text.strip())
                     search_handle = moderation_text
                     if search_handle:
                         if '/@' in search_handle:
                             search_nickname = \
                                 get_nickname_from_actor(search_handle)
-                            search_domain, search_port = \
+                            search_domain, _ = \
                                 get_domain_from_actor(search_handle)
                             search_handle = \
                                 search_nickname + '@' + search_domain
@@ -1898,17 +1904,17 @@ class PubServer(BaseHTTPRequestHandler):
                             if search_handle.startswith('http'):
                                 search_nickname = \
                                     get_nickname_from_actor(search_handle)
-                                search_domain, search_port = \
+                                search_domain, _ = \
                                     get_domain_from_actor(search_handle)
                                 search_handle = \
                                     search_nickname + '@' + search_domain
                         if '@' not in search_handle:
                             # is this a local nickname on this instance?
-                            localHandle = \
+                            local_handle = \
                                 search_handle + '@' + self.server.domain
                             if os.path.isdir(self.server.base_dir +
-                                             '/accounts/' + localHandle):
-                                search_handle = localHandle
+                                             '/accounts/' + local_handle):
+                                search_handle = local_handle
                             else:
                                 search_handle = None
                     if search_handle:
@@ -3737,38 +3743,38 @@ class PubServer(BaseHTTPRequestHandler):
         length = int(self.headers['Content-length'])
 
         try:
-            questionParams = self.rfile.read(length).decode('utf-8')
+            question_params = self.rfile.read(length).decode('utf-8')
         except SocketError as ex:
             if ex.errno == errno.ECONNRESET:
-                print('WARN: POST questionParams connection was reset')
+                print('WARN: POST question_params connection was reset')
             else:
-                print('WARN: POST questionParams socket error')
+                print('WARN: POST question_params socket error')
             self.send_response(400)
             self.end_headers()
             self.server.postreq_busy = False
             return
         except ValueError as ex:
-            print('ERROR: POST questionParams rfile.read failed, ' + str(ex))
+            print('ERROR: POST question_params rfile.read failed, ' + str(ex))
             self.send_response(400)
             self.end_headers()
             self.server.postreq_busy = False
             return
 
-        questionParams = questionParams.replace('+', ' ')
-        questionParams = questionParams.replace('%3F', '')
-        questionParams = \
-            urllib.parse.unquote_plus(questionParams.strip())
+        question_params = question_params.replace('+', ' ')
+        question_params = question_params.replace('%3F', '')
+        question_params = \
+            urllib.parse.unquote_plus(question_params.strip())
 
         # post being voted on
         message_id = None
-        if 'messageId=' in questionParams:
-            message_id = questionParams.split('messageId=')[1]
+        if 'messageId=' in question_params:
+            message_id = question_params.split('messageId=')[1]
             if '&' in message_id:
                 message_id = message_id.split('&')[0]
 
         answer = None
-        if 'answer=' in questionParams:
-            answer = questionParams.split('answer=')[1]
+        if 'answer=' in question_params:
+            answer = question_params.split('answer=')[1]
             if '&' in answer:
                 answer = answer.split('&')[0]
 
@@ -3794,7 +3800,7 @@ class PubServer(BaseHTTPRequestHandler):
                        debug: bool) -> None:
         """Receives an image via POST
         """
-        if not self.outboxAuthenticated:
+        if not self.outbox_authenticated:
             if debug:
                 print('DEBUG: unauthenticated attempt to ' +
                       'post image to outbox')
@@ -3900,11 +3906,12 @@ class PubServer(BaseHTTPRequestHandler):
                 item_id = remove_share_confirm_params.split('itemID=')[1]
                 if '&' in item_id:
                     item_id = item_id.split('&')[0]
-                shareNickname = get_nickname_from_actor(share_actor)
-                if shareNickname:
-                    shareDomain, sharePort = get_domain_from_actor(share_actor)
+                share_nickname = get_nickname_from_actor(share_actor)
+                if share_nickname:
+                    share_domain, _ = \
+                        get_domain_from_actor(share_actor)
                     remove_shared_item(base_dir,
-                                       shareNickname, shareDomain, item_id,
+                                       share_nickname, share_domain, item_id,
                                        http_prefix, domain_full, 'shares')
 
         if calling_domain.endswith('.onion') and onion_domain:
@@ -3967,11 +3974,12 @@ class PubServer(BaseHTTPRequestHandler):
                 item_id = remove_share_confirm_params.split('itemID=')[1]
                 if '&' in item_id:
                     item_id = item_id.split('&')[0]
-                shareNickname = get_nickname_from_actor(share_actor)
-                if shareNickname:
-                    shareDomain, sharePort = get_domain_from_actor(share_actor)
+                share_nickname = get_nickname_from_actor(share_actor)
+                if share_nickname:
+                    share_domain, _ = \
+                        get_domain_from_actor(share_actor)
                     remove_shared_item(base_dir,
-                                       shareNickname, shareDomain, item_id,
+                                       share_nickname, share_domain, item_id,
                                        http_prefix, domain_full, 'wanted')
 
         if calling_domain.endswith('.onion') and onion_domain:
@@ -4043,20 +4051,20 @@ class PubServer(BaseHTTPRequestHandler):
                 if '&' in month_str:
                     month_str = month_str.split('&')[0]
             if '/statuses/' in remove_message_id:
-                removePostActor = remove_message_id.split('/statuses/')[0]
-            if origin_path_str in removePostActor:
+                remove_post_actor = remove_message_id.split('/statuses/')[0]
+            if origin_path_str in remove_post_actor:
                 toList = ['https://www.w3.org/ns/activitystreams#Public',
-                          removePostActor]
+                          remove_post_actor]
                 delete_json = {
                     "@context": "https://www.w3.org/ns/activitystreams",
-                    'actor': removePostActor,
+                    'actor': remove_post_actor,
                     'object': remove_message_id,
                     'to': toList,
-                    'cc': [removePostActor + '/followers'],
+                    'cc': [remove_post_actor + '/followers'],
                     'type': 'Delete'
                 }
                 self.post_to_nickname = \
-                    get_nickname_from_actor(removePostActor)
+                    get_nickname_from_actor(remove_post_actor)
                 if self.post_to_nickname:
                     if month_str and year_str:
                         if month_str.isdigit() and year_str.isdigit():
@@ -4146,7 +4154,7 @@ class PubServer(BaseHTTPRequestHandler):
 
             links_filename = base_dir + '/accounts/links.txt'
             about_filename = base_dir + '/accounts/about.md'
-            TOS_filename = base_dir + '/accounts/tos.md'
+            tos_filename = base_dir + '/accounts/tos.md'
 
             # extract all of the text fields into a dict
             fields = \
@@ -4209,17 +4217,17 @@ class PubServer(BaseHTTPRequestHandler):
                     if not dangerous_markup(tos_str,
                                             allow_local_network_access):
                         try:
-                            with open(TOS_filename, 'w+') as tosfile:
+                            with open(tos_filename, 'w+') as tosfile:
                                 tosfile.write(tos_str)
                         except OSError:
-                            print('EX: unable to write TOS ' + TOS_filename)
+                            print('EX: unable to write TOS ' + tos_filename)
                 else:
-                    if os.path.isfile(TOS_filename):
+                    if os.path.isfile(tos_filename):
                         try:
-                            os.remove(TOS_filename)
+                            os.remove(tos_filename)
                         except OSError:
                             print('EX: _links_update unable to delete ' +
-                                  TOS_filename)
+                                  tos_filename)
 
         # redirect back to the default timeline
         self._redirect_headers(actor_str + '/' + default_timeline,
@@ -4592,10 +4600,10 @@ class PubServer(BaseHTTPRequestHandler):
 
             # get the nickname
             nickname = get_nickname_from_actor(actor_str)
-            editorRole = None
+            editor_role = None
             if nickname:
-                editorRole = is_editor(base_dir, nickname)
-            if not nickname or not editorRole:
+                editor_role = is_editor(base_dir, nickname)
+            if not nickname or not editor_role:
                 if not nickname:
                     print('WARN: nickname not found in ' + actor_str)
                 else:
@@ -5204,16 +5212,16 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.twitter_replacement_domain = None
 
                         # change custom post submit button text
-                        currCustomSubmitText = \
+                        curr_custom_submit_text = \
                             get_config_param(base_dir, 'customSubmitText')
                         if fields.get('customSubmitText'):
                             if fields['customSubmitText'] != \
-                               currCustomSubmitText:
+                               curr_custom_submit_text:
                                 customText = fields['customSubmitText']
                                 set_config_param(base_dir, 'customSubmitText',
                                                  customText)
                         else:
-                            if currCustomSubmitText:
+                            if curr_custom_submit_text:
                                 set_config_param(base_dir, 'customSubmitText',
                                                  '')
 
@@ -5276,10 +5284,10 @@ class PubServer(BaseHTTPRequestHandler):
                         if fields.get('instanceDescriptionShort'):
                             if fields['instanceDescriptionShort'] != \
                                curr_instance_description_short:
-                                iDesc = fields['instanceDescriptionShort']
+                                idesc = fields['instanceDescriptionShort']
                                 set_config_param(base_dir,
                                                  'instanceDescriptionShort',
-                                                 iDesc)
+                                                 idesc)
                         else:
                             if curr_instance_description_short:
                                 set_config_param(base_dir,
@@ -5687,10 +5695,10 @@ class PubServer(BaseHTTPRequestHandler):
                                                   'w+') as modfile:
                                             for mod_nick in mods:
                                                 mod_nick = mod_nick.strip()
-                                                modDir = base_dir + \
+                                                mod_dir = base_dir + \
                                                     '/accounts/' + mod_nick + \
                                                     '@' + domain
-                                                if os.path.isdir(modDir):
+                                                if os.path.isdir(mod_dir):
                                                     modfile.write(mod_nick +
                                                                   '\n')
                                     except OSError:
@@ -5700,10 +5708,10 @@ class PubServer(BaseHTTPRequestHandler):
 
                                     for mod_nick in mods:
                                         mod_nick = mod_nick.strip()
-                                        modDir = base_dir + \
+                                        mod_dir = base_dir + \
                                             '/accounts/' + mod_nick + \
                                             '@' + domain
-                                        if os.path.isdir(modDir):
+                                        if os.path.isdir(mod_dir):
                                             set_role(base_dir,
                                                      mod_nick, domain,
                                                      'moderator')
@@ -5715,11 +5723,11 @@ class PubServer(BaseHTTPRequestHandler):
                                                   'w+') as modfile:
                                             for mod_nick in mods:
                                                 mod_nick = mod_nick.strip()
-                                                modDir = \
+                                                mod_dir = \
                                                     base_dir + \
                                                     '/accounts/' + mod_nick + \
                                                     '@' + domain
-                                                if os.path.isdir(modDir):
+                                                if os.path.isdir(mod_dir):
                                                     modfile.write(mod_nick +
                                                                   '\n')
                                     except OSError:
@@ -5729,12 +5737,12 @@ class PubServer(BaseHTTPRequestHandler):
 
                                     for mod_nick in mods:
                                         mod_nick = mod_nick.strip()
-                                        modDir = \
+                                        mod_dir = \
                                             base_dir + \
                                             '/accounts/' + \
                                             mod_nick + '@' + \
                                             domain
-                                        if os.path.isdir(modDir):
+                                        if os.path.isdir(mod_dir):
                                             set_role(base_dir,
                                                      mod_nick, domain,
                                                      'moderator')
@@ -6554,7 +6562,6 @@ class PubServer(BaseHTTPRequestHandler):
                             actor_json['id'].replace('/', '#') + '.json'
                         save_json(actor_json, actor_cache_filename)
                         # send profile update to followers
-                        pub_number, pub_date = get_status_number()
                         update_actor_json = get_actor_update_json(actor_json)
                         print('Sending actor update: ' +
                               str(update_actor_json))
@@ -17702,7 +17709,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         # if this is a POST to the outbox then check authentication
-        self.outboxAuthenticated = False
+        self.outbox_authenticated = False
         self.post_to_nickname = None
 
         fitness_performance(postreq_start_time, self.server.fitness,
@@ -18216,10 +18223,10 @@ class PubServer(BaseHTTPRequestHandler):
            self.path.endswith('/shares'):
             if users_in_path:
                 if authorized:
-                    self.outboxAuthenticated = True
+                    self.outbox_authenticated = True
                     path_users_section = self.path.split('/users/')[1]
                     self.post_to_nickname = path_users_section.split('/')[0]
-            if not self.outboxAuthenticated:
+            if not self.outbox_authenticated:
                 self.send_response(405)
                 self.end_headers()
                 self.server.postreq_busy = False
@@ -18378,7 +18385,7 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.debug)
 
         # https://www.w3.org/TR/activitypub/#object-without-create
-        if self.outboxAuthenticated:
+        if self.outbox_authenticated:
             if self._post_to_outbox(message_json,
                                     self.server.project_version, None):
                 if message_json.get('id'):
