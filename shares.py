@@ -47,42 +47,42 @@ from blocking import is_blocked
 
 
 def _load_dfc_ids(base_dir: str, system_language: str,
-                  productType: str,
+                  product_type: str,
                   http_prefix: str, domain_full: str) -> {}:
     """Loads the product types ontology
     This is used to add an id to shared items
     """
-    productTypesFilename = \
-        base_dir + '/ontology/custom' + productType.title() + 'Types.json'
-    if not os.path.isfile(productTypesFilename):
-        productTypesFilename = \
-            base_dir + '/ontology/' + productType + 'Types.json'
-    productTypes = load_json(productTypesFilename)
-    if not productTypes:
-        print('Unable to load ontology: ' + productTypesFilename)
+    product_types_filename = \
+        base_dir + '/ontology/custom' + product_type.title() + 'Types.json'
+    if not os.path.isfile(product_types_filename):
+        product_types_filename = \
+            base_dir + '/ontology/' + product_type + 'Types.json'
+    product_types = load_json(product_types_filename)
+    if not product_types:
+        print('Unable to load ontology: ' + product_types_filename)
         return None
-    if not productTypes.get('@graph'):
+    if not product_types.get('@graph'):
         print('No @graph list within ontology')
         return None
-    if len(productTypes['@graph']) == 0:
+    if len(product_types['@graph']) == 0:
         print('@graph list has no contents')
         return None
-    if not productTypes['@graph'][0].get('rdfs:label'):
+    if not product_types['@graph'][0].get('rdfs:label'):
         print('@graph list entry has no rdfs:label')
         return None
-    languageExists = False
-    for label in productTypes['@graph'][0]['rdfs:label']:
+    language_exists = False
+    for label in product_types['@graph'][0]['rdfs:label']:
         if not label.get('@language'):
             continue
         if label['@language'] == system_language:
-            languageExists = True
+            language_exists = True
             break
-    if not languageExists:
-        print('productTypes ontology does not contain the language ' +
+    if not language_exists:
+        print('product_types ontology does not contain the language ' +
               system_language)
         return None
-    dfcIds = {}
-    for item in productTypes['@graph']:
+    dfc_ids = {}
+    for item in product_types['@graph']:
         if not item.get('@id'):
             continue
         if not item.get('rdfs:label'):
@@ -93,70 +93,70 @@ def _load_dfc_ids(base_dir: str, system_language: str,
             if not label.get('@value'):
                 continue
             if label['@language'] == system_language:
-                itemId = \
+                item_id = \
                     item['@id'].replace('http://static.datafoodconsortium.org',
                                         http_prefix + '://' + domain_full)
-                dfcIds[label['@value'].lower()] = itemId
+                dfc_ids[label['@value'].lower()] = item_id
                 break
-    return dfcIds
+    return dfc_ids
 
 
-def _get_valid_shared_item_id(actor: str, displayName: str) -> str:
+def _get_valid_shared_item_id(actor: str, display_name: str) -> str:
     """Removes any invalid characters from the display name to
     produce an item ID
     """
-    removeChars = (' ', '\n', '\r', '#')
-    for ch in removeChars:
-        displayName = displayName.replace(ch, '')
-    removeChars2 = ('+', '/', '\\', '?', '&')
-    for ch in removeChars2:
-        displayName = displayName.replace(ch, '-')
-    displayName = displayName.replace('.', '_')
-    displayName = displayName.replace("’", "'")
+    remove_chars = (' ', '\n', '\r', '#')
+    for char in remove_chars:
+        display_name = display_name.replace(char, '')
+    remove_chars2 = ('+', '/', '\\', '?', '&')
+    for char in remove_chars2:
+        display_name = display_name.replace(char, '-')
+    display_name = display_name.replace('.', '_')
+    display_name = display_name.replace("’", "'")
     actor = actor.replace('://', '___')
     actor = actor.replace('/', '--')
-    return actor + '--shareditems--' + displayName
+    return actor + '--shareditems--' + display_name
 
 
 def remove_shared_item(base_dir: str, nickname: str, domain: str,
-                       itemID: str,
+                       item_id: str,
                        http_prefix: str, domain_full: str,
-                       sharesFileType: str) -> None:
+                       shares_file_type: str) -> None:
     """Removes a share for a person
     """
-    sharesFilename = \
-        acct_dir(base_dir, nickname, domain) + '/' + sharesFileType + '.json'
-    if not os.path.isfile(sharesFilename):
+    shares_filename = \
+        acct_dir(base_dir, nickname, domain) + '/' + shares_file_type + '.json'
+    if not os.path.isfile(shares_filename):
         print('ERROR: remove shared item, missing ' +
-              sharesFileType + '.json ' + sharesFilename)
+              shares_file_type + '.json ' + shares_filename)
         return
 
-    sharesJson = load_json(sharesFilename)
-    if not sharesJson:
+    shares_json = load_json(shares_filename)
+    if not shares_json:
         print('ERROR: remove shared item, ' +
-              sharesFileType + '.json could not be loaded from ' +
-              sharesFilename)
+              shares_file_type + '.json could not be loaded from ' +
+              shares_filename)
         return
 
-    if sharesJson.get(itemID):
+    if shares_json.get(item_id):
         # remove any image for the item
-        itemIDfile = base_dir + '/sharefiles/' + nickname + '/' + itemID
-        if sharesJson[itemID]['imageUrl']:
+        item_idfile = base_dir + '/sharefiles/' + nickname + '/' + item_id
+        if shares_json[item_id]['imageUrl']:
             formats = get_image_extensions()
             for ext in formats:
-                if sharesJson[itemID]['imageUrl'].endswith('.' + ext):
-                    if os.path.isfile(itemIDfile + '.' + ext):
+                if shares_json[item_id]['imageUrl'].endswith('.' + ext):
+                    if os.path.isfile(item_idfile + '.' + ext):
                         try:
-                            os.remove(itemIDfile + '.' + ext)
+                            os.remove(item_idfile + '.' + ext)
                         except OSError:
                             print('EX: remove_shared_item unable to delete ' +
-                                  itemIDfile + '.' + ext)
+                                  item_idfile + '.' + ext)
         # remove the item itself
-        del sharesJson[itemID]
-        save_json(sharesJson, sharesFilename)
+        del shares_json[item_id]
+        save_json(shares_json, shares_filename)
     else:
-        print('ERROR: share index "' + itemID +
-              '" does not exist in ' + sharesFilename)
+        print('ERROR: share index "' + item_id +
+              '" does not exist in ' + shares_filename)
 
 
 def _add_share_duration_sec(duration: str, published: int) -> int:
@@ -164,102 +164,103 @@ def _add_share_duration_sec(duration: str, published: int) -> int:
     """
     if ' ' not in duration:
         return 0
-    durationList = duration.split(' ')
-    if not durationList[0].isdigit():
+    duration_list = duration.split(' ')
+    if not duration_list[0].isdigit():
         return 0
-    if 'hour' in durationList[1]:
-        return published + (int(durationList[0]) * 60 * 60)
-    if 'day' in durationList[1]:
-        return published + (int(durationList[0]) * 60 * 60 * 24)
-    if 'week' in durationList[1]:
-        return published + (int(durationList[0]) * 60 * 60 * 24 * 7)
-    if 'month' in durationList[1]:
-        return published + (int(durationList[0]) * 60 * 60 * 24 * 30)
-    if 'year' in durationList[1]:
-        return published + (int(durationList[0]) * 60 * 60 * 24 * 365)
+    if 'hour' in duration_list[1]:
+        return published + (int(duration_list[0]) * 60 * 60)
+    if 'day' in duration_list[1]:
+        return published + (int(duration_list[0]) * 60 * 60 * 24)
+    if 'week' in duration_list[1]:
+        return published + (int(duration_list[0]) * 60 * 60 * 24 * 7)
+    if 'month' in duration_list[1]:
+        return published + (int(duration_list[0]) * 60 * 60 * 24 * 30)
+    if 'year' in duration_list[1]:
+        return published + (int(duration_list[0]) * 60 * 60 * 24 * 365)
     return 0
 
 
 def _dfc_product_type_from_category(base_dir: str,
-                                    itemCategory: str, translate: {}) -> str:
+                                    item_category: str, translate: {}) -> str:
     """Does the shared item category match a DFC product type?
     If so then return the product type.
     This will be used to select an appropriate ontology file
     such as ontology/foodTypes.json
     """
-    productTypesList = get_category_types(base_dir)
-    categoryLower = itemCategory.lower()
-    for productType in productTypesList:
-        if translate.get(productType):
-            if translate[productType] in categoryLower:
-                return productType
+    product_types_list = get_category_types(base_dir)
+    category_lower = item_category.lower()
+    for product_type in product_types_list:
+        if translate.get(product_type):
+            if translate[product_type] in category_lower:
+                return product_type
         else:
-            if productType in categoryLower:
-                return productType
+            if product_type in category_lower:
+                return product_type
     return None
 
 
 def _getshare_dfc_id(base_dir: str, system_language: str,
-                     itemType: str, itemCategory: str,
+                     item_type: str, item_category: str,
                      translate: {},
                      http_prefix: str, domain_full: str,
-                     dfcIds: {} = None) -> str:
+                     dfc_ids: {} = None) -> str:
     """Attempts to obtain a DFC Id for the shared item,
-    based upon productTypes ontology.
+    based upon product_types ontology.
     See https://github.com/datafoodconsortium/ontology
     """
     # does the category field match any prodyct type ontology
     # files in the ontology subdirectory?
-    matchedProductType = \
-        _dfc_product_type_from_category(base_dir, itemCategory, translate)
-    if not matchedProductType:
-        itemType = itemType.replace(' ', '_')
-        itemType = itemType.replace('.', '')
-        return 'epicyon#' + itemType
-    if not dfcIds:
-        dfcIds = _load_dfc_ids(base_dir, system_language, matchedProductType,
-                               http_prefix, domain_full)
-        if not dfcIds:
+    matched_product_type = \
+        _dfc_product_type_from_category(base_dir, item_category, translate)
+    if not matched_product_type:
+        item_type = item_type.replace(' ', '_')
+        item_type = item_type.replace('.', '')
+        return 'epicyon#' + item_type
+    if not dfc_ids:
+        dfc_ids = _load_dfc_ids(base_dir, system_language,
+                                matched_product_type,
+                                http_prefix, domain_full)
+        if not dfc_ids:
             return ''
-    itemTypeLower = itemType.lower()
-    matchName = ''
-    matchId = ''
-    for name, uri in dfcIds.items():
-        if name not in itemTypeLower:
+    item_type_lower = item_type.lower()
+    match_name = ''
+    match_id = ''
+    for name, uri in dfc_ids.items():
+        if name not in item_type_lower:
             continue
-        if len(name) > len(matchName):
-            matchName = name
-            matchId = uri
-    if not matchId:
+        if len(name) > len(match_name):
+            match_name = name
+            match_id = uri
+    if not match_id:
         # bag of words match
-        maxMatchedWords = 0
-        for name, uri in dfcIds.items():
+        max_matched_words = 0
+        for name, uri in dfc_ids.items():
             name = name.replace('-', ' ')
             words = name.split(' ')
             score = 0
             for wrd in words:
-                if wrd in itemTypeLower:
+                if wrd in item_type_lower:
                     score += 1
-            if score > maxMatchedWords:
-                maxMatchedWords = score
-                matchId = uri
-    return matchId
+            if score > max_matched_words:
+                max_matched_words = score
+                match_id = uri
+    return match_id
 
 
-def _getshare_type_from_dfc_id(dfcUri: str, dfcIds: {}) -> str:
+def _getshare_type_from_dfc_id(dfc_uri: str, dfc_ids: {}) -> str:
     """Attempts to obtain a share item type from its DFC Id,
-    based upon productTypes ontology.
+    based upon product_types ontology.
     See https://github.com/datafoodconsortium/ontology
     """
-    if dfcUri.startswith('epicyon#'):
-        itemType = dfcUri.split('#')[1]
-        itemType = itemType.replace('_', ' ')
-        return itemType
+    if dfc_uri.startswith('epicyon#'):
+        item_type = dfc_uri.split('#')[1]
+        item_type = item_type.replace('_', ' ')
+        return item_type
 
-    for name, uri in dfcIds.items():
-        if uri.endswith('#' + dfcUri):
+    for name, uri in dfc_ids.items():
+        if uri.endswith('#' + dfc_uri):
             return name
-        elif uri == dfcUri:
+        if uri == dfc_uri:
             return name
     return None
 
@@ -267,84 +268,84 @@ def _getshare_type_from_dfc_id(dfcUri: str, dfcIds: {}) -> str:
 def _indicate_new_share_available(base_dir: str, http_prefix: str,
                                   nickname: str, domain: str,
                                   domain_full: str,
-                                  sharesFileType: str) -> None:
+                                  shares_file_type: str) -> None:
     """Indicate to each account that a new share is available
     """
-    for subdir, dirs, files in os.walk(base_dir + '/accounts'):
+    for _, dirs, _ in os.walk(base_dir + '/accounts'):
         for handle in dirs:
             if not is_account_dir(handle):
                 continue
-            accountDir = base_dir + '/accounts/' + handle
-            if sharesFileType == 'shares':
-                newShareFile = accountDir + '/.newShare'
+            account_dir = base_dir + '/accounts/' + handle
+            if shares_file_type == 'shares':
+                new_share_file = account_dir + '/.newShare'
             else:
-                newShareFile = accountDir + '/.newWanted'
-            if os.path.isfile(newShareFile):
+                new_share_file = account_dir + '/.newWanted'
+            if os.path.isfile(new_share_file):
                 continue
-            accountNickname = handle.split('@')[0]
+            account_nickname = handle.split('@')[0]
             # does this account block you?
-            if accountNickname != nickname:
-                if is_blocked(base_dir, accountNickname, domain,
+            if account_nickname != nickname:
+                if is_blocked(base_dir, account_nickname, domain,
                               nickname, domain, None):
                     continue
-            localActor = \
-                local_actor_url(http_prefix, accountNickname, domain_full)
+            local_actor = \
+                local_actor_url(http_prefix, account_nickname, domain_full)
             try:
-                with open(newShareFile, 'w+') as fp:
-                    if sharesFileType == 'shares':
-                        fp.write(localActor + '/tlshares')
+                with open(new_share_file, 'w+') as fp_new:
+                    if shares_file_type == 'shares':
+                        fp_new.write(local_actor + '/tlshares')
                     else:
-                        fp.write(localActor + '/tlwanted')
+                        fp_new.write(local_actor + '/tlwanted')
             except OSError:
                 print('EX: _indicate_new_share_available unable to write ' +
-                      str(newShareFile))
+                      str(new_share_file))
         break
 
 
 def add_share(base_dir: str,
               http_prefix: str, nickname: str, domain: str, port: int,
-              displayName: str, summary: str, image_filename: str,
-              itemQty: float, itemType: str, itemCategory: str, location: str,
-              duration: str, debug: bool, city: str,
+              display_name: str, summary: str, image_filename: str,
+              item_qty: float, item_type: str, item_category: str,
+              location: str, duration: str, debug: bool, city: str,
               price: str, currency: str,
               system_language: str, translate: {},
-              sharesFileType: str, low_bandwidth: bool,
+              shares_file_type: str, low_bandwidth: bool,
               content_license_url: str) -> None:
     """Adds a new share
     """
     if is_filtered_globally(base_dir,
-                            displayName + ' ' + summary + ' ' +
-                            itemType + ' ' + itemCategory):
+                            display_name + ' ' + summary + ' ' +
+                            item_type + ' ' + item_category):
         print('Shared item was filtered due to content')
         return
-    sharesFilename = \
-        acct_dir(base_dir, nickname, domain) + '/' + sharesFileType + '.json'
-    sharesJson = {}
-    if os.path.isfile(sharesFilename):
-        sharesJson = load_json(sharesFilename, 1, 2)
+    shares_filename = \
+        acct_dir(base_dir, nickname, domain) + '/' + shares_file_type + '.json'
+    shares_json = {}
+    if os.path.isfile(shares_filename):
+        shares_json = load_json(shares_filename, 1, 2)
 
     duration = duration.lower()
     published = int(time.time())
-    durationSec = _add_share_duration_sec(duration, published)
+    duration_sec = _add_share_duration_sec(duration, published)
 
     domain_full = get_full_domain(domain, port)
     actor = local_actor_url(http_prefix, nickname, domain_full)
-    itemID = _get_valid_shared_item_id(actor, displayName)
-    dfcId = _getshare_dfc_id(base_dir, system_language,
-                             itemType, itemCategory, translate,
-                             http_prefix, domain_full)
+    item_id = _get_valid_shared_item_id(actor, display_name)
+    dfc_id = _getshare_dfc_id(base_dir, system_language,
+                              item_type, item_category, translate,
+                              http_prefix, domain_full)
 
     # has an image for this share been uploaded?
-    imageUrl = None
-    moveImage = False
+    image_url = None
+    move_image = False
     if not image_filename:
-        sharesImageFilename = \
+        shares_image_filename = \
             acct_dir(base_dir, nickname, domain) + '/upload'
         formats = get_image_extensions()
         for ext in formats:
-            if os.path.isfile(sharesImageFilename + '.' + ext):
-                image_filename = sharesImageFilename + '.' + ext
-                moveImage = True
+            if os.path.isfile(shares_image_filename + '.' + ext):
+                image_filename = shares_image_filename + '.' + ext
+                move_image = True
 
     domain_full = get_full_domain(domain, port)
 
@@ -355,7 +356,7 @@ def add_share(base_dir: str,
                 os.mkdir(base_dir + '/sharefiles')
             if not os.path.isdir(base_dir + '/sharefiles/' + nickname):
                 os.mkdir(base_dir + '/sharefiles/' + nickname)
-            itemIDfile = base_dir + '/sharefiles/' + nickname + '/' + itemID
+            item_idfile = base_dir + '/sharefiles/' + nickname + '/' + item_id
             formats = get_image_extensions()
             for ext in formats:
                 if not image_filename.endswith('.' + ext):
@@ -363,125 +364,124 @@ def add_share(base_dir: str,
                 if low_bandwidth:
                     convert_image_to_low_bandwidth(image_filename)
                 process_meta_data(base_dir, nickname, domain,
-                                  image_filename, itemIDfile + '.' + ext,
+                                  image_filename, item_idfile + '.' + ext,
                                   city, content_license_url)
-                if moveImage:
+                if move_image:
                     try:
                         os.remove(image_filename)
                     except OSError:
                         print('EX: add_share unable to delete ' +
                               str(image_filename))
-                imageUrl = \
+                image_url = \
                     http_prefix + '://' + domain_full + \
-                    '/sharefiles/' + nickname + '/' + itemID + '.' + ext
+                    '/sharefiles/' + nickname + '/' + item_id + '.' + ext
 
-    sharesJson[itemID] = {
-        "displayName": displayName,
+    shares_json[item_id] = {
+        "displayName": display_name,
         "summary": summary,
-        "imageUrl": imageUrl,
-        "itemQty": float(itemQty),
-        "dfcId": dfcId,
-        "itemType": itemType,
-        "category": itemCategory,
+        "imageUrl": image_url,
+        "itemQty": float(item_qty),
+        "dfcId": dfc_id,
+        "itemType": item_type,
+        "category": item_category,
         "location": location,
         "published": published,
-        "expire": durationSec,
+        "expire": duration_sec,
         "itemPrice": price,
         "itemCurrency": currency
     }
 
-    save_json(sharesJson, sharesFilename)
+    save_json(shares_json, shares_filename)
 
     _indicate_new_share_available(base_dir, http_prefix,
                                   nickname, domain, domain_full,
-                                  sharesFileType)
+                                  shares_file_type)
 
 
 def expire_shares(base_dir: str) -> None:
     """Removes expired items from shares
     """
-    for subdir, dirs, files in os.walk(base_dir + '/accounts'):
+    for _, dirs, _ in os.walk(base_dir + '/accounts'):
         for account in dirs:
             if not is_account_dir(account):
                 continue
             nickname = account.split('@')[0]
             domain = account.split('@')[1]
-            for sharesFileType in get_shares_files_list():
+            for shares_file_type in get_shares_files_list():
                 _expire_shares_for_account(base_dir, nickname, domain,
-                                           sharesFileType)
+                                           shares_file_type)
         break
 
 
 def _expire_shares_for_account(base_dir: str, nickname: str, domain: str,
-                               sharesFileType: str) -> None:
+                               shares_file_type: str) -> None:
     """Removes expired items from shares for a particular account
     """
-    handleDomain = remove_domain_port(domain)
-    handle = nickname + '@' + handleDomain
-    sharesFilename = \
-        base_dir + '/accounts/' + handle + '/' + sharesFileType + '.json'
-    if not os.path.isfile(sharesFilename):
+    handle_domain = remove_domain_port(domain)
+    handle = nickname + '@' + handle_domain
+    shares_filename = \
+        base_dir + '/accounts/' + handle + '/' + shares_file_type + '.json'
+    if not os.path.isfile(shares_filename):
         return
-    sharesJson = load_json(sharesFilename, 1, 2)
-    if not sharesJson:
+    shares_json = load_json(shares_filename, 1, 2)
+    if not shares_json:
         return
     curr_time = int(time.time())
-    deleteItemID = []
-    for itemID, item in sharesJson.items():
+    delete_item_id = []
+    for item_id, item in shares_json.items():
         if curr_time > item['expire']:
-            deleteItemID.append(itemID)
-    if not deleteItemID:
+            delete_item_id.append(item_id)
+    if not delete_item_id:
         return
-    for itemID in deleteItemID:
-        del sharesJson[itemID]
+    for item_id in delete_item_id:
+        del shares_json[item_id]
         # remove any associated images
-        itemIDfile = base_dir + '/sharefiles/' + nickname + '/' + itemID
+        item_idfile = base_dir + '/sharefiles/' + nickname + '/' + item_id
         formats = get_image_extensions()
         for ext in formats:
-            if os.path.isfile(itemIDfile + '.' + ext):
+            if os.path.isfile(item_idfile + '.' + ext):
                 try:
-                    os.remove(itemIDfile + '.' + ext)
+                    os.remove(item_idfile + '.' + ext)
                 except OSError:
                     print('EX: _expire_shares_for_account unable to delete ' +
-                          itemIDfile + '.' + ext)
-    save_json(sharesJson, sharesFilename)
+                          item_idfile + '.' + ext)
+    save_json(shares_json, shares_filename)
 
 
 def get_shares_feed_for_person(base_dir: str,
                                domain: str, port: int,
                                path: str, http_prefix: str,
-                               sharesFileType: str,
+                               shares_file_type: str,
                                shares_per_page: int) -> {}:
     """Returns the shares for an account from GET requests
     """
-    if '/' + sharesFileType not in path:
+    if '/' + shares_file_type not in path:
         return None
     # handle page numbers
-    headerOnly = True
-    pageNumber = None
+    header_only = True
+    page_number = None
     if '?page=' in path:
-        pageNumber = path.split('?page=')[1]
-        if pageNumber == 'true':
-            pageNumber = 1
+        page_number = path.split('?page=')[1]
+        if page_number == 'true':
+            page_number = 1
         else:
             try:
-                pageNumber = int(pageNumber)
+                page_number = int(page_number)
             except BaseException:
                 print('EX: get_shares_feed_for_person ' +
-                      'unable to convert to int ' + str(pageNumber))
-                pass
+                      'unable to convert to int ' + str(page_number))
         path = path.split('?page=')[0]
-        headerOnly = False
+        header_only = False
 
-    if not path.endswith('/' + sharesFileType):
+    if not path.endswith('/' + shares_file_type):
         return None
     nickname = None
     if path.startswith('/users/'):
         nickname = \
-            path.replace('/users/', '', 1).replace('/' + sharesFileType, '')
+            path.replace('/users/', '', 1).replace('/' + shares_file_type, '')
     if path.startswith('/@'):
         nickname = \
-            path.replace('/@', '', 1).replace('/' + sharesFileType, '')
+            path.replace('/@', '', 1).replace('/' + shares_file_type, '')
     if not nickname:
         return None
     if not valid_nickname(domain, nickname):
@@ -489,79 +489,79 @@ def get_shares_feed_for_person(base_dir: str,
 
     domain = get_full_domain(domain, port)
 
-    handleDomain = remove_domain_port(domain)
-    sharesFilename = \
-        acct_dir(base_dir, nickname, handleDomain) + '/' + \
-        sharesFileType + '.json'
+    handle_domain = remove_domain_port(domain)
+    shares_filename = \
+        acct_dir(base_dir, nickname, handle_domain) + '/' + \
+        shares_file_type + '.json'
 
-    if headerOnly:
-        noOfShares = 0
-        if os.path.isfile(sharesFilename):
-            sharesJson = load_json(sharesFilename)
-            if sharesJson:
-                noOfShares = len(sharesJson.items())
-        idStr = local_actor_url(http_prefix, nickname, domain)
+    if header_only:
+        no_of_shares = 0
+        if os.path.isfile(shares_filename):
+            shares_json = load_json(shares_filename)
+            if shares_json:
+                no_of_shares = len(shares_json.items())
+        id_str = local_actor_url(http_prefix, nickname, domain)
         shares = {
             '@context': 'https://www.w3.org/ns/activitystreams',
-            'first': idStr + '/' + sharesFileType + '?page=1',
-            'id': idStr + '/' + sharesFileType,
-            'totalItems': str(noOfShares),
+            'first': id_str + '/' + shares_file_type + '?page=1',
+            'id': id_str + '/' + shares_file_type,
+            'totalItems': str(no_of_shares),
             'type': 'OrderedCollection'
         }
         return shares
 
-    if not pageNumber:
-        pageNumber = 1
+    if not page_number:
+        page_number = 1
 
-    nextPageNumber = int(pageNumber + 1)
-    idStr = local_actor_url(http_prefix, nickname, domain)
+    next_page_number = int(page_number + 1)
+    id_str = local_actor_url(http_prefix, nickname, domain)
     shares = {
         '@context': 'https://www.w3.org/ns/activitystreams',
-        'id': idStr + '/' + sharesFileType + '?page=' + str(pageNumber),
+        'id': id_str + '/' + shares_file_type + '?page=' + str(page_number),
         'orderedItems': [],
-        'partOf': idStr + '/' + sharesFileType,
+        'partOf': id_str + '/' + shares_file_type,
         'totalItems': 0,
         'type': 'OrderedCollectionPage'
     }
 
-    if not os.path.isfile(sharesFilename):
+    if not os.path.isfile(shares_filename):
         return shares
-    currPage = 1
-    pageCtr = 0
-    totalCtr = 0
+    curr_page = 1
+    page_ctr = 0
+    total_ctr = 0
 
-    sharesJson = load_json(sharesFilename)
-    if sharesJson:
-        for itemID, item in sharesJson.items():
-            pageCtr += 1
-            totalCtr += 1
-            if currPage == pageNumber:
-                item['shareId'] = itemID
+    shares_json = load_json(shares_filename)
+    if shares_json:
+        for item_id, item in shares_json.items():
+            page_ctr += 1
+            total_ctr += 1
+            if curr_page == page_number:
+                item['shareId'] = item_id
                 shares['orderedItems'].append(item)
-            if pageCtr >= shares_per_page:
-                pageCtr = 0
-                currPage += 1
-    shares['totalItems'] = totalCtr
-    lastPage = int(totalCtr / shares_per_page)
-    if lastPage < 1:
-        lastPage = 1
-    if nextPageNumber > lastPage:
+            if page_ctr >= shares_per_page:
+                page_ctr = 0
+                curr_page += 1
+    shares['totalItems'] = total_ctr
+    last_page = int(total_ctr / shares_per_page)
+    if last_page < 1:
+        last_page = 1
+    if next_page_number > last_page:
         shares['next'] = \
             local_actor_url(http_prefix, nickname, domain) + \
-            '/' + sharesFileType + '?page=' + str(lastPage)
+            '/' + shares_file_type + '?page=' + str(last_page)
     return shares
 
 
 def send_share_via_server(base_dir, session,
-                          fromNickname: str, password: str,
-                          fromDomain: str, fromPort: int,
-                          http_prefix: str, displayName: str,
+                          from_nickname: str, password: str,
+                          from_domain: str, fromPort: int,
+                          http_prefix: str, display_name: str,
                           summary: str, image_filename: str,
-                          itemQty: float, itemType: str, itemCategory: str,
+                          item_qty: float, item_type: str, item_category: str,
                           location: str, duration: str,
                           cached_webfingers: {}, person_cache: {},
                           debug: bool, project_version: str,
-                          itemPrice: str, itemCurrency: str,
+                          itemPrice: str, item_currency: str,
                           signing_priv_key_pem: str) -> {}:
     """Creates an item share via c2s
     """
@@ -570,49 +570,49 @@ def send_share_via_server(base_dir, session,
         return 6
 
     # convert $4.23 to 4.23 USD
-    newItemPrice, newItemCurrency = get_price_from_string(itemPrice)
-    if newItemPrice != itemPrice:
-        itemPrice = newItemPrice
-        if not itemCurrency:
-            if newItemCurrency != itemCurrency:
-                itemCurrency = newItemCurrency
+    new_item_price, new_item_currency = get_price_from_string(itemPrice)
+    if new_item_price != itemPrice:
+        itemPrice = new_item_price
+        if not item_currency:
+            if new_item_currency != item_currency:
+                item_currency = new_item_currency
 
-    fromDomainFull = get_full_domain(fromDomain, fromPort)
+    from_domain_full = get_full_domain(from_domain, fromPort)
 
-    actor = local_actor_url(http_prefix, fromNickname, fromDomainFull)
-    toUrl = 'https://www.w3.org/ns/activitystreams#Public'
-    ccUrl = actor + '/followers'
+    actor = local_actor_url(http_prefix, from_nickname, from_domain_full)
+    to_url = 'https://www.w3.org/ns/activitystreams#Public'
+    cc_url = actor + '/followers'
 
-    newShareJson = {
+    new_share_json = {
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Add',
         'actor': actor,
         'target': actor + '/shares',
         'object': {
             "type": "Offer",
-            "displayName": displayName,
+            "displayName": display_name,
             "summary": summary,
-            "itemQty": float(itemQty),
-            "itemType": itemType,
-            "category": itemCategory,
+            "itemQty": float(item_qty),
+            "itemType": item_type,
+            "category": item_category,
             "location": location,
             "duration": duration,
             "itemPrice": itemPrice,
-            "itemCurrency": itemCurrency,
-            'to': [toUrl],
-            'cc': [ccUrl]
+            "itemCurrency": item_currency,
+            'to': [to_url],
+            'cc': [cc_url]
         },
-        'to': [toUrl],
-        'cc': [ccUrl]
+        'to': [to_url],
+        'cc': [cc_url]
     }
 
-    handle = http_prefix + '://' + fromDomainFull + '/@' + fromNickname
+    handle = http_prefix + '://' + from_domain_full + '/@' + from_nickname
 
     # lookup the inbox for the To handle
     wf_request = \
         webfinger_handle(session, handle, http_prefix,
                          cached_webfingers,
-                         fromDomain, project_version, debug, False,
+                         from_domain, project_version, debug, False,
                          signing_priv_key_pem)
     if not wf_request:
         if debug:
@@ -623,64 +623,64 @@ def send_share_via_server(base_dir, session,
               ' did not return a dict. ' + str(wf_request))
         return 1
 
-    postToBox = 'outbox'
+    post_to_box = 'outbox'
 
     # get the actor inbox for the To handle
-    originDomain = fromDomain
-    (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
-     displayName, _) = get_person_box(signing_priv_key_pem,
-                                      originDomain,
-                                      base_dir, session, wf_request,
-                                      person_cache, project_version,
-                                      http_prefix, fromNickname,
-                                      fromDomain, postToBox,
-                                      83653)
+    origin_domain = from_domain
+    (inbox_url, _, _, from_person_id, _, _,
+     display_name, _) = get_person_box(signing_priv_key_pem,
+                                       origin_domain,
+                                       base_dir, session, wf_request,
+                                       person_cache, project_version,
+                                       http_prefix, from_nickname,
+                                       from_domain, post_to_box,
+                                       83653)
 
-    if not inboxUrl:
+    if not inbox_url:
         if debug:
-            print('DEBUG: share no ' + postToBox +
+            print('DEBUG: share no ' + post_to_box +
                   ' was found for ' + handle)
         return 3
-    if not fromPersonId:
+    if not from_person_id:
         if debug:
             print('DEBUG: share no actor was found for ' + handle)
         return 4
 
-    authHeader = create_basic_auth_header(fromNickname, password)
+    auth_header = create_basic_auth_header(from_nickname, password)
 
     if image_filename:
         headers = {
-            'host': fromDomain,
-            'Authorization': authHeader
+            'host': from_domain,
+            'Authorization': auth_header
         }
-        postResult = \
+        post_result = \
             post_image(session, image_filename, [],
-                       inboxUrl.replace('/' + postToBox, '/shares'),
+                       inbox_url.replace('/' + post_to_box, '/shares'),
                        headers)
 
     headers = {
-        'host': fromDomain,
+        'host': from_domain,
         'Content-type': 'application/json',
-        'Authorization': authHeader
+        'Authorization': auth_header
     }
-    postResult = \
-        post_json(http_prefix, fromDomainFull,
-                  session, newShareJson, [], inboxUrl, headers, 30, True)
-    if not postResult:
+    post_result = \
+        post_json(http_prefix, from_domain_full,
+                  session, new_share_json, [], inbox_url, headers, 30, True)
+    if not post_result:
         if debug:
-            print('DEBUG: POST share failed for c2s to ' + inboxUrl)
+            print('DEBUG: POST share failed for c2s to ' + inbox_url)
 #        return 5
 
     if debug:
         print('DEBUG: c2s POST share item success')
 
-    return newShareJson
+    return new_share_json
 
 
 def send_undo_share_via_server(base_dir: str, session,
-                               fromNickname: str, password: str,
-                               fromDomain: str, fromPort: int,
-                               http_prefix: str, displayName: str,
+                               from_nickname: str, password: str,
+                               from_domain: str, fromPort: int,
+                               http_prefix: str, display_name: str,
                                cached_webfingers: {}, person_cache: {},
                                debug: bool, project_version: str,
                                signing_priv_key_pem: str) -> {}:
@@ -690,33 +690,33 @@ def send_undo_share_via_server(base_dir: str, session,
         print('WARN: No session for send_undo_share_via_server')
         return 6
 
-    fromDomainFull = get_full_domain(fromDomain, fromPort)
+    from_domain_full = get_full_domain(from_domain, fromPort)
 
-    actor = local_actor_url(http_prefix, fromNickname, fromDomainFull)
-    toUrl = 'https://www.w3.org/ns/activitystreams#Public'
-    ccUrl = actor + '/followers'
+    actor = local_actor_url(http_prefix, from_nickname, from_domain_full)
+    to_url = 'https://www.w3.org/ns/activitystreams#Public'
+    cc_url = actor + '/followers'
 
-    undoShareJson = {
+    undo_share_json = {
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Remove',
         'actor': actor,
         'target': actor + '/shares',
         'object': {
             "type": "Offer",
-            "displayName": displayName,
-            'to': [toUrl],
-            'cc': [ccUrl]
+            "displayName": display_name,
+            'to': [to_url],
+            'cc': [cc_url]
         },
-        'to': [toUrl],
-        'cc': [ccUrl]
+        'to': [to_url],
+        'cc': [cc_url]
     }
 
-    handle = http_prefix + '://' + fromDomainFull + '/@' + fromNickname
+    handle = http_prefix + '://' + from_domain_full + '/@' + from_nickname
 
     # lookup the inbox for the To handle
     wf_request = \
         webfinger_handle(session, handle, http_prefix, cached_webfingers,
-                         fromDomain, project_version, debug, False,
+                         from_domain, project_version, debug, False,
                          signing_priv_key_pem)
     if not wf_request:
         if debug:
@@ -727,61 +727,61 @@ def send_undo_share_via_server(base_dir: str, session,
               ' did not return a dict. ' + str(wf_request))
         return 1
 
-    postToBox = 'outbox'
+    post_to_box = 'outbox'
 
     # get the actor inbox for the To handle
-    originDomain = fromDomain
-    (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
-     displayName, _) = get_person_box(signing_priv_key_pem,
-                                      originDomain,
-                                      base_dir, session, wf_request,
-                                      person_cache, project_version,
-                                      http_prefix, fromNickname,
-                                      fromDomain, postToBox,
-                                      12663)
+    origin_domain = from_domain
+    (inbox_url, _, _, from_person_id, _, _,
+     display_name, _) = get_person_box(signing_priv_key_pem,
+                                       origin_domain,
+                                       base_dir, session, wf_request,
+                                       person_cache, project_version,
+                                       http_prefix, from_nickname,
+                                       from_domain, post_to_box,
+                                       12663)
 
-    if not inboxUrl:
+    if not inbox_url:
         if debug:
-            print('DEBUG: unshare no ' + postToBox +
+            print('DEBUG: unshare no ' + post_to_box +
                   ' was found for ' + handle)
         return 3
-    if not fromPersonId:
+    if not from_person_id:
         if debug:
             print('DEBUG: unshare no actor was found for ' + handle)
         return 4
 
-    authHeader = create_basic_auth_header(fromNickname, password)
+    auth_header = create_basic_auth_header(from_nickname, password)
 
     headers = {
-        'host': fromDomain,
+        'host': from_domain,
         'Content-type': 'application/json',
-        'Authorization': authHeader
+        'Authorization': auth_header
     }
-    postResult = \
-        post_json(http_prefix, fromDomainFull,
-                  session, undoShareJson, [], inboxUrl,
+    post_result = \
+        post_json(http_prefix, from_domain_full,
+                  session, undo_share_json, [], inbox_url,
                   headers, 30, True)
-    if not postResult:
+    if not post_result:
         if debug:
-            print('DEBUG: POST unshare failed for c2s to ' + inboxUrl)
+            print('DEBUG: POST unshare failed for c2s to ' + inbox_url)
 #        return 5
 
     if debug:
         print('DEBUG: c2s POST unshare success')
 
-    return undoShareJson
+    return undo_share_json
 
 
 def send_wanted_via_server(base_dir, session,
-                           fromNickname: str, password: str,
-                           fromDomain: str, fromPort: int,
-                           http_prefix: str, displayName: str,
+                           from_nickname: str, password: str,
+                           from_domain: str, fromPort: int,
+                           http_prefix: str, display_name: str,
                            summary: str, image_filename: str,
-                           itemQty: float, itemType: str, itemCategory: str,
+                           item_qty: float, item_type: str, item_category: str,
                            location: str, duration: str,
                            cached_webfingers: {}, person_cache: {},
                            debug: bool, project_version: str,
-                           itemMaxPrice: str, itemCurrency: str,
+                           itemMaxPrice: str, item_currency: str,
                            signing_priv_key_pem: str) -> {}:
     """Creates a wanted item via c2s
     """
@@ -790,49 +790,49 @@ def send_wanted_via_server(base_dir, session,
         return 6
 
     # convert $4.23 to 4.23 USD
-    newItemMaxPrice, newItemCurrency = get_price_from_string(itemMaxPrice)
-    if newItemMaxPrice != itemMaxPrice:
-        itemMaxPrice = newItemMaxPrice
-        if not itemCurrency:
-            if newItemCurrency != itemCurrency:
-                itemCurrency = newItemCurrency
+    new_item_max_price, new_item_currency = get_price_from_string(itemMaxPrice)
+    if new_item_max_price != itemMaxPrice:
+        itemMaxPrice = new_item_max_price
+        if not item_currency:
+            if new_item_currency != item_currency:
+                item_currency = new_item_currency
 
-    fromDomainFull = get_full_domain(fromDomain, fromPort)
+    from_domain_full = get_full_domain(from_domain, fromPort)
 
-    actor = local_actor_url(http_prefix, fromNickname, fromDomainFull)
-    toUrl = 'https://www.w3.org/ns/activitystreams#Public'
-    ccUrl = actor + '/followers'
+    actor = local_actor_url(http_prefix, from_nickname, from_domain_full)
+    to_url = 'https://www.w3.org/ns/activitystreams#Public'
+    cc_url = actor + '/followers'
 
-    newShareJson = {
+    new_share_json = {
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Add',
         'actor': actor,
         'target': actor + '/wanted',
         'object': {
             "type": "Offer",
-            "displayName": displayName,
+            "displayName": display_name,
             "summary": summary,
-            "itemQty": float(itemQty),
-            "itemType": itemType,
-            "category": itemCategory,
+            "itemQty": float(item_qty),
+            "itemType": item_type,
+            "category": item_category,
             "location": location,
             "duration": duration,
             "itemPrice": itemMaxPrice,
-            "itemCurrency": itemCurrency,
-            'to': [toUrl],
-            'cc': [ccUrl]
+            "itemCurrency": item_currency,
+            'to': [to_url],
+            'cc': [cc_url]
         },
-        'to': [toUrl],
-        'cc': [ccUrl]
+        'to': [to_url],
+        'cc': [cc_url]
     }
 
-    handle = http_prefix + '://' + fromDomainFull + '/@' + fromNickname
+    handle = http_prefix + '://' + from_domain_full + '/@' + from_nickname
 
     # lookup the inbox for the To handle
     wf_request = \
         webfinger_handle(session, handle, http_prefix,
                          cached_webfingers,
-                         fromDomain, project_version, debug, False,
+                         from_domain, project_version, debug, False,
                          signing_priv_key_pem)
     if not wf_request:
         if debug:
@@ -843,64 +843,64 @@ def send_wanted_via_server(base_dir, session,
               ' did not return a dict. ' + str(wf_request))
         return 1
 
-    postToBox = 'outbox'
+    post_to_box = 'outbox'
 
     # get the actor inbox for the To handle
-    originDomain = fromDomain
-    (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
-     displayName, _) = get_person_box(signing_priv_key_pem,
-                                      originDomain,
-                                      base_dir, session, wf_request,
-                                      person_cache, project_version,
-                                      http_prefix, fromNickname,
-                                      fromDomain, postToBox,
-                                      23653)
+    origin_domain = from_domain
+    (inbox_url, _, _, from_person_id, _, _,
+     display_name, _) = get_person_box(signing_priv_key_pem,
+                                       origin_domain,
+                                       base_dir, session, wf_request,
+                                       person_cache, project_version,
+                                       http_prefix, from_nickname,
+                                       from_domain, post_to_box,
+                                       23653)
 
-    if not inboxUrl:
+    if not inbox_url:
         if debug:
-            print('DEBUG: wanted no ' + postToBox +
+            print('DEBUG: wanted no ' + post_to_box +
                   ' was found for ' + handle)
         return 3
-    if not fromPersonId:
+    if not from_person_id:
         if debug:
             print('DEBUG: wanted no actor was found for ' + handle)
         return 4
 
-    authHeader = create_basic_auth_header(fromNickname, password)
+    auth_header = create_basic_auth_header(from_nickname, password)
 
     if image_filename:
         headers = {
-            'host': fromDomain,
-            'Authorization': authHeader
+            'host': from_domain,
+            'Authorization': auth_header
         }
-        postResult = \
+        post_result = \
             post_image(session, image_filename, [],
-                       inboxUrl.replace('/' + postToBox, '/wanted'),
+                       inbox_url.replace('/' + post_to_box, '/wanted'),
                        headers)
 
     headers = {
-        'host': fromDomain,
+        'host': from_domain,
         'Content-type': 'application/json',
-        'Authorization': authHeader
+        'Authorization': auth_header
     }
-    postResult = \
-        post_json(http_prefix, fromDomainFull,
-                  session, newShareJson, [], inboxUrl, headers, 30, True)
-    if not postResult:
+    post_result = \
+        post_json(http_prefix, from_domain_full,
+                  session, new_share_json, [], inbox_url, headers, 30, True)
+    if not post_result:
         if debug:
-            print('DEBUG: POST wanted failed for c2s to ' + inboxUrl)
+            print('DEBUG: POST wanted failed for c2s to ' + inbox_url)
 #        return 5
 
     if debug:
         print('DEBUG: c2s POST wanted item success')
 
-    return newShareJson
+    return new_share_json
 
 
 def send_undo_wanted_via_server(base_dir: str, session,
-                                fromNickname: str, password: str,
-                                fromDomain: str, fromPort: int,
-                                http_prefix: str, displayName: str,
+                                from_nickname: str, password: str,
+                                from_domain: str, fromPort: int,
+                                http_prefix: str, display_name: str,
                                 cached_webfingers: {}, person_cache: {},
                                 debug: bool, project_version: str,
                                 signing_priv_key_pem: str) -> {}:
@@ -910,33 +910,33 @@ def send_undo_wanted_via_server(base_dir: str, session,
         print('WARN: No session for send_undo_wanted_via_server')
         return 6
 
-    fromDomainFull = get_full_domain(fromDomain, fromPort)
+    from_domain_full = get_full_domain(from_domain, fromPort)
 
-    actor = local_actor_url(http_prefix, fromNickname, fromDomainFull)
-    toUrl = 'https://www.w3.org/ns/activitystreams#Public'
-    ccUrl = actor + '/followers'
+    actor = local_actor_url(http_prefix, from_nickname, from_domain_full)
+    to_url = 'https://www.w3.org/ns/activitystreams#Public'
+    cc_url = actor + '/followers'
 
-    undoShareJson = {
+    undo_share_json = {
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Remove',
         'actor': actor,
         'target': actor + '/wanted',
         'object': {
             "type": "Offer",
-            "displayName": displayName,
-            'to': [toUrl],
-            'cc': [ccUrl]
+            "displayName": display_name,
+            'to': [to_url],
+            'cc': [cc_url]
         },
-        'to': [toUrl],
-        'cc': [ccUrl]
+        'to': [to_url],
+        'cc': [cc_url]
     }
 
-    handle = http_prefix + '://' + fromDomainFull + '/@' + fromNickname
+    handle = http_prefix + '://' + from_domain_full + '/@' + from_nickname
 
     # lookup the inbox for the To handle
     wf_request = \
         webfinger_handle(session, handle, http_prefix, cached_webfingers,
-                         fromDomain, project_version, debug, False,
+                         from_domain, project_version, debug, False,
                          signing_priv_key_pem)
     if not wf_request:
         if debug:
@@ -947,49 +947,49 @@ def send_undo_wanted_via_server(base_dir: str, session,
               ' did not return a dict. ' + str(wf_request))
         return 1
 
-    postToBox = 'outbox'
+    post_to_box = 'outbox'
 
     # get the actor inbox for the To handle
-    originDomain = fromDomain
-    (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox, avatarUrl,
-     displayName, _) = get_person_box(signing_priv_key_pem,
-                                      originDomain,
-                                      base_dir, session, wf_request,
-                                      person_cache, project_version,
-                                      http_prefix, fromNickname,
-                                      fromDomain, postToBox,
-                                      12693)
+    origin_domain = from_domain
+    (inbox_url, _, _, from_person_id, _, _,
+     display_name, _) = get_person_box(signing_priv_key_pem,
+                                       origin_domain,
+                                       base_dir, session, wf_request,
+                                       person_cache, project_version,
+                                       http_prefix, from_nickname,
+                                       from_domain, post_to_box,
+                                       12693)
 
-    if not inboxUrl:
+    if not inbox_url:
         if debug:
-            print('DEBUG: unwant no ' + postToBox +
+            print('DEBUG: unwant no ' + post_to_box +
                   ' was found for ' + handle)
         return 3
-    if not fromPersonId:
+    if not from_person_id:
         if debug:
             print('DEBUG: unwant no actor was found for ' + handle)
         return 4
 
-    authHeader = create_basic_auth_header(fromNickname, password)
+    auth_header = create_basic_auth_header(from_nickname, password)
 
     headers = {
-        'host': fromDomain,
+        'host': from_domain,
         'Content-type': 'application/json',
-        'Authorization': authHeader
+        'Authorization': auth_header
     }
-    postResult = \
-        post_json(http_prefix, fromDomainFull,
-                  session, undoShareJson, [], inboxUrl,
+    post_result = \
+        post_json(http_prefix, from_domain_full,
+                  session, undo_share_json, [], inbox_url,
                   headers, 30, True)
-    if not postResult:
+    if not post_result:
         if debug:
-            print('DEBUG: POST unwant failed for c2s to ' + inboxUrl)
+            print('DEBUG: POST unwant failed for c2s to ' + inbox_url)
 #        return 5
 
     if debug:
         print('DEBUG: c2s POST unwant success')
 
-    return undoShareJson
+    return undo_share_json
 
 
 def get_shared_items_catalog_via_server(base_dir, session,
@@ -1003,21 +1003,21 @@ def get_shared_items_catalog_via_server(base_dir, session,
         print('WARN: No session for get_shared_items_catalog_via_server')
         return 6
 
-    authHeader = create_basic_auth_header(nickname, password)
+    auth_header = create_basic_auth_header(nickname, password)
 
     headers = {
         'host': domain,
         'Content-type': 'application/json',
-        'Authorization': authHeader,
+        'Authorization': auth_header,
         'Accept': 'application/json'
     }
     domain_full = get_full_domain(domain, port)
     url = local_actor_url(http_prefix, nickname, domain_full) + '/catalog'
     if debug:
         print('Shared items catalog request to: ' + url)
-    catalogJson = get_json(signing_priv_key_pem, session, url, headers, None,
-                           debug, __version__, http_prefix, None)
-    if not catalogJson:
+    catalog_json = get_json(signing_priv_key_pem, session, url, headers, None,
+                            debug, __version__, http_prefix, None)
+    if not catalog_json:
         if debug:
             print('DEBUG: GET shared items catalog failed for c2s to ' + url)
 #        return 5
@@ -1025,7 +1025,7 @@ def get_shared_items_catalog_via_server(base_dir, session,
     if debug:
         print('DEBUG: c2s GET shared items catalog success')
 
-    return catalogJson
+    return catalog_json
 
 
 def outbox_share_upload(base_dir: str, http_prefix: str,
@@ -1070,7 +1070,7 @@ def outbox_share_upload(base_dir: str, http_prefix: str,
         if debug:
             print('DEBUG: duration missing from Offer')
         return
-    itemQty = float(message_json['object']['itemQty'])
+    item_qty = float(message_json['object']['itemQty'])
     location = ''
     if message_json['object'].get('location'):
         location = message_json['object']['location']
@@ -1086,7 +1086,7 @@ def outbox_share_upload(base_dir: str, http_prefix: str,
               message_json['object']['displayName'],
               message_json['object']['summary'],
               image_filename,
-              itemQty,
+              item_qty,
               message_json['object']['itemType'],
               message_json['object']['category'],
               location,
@@ -1131,14 +1131,14 @@ def _shares_catalog_params(path: str) -> (bool, float, float, str):
     """Returns parameters when accessing the shares catalog
     """
     today = False
-    minPrice = 0
-    maxPrice = 9999999
-    matchPattern = None
+    min_price = 0
+    max_price = 9999999
+    match_pattern = None
     if '?' not in path:
-        return today, minPrice, maxPrice, matchPattern
+        return today, min_price, max_price, match_pattern
     args = path.split('?', 1)[1]
-    argList = args.split(';')
-    for arg in argList:
+    arg_list = args.split(';')
+    for arg in arg_list:
         if '=' not in arg:
             continue
         key = arg.split('=')[0].lower()
@@ -1149,136 +1149,137 @@ def _shares_catalog_params(path: str) -> (bool, float, float, str):
                 today = True
         elif key.startswith('min'):
             if is_float(value):
-                minPrice = float(value)
+                min_price = float(value)
         elif key.startswith('max'):
             if is_float(value):
-                maxPrice = float(value)
+                max_price = float(value)
         elif key.startswith('match'):
-            matchPattern = value
-    return today, minPrice, maxPrice, matchPattern
+            match_pattern = value
+    return today, min_price, max_price, match_pattern
 
 
 def shares_catalog_account_endpoint(base_dir: str, http_prefix: str,
                                     nickname: str, domain: str,
                                     domain_full: str,
                                     path: str, debug: bool,
-                                    sharesFileType: str) -> {}:
+                                    shares_file_type: str) -> {}:
     """Returns the endpoint for the shares catalog of a particular account
     See https://github.com/datafoodconsortium/ontology
     Also the subdirectory ontology/DFC
     """
-    today, minPrice, maxPrice, matchPattern = _shares_catalog_params(path)
-    dfcUrl = \
+    today, min_price, max_price, match_pattern = _shares_catalog_params(path)
+    dfc_url = \
         http_prefix + '://' + domain_full + '/ontologies/DFC_FullModel.owl#'
-    dfcPtUrl = \
+    dfc_pt_url = \
         http_prefix + '://' + domain_full + \
         '/ontologies/DFC_ProductGlossary.rdf#'
     owner = local_actor_url(http_prefix, nickname, domain_full)
-    if sharesFileType == 'shares':
-        dfcInstanceId = owner + '/catalog'
+    if shares_file_type == 'shares':
+        dfc_instance_id = owner + '/catalog'
     else:
-        dfcInstanceId = owner + '/wantedItems'
+        dfc_instance_id = owner + '/wantedItems'
     endpoint = {
         "@context": {
-            "DFC": dfcUrl,
-            "dfc-pt": dfcPtUrl,
+            "DFC": dfc_url,
+            "dfc-pt": dfc_pt_url,
             "@base": "http://maPlateformeNationale"
         },
-        "@id": dfcInstanceId,
+        "@id": dfc_instance_id,
         "@type": "DFC:Entreprise",
         "DFC:supplies": []
     }
 
-    currDate = datetime.datetime.utcnow()
-    currDateStr = currDate.strftime("%Y-%m-%d")
+    curr_date = datetime.datetime.utcnow()
+    curr_date_str = curr_date.strftime("%Y-%m-%d")
 
-    sharesFilename = \
-        acct_dir(base_dir, nickname, domain) + '/' + sharesFileType + '.json'
-    if not os.path.isfile(sharesFilename):
+    shares_filename = \
+        acct_dir(base_dir, nickname, domain) + '/' + shares_file_type + '.json'
+    if not os.path.isfile(shares_filename):
         if debug:
-            print(sharesFileType + '.json file not found: ' + sharesFilename)
+            print(shares_file_type + '.json file not found: ' +
+                  shares_filename)
         return endpoint
-    sharesJson = load_json(sharesFilename, 1, 2)
-    if not sharesJson:
+    shares_json = load_json(shares_filename, 1, 2)
+    if not shares_json:
         if debug:
-            print('Unable to load json for ' + sharesFilename)
+            print('Unable to load json for ' + shares_filename)
         return endpoint
 
-    for itemID, item in sharesJson.items():
+    for item_id, item in shares_json.items():
         if not item.get('dfcId'):
             if debug:
-                print('Item does not have dfcId: ' + itemID)
+                print('Item does not have dfcId: ' + item_id)
             continue
         if '#' not in item['dfcId']:
             continue
         if today:
-            if not item['published'].startswith(currDateStr):
+            if not item['published'].startswith(curr_date_str):
                 continue
-        if minPrice is not None:
-            if float(item['itemPrice']) < minPrice:
+        if min_price is not None:
+            if float(item['itemPrice']) < min_price:
                 continue
-        if maxPrice is not None:
-            if float(item['itemPrice']) > maxPrice:
+        if max_price is not None:
+            if float(item['itemPrice']) > max_price:
                 continue
         description = item['displayName'] + ': ' + item['summary']
-        if matchPattern:
-            if not re.match(matchPattern, description):
+        if match_pattern:
+            if not re.match(match_pattern, description):
                 continue
 
-        expireDate = datetime.datetime.fromtimestamp(item['expire'])
-        expireDateStr = expireDate.strftime("%Y-%m-%dT%H:%M:%SZ")
+        expire_date = datetime.datetime.fromtimestamp(item['expire'])
+        expire_date_str = expire_date.strftime("%Y-%m-%dT%H:%M:%SZ")
 
-        shareId = _get_valid_shared_item_id(owner, item['displayName'])
+        share_id = _get_valid_shared_item_id(owner, item['displayName'])
         if item['dfcId'].startswith('epicyon#'):
-            dfcId = "epicyon:" + item['dfcId'].split('#')[1]
+            dfc_id = "epicyon:" + item['dfcId'].split('#')[1]
         else:
-            dfcId = "dfc-pt:" + item['dfcId'].split('#')[1]
-        priceStr = item['itemPrice'] + ' ' + item['itemCurrency']
-        catalogItem = {
-            "@id": shareId,
+            dfc_id = "dfc-pt:" + item['dfcId'].split('#')[1]
+        price_str = item['itemPrice'] + ' ' + item['itemCurrency']
+        catalog_item = {
+            "@id": share_id,
             "@type": "DFC:SuppliedProduct",
-            "DFC:hasType": dfcId,
+            "DFC:hasType": dfc_id,
             "DFC:startDate": item['published'],
-            "DFC:expiryDate": expireDateStr,
+            "DFC:expiryDate": expire_date_str,
             "DFC:quantity": float(item['itemQty']),
-            "DFC:price": priceStr,
+            "DFC:price": price_str,
             "DFC:Image": item['imageUrl'],
             "DFC:description": description
         }
-        endpoint['DFC:supplies'].append(catalogItem)
+        endpoint['DFC:supplies'].append(catalog_item)
 
     return endpoint
 
 
 def shares_catalog_endpoint(base_dir: str, http_prefix: str,
                             domain_full: str,
-                            path: str, sharesFileType: str) -> {}:
+                            path: str, shares_file_type: str) -> {}:
     """Returns the endpoint for the shares catalog for the instance
     See https://github.com/datafoodconsortium/ontology
     Also the subdirectory ontology/DFC
     """
-    today, minPrice, maxPrice, matchPattern = _shares_catalog_params(path)
-    dfcUrl = \
+    today, min_price, max_price, match_pattern = _shares_catalog_params(path)
+    dfc_url = \
         http_prefix + '://' + domain_full + '/ontologies/DFC_FullModel.owl#'
-    dfcPtUrl = \
+    dfc_pt_url = \
         http_prefix + '://' + domain_full + \
         '/ontologies/DFC_ProductGlossary.rdf#'
-    dfcInstanceId = http_prefix + '://' + domain_full + '/catalog'
+    dfc_instance_id = http_prefix + '://' + domain_full + '/catalog'
     endpoint = {
         "@context": {
-            "DFC": dfcUrl,
-            "dfc-pt": dfcPtUrl,
+            "DFC": dfc_url,
+            "dfc-pt": dfc_pt_url,
             "@base": "http://maPlateformeNationale"
         },
-        "@id": dfcInstanceId,
+        "@id": dfc_instance_id,
         "@type": "DFC:Entreprise",
         "DFC:supplies": []
     }
 
-    currDate = datetime.datetime.utcnow()
-    currDateStr = currDate.strftime("%Y-%m-%d")
+    curr_date = datetime.datetime.utcnow()
+    curr_date_str = curr_date.strftime("%Y-%m-%d")
 
-    for subdir, dirs, files in os.walk(base_dir + '/accounts'):
+    for _, dirs, _ in os.walk(base_dir + '/accounts'):
         for acct in dirs:
             if not is_account_dir(acct):
                 continue
@@ -1286,88 +1287,89 @@ def shares_catalog_endpoint(base_dir: str, http_prefix: str,
             domain = acct.split('@')[1]
             owner = local_actor_url(http_prefix, nickname, domain_full)
 
-            sharesFilename = \
+            shares_filename = \
                 acct_dir(base_dir, nickname, domain) + '/' + \
-                sharesFileType + '.json'
-            if not os.path.isfile(sharesFilename):
+                shares_file_type + '.json'
+            if not os.path.isfile(shares_filename):
                 continue
-            print('Test 78363 ' + sharesFilename)
-            sharesJson = load_json(sharesFilename, 1, 2)
-            if not sharesJson:
+            print('Test 78363 ' + shares_filename)
+            shares_json = load_json(shares_filename, 1, 2)
+            if not shares_json:
                 continue
 
-            for itemID, item in sharesJson.items():
+            for _, item in shares_json.items():
                 if not item.get('dfcId'):
                     continue
                 if '#' not in item['dfcId']:
                     continue
                 if today:
-                    if not item['published'].startswith(currDateStr):
+                    if not item['published'].startswith(curr_date_str):
                         continue
-                if minPrice is not None:
-                    if float(item['itemPrice']) < minPrice:
+                if min_price is not None:
+                    if float(item['itemPrice']) < min_price:
                         continue
-                if maxPrice is not None:
-                    if float(item['itemPrice']) > maxPrice:
+                if max_price is not None:
+                    if float(item['itemPrice']) > max_price:
                         continue
                 description = item['displayName'] + ': ' + item['summary']
-                if matchPattern:
-                    if not re.match(matchPattern, description):
+                if match_pattern:
+                    if not re.match(match_pattern, description):
                         continue
 
-                startDateStr = date_seconds_to_string(item['published'])
-                expireDateStr = date_seconds_to_string(item['expire'])
-                shareId = _get_valid_shared_item_id(owner, item['displayName'])
+                start_date_str = date_seconds_to_string(item['published'])
+                expire_date_str = date_seconds_to_string(item['expire'])
+                share_id = \
+                    _get_valid_shared_item_id(owner, item['displayName'])
                 if item['dfcId'].startswith('epicyon#'):
-                    dfcId = "epicyon:" + item['dfcId'].split('#')[1]
+                    dfc_id = "epicyon:" + item['dfcId'].split('#')[1]
                 else:
-                    dfcId = "dfc-pt:" + item['dfcId'].split('#')[1]
-                priceStr = item['itemPrice'] + ' ' + item['itemCurrency']
-                catalogItem = {
-                    "@id": shareId,
+                    dfc_id = "dfc-pt:" + item['dfcId'].split('#')[1]
+                price_str = item['itemPrice'] + ' ' + item['itemCurrency']
+                catalog_item = {
+                    "@id": share_id,
                     "@type": "DFC:SuppliedProduct",
-                    "DFC:hasType": dfcId,
-                    "DFC:startDate": startDateStr,
-                    "DFC:expiryDate": expireDateStr,
+                    "DFC:hasType": dfc_id,
+                    "DFC:startDate": start_date_str,
+                    "DFC:expiryDate": expire_date_str,
                     "DFC:quantity": float(item['itemQty']),
-                    "DFC:price": priceStr,
+                    "DFC:price": price_str,
                     "DFC:Image": item['imageUrl'],
                     "DFC:description": description
                 }
-                endpoint['DFC:supplies'].append(catalogItem)
+                endpoint['DFC:supplies'].append(catalog_item)
 
     return endpoint
 
 
 def shares_catalog_csv_endpoint(base_dir: str, http_prefix: str,
                                 domain_full: str,
-                                path: str, sharesFileType: str) -> str:
+                                path: str, shares_file_type: str) -> str:
     """Returns a CSV version of the shares catalog
     """
-    catalogJson = \
+    catalog_json = \
         shares_catalog_endpoint(base_dir, http_prefix, domain_full, path,
-                                sharesFileType)
-    if not catalogJson:
+                                shares_file_type)
+    if not catalog_json:
         return ''
-    if not catalogJson.get('DFC:supplies'):
+    if not catalog_json.get('DFC:supplies'):
         return ''
-    csvStr = \
+    csv_str = \
         'id,type,hasType,startDate,expiryDate,' + \
         'quantity,price,currency,Image,description,\n'
-    for item in catalogJson['DFC:supplies']:
-        csvStr += '"' + item['@id'] + '",'
-        csvStr += '"' + item['@type'] + '",'
-        csvStr += '"' + item['DFC:hasType'] + '",'
-        csvStr += '"' + item['DFC:startDate'] + '",'
-        csvStr += '"' + item['DFC:expiryDate'] + '",'
-        csvStr += str(item['DFC:quantity']) + ','
-        csvStr += item['DFC:price'].split(' ')[0] + ','
-        csvStr += '"' + item['DFC:price'].split(' ')[1] + '",'
+    for item in catalog_json['DFC:supplies']:
+        csv_str += '"' + item['@id'] + '",'
+        csv_str += '"' + item['@type'] + '",'
+        csv_str += '"' + item['DFC:hasType'] + '",'
+        csv_str += '"' + item['DFC:startDate'] + '",'
+        csv_str += '"' + item['DFC:expiryDate'] + '",'
+        csv_str += str(item['DFC:quantity']) + ','
+        csv_str += item['DFC:price'].split(' ')[0] + ','
+        csv_str += '"' + item['DFC:price'].split(' ')[1] + '",'
         if item.get('DFC:Image'):
-            csvStr += '"' + item['DFC:Image'] + '",'
+            csv_str += '"' + item['DFC:Image'] + '",'
         description = item['DFC:description'].replace('"', "'")
-        csvStr += '"' + description + '",\n'
-    return csvStr
+        csv_str += '"' + description + '",\n'
+    return csv_str
 
 
 def generate_shared_item_federation_tokens(shared_items_federated_domains: [],
@@ -1377,162 +1379,162 @@ def generate_shared_item_federation_tokens(shared_items_federated_domains: [],
     if not shared_items_federated_domains:
         return {}
 
-    tokensJson = {}
+    tokens_json = {}
     if base_dir:
-        tokensFilename = \
+        tokens_filename = \
             base_dir + '/accounts/sharedItemsFederationTokens.json'
-        if os.path.isfile(tokensFilename):
-            tokensJson = load_json(tokensFilename, 1, 2)
-            if tokensJson is None:
-                tokensJson = {}
+        if os.path.isfile(tokens_filename):
+            tokens_json = load_json(tokens_filename, 1, 2)
+            if tokens_json is None:
+                tokens_json = {}
 
-    tokensAdded = False
+    tokens_added = False
     for domain_full in shared_items_federated_domains:
-        if not tokensJson.get(domain_full):
-            tokensJson[domain_full] = ''
-            tokensAdded = True
+        if not tokens_json.get(domain_full):
+            tokens_json[domain_full] = ''
+            tokens_added = True
 
-    if not tokensAdded:
-        return tokensJson
+    if not tokens_added:
+        return tokens_json
     if base_dir:
-        save_json(tokensJson, tokensFilename)
-    return tokensJson
+        save_json(tokens_json, tokens_filename)
+    return tokens_json
 
 
 def update_shared_item_federation_token(base_dir: str,
-                                        tokenDomainFull: str, newToken: str,
+                                        token_domain_full: str, new_token: str,
                                         debug: bool,
-                                        tokensJson: {} = None) -> {}:
+                                        tokens_json: {} = None) -> {}:
     """Updates an individual token for shared item federation
     """
     if debug:
-        print('Updating shared items token for ' + tokenDomainFull)
-    if not tokensJson:
-        tokensJson = {}
+        print('Updating shared items token for ' + token_domain_full)
+    if not tokens_json:
+        tokens_json = {}
     if base_dir:
-        tokensFilename = \
+        tokens_filename = \
             base_dir + '/accounts/sharedItemsFederationTokens.json'
-        if os.path.isfile(tokensFilename):
+        if os.path.isfile(tokens_filename):
             if debug:
-                print('Update loading tokens for ' + tokenDomainFull)
-            tokensJson = load_json(tokensFilename, 1, 2)
-            if tokensJson is None:
-                tokensJson = {}
-    updateRequired = False
-    if tokensJson.get(tokenDomainFull):
-        if tokensJson[tokenDomainFull] != newToken:
-            updateRequired = True
+                print('Update loading tokens for ' + token_domain_full)
+            tokens_json = load_json(tokens_filename, 1, 2)
+            if tokens_json is None:
+                tokens_json = {}
+    update_required = False
+    if tokens_json.get(token_domain_full):
+        if tokens_json[token_domain_full] != new_token:
+            update_required = True
     else:
-        updateRequired = True
-    if updateRequired:
-        tokensJson[tokenDomainFull] = newToken
+        update_required = True
+    if update_required:
+        tokens_json[token_domain_full] = new_token
         if base_dir:
-            save_json(tokensJson, tokensFilename)
-    return tokensJson
+            save_json(tokens_json, tokens_filename)
+    return tokens_json
 
 
 def merge_shared_item_tokens(base_dir: str, domain_full: str,
-                             newSharedItemsFederatedDomains: [],
-                             tokensJson: {}) -> {}:
+                             new_shared_items_federated_domains: [],
+                             tokens_json: {}) -> {}:
     """When the shared item federation domains list has changed, update
     the tokens dict accordingly
     """
     removals = []
     changed = False
-    for tokenDomainFull, tok in tokensJson.items():
+    for token_domain_full, _ in tokens_json.items():
         if domain_full:
-            if tokenDomainFull.startswith(domain_full):
+            if token_domain_full.startswith(domain_full):
                 continue
-        if tokenDomainFull not in newSharedItemsFederatedDomains:
-            removals.append(tokenDomainFull)
+        if token_domain_full not in new_shared_items_federated_domains:
+            removals.append(token_domain_full)
     # remove domains no longer in the federation list
-    for tokenDomainFull in removals:
-        del tokensJson[tokenDomainFull]
+    for token_domain_full in removals:
+        del tokens_json[token_domain_full]
         changed = True
     # add new domains from the federation list
-    for tokenDomainFull in newSharedItemsFederatedDomains:
-        if tokenDomainFull not in tokensJson:
-            tokensJson[tokenDomainFull] = ''
+    for token_domain_full in new_shared_items_federated_domains:
+        if token_domain_full not in tokens_json:
+            tokens_json[token_domain_full] = ''
             changed = True
     if base_dir and changed:
-        tokensFilename = \
+        tokens_filename = \
             base_dir + '/accounts/sharedItemsFederationTokens.json'
-        save_json(tokensJson, tokensFilename)
-    return tokensJson
+        save_json(tokens_json, tokens_filename)
+    return tokens_json
 
 
 def create_shared_item_federation_token(base_dir: str,
-                                        tokenDomainFull: str,
+                                        token_domain_full: str,
                                         force: bool,
-                                        tokensJson: {} = None) -> {}:
+                                        tokens_json: {} = None) -> {}:
     """Updates an individual token for shared item federation
     """
-    if not tokensJson:
-        tokensJson = {}
+    if not tokens_json:
+        tokens_json = {}
     if base_dir:
-        tokensFilename = \
+        tokens_filename = \
             base_dir + '/accounts/sharedItemsFederationTokens.json'
-        if os.path.isfile(tokensFilename):
-            tokensJson = load_json(tokensFilename, 1, 2)
-            if tokensJson is None:
-                tokensJson = {}
-    if force or not tokensJson.get(tokenDomainFull):
-        tokensJson[tokenDomainFull] = secrets.token_urlsafe(64)
+        if os.path.isfile(tokens_filename):
+            tokens_json = load_json(tokens_filename, 1, 2)
+            if tokens_json is None:
+                tokens_json = {}
+    if force or not tokens_json.get(token_domain_full):
+        tokens_json[token_domain_full] = secrets.token_urlsafe(64)
         if base_dir:
-            save_json(tokensJson, tokensFilename)
-    return tokensJson
+            save_json(tokens_json, tokens_filename)
+    return tokens_json
 
 
 def authorize_shared_items(shared_items_federated_domains: [],
                            base_dir: str,
-                           originDomainFull: str,
+                           origin_domain_full: str,
                            calling_domainFull: str,
-                           authHeader: str,
+                           auth_header: str,
                            debug: bool,
-                           tokensJson: {} = None) -> bool:
+                           tokens_json: {} = None) -> bool:
     """HTTP simple token check for shared item federation
     """
     if not shared_items_federated_domains:
         # no shared item federation
         return False
-    if originDomainFull not in shared_items_federated_domains:
+    if origin_domain_full not in shared_items_federated_domains:
         if debug:
-            print(originDomainFull +
+            print(origin_domain_full +
                   ' is not in the shared items federation list ' +
                   str(shared_items_federated_domains))
         return False
-    if 'Basic ' in authHeader:
+    if 'Basic ' in auth_header:
         if debug:
             print('DEBUG: shared item federation should not use basic auth')
         return False
-    providedToken = authHeader.replace('\n', '').replace('\r', '').strip()
-    if not providedToken:
+    provided_token = auth_header.replace('\n', '').replace('\r', '').strip()
+    if not provided_token:
         if debug:
             print('DEBUG: shared item federation token is empty')
         return False
-    if len(providedToken) < 60:
+    if len(provided_token) < 60:
         if debug:
             print('DEBUG: shared item federation token is too small ' +
-                  providedToken)
+                  provided_token)
         return False
-    if not tokensJson:
-        tokensFilename = \
+    if not tokens_json:
+        tokens_filename = \
             base_dir + '/accounts/sharedItemsFederationTokens.json'
-        if not os.path.isfile(tokensFilename):
+        if not os.path.isfile(tokens_filename):
             if debug:
                 print('DEBUG: shared item federation tokens file missing ' +
-                      tokensFilename)
+                      tokens_filename)
             return False
-        tokensJson = load_json(tokensFilename, 1, 2)
-    if not tokensJson:
+        tokens_json = load_json(tokens_filename, 1, 2)
+    if not tokens_json:
         return False
-    if not tokensJson.get(calling_domainFull):
+    if not tokens_json.get(calling_domainFull):
         if debug:
             print('DEBUG: shared item federation token ' +
                   'check failed for ' + calling_domainFull)
         return False
-    if not constant_time_string_check(tokensJson[calling_domainFull],
-                                      providedToken):
+    if not constant_time_string_check(tokens_json[calling_domainFull],
+                                      provided_token):
         if debug:
             print('DEBUG: shared item federation token ' +
                   'mismatch for ' + calling_domainFull)
@@ -1543,62 +1545,63 @@ def authorize_shared_items(shared_items_federated_domains: [],
 def _update_federated_shares_cache(session, shared_items_federated_domains: [],
                                    base_dir: str, domain_full: str,
                                    http_prefix: str,
-                                   tokensJson: {}, debug: bool,
+                                   tokens_json: {}, debug: bool,
                                    system_language: str,
-                                   sharesFileType: str) -> None:
+                                   shares_file_type: str) -> None:
     """Updates the cache of federated shares for the instance.
     This enables shared items to be available even when other instances
     might not be online
     """
     # create directories where catalogs will be stored
-    cacheDir = base_dir + '/cache'
-    if not os.path.isdir(cacheDir):
-        os.mkdir(cacheDir)
-    if sharesFileType == 'shares':
-        catalogsDir = cacheDir + '/catalogs'
+    cache_dir = base_dir + '/cache'
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
+    if shares_file_type == 'shares':
+        catalogs_dir = cache_dir + '/catalogs'
     else:
-        catalogsDir = cacheDir + '/wantedItems'
-    if not os.path.isdir(catalogsDir):
-        os.mkdir(catalogsDir)
+        catalogs_dir = cache_dir + '/wantedItems'
+    if not os.path.isdir(catalogs_dir):
+        os.mkdir(catalogs_dir)
 
-    asHeader = {
+    as_header = {
         "Accept": "application/ld+json",
         "Origin": domain_full
     }
-    for federatedDomainFull in shared_items_federated_domains:
+    for federated_domain_full in shared_items_federated_domains:
         # NOTE: federatedDomain does not have a port extension,
         # so may not work in some situations
-        if federatedDomainFull.startswith(domain_full):
+        if federated_domain_full.startswith(domain_full):
             # only download from instances other than this one
             continue
-        if not tokensJson.get(federatedDomainFull):
+        if not tokens_json.get(federated_domain_full):
             # token has been obtained for the other domain
             continue
-        if not site_is_active(http_prefix + '://' + federatedDomainFull, 10):
+        if not site_is_active(http_prefix + '://' + federated_domain_full, 10):
             continue
-        if sharesFileType == 'shares':
-            url = http_prefix + '://' + federatedDomainFull + '/catalog'
+        if shares_file_type == 'shares':
+            url = http_prefix + '://' + federated_domain_full + '/catalog'
         else:
-            url = http_prefix + '://' + federatedDomainFull + '/wantedItems'
-        asHeader['Authorization'] = tokensJson[federatedDomainFull]
-        catalogJson = get_json(session, url, asHeader, None,
-                               debug, __version__, http_prefix, None)
-        if not catalogJson:
+            url = http_prefix + '://' + federated_domain_full + '/wantedItems'
+        as_header['Authorization'] = tokens_json[federated_domain_full]
+        catalog_json = get_json(session, url, as_header, None,
+                                debug, __version__, http_prefix, None)
+        if not catalog_json:
             print('WARN: failed to download shared items catalog for ' +
-                  federatedDomainFull)
+                  federated_domain_full)
             continue
-        catalogFilename = catalogsDir + '/' + federatedDomainFull + '.json'
-        if save_json(catalogJson, catalogFilename):
-            print('Downloaded shared items catalog for ' + federatedDomainFull)
-            sharesJson = _dfc_to_shares_format(catalogJson,
-                                               base_dir, system_language,
-                                               http_prefix, domain_full)
-            if sharesJson:
-                sharesFilename = \
-                    catalogsDir + '/' + federatedDomainFull + '.' + \
-                    sharesFileType + '.json'
-                save_json(sharesJson, sharesFilename)
-                print('Converted shares catalog for ' + federatedDomainFull)
+        catalog_filename = catalogs_dir + '/' + federated_domain_full + '.json'
+        if save_json(catalog_json, catalog_filename):
+            print('Downloaded shared items catalog for ' +
+                  federated_domain_full)
+            shares_json = _dfc_to_shares_format(catalog_json,
+                                                base_dir, system_language,
+                                                http_prefix, domain_full)
+            if shares_json:
+                shares_filename = \
+                    catalogs_dir + '/' + federated_domain_full + '.' + \
+                    shares_file_type + '.json'
+                save_json(shares_json, shares_filename)
+                print('Converted shares catalog for ' + federated_domain_full)
         else:
             time.sleep(2)
 
@@ -1608,7 +1611,7 @@ def run_federated_shares_watchdog(project_version: str, httpd) -> None:
     running even if it dies
     """
     print('Starting federated shares watchdog')
-    federatedSharesOriginal = \
+    federated_shares_original = \
         httpd.thrPostSchedule.clone(run_federated_shares_daemon)
     httpd.thrFederatedSharesDaemon.start()
     while True:
@@ -1617,49 +1620,49 @@ def run_federated_shares_watchdog(project_version: str, httpd) -> None:
             continue
         httpd.thrFederatedSharesDaemon.kill()
         httpd.thrFederatedSharesDaemon = \
-            federatedSharesOriginal.clone(run_federated_shares_daemon)
+            federated_shares_original.clone(run_federated_shares_daemon)
         httpd.thrFederatedSharesDaemon.start()
         print('Restarting federated shares daemon...')
 
 
 def _generate_next_shares_token_update(base_dir: str,
-                                       minDays: int, maxDays: int) -> None:
+                                       min_days: int, max_days: int) -> None:
     """Creates a file containing the next date when the shared items token
     for this instance will be updated
     """
-    tokenUpdateDir = base_dir + '/accounts'
+    token_update_dir = base_dir + '/accounts'
     if not os.path.isdir(base_dir):
         os.mkdir(base_dir)
-    if not os.path.isdir(tokenUpdateDir):
-        os.mkdir(tokenUpdateDir)
-    tokenUpdateFilename = tokenUpdateDir + '/.tokenUpdate'
-    nextUpdateSec = None
-    if os.path.isfile(tokenUpdateFilename):
-        with open(tokenUpdateFilename, 'r') as fp:
-            nextUpdateStr = fp.read()
-            if nextUpdateStr:
-                if nextUpdateStr.isdigit():
-                    nextUpdateSec = int(nextUpdateStr)
+    if not os.path.isdir(token_update_dir):
+        os.mkdir(token_update_dir)
+    token_update_filename = token_update_dir + '/.tokenUpdate'
+    next_update_sec = None
+    if os.path.isfile(token_update_filename):
+        with open(token_update_filename, 'r') as fp_tok:
+            next_update_str = fp_tok.read()
+            if next_update_str:
+                if next_update_str.isdigit():
+                    next_update_sec = int(next_update_str)
     curr_time = int(time.time())
     updated = False
-    if nextUpdateSec:
-        if curr_time > nextUpdateSec:
-            nextUpdateDays = randint(minDays, maxDays)
-            nextUpdateInterval = int(60 * 60 * 24 * nextUpdateDays)
-            nextUpdateSec += nextUpdateInterval
+    if next_update_sec:
+        if curr_time > next_update_sec:
+            next_update_days = randint(min_days, max_days)
+            next_update_interval = int(60 * 60 * 24 * next_update_days)
+            next_update_sec += next_update_interval
             updated = True
     else:
-        nextUpdateDays = randint(minDays, maxDays)
-        nextUpdateInterval = int(60 * 60 * 24 * nextUpdateDays)
-        nextUpdateSec = curr_time + nextUpdateInterval
+        next_update_days = randint(min_days, max_days)
+        next_update_interval = int(60 * 60 * 24 * next_update_days)
+        next_update_sec = curr_time + next_update_interval
         updated = True
     if updated:
-        with open(tokenUpdateFilename, 'w+') as fp:
-            fp.write(str(nextUpdateSec))
+        with open(token_update_filename, 'w+') as fp_tok:
+            fp_tok.write(str(next_update_sec))
 
 
 def _regenerate_shares_token(base_dir: str, domain_full: str,
-                             minDays: int, maxDays: int, httpd) -> None:
+                             min_days: int, max_days: int, httpd) -> None:
     """Occasionally the shared items token for your instance is updated.
     Scenario:
       - You share items with $FriendlyInstance
@@ -1675,22 +1678,22 @@ def _regenerate_shares_token(base_dir: str, domain_full: str,
     federated shares list of domains continue to follow and communicate
     then they will receive the new token automatically
     """
-    tokenUpdateFilename = base_dir + '/accounts/.tokenUpdate'
-    if not os.path.isfile(tokenUpdateFilename):
+    token_update_filename = base_dir + '/accounts/.tokenUpdate'
+    if not os.path.isfile(token_update_filename):
         return
-    nextUpdateSec = None
-    with open(tokenUpdateFilename, 'r') as fp:
-        nextUpdateStr = fp.read()
-        if nextUpdateStr:
-            if nextUpdateStr.isdigit():
-                nextUpdateSec = int(nextUpdateStr)
-    if not nextUpdateSec:
+    next_update_sec = None
+    with open(token_update_filename, 'r') as fp_tok:
+        next_update_str = fp_tok.read()
+        if next_update_str:
+            if next_update_str.isdigit():
+                next_update_sec = int(next_update_str)
+    if not next_update_sec:
         return
     curr_time = int(time.time())
-    if curr_time <= nextUpdateSec:
+    if curr_time <= next_update_sec:
         return
     create_shared_item_federation_token(base_dir, domain_full, True, None)
-    _generate_next_shares_token_update(base_dir, minDays, maxDays)
+    _generate_next_shares_token_update(base_dir, min_days, max_days)
     # update the tokens used within the daemon
     shared_fed_domains = httpd.shared_items_federated_domains
     httpd.shared_item_federation_tokens = \
@@ -1703,75 +1706,75 @@ def run_federated_shares_daemon(base_dir: str, httpd, http_prefix: str,
                                 system_language: str) -> None:
     """Runs the daemon used to update federated shared items
     """
-    secondsPerHour = 60 * 60
-    fileCheckIntervalSec = 120
+    seconds_per_hour = 60 * 60
+    file_check_interval_sec = 120
     time.sleep(60)
     # the token for this instance will be changed every 7-14 days
-    minDays = 7
-    maxDays = 14
-    _generate_next_shares_token_update(base_dir, minDays, maxDays)
+    min_days = 7
+    max_days = 14
+    _generate_next_shares_token_update(base_dir, min_days, max_days)
     while True:
-        shared_items_federated_domainsStr = \
-            get_config_param(base_dir, 'shared_items_federated_domains')
-        if not shared_items_federated_domainsStr:
-            time.sleep(fileCheckIntervalSec)
+        shared_items_federated_domains_str = \
+            get_config_param(base_dir, 'sharedItemsFederatedDomains')
+        if not shared_items_federated_domains_str:
+            time.sleep(file_check_interval_sec)
             continue
 
         # occasionally change the federated shared items token
         # for this instance
         _regenerate_shares_token(base_dir, domain_full,
-                                 minDays, maxDays, httpd)
+                                 min_days, max_days, httpd)
 
         # get a list of the domains within the shared items federation
         shared_items_federated_domains = []
         fed_domains_list = \
-            shared_items_federated_domainsStr.split(',')
+            shared_items_federated_domains_str.split(',')
         for shared_fed_domain in fed_domains_list:
             shared_items_federated_domains.append(shared_fed_domain.strip())
         if not shared_items_federated_domains:
-            time.sleep(fileCheckIntervalSec)
+            time.sleep(file_check_interval_sec)
             continue
 
         # load the tokens
-        tokensFilename = \
+        tokens_filename = \
             base_dir + '/accounts/sharedItemsFederationTokens.json'
-        if not os.path.isfile(tokensFilename):
-            time.sleep(fileCheckIntervalSec)
+        if not os.path.isfile(tokens_filename):
+            time.sleep(file_check_interval_sec)
             continue
-        tokensJson = load_json(tokensFilename, 1, 2)
-        if not tokensJson:
-            time.sleep(fileCheckIntervalSec)
+        tokens_json = load_json(tokens_filename, 1, 2)
+        if not tokens_json:
+            time.sleep(file_check_interval_sec)
             continue
 
         session = create_session(proxy_type)
-        for sharesFileType in get_shares_files_list():
+        for shares_file_type in get_shares_files_list():
             _update_federated_shares_cache(session,
                                            shared_items_federated_domains,
                                            base_dir, domain_full, http_prefix,
-                                           tokensJson, debug, system_language,
-                                           sharesFileType)
-        time.sleep(secondsPerHour * 6)
+                                           tokens_json, debug, system_language,
+                                           shares_file_type)
+        time.sleep(seconds_per_hour * 6)
 
 
-def _dfc_to_shares_format(catalogJson: {},
+def _dfc_to_shares_format(catalog_json: {},
                           base_dir: str, system_language: str,
                           http_prefix: str, domain_full: str) -> {}:
     """Converts DFC format into the internal formal used to store shared items.
     This simplifies subsequent search and display
     """
-    if not catalogJson.get('DFC:supplies'):
+    if not catalog_json.get('DFC:supplies'):
         return {}
-    sharesJson = {}
+    shares_json = {}
 
-    dfcIds = {}
-    productTypesList = get_category_types(base_dir)
-    for productType in productTypesList:
-        dfcIds[productType] = \
-            _load_dfc_ids(base_dir, system_language, productType,
+    dfc_ids = {}
+    product_types_list = get_category_types(base_dir)
+    for product_type in product_types_list:
+        dfc_ids[product_type] = \
+            _load_dfc_ids(base_dir, system_language, product_type,
                           http_prefix, domain_full)
 
     curr_time = int(time.time())
-    for item in catalogJson['DFC:supplies']:
+    for item in catalog_json['DFC:supplies']:
         if not item.get('@id') or \
            not item.get('@type') or \
            not item.get('DFC:hasType') or \
@@ -1789,74 +1792,75 @@ def _dfc_to_shares_format(catalogJson: {},
         if ':' not in item['DFC:hasType']:
             continue
 
-        startTimeSec = date_string_to_seconds(item['DFC:startDate'])
-        if not startTimeSec:
+        start_time_sec = date_string_to_seconds(item['DFC:startDate'])
+        if not start_time_sec:
             continue
-        expiryTimeSec = date_string_to_seconds(item['DFC:expiryDate'])
-        if not expiryTimeSec:
+        expiry_time_sec = date_string_to_seconds(item['DFC:expiryDate'])
+        if not expiry_time_sec:
             continue
-        if expiryTimeSec < curr_time:
+        if expiry_time_sec < curr_time:
             # has expired
             continue
 
         if item['DFC:hasType'].startswith('epicyon:'):
-            itemType = item['DFC:hasType'].split(':')[1]
-            itemType = itemType.replace('_', ' ')
-            itemCategory = 'non-food'
-            productType = None
+            item_type = item['DFC:hasType'].split(':')[1]
+            item_type = item_type.replace('_', ' ')
+            item_category = 'non-food'
+            product_type = None
         else:
-            hasType = item['DFC:hasType'].split(':')[1]
-            itemType = None
-            productType = None
-            for prodType in productTypesList:
-                itemType = \
-                    _getshare_type_from_dfc_id(hasType, dfcIds[prodType])
-                if itemType:
-                    productType = prodType
+            has_type = item['DFC:hasType'].split(':')[1]
+            item_type = None
+            product_type = None
+            for prod_type in product_types_list:
+                item_type = \
+                    _getshare_type_from_dfc_id(has_type, dfc_ids[prod_type])
+                if item_type:
+                    product_type = prod_type
                     break
-            itemCategory = 'food'
-        if not itemType:
+            item_category = 'food'
+        if not item_type:
             continue
 
-        allText = item['DFC:description'] + ' ' + itemType + ' ' + itemCategory
-        if is_filtered_globally(base_dir, allText):
+        all_text = \
+            item['DFC:description'] + ' ' + item_type + ' ' + item_category
+        if is_filtered_globally(base_dir, all_text):
             continue
 
-        dfcId = None
-        if productType:
-            dfcId = dfcIds[productType][itemType]
-        itemID = item['@id']
+        dfc_id = None
+        if product_type:
+            dfc_id = dfc_ids[product_type][item_type]
+        item_id = item['@id']
         description = item['DFC:description'].split(':', 1)[1].strip()
 
-        imageUrl = ''
+        image_url = ''
         if item.get('DFC:Image'):
-            imageUrl = item['DFC:Image']
-        sharesJson[itemID] = {
+            image_url = item['DFC:Image']
+        shares_json[item_id] = {
             "displayName": item['DFC:description'].split(':')[0],
             "summary": description,
-            "imageUrl": imageUrl,
+            "imageUrl": image_url,
             "itemQty": float(item['DFC:quantity']),
-            "dfcId": dfcId,
-            "itemType": itemType,
-            "category": itemCategory,
+            "dfcId": dfc_id,
+            "itemType": item_type,
+            "category": item_category,
             "location": "",
-            "published": startTimeSec,
-            "expire": expiryTimeSec,
+            "published": start_time_sec,
+            "expire": expiry_time_sec,
             "itemPrice": item['DFC:price'].split(' ')[0],
             "itemCurrency": item['DFC:price'].split(' ')[1]
         }
-    return sharesJson
+    return shares_json
 
 
 def share_category_icon(category: str) -> str:
     """Returns unicode icon for the given category
     """
-    categoryIcons = {
+    category_icons = {
         'accommodation': '🏠',
         'clothes':  '👚',
         'tools': '🔧',
         'food': '🍏'
     }
-    if categoryIcons.get(category):
-        return categoryIcons[category]
+    if category_icons.get(category):
+        return category_icons[category]
     return ''
