@@ -30,36 +30,36 @@ def html_about(css_cache: {}, base_dir: str, http_prefix: str,
             copyfile(base_dir + '/accounts/login-background-custom.jpg',
                      base_dir + '/accounts/login-background.jpg')
 
-    aboutText = 'Information about this instance goes here.'
+    about_text = 'Information about this instance goes here.'
     if os.path.isfile(base_dir + '/accounts/about.md'):
-        with open(base_dir + '/accounts/about.md', 'r') as aboutFile:
-            aboutText = markdown_to_html(aboutFile.read())
+        with open(base_dir + '/accounts/about.md', 'r') as fp_about:
+            about_text = markdown_to_html(fp_about.read())
 
-    aboutForm = ''
+    about_form = ''
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
 
-    instanceTitle = \
+    instance_title = \
         get_config_param(base_dir, 'instanceTitle')
-    aboutForm = \
-        html_header_with_website_markup(css_filename, instanceTitle,
+    about_form = \
+        html_header_with_website_markup(css_filename, instance_title,
                                         http_prefix, domain_full,
                                         system_language)
-    aboutForm += '<div class="container">' + aboutText + '</div>'
+    about_form += '<div class="container">' + about_text + '</div>'
     if onion_domain:
-        aboutForm += \
+        about_form += \
             '<div class="container"><center>\n' + \
             '<p class="administeredby">' + \
             'http://' + onion_domain + '</p>\n</center></div>\n'
     if admin_nickname:
-        adminActor = '/users/' + admin_nickname
-        aboutForm += \
+        admin_actor = '/users/' + admin_nickname
+        about_form += \
             '<div class="container"><center>\n' + \
             '<p class="administeredby">' + \
             translate['Administered by'] + ' <a href="' + \
-            adminActor + '">' + admin_nickname + '</a>. ' + \
+            admin_actor + '">' + admin_nickname + '</a>. ' + \
             translate['Version'] + ' ' + __version__ + \
             '</p>\n</center></div>\n'
-    aboutForm += html_footer()
-    return aboutForm
+    about_form += html_footer()
+    return about_form
