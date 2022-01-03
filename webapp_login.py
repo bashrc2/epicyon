@@ -33,11 +33,11 @@ def html_get_login_credentials(loginParams: str,
         return None, None, None
     if '&' not in loginParams:
         return None, None, None
-    loginArgs = loginParams.split('&')
+    login_args = loginParams.split('&')
     nickname = None
     password = None
     register = False
-    for arg in loginArgs:
+    for arg in login_args:
         if '=' not in arg:
             continue
         if arg.split('=', 1)[0] == 'username':
@@ -63,46 +63,46 @@ def html_login(css_cache: {}, translate: {},
     """
     accounts = no_of_accounts(base_dir)
 
-    loginImage = 'login.png'
-    loginImageFilename = None
-    if os.path.isfile(base_dir + '/accounts/' + loginImage):
-        loginImageFilename = base_dir + '/accounts/' + loginImage
+    login_image = 'login.png'
+    login_image_filename = None
+    if os.path.isfile(base_dir + '/accounts/' + login_image):
+        login_image_filename = base_dir + '/accounts/' + login_image
     elif os.path.isfile(base_dir + '/accounts/login.jpg'):
-        loginImage = 'login.jpg'
-        loginImageFilename = base_dir + '/accounts/' + loginImage
+        login_image = 'login.jpg'
+        login_image_filename = base_dir + '/accounts/' + login_image
     elif os.path.isfile(base_dir + '/accounts/login.jpeg'):
-        loginImage = 'login.jpeg'
-        loginImageFilename = base_dir + '/accounts/' + loginImage
+        login_image = 'login.jpeg'
+        login_image_filename = base_dir + '/accounts/' + login_image
     elif os.path.isfile(base_dir + '/accounts/login.gif'):
-        loginImage = 'login.gif'
-        loginImageFilename = base_dir + '/accounts/' + loginImage
+        login_image = 'login.gif'
+        login_image_filename = base_dir + '/accounts/' + login_image
     elif os.path.isfile(base_dir + '/accounts/login.svg'):
-        loginImage = 'login.svg'
-        loginImageFilename = base_dir + '/accounts/' + loginImage
+        login_image = 'login.svg'
+        login_image_filename = base_dir + '/accounts/' + login_image
     elif os.path.isfile(base_dir + '/accounts/login.webp'):
-        loginImage = 'login.webp'
-        loginImageFilename = base_dir + '/accounts/' + loginImage
+        login_image = 'login.webp'
+        login_image_filename = base_dir + '/accounts/' + login_image
     elif os.path.isfile(base_dir + '/accounts/login.avif'):
-        loginImage = 'login.avif'
-        loginImageFilename = base_dir + '/accounts/' + loginImage
+        login_image = 'login.avif'
+        login_image_filename = base_dir + '/accounts/' + login_image
 
-    if not loginImageFilename:
-        loginImageFilename = base_dir + '/accounts/' + loginImage
-        copyfile(base_dir + '/img/login.png', loginImageFilename)
+    if not login_image_filename:
+        login_image_filename = base_dir + '/accounts/' + login_image
+        copyfile(base_dir + '/img/login.png', login_image_filename)
 
-    textModeLogo = get_text_mode_logo(base_dir)
-    textModeLogoHtml = html_keyboard_navigation(textModeLogo, {}, {})
+    text_mode_logo = get_text_mode_logo(base_dir)
+    text_mode_logo_html = html_keyboard_navigation(text_mode_logo, {}, {})
 
     set_custom_background(base_dir, 'login-background-custom',
                           'login-background')
 
     if accounts > 0:
-        loginText = \
+        login_text = \
             '<p class="login-text">' + \
             translate['Welcome. Please enter your login details below.'] + \
             '</p>'
     else:
-        loginText = \
+        login_text = \
             '<p class="login-text">' + \
             translate['Please enter some credentials'] + '</p>' + \
             '<p class="login-text">' + \
@@ -111,81 +111,81 @@ def html_login(css_cache: {}, translate: {},
     if os.path.isfile(base_dir + '/accounts/login.txt'):
         # custom login message
         with open(base_dir + '/accounts/login.txt', 'r') as file:
-            loginText = '<p class="login-text">' + file.read() + '</p>'
+            login_text = '<p class="login-text">' + file.read() + '</p>'
 
     css_filename = base_dir + '/epicyon-login.css'
     if os.path.isfile(base_dir + '/login.css'):
         css_filename = base_dir + '/login.css'
 
     # show the register button
-    registerButtonStr = ''
+    register_button_str = ''
     if get_config_param(base_dir, 'registration') == 'open':
         if int(get_config_param(base_dir, 'registrationsRemaining')) > 0:
             if accounts > 0:
                 idx = 'Welcome. Please login or register a new account.'
-                loginText = \
+                login_text = \
                     '<p class="login-text">' + \
                     translate[idx] + \
                     '</p>'
-            registerButtonStr = \
+            register_button_str = \
                 '<button type="submit" name="register">Register</button>'
 
-    TOSstr = \
+    tos_str = \
         '<p class="login-text"><a href="/about">' + \
         translate['About this Instance'] + '</a></p>' + \
         '<p class="login-text"><a href="/terms">' + \
         translate['Terms of Service'] + '</a></p>'
 
-    loginButtonStr = ''
+    login_button_str = ''
     if accounts > 0:
-        loginButtonStr = \
+        login_button_str = \
             '<button type="submit" name="submit">' + \
             translate['Login'] + '</button>'
 
-    autocompleteNicknameStr = 'autocomplete="username"'
-    autocompletePasswordStr = 'autocomplete="current-password"'
+    autocomplete_nickname_str = 'autocomplete="username"'
+    autocomplete_password_str = 'autocomplete="current-password"'
     if not autocomplete:
-        autocompleteNicknameStr = 'autocomplete="username" value=""'
-        autocompletePasswordStr = 'autocomplete="off" value=""'
+        autocomplete_nickname_str = 'autocomplete="username" value=""'
+        autocomplete_password_str = 'autocomplete="off" value=""'
 
-    instanceTitle = \
+    instance_title = \
         get_config_param(base_dir, 'instanceTitle')
-    loginForm = \
-        html_header_with_website_markup(css_filename, instanceTitle,
+    login_form = \
+        html_header_with_website_markup(css_filename, instance_title,
                                         http_prefix, domain,
                                         system_language)
 
-    nicknamePattern = get_nickname_validation_pattern()
-    instanceTitle = get_config_param(base_dir, 'instanceTitle')
-    loginForm += \
+    nickname_pattern = get_nickname_validation_pattern()
+    instance_title = get_config_param(base_dir, 'instanceTitle')
+    login_form += \
         '<br>\n' + \
         '<form method="POST" action="/login">\n' + \
         '  <div class="imgcontainer">\n' + \
-        textModeLogoHtml + '\n' + \
-        '    <img loading="lazy" src="' + loginImage + \
-        '" alt="' + instanceTitle + '" class="loginimage">\n' + \
-        loginText + TOSstr + '\n' + \
+        text_mode_logo_html + '\n' + \
+        '    <img loading="lazy" src="' + login_image + \
+        '" alt="' + instance_title + '" class="loginimage">\n' + \
+        login_text + tos_str + '\n' + \
         '  </div>\n' + \
         '\n' + \
         '  <div class="container">\n' + \
         '    <label for="nickname"><b>' + \
         translate['Nickname'] + '</b></label>\n' + \
-        '    <input type="text" ' + autocompleteNicknameStr + \
+        '    <input type="text" ' + autocomplete_nickname_str + \
         ' placeholder="' + translate['Enter Nickname'] + '" ' + \
-        'pattern="' + nicknamePattern + '" name="username" ' + \
+        'pattern="' + nickname_pattern + '" name="username" ' + \
         'required autofocus>\n' + \
         '\n' + \
         '    <label for="password"><b>' + \
         translate['Password'] + '</b></label>\n' + \
-        '    <input type="password" ' + autocompletePasswordStr + \
+        '    <input type="password" ' + autocomplete_password_str + \
         ' placeholder="' + translate['Enter Password'] + '" ' + \
         'pattern="{8,256}" name="password" required>\n' + \
-        loginButtonStr + registerButtonStr + '\n' + \
+        login_button_str + register_button_str + '\n' + \
         '  </div>\n' + \
         '</form>\n' + \
         '<a href="https://gitlab.com/bashrc2/epicyon">' + \
         '<img loading="lazy" class="license" title="' + \
         translate['Get the source code'] + '" alt="' + \
         translate['Get the source code'] + '" src="/icons/agpl.png" /></a>\n'
-    loginForm += html_footer()
-    return loginForm
+    login_form += html_footer()
+    return login_form
