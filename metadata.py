@@ -17,23 +17,23 @@ from utils import no_of_active_accounts_monthly
 def _get_status_count(base_dir: str) -> int:
     """Get the total number of posts
     """
-    statusCtr = 0
-    accountsDir = base_dir + '/accounts'
-    for subdir, dirs, files in os.walk(accountsDir):
+    status_ctr = 0
+    accounts_dir = base_dir + '/accounts'
+    for _, dirs, _ in os.walk(accounts_dir):
         for acct in dirs:
             if not is_account_dir(acct):
                 continue
-            acct_dir = os.path.join(accountsDir, acct + '/outbox')
-            for subdir2, dirs2, files2 in os.walk(acct_dir):
-                statusCtr += len(files2)
+            acct_dir = os.path.join(accounts_dir, acct + '/outbox')
+            for _, _, files2 in os.walk(acct_dir):
+                status_ctr += len(files2)
                 break
         break
-    return statusCtr
+    return status_ctr
 
 
 def meta_data_node_info(base_dir: str,
-                        aboutUrl: str,
-                        termsOfServiceUrl: str,
+                        about_url: str,
+                        terms_of_service_url: str,
                         registration: bool, version: str,
                         showAccounts: bool) -> {}:
     """ /nodeinfo/2.0 endpoint
@@ -47,15 +47,15 @@ def meta_data_node_info(base_dir: str,
     sensitive
     """
     if showAccounts:
-        activeAccounts = no_of_accounts(base_dir)
-        activeAccountsMonthly = no_of_active_accounts_monthly(base_dir, 1)
-        activeAccountsHalfYear = no_of_active_accounts_monthly(base_dir, 6)
-        localPosts = _get_status_count(base_dir)
+        active_accounts = no_of_accounts(base_dir)
+        active_accounts_monthly = no_of_active_accounts_monthly(base_dir, 1)
+        active_accounts_half_year = no_of_active_accounts_monthly(base_dir, 6)
+        local_posts = _get_status_count(base_dir)
     else:
-        activeAccounts = 1
-        activeAccountsMonthly = 1
-        activeAccountsHalfYear = 1
-        localPosts = 1
+        active_accounts = 1
+        active_accounts_monthly = 1
+        active_accounts_half_year = 1
+        local_posts = 1
 
     nodeinfo = {
         'openRegistrations': registration,
@@ -65,15 +65,15 @@ def meta_data_node_info(base_dir: str,
             'version': version
         },
         'documents': {
-            'about': aboutUrl,
-            'terms': termsOfServiceUrl
+            'about': about_url,
+            'terms': terms_of_service_url
         },
         'usage': {
-            'localPosts': localPosts,
+            'localPosts': local_posts,
             'users': {
-                'activeHalfyear': activeAccountsHalfYear,
-                'activeMonth': activeAccountsMonthly,
-                'total': activeAccounts
+                'activeHalfyear': active_accounts_half_year,
+                'activeMonth': active_accounts_monthly,
+                'total': active_accounts
             }
         },
         'version': '2.0'
@@ -82,100 +82,100 @@ def meta_data_node_info(base_dir: str,
 
 
 def meta_data_instance(showAccounts: bool,
-                       instanceTitle: str,
-                       instanceDescriptionShort: str,
-                       instanceDescription: str,
+                       instance_title: str,
+                       instance_description_short: str,
+                       instance_description: str,
                        http_prefix: str, base_dir: str,
                        admin_nickname: str, domain: str, domain_full: str,
                        registration: bool, system_language: str,
                        version: str) -> {}:
     """ /api/v1/instance endpoint
     """
-    adminActorFilename = \
+    admin_actor_filename = \
         base_dir + '/accounts/' + admin_nickname + '@' + domain + '.json'
-    if not os.path.isfile(adminActorFilename):
+    if not os.path.isfile(admin_actor_filename):
         return {}
 
-    adminActor = load_json(adminActorFilename, 0)
-    if not adminActor:
+    admin_actor = load_json(admin_actor_filename, 0)
+    if not admin_actor:
         print('WARN: json load exception meta_data_instance')
         return {}
 
-    rulesList = []
-    rulesFilename = \
+    rules_list = []
+    rules_filename = \
         base_dir + '/accounts/tos.md'
-    if os.path.isfile(rulesFilename):
-        with open(rulesFilename, 'r') as fp:
-            rulesLines = fp.readlines()
-            ruleCtr = 1
-            for line in rulesLines:
+    if os.path.isfile(rules_filename):
+        with open(rules_filename, 'r') as fp_rules:
+            rules_lines = fp_rules.readlines()
+            rule_ctr = 1
+            for line in rules_lines:
                 line = line.strip()
                 if not line:
                     continue
                 if line.startswith('#'):
                     continue
-                rulesList.append({
-                    'id': str(ruleCtr),
+                rules_list.append({
+                    'id': str(rule_ctr),
                     'text': line
                 })
-                ruleCtr += 1
+                rule_ctr += 1
 
-    isBot = False
-    isGroup = False
-    if adminActor['type'] == 'Group':
-        isGroup = True
-    elif adminActor['type'] != 'Person':
-        isBot = True
+    is_bot = False
+    is_group = False
+    if admin_actor['type'] == 'Group':
+        is_group = True
+    elif admin_actor['type'] != 'Person':
+        is_bot = True
 
     url = \
         http_prefix + '://' + domain_full + '/@' + \
-        adminActor['preferredUsername']
+        admin_actor['preferredUsername']
 
     if showAccounts:
-        activeAccounts = no_of_accounts(base_dir)
-        localPosts = _get_status_count(base_dir)
+        active_accounts = no_of_accounts(base_dir)
+        local_posts = _get_status_count(base_dir)
     else:
-        activeAccounts = 1
-        localPosts = 1
+        active_accounts = 1
+        local_posts = 1
 
-    createdAt = ''
-    if adminActor.get('published'):
-        createdAt = adminActor['published']
+    created_at = ''
+    if admin_actor.get('published'):
+        created_at = admin_actor['published']
 
     instance = {
         'approval_required': False,
         'invites_enabled': False,
         'registrations': registration,
         'contact_account': {
-            'acct': adminActor['preferredUsername'],
-            'created_at': createdAt,
-            'avatar': adminActor['icon']['url'],
-            'avatar_static': adminActor['icon']['url'],
-            'header': adminActor['image']['url'],
-            'header_static': adminActor['image']['url'],
-            'bot': isBot,
+            'acct': admin_actor['preferredUsername'],
+            'created_at': created_at,
+            'avatar': admin_actor['icon']['url'],
+            'avatar_static': admin_actor['icon']['url'],
+            'header': admin_actor['image']['url'],
+            'header_static': admin_actor['image']['url'],
+            'bot': is_bot,
             'discoverable': True,
-            'group': isGroup,
-            'display_name': adminActor['name'],
-            'locked': adminActor['manuallyApprovesFollowers'],
+            'group': is_group,
+            'display_name': admin_actor['name'],
+            'locked': admin_actor['manuallyApprovesFollowers'],
             'note': '<p>Admin of ' + domain + '</p>',
             'url': url,
-            'username': adminActor['preferredUsername']
+            'username': admin_actor['preferredUsername']
         },
-        'description': instanceDescription,
+        'description': instance_description,
         'languages': [system_language],
-        'short_description': instanceDescriptionShort,
+        'short_description': instance_description_short,
         'stats': {
             'domain_count': 2,
-            'status_count': localPosts,
-            'user_count': activeAccounts
+            'status_count': local_posts,
+            'user_count': active_accounts
         },
         'thumbnail': http_prefix + '://' + domain_full + '/login.png',
-        'title': instanceTitle,
+        'title': instance_title,
         'uri': domain_full,
         'urls': {},
         'version': version,
-        'rules': rulesList,
+        'rules': rules_list,
         'configuration': {
             'statuses': {
                 'max_media_attachments': 1
@@ -214,18 +214,18 @@ def metadata_custom_emoji(base_dir: str,
     See https://docs.joinmastodon.org/methods/instance/custom_emojis
     """
     result = []
-    emojisUrl = http_prefix + '://' + domain_full + '/emoji'
-    for subdir, dirs, files in os.walk(base_dir + '/emoji'):
-        for f in files:
-            if len(f) < 3:
+    emojis_url = http_prefix + '://' + domain_full + '/emoji'
+    for _, _, files in os.walk(base_dir + '/emoji'):
+        for fname in files:
+            if len(fname) < 3:
                 continue
-            if f[0].isdigit() or f[1].isdigit():
+            if fname[0].isdigit() or fname[1].isdigit():
                 continue
-            if not f.endswith('.png'):
+            if not fname.endswith('.png'):
                 continue
-            url = os.path.join(emojisUrl, f)
+            url = os.path.join(emojis_url, fname)
             result.append({
-                "shortcode": f.replace('.png', ''),
+                "shortcode": fname.replace('.png', ''),
                 "url": url,
                 "static_url": url,
                 "visible_in_picker": True

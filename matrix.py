@@ -43,7 +43,7 @@ def set_matrix_address(actor_json: {}, matrix_address: str) -> None:
         actor_json['attachment'] = []
 
     # remove any existing value
-    propertyFound = None
+    property_found = None
     for property_value in actor_json['attachment']:
         if not property_value.get('name'):
             continue
@@ -51,10 +51,10 @@ def set_matrix_address(actor_json: {}, matrix_address: str) -> None:
             continue
         if not property_value['name'].lower().startswith('matrix'):
             continue
-        propertyFound = property_value
+        property_found = property_value
         break
-    if propertyFound:
-        actor_json['attachment'].remove(propertyFound)
+    if property_found:
+        actor_json['attachment'].remove(property_found)
 
     if '@' not in matrix_address:
         return
@@ -81,9 +81,9 @@ def set_matrix_address(actor_json: {}, matrix_address: str) -> None:
         property_value['value'] = matrix_address
         return
 
-    newMatrixAddress = {
+    new_matrix_address = {
         "name": "Matrix",
         "type": "PropertyValue",
         "value": matrix_address
     }
-    actor_json['attachment'].append(newMatrixAddress)
+    actor_json['attachment'].append(new_matrix_address)

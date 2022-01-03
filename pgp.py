@@ -108,7 +108,7 @@ def set_email_address(actor_json: {}, email_address: str) -> None:
         actor_json['attachment'] = []
 
     # remove any existing value
-    propertyFound = None
+    property_found = None
     for property_value in actor_json['attachment']:
         if not property_value.get('name'):
             continue
@@ -116,10 +116,10 @@ def set_email_address(actor_json: {}, email_address: str) -> None:
             continue
         if not property_value['name'].lower().startswith('email'):
             continue
-        propertyFound = property_value
+        property_found = property_value
         break
-    if propertyFound:
-        actor_json['attachment'].remove(propertyFound)
+    if property_found:
+        actor_json['attachment'].remove(property_found)
     if notEmailAddress:
         return
 
@@ -159,7 +159,7 @@ def set_pgp_pub_key(actor_json: {}, pgp_pub_key: str) -> None:
         actor_json['attachment'] = []
 
     # remove any existing value
-    propertyFound = None
+    property_found = None
     for property_value in actor_json['attachment']:
         if not property_value.get('name'):
             continue
@@ -167,9 +167,9 @@ def set_pgp_pub_key(actor_json: {}, pgp_pub_key: str) -> None:
             continue
         if not property_value['name'].lower().startswith('pgp'):
             continue
-        propertyFound = property_value
+        property_found = property_value
         break
-    if propertyFound:
+    if property_found:
         actor_json['attachment'].remove(property_value)
     if removeKey:
         return
@@ -208,7 +208,7 @@ def set_pgp_fingerprint(actor_json: {}, fingerprint: str) -> None:
         actor_json['attachment'] = []
 
     # remove any existing value
-    propertyFound = None
+    property_found = None
     for property_value in actor_json['attachment']:
         if not property_value.get('name'):
             continue
@@ -216,9 +216,9 @@ def set_pgp_fingerprint(actor_json: {}, fingerprint: str) -> None:
             continue
         if not property_value['name'].lower().startswith('openpgp'):
             continue
-        propertyFound = property_value
+        property_found = property_value
         break
-    if propertyFound:
+    if property_found:
         actor_json['attachment'].remove(property_value)
     if removeFingerprint:
         return

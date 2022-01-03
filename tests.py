@@ -5432,13 +5432,13 @@ def test_update_actor(base_dir: str):
     if len(actor_json['attachment']) == 0:
         print("actor_json['attachment'] has no contents")
     assert len(actor_json['attachment']) > 0
-    propertyFound = False
+    property_found = False
     for property_value in actor_json['attachment']:
         if property_value['name'] == 'PGP':
             print('PGP property set within attachment')
             assert pubKey in property_value['value']
-            propertyFound = True
-    assert propertyFound
+            property_found = True
+    assert property_found
 
     # stop the server
     thrAlice.kill()

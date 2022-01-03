@@ -65,7 +65,7 @@ def set_tox_address(actor_json: {}, tox_address: str) -> None:
         actor_json['attachment'] = []
 
     # remove any existing value
-    propertyFound = None
+    property_found = None
     for property_value in actor_json['attachment']:
         if not property_value.get('name'):
             continue
@@ -73,10 +73,10 @@ def set_tox_address(actor_json: {}, tox_address: str) -> None:
             continue
         if not property_value['name'].lower().startswith('tox'):
             continue
-        propertyFound = property_value
+        property_found = property_value
         break
-    if propertyFound:
-        actor_json['attachment'].remove(propertyFound)
+    if property_found:
+        actor_json['attachment'].remove(property_found)
     if notToxAddress:
         return
 

@@ -181,7 +181,7 @@ def _set_actor_property_url(actor_json: {},
     property_nameLower = property_name.lower()
 
     # remove any existing value
-    propertyFound = None
+    property_found = None
     for property_value in actor_json['attachment']:
         if not property_value.get('name'):
             continue
@@ -189,10 +189,10 @@ def _set_actor_property_url(actor_json: {},
             continue
         if not property_value['name'].lower().startswith(property_nameLower):
             continue
-        propertyFound = property_value
+        property_found = property_value
         break
-    if propertyFound:
-        actor_json['attachment'].remove(propertyFound)
+    if property_found:
+        actor_json['attachment'].remove(property_found)
 
     prefixes = get_protocol_prefixes()
     prefixFound = False
