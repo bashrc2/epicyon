@@ -42,27 +42,27 @@ def _update_feeds_outbox_index(base_dir: str, domain: str,
                                post_id: str) -> None:
     """Updates the index used for imported RSS feeds
     """
-    basePath = base_dir + '/accounts/news@' + domain
-    indexFilename = basePath + '/outbox.index'
+    base_path = base_dir + '/accounts/news@' + domain
+    index_filename = base_path + '/outbox.index'
 
-    if os.path.isfile(indexFilename):
-        if post_id not in open(indexFilename).read():
+    if os.path.isfile(index_filename):
+        if post_id not in open(index_filename).read():
             try:
-                with open(indexFilename, 'r+') as feedsFile:
-                    content = feedsFile.read()
+                with open(index_filename, 'r+') as feeds_file:
+                    content = feeds_file.read()
                     if post_id + '\n' not in content:
-                        feedsFile.seek(0, 0)
-                        feedsFile.write(post_id + '\n' + content)
+                        feeds_file.seek(0, 0)
+                        feeds_file.write(post_id + '\n' + content)
                         print('DEBUG: feeds post added to index')
             except Exception as ex:
                 print('WARN: Failed to write entry to feeds posts index ' +
-                      indexFilename + ' ' + str(ex))
+                      index_filename + ' ' + str(ex))
     else:
         try:
-            with open(indexFilename, 'w+') as feedsFile:
-                feedsFile.write(post_id + '\n')
+            with open(index_filename, 'w+') as feeds_file:
+                feeds_file.write(post_id + '\n')
         except OSError:
-            print('EX: unable to write ' + indexFilename)
+            print('EX: unable to write ' + index_filename)
 
 
 def _save_arrived_time(base_dir: str, post_filename: str,
@@ -70,8 +70,8 @@ def _save_arrived_time(base_dir: str, post_filename: str,
     """Saves the time when an rss post arrived to a file
     """
     try:
-        with open(post_filename + '.arrived', 'w+') as arrivedFile:
-            arrivedFile.write(arrived)
+        with open(post_filename + '.arrived', 'w+') as arrived_file:
+            arrived_file.write(arrived)
     except OSError:
         print('EX: unable to write ' + post_filename + '.arrived')
 
@@ -92,7 +92,7 @@ def _hashtag_logical_not(tree: [], hashtags: [], moderated: bool,
         return False
     if isinstance(tree[1], str):
         return tree[1] not in hashtags
-    elif isinstance(tree[1], list):
+    if isinstance(tree[1], list):
         return not hashtag_rule_resolve(tree[1], hashtags,
                                         moderated, content, url)
     return False
@@ -104,18 +104,18 @@ def _hashtag_logical_contains(tree: [], hashtags: [], moderated: bool,
     """
     if len(tree) != 2:
         return False
-    matchStr = None
+    match_str = None
     if isinstance(tree[1], str):
-        matchStr = tree[1]
+        match_str = tree[1]
     elif isinstance(tree[1], list):
-        matchStr = tree[1][0]
-    if matchStr:
-        if matchStr.startswith('"') and matchStr.endswith('"'):
-            matchStr = matchStr[1:]
-            matchStr = matchStr[:len(matchStr) - 1]
-        matchStrLower = matchStr.lower()
-        contentWithoutTags = content.replace('#' + matchStrLower, '')
-        return matchStrLower in contentWithoutTags
+        match_str = tree[1][0]
+    if match_str:
+        if match_str.startswith('"') and match_str.endswith('"'):
+            match_str = match_str[1:]
+            match_str = match_str[:len(match_str) - 1]
+        match_str_lower = match_str.lower()
+        content_without_tags = content.replace('#' + match_str_lower, '')
+        return match_str_lower in content_without_tags
     return False
 
 
@@ -125,16 +125,16 @@ def _hashtag_logical_from(tree: [], hashtags: [], moderated: bool,
     """
     if len(tree) != 2:
         return False
-    matchStr = None
+    match_str = None
     if isinstance(tree[1], str):
-        matchStr = tree[1]
+        match_str = tree[1]
     elif isinstance(tree[1], list):
-        matchStr = tree[1][0]
-    if matchStr:
-        if matchStr.startswith('"') and matchStr.endswith('"'):
-            matchStr = matchStr[1:]
-            matchStr = matchStr[:len(matchStr) - 1]
-        return matchStr.lower() in url
+        match_str = tree[1][0]
+    if match_str:
+        if match_str.startswith('"') and match_str.endswith('"'):
+            match_str = match_str[1:]
+            match_str = match_str[:len(match_str) - 1]
+        return match_str.lower() in url
     return False
 
 
@@ -144,15 +144,15 @@ def _hashtag_logical_and(tree: [], hashtags: [], moderated: bool,
     """
     if len(tree) < 3:
         return False
-    for argIndex in range(1, len(tree)):
-        argValue = False
-        if isinstance(tree[argIndex], str):
-            argValue = (tree[argIndex] in hashtags)
-        elif isinstance(tree[argIndex], list):
-            argValue = hashtag_rule_resolve(tree[argIndex],
-                                            hashtags, moderated,
-                                            content, url)
-        if not argValue:
+    for arg_index in range(1, len(tree)):
+        arg_value = False
+        if isinstance(tree[arg_index], str):
+            arg_value = (tree[arg_index] in hashtags)
+        elif isinstance(tree[arg_index], list):
+            arg_value = hashtag_rule_resolve(tree[arg_index],
+                                             hashtags, moderated,
+                                             content, url)
+        if not arg_value:
             return False
     return True
 
@@ -163,15 +163,15 @@ def _hashtag_logical_or(tree: [], hashtags: [], moderated: bool,
     """
     if len(tree) < 3:
         return False
-    for argIndex in range(1, len(tree)):
-        argValue = False
-        if isinstance(tree[argIndex], str):
-            argValue = (tree[argIndex] in hashtags)
-        elif isinstance(tree[argIndex], list):
-            argValue = hashtag_rule_resolve(tree[argIndex],
-                                            hashtags, moderated,
-                                            content, url)
-        if argValue:
+    for arg_index in range(1, len(tree)):
+        arg_value = False
+        if isinstance(tree[arg_index], str):
+            arg_value = (tree[arg_index] in hashtags)
+        elif isinstance(tree[arg_index], list):
+            arg_value = hashtag_rule_resolve(tree[arg_index],
+                                             hashtags, moderated,
+                                             content, url)
+        if arg_value:
             return True
     return False
 
@@ -182,18 +182,18 @@ def _hashtag_logical_xor(tree: [], hashtags: [], moderated: bool,
     """
     if len(tree) < 3:
         return False
-    trueCtr = 0
-    for argIndex in range(1, len(tree)):
-        argValue = False
-        if isinstance(tree[argIndex], str):
-            argValue = (tree[argIndex] in hashtags)
-        elif isinstance(tree[argIndex], list):
-            argValue = hashtag_rule_resolve(tree[argIndex],
-                                            hashtags, moderated,
-                                            content, url)
-        if argValue:
-            trueCtr += 1
-    if trueCtr == 1:
+    true_ctr = 0
+    for arg_index in range(1, len(tree)):
+        arg_value = False
+        if isinstance(tree[arg_index], str):
+            arg_value = (tree[arg_index] in hashtags)
+        elif isinstance(tree[arg_index], list):
+            arg_value = hashtag_rule_resolve(tree[arg_index],
+                                             hashtags, moderated,
+                                             content, url)
+        if arg_value:
+            true_ctr += 1
+    if true_ctr == 1:
         return True
     return False
 
@@ -207,134 +207,133 @@ def hashtag_rule_resolve(tree: [], hashtags: [], moderated: bool,
 
     if tree[0] == 'not':
         return _hashtag_logical_not(tree, hashtags, moderated, content, url)
-    elif tree[0] == 'contains':
+    if tree[0] == 'contains':
         return _hashtag_logical_contains(tree, hashtags, moderated,
                                          content, url)
-    elif tree[0] == 'from':
+    if tree[0] == 'from':
         return _hashtag_logical_from(tree, hashtags, moderated, content, url)
-    elif tree[0] == 'and':
+    if tree[0] == 'and':
         return _hashtag_logical_and(tree, hashtags, moderated, content, url)
-    elif tree[0] == 'or':
+    if tree[0] == 'or':
         return _hashtag_logical_or(tree, hashtags, moderated, content, url)
-    elif tree[0] == 'xor':
+    if tree[0] == 'xor':
         return _hashtag_logical_xor(tree, hashtags, moderated, content, url)
-    elif tree[0].startswith('#') and len(tree) == 1:
+    if tree[0].startswith('#') and len(tree) == 1:
         return tree[0] in hashtags
-    elif tree[0].startswith('moderated'):
+    if tree[0].startswith('moderated'):
         return moderated
-    elif tree[0].startswith('"') and tree[0].endswith('"'):
+    if tree[0].startswith('"') and tree[0].endswith('"'):
         return True
 
     return False
 
 
 def hashtag_rule_tree(operators: [],
-                      conditionsStr: str,
-                      tagsInConditions: [],
+                      conditions_str: str,
+                      tags_in_conditions: [],
                       moderated: bool) -> []:
     """Walks the tree
     """
-    if not operators and conditionsStr:
-        conditionsStr = conditionsStr.strip()
-        isStr = conditionsStr.startswith('"') and conditionsStr.endswith('"')
-        if conditionsStr.startswith('#') or isStr or \
-           conditionsStr in operators or \
-           conditionsStr == 'moderated' or \
-           conditionsStr == 'contains':
-            if conditionsStr.startswith('#'):
-                if conditionsStr not in tagsInConditions:
-                    if ' ' not in conditionsStr or \
-                       conditionsStr.startswith('"'):
-                        tagsInConditions.append(conditionsStr)
-            return [conditionsStr.strip()]
-        else:
-            return None
-    if not operators or not conditionsStr:
+    if not operators and conditions_str:
+        conditions_str = conditions_str.strip()
+        is_str = \
+            conditions_str.startswith('"') and conditions_str.endswith('"')
+        if conditions_str.startswith('#') or is_str or \
+           conditions_str in operators or \
+           conditions_str == 'moderated' or \
+           conditions_str == 'contains':
+            if conditions_str.startswith('#'):
+                if conditions_str not in tags_in_conditions:
+                    if ' ' not in conditions_str or \
+                       conditions_str.startswith('"'):
+                        tags_in_conditions.append(conditions_str)
+            return [conditions_str.strip()]
+        return None
+    if not operators or not conditions_str:
         return None
     tree = None
-    conditionsStr = conditionsStr.strip()
-    isStr = conditionsStr.startswith('"') and conditionsStr.endswith('"')
-    if conditionsStr.startswith('#') or isStr or \
-       conditionsStr in operators or \
-       conditionsStr == 'moderated' or \
-       conditionsStr == 'contains':
-        if conditionsStr.startswith('#'):
-            if conditionsStr not in tagsInConditions:
-                if ' ' not in conditionsStr or \
-                   conditionsStr.startswith('"'):
-                    tagsInConditions.append(conditionsStr)
-        tree = [conditionsStr.strip()]
+    conditions_str = conditions_str.strip()
+    is_str = conditions_str.startswith('"') and conditions_str.endswith('"')
+    if conditions_str.startswith('#') or is_str or \
+       conditions_str in operators or \
+       conditions_str == 'moderated' or \
+       conditions_str == 'contains':
+        if conditions_str.startswith('#'):
+            if conditions_str not in tags_in_conditions:
+                if ' ' not in conditions_str or \
+                   conditions_str.startswith('"'):
+                    tags_in_conditions.append(conditions_str)
+        tree = [conditions_str.strip()]
     ctr = 0
     while ctr < len(operators):
-        op = operators[ctr]
-        opMatch = ' ' + op + ' '
-        if opMatch not in conditionsStr and \
-           not conditionsStr.startswith(op + ' '):
+        oper = operators[ctr]
+        opmatch = ' ' + oper + ' '
+        if opmatch not in conditions_str and \
+           not conditions_str.startswith(oper + ' '):
             ctr += 1
             continue
+        tree = [oper]
+        if opmatch in conditions_str:
+            sections = conditions_str.split(opmatch)
         else:
-            tree = [op]
-            if opMatch in conditionsStr:
-                sections = conditionsStr.split(opMatch)
-            else:
-                sections = conditionsStr.split(op + ' ', 1)
-            for subConditionStr in sections:
-                result = hashtag_rule_tree(operators[ctr + 1:],
-                                           subConditionStr,
-                                           tagsInConditions, moderated)
-                if result:
-                    tree.append(result)
-            break
+            sections = conditions_str.split(oper + ' ', 1)
+        for sub_condition_str in sections:
+            result = hashtag_rule_tree(operators[ctr + 1:],
+                                       sub_condition_str,
+                                       tags_in_conditions, moderated)
+            if result:
+                tree.append(result)
+        break
     return tree
 
 
 def _hashtag_add(base_dir: str, http_prefix: str, domain_full: str,
                  post_json_object: {},
-                 actionStr: str, hashtags: [], system_language: str,
+                 action_str: str, hashtags: [], system_language: str,
                  translate: {}) -> None:
     """Adds a hashtag via a hashtag rule
     """
-    addHashtag = actionStr.split('add ', 1)[1].strip()
-    if not addHashtag.startswith('#'):
+    add_hashtag = action_str.split('add ', 1)[1].strip()
+    if not add_hashtag.startswith('#'):
         return
 
-    if addHashtag not in hashtags:
-        hashtags.append(addHashtag)
-    htId = addHashtag.replace('#', '')
-    if not valid_hash_tag(htId):
+    if add_hashtag not in hashtags:
+        hashtags.append(add_hashtag)
+    ht_id = add_hashtag.replace('#', '')
+    if not valid_hash_tag(ht_id):
         return
 
-    hashtagUrl = http_prefix + "://" + domain_full + "/tags/" + htId
-    newTag = {
-        'href': hashtagUrl,
-        'name': addHashtag,
+    hashtag_url = http_prefix + "://" + domain_full + "/tags/" + ht_id
+    new_tag = {
+        'href': hashtag_url,
+        'name': add_hashtag,
         'type': 'Hashtag'
     }
     # does the tag already exist?
-    addTagObject = None
-    for t in post_json_object['object']['tag']:
-        if t.get('type') and t.get('name'):
-            if t['type'] == 'Hashtag' and \
-               t['name'] == addHashtag:
-                addTagObject = t
+    add_tag_object = None
+    for htag in post_json_object['object']['tag']:
+        if htag.get('type') and htag.get('name'):
+            if htag['type'] == 'Hashtag' and \
+               htag['name'] == add_hashtag:
+                add_tag_object = htag
                 break
     # append the tag if it wasn't found
-    if not addTagObject:
-        post_json_object['object']['tag'].append(newTag)
+    if not add_tag_object:
+        post_json_object['object']['tag'].append(new_tag)
     # add corresponding html to the post content
-    hashtagHtml = \
-        " <a href=\"" + hashtagUrl + "\" class=\"addedHashtag\" " + \
-        "rel=\"tag\">#<span>" + htId + "</span></a>"
+    hashtag_html = \
+        " <a href=\"" + hashtag_url + "\" class=\"addedHashtag\" " + \
+        "rel=\"tag\">#<span>" + ht_id + "</span></a>"
     content = get_base_content_from_post(post_json_object, system_language)
-    if hashtagHtml in content:
+    if hashtag_html in content:
         return
 
     if content.endswith('</p>'):
         content = \
             content[:len(content) - len('</p>')] + \
-            hashtagHtml + '</p>'
+            hashtag_html + '</p>'
     else:
-        content += hashtagHtml
+        content += hashtag_html
     post_json_object['object']['content'] = content
     domain = domain_full
     if ':' in domain:
@@ -345,36 +344,36 @@ def _hashtag_add(base_dir: str, http_prefix: str, domain_full: str,
 
 
 def _hashtag_remove(http_prefix: str, domain_full: str, post_json_object: {},
-                    actionStr: str, hashtags: [],
+                    action_str: str, hashtags: [],
                     system_language: str) -> None:
     """Removes a hashtag via a hashtag rule
     """
-    rmHashtag = actionStr.split('remove ', 1)[1].strip()
-    if not rmHashtag.startswith('#'):
+    rm_hashtag = action_str.split('remove ', 1)[1].strip()
+    if not rm_hashtag.startswith('#'):
         return
 
-    if rmHashtag in hashtags:
-        hashtags.remove(rmHashtag)
-    htId = rmHashtag.replace('#', '')
-    hashtagUrl = http_prefix + "://" + domain_full + "/tags/" + htId
+    if rm_hashtag in hashtags:
+        hashtags.remove(rm_hashtag)
+    ht_id = rm_hashtag.replace('#', '')
+    hashtag_url = http_prefix + "://" + domain_full + "/tags/" + ht_id
     # remove tag html from the post content
-    hashtagHtml = \
-        "<a href=\"" + hashtagUrl + "\" class=\"addedHashtag\" " + \
-        "rel=\"tag\">#<span>" + htId + "</span></a>"
+    hashtag_html = \
+        "<a href=\"" + hashtag_url + "\" class=\"addedHashtag\" " + \
+        "rel=\"tag\">#<span>" + ht_id + "</span></a>"
     content = get_base_content_from_post(post_json_object, system_language)
-    if hashtagHtml in content:
-        content = content.replace(hashtagHtml, '').replace('  ', ' ')
+    if hashtag_html in content:
+        content = content.replace(hashtag_html, '').replace('  ', ' ')
         post_json_object['object']['content'] = content
         post_json_object['object']['contentMap'][system_language] = content
-    rmTagObject = None
-    for t in post_json_object['object']['tag']:
-        if t.get('type') and t.get('name'):
-            if t['type'] == 'Hashtag' and \
-               t['name'] == rmHashtag:
-                rmTagObject = t
+    rm_tag_object = None
+    for htag in post_json_object['object']['tag']:
+        if htag.get('type') and htag.get('name'):
+            if htag['type'] == 'Hashtag' and \
+               htag['name'] == rm_hashtag:
+                rm_tag_object = htag
                 break
-    if rmTagObject:
-        post_json_object['object']['tag'].remove(rmTagObject)
+    if rm_tag_object:
+        post_json_object['object']['tag'].remove(rm_tag_object)
 
 
 def _newswire_hashtag_processing(session, base_dir: str, post_json_object: {},
@@ -383,7 +382,7 @@ def _newswire_hashtag_processing(session, base_dir: str, post_json_object: {},
                                  person_cache: {},
                                  cached_webfingers: {},
                                  federation_list: [],
-                                 send_threads: [], postLog: [],
+                                 send_threads: [], post_log: [],
                                  moderated: bool, url: str,
                                  system_language: str,
                                  translate: {}) -> bool:
@@ -391,12 +390,12 @@ def _newswire_hashtag_processing(session, base_dir: str, post_json_object: {},
     Returns true if the post should be saved to the news timeline
     of this instance
     """
-    rulesFilename = base_dir + '/accounts/hashtagrules.txt'
-    if not os.path.isfile(rulesFilename):
+    rules_filename = base_dir + '/accounts/hashtagrules.txt'
+    if not os.path.isfile(rules_filename):
         return True
     rules = []
-    with open(rulesFilename, 'r') as f:
-        rules = f.readlines()
+    with open(rules_filename, 'r') as fp_rules:
+        rules = fp_rules.readlines()
 
     domain_full = get_full_domain(domain, port)
 
@@ -411,129 +410,130 @@ def _newswire_hashtag_processing(session, base_dir: str, post_json_object: {},
 
     # actionOccurred = False
     operators = ('not', 'and', 'or', 'xor', 'from', 'contains')
-    for ruleStr in rules:
-        if not ruleStr:
+    for rule_str in rules:
+        if not rule_str:
             continue
-        if not ruleStr.startswith('if '):
+        if not rule_str.startswith('if '):
             continue
-        if ' then ' not in ruleStr:
+        if ' then ' not in rule_str:
             continue
-        conditionsStr = ruleStr.split('if ', 1)[1]
-        conditionsStr = conditionsStr.split(' then ')[0]
-        tagsInConditions = []
-        tree = hashtag_rule_tree(operators, conditionsStr,
-                                 tagsInConditions, moderated)
+        conditions_str = rule_str.split('if ', 1)[1]
+        conditions_str = conditions_str.split(' then ')[0]
+        tags_in_conditions = []
+        tree = hashtag_rule_tree(operators, conditions_str,
+                                 tags_in_conditions, moderated)
         if not hashtag_rule_resolve(tree, hashtags, moderated, content, url):
             continue
         # the condition matches, so do something
-        actionStr = ruleStr.split(' then ')[1].strip()
+        action_str = rule_str.split(' then ')[1].strip()
 
-        if actionStr.startswith('add '):
+        if action_str.startswith('add '):
             # add a hashtag
             _hashtag_add(base_dir, http_prefix, domain_full,
-                         post_json_object, actionStr, hashtags,
+                         post_json_object, action_str, hashtags,
                          system_language, translate)
-        elif actionStr.startswith('remove '):
+        elif action_str.startswith('remove '):
             # remove a hashtag
             _hashtag_remove(http_prefix, domain_full, post_json_object,
-                            actionStr, hashtags, system_language)
-        elif actionStr.startswith('block') or actionStr.startswith('drop'):
+                            action_str, hashtags, system_language)
+        elif action_str.startswith('block') or action_str.startswith('drop'):
             # Block this item
             return False
     return True
 
 
 def _create_news_mirror(base_dir: str, domain: str,
-                        post_idNumber: str, url: str,
+                        post_id_number: str, url: str,
                         max_mirrored_articles: int) -> bool:
     """Creates a local mirror of a news article
     """
     if '|' in url or '>' in url:
         return True
 
-    mirrorDir = base_dir + '/accounts/newsmirror'
-    if not os.path.isdir(mirrorDir):
-        os.mkdir(mirrorDir)
+    mirror_dir = base_dir + '/accounts/newsmirror'
+    if not os.path.isdir(mirror_dir):
+        os.mkdir(mirror_dir)
 
     # count the directories
-    noOfDirs = 0
-    for subdir, dirs, files in os.walk(mirrorDir):
-        noOfDirs = len(dirs)
+    no_of_dirs = 0
+    for _, dirs, _ in os.walk(mirror_dir):
+        no_of_dirs = len(dirs)
 
-    mirrorIndexFilename = base_dir + '/accounts/newsmirror.txt'
+    mirror_index_filename = base_dir + '/accounts/newsmirror.txt'
 
-    if max_mirrored_articles > 0 and noOfDirs > max_mirrored_articles:
-        if not os.path.isfile(mirrorIndexFilename):
+    if max_mirrored_articles > 0 and no_of_dirs > max_mirrored_articles:
+        if not os.path.isfile(mirror_index_filename):
             # no index for mirrors found
             return True
         removals = []
-        with open(mirrorIndexFilename, 'r') as indexFile:
+        with open(mirror_index_filename, 'r') as index_file:
             # remove the oldest directories
             ctr = 0
-            while noOfDirs > max_mirrored_articles:
+            while no_of_dirs > max_mirrored_articles:
                 ctr += 1
                 if ctr > 5000:
                     # escape valve
                     break
 
-                post_id = indexFile.readline()
+                post_id = index_file.readline()
                 if not post_id:
                     continue
                 post_id = post_id.strip()
-                mirrorArticleDir = mirrorDir + '/' + post_id
-                if os.path.isdir(mirrorArticleDir):
-                    rmtree(mirrorArticleDir, ignore_errors=False, onerror=None)
+                mirror_article_dir = mirror_dir + '/' + post_id
+                if os.path.isdir(mirror_article_dir):
+                    rmtree(mirror_article_dir,
+                           ignore_errors=False, onerror=None)
                     removals.append(post_id)
-                    noOfDirs -= 1
+                    no_of_dirs -= 1
 
         # remove the corresponding index entries
         if removals:
-            indexContent = ''
-            with open(mirrorIndexFilename, 'r') as indexFile:
-                indexContent = indexFile.read()
-                for removePostId in removals:
-                    indexContent = \
-                        indexContent.replace(removePostId + '\n', '')
+            index_content = ''
+            with open(mirror_index_filename, 'r') as index_file:
+                index_content = index_file.read()
+                for remove_post_id in removals:
+                    index_content = \
+                        index_content.replace(remove_post_id + '\n', '')
             try:
-                with open(mirrorIndexFilename, 'w+') as indexFile:
-                    indexFile.write(indexContent)
+                with open(mirror_index_filename, 'w+') as index_file:
+                    index_file.write(index_content)
             except OSError:
-                print('EX: unable to write ' + mirrorIndexFilename)
+                print('EX: unable to write ' + mirror_index_filename)
 
-    mirrorArticleDir = mirrorDir + '/' + post_idNumber
-    if os.path.isdir(mirrorArticleDir):
+    mirror_article_dir = mirror_dir + '/' + post_id_number
+    if os.path.isdir(mirror_article_dir):
         # already mirrored
         return True
 
     # for onion instances mirror via tor
-    prefixStr = ''
+    prefix_str = ''
     if domain.endswith('.onion'):
-        prefixStr = '/usr/bin/torsocks '
+        prefix_str = '/usr/bin/torsocks '
 
     # download the files
-    commandStr = \
-        prefixStr + '/usr/bin/wget -mkEpnp -e robots=off ' + url + \
-        ' -P ' + mirrorArticleDir
-    p = Popen(commandStr, shell=True)
-    os.waitpid(p.pid, 0)
+    command_str = \
+        prefix_str + '/usr/bin/wget -mkEpnp -e robots=off ' + url + \
+        ' -P ' + mirror_article_dir
+    proc = Popen(command_str, shell=True)
+    os.waitpid(proc.pid, 0)
 
-    if not os.path.isdir(mirrorArticleDir):
+    if not os.path.isdir(mirror_article_dir):
         print('WARN: failed to mirror ' + url)
         return True
 
     # append the post Id number to the index file
-    if os.path.isfile(mirrorIndexFilename):
+    if os.path.isfile(mirror_index_filename):
         try:
-            with open(mirrorIndexFilename, 'a+') as indexFile:
-                indexFile.write(post_idNumber + '\n')
+            with open(mirror_index_filename, 'a+') as index_file:
+                index_file.write(post_id_number + '\n')
         except OSError:
-            print('EX: unable to append ' + mirrorIndexFilename)
+            print('EX: unable to append ' + mirror_index_filename)
     else:
         try:
-            with open(mirrorIndexFilename, 'w+') as indexFile:
-                indexFile.write(post_idNumber + '\n')
+            with open(mirror_index_filename, 'w+') as index_file:
+                index_file.write(post_id_number + '\n')
         except OSError:
-            print('EX: unable to write ' + mirrorIndexFilename)
+            print('EX: unable to write ' + mirror_index_filename)
 
     return True
 
@@ -542,11 +542,12 @@ def _convert_rs_sto_activity_pub(base_dir: str, http_prefix: str,
                                  domain: str, port: int,
                                  newswire: {},
                                  translate: {},
-                                 recent_posts_cache: {}, max_recent_posts: int,
+                                 recent_posts_cache: {},
+                                 max_recent_posts: int,
                                  session, cached_webfingers: {},
                                  person_cache: {},
                                  federation_list: [],
-                                 send_threads: [], postLog: [],
+                                 send_threads: [], post_log: [],
                                  max_mirrored_articles: int,
                                  allow_local_network_access: bool,
                                  system_language: str,
@@ -558,104 +559,104 @@ def _convert_rs_sto_activity_pub(base_dir: str, http_prefix: str,
         print('No newswire to convert')
         return
 
-    basePath = base_dir + '/accounts/news@' + domain + '/outbox'
-    if not os.path.isdir(basePath):
-        os.mkdir(basePath)
+    base_path = base_dir + '/accounts/news@' + domain + '/outbox'
+    if not os.path.isdir(base_path):
+        os.mkdir(base_path)
 
     # oldest items first
-    newswireReverse = OrderedDict(sorted(newswire.items(), reverse=False))
+    newswire_reverse = OrderedDict(sorted(newswire.items(), reverse=False))
 
-    for dateStr, item in newswireReverse.items():
-        originalDateStr = dateStr
+    for date_str, item in newswire_reverse.items():
+        original_date_str = date_str
         # convert the date to the format used by ActivityPub
-        if '+00:00' in dateStr:
-            dateStr = dateStr.replace(' ', 'T')
-            dateStr = dateStr.replace('+00:00', 'Z')
+        if '+00:00' in date_str:
+            date_str = date_str.replace(' ', 'T')
+            date_str = date_str.replace('+00:00', 'Z')
         else:
             try:
-                dateStrWithOffset = \
-                    datetime.datetime.strptime(dateStr, "%Y-%m-%d %H:%M:%S%z")
+                date_str_with_offset = \
+                    datetime.datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S%z")
             except BaseException:
-                print('EX: Newswire strptime failed ' + str(dateStr))
+                print('EX: Newswire strptime failed ' + str(date_str))
                 continue
             try:
-                dateStr = dateStrWithOffset.strftime("%Y-%m-%dT%H:%M:%SZ")
+                date_str = date_str_with_offset.strftime("%Y-%m-%dT%H:%M:%SZ")
             except BaseException:
-                print('EX: Newswire dateStrWithOffset failed ' +
-                      str(dateStrWithOffset))
+                print('EX: Newswire date_str_with_offset failed ' +
+                      str(date_str_with_offset))
                 continue
 
-        statusNumber, published = get_status_number(dateStr)
-        newPostId = \
+        status_number, _ = get_status_number(date_str)
+        new_post_id = \
             local_actor_url(http_prefix, 'news', domain) + \
-            '/statuses/' + statusNumber
+            '/statuses/' + status_number
 
         # file where the post is stored
-        filename = basePath + '/' + newPostId.replace('/', '#') + '.json'
+        filename = base_path + '/' + new_post_id.replace('/', '#') + '.json'
         if os.path.isfile(filename):
             # don't create the post if it already exists
             # set the url
-            # newswire[originalDateStr][1] = \
-            #     '/users/news/statuses/' + statusNumber
+            # newswire[original_date_str][1] = \
+            #     '/users/news/statuses/' + status_number
             # set the filename
-            newswire[originalDateStr][3] = filename
+            newswire[original_date_str][3] = filename
             continue
 
-        rssTitle = _remove_control_characters(item[0])
+        rss_title = _remove_control_characters(item[0])
         url = item[1]
         if dangerous_markup(url, allow_local_network_access) or \
-           dangerous_markup(rssTitle, allow_local_network_access):
+           dangerous_markup(rss_title, allow_local_network_access):
             continue
-        rssDescription = ''
+        rss_description = ''
 
         # get the rss description if it exists
-        rssDescription = '<p>' + remove_html(item[4]) + '<p>'
+        rss_description = '<p>' + remove_html(item[4]) + '<p>'
 
         mirrored = item[7]
-        postUrl = url
+        post_url = url
         if mirrored and '://' in url:
-            postUrl = '/newsmirror/' + statusNumber + '/' + \
+            post_url = '/newsmirror/' + status_number + '/' + \
                 url.split('://')[1]
-            if postUrl.endswith('/'):
-                postUrl += 'index.html'
+            if post_url.endswith('/'):
+                post_url += 'index.html'
             else:
-                postUrl += '/index.html'
+                post_url += '/index.html'
 
         # add the off-site link to the description
-        rssDescription += \
-            '<br><a href="' + postUrl + '">' + \
+        rss_description += \
+            '<br><a href="' + post_url + '">' + \
             translate['Read more...'] + '</a>'
 
-        followersOnly = False
+        followers_only = False
         # NOTE: the id when the post is created will not be
         # consistent (it's based on the current time, not the
         # published time), so we change that later
-        saveToFile = False
-        attachImageFilename = None
-        mediaType = None
-        imageDescription = None
+        save_to_file = False
+        attach_image_filename = None
+        media_type = None
+        image_description = None
         city = 'London, England'
-        conversationId = None
+        conversation_id = None
         blog = create_news_post(base_dir,
                                 domain, port, http_prefix,
-                                rssDescription,
-                                followersOnly, saveToFile,
-                                attachImageFilename, mediaType,
-                                imageDescription, city,
-                                rssTitle, system_language,
-                                conversationId, low_bandwidth,
+                                rss_description,
+                                followers_only, save_to_file,
+                                attach_image_filename, media_type,
+                                image_description, city,
+                                rss_title, system_language,
+                                conversation_id, low_bandwidth,
                                 content_license_url)
         if not blog:
             continue
 
         if mirrored:
-            if not _create_news_mirror(base_dir, domain, statusNumber,
+            if not _create_news_mirror(base_dir, domain, status_number,
                                        url, max_mirrored_articles):
                 continue
 
-        idStr = \
+        id_str = \
             local_actor_url(http_prefix, 'news', domain) + \
-            '/statuses/' + statusNumber + '/replies'
+            '/statuses/' + status_number + '/replies'
         blog['news'] = True
 
         # note the time of arrival
@@ -663,73 +664,73 @@ def _convert_rs_sto_activity_pub(base_dir: str, http_prefix: str,
         blog['object']['arrived'] = curr_time.strftime("%Y-%m-%dT%H:%M:%SZ")
 
         # change the id, based upon the published time
-        blog['object']['replies']['id'] = idStr
-        blog['object']['replies']['first']['partOf'] = idStr
+        blog['object']['replies']['id'] = id_str
+        blog['object']['replies']['first']['partOf'] = id_str
 
-        blog['id'] = newPostId + '/activity'
-        blog['object']['id'] = newPostId
-        blog['object']['atomUri'] = newPostId
+        blog['id'] = new_post_id + '/activity'
+        blog['object']['id'] = new_post_id
+        blog['object']['atomUri'] = new_post_id
         blog['object']['url'] = \
-            http_prefix + '://' + domain + '/@news/' + statusNumber
-        blog['object']['published'] = dateStr
+            http_prefix + '://' + domain + '/@news/' + status_number
+        blog['object']['published'] = date_str
 
-        blog['object']['content'] = rssDescription
-        blog['object']['contentMap'][system_language] = rssDescription
+        blog['object']['content'] = rss_description
+        blog['object']['contentMap'][system_language] = rss_description
 
         domain_full = get_full_domain(domain, port)
 
         hashtags = item[6]
 
-        post_id = newPostId.replace('/', '#')
+        post_id = new_post_id.replace('/', '#')
 
         moderated = item[5]
 
-        savePost = \
+        save_post = \
             _newswire_hashtag_processing(session, base_dir,
                                          blog, hashtags,
                                          http_prefix, domain, port,
                                          person_cache, cached_webfingers,
                                          federation_list,
-                                         send_threads, postLog,
+                                         send_threads, post_log,
                                          moderated, url, system_language,
                                          translate)
 
         # save the post and update the index
-        if savePost:
+        if save_post:
             # ensure that all hashtags are stored in the json
             # and appended to the content
             blog['object']['tag'] = []
-            for tagName in hashtags:
-                htId = tagName.replace('#', '')
-                hashtagUrl = \
-                    http_prefix + "://" + domain_full + "/tags/" + htId
-                newTag = {
-                    'href': hashtagUrl,
-                    'name': tagName,
+            for tag_name in hashtags:
+                ht_id = tag_name.replace('#', '')
+                hashtag_url = \
+                    http_prefix + "://" + domain_full + "/tags/" + ht_id
+                new_tag = {
+                    'href': hashtag_url,
+                    'name': tag_name,
                     'type': 'Hashtag'
                 }
-                blog['object']['tag'].append(newTag)
-                hashtagHtml = \
-                    " <a href=\"" + hashtagUrl + \
+                blog['object']['tag'].append(new_tag)
+                hashtag_html = \
+                    " <a href=\"" + hashtag_url + \
                     "\" class=\"addedHashtag\" " + \
                     "rel=\"tag\">#<span>" + \
-                    htId + "</span></a>"
+                    ht_id + "</span></a>"
                 content = get_base_content_from_post(blog, system_language)
-                if hashtagHtml not in content:
+                if hashtag_html not in content:
                     if content.endswith('</p>'):
                         content = \
                             content[:len(content) - len('</p>')] + \
-                            hashtagHtml + '</p>'
+                            hashtag_html + '</p>'
                     else:
-                        content += hashtagHtml
+                        content += hashtag_html
                     blog['object']['content'] = content
                     blog['object']['contentMap'][system_language] = content
 
             # update the newswire tags if new ones have been found by
             # _newswire_hashtag_processing
             for tag in hashtags:
-                if tag not in newswire[originalDateStr][6]:
-                    newswire[originalDateStr][6].append(tag)
+                if tag not in newswire[original_date_str][6]:
+                    newswire[original_date_str][6].append(tag)
 
             store_hash_tags(base_dir, 'news', domain,
                             http_prefix, domain_full,
@@ -755,14 +756,14 @@ def _convert_rs_sto_activity_pub(base_dir: str, http_prefix: str,
 
                 # setting the url here links to the activitypub object
                 # stored locally
-                # newswire[originalDateStr][1] = \
-                #     '/users/news/statuses/' + statusNumber
+                # newswire[original_date_str][1] = \
+                #     '/users/news/statuses/' + status_number
 
                 # set the filename
-                newswire[originalDateStr][3] = filename
+                newswire[original_date_str][3] = filename
 
 
-def _merge_with_previous_newswire(oldNewswire: {}, newNewswire: {}) -> None:
+def _merge_with_previous_newswire(oldNewswire: {}, new_newswire: {}) -> None:
     """Preserve any votes or generated activitypub post filename
     as rss feeds are updated
     """
@@ -770,10 +771,10 @@ def _merge_with_previous_newswire(oldNewswire: {}, newNewswire: {}) -> None:
         return
 
     for published, fields in oldNewswire.items():
-        if not newNewswire.get(published):
+        if not new_newswire.get(published):
             continue
         for i in range(1, 5):
-            newNewswire[published][i] = fields[i]
+            new_newswire[published][i] = fields[i]
 
 
 def run_newswire_daemon(base_dir: str, httpd,
@@ -781,8 +782,8 @@ def run_newswire_daemon(base_dir: str, httpd,
                         translate: {}) -> None:
     """Periodically updates RSS feeds
     """
-    newswireStateFilename = base_dir + '/accounts/.newswirestate.json'
-    refreshFilename = base_dir + '/accounts/.refresh_newswire'
+    newswire_state_filename = base_dir + '/accounts/.newswirestate.json'
+    refresh_filename = base_dir + '/accounts/.refresh_newswire'
 
     # initial sleep to allow the system to start up
     time.sleep(50)
@@ -800,7 +801,7 @@ def run_newswire_daemon(base_dir: str, httpd,
 
         # try to update the feeds
         print('Updating newswire feeds')
-        newNewswire = \
+        new_newswire = \
             get_dict_from_newswire(httpd.session, base_dir, domain,
                                    httpd.max_newswire_postsPerSource,
                                    httpd.max_newswire_feed_size_kb,
@@ -813,16 +814,16 @@ def run_newswire_daemon(base_dir: str, httpd,
 
         if not httpd.newswire:
             print('Newswire feeds not updated')
-            if os.path.isfile(newswireStateFilename):
+            if os.path.isfile(newswire_state_filename):
                 print('Loading newswire from file')
-                httpd.newswire = load_json(newswireStateFilename)
+                httpd.newswire = load_json(newswire_state_filename)
 
         print('Merging with previous newswire')
-        _merge_with_previous_newswire(httpd.newswire, newNewswire)
+        _merge_with_previous_newswire(httpd.newswire, new_newswire)
 
-        httpd.newswire = newNewswire
-        if newNewswire:
-            save_json(httpd.newswire, newswireStateFilename)
+        httpd.newswire = new_newswire
+        if new_newswire:
+            save_json(httpd.newswire, newswire_state_filename)
             print('Newswire updated')
         else:
             print('No new newswire')
@@ -830,7 +831,7 @@ def run_newswire_daemon(base_dir: str, httpd,
         print('Converting newswire to activitypub format')
         _convert_rs_sto_activity_pub(base_dir,
                                      http_prefix, domain, port,
-                                     newNewswire, translate,
+                                     new_newswire, translate,
                                      httpd.recent_posts_cache,
                                      httpd.max_recent_posts,
                                      httpd.session,
@@ -848,26 +849,26 @@ def run_newswire_daemon(base_dir: str, httpd,
 
         if httpd.max_news_posts > 0:
             archive_dir = base_dir + '/archive'
-            archiveSubdir = \
+            archive_subdir = \
                 archive_dir + '/accounts/news@' + domain + '/outbox'
             print('Archiving news posts')
             archive_posts_for_person(http_prefix, 'news',
                                      domain, base_dir, 'outbox',
-                                     archiveSubdir,
+                                     archive_subdir,
                                      httpd.recent_posts_cache,
                                      httpd.max_news_posts)
 
         # wait a while before the next feeds update
-        for tick in range(120):
+        for _ in range(120):
             time.sleep(10)
             # if a new blog post has been created then stop
             # waiting and recalculate the newswire
-            if os.path.isfile(refreshFilename):
+            if os.path.isfile(refresh_filename):
                 try:
-                    os.remove(refreshFilename)
+                    os.remove(refresh_filename)
                 except OSError:
                     print('EX: run_newswire_daemon unable to delete ' +
-                          str(refreshFilename))
+                          str(refresh_filename))
                 break
 
 
@@ -875,7 +876,7 @@ def run_newswire_watchdog(project_version: str, httpd) -> None:
     """This tries to keep the newswire update thread running even if it dies
     """
     print('Starting newswire watchdog')
-    newswireOriginal = \
+    newswire_original = \
         httpd.thrPostSchedule.clone(run_newswire_daemon)
     httpd.thrNewswireDaemon.start()
     while True:
@@ -884,6 +885,6 @@ def run_newswire_watchdog(project_version: str, httpd) -> None:
             continue
         httpd.thrNewswireDaemon.kill()
         httpd.thrNewswireDaemon = \
-            newswireOriginal.clone(run_newswire_daemon)
+            newswire_original.clone(run_newswire_daemon)
         httpd.thrNewswireDaemon.start()
         print('Restarting newswire daemon...')
