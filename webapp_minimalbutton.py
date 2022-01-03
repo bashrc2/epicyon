@@ -15,11 +15,11 @@ def is_minimal(base_dir: str, domain: str, nickname: str) -> bool:
     """Returns true if minimal buttons should be shown
        for the given account
     """
-    accountDir = acct_dir(base_dir, nickname, domain)
-    if not os.path.isdir(accountDir):
+    account_dir = acct_dir(base_dir, nickname, domain)
+    if not os.path.isdir(account_dir):
         return True
-    minimalFilename = accountDir + '/.notminimal'
-    if os.path.isfile(minimalFilename):
+    minimal_filename = account_dir + '/.notminimal'
+    if os.path.isfile(minimal_filename):
         return False
     return True
 
@@ -28,19 +28,19 @@ def set_minimal(base_dir: str, domain: str, nickname: str,
                 minimal: bool) -> None:
     """Sets whether an account should display minimal buttons
     """
-    accountDir = acct_dir(base_dir, nickname, domain)
-    if not os.path.isdir(accountDir):
+    account_dir = acct_dir(base_dir, nickname, domain)
+    if not os.path.isdir(account_dir):
         return
-    minimalFilename = accountDir + '/.notminimal'
-    minimalFileExists = os.path.isfile(minimalFilename)
-    if minimal and minimalFileExists:
+    minimal_filename = account_dir + '/.notminimal'
+    minimal_file_exists = os.path.isfile(minimal_filename)
+    if minimal and minimal_file_exists:
         try:
-            os.remove(minimalFilename)
+            os.remove(minimal_filename)
         except OSError:
-            print('EX: set_minimal unable to delete ' + minimalFilename)
-    elif not minimal and not minimalFileExists:
+            print('EX: set_minimal unable to delete ' + minimal_filename)
+    elif not minimal and not minimal_file_exists:
         try:
-            with open(minimalFilename, 'w+') as fp:
-                fp.write('\n')
+            with open(minimal_filename, 'w+') as fp_min:
+                fp_min.write('\n')
         except OSError:
-            print('EX: unable to write minimal ' + minimalFilename)
+            print('EX: unable to write minimal ' + minimal_filename)
