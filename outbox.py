@@ -66,7 +66,7 @@ def _person_receive_update_outbox(recent_posts_cache: {},
     For example, setting the PGP key from the desktop client
     """
     # these attachments are updatable via c2s
-    updatableAttachments = ('PGP', 'OpenPGP', 'Email')
+    updatable_attachments = ('PGP', 'OpenPGP', 'Email')
 
     if not message_json.get('type'):
         return
@@ -117,59 +117,58 @@ def _person_receive_update_outbox(recent_posts_cache: {},
             print('DEBUG: c2s actor update - unexpected id ' +
                   message_json['id'])
         return
-    updatedActorJson = message_json['object']
+    updated_actor_json = message_json['object']
     # load actor from file
-    actorFilename = acct_dir(base_dir, nickname, domain) + '.json'
-    if not os.path.isfile(actorFilename):
-        print('actorFilename not found: ' + actorFilename)
+    actor_filename = acct_dir(base_dir, nickname, domain) + '.json'
+    if not os.path.isfile(actor_filename):
+        print('actor_filename not found: ' + actor_filename)
         return
-    actor_json = load_json(actorFilename)
+    actor_json = load_json(actor_filename)
     if not actor_json:
         return
-    actorChanged = False
+    actor_changed = False
     # update fields within actor
-    if 'attachment' in updatedActorJson:
-        for newPropertyValue in updatedActorJson['attachment']:
-            if not newPropertyValue.get('name'):
+    if 'attachment' in updated_actor_json:
+        for new_property_value in updated_actor_json['attachment']:
+            if not new_property_value.get('name'):
                 continue
-            if newPropertyValue['name'] not in updatableAttachments:
+            if new_property_value['name'] not in updatable_attachments:
                 continue
-            if not newPropertyValue.get('type'):
+            if not new_property_value.get('type'):
                 continue
-            if not newPropertyValue.get('value'):
+            if not new_property_value.get('value'):
                 continue
-            if newPropertyValue['type'] != 'PropertyValue':
+            if new_property_value['type'] != 'PropertyValue':
                 continue
             if 'attachment' not in actor_json:
                 continue
             found = False
-            for attachIdx in range(len(actor_json['attachment'])):
-                if actor_json['attachment'][attachIdx]['type'] != \
+            for attach_idx in range(len(actor_json['attachment'])):
+                if actor_json['attachment'][attach_idx]['type'] != \
                    'PropertyValue':
                     continue
-                if actor_json['attachment'][attachIdx]['name'] != \
-                   newPropertyValue['name']:
+                if actor_json['attachment'][attach_idx]['name'] != \
+                   new_property_value['name']:
                     continue
-                else:
-                    if actor_json['attachment'][attachIdx]['value'] != \
-                       newPropertyValue['value']:
-                        actor_json['attachment'][attachIdx]['value'] = \
-                            newPropertyValue['value']
-                        actorChanged = True
-                    found = True
-                    break
+                if actor_json['attachment'][attach_idx]['value'] != \
+                   new_property_value['value']:
+                    actor_json['attachment'][attach_idx]['value'] = \
+                        new_property_value['value']
+                    actor_changed = True
+                found = True
+                break
             if not found:
                 actor_json['attachment'].append({
-                    "name": newPropertyValue['name'],
+                    "name": new_property_value['name'],
                     "type": "PropertyValue",
-                    "value": newPropertyValue['value']
+                    "value": new_property_value['value']
                 })
-                actorChanged = True
+                actor_changed = True
     # save actor to file
-    if actorChanged:
-        save_json(actor_json, actorFilename)
+    if actor_changed:
+        save_json(actor_json, actor_filename)
         if debug:
-            print('actor saved: ' + actorFilename)
+            print('actor saved: ' + actor_filename)
     if debug:
         print('New attachment: ' + str(actor_json['attachment']))
     message_json['object'] = actor_json
@@ -184,7 +183,7 @@ def post_message_to_outbox(session, translate: {},
                            onion_domain: str, i2p_domain: str, port: int,
                            recent_posts_cache: {}, followers_threads: [],
                            federation_list: [], send_threads: [],
-                           postLog: [], cached_webfingers: {},
+                           post_log: [], cached_webfingers: {},
                            person_cache: {}, allow_deletion: bool,
                            proxy_type: str, version: str, debug: bool,
                            yt_replace_domain: str,
@@ -223,9 +222,9 @@ def post_message_to_outbox(session, translate: {},
     # check that the outgoing post doesn't contain any markup
     # which can be used to implement exploits
     if has_object_dict(message_json):
-        contentStr = get_base_content_from_post(message_json, system_language)
-        if contentStr:
-            if dangerous_markup(contentStr, allow_local_network_access):
+        content_str = get_base_content_from_post(message_json, system_language)
+        if content_str:
+            if dangerous_markup(content_str, allow_local_network_access):
                 print('POST to outbox contains dangerous markup: ' +
                       str(message_json))
                 return False
@@ -274,14 +273,14 @@ def post_message_to_outbox(session, translate: {},
 
         # sent by an actor on a local network address?
         if not allow_local_network_access:
-            localNetworkPatternList = get_local_network_addresses()
-            for localNetworkPattern in localNetworkPatternList:
-                if localNetworkPattern in message_json['actor']:
+            local_network_pattern_list = get_local_network_addresses()
+            for local_network_pattern in local_network_pattern_list:
+                if local_network_pattern in message_json['actor']:
                     return False
 
-        testDomain, testPort = get_domain_from_actor(message_json['actor'])
-        testDomain = get_full_domain(testDomain, testPort)
-        if is_blocked_domain(base_dir, testDomain):
+        test_domain, test_port = get_domain_from_actor(message_json['actor'])
+        test_domain = get_full_domain(test_domain, test_port)
+        if is_blocked_domain(base_dir, test_domain):
             if debug:
                 print('DEBUG: domain is blocked: ' + message_json['actor'])
             return False
@@ -294,11 +293,11 @@ def post_message_to_outbox(session, translate: {},
         # https://www.w3.org/TR/activitypub/#create-activity-outbox
         message_json['object']['attributedTo'] = message_json['actor']
         if message_json['object'].get('attachment'):
-            attachmentIndex = 0
-            attach = message_json['object']['attachment'][attachmentIndex]
+            attachment_index = 0
+            attach = message_json['object']['attachment'][attachment_index]
             if attach.get('mediaType'):
-                fileExtension = 'png'
-                mediaTypeStr = \
+                file_extension = 'png'
+                media_type_str = \
                     attach['mediaType']
 
                 extensions = {
@@ -313,39 +312,39 @@ def post_message_to_outbox(session, translate: {},
                     "webm": "webm",
                     "ogv": "ogv"
                 }
-                for matchExt, ext in extensions.items():
-                    if mediaTypeStr.endswith(matchExt):
-                        fileExtension = ext
+                for match_ext, ext in extensions.items():
+                    if media_type_str.endswith(match_ext):
+                        file_extension = ext
                         break
 
-                mediaDir = \
+                media_dir = \
                     base_dir + '/accounts/' + \
                     post_to_nickname + '@' + domain
-                uploadMediaFilename = mediaDir + '/upload.' + fileExtension
-                if not os.path.isfile(uploadMediaFilename):
+                upload_media_filename = media_dir + '/upload.' + file_extension
+                if not os.path.isfile(upload_media_filename):
                     del message_json['object']['attachment']
                 else:
                     # generate a path for the uploaded image
-                    mPath = get_media_path()
-                    mediaPath = mPath + '/' + \
-                        create_password(16).lower() + '.' + fileExtension
-                    create_media_dirs(base_dir, mPath)
-                    mediaFilename = base_dir + '/' + mediaPath
+                    mpath = get_media_path()
+                    media_path = mpath + '/' + \
+                        create_password(16).lower() + '.' + file_extension
+                    create_media_dirs(base_dir, mpath)
+                    media_filename = base_dir + '/' + media_path
                     # move the uploaded image to its new path
-                    os.rename(uploadMediaFilename, mediaFilename)
+                    os.rename(upload_media_filename, media_filename)
                     # change the url of the attachment
                     attach['url'] = \
-                        http_prefix + '://' + domain_full + '/' + mediaPath
+                        http_prefix + '://' + domain_full + '/' + media_path
                     attach['url'] = \
                         attach['url'].replace('/media/',
                                               '/system/' +
                                               'media_attachments/files/')
 
-    permittedOutboxTypes = (
+    permitted_outbox_types = (
         'Create', 'Announce', 'Like', 'EmojiReact', 'Follow', 'Undo',
         'Update', 'Add', 'Remove', 'Block', 'Delete', 'Skill', 'Ignore'
     )
-    if message_json['type'] not in permittedOutboxTypes:
+    if message_json['type'] not in permitted_outbox_types:
         if debug:
             print('DEBUG: POST to outbox - ' + message_json['type'] +
                   ' is not a permitted activity type')
@@ -361,65 +360,65 @@ def post_message_to_outbox(session, translate: {},
     if debug:
         print('DEBUG: save_post_to_box')
     if message_json['type'] != 'Upgrade':
-        outboxName = 'outbox'
+        outbox_name = 'outbox'
 
         # if this is a blog post or an event then save to its own box
         if message_json['type'] == 'Create':
             if has_object_dict(message_json):
                 if message_json['object'].get('type'):
                     if message_json['object']['type'] == 'Article':
-                        outboxName = 'tlblogs'
+                        outbox_name = 'tlblogs'
 
-        savedFilename = \
+        saved_filename = \
             save_post_to_box(base_dir,
                              http_prefix,
                              post_id,
                              post_to_nickname, domain_full,
-                             message_json, outboxName)
-        if not savedFilename:
-            print('WARN: post not saved to outbox ' + outboxName)
+                             message_json, outbox_name)
+        if not saved_filename:
+            print('WARN: post not saved to outbox ' + outbox_name)
             return False
 
         # save all instance blogs to the news actor
-        if post_to_nickname != 'news' and outboxName == 'tlblogs':
-            if '/' in savedFilename:
+        if post_to_nickname != 'news' and outbox_name == 'tlblogs':
+            if '/' in saved_filename:
                 if is_featured_writer(base_dir, post_to_nickname, domain):
-                    savedPostId = savedFilename.split('/')[-1]
-                    blogsDir = \
+                    saved_post_id = saved_filename.split('/')[-1]
+                    blogs_dir = \
                         base_dir + '/accounts/news@' + domain + '/tlblogs'
-                    if not os.path.isdir(blogsDir):
-                        os.mkdir(blogsDir)
-                    copyfile(savedFilename, blogsDir + '/' + savedPostId)
+                    if not os.path.isdir(blogs_dir):
+                        os.mkdir(blogs_dir)
+                    copyfile(saved_filename, blogs_dir + '/' + saved_post_id)
                     inbox_update_index('tlblogs', base_dir,
                                        'news@' + domain,
-                                       savedFilename, debug)
+                                       saved_filename, debug)
 
                 # clear the citations file if it exists
-                citationsFilename = \
+                citations_filename = \
                     base_dir + '/accounts/' + \
                     post_to_nickname + '@' + domain + '/.citations.txt'
-                if os.path.isfile(citationsFilename):
+                if os.path.isfile(citations_filename):
                     try:
-                        os.remove(citationsFilename)
+                        os.remove(citations_filename)
                     except OSError:
                         print('EX: post_message_to_outbox unable to delete ' +
-                              citationsFilename)
+                              citations_filename)
 
         # The following activity types get added to the index files
-        indexedActivities = (
+        indexed_activities = (
             'Create', 'Question', 'Note', 'EncryptedMessage', 'Article',
             'Patch', 'Announce'
         )
-        if message_json['type'] in indexedActivities:
-            indexes = [outboxName, "inbox"]
-            selfActor = \
+        if message_json['type'] in indexed_activities:
+            indexes = [outbox_name, "inbox"]
+            self_actor = \
                 local_actor_url(http_prefix, post_to_nickname, domain_full)
-            for boxNameIndex in indexes:
-                if not boxNameIndex:
+            for box_name_index in indexes:
+                if not box_name_index:
                     continue
 
                 # should this also go to the media timeline?
-                if boxNameIndex == 'inbox':
+                if box_name_index == 'inbox':
                     if is_image_media(session, base_dir, http_prefix,
                                       post_to_nickname, domain,
                                       message_json,
@@ -433,31 +432,31 @@ def post_message_to_outbox(session, translate: {},
                                       signing_priv_key_pem):
                         inbox_update_index('tlmedia', base_dir,
                                            post_to_nickname + '@' + domain,
-                                           savedFilename, debug)
+                                           saved_filename, debug)
 
-                if boxNameIndex == 'inbox' and outboxName == 'tlblogs':
+                if box_name_index == 'inbox' and outbox_name == 'tlblogs':
                     continue
 
                 # avoid duplicates of the message if already going
                 # back to the inbox of the same account
-                if selfActor not in message_json['to']:
+                if self_actor not in message_json['to']:
                     # show sent post within the inbox,
                     # as is the typical convention
-                    inbox_update_index(boxNameIndex, base_dir,
+                    inbox_update_index(box_name_index, base_dir,
                                        post_to_nickname + '@' + domain,
-                                       savedFilename, debug)
+                                       saved_filename, debug)
 
                     # regenerate the html
-                    useCacheOnly = False
-                    pageNumber = 1
-                    showIndividualPostIcons = True
-                    manuallyApproveFollowers = \
+                    use_cache_only = False
+                    page_number = 1
+                    show_individual_post_icons = True
+                    manually_approve_followers = \
                         follower_approval_active(base_dir,
                                                  post_to_nickname, domain)
                     individual_post_as_html(signing_priv_key_pem,
                                             False, recent_posts_cache,
                                             max_recent_posts,
-                                            translate, pageNumber,
+                                            translate, page_number,
                                             base_dir, session,
                                             cached_webfingers,
                                             person_cache,
@@ -465,7 +464,7 @@ def post_message_to_outbox(session, translate: {},
                                             message_json, None, True,
                                             allow_deletion,
                                             http_prefix, __version__,
-                                            boxNameIndex,
+                                            box_name_index,
                                             yt_replace_domain,
                                             twitter_replacement_domain,
                                             show_published_date_only,
@@ -473,10 +472,10 @@ def post_message_to_outbox(session, translate: {},
                                             allow_local_network_access,
                                             theme, system_language,
                                             max_like_count,
-                                            boxNameIndex != 'dm',
-                                            showIndividualPostIcons,
-                                            manuallyApproveFollowers,
-                                            False, True, useCacheOnly,
+                                            box_name_index != 'dm',
+                                            show_individual_post_icons,
+                                            manually_approve_followers,
+                                            False, True, use_cache_only,
                                             cw_lists, lists_enabled)
 
     if outbox_announce(recent_posts_cache,
@@ -493,12 +492,12 @@ def post_message_to_outbox(session, translate: {},
     if debug:
         print('DEBUG: sending c2s post to followers')
     # remove inactive threads
-    inactiveFollowerThreads = []
-    for th in followers_threads:
-        if not th.is_alive():
-            inactiveFollowerThreads.append(th)
-    for th in inactiveFollowerThreads:
-        followers_threads.remove(th)
+    inactive_follower_threads = []
+    for thr in followers_threads:
+        if not thr.is_alive():
+            inactive_follower_threads.append(thr)
+    for thr in inactive_follower_threads:
+        followers_threads.remove(thr)
     if debug:
         print('DEBUG: ' + str(len(followers_threads)) +
               ' followers threads active')
@@ -510,7 +509,7 @@ def post_message_to_outbox(session, translate: {},
         # remove it from the list
         followers_threads.pop(0)
     # create a thread to send the post to followers
-    followersThread = \
+    followers_thread = \
         send_to_followers_thread(server.session,
                                  base_dir,
                                  post_to_nickname,
@@ -518,7 +517,7 @@ def post_message_to_outbox(session, translate: {},
                                  port, http_prefix,
                                  federation_list,
                                  send_threads,
-                                 postLog,
+                                 post_log,
                                  cached_webfingers,
                                  person_cache,
                                  message_json, debug,
@@ -526,7 +525,7 @@ def post_message_to_outbox(session, translate: {},
                                  shared_items_federated_domains,
                                  shared_item_federation_tokens,
                                  signing_priv_key_pem)
-    followers_threads.append(followersThread)
+    followers_threads.append(followers_thread)
 
     if debug:
         print('DEBUG: handle any unfollow requests')
@@ -652,14 +651,14 @@ def post_message_to_outbox(session, translate: {},
         else:
             print('c2s sender: ' +
                   post_to_nickname + '@' + domain + ':' + str(port))
-    namedAddressesThread = \
+    named_addresses_thread = \
         send_to_named_addresses_thread(server.session, base_dir,
                                        post_to_nickname,
                                        domain, onion_domain, i2p_domain, port,
                                        http_prefix,
                                        federation_list,
                                        send_threads,
-                                       postLog,
+                                       post_log,
                                        cached_webfingers,
                                        person_cache,
                                        message_json, debug,
@@ -667,5 +666,5 @@ def post_message_to_outbox(session, translate: {},
                                        shared_items_federated_domains,
                                        shared_item_federation_tokens,
                                        signing_priv_key_pem)
-    followers_threads.append(namedAddressesThread)
+    followers_threads.append(named_addresses_thread)
     return True
