@@ -44,22 +44,22 @@ def get_tox_address(actor_json: {}) -> str:
 def set_tox_address(actor_json: {}, tox_address: str) -> None:
     """Sets an tox address for the given actor
     """
-    notToxAddress = False
+    not_tox_address = False
 
     if len(tox_address) != 76:
-        notToxAddress = True
+        not_tox_address = True
     if tox_address.upper() != tox_address:
-        notToxAddress = True
+        not_tox_address = True
     if '"' in tox_address:
-        notToxAddress = True
+        not_tox_address = True
     if ' ' in tox_address:
-        notToxAddress = True
+        not_tox_address = True
     if '.' in tox_address:
-        notToxAddress = True
+        not_tox_address = True
     if ',' in tox_address:
-        notToxAddress = True
+        not_tox_address = True
     if '<' in tox_address:
-        notToxAddress = True
+        not_tox_address = True
 
     if not actor_json.get('attachment'):
         actor_json['attachment'] = []
@@ -77,7 +77,7 @@ def set_tox_address(actor_json: {}, tox_address: str) -> None:
         break
     if property_found:
         actor_json['attachment'].remove(property_found)
-    if notToxAddress:
+    if not_tox_address:
         return
 
     for property_value in actor_json['attachment']:
@@ -92,9 +92,9 @@ def set_tox_address(actor_json: {}, tox_address: str) -> None:
         property_value['value'] = tox_address
         return
 
-    newToxAddress = {
+    new_tox_address = {
         "name": "Tox",
         "type": "PropertyValue",
         "value": tox_address
     }
-    actor_json['attachment'].append(newToxAddress)
+    actor_json['attachment'].append(new_tox_address)

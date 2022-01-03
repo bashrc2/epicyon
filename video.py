@@ -22,22 +22,22 @@ def convert_video_to_note(base_dir: str, nickname: str, domain: str,
     a Note, so that it can then be displayed in a timeline
     """
     # check that the required fields are present
-    requiredFields = (
+    required_fields = (
         'type', '@context', 'id', 'published', 'to', 'cc',
         'attributedTo', 'commentsEnabled', 'content', 'sensitive',
         'name', 'url'
     )
-    for fieldName in requiredFields:
-        if not post_json_object.get(fieldName):
+    for field_name in required_fields:
+        if not post_json_object.get(field_name):
             return None
 
     if post_json_object['type'] != 'Video':
         return None
 
     # who is this attributed to ?
-    attributedTo = None
+    attributed_to = None
     if isinstance(post_json_object['attributedTo'], str):
-        attributedTo = post_json_object['attributedTo']
+        attributed_to = post_json_object['attributedTo']
     elif isinstance(post_json_object['attributedTo'], list):
         for entity in post_json_object['attributedTo']:
             if not isinstance(entity, dict):
@@ -48,28 +48,28 @@ def convert_video_to_note(base_dir: str, nickname: str, domain: str,
                 continue
             if not entity.get('id'):
                 continue
-            attributedTo = entity['id']
+            attributed_to = entity['id']
             break
-    if not attributedTo:
+    if not attributed_to:
         return None
 
     # get the language of the video
-    postLanguage = system_language
+    post_language = system_language
     if post_json_object.get('language'):
         if isinstance(post_json_object['language'], dict):
             if post_json_object['language'].get('identifier'):
-                postLanguage = post_json_object['language']['identifier']
+                post_language = post_json_object['language']['identifier']
 
     # check that the attributed actor is not blocked
-    postNickname = get_nickname_from_actor(attributedTo)
-    if not postNickname:
+    post_nickname = get_nickname_from_actor(attributed_to)
+    if not post_nickname:
         return None
-    postDomain, postDomainPort = get_domain_from_actor(attributedTo)
-    if not postDomain:
+    post_domain, post_domain_port = get_domain_from_actor(attributed_to)
+    if not post_domain:
         return None
-    postDomainFull = get_full_domain(postDomain, postDomainPort)
+    post_domain_full = get_full_domain(post_domain, post_domain_port)
     if is_blocked(base_dir, nickname, domain,
-                  postNickname, postDomainFull, blocked_cache):
+                  post_nickname, post_domain_full, blocked_cache):
         return None
 
     # check that the content is valid
@@ -89,90 +89,90 @@ def convert_video_to_note(base_dir: str, nickname: str, domain: str,
                 content += '<p>' + post_json_object['license']['name'] + '</p>'
     content += post_json_object['content']
 
-    conversationId = remove_id_ending(post_json_object['id'])
+    conversation_id = remove_id_ending(post_json_object['id'])
 
-    mediaType = None
-    mediaUrl = None
-    mediaTorrent = None
-    mediaMagnet = None
-    for mediaLink in post_json_object['url']:
-        if not isinstance(mediaLink, dict):
+    media_type = None
+    media_url = None
+    media_torrent = None
+    media_magnet = None
+    for media_link in post_json_object['url']:
+        if not isinstance(media_link, dict):
             continue
-        if not mediaLink.get('mediaType'):
+        if not media_link.get('mediaType'):
             continue
-        if not mediaLink.get('href'):
+        if not media_link.get('href'):
             continue
-        if mediaLink['mediaType'] == 'application/x-bittorrent':
-            mediaTorrent = mediaLink['href']
-        if mediaLink['href'].startswith('magnet:'):
-            mediaMagnet = mediaLink['href']
-        if mediaLink['mediaType'] != 'video/mp4' and \
-           mediaLink['mediaType'] != 'video/ogv':
+        if media_link['mediaType'] == 'application/x-bittorrent':
+            media_torrent = media_link['href']
+        if media_link['href'].startswith('magnet:'):
+            media_magnet = media_link['href']
+        if media_link['mediaType'] != 'video/mp4' and \
+           media_link['mediaType'] != 'video/ogv':
             continue
-        if not mediaUrl:
-            mediaType = mediaLink['mediaType']
-            mediaUrl = mediaLink['href']
+        if not media_url:
+            media_type = media_link['mediaType']
+            media_url = media_link['href']
 
-    if not mediaUrl:
+    if not media_url:
         return None
 
     attachment = [{
-            'mediaType': mediaType,
+            'mediaType': media_type,
             'name': post_json_object['content'],
             'type': 'Document',
-            'url': mediaUrl
+            'url': media_url
     }]
 
-    if mediaTorrent or mediaMagnet:
+    if media_torrent or media_magnet:
         content += '<p>'
-        if mediaTorrent:
-            content += '<a href="' + mediaTorrent + '">⇓</a> '
-        if mediaMagnet:
-            content += '<a href="' + mediaMagnet + '">🧲</a>'
+        if media_torrent:
+            content += '<a href="' + media_torrent + '">⇓</a> '
+        if media_magnet:
+            content += '<a href="' + media_magnet + '">🧲</a>'
         content += '</p>'
 
-    newPostId = remove_id_ending(post_json_object['id'])
-    newPost = {
+    new_post_id = remove_id_ending(post_json_object['id'])
+    new_post = {
         '@context': post_json_object['@context'],
-        'id': newPostId + '/activity',
+        'id': new_post_id + '/activity',
         'type': 'Create',
-        'actor': attributedTo,
+        'actor': attributed_to,
         'published': post_json_object['published'],
         'to': post_json_object['to'],
         'cc': post_json_object['cc'],
         'object': {
-            'id': newPostId,
-            'conversation': conversationId,
+            'id': new_post_id,
+            'conversation': conversation_id,
             'type': 'Note',
             'summary': None,
             'inReplyTo': None,
             'published': post_json_object['published'],
-            'url': newPostId,
-            'attributedTo': attributedTo,
+            'url': new_post_id,
+            'attributedTo': attributed_to,
             'to': post_json_object['to'],
             'cc': post_json_object['cc'],
             'sensitive': post_json_object['sensitive'],
-            'atomUri': newPostId,
+            'atomUri': new_post_id,
             'inReplyToAtomUri': None,
             'commentsEnabled': post_json_object['commentsEnabled'],
             'rejectReplies': not post_json_object['commentsEnabled'],
             'mediaType': 'text/html',
             'content': content,
             'contentMap': {
-                postLanguage: content
+                post_language: content
             },
             'attachment': attachment,
             'tag': [],
             'replies': {
-                'id': newPostId + '/replies',
+                'id': new_post_id + '/replies',
                 'type': 'Collection',
                 'first': {
                     'type': 'CollectionPage',
-                    'partOf': newPostId + '/replies',
+                    'partOf': new_post_id + '/replies',
                     'items': []
                 }
             }
         }
     }
 
-    return newPost
+    return new_post
