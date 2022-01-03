@@ -54,50 +54,50 @@ def rss2header(http_prefix: str,
                title: str, translate: {}) -> str:
     """Header for an RSS 2.0 feed
     """
-    rssStr = \
+    rss_str = \
         "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" + \
         "<rss version=\"2.0\">" + \
         '<channel>'
 
     if title.startswith('News'):
-        rssStr += \
+        rss_str += \
             '    <title>Newswire</title>' + \
             '    <link>' + http_prefix + '://' + domain_full + \
             '/newswire.xml' + '</link>'
     elif title.startswith('Site'):
-        rssStr += \
+        rss_str += \
             '    <title>' + domain_full + '</title>' + \
             '    <link>' + http_prefix + '://' + domain_full + \
             '/blog/rss.xml' + '</link>'
     else:
-        rssStr += \
+        rss_str += \
             '    <title>' + translate[title] + '</title>' + \
             '    <link>' + \
             local_actor_url(http_prefix, nickname, domain_full) + \
             '/rss.xml' + '</link>'
-    return rssStr
+    return rss_str
 
 
 def rss2footer() -> str:
     """Footer for an RSS 2.0 feed
     """
-    rssStr = '</channel></rss>'
-    return rssStr
+    rss_str = '</channel></rss>'
+    return rss_str
 
 
-def get_newswire_tags(text: str, maxTags: int) -> []:
+def get_newswire_tags(text: str, max_tags: int) -> []:
     """Returns a list of hashtags found in the given text
     """
     if '#' not in text:
         return []
     if ' ' not in text:
         return []
-    textSimplified = \
+    text_simplified = \
         text.replace(',', ' ').replace(';', ' ').replace('- ', ' ')
-    textSimplified = textSimplified.replace('. ', ' ').strip()
-    if textSimplified.endswith('.'):
-        textSimplified = textSimplified[:len(textSimplified)-1]
-    words = textSimplified.split(' ')
+    text_simplified = text_simplified.replace('. ', ' ').strip()
+    if text_simplified.endswith('.'):
+        text_simplified = text_simplified[:len(text_simplified)-1]
+    words = text_simplified.split(' ')
     tags = []
     for wrd in words:
         if not wrd.startswith('#'):
@@ -107,7 +107,7 @@ def get_newswire_tags(text: str, maxTags: int) -> []:
         if wrd in tags:
             continue
         tags.append(wrd)
-        if len(tags) >= maxTags:
+        if len(tags) >= max_tags:
             break
     return tags
 
@@ -140,8 +140,7 @@ def get_newswire_favicon_url(url: str) -> str:
     domain = url.split('://')[1]
     if '/' not in domain:
         return url + '/favicon.ico'
-    else:
-        domain = domain.split('/')[0]
+    domain = domain.split('/')[0]
     return url.split('://')[0] + '://' + domain + '/favicon.ico'
 
 
@@ -149,17 +148,17 @@ def _download_newswire_feed_favicon(session, base_dir: str,
                                     link: str, debug: bool) -> bool:
     """Downloads the favicon for the given feed link
     """
-    favUrl = get_newswire_favicon_url(link)
+    fav_url = get_newswire_favicon_url(link)
     if '://' not in link:
         return False
-    timeoutSec = 10
-    imageData, mimeType = \
-        download_image_any_mime_type(session, favUrl, timeoutSec, debug)
-    if not imageData or not mimeType:
+    timeout_sec = 10
+    image_data, mime_type = \
+        download_image_any_mime_type(session, fav_url, timeout_sec, debug)
+    if not image_data or not mime_type:
         return False
 
     # update the favicon url
-    extensionsToMime = {
+    extensions_to_mime = {
         'ico': 'x-icon',
         'png': 'png',
         'jpg': 'jpeg',
@@ -168,9 +167,9 @@ def _download_newswire_feed_favicon(session, base_dir: str,
         'svg': 'svg+xml',
         'webp': 'webp'
     }
-    for ext, mimeExt in extensionsToMime.items():
-        if 'image/' + mimeExt in mimeType:
-            favUrl = favUrl.replace('.ico', '.' + ext)
+    for ext, mime_ext in extensions_to_mime.items():
+        if 'image/' + mime_ext in mime_type:
+            fav_url = fav_url.replace('.ico', '.' + ext)
             break
 
     # create cached favicons directory if needed
@@ -178,43 +177,43 @@ def _download_newswire_feed_favicon(session, base_dir: str,
         os.mkdir(base_dir + '/favicons')
 
     # check svg for dubious scripts
-    if favUrl.endswith('.svg'):
-        imageDataStr = str(imageData)
-        if dangerous_svg(imageDataStr, False):
+    if fav_url.endswith('.svg'):
+        image_data_str = str(image_data)
+        if dangerous_svg(image_data_str, False):
             return False
 
     # save to the cache
-    favFilename = get_fav_filename_from_url(base_dir, favUrl)
-    if os.path.isfile(favFilename):
+    fav_filename = get_fav_filename_from_url(base_dir, fav_url)
+    if os.path.isfile(fav_filename):
         return True
     try:
-        with open(favFilename, 'wb+') as fp:
-            fp.write(imageData)
+        with open(fav_filename, 'wb+') as fp_fav:
+            fp_fav.write(image_data)
     except OSError:
-        print('EX: failed writing favicon ' + favFilename)
+        print('EX: failed writing favicon ' + fav_filename)
         return False
 
     return True
 
 
 def _add_newswire_dict_entry(base_dir: str, domain: str,
-                             newswire: {}, dateStr: str,
+                             newswire: {}, date_str: str,
                              title: str, link: str,
-                             votesStatus: str, post_filename: str,
+                             votes_status: str, post_filename: str,
                              description: str, moderated: bool,
                              mirrored: bool,
                              tags: [],
-                             maxTags: int, session, debug: bool) -> None:
+                             max_tags: int, session, debug: bool) -> None:
     """Update the newswire dictionary
     """
     # remove any markup
     title = remove_html(title)
     description = remove_html(description)
 
-    allText = title + ' ' + description
+    all_text = title + ' ' + description
 
     # check that none of the text is filtered against
-    if is_filtered(base_dir, None, None, allText):
+    if is_filtered(base_dir, None, None, all_text):
         return
 
     title = limit_word_lengths(title, 13)
@@ -223,42 +222,42 @@ def _add_newswire_dict_entry(base_dir: str, domain: str,
         tags = []
 
     # extract hashtags from the text of the feed post
-    postTags = get_newswire_tags(allText, maxTags)
+    post_tags = get_newswire_tags(all_text, max_tags)
 
     # combine the tags into a single list
     for tag in tags:
-        if tag in postTags:
+        if tag in post_tags:
             continue
-        if len(postTags) < maxTags:
-            postTags.append(tag)
+        if len(post_tags) < max_tags:
+            post_tags.append(tag)
 
     # check that no tags are blocked
-    for tag in postTags:
+    for tag in post_tags:
         if is_blocked_hashtag(base_dir, tag):
             return
 
     _download_newswire_feed_favicon(session, base_dir, link, debug)
 
-    newswire[dateStr] = [
+    newswire[date_str] = [
         title,
         link,
-        votesStatus,
+        votes_status,
         post_filename,
         description,
         moderated,
-        postTags,
+        post_tags,
         mirrored
     ]
 
 
-def _valid_feed_date(pubDate: str, debug: bool = False) -> bool:
+def _valid_feed_date(pub_date: str, debug: bool = False) -> bool:
     # convert from YY-MM-DD HH:MM:SS+00:00 to
     # YY-MM-DDTHH:MM:SSZ
-    postDate = pubDate.replace(' ', 'T').replace('+00:00', 'Z')
-    return valid_post_date(postDate, 90, debug)
+    post_date = pub_date.replace(' ', 'T').replace('+00:00', 'Z')
+    return valid_post_date(post_date, 90, debug)
 
 
-def parse_feed_date(pubDate: str) -> str:
+def parse_feed_date(pub_date: str) -> str:
     """Returns a UTC date string based on the given date string
     This tries a number of formats to see which work
     """
@@ -275,597 +274,599 @@ def parse_feed_date(pubDate: str) -> str:
                "%a, %d %b %Y %H:%M:%S UT",
                "%Y-%m-%dT%H:%M:%SZ",
                "%Y-%m-%dT%H:%M:%S%z")
-    publishedDate = None
-    for dateFormat in formats:
-        if ',' in pubDate and ',' not in dateFormat:
+    published_date = None
+    for date_format in formats:
+        if ',' in pub_date and ',' not in date_format:
             continue
-        if ',' not in pubDate and ',' in dateFormat:
+        if ',' not in pub_date and ',' in date_format:
             continue
-        if 'Z' in pubDate and 'Z' not in dateFormat:
+        if 'Z' in pub_date and 'Z' not in date_format:
             continue
-        if 'Z' not in pubDate and 'Z' in dateFormat:
+        if 'Z' not in pub_date and 'Z' in date_format:
             continue
-        if 'EST' not in pubDate and 'EST' in dateFormat:
+        if 'EST' not in pub_date and 'EST' in date_format:
             continue
-        if 'GMT' not in pubDate and 'GMT' in dateFormat:
+        if 'GMT' not in pub_date and 'GMT' in date_format:
             continue
-        if 'EST' in pubDate and 'EST' not in dateFormat:
+        if 'EST' in pub_date and 'EST' not in date_format:
             continue
-        if 'UT' not in pubDate and 'UT' in dateFormat:
+        if 'UT' not in pub_date and 'UT' in date_format:
             continue
-        if 'UT' in pubDate and 'UT' not in dateFormat:
+        if 'UT' in pub_date and 'UT' not in date_format:
             continue
 
         try:
-            publishedDate = datetime.strptime(pubDate, dateFormat)
+            published_date = datetime.strptime(pub_date, date_format)
         except BaseException:
             continue
 
-        if publishedDate:
-            if pubDate.endswith(' EST'):
-                hoursAdded = timedelta(hours=5)
-                publishedDate = publishedDate + hoursAdded
+        if published_date:
+            if pub_date.endswith(' EST'):
+                hours_added = timedelta(hours=5)
+                published_date = published_date + hours_added
             break
 
-    pubDateStr = None
-    if publishedDate:
-        offset = publishedDate.utcoffset()
+    pub_date_str = None
+    if published_date:
+        offset = published_date.utcoffset()
         if offset:
-            publishedDate = publishedDate - offset
+            published_date = published_date - offset
         # convert local date to UTC
-        publishedDate = publishedDate.replace(tzinfo=timezone.utc)
-        pubDateStr = str(publishedDate)
-        if not pubDateStr.endswith('+00:00'):
-            pubDateStr += '+00:00'
+        published_date = published_date.replace(tzinfo=timezone.utc)
+        pub_date_str = str(published_date)
+        if not pub_date_str.endswith('+00:00'):
+            pub_date_str += '+00:00'
     else:
-        print('WARN: unrecognized date format: ' + pubDate)
+        print('WARN: unrecognized date format: ' + pub_date)
 
-    return pubDateStr
+    return pub_date_str
 
 
 def load_hashtag_categories(base_dir: str, language: str) -> None:
     """Loads an rss file containing hashtag categories
     """
-    hashtagCategoriesFilename = base_dir + '/categories.xml'
-    if not os.path.isfile(hashtagCategoriesFilename):
-        hashtagCategoriesFilename = \
+    hashtag_categories_filename = base_dir + '/categories.xml'
+    if not os.path.isfile(hashtag_categories_filename):
+        hashtag_categories_filename = \
             base_dir + '/defaultcategories/' + language + '.xml'
-        if not os.path.isfile(hashtagCategoriesFilename):
+        if not os.path.isfile(hashtag_categories_filename):
             return
 
-    with open(hashtagCategoriesFilename, 'r') as fp:
-        xmlStr = fp.read()
-        _xml2str_to_hashtag_categories(base_dir, xmlStr, 1024, True)
+    with open(hashtag_categories_filename, 'r') as fp_cat:
+        xml_str = fp_cat.read()
+        _xml2str_to_hashtag_categories(base_dir, xml_str, 1024, True)
 
 
-def _xml2str_to_hashtag_categories(base_dir: str, xmlStr: str,
-                                   maxCategoriesFeedItemSizeKb: int,
+def _xml2str_to_hashtag_categories(base_dir: str, xml_str: str,
+                                   max_categories_feedItem_size_kb: int,
                                    force: bool = False) -> None:
     """Updates hashtag categories based upon an rss feed
     """
-    rssItems = xmlStr.split('<item>')
-    maxBytes = maxCategoriesFeedItemSizeKb * 1024
-    for rssItem in rssItems:
-        if not rssItem:
+    rss_items = xml_str.split('<item>')
+    max_bytes = max_categories_feedItem_size_kb * 1024
+    for rss_item in rss_items:
+        if not rss_item:
             continue
-        if len(rssItem) > maxBytes:
+        if len(rss_item) > max_bytes:
             print('WARN: rss categories feed item is too big')
             continue
-        if '<title>' not in rssItem:
+        if '<title>' not in rss_item:
             continue
-        if '</title>' not in rssItem:
+        if '</title>' not in rss_item:
             continue
-        if '<description>' not in rssItem:
+        if '<description>' not in rss_item:
             continue
-        if '</description>' not in rssItem:
+        if '</description>' not in rss_item:
             continue
-        categoryStr = rssItem.split('<title>')[1]
-        categoryStr = categoryStr.split('</title>')[0].strip()
-        if not categoryStr:
+        category_str = rss_item.split('<title>')[1]
+        category_str = category_str.split('</title>')[0].strip()
+        if not category_str:
             continue
-        if 'CDATA' in categoryStr:
+        if 'CDATA' in category_str:
             continue
-        hashtagListStr = rssItem.split('<description>')[1]
-        hashtagListStr = hashtagListStr.split('</description>')[0].strip()
-        if not hashtagListStr:
+        hashtag_list_str = rss_item.split('<description>')[1]
+        hashtag_list_str = hashtag_list_str.split('</description>')[0].strip()
+        if not hashtag_list_str:
             continue
-        if 'CDATA' in hashtagListStr:
+        if 'CDATA' in hashtag_list_str:
             continue
-        hashtagList = hashtagListStr.split(' ')
-        if not is_blocked_hashtag(base_dir, categoryStr):
-            for hashtag in hashtagList:
-                set_hashtag_category(base_dir, hashtag, categoryStr,
+        hashtag_list = hashtag_list_str.split(' ')
+        if not is_blocked_hashtag(base_dir, category_str):
+            for hashtag in hashtag_list:
+                set_hashtag_category(base_dir, hashtag, category_str,
                                      False, force)
 
 
-def _xml2str_to_dict(base_dir: str, domain: str, xmlStr: str,
+def _xml2str_to_dict(base_dir: str, domain: str, xml_str: str,
                      moderated: bool, mirrored: bool,
-                     maxPostsPerSource: int,
+                     max_posts_per_source: int,
                      max_feed_item_size_kb: int,
-                     maxCategoriesFeedItemSizeKb: int,
+                     max_categories_feedItem_size_kb: int,
                      session, debug: bool) -> {}:
     """Converts an xml RSS 2.0 string to a dictionary
     """
-    if '<item>' not in xmlStr:
+    if '<item>' not in xml_str:
         return {}
     result = {}
 
     # is this an rss feed containing hashtag categories?
-    if '<title>#categories</title>' in xmlStr:
-        _xml2str_to_hashtag_categories(base_dir, xmlStr,
-                                       maxCategoriesFeedItemSizeKb)
+    if '<title>#categories</title>' in xml_str:
+        _xml2str_to_hashtag_categories(base_dir, xml_str,
+                                       max_categories_feedItem_size_kb)
         return {}
 
-    rssItems = xmlStr.split('<item>')
-    postCtr = 0
-    maxBytes = max_feed_item_size_kb * 1024
-    for rssItem in rssItems:
-        if not rssItem:
+    rss_items = xml_str.split('<item>')
+    post_ctr = 0
+    max_bytes = max_feed_item_size_kb * 1024
+    for rss_item in rss_items:
+        if not rss_item:
             continue
-        if len(rssItem) > maxBytes:
+        if len(rss_item) > max_bytes:
             print('WARN: rss feed item is too big')
             continue
-        if '<title>' not in rssItem:
+        if '<title>' not in rss_item:
             continue
-        if '</title>' not in rssItem:
+        if '</title>' not in rss_item:
             continue
-        if '<link>' not in rssItem:
+        if '<link>' not in rss_item:
             continue
-        if '</link>' not in rssItem:
+        if '</link>' not in rss_item:
             continue
-        if '<pubDate>' not in rssItem:
+        if '<pubDate>' not in rss_item:
             continue
-        if '</pubDate>' not in rssItem:
+        if '</pubDate>' not in rss_item:
             continue
-        title = rssItem.split('<title>')[1]
+        title = rss_item.split('<title>')[1]
         title = _remove_cdata(title.split('</title>')[0])
         title = remove_html(title)
         description = ''
-        if '<description>' in rssItem and '</description>' in rssItem:
-            description = rssItem.split('<description>')[1]
+        if '<description>' in rss_item and '</description>' in rss_item:
+            description = rss_item.split('<description>')[1]
             description = remove_html(description.split('</description>')[0])
         else:
-            if '<media:description>' in rssItem and \
-               '</media:description>' in rssItem:
-                description = rssItem.split('<media:description>')[1]
+            if '<media:description>' in rss_item and \
+               '</media:description>' in rss_item:
+                description = rss_item.split('<media:description>')[1]
                 description = description.split('</media:description>')[0]
                 description = remove_html(description)
-        link = rssItem.split('<link>')[1]
+        link = rss_item.split('<link>')[1]
         link = link.split('</link>')[0]
         if '://' not in link:
             continue
-        itemDomain = link.split('://')[1]
-        if '/' in itemDomain:
-            itemDomain = itemDomain.split('/')[0]
-        if is_blocked_domain(base_dir, itemDomain):
+        item_domain = link.split('://')[1]
+        if '/' in item_domain:
+            item_domain = item_domain.split('/')[0]
+        if is_blocked_domain(base_dir, item_domain):
             continue
-        pubDate = rssItem.split('<pubDate>')[1]
-        pubDate = pubDate.split('</pubDate>')[0]
+        pub_date = rss_item.split('<pubDate>')[1]
+        pub_date = pub_date.split('</pubDate>')[0]
 
-        pubDateStr = parse_feed_date(pubDate)
-        if pubDateStr:
-            if _valid_feed_date(pubDateStr):
+        pub_date_str = parse_feed_date(pub_date)
+        if pub_date_str:
+            if _valid_feed_date(pub_date_str):
                 post_filename = ''
-                votesStatus = []
+                votes_status = []
                 _add_newswire_dict_entry(base_dir, domain,
-                                         result, pubDateStr,
+                                         result, pub_date_str,
                                          title, link,
-                                         votesStatus, post_filename,
+                                         votes_status, post_filename,
                                          description, moderated,
                                          mirrored, [], 32, session, debug)
-                postCtr += 1
-                if postCtr >= maxPostsPerSource:
+                post_ctr += 1
+                if post_ctr >= max_posts_per_source:
                     break
-    if postCtr > 0:
-        print('Added ' + str(postCtr) +
+    if post_ctr > 0:
+        print('Added ' + str(post_ctr) +
               ' rss 2.0 feed items to newswire')
     return result
 
 
-def _xml1str_to_dict(base_dir: str, domain: str, xmlStr: str,
+def _xml1str_to_dict(base_dir: str, domain: str, xml_str: str,
                      moderated: bool, mirrored: bool,
-                     maxPostsPerSource: int,
+                     max_posts_per_source: int,
                      max_feed_item_size_kb: int,
-                     maxCategoriesFeedItemSizeKb: int,
+                     max_categories_feedItem_size_kb: int,
                      session, debug: bool) -> {}:
     """Converts an xml RSS 1.0 string to a dictionary
     https://validator.w3.org/feed/docs/rss1.html
     """
-    itemStr = '<item'
-    if itemStr not in xmlStr:
+    item_str = '<item'
+    if item_str not in xml_str:
         return {}
     result = {}
 
     # is this an rss feed containing hashtag categories?
-    if '<title>#categories</title>' in xmlStr:
-        _xml2str_to_hashtag_categories(base_dir, xmlStr,
-                                       maxCategoriesFeedItemSizeKb)
+    if '<title>#categories</title>' in xml_str:
+        _xml2str_to_hashtag_categories(base_dir, xml_str,
+                                       max_categories_feedItem_size_kb)
         return {}
 
-    rssItems = xmlStr.split(itemStr)
-    postCtr = 0
-    maxBytes = max_feed_item_size_kb * 1024
-    for rssItem in rssItems:
-        if not rssItem:
+    rss_items = xml_str.split(item_str)
+    post_ctr = 0
+    max_bytes = max_feed_item_size_kb * 1024
+    for rss_item in rss_items:
+        if not rss_item:
             continue
-        if len(rssItem) > maxBytes:
+        if len(rss_item) > max_bytes:
             print('WARN: rss 1.0 feed item is too big')
             continue
-        if rssItem.startswith('s>'):
+        if rss_item.startswith('s>'):
             continue
-        if '<title>' not in rssItem:
+        if '<title>' not in rss_item:
             continue
-        if '</title>' not in rssItem:
+        if '</title>' not in rss_item:
             continue
-        if '<link>' not in rssItem:
+        if '<link>' not in rss_item:
             continue
-        if '</link>' not in rssItem:
+        if '</link>' not in rss_item:
             continue
-        if '<dc:date>' not in rssItem:
+        if '<dc:date>' not in rss_item:
             continue
-        if '</dc:date>' not in rssItem:
+        if '</dc:date>' not in rss_item:
             continue
-        title = rssItem.split('<title>')[1]
+        title = rss_item.split('<title>')[1]
         title = _remove_cdata(title.split('</title>')[0])
         title = remove_html(title)
         description = ''
-        if '<description>' in rssItem and '</description>' in rssItem:
-            description = rssItem.split('<description>')[1]
+        if '<description>' in rss_item and '</description>' in rss_item:
+            description = rss_item.split('<description>')[1]
             description = remove_html(description.split('</description>')[0])
         else:
-            if '<media:description>' in rssItem and \
-               '</media:description>' in rssItem:
-                description = rssItem.split('<media:description>')[1]
+            if '<media:description>' in rss_item and \
+               '</media:description>' in rss_item:
+                description = rss_item.split('<media:description>')[1]
                 description = description.split('</media:description>')[0]
                 description = remove_html(description)
-        link = rssItem.split('<link>')[1]
+        link = rss_item.split('<link>')[1]
         link = link.split('</link>')[0]
         if '://' not in link:
             continue
-        itemDomain = link.split('://')[1]
-        if '/' in itemDomain:
-            itemDomain = itemDomain.split('/')[0]
-        if is_blocked_domain(base_dir, itemDomain):
+        item_domain = link.split('://')[1]
+        if '/' in item_domain:
+            item_domain = item_domain.split('/')[0]
+        if is_blocked_domain(base_dir, item_domain):
             continue
-        pubDate = rssItem.split('<dc:date>')[1]
-        pubDate = pubDate.split('</dc:date>')[0]
+        pub_date = rss_item.split('<dc:date>')[1]
+        pub_date = pub_date.split('</dc:date>')[0]
 
-        pubDateStr = parse_feed_date(pubDate)
-        if pubDateStr:
-            if _valid_feed_date(pubDateStr):
+        pub_date_str = parse_feed_date(pub_date)
+        if pub_date_str:
+            if _valid_feed_date(pub_date_str):
                 post_filename = ''
-                votesStatus = []
+                votes_status = []
                 _add_newswire_dict_entry(base_dir, domain,
-                                         result, pubDateStr,
+                                         result, pub_date_str,
                                          title, link,
-                                         votesStatus, post_filename,
+                                         votes_status, post_filename,
                                          description, moderated,
                                          mirrored, [], 32, session, debug)
-                postCtr += 1
-                if postCtr >= maxPostsPerSource:
+                post_ctr += 1
+                if post_ctr >= max_posts_per_source:
                     break
-    if postCtr > 0:
-        print('Added ' + str(postCtr) +
+    if post_ctr > 0:
+        print('Added ' + str(post_ctr) +
               ' rss 1.0 feed items to newswire')
     return result
 
 
-def _atom_feed_to_dict(base_dir: str, domain: str, xmlStr: str,
+def _atom_feed_to_dict(base_dir: str, domain: str, xml_str: str,
                        moderated: bool, mirrored: bool,
-                       maxPostsPerSource: int,
+                       max_posts_per_source: int,
                        max_feed_item_size_kb: int,
                        session, debug: bool) -> {}:
     """Converts an atom feed string to a dictionary
     """
-    if '<entry>' not in xmlStr:
+    if '<entry>' not in xml_str:
         return {}
     result = {}
-    atomItems = xmlStr.split('<entry>')
-    postCtr = 0
-    maxBytes = max_feed_item_size_kb * 1024
-    for atomItem in atomItems:
-        if not atomItem:
+    atom_items = xml_str.split('<entry>')
+    post_ctr = 0
+    max_bytes = max_feed_item_size_kb * 1024
+    for atom_item in atom_items:
+        if not atom_item:
             continue
-        if len(atomItem) > maxBytes:
+        if len(atom_item) > max_bytes:
             print('WARN: atom feed item is too big')
             continue
-        if '<title>' not in atomItem:
+        if '<title>' not in atom_item:
             continue
-        if '</title>' not in atomItem:
+        if '</title>' not in atom_item:
             continue
-        if '<link>' not in atomItem:
+        if '<link>' not in atom_item:
             continue
-        if '</link>' not in atomItem:
+        if '</link>' not in atom_item:
             continue
-        if '<updated>' not in atomItem:
+        if '<updated>' not in atom_item:
             continue
-        if '</updated>' not in atomItem:
+        if '</updated>' not in atom_item:
             continue
-        title = atomItem.split('<title>')[1]
+        title = atom_item.split('<title>')[1]
         title = _remove_cdata(title.split('</title>')[0])
         title = remove_html(title)
         description = ''
-        if '<summary>' in atomItem and '</summary>' in atomItem:
-            description = atomItem.split('<summary>')[1]
+        if '<summary>' in atom_item and '</summary>' in atom_item:
+            description = atom_item.split('<summary>')[1]
             description = remove_html(description.split('</summary>')[0])
         else:
-            if '<media:description>' in atomItem and \
-               '</media:description>' in atomItem:
-                description = atomItem.split('<media:description>')[1]
+            if '<media:description>' in atom_item and \
+               '</media:description>' in atom_item:
+                description = atom_item.split('<media:description>')[1]
                 description = description.split('</media:description>')[0]
                 description = remove_html(description)
-        link = atomItem.split('<link>')[1]
+        link = atom_item.split('<link>')[1]
         link = link.split('</link>')[0]
         if '://' not in link:
             continue
-        itemDomain = link.split('://')[1]
-        if '/' in itemDomain:
-            itemDomain = itemDomain.split('/')[0]
-        if is_blocked_domain(base_dir, itemDomain):
+        item_domain = link.split('://')[1]
+        if '/' in item_domain:
+            item_domain = item_domain.split('/')[0]
+        if is_blocked_domain(base_dir, item_domain):
             continue
-        pubDate = atomItem.split('<updated>')[1]
-        pubDate = pubDate.split('</updated>')[0]
+        pub_date = atom_item.split('<updated>')[1]
+        pub_date = pub_date.split('</updated>')[0]
 
-        pubDateStr = parse_feed_date(pubDate)
-        if pubDateStr:
-            if _valid_feed_date(pubDateStr):
+        pub_date_str = parse_feed_date(pub_date)
+        if pub_date_str:
+            if _valid_feed_date(pub_date_str):
                 post_filename = ''
-                votesStatus = []
+                votes_status = []
                 _add_newswire_dict_entry(base_dir, domain,
-                                         result, pubDateStr,
+                                         result, pub_date_str,
                                          title, link,
-                                         votesStatus, post_filename,
+                                         votes_status, post_filename,
                                          description, moderated,
                                          mirrored, [], 32, session, debug)
-                postCtr += 1
-                if postCtr >= maxPostsPerSource:
+                post_ctr += 1
+                if post_ctr >= max_posts_per_source:
                     break
-    if postCtr > 0:
-        print('Added ' + str(postCtr) +
+    if post_ctr > 0:
+        print('Added ' + str(post_ctr) +
               ' atom feed items to newswire')
     return result
 
 
-def _json_feed_v1to_dict(base_dir: str, domain: str, xmlStr: str,
+def _json_feed_v1to_dict(base_dir: str, domain: str, xml_str: str,
                          moderated: bool, mirrored: bool,
-                         maxPostsPerSource: int,
+                         max_posts_per_source: int,
                          max_feed_item_size_kb: int,
                          session, debug: bool) -> {}:
     """Converts a json feed string to a dictionary
     See https://jsonfeed.org/version/1.1
     """
-    if '"items"' not in xmlStr:
+    if '"items"' not in xml_str:
         return {}
     try:
-        feedJson = json.loads(xmlStr)
+        feed_json = json.loads(xml_str)
     except BaseException:
-        print('EX: _json_feed_v1to_dict unable to load json ' + str(xmlStr))
+        print('EX: _json_feed_v1to_dict unable to load json ' + str(xml_str))
         return {}
-    maxBytes = max_feed_item_size_kb * 1024
-    if not feedJson.get('version'):
+    max_bytes = max_feed_item_size_kb * 1024
+    if not feed_json.get('version'):
         return {}
-    if not feedJson['version'].startswith('https://jsonfeed.org/version/1'):
+    if not feed_json['version'].startswith('https://jsonfeed.org/version/1'):
         return {}
-    if not feedJson.get('items'):
+    if not feed_json.get('items'):
         return {}
-    if not isinstance(feedJson['items'], list):
+    if not isinstance(feed_json['items'], list):
         return {}
-    postCtr = 0
+    post_ctr = 0
     result = {}
-    for jsonFeedItem in feedJson['items']:
-        if not jsonFeedItem:
+    for json_feed_item in feed_json['items']:
+        if not json_feed_item:
             continue
-        if not isinstance(jsonFeedItem, dict):
+        if not isinstance(json_feed_item, dict):
             continue
-        if not jsonFeedItem.get('url'):
+        if not json_feed_item.get('url'):
             continue
-        if not isinstance(jsonFeedItem['url'], str):
+        if not isinstance(json_feed_item['url'], str):
             continue
-        if not jsonFeedItem.get('date_published'):
-            if not jsonFeedItem.get('date_modified'):
+        if not json_feed_item.get('date_published'):
+            if not json_feed_item.get('date_modified'):
                 continue
-        if not jsonFeedItem.get('content_text'):
-            if not jsonFeedItem.get('content_html'):
+        if not json_feed_item.get('content_text'):
+            if not json_feed_item.get('content_html'):
                 continue
-        if jsonFeedItem.get('content_html'):
-            if not isinstance(jsonFeedItem['content_html'], str):
+        if json_feed_item.get('content_html'):
+            if not isinstance(json_feed_item['content_html'], str):
                 continue
-            title = remove_html(jsonFeedItem['content_html'])
+            title = remove_html(json_feed_item['content_html'])
         else:
-            if not isinstance(jsonFeedItem['content_text'], str):
+            if not isinstance(json_feed_item['content_text'], str):
                 continue
-            title = remove_html(jsonFeedItem['content_text'])
-        if len(title) > maxBytes:
+            title = remove_html(json_feed_item['content_text'])
+        if len(title) > max_bytes:
             print('WARN: json feed title is too long')
             continue
         description = ''
-        if jsonFeedItem.get('description'):
-            if not isinstance(jsonFeedItem['description'], str):
+        if json_feed_item.get('description'):
+            if not isinstance(json_feed_item['description'], str):
                 continue
-            description = remove_html(jsonFeedItem['description'])
-            if len(description) > maxBytes:
+            description = remove_html(json_feed_item['description'])
+            if len(description) > max_bytes:
                 print('WARN: json feed description is too long')
                 continue
-            if jsonFeedItem.get('tags'):
-                if isinstance(jsonFeedItem['tags'], list):
-                    for tagName in jsonFeedItem['tags']:
-                        if not isinstance(tagName, str):
+            if json_feed_item.get('tags'):
+                if isinstance(json_feed_item['tags'], list):
+                    for tag_name in json_feed_item['tags']:
+                        if not isinstance(tag_name, str):
                             continue
-                        if ' ' in tagName:
+                        if ' ' in tag_name:
                             continue
-                        if not tagName.startswith('#'):
-                            tagName = '#' + tagName
-                        if tagName not in description:
-                            description += ' ' + tagName
+                        if not tag_name.startswith('#'):
+                            tag_name = '#' + tag_name
+                        if tag_name not in description:
+                            description += ' ' + tag_name
 
-        link = jsonFeedItem['url']
+        link = json_feed_item['url']
         if '://' not in link:
             continue
-        if len(link) > maxBytes:
+        if len(link) > max_bytes:
             print('WARN: json feed link is too long')
             continue
-        itemDomain = link.split('://')[1]
-        if '/' in itemDomain:
-            itemDomain = itemDomain.split('/')[0]
-        if is_blocked_domain(base_dir, itemDomain):
+        item_domain = link.split('://')[1]
+        if '/' in item_domain:
+            item_domain = item_domain.split('/')[0]
+        if is_blocked_domain(base_dir, item_domain):
             continue
-        if jsonFeedItem.get('date_published'):
-            if not isinstance(jsonFeedItem['date_published'], str):
+        if json_feed_item.get('date_published'):
+            if not isinstance(json_feed_item['date_published'], str):
                 continue
-            pubDate = jsonFeedItem['date_published']
+            pub_date = json_feed_item['date_published']
         else:
-            if not isinstance(jsonFeedItem['date_modified'], str):
+            if not isinstance(json_feed_item['date_modified'], str):
                 continue
-            pubDate = jsonFeedItem['date_modified']
+            pub_date = json_feed_item['date_modified']
 
-        pubDateStr = parse_feed_date(pubDate)
-        if pubDateStr:
-            if _valid_feed_date(pubDateStr):
+        pub_date_str = parse_feed_date(pub_date)
+        if pub_date_str:
+            if _valid_feed_date(pub_date_str):
                 post_filename = ''
-                votesStatus = []
+                votes_status = []
                 _add_newswire_dict_entry(base_dir, domain,
-                                         result, pubDateStr,
+                                         result, pub_date_str,
                                          title, link,
-                                         votesStatus, post_filename,
+                                         votes_status, post_filename,
                                          description, moderated,
                                          mirrored, [], 32, session, debug)
-                postCtr += 1
-                if postCtr >= maxPostsPerSource:
+                post_ctr += 1
+                if post_ctr >= max_posts_per_source:
                     break
-    if postCtr > 0:
-        print('Added ' + str(postCtr) +
+    if post_ctr > 0:
+        print('Added ' + str(post_ctr) +
               ' json feed items to newswire')
     return result
 
 
-def _atom_feed_yt_to_dict(base_dir: str, domain: str, xmlStr: str,
+def _atom_feed_yt_to_dict(base_dir: str, domain: str, xml_str: str,
                           moderated: bool, mirrored: bool,
-                          maxPostsPerSource: int,
+                          max_posts_per_source: int,
                           max_feed_item_size_kb: int,
                           session, debug: bool) -> {}:
     """Converts an atom-style YouTube feed string to a dictionary
     """
-    if '<entry>' not in xmlStr:
+    if '<entry>' not in xml_str:
         return {}
     if is_blocked_domain(base_dir, 'www.youtube.com'):
         return {}
     result = {}
-    atomItems = xmlStr.split('<entry>')
-    postCtr = 0
-    maxBytes = max_feed_item_size_kb * 1024
-    for atomItem in atomItems:
-        if not atomItem:
+    atom_items = xml_str.split('<entry>')
+    post_ctr = 0
+    max_bytes = max_feed_item_size_kb * 1024
+    for atom_item in atom_items:
+        if not atom_item:
             continue
-        if not atomItem.strip():
+        if not atom_item.strip():
             continue
-        if len(atomItem) > maxBytes:
+        if len(atom_item) > max_bytes:
             print('WARN: atom feed item is too big')
             continue
-        if '<title>' not in atomItem:
+        if '<title>' not in atom_item:
             continue
-        if '</title>' not in atomItem:
+        if '</title>' not in atom_item:
             continue
-        if '<published>' not in atomItem:
+        if '<published>' not in atom_item:
             continue
-        if '</published>' not in atomItem:
+        if '</published>' not in atom_item:
             continue
-        if '<yt:videoId>' not in atomItem:
+        if '<yt:videoId>' not in atom_item:
             continue
-        if '</yt:videoId>' not in atomItem:
+        if '</yt:videoId>' not in atom_item:
             continue
-        title = atomItem.split('<title>')[1]
+        title = atom_item.split('<title>')[1]
         title = _remove_cdata(title.split('</title>')[0])
         description = ''
-        if '<media:description>' in atomItem and \
-           '</media:description>' in atomItem:
-            description = atomItem.split('<media:description>')[1]
+        if '<media:description>' in atom_item and \
+           '</media:description>' in atom_item:
+            description = atom_item.split('<media:description>')[1]
             description = description.split('</media:description>')[0]
             description = remove_html(description)
-        elif '<summary>' in atomItem and '</summary>' in atomItem:
-            description = atomItem.split('<summary>')[1]
+        elif '<summary>' in atom_item and '</summary>' in atom_item:
+            description = atom_item.split('<summary>')[1]
             description = description.split('</summary>')[0]
             description = remove_html(description)
-        link = atomItem.split('<yt:videoId>')[1]
+        link = atom_item.split('<yt:videoId>')[1]
         link = link.split('</yt:videoId>')[0]
         link = 'https://www.youtube.com/watch?v=' + link.strip()
-        pubDate = atomItem.split('<published>')[1]
-        pubDate = pubDate.split('</published>')[0]
+        pub_date = atom_item.split('<published>')[1]
+        pub_date = pub_date.split('</published>')[0]
 
-        pubDateStr = parse_feed_date(pubDate)
-        if pubDateStr:
-            if _valid_feed_date(pubDateStr):
+        pub_date_str = parse_feed_date(pub_date)
+        if pub_date_str:
+            if _valid_feed_date(pub_date_str):
                 post_filename = ''
-                votesStatus = []
+                votes_status = []
                 _add_newswire_dict_entry(base_dir, domain,
-                                         result, pubDateStr,
+                                         result, pub_date_str,
                                          title, link,
-                                         votesStatus, post_filename,
+                                         votes_status, post_filename,
                                          description, moderated, mirrored,
                                          [], 32, session, debug)
-                postCtr += 1
-                if postCtr >= maxPostsPerSource:
+                post_ctr += 1
+                if post_ctr >= max_posts_per_source:
                     break
-    if postCtr > 0:
-        print('Added ' + str(postCtr) + ' YouTube feed items to newswire')
+    if post_ctr > 0:
+        print('Added ' + str(post_ctr) + ' YouTube feed items to newswire')
     return result
 
 
-def _xml_str_to_dict(base_dir: str, domain: str, xmlStr: str,
+def _xml_str_to_dict(base_dir: str, domain: str, xml_str: str,
                      moderated: bool, mirrored: bool,
-                     maxPostsPerSource: int,
+                     max_posts_per_source: int,
                      max_feed_item_size_kb: int,
-                     maxCategoriesFeedItemSizeKb: int,
+                     max_categories_feedItem_size_kb: int,
                      session, debug: bool) -> {}:
     """Converts an xml string to a dictionary
     """
-    if '<yt:videoId>' in xmlStr and '<yt:channelId>' in xmlStr:
+    if '<yt:videoId>' in xml_str and '<yt:channelId>' in xml_str:
         print('YouTube feed: reading')
         return _atom_feed_yt_to_dict(base_dir, domain,
-                                     xmlStr, moderated, mirrored,
-                                     maxPostsPerSource, max_feed_item_size_kb,
+                                     xml_str, moderated, mirrored,
+                                     max_posts_per_source,
+                                     max_feed_item_size_kb,
                                      session, debug)
-    elif 'rss version="2.0"' in xmlStr:
+    elif 'rss version="2.0"' in xml_str:
         return _xml2str_to_dict(base_dir, domain,
-                                xmlStr, moderated, mirrored,
-                                maxPostsPerSource, max_feed_item_size_kb,
-                                maxCategoriesFeedItemSizeKb,
+                                xml_str, moderated, mirrored,
+                                max_posts_per_source, max_feed_item_size_kb,
+                                max_categories_feedItem_size_kb,
                                 session, debug)
-    elif '<?xml version="1.0"' in xmlStr:
+    elif '<?xml version="1.0"' in xml_str:
         return _xml1str_to_dict(base_dir, domain,
-                                xmlStr, moderated, mirrored,
-                                maxPostsPerSource, max_feed_item_size_kb,
-                                maxCategoriesFeedItemSizeKb,
+                                xml_str, moderated, mirrored,
+                                max_posts_per_source, max_feed_item_size_kb,
+                                max_categories_feedItem_size_kb,
                                 session, debug)
-    elif 'xmlns="http://www.w3.org/2005/Atom"' in xmlStr:
+    elif 'xmlns="http://www.w3.org/2005/Atom"' in xml_str:
         return _atom_feed_to_dict(base_dir, domain,
-                                  xmlStr, moderated, mirrored,
-                                  maxPostsPerSource, max_feed_item_size_kb,
+                                  xml_str, moderated, mirrored,
+                                  max_posts_per_source, max_feed_item_size_kb,
                                   session, debug)
-    elif 'https://jsonfeed.org/version/1' in xmlStr:
+    elif 'https://jsonfeed.org/version/1' in xml_str:
         return _json_feed_v1to_dict(base_dir, domain,
-                                    xmlStr, moderated, mirrored,
-                                    maxPostsPerSource, max_feed_item_size_kb,
+                                    xml_str, moderated, mirrored,
+                                    max_posts_per_source,
+                                    max_feed_item_size_kb,
                                     session, debug)
     return {}
 
 
-def _y_tchannel_to_atom_feed(url: str) -> str:
+def _yt_channel_to_atom_feed(url: str) -> str:
     """Converts a YouTube channel url into an atom feed url
     """
     if 'youtube.com/channel/' not in url:
         return url
-    channelId = url.split('youtube.com/channel/')[1].strip()
-    channelUrl = \
-        'https://www.youtube.com/feeds/videos.xml?channel_id=' + channelId
-    print('YouTube feed: ' + channelUrl)
-    return channelUrl
+    channel_id = url.split('youtube.com/channel/')[1].strip()
+    channel_url = \
+        'https://www.youtube.com/feeds/videos.xml?channel_id=' + channel_id
+    print('YouTube feed: ' + channel_url)
+    return channel_url
 
 
 def get_rss(base_dir: str, domain: str, session, url: str,
             moderated: bool, mirrored: bool,
-            maxPostsPerSource: int, maxFeedSizeKb: int,
+            max_posts_per_source: int, max_feed_size_kb: int,
             max_feed_item_size_kb: int,
-            maxCategoriesFeedItemSizeKb: int, debug: bool) -> {}:
+            max_categories_feedItem_size_kb: int, debug: bool) -> {}:
     """Returns an RSS url as a dict
     """
     if not isinstance(url, str):
@@ -876,27 +877,28 @@ def get_rss(base_dir: str, domain: str, session, url: str,
         'Accept': 'text/xml, application/xml; charset=UTF-8'
     }
     params = None
-    sessionParams = {}
-    sessionHeaders = {}
+    session_params = {}
+    session_headers = {}
     if headers:
-        sessionHeaders = headers
+        session_headers = headers
     if params:
-        sessionParams = params
-    sessionHeaders['User-Agent'] = \
+        session_params = params
+    session_headers['User-Agent'] = \
         'Mozilla/5.0 (X11; Linux x86_64; rv:81.0) Gecko/20100101 Firefox/81.0'
     if not session:
         print('WARN: no session specified for get_rss')
-    url = _y_tchannel_to_atom_feed(url)
+    url = _yt_channel_to_atom_feed(url)
     try:
-        result = session.get(url, headers=sessionHeaders, params=sessionParams)
+        result = \
+            session.get(url, headers=session_headers, params=session_params)
         if result:
-            if int(len(result.text) / 1024) < maxFeedSizeKb and \
+            if int(len(result.text) / 1024) < max_feed_size_kb and \
                not contains_invalid_chars(result.text):
                 return _xml_str_to_dict(base_dir, domain, result.text,
                                         moderated, mirrored,
-                                        maxPostsPerSource,
+                                        max_posts_per_source,
                                         max_feed_item_size_kb,
-                                        maxCategoriesFeedItemSizeKb,
+                                        max_categories_feedItem_size_kb,
                                         session, debug)
             else:
                 print('WARN: feed is too large, ' +
@@ -905,12 +907,12 @@ def get_rss(base_dir: str, domain: str, session, url: str,
             print('WARN: no result returned for feed ' + url)
     except requests.exceptions.RequestException as ex:
         print('WARN: get_rss failed\nurl: ' + str(url) + ', ' +
-              'headers: ' + str(sessionHeaders) + ', ' +
-              'params: ' + str(sessionParams) + ', ' + str(ex))
+              'headers: ' + str(session_headers) + ', ' +
+              'params: ' + str(session_params) + ', ' + str(ex))
     except ValueError as ex:
         print('WARN: get_rss failed\nurl: ' + str(url) + ', ' +
-              'headers: ' + str(sessionHeaders) + ', ' +
-              'params: ' + str(sessionParams) + ', ' + str(ex))
+              'headers: ' + str(session_headers) + ', ' +
+              'params: ' + str(session_params) + ', ' + str(ex))
     except SocketError as ex:
         if ex.errno == errno.ECONNRESET:
             print('WARN: connection was reset during get_rss ' + str(ex))
@@ -925,9 +927,9 @@ def get_rs_sfrom_dict(base_dir: str, newswire: {},
     """Returns an rss feed from the current newswire dict.
     This allows other instances to subscribe to the same newswire
     """
-    rssStr = rss2header(http_prefix,
-                        None, domain_full,
-                        'Newswire', translate)
+    rss_str = rss2header(http_prefix,
+                         None, domain_full,
+                         'Newswire', translate)
     if not newswire:
         return ''
     for published, fields in newswire.items():
@@ -935,31 +937,31 @@ def get_rs_sfrom_dict(base_dir: str, newswire: {},
             published = published.replace('+00:00', 'Z').strip()
             published = published.replace(' ', 'T')
         else:
-            publishedWithOffset = \
+            published_with_offset = \
                 datetime.strptime(published, "%Y-%m-%d %H:%M:%S%z")
-            published = publishedWithOffset.strftime("%Y-%m-%dT%H:%M:%SZ")
+            published = published_with_offset.strftime("%Y-%m-%dT%H:%M:%SZ")
         try:
-            pubDate = datetime.strptime(published, "%Y-%m-%dT%H:%M:%SZ")
+            pub_date = datetime.strptime(published, "%Y-%m-%dT%H:%M:%SZ")
         except Exception as ex:
             print('WARN: Unable to convert date ' + published + ' ' + str(ex))
             continue
-        rssStr += \
+        rss_str += \
             '<item>\n' + \
             '  <title>' + fields[0] + '</title>\n'
         description = remove_html(first_paragraph_from_string(fields[4]))
-        rssStr += '  <description>' + description + '</description>\n'
+        rss_str += '  <description>' + description + '</description>\n'
         url = fields[1]
         if '://' not in url:
             if domain_full not in url:
                 url = http_prefix + '://' + domain_full + url
-        rssStr += '  <link>' + url + '</link>\n'
+        rss_str += '  <link>' + url + '</link>\n'
 
-        rssDateStr = pubDate.strftime("%a, %d %b %Y %H:%M:%S UT")
-        rssStr += \
-            '  <pubDate>' + rssDateStr + '</pubDate>\n' + \
+        rss_date_str = pub_date.strftime("%a, %d %b %Y %H:%M:%S UT")
+        rss_str += \
+            '  <pubDate>' + rss_date_str + '</pubDate>\n' + \
             '</item>\n'
-    rssStr += rss2footer()
-    return rssStr
+    rss_str += rss2footer()
+    return rss_str
 
 
 def _is_newswire_blog_post(post_json_object: {}) -> bool:
@@ -990,44 +992,44 @@ def _get_hashtags_from_post(post_json_object: {}) -> []:
     if not isinstance(post_json_object['object']['tag'], list):
         return []
     tags = []
-    for tg in post_json_object['object']['tag']:
-        if not isinstance(tg, dict):
+    for tgname in post_json_object['object']['tag']:
+        if not isinstance(tgname, dict):
             continue
-        if not tg.get('name'):
+        if not tgname.get('name'):
             continue
-        if not tg.get('type'):
+        if not tgname.get('type'):
             continue
-        if tg['type'] != 'Hashtag':
+        if tgname['type'] != 'Hashtag':
             continue
-        if tg['name'] not in tags:
-            tags.append(tg['name'])
+        if tgname['name'] not in tags:
+            tags.append(tgname['name'])
     return tags
 
 
 def _add_account_blogs_to_newswire(base_dir: str, nickname: str, domain: str,
                                    newswire: {},
-                                   maxBlogsPerAccount: int,
-                                   indexFilename: str,
-                                   maxTags: int, system_language: str,
+                                   max_blogs_per_account: int,
+                                   index_filename: str,
+                                   max_tags: int, system_language: str,
                                    session, debug: bool) -> None:
     """Adds blogs for the given account to the newswire
     """
-    if not os.path.isfile(indexFilename):
+    if not os.path.isfile(index_filename):
         return
     # local blog entries are unmoderated by default
     moderated = False
 
     # local blogs can potentially be moderated
-    moderatedFilename = \
+    moderated_filename = \
         acct_dir(base_dir, nickname, domain) + '/.newswiremoderated'
-    if os.path.isfile(moderatedFilename):
+    if os.path.isfile(moderated_filename):
         moderated = True
 
-    with open(indexFilename, 'r') as indexFile:
+    with open(index_filename, 'r') as index_file:
         post_filename = 'start'
         ctr = 0
         while post_filename:
-            post_filename = indexFile.readline()
+            post_filename = index_file.readline()
             if post_filename:
                 # if this is a full path then remove the directories
                 if '/' in post_filename:
@@ -1036,62 +1038,62 @@ def _add_account_blogs_to_newswire(base_dir: str, nickname: str, domain: str,
                 # filename of the post without any extension or path
                 # This should also correspond to any index entry in
                 # the posts cache
-                postUrl = \
+                post_url = \
                     post_filename.replace('\n', '').replace('\r', '')
-                postUrl = postUrl.replace('.json', '').strip()
+                post_url = post_url.replace('.json', '').strip()
 
                 # read the post from file
-                fullPostFilename = \
+                full_post_filename = \
                     locate_post(base_dir, nickname,
-                                domain, postUrl, False)
-                if not fullPostFilename:
-                    print('Unable to locate post for newswire ' + postUrl)
+                                domain, post_url, False)
+                if not full_post_filename:
+                    print('Unable to locate post for newswire ' + post_url)
                     ctr += 1
-                    if ctr >= maxBlogsPerAccount:
+                    if ctr >= max_blogs_per_account:
                         break
                     continue
 
                 post_json_object = None
-                if fullPostFilename:
-                    post_json_object = load_json(fullPostFilename)
+                if full_post_filename:
+                    post_json_object = load_json(full_post_filename)
                 if _is_newswire_blog_post(post_json_object):
                     published = post_json_object['object']['published']
                     published = published.replace('T', ' ')
                     published = published.replace('Z', '+00:00')
                     votes = []
-                    if os.path.isfile(fullPostFilename + '.votes'):
-                        votes = load_json(fullPostFilename + '.votes')
+                    if os.path.isfile(full_post_filename + '.votes'):
+                        votes = load_json(full_post_filename + '.votes')
                     content = \
                         get_base_content_from_post(post_json_object,
                                                    system_language)
                     description = first_paragraph_from_string(content)
                     description = remove_html(description)
-                    tagsFromPost = _get_hashtags_from_post(post_json_object)
+                    tags_from_post = _get_hashtags_from_post(post_json_object)
                     summary = post_json_object['object']['summary']
                     _add_newswire_dict_entry(base_dir, domain,
                                              newswire, published,
                                              summary,
                                              post_json_object['object']['url'],
-                                             votes, fullPostFilename,
+                                             votes, full_post_filename,
                                              description, moderated, False,
-                                             tagsFromPost,
-                                             maxTags, session, debug)
+                                             tags_from_post,
+                                             max_tags, session, debug)
 
             ctr += 1
-            if ctr >= maxBlogsPerAccount:
+            if ctr >= max_blogs_per_account:
                 break
 
 
 def _add_blogs_to_newswire(base_dir: str, domain: str, newswire: {},
-                           maxBlogsPerAccount: int,
-                           maxTags: int, system_language: str,
+                           max_blogs_per_account: int,
+                           max_tags: int, system_language: str,
                            session, debug: bool) -> None:
     """Adds blogs from each user account into the newswire
     """
-    moderationDict = {}
+    moderation_dict = {}
 
     # go through each account
-    for subdir, dirs, files in os.walk(base_dir + '/accounts'):
+    for _, dirs, _ in os.walk(base_dir + '/accounts'):
         for handle in dirs:
             if not is_account_dir(handle):
                 continue
@@ -1107,54 +1109,55 @@ def _add_blogs_to_newswire(base_dir: str, domain: str, newswire: {},
                 continue
 
             # is there a blogs timeline for this account?
-            accountDir = os.path.join(base_dir + '/accounts', handle)
-            blogsIndex = accountDir + '/tlblogs.index'
-            if os.path.isfile(blogsIndex):
+            account_dir = os.path.join(base_dir + '/accounts', handle)
+            blogs_index = account_dir + '/tlblogs.index'
+            if os.path.isfile(blogs_index):
                 domain = handle.split('@')[1]
                 _add_account_blogs_to_newswire(base_dir, nickname, domain,
-                                               newswire, maxBlogsPerAccount,
-                                               blogsIndex, maxTags,
+                                               newswire, max_blogs_per_account,
+                                               blogs_index, max_tags,
                                                system_language, session,
                                                debug)
         break
 
     # sort the moderation dict into chronological order, latest first
-    sortedModerationDict = \
-        OrderedDict(sorted(moderationDict.items(), reverse=True))
+    sorted_moderation_dict = \
+        OrderedDict(sorted(moderation_dict.items(), reverse=True))
     # save the moderation queue details for later display
-    newswireModerationFilename = base_dir + '/accounts/newswiremoderation.txt'
-    if sortedModerationDict:
-        save_json(sortedModerationDict, newswireModerationFilename)
+    newswire_moderation_filename = \
+        base_dir + '/accounts/newswiremoderation.txt'
+    if sorted_moderation_dict:
+        save_json(sorted_moderation_dict, newswire_moderation_filename)
     else:
         # remove the file if there is nothing to moderate
-        if os.path.isfile(newswireModerationFilename):
+        if os.path.isfile(newswire_moderation_filename):
             try:
-                os.remove(newswireModerationFilename)
+                os.remove(newswire_moderation_filename)
             except OSError:
                 print('EX: _add_blogs_to_newswire unable to delete ' +
-                      str(newswireModerationFilename))
+                      str(newswire_moderation_filename))
 
 
 def get_dict_from_newswire(session, base_dir: str, domain: str,
-                           maxPostsPerSource: int, maxFeedSizeKb: int,
-                           maxTags: int, max_feed_item_size_kb: int,
+                           max_posts_per_source: int, max_feed_size_kb: int,
+                           max_tags: int, max_feed_item_size_kb: int,
                            max_newswire_posts: int,
-                           maxCategoriesFeedItemSizeKb: int,
+                           max_categories_feedItem_size_kb: int,
                            system_language: str, debug: bool) -> {}:
     """Gets rss feeds as a dictionary from newswire file
     """
-    subscriptionsFilename = base_dir + '/accounts/newswire.txt'
-    if not os.path.isfile(subscriptionsFilename):
+    subscriptions_filename = base_dir + '/accounts/newswire.txt'
+    if not os.path.isfile(subscriptions_filename):
         return {}
 
-    maxPostsPerSource = 5
+    max_posts_per_source = 5
 
     # add rss feeds
-    rssFeed = []
-    with open(subscriptionsFilename, 'r') as fp:
-        rssFeed = fp.readlines()
+    rss_feed = []
+    with open(subscriptions_filename, 'r') as fp_sub:
+        rss_feed = fp_sub.readlines()
     result = {}
-    for url in rssFeed:
+    for url in rss_feed:
         url = url.strip()
 
         # Does this contain a url?
@@ -1177,33 +1180,33 @@ def get_dict_from_newswire(session, base_dir: str, domain: str,
             mirrored = True
             url = url.replace('!', '').strip()
 
-        itemsList = get_rss(base_dir, domain, session, url,
-                            moderated, mirrored,
-                            maxPostsPerSource, maxFeedSizeKb,
-                            max_feed_item_size_kb,
-                            maxCategoriesFeedItemSizeKb, debug)
-        if itemsList:
-            for dateStr, item in itemsList.items():
-                result[dateStr] = item
+        items_list = get_rss(base_dir, domain, session, url,
+                             moderated, mirrored,
+                             max_posts_per_source, max_feed_size_kb,
+                             max_feed_item_size_kb,
+                             max_categories_feedItem_size_kb, debug)
+        if items_list:
+            for date_str, item in items_list.items():
+                result[date_str] = item
 
     # add blogs from each user account
     _add_blogs_to_newswire(base_dir, domain, result,
-                           maxPostsPerSource, maxTags, system_language,
+                           max_posts_per_source, max_tags, system_language,
                            session, debug)
 
     # sort into chronological order, latest first
-    sortedResult = OrderedDict(sorted(result.items(), reverse=True))
+    sorted_result = OrderedDict(sorted(result.items(), reverse=True))
 
     # are there too many posts? If so then remove the oldest ones
-    noOfPosts = len(sortedResult.items())
-    if noOfPosts > max_newswire_posts:
+    no_of_posts = len(sorted_result.items())
+    if no_of_posts > max_newswire_posts:
         ctr = 0
         removals = []
-        for dateStr, item in sortedResult.items():
+        for date_str, item in sorted_result.items():
             ctr += 1
             if ctr > max_newswire_posts:
-                removals.append(dateStr)
-        for r in removals:
-            sortedResult.pop(r)
+                removals.append(date_str)
+        for remov in removals:
+            sorted_result.pop(remov)
 
-    return sortedResult
+    return sorted_result
