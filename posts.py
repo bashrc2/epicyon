@@ -291,7 +291,7 @@ def parse_user_feed(signing_priv_key_pem: str,
             user_feed = next_url
             if user_feed.get('orderedItems'):
                 return user_feed['orderedItems']
-            elif user_feed.get('items'):
+            if user_feed.get('items'):
                 return user_feed['items']
     return None
 
@@ -393,9 +393,9 @@ def get_person_box(signing_priv_key_pem: str, origin_domain: str,
     if not box_json:
         return None, None, None, None, None, None, None, None
 
-    personId = None
+    person_id = None
     if person_json.get('id'):
-        personId = person_json['id']
+        person_id = person_json['id']
     pub_key_id = None
     pub_key = None
     if person_json.get('publicKey'):
@@ -430,7 +430,7 @@ def get_person_box(signing_priv_key_pem: str, origin_domain: str,
     store_person_in_cache(base_dir, person_url, person_json,
                           person_cache, True)
 
-    return box_json, pub_key_id, pub_key, personId, shared_inbox, \
+    return box_json, pub_key_id, pub_key, person_id, shared_inbox, \
         avatar_url, display_name, is_group
 
 
@@ -2153,8 +2153,8 @@ def create_report_post(base_dir: str,
     moderators_list = []
     moderators_file = base_dir + '/accounts/moderators.txt'
     if os.path.isfile(moderators_file):
-        with open(moderators_file, 'r') as fileHandler:
-            for line in fileHandler:
+        with open(moderators_file, 'r') as fp_mod:
+            for line in fp_mod:
                 line = line.strip('\n').strip('\r')
                 if line.startswith('#'):
                     continue
@@ -2742,7 +2742,7 @@ def send_signed_json(post_json_object: {}, session, base_dir: str,
         return 4
     if not to_person_id:
         if debug:
-            print('DEBUG: missing personId')
+            print('DEBUG: missing person_id')
         return 5
     # shared_inbox is optional
 
