@@ -16,9 +16,9 @@ def get_xmpp_address(actor_json: {}) -> str:
     for property_value in actor_json['attachment']:
         if not property_value.get('name'):
             continue
-        nameLower = property_value['name'].lower()
-        if not (nameLower.startswith('xmpp') or
-                nameLower.startswith('jabber')):
+        name_lower = property_value['name'].lower()
+        if not (name_lower.startswith('xmpp') or
+                name_lower.startswith('jabber')):
             continue
         if not property_value.get('type'):
             continue
@@ -37,15 +37,15 @@ def get_xmpp_address(actor_json: {}) -> str:
 def set_xmpp_address(actor_json: {}, xmpp_address: str) -> None:
     """Sets an xmpp address for the given actor
     """
-    notXmppAddress = False
+    not_xmpp_address = False
     if '@' not in xmpp_address:
-        notXmppAddress = True
+        not_xmpp_address = True
     if '.' not in xmpp_address:
-        notXmppAddress = True
+        not_xmpp_address = True
     if '"' in xmpp_address:
-        notXmppAddress = True
+        not_xmpp_address = True
     if '<' in xmpp_address:
-        notXmppAddress = True
+        not_xmpp_address = True
 
     if not actor_json.get('attachment'):
         actor_json['attachment'] = []
@@ -64,7 +64,7 @@ def set_xmpp_address(actor_json: {}, xmpp_address: str) -> None:
         break
     if property_found:
         actor_json['attachment'].remove(property_found)
-    if notXmppAddress:
+    if not_xmpp_address:
         return
 
     for property_value in actor_json['attachment']:
@@ -72,18 +72,18 @@ def set_xmpp_address(actor_json: {}, xmpp_address: str) -> None:
             continue
         if not property_value.get('type'):
             continue
-        nameLower = property_value['name'].lower()
-        if not (nameLower.startswith('xmpp') or
-                nameLower.startswith('jabber')):
+        name_lower = property_value['name'].lower()
+        if not (name_lower.startswith('xmpp') or
+                name_lower.startswith('jabber')):
             continue
         if property_value['type'] != 'PropertyValue':
             continue
         property_value['value'] = xmpp_address
         return
 
-    newXmppAddress = {
+    new_xmpp_address = {
         "name": "XMPP",
         "type": "PropertyValue",
         "value": xmpp_address
     }
-    actor_json['attachment'].append(newXmppAddress)
+    actor_json['attachment'].append(new_xmpp_address)
