@@ -30,16 +30,17 @@ def _move_following_handles_for_account(base_dir: str,
     """Goes through all follows for an account and updates any that have moved
     """
     ctr = 0
-    followingFilename = acct_dir(base_dir, nickname, domain) + '/following.txt'
-    if not os.path.isfile(followingFilename):
+    following_filename = \
+        acct_dir(base_dir, nickname, domain) + '/following.txt'
+    if not os.path.isfile(following_filename):
         return ctr
-    with open(followingFilename, 'r') as f:
-        followingHandles = f.readlines()
-        for followHandle in followingHandles:
-            followHandle = followHandle.strip("\n").strip("\r")
+    with open(following_filename, 'r') as fp_foll:
+        following_handles = fp_foll.readlines()
+        for follow_handle in following_handles:
+            follow_handle = follow_handle.strip("\n").strip("\r")
             ctr += \
                 _update_moved_handle(base_dir, nickname, domain,
-                                     followHandle, session,
+                                     follow_handle, session,
                                      http_prefix, cached_webfingers,
                                      debug, signing_priv_key_pem)
     return ctr
@@ -73,101 +74,102 @@ def _update_moved_handle(base_dir: str, nickname: str, domain: str,
               ' did not return a dict. ' + str(wf_request))
         return ctr
 
-    personUrl = None
+    person_url = None
     if wf_request.get('errors'):
         print('wf_request error: ' + str(wf_request['errors']))
         return ctr
 
-    if not personUrl:
-        personUrl = get_user_url(wf_request, 0, debug)
-        if not personUrl:
+    if not person_url:
+        person_url = get_user_url(wf_request, 0, debug)
+        if not person_url:
             return ctr
 
     gnunet = False
     if http_prefix == 'gnunet':
         gnunet = True
-    personJson = \
-        get_actor_json(domain, personUrl, http_prefix, gnunet, debug, False,
+    person_json = \
+        get_actor_json(domain, person_url, http_prefix, gnunet, debug, False,
                        signing_priv_key_pem, None)
-    if not personJson:
+    if not person_json:
         return ctr
-    if not personJson.get('movedTo'):
+    if not person_json.get('movedTo'):
         return ctr
-    movedToUrl = personJson['movedTo']
-    if '://' not in movedToUrl:
+    moved_to_url = person_json['movedTo']
+    if '://' not in moved_to_url:
         return ctr
-    if '.' not in movedToUrl:
+    if '.' not in moved_to_url:
         return ctr
-    movedToNickname = get_nickname_from_actor(movedToUrl)
-    if not movedToNickname:
+    moved_to_nickname = get_nickname_from_actor(moved_to_url)
+    if not moved_to_nickname:
         return ctr
-    movedToDomain, movedToPort = get_domain_from_actor(movedToUrl)
-    if not movedToDomain:
+    moved_to_domain, moved_to_port = get_domain_from_actor(moved_to_url)
+    if not moved_to_domain:
         return ctr
-    movedToDomainFull = movedToDomain
-    if movedToPort:
-        if movedToPort != 80 and movedToPort != 443:
-            movedToDomainFull = movedToDomain + ':' + str(movedToPort)
-    group_account = has_group_type(base_dir, movedToUrl, None)
+    moved_to_domain_full = moved_to_domain
+    if moved_to_port:
+        if moved_to_port not in (80, 443):
+            moved_to_domain_full = moved_to_domain + ':' + str(moved_to_port)
+    group_account = has_group_type(base_dir, moved_to_url, None)
     if is_blocked(base_dir, nickname, domain,
-                  movedToNickname, movedToDomain):
+                  moved_to_nickname, moved_to_domain):
         # someone that you follow has moved to a blocked domain
         # so just unfollow them
         unfollow_account(base_dir, nickname, domain,
-                         movedToNickname, movedToDomainFull,
+                         moved_to_nickname, moved_to_domain_full,
                          debug, group_account, 'following.txt')
         return ctr
 
-    followingFilename = acct_dir(base_dir, nickname, domain) + '/following.txt'
-    if os.path.isfile(followingFilename):
-        with open(followingFilename, 'r') as f:
-            followingHandles = f.readlines()
+    following_filename = \
+        acct_dir(base_dir, nickname, domain) + '/following.txt'
+    if os.path.isfile(following_filename):
+        with open(following_filename, 'r') as foll1:
+            following_handles = foll1.readlines()
 
-            movedToHandle = movedToNickname + '@' + movedToDomainFull
-            handleLower = handle.lower()
+            moved_to_handle = moved_to_nickname + '@' + moved_to_domain_full
+            handle_lower = handle.lower()
 
-            refollowFilename = \
+            refollow_filename = \
                 acct_dir(base_dir, nickname, domain) + '/refollow.txt'
 
             # unfollow the old handle
-            with open(followingFilename, 'w+') as f:
-                for followHandle in followingHandles:
-                    if followHandle.strip("\n").strip("\r").lower() != \
-                       handleLower:
-                        f.write(followHandle)
+            with open(following_filename, 'w+') as foll2:
+                for follow_handle in following_handles:
+                    if follow_handle.strip("\n").strip("\r").lower() != \
+                       handle_lower:
+                        foll2.write(follow_handle)
                     else:
-                        handleNickname = handle.split('@')[0]
-                        handleDomain = handle.split('@')[1]
+                        handle_nickname = handle.split('@')[0]
+                        handle_domain = handle.split('@')[1]
                         unfollow_account(base_dir, nickname, domain,
-                                         handleNickname,
-                                         handleDomain,
+                                         handle_nickname,
+                                         handle_domain,
                                          debug, group_account, 'following.txt')
                         ctr += 1
                         print('Unfollowed ' + handle + ' who has moved to ' +
-                              movedToHandle)
+                              moved_to_handle)
 
                         # save the new handles to the refollow list
-                        if os.path.isfile(refollowFilename):
-                            with open(refollowFilename, 'a+') as f:
-                                f.write(movedToHandle + '\n')
+                        if os.path.isfile(refollow_filename):
+                            with open(refollow_filename, 'a+') as refoll:
+                                refoll.write(moved_to_handle + '\n')
                         else:
-                            with open(refollowFilename, 'w+') as f:
-                                f.write(movedToHandle + '\n')
+                            with open(refollow_filename, 'w+') as refoll:
+                                refoll.write(moved_to_handle + '\n')
 
-    followersFilename = \
+    followers_filename = \
         acct_dir(base_dir, nickname, domain) + '/followers.txt'
-    if os.path.isfile(followersFilename):
-        with open(followersFilename, 'r') as f:
-            followerHandles = f.readlines()
+    if os.path.isfile(followers_filename):
+        with open(followers_filename, 'r') as foll3:
+            follower_handles = foll3.readlines()
 
-            handleLower = handle.lower()
+            handle_lower = handle.lower()
 
             # remove followers who have moved
-            with open(followersFilename, 'w+') as f:
-                for followerHandle in followerHandles:
-                    if followerHandle.strip("\n").strip("\r").lower() != \
-                       handleLower:
-                        f.write(followerHandle)
+            with open(followers_filename, 'w+') as foll4:
+                for follower_handle in follower_handles:
+                    if follower_handle.strip("\n").strip("\r").lower() != \
+                       handle_lower:
+                        foll4.write(follower_handle)
                     else:
                         ctr += 1
                         print('Removed follower who has moved ' + handle)
@@ -184,7 +186,7 @@ def migrate_accounts(base_dir: str, session,
     """
     # update followers and following lists for each account
     ctr = 0
-    for subdir, dirs, files in os.walk(base_dir + '/accounts'):
+    for _, dirs, _ in os.walk(base_dir + '/accounts'):
         for handle in dirs:
             if not is_account_dir(handle):
                 continue
