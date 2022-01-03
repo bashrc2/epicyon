@@ -24,22 +24,22 @@ def instances_graph(base_dir: str, handles: str,
     The handles argument should contain a comma separated list
     of handles on different instances
     """
-    dotGraphStr = 'digraph instances {\n'
+    dot_graph_str = 'digraph instances {\n'
     if ',' not in handles:
-        return dotGraphStr + '}\n'
+        return dot_graph_str + '}\n'
     session = create_session(proxy_type)
     if not session:
-        return dotGraphStr + '}\n'
+        return dot_graph_str + '}\n'
 
     person_cache = {}
     cached_webfingers = {}
     federation_list = []
     max_mentions = 99
     max_emoji = 99
-    maxAttachments = 5
+    max_attachments = 5
 
-    personHandles = handles.split(',')
-    for handle in personHandles:
+    person_handles = handles.split(',')
+    for handle in person_handles:
         handle = handle.strip()
         if handle.startswith('@'):
             handle = handle[1:]
@@ -57,32 +57,32 @@ def instances_graph(base_dir: str, handles: str,
                              domain, project_version, debug, False,
                              signing_priv_key_pem)
         if not wf_request:
-            return dotGraphStr + '}\n'
+            return dot_graph_str + '}\n'
         if not isinstance(wf_request, dict):
             print('Webfinger for ' + handle + ' did not return a dict. ' +
                   str(wf_request))
-            return dotGraphStr + '}\n'
+            return dot_graph_str + '}\n'
 
-        originDomain = None
-        (personUrl, pubKeyId, pubKey, personId, shaedInbox, avatarUrl,
-         displayName, _) = get_person_box(signing_priv_key_pem,
-                                          originDomain,
-                                          base_dir, session, wf_request,
-                                          person_cache,
-                                          project_version, http_prefix,
-                                          nickname, domain, 'outbox',
-                                          27261)
-        wordFrequency = {}
-        postDomains = \
-            get_post_domains(session, personUrl, 64, max_mentions, max_emoji,
-                             maxAttachments, federation_list,
+        origin_domain = None
+        (person_url, _, _, _, _, _,
+         _, _) = get_person_box(signing_priv_key_pem,
+                                origin_domain,
+                                base_dir, session, wf_request,
+                                person_cache,
+                                project_version, http_prefix,
+                                nickname, domain, 'outbox',
+                                27261)
+        word_frequency = {}
+        post_domains = \
+            get_post_domains(session, person_url, 64, max_mentions, max_emoji,
+                             max_attachments, federation_list,
                              person_cache, debug,
                              project_version, http_prefix, domain,
-                             wordFrequency, [], system_language,
+                             word_frequency, [], system_language,
                              signing_priv_key_pem)
-        postDomains.sort()
-        for fedDomain in postDomains:
-            dotLineStr = '    "' + domain + '" -> "' + fedDomain + '";\n'
-            if dotLineStr not in dotGraphStr:
-                dotGraphStr += dotLineStr
-    return dotGraphStr + '}\n'
+        post_domains.sort()
+        for fed_domain in post_domains:
+            dot_line_str = '    "' + domain + '" -> "' + fed_domain + '";\n'
+            if dot_line_str not in dot_graph_str:
+                dot_graph_str += dot_line_str
+    return dot_graph_str + '}\n'
