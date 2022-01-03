@@ -41,29 +41,29 @@ def _html_front_screen_posts(recent_posts_cache: {}, max_recent_posts: int,
     These should only be public blog posts from the features timeline
     which is the blog timeline of the news actor
     """
-    separatorStr = html_post_separator(base_dir, None)
-    profileStr = ''
-    maxItems = 4
+    separator_str = html_post_separator(base_dir, None)
+    profile_str = ''
+    max_items = 4
     ctr = 0
-    currPage = 1
-    boxName = 'tlfeatures'
+    curr_page = 1
+    box_name = 'tlfeatures'
     authorized = True
-    while ctr < maxItems and currPage < 4:
-        outboxFeedPathStr = \
-            '/users/' + nickname + '/' + boxName + \
-            '?page=' + str(currPage)
-        outboxFeed = \
+    while ctr < max_items and curr_page < 4:
+        outbox_feed_path_str = \
+            '/users/' + nickname + '/' + box_name + \
+            '?page=' + str(curr_page)
+        outbox_feed = \
             person_box_json({}, session, base_dir, domain, port,
-                            outboxFeedPathStr,
-                            http_prefix, 10, boxName,
+                            outbox_feed_path_str,
+                            http_prefix, 10, box_name,
                             authorized, 0, False, 0)
-        if not outboxFeed:
+        if not outbox_feed:
             break
-        if len(outboxFeed['orderedItems']) == 0:
+        if len(outbox_feed['orderedItems']) == 0:
             break
-        for item in outboxFeed['orderedItems']:
+        for item in outbox_feed['orderedItems']:
             if item['type'] == 'Create':
-                postStr = \
+                post_str = \
                     individual_post_as_html(signing_priv_key_pem,
                                             True, recent_posts_cache,
                                             max_recent_posts,
@@ -85,13 +85,13 @@ def _html_front_screen_posts(recent_posts_cache: {}, max_recent_posts: int,
                                             False, False, False,
                                             True, False, False,
                                             cw_lists, lists_enabled)
-                if postStr:
-                    profileStr += postStr + separatorStr
+                if post_str:
+                    profile_str += post_str + separator_str
                     ctr += 1
-                    if ctr >= maxItems:
+                    if ctr >= max_items:
                         break
-        currPage += 1
-    return profileStr
+        curr_page += 1
+    return profile_str
 
 
 def html_front_screen(signing_priv_key_pem: str,
@@ -112,9 +112,9 @@ def html_front_screen(signing_priv_key_pem: str,
                       access_keys: {},
                       system_language: str, max_like_count: int,
                       shared_items_federated_domains: [],
-                      extraJson: {},
-                      pageNumber: int,
-                      maxItemsPerPage: int,
+                      extra_json: {},
+                      page_number: int,
+                      max_items_per_page: int,
                       cw_lists: {}, lists_enabled: str) -> str:
     """Show the news instance front screen
     """
@@ -130,20 +130,20 @@ def html_front_screen(signing_priv_key_pem: str,
     if port:
         domain_full = domain + ':' + str(port)
 
-    loginButton = header_buttons_front_screen(translate, nickname,
-                                              'features', authorized,
-                                              icons_as_buttons)
+    login_button = header_buttons_front_screen(translate, nickname,
+                                               'features', authorized,
+                                               icons_as_buttons)
 
     # If this is the news account then show a different banner
-    banner_file, banner_filename = \
+    banner_file, _ = \
         get_banner_file(base_dir, nickname, domain, theme)
-    profileHeaderStr = \
+    profile_header_str = \
         '<img loading="lazy" class="timeline-banner" ' + \
         'src="/users/' + nickname + '/' + banner_file + '" />\n'
-    if loginButton:
-        profileHeaderStr += '<center>' + loginButton + '</center>\n'
+    if login_button:
+        profile_header_str += '<center>' + login_button + '</center>\n'
 
-    profileHeaderStr += \
+    profile_header_str += \
         '<table class="timeline">\n' + \
         '  <colgroup>\n' + \
         '    <col span="1" class="column-left">\n' + \
@@ -153,27 +153,27 @@ def html_front_screen(signing_priv_key_pem: str,
         '  <tbody>\n' + \
         '    <tr>\n' + \
         '      <td valign="top" class="col-left">\n'
-    profileHeaderStr += \
+    profile_header_str += \
         get_left_column_content(base_dir, 'news', domain_full,
                                 http_prefix, translate,
                                 False, False,
                                 False, None, rss_icon_at_top, True,
                                 True, theme, access_keys,
                                 shared_items_federated_domains)
-    profileHeaderStr += \
+    profile_header_str += \
         '      </td>\n' + \
         '      <td valign="top" class="col-center">\n'
 
-    profileStr = profileHeaderStr
+    profile_str = profile_header_str
 
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
 
-    licenseStr = ''
-    banner_file, banner_filename = \
+    license_str = ''
+    banner_file, _ = \
         get_banner_file(base_dir, nickname, domain, theme)
-    profileStr += \
+    profile_str += \
         _html_front_screen_posts(recent_posts_cache, max_recent_posts,
                                  translate,
                                  base_dir, http_prefix,
@@ -188,27 +188,27 @@ def html_front_screen(signing_priv_key_pem: str,
                                  theme, system_language,
                                  max_like_count,
                                  signing_priv_key_pem,
-                                 cw_lists, lists_enabled) + licenseStr
+                                 cw_lists, lists_enabled) + license_str
 
     # Footer which is only used for system accounts
-    profileFooterStr = '      </td>\n'
-    profileFooterStr += '      <td valign="top" class="col-right">\n'
-    profileFooterStr += \
+    profile_footer_str = '      </td>\n'
+    profile_footer_str += '      <td valign="top" class="col-right">\n'
+    profile_footer_str += \
         get_right_column_content(base_dir, 'news', domain_full,
                                  http_prefix, translate,
                                  False, False, newswire, False,
                                  False, None, False, False,
                                  False, True, authorized, True, theme,
                                  default_timeline, access_keys)
-    profileFooterStr += \
+    profile_footer_str += \
         '      </td>\n' + \
         '  </tr>\n' + \
         '  </tbody>\n' + \
         '</table>\n'
 
-    instanceTitle = \
+    instance_title = \
         get_config_param(base_dir, 'instanceTitle')
-    profileStr = \
-        html_header_with_external_style(css_filename, instanceTitle, None) + \
-        profileStr + profileFooterStr + html_footer()
-    return profileStr
+    profile_str = \
+        html_header_with_external_style(css_filename, instance_title, None) + \
+        profile_str + profile_footer_str + html_footer()
+    return profile_str
