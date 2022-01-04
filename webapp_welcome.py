@@ -43,7 +43,7 @@ def welcome_screen_is_complete(base_dir: str,
 def html_welcome_screen(base_dir: str, nickname: str,
                         language: str, translate: {},
                         theme_name: str,
-                        currScreen='welcome') -> str:
+                        curr_screen='welcome') -> str:
     """Returns the welcome screen
     """
     # set a custom background for the welcome screen
@@ -53,7 +53,7 @@ def html_welcome_screen(base_dir: str, nickname: str,
                      base_dir + '/accounts/welcome-background.jpg')
 
     welcome_text = 'Welcome to Epicyon'
-    welcome_filename = base_dir + '/accounts/' + currScreen + '.md'
+    welcome_filename = base_dir + '/accounts/' + curr_screen + '.md'
     if not os.path.isfile(welcome_filename):
         default_filename = None
         if theme_name:
@@ -65,10 +65,10 @@ def html_welcome_screen(base_dir: str, nickname: str,
         if not default_filename:
             default_filename = \
                 base_dir + '/defaultwelcome/' + \
-                currScreen + '_' + language + '.md'
+                curr_screen + '_' + language + '.md'
         if not os.path.isfile(default_filename):
             default_filename = \
-                base_dir + '/defaultwelcome/' + currScreen + '_en.md'
+                base_dir + '/defaultwelcome/' + curr_screen + '_en.md'
         copyfile(default_filename, welcome_filename)
 
     instance_title = \
